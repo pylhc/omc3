@@ -1,0 +1,6 @@
+/*
+* Specific macros for runII of 2016 of the LHC
+*/
+
+!@require lhc_runII_2016
+!@require lhc_runII_ats
