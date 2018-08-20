@@ -124,16 +124,18 @@ def _compute_params_bin(sdds_file):
 
 
 def _compute_arrays_bin(sdds_file):
-    data = b""
+    data = bytearray()
     for array_name in sdds_file.get_arrays():
         array = sdds_file.get_arrays()[array_name]
-        data += np.array(len(array.values), dtype=TYPES["int"]).tobytes()
+        data.extend(np.array(len(array.values), dtype=TYPES["int"]).tobytes())
         if array.type_name == "string":
             for string in array.values:
-                data += _compute_string(array, string)
+                data.extend(_compute_string(array, string))
         else:
-            data += np.array(array.values, dtype=TYPES[array.type_name]).tobytes()
-    return data
+            data.extend(
+                np.array(array.values, dtype=TYPES[array.type_name]).tobytes()
+            )
+    return bytes(data)
 
 
 def _compute_cols_bin(sdds_file):
