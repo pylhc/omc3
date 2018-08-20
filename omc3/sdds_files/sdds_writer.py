@@ -34,7 +34,7 @@ def get_sdds_binary(sdds_file, binary=True):
     """
     header = _compute_header(sdds_file)
     if binary:
-        header += "&data mode=binary, " + sdds_reader.END_TAG + "\n"
+        header += ("&data mode=binary, " + sdds_reader.END_TAG + "\n").encode("utf-8")
         data = _compute_data_binary(sdds_file)
     else:
         raise NotImplementedError("Only binary mode for now.")
@@ -48,7 +48,7 @@ def _compute_header(sdds_file):
     header += _compute_params_head(sdds_file)
     header += _compute_arrays_head(sdds_file)
     header += _compute_cols_head(sdds_file)
-    return header
+    return header.encode("utf-8")
 
 
 def _compute_params_head(sdds_file):
@@ -113,7 +113,7 @@ def _compute_data_binary(sdds_file):
 
 
 def _compute_params_bin(sdds_file):
-    data = ""
+    data = b""
     for param_name in sdds_file.get_parameters():
         param = sdds_file.get_parameters()[param_name]
         if param.type_name == "string":
@@ -124,7 +124,7 @@ def _compute_params_bin(sdds_file):
 
 
 def _compute_arrays_bin(sdds_file):
-    data = ""
+    data = b""
     for array_name in sdds_file.get_arrays():
         array = sdds_file.get_arrays()[array_name]
         data += np.array(len(array.values), dtype=TYPES["int"]).tobytes()
@@ -138,18 +138,18 @@ def _compute_arrays_bin(sdds_file):
 
 def _compute_cols_bin(sdds_file):
     # TODO: I dont know what these columns things are...
-    return ""
+    return b""
 
 
 def _compute_string(thing, string):
-    data = ""
+    data = b""
     type_ = TYPES["int"]
     if thing.modifier == "u1":
         type_ = TYPES["byte"]
     elif thing.modifier == "i2":
         type_ = TYPES["short"]
     data += np.array(len(string), dtype=type_).tobytes()
-    data += string.encode("utf-8")
+    data += string
     return data
 
 

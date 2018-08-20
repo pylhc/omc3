@@ -101,8 +101,8 @@ def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH,
         process = subprocess.Popen([madx_path, madx_jobfile], shell=False,
                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
         with _logfile_wrapper(log_file) as log_handler, process.stdout:
-            for line in iter(process.stdout.readline, b''):
-                log_handler(line)
+            for line in process.stdout:
+                log_handler(line.decode('utf-8'))
         status = process.wait()
 
     if status:

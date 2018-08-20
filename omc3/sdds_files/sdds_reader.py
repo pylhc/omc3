@@ -334,7 +334,7 @@ class SddsReader(object):
                     str_len = self._read_binary_byte()
                 elif "i2" == array.modifier:
                     str_len = self._read_binary_short()
-                str_len = self._read_binary_int()
+                str_len = self._read_binary_int()[0]
                 values.append(self._read_binary_string(bytes=str_len))
             array.values = values
         else:
