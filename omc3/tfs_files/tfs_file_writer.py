@@ -105,7 +105,6 @@ class TfsFileWriter(object):
         lines.append("* " + format_for_titles.format(*self._list_of_column_names))
         lines.append("$ " + format_for_titles.format(*self._list_of_column_data_types))
         data_format = self._get_column_formatter(self._list_of_column_data_types, with_type=True)
-        print(data_format)
         for table_line in self._list_of_table_rows:
             lines.append("  " + data_format.format(*table_line))
         with open(self._file_name, 'w') as tfs_file:
