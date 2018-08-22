@@ -1,6 +1,5 @@
 from collections import OrderedDict
-import sys
-import os
+from os.path import basename, dirname
 import logging
 import pandas
 import numpy as np
@@ -49,7 +48,6 @@ class TfsDataFrame(pandas.DataFrame):
     To get a header value do: data_frame["header_name"] or
     data_frame.header_name.
     """
-
     _metadata = ["headers", "indx"]
 
     def __init__(self, *args, **kwargs):
@@ -64,8 +62,7 @@ class TfsDataFrame(pandas.DataFrame):
             try:
                 return self.headers[key]
             except KeyError:
-                raise KeyError(str(key) +
-                               " is not in the DataFrame or headers.")
+                raise KeyError(f"{key} is neither in the DataFrame nor in headers.")
             except TypeError:
                 raise e
 
@@ -76,8 +73,7 @@ class TfsDataFrame(pandas.DataFrame):
             try:
                 return self.headers[name]
             except KeyError:
-                raise AttributeError(str(name) +
-                                     " is not in the DataFrame or headers.")
+                raise AttributeError(f"{name} is neither in the DataFrame nor in headers.")
 
     @property
     def _constructor(self):
@@ -105,7 +101,7 @@ def read_tfs(tfs_path, index=None):
     :param index: Name of the column to set as index. If not given looks for INDEX_ID-column
     :return: TFS_DataFrame object
     """
-    LOGGER.debug("Reading path: " + tfs_path)
+    LOGGER.debug(f"Reading path: {tfs_path}")
     headers = OrderedDict()
     column_names = column_types = None
     rows_list = []
@@ -154,7 +150,7 @@ def read_tfs(tfs_path, index=None):
     return data_frame
 
 
-def write_tfs(tfs_path, data_frame, headers_dict={}, save_index=False):
+def write_tfs(tfs_path, data_frame, headers_dict=None, save_index=False):
     """
     Writes the Pandas DataFrame data_frame into tfs_path with the headers_dict
     as headers dictionary. If you want to keep the order of the headers, use
@@ -180,37 +176,23 @@ def write_tfs(tfs_path, data_frame, headers_dict={}, save_index=False):
                 idx_name = INDEX_ID
         data_frame.insert(0, idx_name, data_frame.index)
 
-    tfs_name = os.path.basename(tfs_path)
-    tfs_dir = os.path.dirname(tfs_path)
-    LOGGER.debug("Attempting to write file: " + tfs_name + " in " + tfs_dir)
-    tfs_writer = tfs_file_writer.TfsFileWriter(tfs_name, outputpath=tfs_dir)
-    column_names = _get_column_names(data_frame)
-    column_types = _get_column_types(data_frame)
+    LOGGER.debug(f"Attempting to write file: {basename(tfs_path)} in {dirname(tfs_path)}")
 
-    if len(headers_dict) == 0:
+    if headers_dict is None:
         try:
             headers_dict = data_frame.headers
         except AttributeError:
-            pass
-
-    for head_name in headers_dict:
-        if isinstance(headers_dict[head_name], INT_PARENTS):
-            tfs_writer.add_int_descriptor(head_name, headers_dict[head_name])
-        elif isinstance(headers_dict[head_name], FLOAT_PARENTS):
-            tfs_writer.add_float_descriptor(head_name, headers_dict[head_name])
-        else:
-            tfs_writer.add_string_descriptor(head_name, headers_dict[head_name])
-    tfs_writer.add_column_names(column_names)
-    tfs_writer.add_column_datatypes(column_types)
+            headers_dict = {}
+    tfs_writer = tfs_file_writer.TfsFileWriter(tfs_path, headers_dict)
+    tfs_writer.add_column_names(data_frame.columns.values)
+    tfs_writer.add_column_datatypes(_get_column_types(data_frame))
     for _, row in data_frame.iterrows():
         tfs_writer.add_table_row(row)
     tfs_writer.write_to_file()
 
 
 class TfsFormatError(Exception):
-    """
-    Raised when wrong format is detected in the TFS file.
-    """
+    """Raised when wrong format is detected in the TFS file."""
     pass
 
 
@@ -248,7 +230,7 @@ def _id_to_type(type_str):
     except KeyError:
         if type_str.startswith("%") and type_str.endswith("s"):
             return str
-        _raise_unknown_type(type_str)
+        raise TfsFormatError(f"Unknown data type: {type_str}")
 
 
 def _type_to_id(type_f):
@@ -258,20 +240,12 @@ def _type_to_id(type_f):
         return "%s"
 
 
-def _get_column_names(data_frame):
-    return data_frame.columns.values
-
-
 def _get_column_types(data_frame):
     types = []
     for column in data_frame.columns:
         type_f = data_frame[column].dtype
         types.append(_type_to_id(type_f.type))
     return types
-
-
-def _raise_unknown_type(name):
-    raise TfsFormatError("Unknown data type: " + name)
 
 
 def _validate(data_frame, info_str=""):
@@ -289,15 +263,7 @@ def _validate(data_frame, info_str=""):
 
     bool_df = data_frame.apply(isnotfinite)
     if bool_df.values.any():
-        LOGGER.warning("DataFrame {:s} contains non-physical values at Index: {:s}".format(
-            info_str,
-            str(bool_df.index[bool_df.any(axis='columns')].tolist())
-        ))
+        LOGGER.warning(f"DataFrame {info_str:s} contains non-physical values at Index: "
+                       f"{bool_df.index[bool_df.any(axis='columns')].tolist():s}")
     else:
-        LOGGER.debug("DataFrame {:s} validated.".format(info_str))
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    LOGGER.debug(read_tfs(sys.argv[1]))
-
+        LOGGER.debug(f"DataFrame {info_str:s} validated.")
