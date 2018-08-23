@@ -146,6 +146,7 @@ def write_tfs(tfs_path, data_frame, headers_dict=None,
     :param data_frame: Data Frame to save
     :param headers_dict: Headers of the dataframe, if empty tries to use data_frame.headers
     :param save_index: bool or string. If True, saves the index of the data_frame to a column
+    :param colwidth: Column width
     identifiable by INDEX_ID (will be loaded automatically by read_tfs). If string, it saves
     the index of the data_frame to a column named like the string given. Default: False
     """

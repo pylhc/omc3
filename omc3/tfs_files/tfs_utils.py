@@ -1,7 +1,14 @@
 from tfs_files import tfs_pandas as tfs
 from utils import logging_tools as logtools
-
+import numpy as np
 LOG = logtools.get_logger(__name__)
+
+
+def significant_numbers(value, error):
+    digits = -int(np.floor(np.log10(error)))
+    if np.floor(error * 10 ** digits) == 1:
+        digits = digits + 1
+    return f"{round(value,digits):.{max(digits, 0)}f}", f"{round(error, digits):.{max(digits, 0)}f}"
 
 
 def remove_nan_from_files(list_of_files, replace=False):
@@ -13,9 +20,9 @@ def remove_nan_from_files(list_of_files, replace=False):
     for filepath in list_of_files:
         try:
             df = tfs.read_tfs(filepath)
-            LOG.info("Read file {:s}".format(filepath))
+            LOG.info(f"Read file {filepath:s}")
         except (IOError, tfs.TfsFormatError):
-            LOG.info("Skipped file {:s}".format(filepath))
+            LOG.info(f"Skipped file {filepath:s}")
         else:
             df = df.dropna(axis='index')
             if not replace:
@@ -26,7 +33,7 @@ def remove_nan_from_files(list_of_files, replace=False):
 def remove_header_comments_from_files(list_of_files):
     """ Check the files in list for invalid headers (no type defined) and removes them. """
     for filepath in list_of_files:
-        LOG.info("Checking file: '{:s}'".format(filepath))
+        LOG.info(f"Checking file: {filepath:s}")
         with open(filepath, "r") as f:
             f_lines = f.readlines()
 
