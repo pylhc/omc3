@@ -3,7 +3,6 @@ from os.path import basename, dirname
 import logging
 import pandas
 import numpy as np
-from tfs_files import tfs_file_writer
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
@@ -18,19 +17,6 @@ FLOAT_PARENTS = (float, np.floating)
 INT_PARENTS = (int, np.integer, bool, np.bool_)
 
 
-class TypeToIdConverter(object):
-    """ For symmetry reasons. """
-    def __getitem__(self, item):
-        if issubclass(item, INT_PARENTS):
-            return "%d"
-        elif issubclass(item, FLOAT_PARENTS):
-            return "%le"
-        else:
-            return "%s"
-
-
-TYPE_TO_ID = TypeToIdConverter()
-
 ID_TO_TYPE = {
     "%s": np.str,
     "%bpm_s": np.str,
@@ -39,6 +25,9 @@ ID_TO_TYPE = {
     "%hd": np.int,
     "%d": np.int,
 }
+
+DEFAULT_COLUMN_WIDTH = 20
+MIN_COLUMN_WIDTH = 10
 
 
 class TfsDataFrame(pandas.DataFrame):
@@ -147,7 +136,8 @@ def read_tfs(tfs_path, index=None):
     return data_frame
 
 
-def write_tfs(tfs_path, data_frame, headers_dict=None, save_index=False):
+def write_tfs(tfs_path, data_frame, headers_dict=None,
+              save_index=False, colwidth=DEFAULT_COLUMN_WIDTH):
     """
     Writes the Pandas DataFrame data_frame into tfs_path with the headers_dict
     as headers dictionary. If you want to keep the order of the headers, use
@@ -180,12 +170,61 @@ def write_tfs(tfs_path, data_frame, headers_dict=None, save_index=False):
             headers_dict = data_frame.headers
         except AttributeError:
             headers_dict = {}
-    tfs_writer = tfs_file_writer.TfsFileWriter(tfs_path, headers_dict)
-    tfs_writer.add_column_names(data_frame.columns.values)
-    tfs_writer.add_column_datatypes(_get_column_types(data_frame))
-    for _, row in data_frame.iterrows():
-        tfs_writer.add_table_row(row)
-    tfs_writer.write_to_file()
+
+    colwidth = MIN_COLUMN_WIDTH if colwidth < MIN_COLUMN_WIDTH else colwidth
+    headers_str = _get_headers_str(headers_dict)
+    colnames_str = _get_colnames_str(data_frame.columns, colwidth)
+    coltypes_str = _get_coltypes_str(data_frame.dtypes, colwidth)
+    data_str = _get_data_str(data_frame, colwidth)
+    with open(tfs_path, "w") as tfs_data:
+        tfs_data.write("\n".join((
+            headers_str, colnames_str, coltypes_str, data_str
+        )))
+
+
+def _get_headers_str(headers_dict):
+    return "\n".join(_get_header_line(name, headers_dict[name])
+                     for name in headers_dict)
+
+
+def _get_header_line(name, value):
+    # TODO types can be a global dictionary
+    if not isinstance(name, str):
+        raise ValueError(f"{name} is not a string")
+    if isinstance(value, INT_PARENTS):
+        return f"@ {name} %d {value}"
+    elif isinstance(value, FLOAT_PARENTS):
+        return f"@ {name} %le {value}"
+    elif isinstance(value, str):
+        return f"@ {name} %s \"{value}\""
+    else:
+        raise ValueError(f"{value} does not correspond to any _TfsDataType")
+
+
+def _get_colnames_str(colnames, colwidth):
+    fmt = _get_row_fmt_str([str] * len(colnames), colwidth)
+    colnames_str = fmt.format(*colnames)
+    return "* " + colnames_str
+
+
+def _get_coltypes_str(types, colwidth):
+    fmt = _get_row_fmt_str([str] * len(types), colwidth)
+    coltypes_str = fmt.format(*[_dtype_to_str(type_) for type_ in types])
+    return "$ " + coltypes_str
+
+
+def _get_data_str(data_frame, colwidth):
+    format_strings = "  " + _get_row_fmt_str(data_frame.dtypes, colwidth)
+    return "\n".join(
+        data_frame.apply(lambda series: format_strings.format(*series), axis=1)
+    )
+
+
+def _get_row_fmt_str(dtypes, colwidth):
+    return " ".join(
+        "{" + f"{indx:d}:>{_dtype_to_format(type_, colwidth)}" + "}"
+        for indx, type_ in enumerate(dtypes)
+    )
 
 
 class TfsFormatError(Exception):
@@ -230,19 +269,22 @@ def _id_to_type(type_str):
         raise TfsFormatError(f"Unknown data type: {type_str}")
 
 
-def _type_to_id(type_f):
-    try:
-        return TYPE_TO_ID[type_f]
-    except KeyError:
+def _dtype_to_str(type_):
+    if np.issubdtype(type_, np.integer) or np.issubdtype(type_, np.bool_):
+        return "%d"
+    elif np.issubdtype(type_, np.floating):
+        return "%le"
+    else:
         return "%s"
 
 
-def _get_column_types(data_frame):
-    types = []
-    for column in data_frame.columns:
-        type_f = data_frame[column].dtype
-        types.append(_type_to_id(type_f.type))
-    return types
+def _dtype_to_format(type_, colsize):
+    if np.issubdtype(type_, np.integer) or np.issubdtype(type_, np.bool_):
+        return f"{colsize}d"
+    elif np.issubdtype(type_, np.floating):
+        return f"{colsize}.{colsize - len('-0.e-000')}g"
+    else:
+        return f"{colsize}s"
 
 
 def _validate(data_frame, info_str=""):
