@@ -5,6 +5,7 @@ LOG = logtools.get_logger(__name__)
 
 
 def significant_numbers(value, error):
+    """Computes value and its error properly rounded with respect to the size of the error"""
     digits = -int(np.floor(np.log10(error)))
     if np.floor(error * 10 ** digits) == 1:
         digits = digits + 1
@@ -41,23 +42,15 @@ def remove_header_comments_from_files(list_of_files):
         for idx, line in enumerate(f_lines):
             if line.startswith("*"):
                 break
-
             if line.startswith("@") and len(line.split("%")) == 1:
                 del_idcs.append(idx)
 
         if len(del_idcs) > 0:
-            LOG.info("    Found {:d} lines to delete.".format(len(del_idcs)))
+            LOG.info(f"    Found {len(del_idcs):d} lines to delete.")
             for idx in reversed(del_idcs):
                 deleted_line = f_lines.pop(idx)
-                LOG.info("    Deleted line: '{:s}'".format(deleted_line.strip()))
+                LOG.info(f"    Deleted line: {deleted_line.strip():s}")
 
             with open(filepath, "w") as f:
                 f.writelines(f_lines)
-
-
-# Script Mode ##################################################################
-
-
-if __name__ == '__main__':
-    raise EnvironmentError("{:s} is not supposed to run as main.".format(__file__))
 
