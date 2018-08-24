@@ -222,8 +222,8 @@ class _TbtAsciiWriter(object):
 
     def _load_model(self):
         _append_beta_beat_to_path()
-        from tfs_files import tfs_pandas
-        return tfs_pandas.read_tfs(self._model_path)
+        from tfs import read_tfs
+        return read_tfs(self._model_path)
 
     def _write_header(self, tbt_file, output_file, model_data):
         output_file.write("#SDDSASCIIFORMAT v1\n")

@@ -1,4 +1,5 @@
-from tfs_files import tfs_pandas as tfs
+from tfs import read_tfs, write_tfs
+from tfs.handler import TfsFormatError
 from utils import logging_tools as logtools
 import numpy as np
 LOG = logtools.get_logger(__name__)
@@ -20,15 +21,15 @@ def remove_nan_from_files(list_of_files, replace=False):
     """
     for filepath in list_of_files:
         try:
-            df = tfs.read_tfs(filepath)
+            df = read_tfs(filepath)
             LOG.info(f"Read file {filepath:s}")
-        except (IOError, tfs.TfsFormatError):
+        except (IOError, TfsFormatError):
             LOG.info(f"Skipped file {filepath:s}")
         else:
             df = df.dropna(axis='index')
             if not replace:
                 filepath += ".dropna"
-            tfs.write_tfs(filepath, df)
+            write_tfs(filepath, df)
 
 
 def remove_header_comments_from_files(list_of_files):
@@ -53,4 +54,3 @@ def remove_header_comments_from_files(list_of_files):
 
             with open(filepath, "w") as f:
                 f.writelines(f_lines)
-

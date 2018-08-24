@@ -138,6 +138,7 @@ def write_tfs(tfs_path, data_frame, headers_dict=None,
     """
     Writes the DataFrame into tfs_path with the headers_dict as
     headers dictionary. If you want to keep the order of the headers, use collections.OrderedDict.
+
     Args:
         tfs_path: path to the output TFS file
         data_frame: TfsDataFrame or pandas.DataFrame to save
