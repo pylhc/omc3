@@ -1,7 +1,9 @@
 import time
 import numpy as np
-from sdds_files import sdds_writer, sdds_reader
-from sdds_files import turn_by_turn_reader as tbt_reader
+
+import sdds.handler
+from sdds import sdds_writer, handler
+from tbt import turn_by_turn_reader as tbt_reader
 
 
 def write_tbt_file(names, matrix, outfile):
@@ -14,12 +16,12 @@ def write_tbt_file(names, matrix, outfile):
         outfile: Path to the output file.
     """
     _, _, nbunches, nturns = matrix.shape
-    sdds_file = sdds_reader.SddsFile()
+    sdds_file = handler.SddsFile()
     for param in _get_all_params(nbunches, nturns):
         sdds_file._parameters[param.name] = param
     for array in _get_all_arrays(names, matrix):
         sdds_file._arrays[array.name] = array
-    sdds_writer.write_sdds_file(sdds_file, outfile)
+    sdds.handler.write_sdds(sdds_file, outfile)
 
 
 def _get_all_params(nbunches, nturns):
@@ -30,9 +32,9 @@ def _get_all_params(nbunches, nturns):
 
 
 def _get_param(name, type_, value):
-    param = sdds_reader.SddsParameter(name,
-                                      type_, type_,
-                                      None, None, None, None, None)
+    param = handler.SddsParameter(name,
+                                  type_, type_,
+                                  None, None, None, None, None)
     param.value = value
     return param
 
@@ -63,11 +65,11 @@ def _get_all_arrays(names, matrix):
 
 
 def _get_array(name, type_, values):
-    array = sdds_reader.SddsArray(name,
-                                  type_, type_,
-                                  None, None, None, None, None, None, None)
+    array = handler.SddsArray(name,
+                              type_, type_,
+                              None, None, None, None, None, None, None)
     if type_ != "string":
-        array.values = values.astype(sdds_writer.TYPES[type_])
+        array.values = values.astype(sdds.handler.TYPES[type_])
     else:
         array.values = values
     return array

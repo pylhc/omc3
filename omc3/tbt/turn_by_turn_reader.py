@@ -1,12 +1,10 @@
-import sys
-import os
 import logging
 from datetime import datetime
 import numpy as np
 import pandas as pd
 
-from sdds_files import sdds_reader, ascii_reader
-
+from sdds import handler
+from tbt import ascii_reader
 
 LOGGER = logging.getLogger(__name__)
 
@@ -146,7 +144,7 @@ class TbtFile(object):
 
 class _TbtReader(object):
     def __init__(self, file_path):
-        sdds_file = sdds_reader.read_sdds_file(file_path)
+        sdds_file = handler.read_sdds(file_path)
         parameters = sdds_file.get_parameters()
         arrays = sdds_file.get_arrays()
         self._timestamp = parameters[TIMESTAMP_NAME].value
@@ -221,7 +219,6 @@ class _TbtAsciiWriter(object):
                 self._write_tbt_data(tbt_file, output_file, model_data)
 
     def _load_model(self):
-        _append_beta_beat_to_path()
         from tfs import read_tfs
         return read_tfs(self._model_path)
 
@@ -261,26 +258,3 @@ class _TbtAsciiWriter(object):
                 output_str_y = row_format.format(str(VER), bpm_name, bpm_s,
                                                  *bpm_samples_y)
                 output_file.write(output_str_y)
-
-
-def _append_beta_beat_to_path():  # TODO remove this?
-    parent_path = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), ".."
-    ))
-    if os.path.basename(parent_path) == "Beta-Beat.src":
-        sys.path.append(parent_path)
-    else:
-        LOGGER.warning("Not in Beta-Beat.src, using lintrack metaclass")
-        if "win" in sys.platform and sys.platform != "darwin":
-            afs_root = "\\\\AFS"
-        else:
-            afs_root = "/afs"
-        sys.path.append(
-            os.path.join(afs_root, "cern.ch", "eng",
-                         "sl", "lintrack", "Beta-Beat.src")
-        )
-
-
-if __name__ == "__main__":
-    _, _file_path, _model_path, _output_path = sys.argv
-    transform_tbt_to_ascii(_file_path, _model_path, _output_path)
