@@ -1,6 +1,5 @@
-from __future__ import print_function
 import os
-from tfs_files import tfs_pandas
+from tfs import read_tfs, write_tfs
 
 
 class _MetaTfsCollection(type):
@@ -19,7 +18,7 @@ class _MetaTfsCollection(type):
                 kwargs = value.kwargs
             except AttributeError:
                 continue
-            new_props = _define_property(dct, args, kwargs)
+            new_props = _define_property(args, kwargs)
             try:
                 prop_x, prop_y = new_props
                 new_dict.pop(name)
@@ -127,7 +126,7 @@ class TfsCollection(object):
         Returns:
             A tfs_pandas instance of the requested file.
         """
-        tfs_data = tfs_pandas.read_tfs(os.path.join(self.directory, filename))
+        tfs_data = read_tfs(os.path.join(self.directory, filename))
         if "NAME" in tfs_data:
             tfs_data = tfs_data.set_index("NAME", drop=False)
         return tfs_data
@@ -150,7 +149,7 @@ class TfsCollection(object):
 
     def _write_tfs(self, filename, data_frame):
         if self.allow_write:
-            tfs_pandas.write_tfs(os.path.join(self.directory, filename), data_frame)
+            write_tfs(os.path.join(self.directory, filename), data_frame)
         self._buffer[filename] = data_frame
 
     class _TwoPlanes(object):
@@ -179,12 +178,12 @@ class Tfs(object):
 
 # Private methods to define the properties ##################################
 
-def _define_property(dct, args, kwargs):
+def _define_property(args, kwargs):
     if "two_planes" not in kwargs:
-        return _define_property_two_planes(dct, args, kwargs)
+        return _define_property_two_planes(args, kwargs)
     elif kwargs["two_planes"]:
         kwargs.pop("two_planes")
-        return _define_property_two_planes(dct, args, kwargs)
+        return _define_property_two_planes(args, kwargs)
     else:
         kwargs.pop("two_planes")
 
@@ -196,7 +195,7 @@ def _define_property(dct, args, kwargs):
         return property(fget=getter_funct, fset=setter_funct)
 
 
-def _define_property_two_planes(dct, args, kwargs):
+def _define_property_two_planes(args, kwargs):
     x_kwargs = dict(kwargs)
     y_kwargs = dict(kwargs)
     x_kwargs["plane"] = "x"
@@ -248,7 +247,7 @@ class _MaybeCall(object):
     def __getattr__(self, attr):
         return _MaybeCall.MaybeCallAttr(self.parent, attr)
 
-    class MaybeCallAttr():
+    class MaybeCallAttr:
         def __init__(self, parent, attr):
             self.parent = parent
             self.attr = attr
@@ -257,9 +256,9 @@ class _MaybeCall(object):
             return _MaybeCall.MaybeCallAttr(self.parent,
                                             self.attr + "_" + item)
 
-        def __call__(self, function, *args, **kwargs):
+        def __call__(self, function_call, *args, **kwargs):
             try:
                 tfs_file = getattr(self.parent, self.attr)
             except IOError:
                 return lambda funct: None  # Empty function
-            return function(tfs_file, *args, **kwargs)
+            return function_call(tfs_file, *args, **kwargs)
