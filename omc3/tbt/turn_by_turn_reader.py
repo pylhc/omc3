@@ -3,7 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-from sdds import handler
+import sdds
 from tbt import ascii_reader
 
 LOGGER = logging.getLogger(__name__)
@@ -144,7 +144,7 @@ class TbtFile(object):
 
 class _TbtReader(object):
     def __init__(self, file_path):
-        sdds_file = handler.read_sdds(file_path)
+        sdds_file = sdds.read(file_path)
         parameters = sdds_file.get_parameters()
         arrays = sdds_file.get_arrays()
         self._timestamp = parameters[TIMESTAMP_NAME].value
