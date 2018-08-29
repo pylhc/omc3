@@ -2,16 +2,16 @@ import os
 import pytest
 import numpy as np
 from .context import omc3
-from omc3.sdds_files import sdds_reader, sdds_writer
+from omc3.sdds import read_sdds, write_sdds
 
 
 CURRENT_DIR = os.path.dirname(__file__)
 
 
 def test_sdds_write_read(_sdds_file, _test_file):
-    original = sdds_reader.read_sdds_file(_sdds_file)
-    sdds_writer.write_sdds_file(original, _test_file)
-    new = sdds_reader.read_sdds_file(_test_file)
+    original = read_sdds(_sdds_file)
+    write_sdds(original, _test_file)
+    new = read_sdds(_test_file)
     for param_name in original.get_parameters():
         assert (original.get_parameters()[param_name].value ==
                 new.get_parameters()[param_name].value)
@@ -22,8 +22,7 @@ def test_sdds_write_read(_sdds_file, _test_file):
 
 @pytest.fixture()
 def _sdds_file():
-    return os.path.join(CURRENT_DIR, "..", "inputs",
-                        "tbt_files", "flat_beam1_3d.sdds")
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.sdds")
 
 
 @pytest.fixture()
