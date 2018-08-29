@@ -1,0 +1,11 @@
+language: python
+email:
+    recipients:
+      - lmalina@cern.ch
+      - jcoellod@cern.ch
+    on_success: always
+    on_failure: always
+python:
+ - "3.6"
+script:
+ - pytest tests/unit/
