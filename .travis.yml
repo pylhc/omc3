@@ -8,4 +8,6 @@ email:
 python:
  - "3.6"
 script:
- - pytest tests/unit/
+ - pytest tests/unit/test_madx_wrapper.py
+ - pytest tests/unit/test_tfs.py
+ - pytest tests/unit/test_stats.py
