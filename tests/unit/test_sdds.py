@@ -22,8 +22,7 @@ def test_sdds_write_read(_sdds_file, _test_file):
 
 @pytest.fixture()
 def _sdds_file():
-    return os.path.join(CURRENT_DIR, "..", "inputs",
-                        "tbt_files", "flat_beam1_3d.sdds")
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.sdds")
 
 
 @pytest.fixture()
