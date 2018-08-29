@@ -1,0 +1,13 @@
+language: python
+email:
+    recipients:
+      - lmalina@cern.ch
+      - jcoellod@cern.ch
+    on_success: always
+    on_failure: always
+python:
+ - "3.6"
+script:
+ - pytest tests/unit/test_madx_wrapper.py
+ - pytest tests/unit/test_tfs.py
+ - pytest tests/unit/test_stats.py
