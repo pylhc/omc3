@@ -35,7 +35,7 @@ def dict_to_df(di):  # should contain at least 'data': np.array(2D)
 
 
 def df_to_dict(df):
-    return {'data': df.as_matrix().values, 'index': df.index.values, 'columns': df.columns.values}
+    return {'data': df.values, 'index': df.index.values, 'columns': df.columns.values}
 
 
 def save_tbt_files(file_name, *tbts):
@@ -44,8 +44,7 @@ def save_tbt_files(file_name, *tbts):
 
 def get_trackone_stats(infile):
     stats_string = ""
-    nturns = 0
-    nparticles = 0
+    nturns, nparticles = 0, 0
     first_seg = True
     with open(infile, 'r') as f:
         for l in f:
@@ -56,15 +55,12 @@ def get_trackone_stats(infile):
                 continue
             parts = l.split()
             if parts[0] == '#segment':
-                if first_seg:
-                    nturns = int(parts[2])
-                    nparticles = int(parts[3])
-                    first_seg = False
-                    stats_string = stats_string + l
-                else:
+                if not first_seg:
                     break
-            else:
-                stats_string = stats_string + l
+                nturns = int(parts[2])
+                nparticles = int(parts[3])
+                first_seg = False
+            stats_string = stats_string + l
     stats_file = open('stats.txt', "w")
     stats_file.write(stats_string)
     stats_file.close()
@@ -99,4 +95,3 @@ def get_structure_from_trackone(nturns=0, npart=0, infile='trackone'):
             elif 'BPM' in bpm_name:
                 bpms[bpm_name][int(parts[0]) - 1, int(parts[1]) - 1, :] = np.array(parts[2:])
     return np.array(bpms.keys()), np.transpose(np.array(bpms.values()), axes=[3, 0, 1, 2])
-
