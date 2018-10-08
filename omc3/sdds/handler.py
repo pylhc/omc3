@@ -1,4 +1,3 @@
-import sys
 import re
 import logging
 import numpy as np
@@ -26,7 +25,7 @@ END_TAG = "&end"
 DEBUG = False
 
 
-def read_sdds_file(file_path):
+def read_sdds(file_path):
     return SddsReader(file_path).sdds_file
 
 
@@ -394,42 +393,155 @@ class SddsFile(object):
         self._arrays = OrderedDict()
         self._columns = OrderedDict()
 
-    def define_parameter(
-            self, name, type, type_name,
-            units, symbol, modifier, format_string, description
-    ):
-        self._parameters[name] = SddsParameter(
-            name, type, type_name,
-            units, symbol, modifier, format_string, description
-        )
+    def define_parameter(self, name, type, type_name, units, symbol, modifier, format_string, description):
+        self._parameters[name] = SddsParameter(name, type, type_name, units, symbol, modifier, format_string, description)
 
     def get_parameters(self):
         return self._parameters
 
-    def define_array(
-            self, name, type, type_name, dimensions,
-            units, symbol, modifier, format_string, description, group
-    ):
-        self._arrays[name] = SddsArray(
-            name, type, type_name, dimensions,
-            units, symbol, modifier, format_string, description, group
-        )
+    def define_array(self, name, type, type_name, dimensions, units, symbol, modifier, format_string, description, group):
+        self._arrays[name] = SddsArray(name, type, type_name, dimensions, units, symbol, modifier, format_string, description, group)
 
     def get_arrays(self):
         return self._arrays
 
-    def define_column(
-            self, name, type, type_name,
-            units, symbol, modifier, format_string, description
-    ):
-        self._columns[name] = SddsColumn(
-            name, type, type_name,
-            units, symbol, modifier, format_string, description
-        )
+    def define_column(self, name, type, type_name, units, symbol, modifier, format_string, description):
+        self._columns[name] = SddsColumn(name, type, type_name, units, symbol, modifier, format_string, description)
 
     def get_columns(self):
         return self._columns
 
 
-if __name__ == "__main__":
-    SddsReader(sys.argv[1])
+HARDCODED_HEAD = "SDDS1\n!# big-endian\n"
+TYPES = {
+    "boolean": np.dtype(">i1"),
+    "char": np.dtype(">i1"),
+    "double": np.dtype(">d"),
+    "float": np.dtype(">f"),
+    # Long means 32bits in these sdds...
+    "long": np.dtype(">i"),
+    "int": np.dtype(">i"),
+    "short": np.dtype(">i2"),
+}
+
+
+def write_sdds(sdds_file, output_file, binary=True):
+    """Writes the sdds_file SddsFile object into output_file.
+
+    The SDDS specification accepts a non-binary mode (ASCII), but this has not
+    been implemented yet (TODO?).
+    """
+    if not binary:
+        raise NotImplementedError("Only binary mode for now.")
+    header = _compute_header(sdds_file)
+    header += ("&data mode=binary, " + END_TAG + "\n").encode("utf-8")
+    data = _compute_data_binary(sdds_file)
+    with open(output_file, "wb") as outdata:
+        outdata.write(header + data)
+
+
+def _compute_header(sdds_file):
+    header = HARDCODED_HEAD
+    header += _compute_params_head(sdds_file)
+    header += _compute_arrays_head(sdds_file)
+    header += _compute_cols_head(sdds_file)
+    return header.encode("utf-8")
+
+
+def _compute_params_head(sdds_file):
+    header = ""
+    for param_name in sdds_file.get_parameters():
+        param = sdds_file.get_parameters()[param_name]
+        header += PARAMETER_TAG + " "
+        header += _common_headers(param)
+        header += END_TAG + "\n"
+    return header
+
+
+def _compute_arrays_head(sdds_file):
+    header = ""
+    for array_name in sdds_file.get_arrays():
+        array = sdds_file.get_arrays()[array_name]
+        header += ARRAY_TAG + " "
+        header += _common_headers(array)
+        header += _add(GROUP, array.group)
+        header += END_TAG + "\n"
+    return header
+
+
+def _compute_cols_head(sdds_file):
+    header = ""
+    for col_name in sdds_file.get_columns():
+        col = sdds_file.get_columns()[col_name]
+        header += COLUMN_TAG + " "
+        header += _common_headers(col)
+        header += END_TAG + "\n"
+    return header
+
+
+def _common_headers(thing):
+    header = ""
+    header += _add(NAME, thing.name)
+    header += _add(TYPE, thing.type_name)
+    header += _add(UNITS, thing.units)
+    header += _add(SYMBOL, thing.symbol)
+    header += _add(MODIFIER, thing.modifier)
+    header += _add(FORMAT_STRING, thing.format_string)
+    header += _add(DESCRIPTION, thing.description)
+    return header
+
+
+def _add(name, value):
+    return "{}={}, ".format(name, value) if value else ""
+
+
+def _compute_data_binary(sdds_file):
+    # This 0 is called row_count in the reader... not sure of its purpose
+    data = np.array(0, dtype=TYPES["int"]).tobytes()
+    data += _compute_params_bin(sdds_file)
+    data += _compute_arrays_bin(sdds_file)
+    data += _compute_cols_bin(sdds_file)
+    return data
+
+
+def _compute_params_bin(sdds_file):
+    data = b""
+    for param_name in sdds_file.get_parameters():
+        param = sdds_file.get_parameters()[param_name]
+        if param.type_name == "string":
+            data += _compute_string(param, param.value)
+        else:
+            data += np.array(param.value, dtype=TYPES[param.type_name]).tobytes()
+    return data
+
+
+def _compute_arrays_bin(sdds_file):
+    data = bytearray()
+    for array_name in sdds_file.get_arrays():
+        array = sdds_file.get_arrays()[array_name]
+        data.extend(np.array(len(array.values), dtype=TYPES["int"]).tobytes())
+        if array.type_name == "string":
+            for string in array.values:
+                data.extend(_compute_string(array, string))
+        else:
+            data.extend(
+                np.array(array.values, dtype=TYPES[array.type_name]).tobytes()
+            )
+    return bytes(data)
+
+
+def _compute_cols_bin(sdds_file):
+    # TODO: I dont know what these columns things are...
+    return b""
+
+
+def _compute_string(thing, string):
+    data = b""
+    type_ = TYPES["int"]
+    if thing.modifier == "u1":
+        type_ = TYPES["byte"]
+    elif thing.modifier == "i2":
+        type_ = TYPES["short"]
+    data += np.array(len(string), dtype=type_).tobytes()
+    data += string
+    return data

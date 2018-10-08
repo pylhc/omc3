@@ -7,21 +7,17 @@ _ACQ_DATE_PREFIX = "#Acquisition date: "
 
 
 def read_ascii_file(file_path):
-    bpm_names_x = []
-    bpm_names_y = []
-    matrix_x = []
-    matrix_y = []
+    bpm_names = {"0": [], "1": []}
+    matrix = {"0": [], "1": []}
     date = None
     with open(file_path, "r") as file_data:
         for line in file_data:
             line = line.strip()
             # Empty lines and comments:
-            if line == "":
+            if line == "" or "#" in line:
                 continue
             if _ACQ_DATE_PREFIX in line:
                 date = _parse_date(line)
-                continue
-            if "#" in line:
                 continue
             # Samples:
             parts = line.split()
@@ -29,18 +25,15 @@ def read_ascii_file(file_path):
             bpm_name = parts.pop(0)
             parts.pop(0)
             bpm_samples = _get_samples_array(parts)
-            if bpm_plane == "0":
-                bpm_names_x.append(bpm_name)
-                matrix_x.append(bpm_samples)
-            elif bpm_plane == "1":
-                bpm_names_y.append(bpm_name)
-                matrix_y.append(bpm_samples)
-            else:
-                raise ValueError("Wrong plane found in: " + file_path)
-    matrix_x = pd.DataFrame(index=bpm_names_x, data=np.array(matrix_x))
-    matrix_y = pd.DataFrame(index=bpm_names_y, data=np.array(matrix_y))
-    return (bpm_names_x, matrix_x,
-            bpm_names_y, matrix_y, date)
+            try:
+                bpm_names[bpm_plane].append(bpm_name)
+                matrix[bpm_plane].append(bpm_samples)
+            except KeyError:
+                raise ValueError(f"Wrong plane found in: {file_path}")
+    matrix_x = pd.DataFrame(index=bpm_names["0"], data=np.array(matrix["0"]))
+    matrix_y = pd.DataFrame(index=bpm_names["1"], data=np.array(matrix["1"]))
+    return (bpm_names["0"], matrix_x,
+            bpm_names["1"], matrix_y, date)
 
 
 def is_ascii_file(file_path):
@@ -64,6 +57,4 @@ def _parse_date(line):
 
 
 def _get_samples_array(samples_strings):
-    return np.array(
-        [float(sample) for sample in samples_strings]
-    )
+    return np.array([float(sample) for sample in samples_strings])
