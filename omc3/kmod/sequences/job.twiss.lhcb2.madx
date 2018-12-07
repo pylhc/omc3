@@ -1,0 +1,32 @@
+title, "Model creator for java";
+
+!@require lhc_runII_ats.macros.madx
+
+option, -echo;
+
+call, file = "/afs/cern.ch/eng/lhc/optics/runII/2017/lhc_as-built.seq";
+
+exec, define_nominal_beams();
+call, file = "/afs/cern.ch/eng/lhc/optics/runII/2017/opticsfile.19";
+exec, cycle_sequences();
+
+if(0==1){
+exec, set_crossing_scheme_ON();
+}else{
+exec, set_default_crossing_scheme();
+}
+
+use, period = LHCB2;
+
+option, echo;
+
+exec, match_tunes(0.31, 0.32, 1);
+
+select, flag=twiss, clear;
+select, flag=twiss, class=quadrupole, column=name,s,l,keyword,parent,k1l;
+select, flag=twiss, class=instrument;
+select, flag=twiss, class=tkicker;
+select, flag=twiss, class=monitor;
+select, flag=twiss, class=rbend;
+select, flag=twiss, class=marker;
+twiss, file=twiss_lhcb2.dat;

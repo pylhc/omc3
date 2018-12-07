@@ -19,6 +19,8 @@ def analyse_kmod():
     LOG.info('get inputfiles')
     
     magnet1_df, magnet2_df = kmod_get_files.merge_data( kmod_input_params )
+
+    magnet1_df, magnet2_df = kmod_utils.define_params( kmod_input_params, magnet1_df, magnet2_df )
     
     magnet1_df = kmod_utils.add_tuneuncertainty(magnet1_df, kmod_input_params)
     magnet2_df = kmod_utils.add_tuneuncertainty(magnet2_df, kmod_input_params)
