@@ -1,7 +1,7 @@
 
 import os
 new_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir, os.path.pardir))
-# change at later point to point to beta beat src path
+
 SEQUENCES_PATH = os.path.join( new_path,'omc3', 'kmod', 'sequences' )
 
 def get_tune_col(plane):
@@ -11,7 +11,7 @@ def get_tune_err_col(plane):
     return "{:s}_ERR".format( get_tune_col(plane) )
 
 def get_cleaned_col(plane):
-    return "CLEANED{:s}".format( plane.upper() )    
+    return "CLEANED_{:s}".format( plane.upper() )    
 
 def get_k_col():
     return "K" 
@@ -33,6 +33,12 @@ def get_betawaist_col(plane):
 
 def get_betawaist_err_col(plane):
     return "{:s}_ERR".format( get_betawaist_col(plane) )
+
+def get_av_beta_col(plane):
+    return "AVERAGEBETA{:s}".format( plane.upper() )     
+
+def get_av_beta_err_col(plane):
+    return "{:s}_ERR".format( get_av_beta_col( plane ) )
 
 def get_sequence_filename(beam):
     return os.path.join( SEQUENCES_PATH , "twiss_lhc{:s}.dat".format( beam.lower() ))

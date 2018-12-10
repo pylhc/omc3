@@ -6,6 +6,9 @@ from kmod import kmod_constants
 
 LOG = logging_tools.get_logger(__name__)
 
+def find_magnet(kmod_input_params, magnet1_df, magnet2_df):
+    pass
+
 def define_params(kmod_input_params, magnet1_df, magnet2_df):
     LOG.debug(' adding additional parameters to header ')
     
