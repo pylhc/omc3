@@ -34,7 +34,7 @@ def analyse_kmod():
     
     magnet1_df, magnet2_df = kmod_analysis.analyse(magnet1_df, magnet2_df)
 
-    # kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df )
+    kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, interactive_plot=True )
 
     tfs.write_tfs( '{:s}.tfs'.format( magnet1_df.headers['QUADRUPOLE'] ), magnet1_df )
     tfs.write_tfs( '{:s}.tfs'.format( magnet2_df.headers['QUADRUPOLE'] ), magnet2_df )

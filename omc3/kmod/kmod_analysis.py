@@ -57,11 +57,12 @@ def calc_k( magnet_df ):
     magnet_df.headers[kmod_constants.get_k_col()] = np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('Y')]  ==True )[kmod_constants.get_k_col()].dropna() )
     
     return magnet_df
+    
 def return_fit_input( magnet_df, plane ):
 
     x = np.zeros( ( 2, len( magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_k_col()].dropna() ) ) )
-    
-    x[0, : ] = ( magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_k_col()].dropna() - magnet_df.headers[kmod_constants.get_k_col()] ) * magnet_df.headers['LENGTH']
+    sign = magnet_df.headers['POLARITY'] if plane=='X' else -1*magnet_df.headers['POLARITY']        
+    x[0, : ] = sign*( magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_k_col()].dropna() - magnet_df.headers[kmod_constants.get_k_col()] ) * magnet_df.headers['LENGTH']
     x[1, : ] = magnet_df.headers[ kmod_constants.get_tune_col(plane) ]
 
     return x
@@ -75,7 +76,8 @@ def do_fit( magnet_df, plane ):
         p0= 1
     )
 
-    return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
+    return av_beta[0], np.sqrt(np.diag(av_beta_err))[0]
+    
 
 def get_av_beta(magnet_df):
 
