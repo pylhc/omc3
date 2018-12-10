@@ -32,7 +32,7 @@ def analyse_kmod():
     
     LOG.info('run simplex')
     
-    magnet1_df, magnet2_df = kmod_analysis.analyse(magnet1_df, magnet2_df)
+    magnet1_df, magnet2_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
 
     kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, interactive_plot=True )
 

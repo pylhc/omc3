@@ -12,11 +12,6 @@ def fit_prec(x, beta_av):
     dQ = (1/(2.*np.pi)) * np.arccos( np.cos(2 * np.pi * np.modf(x[1])[0] ) - 0.5 * beta_av * x[0] * np.sin( 2 * np.pi * np.modf(x[1])[0] )  ) - np.modf(x[1])[0]
     return dQ
 
-# def fit_prec(beta_av, x):
-
-#     dQ = (1/(2.*np.pi)) * np.arccos( np.cos(2 * np.pi * np.modf(x[1])[0]  ) - 0.5 * beta_av[0] * x[0] * np.sin( 2 * np.pi * np.modf(x[1])[0] )  ) - np.modf(x[1])[0]
-#     return dQ
-
 np.vectorize(fit_prec)
 
 def average_beta_from_Tune(Q, TdQ, l, Dk):
@@ -25,20 +20,23 @@ def average_beta_from_Tune(Q, TdQ, l, Dk):
     beta_av = 2 * (1 / math.tan(2 * math.pi * Q) * (1 - math.cos(2 * math.pi * TdQ)) + math.sin(2 * math.pi * TdQ)) / ( l * Dk)
     return abs(beta_av)
 
-def average_beta_focussing_quadrupole(beta0, alfa0, K, L):
+def average_beta_focussing_quadrupole(b, w, L, K):
 
+    beta0 = b + ((L - w) ** 2 / (b))
+    alpha0 = (L - w) / b
     average_beta =   (beta0/2.) * ( 1 + ( ( np.sin(2 * np.sqrt(K) * L ) ) / ( 2 * np.sqrt(K) * L ) ) ) \
-                    - alfa0 * ( ( np.sin( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
-                    + (1/(2*K)) * ( (1 + alfa0**2)/(beta0) ) * ( 1 - ( ( np.sin(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) )
+                    - alpha0 * ( ( np.sin( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
+                    + (1/(2*K)) * ( (1 + alpha0**2)/(beta0) ) * ( 1 - ( ( np.sin(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) )
 
     return average_beta
 np.vectorize(average_beta_focussing_quadrupole) 
 
-def average_beta_defocussing_quadrupole(beta0, alfa0, K, L):
-
+def average_beta_defocussing_quadrupole(b, w, L, K):
+    beta0 = b + ((L - w) ** 2 / (b))
+    alpha0 = (L - w) / b
     average_beta =   (beta0/2.) * ( 1 + ( ( np.sinh(2 * np.sqrt(K) * L ) ) / ( 2 * np.sqrt(K) * L ) ) ) \
-                    - alfa0 * ( ( np.sinh( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
-                    + (1/(2*K)) * ( (1 + alfa0**2)/(beta0) ) * ( ( ( np.sinh(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) - 1 )
+                    - alpha0 * ( ( np.sinh( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
+                    + (1/(2*K)) * ( (1 + alpha0**2)/(beta0) ) * ( ( ( np.sinh(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) - 1 )
 
     return average_beta
 np.vectorize(average_beta_defocussing_quadrupole)
@@ -86,8 +84,21 @@ def get_av_beta(magnet_df):
 
     return magnet_df
 
+def chi2(x, magnet1_df, magnet2_df  ):
 
-def analyse( magnet1_df, magnet2_df ):
+    b = x[0]
+    b = x[1]
+    c2=(average_beta_focussing_quadrupole(b, w) - ) ** 2 + (average_beta_defocussing_quadrupole(b, -w) - betaavdefquad) ** 2
+
+    return c2
+
+def get_beta_waist( magnet1_df, magnet2_df, kmod_input_params, plane ):
+    fun = lambda x: chi2(x, magnet1_df, magnet2_df)
+
+    results = scipy.optimize.minimize( fun, guess, method='nelder-mead', tol=1E-9 )
+    return results.x[0], results.x[1]
+
+def analyse( magnet1_df, magnet2_df, kmod_input_params ):
 
     LOG.info('get tune')
 
@@ -105,6 +116,8 @@ def analyse( magnet1_df, magnet2_df ):
     magnet2_df = get_av_beta( magnet2_df )
 
     LOG.info('simplex to determine beta waist')
+
+    results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params)
 
 
     return magnet1_df, magnet2_df
