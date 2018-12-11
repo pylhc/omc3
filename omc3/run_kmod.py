@@ -14,7 +14,7 @@ def analyse_kmod():
     LOG.info('Getting input parameter')
     kmod_input_params = kmod_input.get_input()
 
-    iotools.create_dirs( os.path.join( kmod_input_params.working_directory,'{:s}.{:s}.{:s}'.format( kmod_input_params.magnet1, kmod_input_params.magnet2, kmod_input_params.beam ) ) )
+    iotools.create_dirs( kmod_constants.get_working_directory( kmod_input_params ) )
 
     LOG.info('get inputfiles')
     
@@ -34,10 +34,10 @@ def analyse_kmod():
     
     magnet1_df, magnet2_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
 
-    kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, interactive_plot=True )
+    kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=True )    
 
-    tfs.write_tfs( '{:s}.tfs'.format( magnet1_df.headers['QUADRUPOLE'] ), magnet1_df )
-    tfs.write_tfs( '{:s}.tfs'.format( magnet2_df.headers['QUADRUPOLE'] ), magnet2_df )
+    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet1_df.headers['QUADRUPOLE'] ) ) , magnet1_df )
+    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet2_df.headers['QUADRUPOLE'] ) ) , magnet2_df )
 
     LOG.info('calc betastar')
     

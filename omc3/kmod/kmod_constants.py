@@ -42,3 +42,6 @@ def get_av_beta_err_col(plane):
 
 def get_sequence_filename(beam):
     return os.path.join( SEQUENCES_PATH , "twiss_lhc{:s}.dat".format( beam.lower() ))
+
+def get_working_directory( kmod_input_params ):
+    return os.path.join( kmod_input_params.working_directory,'{:s}.{:s}.{:s}'.format( kmod_input_params.magnet1, kmod_input_params.magnet2, kmod_input_params.beam ) )

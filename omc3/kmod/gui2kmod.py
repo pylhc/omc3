@@ -4,7 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 
-from kmod import magnet_defs, kmod_utils
+from kmod import magnet_defs
+from kmod import kmod_utils_old as kmod_utils
 import tfs
 from utils import outliers
 

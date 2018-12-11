@@ -1,5 +1,6 @@
 import argparse
 from utils import logging_tools
+from kmod import kmod_utils
 
 LOG = logging_tools.get_logger(__name__)
 DEFAULTS_IP = {
@@ -139,6 +140,8 @@ class KmodInput():
         else:
             LOG.info('Indiv magnets analysis')
             self.circuit1, self.circuit2 =  options.circuits.split(',')
+            self.magnet1 = kmod_utils.find_magnet(self.beam, self.circuit1)
+            self.magnet2 = kmod_utils.find_magnet(self.beam, self.circuit2) 
 
     def _returnmagnetname(self, circuit, beam, twiss):
         circuit = circuit.split('.')
@@ -151,6 +154,13 @@ class KmodInput():
 
         magnet = magnet_defs.findQuadrupoleType(searchstring, beam, twiss)
         return magnet
+    
+    def return_guess(self, plane):
+
+        if plane == 'X':
+            return [self.betastar_x, self.waist_x]
+        elif plane == 'Y':
+            return [self.betastar_y, self.waist_y]
 
     def set_error( self, options, error ):
         if error not in options:

@@ -88,7 +88,7 @@ def chi2(x, magnet1_df, magnet2_df  ):
 
     b = x[0]
     b = x[1]
-    c2=(average_beta_focussing_quadrupole(b, w) - ) ** 2 + (average_beta_defocussing_quadrupole(b, -w) - betaavdefquad) ** 2
+    c2=(average_beta_focussing_quadrupole(b, w) - 0) ** 2 + (average_beta_defocussing_quadrupole(b, -w) - 0) ** 2
 
     return c2
 
@@ -117,7 +117,7 @@ def analyse( magnet1_df, magnet2_df, kmod_input_params ):
 
     LOG.info('simplex to determine beta waist')
 
-    results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params)
+    # results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
 
 
     return magnet1_df, magnet2_df

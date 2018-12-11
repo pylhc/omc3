@@ -14,9 +14,9 @@ def return_filename( kmod_input_params ):
         if kmod_input_params.ip is not None:
             LOG.debug('Setting IP trim file names')
             for side in SIDES:        
-                path_tunex = os.path.join( kmod_input_params.working_directory, '{:s}{:s}{:s}X.tfs'.format(kmod_input_params.ip, kmod_input_params.beam.lower(), side) )
-                path_tuney = os.path.join( kmod_input_params.working_directory, '{:s}{:s}{:s}Y.tfs'.format(kmod_input_params.ip, kmod_input_params.beam.lower(), side) )
-                path_k = os.path.join( kmod_input_params.working_directory, '{:s}{:s}K.tfs'.format(kmod_input_params.ip, side) )
+                path_tunex = os.path.join( kmod_input_params.working_directory, '{:s}{:s}{:s}X.tfs'.format(kmod_input_params.ip.lower(), kmod_input_params.beam.lower(), side) )
+                path_tuney = os.path.join( kmod_input_params.working_directory, '{:s}{:s}{:s}Y.tfs'.format(kmod_input_params.ip.lower(), kmod_input_params.beam.lower(), side) )
+                path_k = os.path.join( kmod_input_params.working_directory, '{:s}{:s}K.tfs'.format(kmod_input_params.ip.lower(), side) )
 
                 yield path_tunex, path_tuney, path_k
         elif kmod_input_params.circuits is not None:
@@ -38,7 +38,7 @@ def return_mean_of_binned_data( bins, tune_df ):
     digitize = np.digitize( tune_df['TIME'] , bins )
 
     mean = [ tune_df['TUNE'][ digitize==i ].mean() for i in range( 1, len(bins) )  ]
-    std = [ tune_df['TUNE'][ digitize==i ].std() for i in range( 1, len(bins) )  ]
+    std = np.nan_to_num([ tune_df['TUNE'][ digitize==i ].std() for i in range( 1, len(bins) )  ])
 
     return mean, std
 

@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from utils import logging_tools, outliers
 import matplotlib.pyplot as plt 
 import tfs
@@ -8,8 +9,15 @@ plt.rc('text', usetex=True)
 
 LOG = logging_tools.get_logger(__name__)
 
-def find_magnet(kmod_input_params, magnet1_df, magnet2_df):
-    pass
+def find_magnet( beam, circuit):
+    
+    sequence = tfs.read( kmod_constants.get_sequence_filename( beam ) )
+
+    circuit = circuit.split('.')
+
+    magnetname = sequence[ sequence['NAME'].str.contains( r'MQ\w+\.{:s}{:s}{:s}\.\w+'.format( circuit[0][-1], circuit[1][0], circuit[1][1]  ) ) ]['NAME'].values[0] 
+
+    return magnetname
 
 def define_params(kmod_input_params, magnet1_df, magnet2_df):
     LOG.debug(' adding additional parameters to header ')
@@ -48,6 +56,7 @@ def ax_plot(ax, magnet_df, plane ):
         yerr = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col( plane )]  ==True )[kmod_constants.get_tune_err_col( plane )].dropna(),
         color ='blue',
         fmt='o',
+        label='Data',
         zorder=1
         )
     ax.errorbar( 
@@ -56,6 +65,7 @@ def ax_plot(ax, magnet_df, plane ):
         yerr = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col( plane )]  ==False )[kmod_constants.get_tune_err_col( plane )].dropna(),
         color ='orange',
         fmt='o',
+        label='Cleaned',
         zorder=2
         )
 
@@ -64,6 +74,7 @@ def ax_plot(ax, magnet_df, plane ):
         (magnet_df.where( magnet_df[kmod_constants.get_cleaned_col( plane )]  ==True )[kmod_constants.get_k_col()].dropna() - magnet_df.headers[kmod_constants.get_k_col()]  )*1E3,
         kmod_analysis.fit_prec( kmod_analysis.return_fit_input( magnet_df, plane )  , magnet_df.headers[kmod_constants.get_av_beta_col( plane )]) + magnet_df.headers[kmod_constants.get_tune_col( plane )] ,
         color='red',
+        label='Fit',
         zorder=3
         )
 
@@ -72,7 +83,7 @@ def ax_plot(ax, magnet_df, plane ):
 
     return
 
-def plot_cleaned_data( magnet1_df, magnet2_df, interactive_plot=False ):
+def plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False ):
 
     fig, ax = plt.subplots( nrows=2, ncols=2, figsize=(10,10) )
 
@@ -80,11 +91,10 @@ def plot_cleaned_data( magnet1_df, magnet2_df, interactive_plot=False ):
     ax_plot( ax[0,0], magnet1_df, 'X' )
     ax_plot( ax[1,0], magnet1_df, 'Y' )
     ax_plot( ax[0,1], magnet2_df, 'X' )
-    ax_plot( ax[1,1], magnet2_df, 'Y' )
-              
+    ax_plot( ax[1,1], magnet2_df, 'Y' )              
 
     plt.tight_layout()
-    plt.savefig('fit_plots.pdf')
+    plt.savefig(  os.path.join(  kmod_constants.get_working_directory( kmod_input_params ) , 'fit_plots.pdf' ) )
     if interactive_plot == True:
         plt.show()
     
