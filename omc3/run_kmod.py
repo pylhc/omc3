@@ -32,16 +32,17 @@ def analyse_kmod():
     
     LOG.info('run simplex')
     
-    magnet1_df, magnet2_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
+    magnet1_df, magnet2_df, results_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
 
     kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=True )    
 
     tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet1_df.headers['QUADRUPOLE'] ) ) , magnet1_df )
     tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet2_df.headers['QUADRUPOLE'] ) ) , magnet2_df )
 
+    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), 'results.tfs' ) , results_df )
     LOG.info('calc betastar')
     
-    # results file format index magnet columns timestamp betastarX betastarY betawaistX betawaistY etc.
+    # results file format :index magnet columns timestamp betastarX betastarY betawaistX betawaistY etc.
 
     LOG.info('calc beta at inst')
     

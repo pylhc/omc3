@@ -44,4 +44,11 @@ def get_sequence_filename(beam):
     return os.path.join( SEQUENCES_PATH , "twiss_lhc{:s}.dat".format( beam.lower() ))
 
 def get_working_directory( kmod_input_params ):
-    return os.path.join( kmod_input_params.working_directory,'{:s}.{:s}.{:s}'.format( kmod_input_params.magnet1, kmod_input_params.magnet2, kmod_input_params.beam ) )
+    return os.path.join( kmod_input_params.working_directory, get_label(kmod_input_params) )
+
+def get_label( kmod_input_params ):
+    if kmod_input_params.ip is not None:
+        return '{:s}{:s}'.format( kmod_input_params.ip, kmod_input_params.beam )
+    
+    elif kmod_input_params.circuits is not None:
+        return '{:s}-{:s}'.format( kmod_input_params.magnet1, kmod_input_params.magnet2 )

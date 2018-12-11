@@ -4,6 +4,7 @@ import math
 from utils import logging_tools
 from kmod import kmod_constants
 import scipy.optimize
+import tfs
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -139,8 +140,10 @@ def analyse( magnet1_df, magnet2_df, kmod_input_params ):
 
     LOG.info('simplex to determine beta waist')
 
-    results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
-    results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'Y')
+    results_x = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
+    results_y = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'Y')
+
+    results_df = tfs.TfsDataFrame( columns=['LABEL', kmod_constants.get_betawaist_col('X'), kmod_constants.get_waist_col('X'), kmod_constants.get_betawaist_col('Y'), kmod_constants.get_waist_col('Y')] , data=[np.hstack( (kmod_constants.get_label(kmod_input_params), results_x, results_y ) )]  )
 
 
-    return magnet1_df, magnet2_df
+    return magnet1_df, magnet2_df, results_df
