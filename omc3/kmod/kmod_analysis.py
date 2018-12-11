@@ -20,10 +20,10 @@ def average_beta_from_Tune(Q, TdQ, l, Dk):
     beta_av = 2 * (1 / math.tan(2 * math.pi * Q) * (1 - math.cos(2 * math.pi * TdQ)) + math.sin(2 * math.pi * TdQ)) / ( l * Dk)
     return abs(beta_av)
 
-def average_beta_focussing_quadrupole(b, w, L, K):
+def average_beta_focussing_quadrupole(b, w, L, K, Lstar):
 
-    beta0 = b + ((L - w) ** 2 / (b))
-    alpha0 = (L - w) / b
+    beta0 = b + ((Lstar - w) ** 2 / (b))
+    alpha0 = -(Lstar - w) / b
     average_beta =   (beta0/2.) * ( 1 + ( ( np.sin(2 * np.sqrt(K) * L ) ) / ( 2 * np.sqrt(K) * L ) ) ) \
                     - alpha0 * ( ( np.sin( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
                     + (1/(2*K)) * ( (1 + alpha0**2)/(beta0) ) * ( 1 - ( ( np.sin(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) )
@@ -31,9 +31,9 @@ def average_beta_focussing_quadrupole(b, w, L, K):
     return average_beta
 np.vectorize(average_beta_focussing_quadrupole) 
 
-def average_beta_defocussing_quadrupole(b, w, L, K):
-    beta0 = b + ((L - w) ** 2 / (b))
-    alpha0 = (L - w) / b
+def average_beta_defocussing_quadrupole(b, w, L, K, Lstar):
+    beta0 = b + ((Lstar - w) ** 2 / (b))
+    alpha0 = -(Lstar - w) / b
     average_beta =   (beta0/2.) * ( 1 + ( ( np.sinh(2 * np.sqrt(K) * L ) ) / ( 2 * np.sqrt(K) * L ) ) ) \
                     - alpha0 * ( ( np.sinh( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
                     + (1/(2*K)) * ( (1 + alpha0**2)/(beta0) ) * ( ( ( np.sinh(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) - 1 )
@@ -84,19 +84,41 @@ def get_av_beta(magnet_df):
 
     return magnet_df
 
-def chi2(x, magnet1_df, magnet2_df  ):
+def return_df(magnet1_df, magnet2_df, plane):
+
+    if plane =='X':
+        if magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
+            return magnet1_df, magnet2_df
+        elif magnet1_df.headers['POLARITY'] == -1 and magnet2_df.headers['POLARITY'] == 1:
+            return magnet2_df, magnet1_df
+
+    elif plane =='Y':
+        if magnet1_df.headers['POLARITY'] == -1 and magnet2_df.headers['POLARITY'] == 1:
+            return magnet1_df, magnet2_df
+        elif magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
+            return magnet2_df, magnet1_df
+
+def chi2(x, magnet1_df, magnet2_df, plane  ):
 
     b = x[0]
-    b = x[1]
-    c2=(average_beta_focussing_quadrupole(b, w) - 0) ** 2 + (average_beta_defocussing_quadrupole(b, -w) - 0) ** 2
+    w = x[1]
+
+    foc_magnet_df, def_magnet_df = return_df( magnet1_df, magnet2_df, plane )
+    
+    c2=\
+    (average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers[ 'LENGTH' ], foc_magnet_df.headers[ kmod_constants.get_k_col() ], foc_magnet_df.headers[ 'LSTAR' ]) - foc_magnet_df.headers[ kmod_constants.get_av_beta_col( plane ) ] ) ** 2 \
+    + (average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers[ 'LENGTH' ], def_magnet_df.headers[ kmod_constants.get_k_col() ], def_magnet_df.headers[ 'LSTAR' ]) - def_magnet_df.headers[ kmod_constants.get_av_beta_col( plane ) ]  ) ** 2
 
     return c2
 
 def get_beta_waist( magnet1_df, magnet2_df, kmod_input_params, plane ):
-    fun = lambda x: chi2(x, magnet1_df, magnet2_df)
+    fun = lambda x: chi2(x, magnet1_df, magnet2_df, plane)
 
-    results = scipy.optimize.minimize( fun, guess, method='nelder-mead', tol=1E-9 )
+    results = scipy.optimize.minimize( fun, kmod_input_params.return_guess(plane), method='nelder-mead', tol=1E-9 )
+
     return results.x[0], results.x[1]
+
+
 
 def analyse( magnet1_df, magnet2_df, kmod_input_params ):
 
@@ -117,7 +139,8 @@ def analyse( magnet1_df, magnet2_df, kmod_input_params ):
 
     LOG.info('simplex to determine beta waist')
 
-    # results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
+    results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
+    results_df = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'Y')
 
 
     return magnet1_df, magnet2_df

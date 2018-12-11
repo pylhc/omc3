@@ -142,18 +142,6 @@ class KmodInput():
             self.circuit1, self.circuit2 =  options.circuits.split(',')
             self.magnet1 = kmod_utils.find_magnet(self.beam, self.circuit1)
             self.magnet2 = kmod_utils.find_magnet(self.beam, self.circuit2) 
-
-    def _returnmagnetname(self, circuit, beam, twiss):
-        circuit = circuit.split('.')
-
-        number = circuit[0][-1]
-        side = circuit[1][0]
-        ip = circuit[1][1]
-
-        searchstring = '.'+str(number)+str(side)+str(ip)
-
-        magnet = magnet_defs.findQuadrupoleType(searchstring, beam, twiss)
-        return magnet
     
     def return_guess(self, plane):
 
