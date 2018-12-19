@@ -42,8 +42,8 @@ def define_params(kmod_input_params, magnet1_df, magnet2_df):
 
 def add_tuneuncertainty( magnet_df,  kmod_input_params ):
     LOG.debug('adding {} units tune measurement uncertainty'.format(kmod_input_params.tune_uncertainty))
-    magnet_df['TUNEX_ERR'] = np.sqrt(magnet_df['TUNEX_ERR']**2 + kmod_input_params.tune_uncertainty**2) 
-    magnet_df['TUNEY_ERR'] = np.sqrt(magnet_df['TUNEY_ERR']**2 + kmod_input_params.tune_uncertainty**2) 
+    magnet_df[kmod_constants.get_tune_err_col('X')] = np.sqrt(magnet_df[kmod_constants.get_tune_err_col('X')]**2 + kmod_input_params.tune_uncertainty**2) 
+    magnet_df[kmod_constants.get_tune_err_col('Y')] = np.sqrt(magnet_df[kmod_constants.get_tune_err_col('Y')]**2 + kmod_input_params.tune_uncertainty**2) 
 
     return magnet_df
 

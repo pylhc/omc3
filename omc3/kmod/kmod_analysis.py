@@ -3,7 +3,6 @@ import numpy as np
 import math
 from utils import logging_tools
 from kmod import kmod_constants
-import scipy.optimize
 import tfs
 
 LOG = logging_tools.get_logger(__name__)
@@ -11,6 +10,13 @@ LOG = logging_tools.get_logger(__name__)
 def fit_prec(x, beta_av):
     
     dQ = (1/(2.*np.pi)) * np.arccos( np.cos(2 * np.pi * np.modf(x[1])[0] ) - 0.5 * beta_av * x[0] * np.sin( 2 * np.pi * np.modf(x[1])[0] )  ) - np.modf(x[1])[0]
+    return dQ
+
+np.vectorize(fit_prec)
+
+def fit_approx(x, beta_av):
+    
+    dQ = beta_av*x[0]/(4*np.pi)
     return dQ
 
 np.vectorize(fit_prec)
@@ -66,14 +72,25 @@ def return_fit_input( magnet_df, plane ):
 
     return x
 
-def do_fit( magnet_df, plane ):
+def do_fit( magnet_df, plane, use_approx=False ):
+    if not use_approx:
+        av_beta, av_beta_err = scipy.optimize.curve_fit(
+            fit_prec,
+            xdata= return_fit_input(magnet_df, plane),
+            ydata = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[ kmod_constants.get_tune_col(plane) ],
+            p0= 1
+        )
 
-    av_beta, av_beta_err = scipy.optimize.curve_fit(
-        fit_prec,
-        xdata= return_fit_input(magnet_df, plane),
-        ydata = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[ kmod_constants.get_tune_col(plane) ],
-        p0= 1
-    )
+        
+
+    elif use_approx:
+
+        av_beta, av_beta_err = scipy.optimize.curve_fit(
+            fit_approx,
+            xdata= return_fit_input(magnet_df, plane),
+            ydata = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[ kmod_constants.get_tune_col(plane) ],
+            p0= 1
+        )
 
     return av_beta[0], np.sqrt(np.diag(av_beta_err))[0]
     

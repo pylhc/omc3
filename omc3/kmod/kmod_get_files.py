@@ -9,6 +9,16 @@ from kmod import kmod_constants
 LOG = logging_tools.get_logger(__name__)
 SIDES=('L', 'R')
 
+def get_simulation_files( kmod_input_params ):
+
+    magnet1_df = tfs.read(  os.path.join( kmod_input_params.working_directory, '{:s}.tfs'.format( kmod_input_params.magnet1 ) ) )
+    magnet2_df = tfs.read(  os.path.join( kmod_input_params.working_directory, '{:s}.tfs'.format( kmod_input_params.magnet2 ) ) )
+
+    magnet1_df.headers['QUADRUPOLE'] = magnet1_df.headers['NAME'] 
+    magnet2_df.headers['QUADRUPOLE'] = magnet2_df.headers['NAME'] 
+
+    return magnet1_df, magnet2_df
+
 def return_filename( kmod_input_params ):
     # TODO rewrite to make less cluttered
         if kmod_input_params.ip is not None:

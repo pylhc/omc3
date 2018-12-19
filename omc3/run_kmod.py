@@ -17,8 +17,10 @@ def analyse_kmod():
     iotools.create_dirs( kmod_constants.get_working_directory( kmod_input_params ) )
 
     LOG.info('get inputfiles')
-    
-    magnet1_df, magnet2_df = kmod_get_files.merge_data( kmod_input_params )
+    if kmod_input_params.simulation:
+        magnet1_df, magnet2_df = kmod_get_files.get_simulation_files( kmod_input_params )
+    else:
+        magnet1_df, magnet2_df = kmod_get_files.merge_data( kmod_input_params )
 
     magnet1_df, magnet2_df = kmod_utils.define_params( kmod_input_params, magnet1_df, magnet2_df )
     
@@ -34,19 +36,21 @@ def analyse_kmod():
     
     magnet1_df, magnet2_df, results_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
 
+    LOG.info('plot tunes and fit')
     kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=True )    
 
-    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet1_df.headers['QUADRUPOLE'] ) ) , magnet1_df )
-    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet2_df.headers['QUADRUPOLE'] ) ) , magnet2_df )
-
-    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), 'results.tfs' ) , results_df )
     LOG.info('calc betastar')
     
     # results file format :index magnet columns timestamp betastarX betastarY betawaistX betawaistY etc.
 
     LOG.info('calc beta at inst')
     
+    LOG.info('write magnet df and results')
+    
+    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet1_df.headers['QUADRUPOLE'] ) ) , magnet1_df )
+    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet2_df.headers['QUADRUPOLE'] ) ) , magnet2_df )
 
+    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), 'results.tfs' ) , results_df )
 
 
 if __name__ == '__main__':

@@ -51,7 +51,10 @@ def _parse_args():
     parser.add_argument('--instruments',
                         help='define instruments (use keywords from twiss) at which beta should be calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER',
                         action='store', type=str, dest='instruments', default='MONITOR,SBEND,TKICKER,INSTRUMENT')
-    
+
+    parser.add_argument('--simulation',
+                        help='flag for enabling simulation mode',
+                        action='store_true', dest='simulation')    
     parser.add_argument('--log',
                         help='flag for creating a log file',
                         action='store_true', dest='log')
@@ -98,6 +101,7 @@ class KmodInput():
         self.tune_uncertainty = None
         self.instruments = None
         self.log = None
+        self.simulation = None
         self.no_autoclean = None
 
     def set_params_from_parser(self, options):
@@ -112,6 +116,7 @@ class KmodInput():
         self.instruments = list(map( str.upper ,options.instruments.split(",")  ))
 
         self.log = options.log
+        self.simulation = options.simulation
         self.no_autoclean = options.a_clean
 
         self.set_error(options, "cminus")
