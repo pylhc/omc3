@@ -37,7 +37,7 @@ def analyse_kmod():
     magnet1_df, magnet2_df, results_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
 
     LOG.info('plot tunes and fit')
-    kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=True )    
+    kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False )    
 
     LOG.info('calc betastar')
     

@@ -7,9 +7,29 @@ import tfs
 
 LOG = logging_tools.get_logger(__name__)
 
+PLANES = ['X', 'Y']
+
 def calc_betastar( kmod_input_params, results_df):
+    
+    if kmod_input_params.betastar_required:
 
+        sign = np.array( [[0,0],[1,0],[-1,0],[0,1],[0,-1]] )
 
+        for plane in PLANES:
+
+            betastar = \
+            (float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) + sign[:,0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values) )\
+            + (float(results_df.loc[:, kmod_constants.get_waist_col(plane)].values)+ sign[:,1]* float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values) )**2\
+            /(float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) + sign[:,0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values) )
+
+            betastar_err = np.sqrt(np.sum(np.maximum(np.absolute(betastar[1::2]-betastar[0]),abs(betastar[1::2]-betastar[0]))**2))
+
+            results_df[ kmod_constants.get_betastar_col(plane) ] = betastar[0]
+            results_df[ kmod_constants.get_betastar_err_col(plane) ] = betastar_err
+
+    cols = results_df.columns.tolist()
+    cols = [cols[0]]+cols[-4:]+cols[1:-4]
+    results_df = results_df[cols]
 
     return results_df
 
@@ -164,7 +184,7 @@ def analyse( magnet1_df, magnet2_df, kmod_input_params ):
     results_x = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
     results_y = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'Y')
 
-    results_df = tfs.TfsDataFrame( columns=['LABEL', kmod_constants.get_betawaist_col('X'), kmod_constants.get_betawaist_err_col('X'), kmod_constants.get_waist_col('X'), kmod_constants.get_waist_err_col('X'), kmod_constants.get_betawaist_col('Y'), kmod_constants.get_betawaist_err_col('Y'), kmod_constants.get_waist_col('Y'), kmod_constants.get_waist_err_col('Y')] , data=[np.hstack( (kmod_constants.get_label(kmod_input_params), results_x[0], 0, results_x[1], 0, results_y[0], 0, results_y[1], 0) )]  )
+    results_df = tfs.TfsDataFrame( columns=['LABEL', kmod_constants.get_betawaist_col('X'), kmod_constants.get_betawaist_err_col('X'), kmod_constants.get_waist_col('X'), kmod_constants.get_waist_err_col('X'), kmod_constants.get_betawaist_col('Y'), kmod_constants.get_betawaist_err_col('Y'), kmod_constants.get_waist_col('Y'), kmod_constants.get_waist_err_col('Y')] , data=[np.hstack( (kmod_constants.get_label(kmod_input_params), results_x[0], 1E-4, results_x[1], 1E-4, results_y[0], 1E-4, results_y[1], 1E-4) )]  )
 
 
     return magnet1_df, magnet2_df, results_df
