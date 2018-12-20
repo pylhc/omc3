@@ -38,6 +38,23 @@ def define_params(kmod_input_params, magnet1_df, magnet2_df):
     magnet1_df.headers['LSTAR'] = np.abs( ip_position - magnet1_position_center ) - magnet1_df.headers['LENGTH']/2.
     magnet2_df.headers['LSTAR'] = np.abs( ip_position - magnet2_position_center ) - magnet2_df.headers['LENGTH']/2.
 
+    if magnet1_position_center < magnet2_position_center:
+        left_magnet_df = magnet1_df
+        right_magnet_df = magnet2_df
+    elif magnet2_position_center< magnet1_position_center:
+        left_magnet_df = magnet2_df
+        right_magnet_df = magnet1_df
+
+    between_magnets_df = sequence.reset_index().truncate( before= sequence.index.get_loc( left_magnet_df.headers['QUADRUPOLE'] ), after= sequence.index.get_loc( right_magnet_df.headers['QUADRUPOLE'] ) , axis='index' )
+
+    if between_magnets_df.isin( ['OMK'] ).any().loc['PARENT']:
+        kmod_input_params.set_betastar_required()
+
+    for instrument in kmod_input_params.instruments:
+        if between_magnets_df.isin([instrument]).any().loc['KEYWORD']:
+            kmod_input_params.set_instrument_position( instrument , dict( zip( between_magnets_df.loc[ between_magnets_df['KEYWORD'] == instrument ]['NAME'].values, (between_magnets_df.loc[ between_magnets_df['KEYWORD'] == instrument ]['S'].values - ip_position) ) ) )
+
+
     return magnet1_df, magnet2_df
 
 def add_tuneuncertainty( magnet_df,  kmod_input_params ):
@@ -92,6 +109,8 @@ def plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_pl
     ax_plot( ax[1,0], magnet1_df, 'Y' )
     ax_plot( ax[0,1], magnet2_df, 'X' )
     ax_plot( ax[1,1], magnet2_df, 'Y' )              
+
+    ax[1,1].legend()
 
     plt.tight_layout()
     plt.savefig(  os.path.join(  kmod_constants.get_working_directory( kmod_input_params ) , 'fit_plots.pdf' ) )

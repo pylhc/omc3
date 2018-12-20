@@ -103,6 +103,7 @@ class KmodInput():
         self.log = None
         self.simulation = None
         self.no_autoclean = None
+        self.betastar_required=False
 
     def set_params_from_parser(self, options):
 
@@ -125,6 +126,12 @@ class KmodInput():
 
         self.set_betastar_and_waist( options )
         self.set_magnets( options )
+
+    def set_betastar_required(self):
+        self.betastar_required=True
+
+    def set_instrument_position( self, instrument, positions ):
+        setattr(self, instrument, positions)
 
     def set_betastar_and_waist(self, options):
         

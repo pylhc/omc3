@@ -41,7 +41,7 @@ def analyse_kmod():
 
     LOG.info('calc betastar')
     
-    # results file format :index magnet columns timestamp betastarX betastarY betawaistX betawaistY etc.
+    results_df = kmod_analysis.calc_betastar( kmod_input_params, results_df )
 
     LOG.info('calc beta at inst')
     

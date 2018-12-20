@@ -7,6 +7,12 @@ import tfs
 
 LOG = logging_tools.get_logger(__name__)
 
+def calc_betastar( kmod_input_params, results_df):
+
+
+
+    return results_df
+
 def fit_prec(x, beta_av):
     
     dQ = (1/(2.*np.pi)) * np.arccos( np.cos(2 * np.pi * np.modf(x[1])[0] ) - 0.5 * beta_av * x[0] * np.sin( 2 * np.pi * np.modf(x[1])[0] )  ) - np.modf(x[1])[0]
@@ -19,7 +25,7 @@ def fit_approx(x, beta_av):
     dQ = beta_av*x[0]/(4*np.pi)
     return dQ
 
-np.vectorize(fit_prec)
+np.vectorize(fit_approx)
 
 def average_beta_from_Tune(Q, TdQ, l, Dk):
     """Calculates average beta function in quadrupole from Tunechange TdQ and delta K """
@@ -79,9 +85,7 @@ def do_fit( magnet_df, plane, use_approx=False ):
             xdata= return_fit_input(magnet_df, plane),
             ydata = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[ kmod_constants.get_tune_col(plane) ],
             p0= 1
-        )
-
-        
+        )     
 
     elif use_approx:
 
@@ -160,7 +164,7 @@ def analyse( magnet1_df, magnet2_df, kmod_input_params ):
     results_x = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
     results_y = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'Y')
 
-    results_df = tfs.TfsDataFrame( columns=['LABEL', kmod_constants.get_betawaist_col('X'), kmod_constants.get_waist_col('X'), kmod_constants.get_betawaist_col('Y'), kmod_constants.get_waist_col('Y')] , data=[np.hstack( (kmod_constants.get_label(kmod_input_params), results_x, results_y ) )]  )
+    results_df = tfs.TfsDataFrame( columns=['LABEL', kmod_constants.get_betawaist_col('X'), kmod_constants.get_betawaist_err_col('X'), kmod_constants.get_waist_col('X'), kmod_constants.get_waist_err_col('X'), kmod_constants.get_betawaist_col('Y'), kmod_constants.get_betawaist_err_col('Y'), kmod_constants.get_waist_col('Y'), kmod_constants.get_waist_err_col('Y')] , data=[np.hstack( (kmod_constants.get_label(kmod_input_params), results_x[0], 0, results_x[1], 0, results_y[0], 0, results_y[1], 0) )]  )
 
 
     return magnet1_df, magnet2_df, results_df
