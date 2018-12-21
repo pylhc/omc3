@@ -1,4 +1,3 @@
-import pandas as pd
 import tfs
 import os
 from utils import logging_tools

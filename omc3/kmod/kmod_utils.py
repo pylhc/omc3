@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from utils import logging_tools, outliers
+from utils import logging_tools
 import matplotlib.pyplot as plt 
 import tfs
 from kmod import kmod_constants, kmod_analysis
