@@ -1,5 +1,6 @@
 import os
 from utils import logging_tools, iotools
+import datetime
 import tfs
 from kmod import kmod_input, kmod_get_files, kmod_utils, kmod_cleaning, kmod_analysis, kmod_constants
 
@@ -32,13 +33,15 @@ def analyse_kmod():
     
     LOG.info('run simplex')
     magnet1_df, magnet2_df, results_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
-
+    
     LOG.info('plot tunes and fit')
     kmod_utils.plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False )    
 
     LOG.info('calc betastar')
     if kmod_input_params.betastar_required:
         results_df = kmod_analysis.calc_betastar( kmod_input_params, results_df )
+
+    results_df.loc[:,'TIME'] = ('{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
 
     LOG.info('calc beta at inst')
     if kmod_input_params.instruments_found != []:

@@ -131,8 +131,8 @@ def calc_tune( magnet_df ):
 
 def calc_k( magnet_df ):    
     
-    magnet_df.headers[kmod_constants.get_k_col()] = np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('X')]  ==True )[kmod_constants.get_k_col()].dropna() )
-    magnet_df.headers[kmod_constants.get_k_col()] = np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('Y')]  ==True )[kmod_constants.get_k_col()].dropna() )
+    magnet_df.headers[kmod_constants.get_k_col()] = np.absolute(np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('X')]  ==True )[kmod_constants.get_k_col()].dropna() ))
+    magnet_df.headers[kmod_constants.get_k_col()] = np.absolute(np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('Y')]  ==True )[kmod_constants.get_k_col()].dropna() ))
     
     return magnet_df
     
