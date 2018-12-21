@@ -72,7 +72,7 @@ def bin_tunes_and_k( tunex_df, tuney_df, k_df, magnet ):
     tunex, tunex_err = return_mean_of_binned_data( bins, tunex_df )
     tuney, tuney_err = return_mean_of_binned_data( bins, tuney_df )
 
-    magnet_df = tfs.TfsDataFrame( headers=headers_for_df( magnet, k_df ) ,columns= [kmod_constants.get_k_col(), kmod_constants.get_tune_col('X'), kmod_constants.get_tune_err_col('X'), kmod_constants.get_tune_col('Y'), kmod_constants.get_tune_err_col('Y')], data= np.column_stack( ( k_df['K'], tunex, tunex_err, tuney, tuney_err ) ) )
+    magnet_df = tfs.TfsDataFrame( headers=headers_for_df( magnet, k_df ) ,columns= [kmod_constants.get_k_col(), kmod_constants.get_tune_col('X'), kmod_constants.get_tune_err_col('X'), kmod_constants.get_tune_col('Y'), kmod_constants.get_tune_err_col('Y')], data= np.column_stack( ( np.absolute(k_df['K']), tunex, tunex_err, tuney, tuney_err ) ) )
 
     return magnet_df
 

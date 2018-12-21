@@ -104,9 +104,9 @@ def average_beta_focussing_quadrupole(b, w, L, K, Lstar):
 
     beta0 = b + ((Lstar - w) ** 2 / (b))
     alpha0 = -(Lstar - w) / b
-    average_beta =   (beta0/2.) * ( 1 + ( ( np.sin(2 * np.sqrt(K) * L ) ) / ( 2 * np.sqrt(K) * L ) ) ) \
-                    - alpha0 * ( ( np.sin( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
-                    + (1/(2*K)) * ( (1 + alpha0**2)/(beta0) ) * ( 1 - ( ( np.sin(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) )
+    average_beta =   (beta0/2.) * ( 1 + ( ( np.sin(2 * np.sqrt(abs(K)) * L ) ) / ( 2 * np.sqrt(abs(K)) * L ) ) ) \
+                    - alpha0 * ( ( np.sin( np.sqrt(abs(K)) * L )**2 ) / ( abs(K) * L ) ) \
+                    + (1/(2*abs(K))) * ( (1 + alpha0**2)/(beta0) ) * ( 1 - ( ( np.sin(2 * np.sqrt(abs(K)) * L) ) / ( 2 * np.sqrt(abs(K)) * L ) ) )
 
     return average_beta
 np.vectorize(average_beta_focussing_quadrupole) 
@@ -114,9 +114,9 @@ np.vectorize(average_beta_focussing_quadrupole)
 def average_beta_defocussing_quadrupole(b, w, L, K, Lstar):
     beta0 = b + ((Lstar - w) ** 2 / (b))
     alpha0 = -(Lstar - w) / b
-    average_beta =   (beta0/2.) * ( 1 + ( ( np.sinh(2 * np.sqrt(K) * L ) ) / ( 2 * np.sqrt(K) * L ) ) ) \
-                    - alpha0 * ( ( np.sinh( np.sqrt(K) * L )**2 ) / ( K * L ) ) \
-                    + (1/(2*K)) * ( (1 + alpha0**2)/(beta0) ) * ( ( ( np.sinh(2 * np.sqrt(K) * L) ) / ( 2 * np.sqrt(K) * L ) ) - 1 )
+    average_beta =   (beta0/2.) * ( 1 + ( ( np.sinh(2 * np.sqrt(abs(K)) * L ) ) / ( 2 * np.sqrt(abs(K)) * L ) ) ) \
+                    - alpha0 * ( ( np.sinh( np.sqrt(abs(K)) * L )**2 ) / ( abs(K) * L ) ) \
+                    + (1/(2*abs(K))) * ( (1 + alpha0**2)/(beta0) ) * ( ( ( np.sinh(2 * np.sqrt(abs(K)) * L) ) / ( 2 * np.sqrt(abs(K)) * L ) ) - 1 )
 
     return average_beta
 np.vectorize(average_beta_defocussing_quadrupole)
@@ -131,8 +131,8 @@ def calc_tune( magnet_df ):
 
 def calc_k( magnet_df ):    
     
-    magnet_df.headers[kmod_constants.get_k_col()] = np.absolute(np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('X')]  ==True )[kmod_constants.get_k_col()].dropna() ))
-    magnet_df.headers[kmod_constants.get_k_col()] = np.absolute(np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('Y')]  ==True )[kmod_constants.get_k_col()].dropna() ))
+    magnet_df.headers[kmod_constants.get_k_col()] = np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('X')]  ==True )[kmod_constants.get_k_col()].dropna() )
+    magnet_df.headers[kmod_constants.get_k_col()] = np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('Y')]  ==True )[kmod_constants.get_k_col()].dropna() )
     
     return magnet_df
     
@@ -202,11 +202,13 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign  ):
 
 def get_beta_waist( magnet1_df, magnet2_df, kmod_input_params, plane ):
 
-    sign = return_sign_for_err(8)
+    n=8
+
+    sign = return_sign_for_err(n)
 
     foc_magnet_df, def_magnet_df = return_df( magnet1_df, magnet2_df, plane )
     
-    results = np.zeros( (17,2) )   
+    results = np.zeros( (2*n+1,2) )   
     for i,s in enumerate(sign):
         
         fun = lambda x: chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s)

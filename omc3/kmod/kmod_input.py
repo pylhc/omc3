@@ -50,7 +50,6 @@ def _parse_args():
                         help='error in length of the modulated quadrupoles, unit m',
                         action='store', type=float, dest='errorL', default=argparse.SUPPRESS)
 
-
     parser.add_argument('--tune_uncertainty',
                         help='tune measurement uncertainty',
                         action='store', type=float, dest='tunemeasuncertainty', default=2.5e-5)
