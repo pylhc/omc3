@@ -16,6 +16,12 @@ def get_cleaned_col(plane):
 def get_k_col():
     return "K" 
 
+def get_beta_col(plane):
+    return "BETA{:s}".format( plane.upper() ) 
+
+def get_beta_err_col(plane):
+    return "{:s}_ERR".format( get_beta_col(plane) )  
+
 def get_betastar_col(plane):
     return "BETASTAR{:s}".format( plane.upper() )    
 

@@ -52,6 +52,7 @@ def define_params(kmod_input_params, magnet1_df, magnet2_df):
 
     for instrument in kmod_input_params.instruments:
         if between_magnets_df.isin([instrument]).any().loc['KEYWORD']:
+            kmod_input_params.set_instruments_found(instrument)
             kmod_input_params.set_instrument_position( instrument , dict( zip( between_magnets_df.loc[ between_magnets_df['KEYWORD'] == instrument ]['NAME'].values, (between_magnets_df.loc[ between_magnets_df['KEYWORD'] == instrument ]['S'].values - ip_position) ) ) )
 
     return magnet1_df, magnet2_df

@@ -157,7 +157,8 @@ def clean_data( kmod_input_params, magnet_df ):
     if kmod_input_params.no_autoclean == True:
         #TODO currently not working due to python2 - python3 issues
 
-        pass 
+        magnet_df[kmod_constants.get_cleaned_col('X')] = True
+        magnet_df[kmod_constants.get_cleaned_col('Y')] = True
 
     else:
         magnet_df[kmod_constants.get_cleaned_col('X')] = automatic_cleaning_data( magnet_df[kmod_constants.get_k_col()], magnet_df[kmod_constants.get_tune_col('X')], magnet_df[kmod_constants.get_tune_err_col('X')] )

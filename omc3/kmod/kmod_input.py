@@ -6,13 +6,15 @@ LOG = logging_tools.get_logger(__name__)
 DEFAULTS_IP = {
     "cminus": 1E-3 ,
     "misalignment": 0.006 ,
-    "errorK": 0.001 
+    "errorK": 0.001 ,
+    "errorL": 0.001 ,
 }
 
 DEFAULTS_CIRCUITS = {
     "cminus": 1E-3 ,
     "misalignment": 0.001 ,
-    "errorK": 0.001 
+    "errorK": 0.001, 
+    "errorL": 0.001,
 }
 
 MAGNETS_IP = {
@@ -44,7 +46,11 @@ def _parse_args():
     parser.add_argument('--errorK',
                         help='error in K of the modulated quadrupoles, unit m^-2',
                         action='store', type=float, dest='errorK', default=argparse.SUPPRESS)
-    
+    parser.add_argument('--errorL',
+                        help='error in length of the modulated quadrupoles, unit m',
+                        action='store', type=float, dest='errorL', default=argparse.SUPPRESS)
+
+
     parser.add_argument('--tune_uncertainty',
                         help='tune measurement uncertainty',
                         action='store', type=float, dest='tunemeasuncertainty', default=2.5e-5)
@@ -104,6 +110,7 @@ class KmodInput():
         self.simulation = None
         self.no_autoclean = None
         self.betastar_required=False
+        self.instruments_found=[]
 
     def set_params_from_parser(self, options):
 
@@ -122,6 +129,7 @@ class KmodInput():
 
         self.set_error(options, "cminus")
         self.set_error(options, "errorK")
+        self.set_error(options, "errorL")
         self.set_error(options, "misalignment")
 
         self.set_betastar_and_waist( options )
@@ -129,6 +137,9 @@ class KmodInput():
 
     def set_betastar_required(self):
         self.betastar_required=True
+
+    def set_instruments_found(self, found):
+        self.instruments_found.append(found)
 
     def set_instrument_position( self, instrument, positions ):
         setattr(self, instrument, positions)
