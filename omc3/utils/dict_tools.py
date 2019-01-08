@@ -2,7 +2,6 @@
 
 """
 import copy
-import six
 from utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
@@ -111,7 +110,7 @@ class Parameter(object):
         self._validate()
 
     def _validate(self):
-        if not isinstance(self.name, six.string_types):
+        if not isinstance(self.name, str):
             raise ParameterError("Parameter '{:s}': ".format(str(self.name)) +
                                  "Name is not a valid string.")
 
@@ -218,48 +217,27 @@ class DictParser(object):
         param = param_dict[key]
         if not arg_dict or key not in arg_dict:
             if param.required:
-                raise ArgumentError("'{:s}' required in options.\nHelp: {:s}".format(
-                    key, param.help)
-                )
-            else:
-                return param.default
+                raise ArgumentError(f"'{key:s}' required in options.\nHelp: {param.help:s}")
+            return param.default
 
         opt = arg_dict[key]
         if opt is None:
             if param.required:
-                raise ArgumentError("'{:s}' required in options.\nHelp: {:s}".format(
-                    key, param.help)
-                )
-        else:
-            if param.type and not isinstance(opt, param.type):
-                raise ArgumentError("'{:s}' is not of type {:s}.\nHelp: {:s}".format(
-                    key, param.type.__name__, param.help)
-                )
-            if param.type == list:
-                if param.nargs and not param.nargs == len(opt):
-                    raise ArgumentError(
-                        "'{:s}' should be list of length {:d},".format(key, param.nargs) +
-                        " instead it was of length {:d}.\nHelp: {:s}".format(len(opt), param.help))
-                if param.subtype:
-                    for idx, item in enumerate(opt):
-                        if not isinstance(item, param.subtype):
-                            raise ArgumentError(
-                                "Item {:d} of '{:s}' is not of type '{:s}' ".format(
-                                    idx, key, param.subtype.__name__) +
-                                ".\nHelp: {:s}".format(param.help))
+                raise ArgumentError(f"'{key:s}' required in options.\nHelp: {param.help:s}")
 
-                if param.choices and any([o for o in opt if o not in param.choices]):
-                    raise ArgumentError(
-                        "All elements of '{:s}' need to be one of {:s},".format(key,
-                                                                                param.choices) +
-                        " instead the list was {:s}.\nHelp: {:s}".format(str(opt), param.help)
-                    )
-
-            elif param.choices and opt not in param.choices:
-                raise ArgumentError(
-                    "'{:s}' needs to be one of {:s}, instead it was {:s}.\nHelp: {:s}".format(
-                    key, param.choices, str(opt), param.help)
-                )
+        if param.type and not isinstance(opt, param.type):
+            raise ArgumentError(f"'{key:s}' is not of type {param.type.__name__:s}.\nHelp: {param.help:s}")
+        if param.type == list:
+            if param.nargs and not param.nargs == len(opt):
+                raise ArgumentError(f"'{key:s}' should be list of length {param.nargs:d}, instead it was of length {len(opt):d}.\nHelp: {param.help:s}")
+            if param.subtype:
+                for idx, item in enumerate(opt):
+                    if not isinstance(item, param.subtype):
+                        raise ArgumentError(f"Item {idx:d} of '{key:s}' is not of type '{param.subtype.__name__:s}'.\nHelp: {param.help:s}")
+            if param.choices and any([o for o in opt if o not in param.choices]):
+                raise ArgumentError(f"All elements of '{key:s}' need to be one of {param.choices:s}, instead the list was {opt:s}.\nHelp: {param.help:s}")
+        elif param.choices and opt not in param.choices:
+            raise ArgumentError(f"'{key:s}' needs to be one of {param.choices:s}, instead it was {opt:s}.\nHelp: {param.help:s}")
         return opt
 
     def _parse_options(self, arg_dict, param_dict):
@@ -288,9 +266,9 @@ class DictParser(object):
                 except ArgumentError as e:
                     old_msg = e.message[1:]
                     if old_msg.startswith("'"):
-                        e.message = "'{:s}.{:s}".format(key, e.message[1:])
+                        e.message = f"'{key:s}.{e.message[1:]:s}"
                     else:
-                        e.message = "'{:s}' has {:s}".format(key, e.message)
+                        e.message = f"'{key:s}' has {e.message:s}"
                     e.args = (e.message,)
                     raise
 
@@ -304,8 +282,7 @@ class DictParser(object):
 
         if self.strict:
             return checked_dict
-        else:
-            return checked_dict, arg_dict
+        return checked_dict, arg_dict
 
     #########################
     # Public Methods
@@ -388,28 +365,16 @@ class DictParser(object):
                 else:
                     node_char = _TC['S'] + _TC['-']
                     level_char_pp = level_char + _TC['|'] + '  '
-
-                LOG.info(u"{:s}{:s} {:s}".format(level_char, node_char, key))
+                LOG.info(f"{level_char:s}{node_char:s} {key:s}")
                 if isinstance(tree[key], dict):
-
                     print_tree(tree[key], level_char_pp)
                 else:
                     leaf = tree[key]
-                    LOG.info(u"{:s}{:s} {:s}: {:s}".format(
-                             level_char_pp, _TC['S'] + _TC['-'],
-                             'Required', str(leaf.required)))
-                    LOG.info(u"{:s}{:s} {:s}: {:s}".format(
-                             level_char_pp, _TC['S'] + _TC['-'],
-                             'Default', str(leaf.default)))
-                    LOG.info(u"{:s}{:s} {:s}: {:s}".format(
-                             level_char_pp, _TC['S'] + _TC['-'],
-                             'Type', leaf.type.__name__ if leaf.type else 'None'))
-                    LOG.info(u"{:s}{:s} {:s}: {:s}".format(
-                             level_char_pp, _TC['S'] + _TC['-'],
-                             'Choices', str(leaf.choices)))
-                    LOG.info(u"{:s}{:s} {:s}: {:s}".format(
-                             level_char_pp, _TC['L'] + _TC['-'],
-                             'Help', leaf.help))
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Required: {leaf.required:s}")
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Default: {leaf.default:s}")
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Type: {leaf.type.__name__ if leaf.type else 'None':s}")
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Choices: {leaf.choices:s}")
+                    LOG.info(f"{level_char_pp + _TC['L'] + _TC['-']:s} Help: {leaf.help:s}")
 
         LOG.info('Parameter Dictionary')
         print_tree(self.dictionary, '')
@@ -432,7 +397,7 @@ class DictParser(object):
         """
         sub_dict = self._traverse_dict(loc)
         if param.name in sub_dict:
-            raise ParameterError("'{:s}' already exists in parser!".format(param.name))
+            raise ParameterError(f"'{param.name:s}' already exists in parser!")
         sub_dict[param.name] = param
         return self
 
@@ -474,11 +439,10 @@ class DictParser(object):
             try:
                 return eval(item)  # sorry for using that
             except (NameError, SyntaxError):
-                raise ArgumentError(
-                    "Could not evaluate argument '{:s}', unknown '{:s}'".format(name, item))
+                raise ArgumentError(f"Could not evaluate argument '{name:s}', unknown '{item:s}'")
 
         def eval_type(my_type, item):
-            if issubclass(my_type, six.string_types):
+            if issubclass(my_type, str):
                 return my_type(item.strip("\'\""))
             if issubclass(my_type, bool):
                 return bool(eval(item))
@@ -506,10 +470,3 @@ class DictParser(object):
                 # could check self.strict here, but result is passed to get checked anyway
                 out[name] = evaluate(name, value)
         return out
-
-
-# Script Mode ##################################################################
-
-
-if __name__ == '__main__':
-    raise EnvironmentError("{:s} is not supposed to run as main.".format(__file__))

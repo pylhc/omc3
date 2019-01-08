@@ -20,22 +20,18 @@ Usage:
 ++++++++++++++++++++++++
 
 To be used as a decorator::
-
     @entrypoint(parameters)
     def some_function(options, unknown_options)
 
 Using **strict** mode (see below)::
-
     @entrypoint(parameters, strict=True)
     def some_function(options)
 
 It is also possible to use the EntryPoint Class similar to a normal parser::
-
     ep_parser = EntryPoint(parameters)
     options, unknown_options = ep_parser.parse(arguments)
 
 Using **strict** mode (see below)::
-
     ep_parser = EntryPoint(parameters, strict=True)
     options = ep_parser.parse(arguments)
 
@@ -60,7 +56,6 @@ Parameters need to be a list or a dictionary of dictionaries with the following 
  and the default to ``False`` and ``True`` respectively.
 
 
-
 The **strict** option changes the behaviour for unknown parameters:
 ``strict=True`` raises exceptions, ``strict=False`` loggs debug messages and returns the options.
 Hence a wrapped function with ``strict=True`` must accept one input, with ``strict=False`` two.
@@ -68,30 +63,22 @@ Default: ``False``
 
 """
 
-import six
 import copy
 import json
 import argparse
 from argparse import ArgumentParser
-
-import sys
+from configparser import ConfigParser
+from inspect import getfullargspec
+from functools import wraps
 
 from utils import logging_tools as logtools
 from utils.dict_tools import DictParser
 from utils.dict_tools import DotDict
 from utils.dict_tools import ArgumentError
 from utils.dict_tools import ParameterError
-from functools import wraps
+
 from utils.contexts import silence
 
-try:
-    # Python 2
-    from ConfigParser import ConfigParser
-    from inspect import getargspec as getfullargspec
-except ImportError:
-    # Python 3
-    from configparser import ConfigParser
-    from inspect import getfullargspec
 
 LOG = logtools.get_logger(__name__)
 
@@ -204,11 +191,11 @@ class EntryPoint(object):
             options = DotDict(vars(options))
             if self.strict:
                 if unknown_opts:
-                    raise ArgumentError("Unknown options: {:s}".format(str(unknown_opts)))
+                    raise ArgumentError(f"Unknown options: {unknown_opts}")
                 return options
             else:
                 if unknown_opts:
-                    LOG.debug("Unknown options: {:s}".format(str(unknown_opts)))
+                    LOG.debug(f"Unknown options: {unknown_opts}")
                 return options, unknown_opts
         else:
             # parse config file
@@ -216,7 +203,7 @@ class EntryPoint(object):
 
     def _handle_arg(self, arg):
         """ *args has been input """
-        if isinstance(arg, six.string_types):
+        if isinstance(arg, str):
             # assume config file
             options = self.dictparse.parse_config_items(self._read_config(arg))
         elif isinstance(arg, dict):
@@ -403,17 +390,17 @@ class EntryPointParameters(DotDict):
             space = " " * (len(name_type) + 2)
 
             try:
-                item_str += "\n{s:s}**Flags**: {f:s}".format(s=space, f=item["flags"])
+                item_str += f"\n{space:s}**Flags**: {item['flags']:s}"
             except KeyError:
                 pass
 
             try:
-                item_str += "\n{s:s}**Choices**: {c:s}".format(s=space, c=item["choices"])
+                item_str += f"\n{space:s}**Choices**: {item['choices']:s}"
             except KeyError:
                 pass
 
             try:
-                item_str += "\n{s:s}**Default**: ``{d:s}``".format(s=space, d=str(item["default"]))
+                item_str += f"\n{space:s}**Default**: ``{item['default']:s}``"
             except KeyError:
                 pass
 
@@ -459,7 +446,7 @@ def add_params_to_generic(parser, params):
             if flags is None:
                 parser.add_argument(**param)
             else:
-                if isinstance(flags, six.string_types):
+                if isinstance(flags, str):
                     flags = [flags]
                 parser.add_argument(*flags, **param)
 
@@ -559,12 +546,3 @@ class CreateParamHelp(object):
                 module._get_params().help()
         else:
             getattr(module, param_fun)().help()
-
-
-# Script Mode ##################################################################
-
-
-if __name__ == '__main__':
-    raise EnvironmentError("{:s} is not supposed to run as main.".format(__file__))
-
-
