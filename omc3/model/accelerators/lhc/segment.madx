@@ -1,0 +1,48 @@
+!@require %(LIB)s
+!@require segments
+
+option, -echo;
+
+%(MAIN_SEQ)s
+exec, define_nominal_beams();
+call, file = "%(OPTICS_PATH)s";
+exec, set_default_crossing_scheme();
+
+! Cycle the sequence in the start point to
+! avoid negative length sequence.
+seqedit, sequence=LHCB%(NUM_BEAM)i;
+flatten;
+cycle, start=%(STARTFROM)s;
+endedit;
+
+use, period = LHCB%(NUM_BEAM)i;
+
+option, echo;
+
+twiss;
+
+exec, save_initial_and_final_values(
+    LHCB%(NUM_BEAM)s,
+    %(STARTFROM)s,
+    %(ENDAT)s,
+    "%(PATH)s/measurement%(BETAKIND)s_%(LABEL)s.madx",
+    biniLHCB%(NUM_BEAM)s,
+    bendLHCB%(NUM_BEAM)s
+);
+
+exec, extract_segment_sequence(
+    LHCB%(NUM_BEAM)s,
+    front_LHCB%(NUM_BEAM)s, back_LHCB%(NUM_BEAM)s,
+    %(STARTFROM)s, %(ENDAT)s
+);
+exec, beam_LHCB%(NUM_BEAM)s(front_LHCB%(NUM_BEAM)s);
+exec, beam_LHCB%(NUM_BEAM)s(back_LHCB%(NUM_BEAM)s);
+
+
+exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s.dat", biniLHCB%(NUM_BEAM)s);
+exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_back.dat", bendLHCB%(NUM_BEAM)s);
+
+call, file="%(PATH)s/corrections_%(LABEL)s.madx";
+
+exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_cor.dat", biniLHCB%(NUM_BEAM)s);
+exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_cor_back.dat", bendLHCB%(NUM_BEAM)s);

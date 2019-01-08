@@ -1,0 +1,110 @@
+/******************************************************************************************
+*
+* MAD-X File for PS  optics calculations
+*
+*
+*
+******************************************************************************************/
+
+title, "PS Ring lattice";
+
+!@require beta_beat 
+!@require segments
+
+/******************************************************************************************
+ * beam, use
+ ******************************************************************************************/
+
+beam_Ek=%(KINETICENERGY)s;
+beam_Etot = beam_Ek + pmass;
+beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+
+BEAM, PARTICLE=PROTON, PC = beam_pc;
+BRHO      := BEAM->PC * 3.3356;
+
+/******************************************************************************************
+ * PS 
+ ******************************************************************************************/
+ call, file = '%(FILES_DIR)s/elements/PS.ele';
+ call, file = '%(FILES_DIR)s/sequence/PS.seq';
+ call, file = '%(FILES_DIR)s/strength/elements.str';
+ call, file = '%(FILES_DIR)s/cmd/macros.ptc';
+
+ /*Strength files*/
+ call, file = "%(OPTICS_PATH)s";
+
+/******************************************************************************************
+ * Install AC dipole
+ ******************************************************************************************/
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+
+ 
+ 
+ use, sequence=PS;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+match, use_macro;
+  vary,   name=kf, step=1.0E-6 ;
+  vary,   name=kd, step=1.0E-6 ;
+  
+  !USE_MACRO, name=ptc_twiss_tune_macro;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu1)= Qx;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu2)= Qy;
+  
+  mq: macro
+   {
+     twiss;
+   }
+  CONSTRAINT, expr=  table(summ , q1)= Qx; 
+  CONSTRAINT, expr=  table(summ , q2)= Qy;
+  
+  lmdif,calls=1000,TOLERANCE=1.0E-21;
+ENDMATCH;
+
+
+
+/******************************************************************************************
+ * TWISS
+ ******************************************************************************************/
+
+
+/************************************************************
+ * MAD uses pt as the 5th variable NOT delta-p.
+ * The result is that all derivatives are with repect to pt.
+ * This is the reason for the non-standard dispersion values
+ * for non-relativistic machines, like the PSB
+ ************************************************************/
+ select, flag=twiss, clear;
+ select, flag=twiss, pattern="^PR.*BPM",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ twiss, chrom, sequence=PS;
+
+
+
+exec, save_initial_and_final_values(
+    ps,
+    %(STARTFROM)s,
+    %(ENDAT)s,
+    "%(PATH)s/measurement%(BETAKIND)s_%(LABEL)s.madx",
+    binips,
+    bendps
+);
+
+exec, extract_segment_sequence(
+    ps,
+    front_ps, back_ps,
+    %(STARTFROM)s, %(ENDAT)s
+);
+
+
+exec, twiss_segment(front_ps, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s.dat", binips);
+exec, twiss_segment(back_ps, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_back.dat", bendps);
+
+call, file="%(PATH)s/corrections_%(LABEL)s.madx";
+
+exec, twiss_segment(front_ps, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_cor.dat", binips);
+exec, twiss_segment(back_ps, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_cor_back.dat", bendps);

@@ -1,0 +1,79 @@
+/******************************************************************************************
+*
+* MAD-X File for PS  optics calculations
+*
+*
+*
+******************************************************************************************/
+
+title, "PS Ring lattice";
+
+/******************************************************************************************
+ * beam, use
+ ******************************************************************************************/
+
+beam_Ek=%(KINETICENERGY)s;
+beam_Etot = beam_Ek + pmass;
+beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+
+BEAM, PARTICLE=PROTON, PC = beam_pc;
+BRHO      := BEAM->PC * 3.3356;
+
+/******************************************************************************************
+ * PS 
+ ******************************************************************************************/
+ call, file = '%(FILES_DIR)s/elements/PS.ele';
+ call, file = '%(FILES_DIR)s/sequence/PS.seq';
+ call, file = '%(FILES_DIR)s/strength/elements.str';
+ call, file = '%(FILES_DIR)s/cmd/macros.ptc';
+
+ /*Strength files*/
+ call, file = "%(OPTICS_PATH)s";
+
+ seqedit, sequence=PS;
+  flatten;
+  cycle, start=PS43$START;
+ endedit;
+
+ use, sequence=PS;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+! if we ever have an AC Dipole in PS
+! Qxd = %(DRV_TUNE_X)s;
+! Qyd = %(DRV_TUNE_Y)s;
+
+
+match, use_macro;
+  vary,   name=kf, step=1.0E-6 ;
+  vary,   name=kd, step=1.0E-6 ;
+  
+  !USE_MACRO, name=ptc_twiss_tune_macro;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu1)= Qx;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu2)= Qy;
+  
+  mq: macro
+   {
+     twiss;
+   }
+  CONSTRAINT, expr=  table(summ , q1)= Qx; 
+  CONSTRAINT, expr=  table(summ , q2)= Qy;
+  
+  lmdif,calls=1000,TOLERANCE=1.0E-21;
+ENDMATCH;
+
+
+
+/******************************************************************************************
+ * ITERATE 
+ ******************************************************************************************/
+
+
+select, flag=twiss, clear;
+select, flag=twiss, pattern="PR.BPM.*", column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;
+
+call, file="%(PATH)s/iter.madx";

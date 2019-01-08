@@ -1,0 +1,72 @@
+{
+  "MQX": [
+    "kqx1.l1",
+    "kqx1.r1",
+    "kqx2a.l1",
+    "kqx2b.l1",
+    "kqx2a.r1",
+    "kqx2b.r1",
+    "kqx3.l1",
+    "kqx3.r1",
+    "kqx1.l5",
+    "kqx1.r5",
+    "kqx2a.l5",
+    "kqx2b.l5",
+    "kqx2a.r5",
+    "kqx2b.r5",
+    "kqx3.l5",
+    "kqx3.r5",
+    "kqx.l2", 
+    "kqx.r2", 
+    "kqx.l8", 
+    "kqx.r8"
+  ], 
+  "MQXT": [
+    "ktqx2.l2", 
+    "ktqx1.l2", 
+    "ktqx1.r2", 
+    "ktqx2.r2", 
+    "ktqx2.l8", 
+    "ktqx1.l8", 
+    "ktqx1.r8", 
+    "ktqx2.r8"
+  ],
+  "MQXNEW": [
+    "kqx1.l1",
+    "kqx1.r1",
+    "kqx2.l1",
+    "kqx2.r1",
+    "kqx3.l1",
+    "kqx3.r1",
+    "kqx1.l5",
+    "kqx1.r5",
+    "kqx2.l5",
+    "kqx2.r5",
+    "kqx3.l5",
+    "kqx3.r5"
+  ],
+  "OLDMQXNEW": [
+    "ktrim1.l1",
+    "kpc.l1",
+    "ktrim3.l1",
+    "ktrim1.r1",
+    "kpc.r1",
+    "ktrim3.r1",
+    "ktrim1.l5",
+    "kpc.l5",
+    "ktrim3.l5",
+    "ktrim1.r5",
+    "kpc.r5",
+    "ktrim3.r5"
+  ],
+  "MQSX": [
+    "kqsx3.r1", 
+    "kqsx3.l2", 
+    "kqsx3.r2", 
+    "kqsx3.l5", 
+    "kqsx3.r5", 
+    "kqsx3.l8", 
+    "kqsx3.r8", 
+    "kqsx3.l1"
+  ]
+}

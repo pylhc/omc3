@@ -1,0 +1,92 @@
+title, 'BOOSTER lattice';
+!@require beta_beat 
+!@require segments
+
+!for the time being not used
+beam_Ek=0.160;
+beam_Etot = beam_Ek + pmass;
+beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+ 
+
+option, echo;
+option, RBARC=FALSE;
+
+/******************************************************************************************
+ * BOOSTER
+ ******************************************************************************************/
+call, file = '%(FILES_DIR)s/psb.ele';
+call, file = '%(FILES_DIR)s/psb.seq';
+call, file = '%(FILES_DIR)s/defseries.seq';
+call, file = '%(FILES_DIR)s/powering.seq';
+call, file = '%(FILES_DIR)s/psb.dbx';
+call, file = '%(FILES_DIR)s/psb_orbit.str';
+
+/******************************************************************************************
+ * beam, use
+ ******************************************************************************************/
+ 
+beam, particle=PROTON, pc=beam_pc;  ! change depending on c-time of orbit measurement; pc=momentum
+use, sequence=psb%(RING)s;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+Qx = %(NAT_TUNE_X)s;
+Qy = %(NAT_TUNE_Y)s;
+
+
+hacmap21 = 0;
+vacmap43 = 0;
+MATCH,sequence=psb%(RING)s;
+vary, NAME=kKF, step = 0.0001;
+vary, NAME=kKD, step = 0.0001;
+constraint, range=#E, MUX=Qx, MUY=Qy;
+lmdif, calls = 10000, tolerance = 1.0E-21;
+ENDMATCH;
+
+
+/******************************************************************************************
+ * TWISS
+ ******************************************************************************************/
+
+PSHIFT=0;
+
+! Cycle the sequence in the start point to
+! avoid negative length sequence.
+seqedit, sequence=psb%(RING)s;
+flatten;
+cycle, start=%(STARTFROM)s;
+endedit;
+
+use, period = psb%(RING)s;
+
+option, echo;
+
+twiss;
+
+exec, save_initial_and_final_values(
+    psb%(RING)s,
+    %(STARTFROM)s,
+    %(ENDAT)s,
+    "%(PATH)s/measurement%(BETAKIND)s_%(LABEL)s.madx",
+    binipsb%(RING)s,
+    bendpsb%(RING)s
+);
+
+exec, extract_segment_sequence(
+    psb%(RING)s,
+    front_psb%(RING)s, back_psb%(RING)s,
+    %(STARTFROM)s, %(ENDAT)s
+);
+!exec, beam_psb%(RING)s(front_psb%(RING)s);
+!exec, beam_psb%(RING)s(back_psb%(RING)s);
+
+
+exec, twiss_segment(front_psb%(RING)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s.dat", binipsb%(RING)s);
+exec, twiss_segment(back_psb%(RING)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_back.dat", bendpsb%(RING)s);
+
+call, file="%(PATH)s/corrections_%(LABEL)s.madx";
+
+exec, twiss_segment(front_psb%(RING)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_cor.dat", binipsb%(RING)s);
+exec, twiss_segment(back_psb%(RING)s, "%(PATH)s/twiss%(BETAKIND)s_%(LABEL)s_cor_back.dat", bendpsb%(RING)s);
