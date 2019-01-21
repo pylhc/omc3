@@ -41,7 +41,7 @@ class DotDict(dict):
         return DotDict(get_subdict(self, keys, strict))
 
 
-def print_dict_tree(dictionary, name='Dictionary'):
+def print_dict_tree(dictionary, name='Dictionary', print_fun=LOG.info):
     """ Prints a dictionary as a tree """
     def print_tree(tree, level_char):
         for i, key in enumerate(sorted(tree.keys())):
@@ -53,14 +53,12 @@ def print_dict_tree(dictionary, name='Dictionary'):
                 level_char_pp = level_char + _TC['|'] + '  '
 
             if isinstance(tree[key], dict):
-                LOG.info(u"{:s}{:s} {:s}"
-                         .format(level_char, node_char, str(key)))
+                print_fun(f"{level_char:s}{node_char:s} {str(key):s}")
                 print_tree(tree[key], level_char_pp)
             else:
-                LOG.info(u"{:s}{:s} {:s}: {:s}"
-                         .format(level_char, node_char, str(key), str(tree[key])))
+                print_fun(f"{level_char:s}{node_char:s} {str(key):s}: {str(tree[key]):s}")
 
-    LOG.info('{:s}:'.format(name))
+    print_fun('{:s}:'.format(name))
     print_tree(dictionary, '')
 
 
@@ -111,45 +109,60 @@ class Parameter(object):
 
     def _validate(self):
         if not isinstance(self.name, str):
-            raise ParameterError("Parameter '{:s}': ".format(str(self.name)) +
+            raise ParameterError(f"Parameter '{str(self.name):s}': " +
                                  "Name is not a valid string.")
 
         if self.default and self.type and not isinstance(self.default, self.type):
-            raise ParameterError("Parameter '{:s}': ".format(self.name) +
+            raise ParameterError(f"Parameter '{self.name:s}': " +
                                  "Default value not of specified type.")
 
         if self.choices:
             try:
-                if self.default and self.default not in self.choices:
-                    raise ParameterError("Parameter '{:s}': ".format(self.name) +
-                                         "Default value not found in choices.")
-
-                if self.type or self.subtype:
-                    check = self.type if self.subtype is None else self.subtype
-                    for choice in self.choices:
-                        if not isinstance(choice, check):
-                            raise ParameterError("Choice '{}' ".format(choice) +
-                                                 "of parameter '{:s}': ".format(self.name) +
-                                                 "is not of type '{:s}'.".format(check.__name__))
+                [choice for choice in self.choices]
             except TypeError:
-                raise ParameterError("Parameter '{:s}': ".format(self.name) +
-                                     "Choices seem to be not iterable.")
+                raise ParameterError(f"Parameter '{self.name:s}': " +
+                                     "'Choices' need to be iterable.")
+
+            if self.default:
+                if self.subtype:
+                    try:
+                        not_a_choice = [d for d in self.default if d not in self.choices]
+                    except TypeError:
+                        raise ParameterError(f"Parameter '{self.name:s}': " +
+                                             "'Default' should be iterable.")
+
+                    if len(not_a_choice) > 0:
+                        raise ParameterError(f"Parameter '{self.name:s}': " +
+                                             f"Default value(s) '{str(not_a_choice)}'"
+                                             " not found in choices.")
+                else:
+                    if self.default not in self.choices:
+                        raise ParameterError(f"Parameter '{self.name:s}': " +
+                                             "Default value not found in choices.")
+
+            if self.type or self.subtype:
+                check = self.type if self.subtype is None else self.subtype
+                for choice in self.choices:
+                    if not isinstance(choice, check):
+                        raise ParameterError(f"Choice '{choice}' " +
+                                             f"of parameter '{self.name:s}': " +
+                                             f"is not of type '{check.__name__:s}'.")
 
         if self.nargs:
             if not isinstance(self.nargs, int):
-                raise ParameterError("Parameter '{:s}': ".format(self.name) +
+                raise ParameterError(f"Parameter '{self.name:s}': " +
                                      "nargs needs to be an integer.")
 
             if not (self.type or self.type == list):
-                raise ParameterError("Parameter '{:s}': ".format(self.name) +
+                raise ParameterError(f"Parameter '{self.name:s}': " +
                                      "'type' needs to be 'list' if 'nargs' is given.")
 
         if self.subtype and not (self.type or self.type == list):
-            raise ParameterError("Parameter '{:s}': ".format(self.name) +
+            raise ParameterError(f"Parameter '{self.name:s}': " +
                                  "field 'subtype' is only accepted if 'type' is list.")
 
         if self.required and self.default is not None:
-            LOG.warn("Parameter '{:s}': ".format(self.name) +
+            LOG.warn(f"Parameter '{self.name:s}': " +
                      "Value is required but default value is given. The latter will be ignored.")
 
 
@@ -193,14 +206,14 @@ class DictParser(object):
                 try:
                     DictParser._validate_parameters(param)
                 except ParameterError as e:
-                    e.message = "'{:s}.{:s}".format(key, e.message[1:])
+                    e.message = f"'{key:s}.{e.message[1:]:s}"
                     e.args = (e.message,)
                     raise
             elif not isinstance(param, Parameter):
-                raise ParameterError("'{:s}' is not a valid entry.".format(key))
+                raise ParameterError(f"'{key:s}' is not a valid entry.")
             else:
                 if key != param.name:
-                    raise ParameterError("'{:s}': Key and name need to be the same.".format(key))
+                    raise ParameterError(f"'{key:s}': Key and name need to be the same.")
 
     @staticmethod
     def _check_value(key, arg_dict, param_dict):
@@ -217,27 +230,42 @@ class DictParser(object):
         param = param_dict[key]
         if not arg_dict or key not in arg_dict:
             if param.required:
-                raise ArgumentError(f"'{key:s}' required in options.\nHelp: {param.help:s}")
+                raise ArgumentError(f"'{key:s}' required in options.\n"
+                                    f"Help: {param.help:s}")
             return param.default
 
         opt = arg_dict[key]
         if opt is None:
             if param.required:
-                raise ArgumentError(f"'{key:s}' required in options.\nHelp: {param.help:s}")
+                raise ArgumentError(f"'{key:s}' required in options.\n"
+                                    f"Help: {param.help:s}")
 
         if param.type and not isinstance(opt, param.type):
-            raise ArgumentError(f"'{key:s}' is not of type {param.type.__name__:s}.\nHelp: {param.help:s}")
+            raise ArgumentError(f"'{key:s}' is not of type {param.type.__name__:s}.\n"
+                                f"Help: {param.help:s}")
+
         if param.type == list:
             if param.nargs and not param.nargs == len(opt):
-                raise ArgumentError(f"'{key:s}' should be list of length {param.nargs:d}, instead it was of length {len(opt):d}.\nHelp: {param.help:s}")
+                raise ArgumentError(f"'{key:s}' should be list of length {param.nargs:d},"
+                                    f" instead it was of length {len(opt):d}.\n"
+                                    f"Help: {param.help:s}")
+
             if param.subtype:
                 for idx, item in enumerate(opt):
                     if not isinstance(item, param.subtype):
-                        raise ArgumentError(f"Item {idx:d} of '{key:s}' is not of type '{param.subtype.__name__:s}'.\nHelp: {param.help:s}")
+                        raise ArgumentError(f"Item {idx:d} of '{key:s}'"
+                                            f" is not of type '{param.subtype.__name__:s}'.\n"
+                                            f"Help: {param.help:s}")
+
             if param.choices and any([o for o in opt if o not in param.choices]):
-                raise ArgumentError(f"All elements of '{key:s}' need to be one of {param.choices:s}, instead the list was {opt:s}.\nHelp: {param.help:s}")
+                raise ArgumentError(f"All elements of '{key:s}' need to be one of "
+                                    f"'{param.choices:s}', instead the list was {opt:s}.\n"
+                                    f"Help: {param.help:s}")
+
         elif param.choices and opt not in param.choices:
-            raise ArgumentError(f"'{key:s}' needs to be one of {param.choices:s}, instead it was {opt:s}.\nHelp: {param.help:s}")
+            raise ArgumentError(f"'{key:s}' needs to be one of '{param.choices:s}', "
+                                f"instead it was {opt:s}.\n"
+                                f"Help: {param.help:s}")
         return opt
 
     def _parse_options(self, arg_dict, param_dict):
@@ -275,7 +303,7 @@ class DictParser(object):
             arg_dict.pop(key, None)  # Default value avoids KeyError
 
         if len(arg_dict) > 0:
-            error_message = "Unknown Options: '{:s}'.".format(str(list(arg_dict.keys())))
+            error_message = f"Unknown Options: '{str(list(arg_dict.keys())):s}'."
             if self.strict:
                 raise ArgumentError(error_message)
             LOG.debug(error_message)
@@ -345,7 +373,7 @@ class DictParser(object):
         sub_dict = self._traverse_dict('.'.join(fields[:-1]))
 
         if name in sub_dict:
-            raise ParameterError("'{:s}' already exists in parser!".format(name))
+            raise ParameterError(f"'{name:s}' already exists in parser!")
 
         self._validate_parameters(dictionary)
         sub_dict[name] = dictionary
@@ -370,12 +398,20 @@ class DictParser(object):
                     print_tree(tree[key], level_char_pp)
                 else:
                     leaf = tree[key]
-                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Required: {leaf.required:s}")
-                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Default: {leaf.default:s}")
-                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Type: {leaf.type.__name__ if leaf.type else 'None':s}")
-                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s} Choices: {leaf.choices:s}")
-                    LOG.info(f"{level_char_pp + _TC['L'] + _TC['-']:s} Help: {leaf.help:s}")
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
+                             f" Required: {leaf.required:s}")
 
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
+                             f" Default: {leaf.default:s}")
+
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
+                             f" Type: {leaf.type.__name__ if leaf.type else 'None':s}")
+
+                    LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
+                             f" Choices: {leaf.choices:s}")
+
+                    LOG.info(f"{level_char_pp + _TC['L'] + _TC['-']:s}"
+                             f" Help: {leaf.help:s}")
         LOG.info('Parameter Dictionary')
         print_tree(self.dictionary, '')
 

@@ -56,6 +56,62 @@ Parameters need to be a list or a dictionary of dictionaries with the following 
  and the default to ``False`` and ``True`` respectively.
 
 
+Alternatively, you can use the provided ``EntryPointParameters()`` class.
+
+Example with ``EntryPointParameters``:
+
+.. code-block:: python
+
+    args = EntryPointParameters()
+    args.add_parameter(name="accel",
+                       flags=["-a", "--accel"],
+                       help="Which accelerator?",
+                       choices=["LHCB1","LHCB2","LHCB5"],
+                       default="LHCB1")
+    args.add_parameter(name="dict",
+                       flags=["-d", "--dictionary"],
+                       help="File with the BPM dictionary",
+                       default="bpm.txt",
+                       type=str)
+
+
+Example with dictionary of dictionaries:
+
+.. code-block:: python
+
+    args = {
+        "accel": dict(
+            flags=["-a", "--accel"],
+            help="Which accelerator?",
+            choices=["LHCB1", "LHCB2", "LHCB5"],
+            default="LHCB1"),
+        "dict": dict(
+            flags=["-d", "--dictionary"],
+            help="File with the BPM dictionary",
+            default="bpm.txt",
+            type=str),
+            }
+
+
+Example with list of dictionaries:
+
+.. code-block:: python
+    args = [
+        "dict(
+            name="accel",
+            flags=["-a", "--accel"],
+            help="Which accelerator?",
+            choices=["LHCB1", "LHCB2", "LHCB5"],
+            default="LHCB1"),
+        dict(
+            name="dict",
+            flags=["-d", "--dictionary"],
+            help="File with the BPM dictionary",
+            default="bpm.txt",
+            type=str),
+            ]
+
+
 The **strict** option changes the behaviour for unknown parameters:
 ``strict=True`` raises exceptions, ``strict=False`` loggs debug messages and returns the options.
 Hence a wrapped function with ``strict=True`` must accept one input, with ``strict=False`` two.
@@ -222,7 +278,7 @@ class EntryPoint(object):
         if ID_CONFIG in kwargs:
             if len(kwargs) > 2 or (len(kwargs) == 2 and ID_SECTION not in kwargs):
                 raise ArgumentError(
-                    "Only '{:s}' and '{:s}'".format(ID_CONFIG, ID_SECTION) +
+                    f"Only '{ID_CONFIG:s}' and '{ID_SECTION:s}'" +
                     " arguments are allowed, when using a config file.")
             options = self._read_config(kwargs[ID_CONFIG],
                                         kwargs.get(ID_SECTION, None))
@@ -236,7 +292,7 @@ class EntryPoint(object):
         elif ID_JSON in kwargs:
             if len(kwargs) > 2 or (len(kwargs) == 2 and ID_SECTION not in kwargs):
                 raise ArgumentError(
-                    "Only '{:s}' and '{:s}'".format(ID_JSON, ID_SECTION) +
+                    f"Only '{ID_JSON:s}' and '{ID_SECTION:s}'" +
                     " arguments are allowed, when using a json file.")
             with open(kwargs[ID_JSON], 'r') as json_file:
                 json_dict = json.load(json_file)
@@ -263,25 +319,25 @@ class EntryPoint(object):
                 raise ParameterError("A Parameter needs a Name!")
 
             if param.get("nargs", None) == argparse.REMAINDER:
-                raise ParameterError("Parameter '{:s}' is set as remainder.".format(arg_name) +
+                raise ParameterError(f"Parameter '{arg_name:s}' is set as remainder." +
                                      "This method is really buggy, hence it is forbidden.")
 
             if param.get("flags", None) is None:
-                raise ParameterError("Parameter '{:s}'".format(arg_name) +
-                                     "does not have flags.")
+                raise ParameterError(f"Parameter '{arg_name:s}' does not have flags.")
 
     def _read_config(self, cfgfile_path, section=None):
         """ Get content from config file"""
         cfgparse = self.configparse
 
         with open(cfgfile_path) as config_file:
-            cfgparse.readfp(config_file)
+            cfgparse.read_file(config_file)
 
         sections = cfgparse.sections()
         if not section and len(sections) == 1:
             section = sections[0]
         elif not section:
-            raise ArgumentError("'{:s}' contains multiple sections. Please specify one!")
+            raise ArgumentError(f"'{cfgfile_path:s}' contains multiple sections. " +
+                                " Please specify one!")
 
         return cfgparse.items(section)
 
@@ -334,7 +390,7 @@ class entrypoint(EntryPoint):
                 raise ArgumentError("In strict mode, only one option-structure will be passed."
                                     " The entrypoint needs to have the following structure: "
                                     " ([self/cls,] options)."
-                                    " Found: {:s}".format(getfullargspec(func).args))
+                                    f" Found: {getfullargspec(func).args:}")
         else:
             if nargs == 2:
                 @wraps(func)
@@ -350,7 +406,7 @@ class entrypoint(EntryPoint):
                 raise ArgumentError("Two option-structures will be passed."
                                     " The entrypoint needs to have the following structure: "
                                     " ([self/cls,] options, unknown_options)."
-                                    " Found: {:s}".format(getfullargspec(func).args))
+                                    f" Found: {getfullargspec(func).args:}")
         return wrapper
 
 
@@ -365,7 +421,7 @@ class EntryPointParameters(DotDict):
         """ Add parameter """
         name = kwargs.pop("name")
         if name in self:
-            raise ParameterError("'{:s}' is already a parameter.".format(name))
+            raise ParameterError(f"'{name:s}' is already a parameter.")
         else:
             self[name] = kwargs
 
@@ -378,14 +434,14 @@ class EntryPointParameters(DotDict):
             item_str = ""
             item = self[name]
             try:
-                name_type = "{n:s} ({t:s})".format(n=name, t=item["type"].__name__)
+                name_type = f"{name:s} ({item['type'].__name__:s})"
             except KeyError:
-                name_type = "{n:s}".format(n=name)
+                name_type = f"{name:s}"
 
             try:
-                item_str += "{n:s}: {h:s}".format(n=name_type, h=item["help"])
+                item_str += f"{name_type:s}: {item['help']:s}"
             except KeyError:
-                item_str += "{n:s}: -Help not available- ".format(n=name_type)
+                item_str += f"{name_type:s}: -Help not available- "
 
             space = " " * (len(name_type) + 2)
 
@@ -405,7 +461,7 @@ class EntryPointParameters(DotDict):
                 pass
 
             try:
-                item_str += "\n{s:s}**Action**: ``{d:s}``".format(s=space, d=str(item["action"]))
+                item_str += f"\n{space:s}**Action**: ``{str(item['action']):s}``"
             except KeyError:
                 pass
 
@@ -465,7 +521,7 @@ def add_params_to_generic(parser, params):
                     param["type"] = bool
                     param["default"] = not param["action"][6] == "t"
                 else:
-                    raise ParameterError("Action '{:s}' not allowed in EntryPoint")
+                    raise ParameterError(f"Action '{param['action']:s}' not allowed in EntryPoint")
                 param.pop("action")
 
             param.pop("flags", None)
