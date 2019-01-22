@@ -1,6 +1,7 @@
 """
 
 """
+import argparse
 import copy
 from utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
@@ -116,6 +117,22 @@ class Parameter(object):
             raise ParameterError(f"Parameter '{self.name:s}': " +
                                  "Default value not of specified type.")
 
+        if self.subtype and not (self.type or self.type == list):
+            raise ParameterError(f"Parameter '{self.name:s}': " +
+                                 "field 'subtype' is only accepted if 'type' is list.")
+
+        if self.nargs:
+            if (not isinstance(self.nargs, int) and
+                    self.nargs not in [argparse.ONE_OR_MORE, argparse.ZERO_OR_MORE]):
+                raise ParameterError(f"Parameter '{self.name:s}': "
+                                     "nargs needs to be an integer or either "
+                                     f"'{argparse.ONE_OR_MORE}' or '{argparse.ZERO_OR_MORE}'. "
+                                     f"Instead it was '{self.nargs}'")
+
+            if not (self.type or self.type == list):
+                raise ParameterError(f"Parameter '{self.name:s}': " +
+                                     "'type' needs to be 'list' if 'nargs' is given.")
+
         if self.choices:
             try:
                 [choice for choice in self.choices]
@@ -124,12 +141,8 @@ class Parameter(object):
                                      "'Choices' need to be iterable.")
 
             if self.default:
-                if self.subtype:
-                    try:
-                        not_a_choice = [d for d in self.default if d not in self.choices]
-                    except TypeError:
-                        raise ParameterError(f"Parameter '{self.name:s}': " +
-                                             "'Default' should be iterable.")
+                if self.type == list:
+                    not_a_choice = [d for d in self.default if d not in self.choices]
 
                     if len(not_a_choice) > 0:
                         raise ParameterError(f"Parameter '{self.name:s}': " +
@@ -141,29 +154,21 @@ class Parameter(object):
                                              "Default value not found in choices.")
 
             if self.type or self.subtype:
-                check = self.type if self.subtype is None else self.subtype
-                for choice in self.choices:
-                    if not isinstance(choice, check):
-                        raise ParameterError(f"Choice '{choice}' " +
-                                             f"of parameter '{self.name:s}': " +
-                                             f"is not of type '{check.__name__:s}'.")
+                if self.nargs is None:
+                    check = self.type if self.subtype is None else self.subtype
+                else:
+                    check = self.subtype
 
-        if self.nargs:
-            if not isinstance(self.nargs, int):
-                raise ParameterError(f"Parameter '{self.name:s}': " +
-                                     "nargs needs to be an integer.")
-
-            if not (self.type or self.type == list):
-                raise ParameterError(f"Parameter '{self.name:s}': " +
-                                     "'type' needs to be 'list' if 'nargs' is given.")
-
-        if self.subtype and not (self.type or self.type == list):
-            raise ParameterError(f"Parameter '{self.name:s}': " +
-                                 "field 'subtype' is only accepted if 'type' is list.")
+                if check is not None:
+                    for choice in self.choices:
+                        if not isinstance(choice, check):
+                            raise ParameterError(f"Choice '{choice}' " +
+                                                 f"of parameter '{self.name:s}': " +
+                                                 f"is not of type '{check.__name__:s}'.")
 
         if self.required and self.default is not None:
-            LOG.warn(f"Parameter '{self.name:s}': " +
-                     "Value is required but default value is given. The latter will be ignored.")
+            LOG.warning(f"Parameter '{self.name:s}': " +
+                        "Value is required but default value is given. The latter will be ignored.")
 
 
 class DictParser(object):
@@ -245,10 +250,16 @@ class DictParser(object):
                                 f"Help: {param.help:s}")
 
         if param.type == list:
-            if param.nargs and not param.nargs == len(opt):
-                raise ArgumentError(f"'{key:s}' should be list of length {param.nargs:d},"
-                                    f" instead it was of length {len(opt):d}.\n"
-                                    f"Help: {param.help:s}")
+            if param.nargs:
+                if isinstance(param.nargs, int) and not param.nargs == len(opt):
+                    raise ArgumentError(f"'{key:s}' should be list of length {param.nargs:d},"
+                                        f" instead it was of length {len(opt):d}.\n"
+                                        f"Help: {param.help:s}")
+
+                if param.nargs == argparse.ONE_OR_MORE and not len(opt):
+                    raise ArgumentError(f"'{key:s}' should be list of length >= 1,"
+                                        f" instead it was of length {len(opt):d}.\n"
+                                        f"Help: {param.help:s}")
 
             if param.subtype:
                 for idx, item in enumerate(opt):
@@ -259,11 +270,11 @@ class DictParser(object):
 
             if param.choices and any([o for o in opt if o not in param.choices]):
                 raise ArgumentError(f"All elements of '{key:s}' need to be one of "
-                                    f"'{param.choices:s}', instead the list was {opt:s}.\n"
+                                    f"'{param.choices:}', instead the list was {opt:s}.\n"
                                     f"Help: {param.help:s}")
 
         elif param.choices and opt not in param.choices:
-            raise ArgumentError(f"'{key:s}' needs to be one of '{param.choices:s}', "
+            raise ArgumentError(f"'{key:s}' needs to be one of '{param.choices:}', "
                                 f"instead it was {opt:s}.\n"
                                 f"Help: {param.help:s}")
         return opt
@@ -362,7 +373,7 @@ class DictParser(object):
         """ Appends a complete subdictionary to existing argument structure at node 'loc'.
 
         Args:
-            loc: locination of the node to append the sub-dictionary
+            loc: location of the node to append the sub-dictionary
             dictionary: The dictionary to append
 
         Returns:
