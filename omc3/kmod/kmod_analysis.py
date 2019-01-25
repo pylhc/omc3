@@ -35,7 +35,6 @@ def calc_betastar( kmod_input_params, results_df):
 
     cols = results_df.columns.tolist()
     cols = [cols[0]]+cols[-4:]+cols[1:-4]
-    # results_df = results_df[cols]
     results_df.reindex(columns=cols)
 
     return results_df
