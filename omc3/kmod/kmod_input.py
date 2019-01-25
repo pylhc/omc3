@@ -158,7 +158,7 @@ class KmodInput():
         if options.ip is not None:
             LOG.info('IP trim analysis')
             self.magnet1, self.magnet2 = MAGNETS_IP[options.ip.upper()]
-        # TODO fix this function for IR4 modulation
+        
         else:
             LOG.info('Indiv magnets analysis')
             self.circuit1, self.circuit2 =  options.circuits.split(',')

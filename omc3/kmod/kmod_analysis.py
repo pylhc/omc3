@@ -39,7 +39,7 @@ def calc_betastar( kmod_input_params, results_df):
 
     return results_df
 
-def calc_beta_inst( name, position, results_df ):
+def calc_beta_inst( name, position, results_df, magnet1_df, magnet2_df ):
 
     betas = np.zeros((2,2))
 
@@ -48,10 +48,13 @@ def calc_beta_inst( name, position, results_df ):
     for i, plane in enumerate(PLANES):
         
         waist = float(results_df.loc[:, kmod_constants.get_waist_col(plane)].values)
+
+        
+        if magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
+            waist = -waist 
+        
         if plane == 'Y':
             waist = - waist
-
-        # TODO check for all cases of focussing and defocussing magnets
         
         beta = \
         (float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) + sign[:,0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values) )\
@@ -65,16 +68,15 @@ def calc_beta_inst( name, position, results_df ):
 
     return name, betas[0,0], betas[0,1], betas[1,0], betas[1,1]
 
-def calc_beta_at_instruments( kmod_input_params, results_df ):
+def calc_beta_at_instruments( kmod_input_params, results_df, magnet1_df, magnet2_df ):
 
     beta_instr=[]
-    
     
     for instrument in kmod_input_params.instruments_found:
         positions = getattr(kmod_input_params, instrument)
 
         for name, position in positions.items():
-            beta_instr.append( calc_beta_inst( name, position, results_df ))
+            beta_instr.append( calc_beta_inst( name, position, results_df, magnet1_df, magnet2_df ))
 
     instrument_beta_df = tfs.TfsDataFrame(  columns=['INSTRUMENT', kmod_constants.get_beta_col('X'), kmod_constants.get_beta_err_col('X'), kmod_constants.get_beta_col('Y'), kmod_constants.get_beta_err_col('Y')], data=beta_instr   )
 

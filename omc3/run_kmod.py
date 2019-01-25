@@ -45,7 +45,7 @@ def analyse_kmod():
 
     LOG.info('calc beta at inst')
     if kmod_input_params.instruments_found != []:
-        instrument_beta_df = kmod_analysis.calc_beta_at_instruments( kmod_input_params, results_df )
+        instrument_beta_df = kmod_analysis.calc_beta_at_instruments( kmod_input_params, results_df, magnet1_df, magnet2_df )
     
 
     LOG.info('write magnet df and results')    

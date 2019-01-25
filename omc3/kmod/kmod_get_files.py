@@ -56,7 +56,7 @@ def headers_for_df( magnet, k_df ):
     head = {}
 
     head['QUADRUPOLE'] = magnet
-    head['DELTA_I'] = (np.max( k_df['CURRENT'] ) - np.min( k_df['CURRENT'] ))/2.
+    head['DELTA_I'] = (np.max( k_df['CURRENT'].rolling(5).mean() ) - np.min( k_df['CURRENT'].rolling(5).mean() ))/2.
     head['START_TIME'] =  (datetime.datetime.fromtimestamp( k_df['TIME'].iloc[0] /1000.0 )).strftime( '%Y-%m-%d %H:%M:%S' )
     head['END_TIME'] =  (datetime.datetime.fromtimestamp( k_df['TIME'].iloc[-1] /1000.0 )).strftime( '%Y-%m-%d %H:%M:%S' )
 
