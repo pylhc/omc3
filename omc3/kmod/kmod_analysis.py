@@ -35,7 +35,8 @@ def calc_betastar( kmod_input_params, results_df):
 
     cols = results_df.columns.tolist()
     cols = [cols[0]]+cols[-4:]+cols[1:-4]
-    results_df = results_df[cols]
+    # results_df = results_df[cols]
+    results_df.reindex(columns=cols)
 
     return results_df
 
@@ -48,7 +49,6 @@ def calc_beta_inst( name, position, results_df, magnet1_df, magnet2_df ):
     for i, plane in enumerate(PLANES):
         
         waist = float(results_df.loc[:, kmod_constants.get_waist_col(plane)].values)
-
         
         if magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
             waist = -waist 

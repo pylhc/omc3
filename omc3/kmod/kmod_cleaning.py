@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from scipy.spatial import Delaunay
+from scipy.spatial.qhull import Delaunay
 import numpy as np
 from utils import logging_tools, outliers
 from kmod import kmod_constants

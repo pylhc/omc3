@@ -97,13 +97,12 @@ def ax_plot(ax, magnet_df, plane ):
 
     ax.set_xlabel( r'$ \Delta K $', fontsize=15 )    
     ax.set_ylabel( r'$ Q_{{{:s}}} $'.format(plane.upper()) , fontsize=15)    
-
+    
     return
 
 def plot_cleaned_data( magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False ):
 
     fig, ax = plt.subplots( nrows=2, ncols=2, figsize=(10,10) )
-
 
     ax_plot( ax[0,0], magnet1_df, 'X' )
     ax_plot( ax[1,0], magnet1_df, 'Y' )
