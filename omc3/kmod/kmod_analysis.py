@@ -4,6 +4,7 @@ import math
 from utils import logging_tools
 from kmod import kmod_constants
 import tfs
+from tfs import tools as tfstools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -30,12 +31,15 @@ def calc_betastar( kmod_input_params, results_df):
 
         betastar_err = np.sqrt(np.sum(np.maximum(np.absolute(betastar[1::2]-betastar[0]),abs(betastar[1::2]-betastar[0]))**2))
 
-        results_df[ kmod_constants.get_betastar_col(plane) ] = betastar[0]
-        results_df[ kmod_constants.get_betastar_err_col(plane) ] = betastar_err
+        # results_df[ kmod_constants.get_betastar_col(plane) ] = betastar[0]
+        # results_df[ kmod_constants.get_betastar_err_col(plane) ] = betastar_err
 
+        results_df[ kmod_constants.get_betastar_col(plane) ], results_df[ kmod_constants.get_betastar_err_col(plane) ] = tfstools.significant_numbers( betastar[0], betastar_err )
+
+    # reindex df to put betastar first
     cols = results_df.columns.tolist()
     cols = [cols[0]]+cols[-4:]+cols[1:-4]
-    results_df.reindex(columns=cols)
+    results_df=results_df.reindex(columns=cols)
 
     return results_df
 
@@ -53,7 +57,7 @@ def calc_beta_inst( name, position, results_df, magnet1_df, magnet2_df ):
             waist = -waist 
         
         if plane == 'Y':
-            waist = - waist
+            waist = -waist
         
         beta = \
         (float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) + sign[:,0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values) )\
@@ -62,8 +66,10 @@ def calc_beta_inst( name, position, results_df, magnet1_df, magnet2_df ):
 
         beta_err = np.sqrt(np.sum(np.maximum(np.absolute(beta[1::2]-beta[0]),abs(beta[1::2]-beta[0]))**2))
         
-        betas[i,0]= beta[0]
-        betas[i,1]= beta_err
+        # betas[i,0]= beta[0]
+        # betas[i,1]= beta_err
+        betas[i,0], betas[i,1] = tfstools.significant_numbers( beta[0], beta_err )
+
 
     return name, betas[0,0], betas[0,1], betas[1,0], betas[1,1]
 
