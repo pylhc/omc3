@@ -38,7 +38,7 @@ def return_filename( kmod_input_params ):
                 yield path_tunex, path_tuney, path_k
 
 def return_magnet( kmod_input_params ):
-    # a = (x for x in [1,2,3,4])
+    
     for x in [kmod_input_params.magnet1,kmod_input_params.magnet2]:
         yield x
 

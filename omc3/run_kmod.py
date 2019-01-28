@@ -48,10 +48,11 @@ def analyse_kmod():
         instrument_beta_df = kmod_analysis.calc_beta_at_instruments( kmod_input_params, results_df, magnet1_df, magnet2_df )
     
 
-    LOG.info('write magnet df and results')    
-    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet1_df.headers['QUADRUPOLE'] ) ) , magnet1_df )
-    tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet2_df.headers['QUADRUPOLE'] ) ) , magnet2_df )
+    LOG.info('write magnet df and results') 
 
+    for magnet_df in [magnet1_df, magnet2_df]   
+        tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet_df.headers['QUADRUPOLE'] ) ) , magnet_df )
+    
     tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), 'results.tfs' ) , results_df )
     if kmod_input_params.instruments_found != []:
         tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), 'beta_instrument.tfs' ) , instrument_beta_df )

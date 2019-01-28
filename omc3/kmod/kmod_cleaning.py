@@ -6,6 +6,8 @@ from kmod import kmod_constants
 
 LOG = logging_tools.get_logger(__name__)
 
+PLANES = ['X', 'Y']
+
 class clicker_class(object):
     def __init__(self, ax, data, pix_err=1):
         self.canvas = ax.get_figure().canvas
@@ -156,13 +158,14 @@ def clean_data( kmod_input_params, magnet_df ):
 
     if kmod_input_params.no_autoclean == True:
         #TODO currently not working due to python2 - python3 issues
-
-        magnet_df[kmod_constants.get_cleaned_col('X')] = True
-        magnet_df[kmod_constants.get_cleaned_col('Y')] = True
+        for plane in PLANES:
+            magnet_df[kmod_constants.get_cleaned_col( plane )] = True
+            
 
     else:
-        magnet_df[kmod_constants.get_cleaned_col('X')] = automatic_cleaning_data( magnet_df[kmod_constants.get_k_col()], magnet_df[kmod_constants.get_tune_col('X')], magnet_df[kmod_constants.get_tune_err_col('X')] )
-        magnet_df[kmod_constants.get_cleaned_col('Y')] = automatic_cleaning_data( magnet_df[kmod_constants.get_k_col()], magnet_df[kmod_constants.get_tune_col('Y')], magnet_df[kmod_constants.get_tune_err_col('Y')] )
+        for plane in PLANES:
+            magnet_df[kmod_constants.get_cleaned_col( plane )] = automatic_cleaning_data( magnet_df[kmod_constants.get_k_col()], magnet_df[kmod_constants.get_tune_col( plane )], magnet_df[kmod_constants.get_tune_err_col( plane )] )
+        
 
     return magnet_df
 
