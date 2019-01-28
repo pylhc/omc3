@@ -1,5 +1,7 @@
 """Exposes SddsFile, read_sdds and write_sdds directly in sdds namespace."""
-from sdds.handler import read_sdds, write_sdds, SddsFile
+from sdds.write_handler import write_sdds
+from sdds.read_handler import read_sdds
+from sdds.classes import SddsFile
 # aliases
 read = read_sdds
 write = write_sdds
