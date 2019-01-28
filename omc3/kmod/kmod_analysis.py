@@ -29,13 +29,9 @@ def calc_betastar( kmod_input_params, results_df):
         + (float(results_df.loc[:, kmod_constants.get_waist_col(plane)].values)+ sign[:,1]* float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values) )**2\
         /(float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) + sign[:,0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values) )
 
-        betastar_err = np.sqrt(np.sum(np.maximum(np.absolute(betastar[1::2]-betastar[0]),abs(betastar[1::2]-betastar[0]))**2))
-
-        # results_df[ kmod_constants.get_betastar_col(plane) ] = betastar[0]
-        # results_df[ kmod_constants.get_betastar_err_col(plane) ] = betastar_err
+        betastar_err = get_err(betastar[1::2]-betastar[0])
 
         results_df[ kmod_constants.get_betastar_col(plane) ], results_df[ kmod_constants.get_betastar_err_col(plane) ] = tfstools.significant_numbers( betastar[0], betastar_err )
-
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
     cols = [cols[0]]+cols[-4:]+cols[1:-4]
@@ -64,10 +60,8 @@ def calc_beta_inst( name, position, results_df, magnet1_df, magnet2_df ):
         + ( (waist - position ) + sign[:,1]* float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values) )**2\
         /(float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) + sign[:,0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values) )
 
-        beta_err = np.sqrt(np.sum(np.maximum(np.absolute(beta[1::2]-beta[0]),abs(beta[1::2]-beta[0]))**2))
-        
-        # betas[i,0]= beta[0]
-        # betas[i,1]= beta_err
+        beta_err = get_err(beta[1::2]-beta[0])
+
         betas[i,0], betas[i,1] = tfstools.significant_numbers( beta[0], beta_err )
 
 
@@ -131,16 +125,16 @@ np.vectorize(average_beta_defocussing_quadrupole)
 
 def calc_tune( magnet_df ):    
     
-    magnet_df.headers[kmod_constants.get_tune_col('X')] = np.average( magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('X')]  ==True )[kmod_constants.get_tune_col('X')].dropna() )
-    magnet_df.headers[kmod_constants.get_tune_col('Y')] = np.average( magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('Y')]  ==True )[kmod_constants.get_tune_col('Y')].dropna() )
+    for plane in PLANES:
+        magnet_df.headers[kmod_constants.get_tune_col( plane )] = np.average( magnet_df.where( magnet_df[kmod_constants.get_cleaned_col( plane )]  ==True )[kmod_constants.get_tune_col( plane )].dropna() )
+        
     
     return magnet_df
 
 def calc_k( magnet_df ):    
     
     magnet_df.headers[kmod_constants.get_k_col()] = np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('X')]  ==True )[kmod_constants.get_k_col()].dropna() )
-    magnet_df.headers[kmod_constants.get_k_col()] = np.average(  magnet_df.where( magnet_df[kmod_constants.get_cleaned_col('Y')]  ==True )[kmod_constants.get_k_col()].dropna() )
-    
+        
     return magnet_df
     
 def return_fit_input( magnet_df, plane ):
@@ -154,29 +148,25 @@ def return_fit_input( magnet_df, plane ):
 
 def do_fit( magnet_df, plane, use_approx=False ):
     if not use_approx:
-        av_beta, av_beta_err = scipy.optimize.curve_fit(
-            fit_prec,
-            xdata= return_fit_input(magnet_df, plane),
-            ydata = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[ kmod_constants.get_tune_col(plane) ],
-            p0= 1
-        )     
-
+        fun = fit_prec
     elif use_approx:
+        fun = fit_approx
 
-        av_beta, av_beta_err = scipy.optimize.curve_fit(
-            fit_approx,
-            xdata= return_fit_input(magnet_df, plane),
-            ydata = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[ kmod_constants.get_tune_col(plane) ],
-            p0= 1
-        )
+    av_beta, av_beta_err = scipy.optimize.curve_fit(
+        fun,
+        xdata= return_fit_input(magnet_df, plane),
+        ydata = magnet_df.where( magnet_df[kmod_constants.get_cleaned_col(plane)]  ==True )[kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[ kmod_constants.get_tune_col(plane) ],
+        p0= 1
+    )     
 
     return av_beta[0], np.sqrt(np.diag(av_beta_err))[0]
     
 
 def get_av_beta(magnet_df):
 
-    magnet_df.headers[ kmod_constants.get_av_beta_col( 'X') ], magnet_df.headers[ kmod_constants.get_av_beta_err_col( 'X') ] = do_fit( magnet_df, 'X' )
-    magnet_df.headers[ kmod_constants.get_av_beta_col( 'Y') ], magnet_df.headers[ kmod_constants.get_av_beta_err_col( 'Y') ] = do_fit( magnet_df, 'Y' )
+    for plane in PLANES:
+        magnet_df.headers[ kmod_constants.get_av_beta_col( plane ) ], magnet_df.headers[ kmod_constants.get_av_beta_err_col( plane ) ] = do_fit( magnet_df, plane  )
+    
 
     return magnet_df
 
@@ -222,11 +212,14 @@ def get_beta_waist( magnet1_df, magnet2_df, kmod_input_params, plane ):
         fitresults = scipy.optimize.minimize( fun, kmod_input_params.return_guess(plane), method='nelder-mead', tol=1E-9 )
         results[i,:] = fitresults.x[0], fitresults.x[1]
 
-    beta_waist_err = np.sqrt(np.sum(np.maximum(np.absolute(results[1::2,0]-results[0,0]),abs(results[1::2,0]-results[0,0]))**2))
-    waist_err = np.sqrt(np.sum(np.maximum(np.absolute(results[1::2,1]-results[0,1]),abs(results[1::2,1]-results[0,1]))**2))
+    beta_waist_err = get_err(results[1::2,0]-results[0,0])
+    waist_err = get_err( results[1::2,1]-results[0,1] )
+
 
     return results[0,0], beta_waist_err, results[0,1], waist_err
 
+def get_err( diff_array ):
+    return np.sqrt(np.sum(np.maximum(np.absolute( diff_array ),np.absolute( diff_array ))**2))
 
 
 def analyse( magnet1_df, magnet2_df, kmod_input_params ):
