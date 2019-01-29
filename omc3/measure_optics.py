@@ -90,20 +90,15 @@ def measure_optics(input_files, measure_input):
     except:
         _tb_()
     try:
-        dispersion.calculate_orbit_and_dispersion(measure_input, input_files, tune_dict, mad_twiss,
-                                                  beta_df_dict, common_header)
-    except:
-        _tb_()
-
-    try:
         dispersion.calculate_dx_from_3d(measure_input, input_files, mad_twiss, common_header, tune_dict)
-    except:
-        _tb_()
-
-    try:
         dispersion.calculate_ndx_from_3d(measure_input, input_files, mad_twiss, mad_ac, beta_dict["X"]["F"], dispersion._get_header(common_header, tune_dict, 'getNDx.out'))
     except:
-        _tb_()
+        #LOGGER.info("Calculate dispersion from 3D kicks failed.")
+        try:
+            dispersion.calculate_orbit_and_dispersion(measure_input, input_files, tune_dict, mad_twiss,
+                                                  beta_df_dict, common_header)
+        except:
+            _tb_()
     try:
         inv_x, inv_y = kick.calculate_kick(measure_input, input_files, mad_twiss, mad_ac, ratio, common_header)
     except:
