@@ -191,11 +191,11 @@ class EntryPoint(object):
             options = DotDict(vars(options))
             if self.strict:
                 if unknown_opts:
-                    raise ArgumentError("Unknown options: {:s}".format(unknown_opts))
+                    raise ArgumentError(f"Unknown options: {unknown_opts}")
                 return options
             else:
                 if unknown_opts:
-                    LOG.debug("Unknown options: {:s}".format(unknown_opts))
+                    LOG.debug(f"Unknown options: {unknown_opts}")
                 return options, unknown_opts
         else:
             # parse config file
@@ -390,17 +390,17 @@ class EntryPointParameters(DotDict):
             space = " " * (len(name_type) + 2)
 
             try:
-                item_str += "\n{s:s}**Flags**: {f:s}".format(s=space, f=item["flags"])
+                item_str += f"\n{space:s}**Flags**: {item['flags']:s}"
             except KeyError:
                 pass
 
             try:
-                item_str += "\n{s:s}**Choices**: {c:s}".format(s=space, c=item["choices"])
+                item_str += f"\n{space:s}**Choices**: {item['choices']:s}"
             except KeyError:
                 pass
 
             try:
-                item_str += "\n{s:s}**Default**: ``{d:s}``".format(s=space, d=str(item["default"]))
+                item_str += f"\n{space:s}**Default**: ``{item['default']:s}``"
             except KeyError:
                 pass
 
@@ -430,10 +430,7 @@ def add_params_to_generic(parser, params):
     """ Adds entry-point style parameter to either
     ArgumentParser, DictParser or EntryPointArguments
     """
-    try:
-        params = copy.deepcopy(params)
-    except TypeError:
-        pass  # Python 3
+    params = copy.deepcopy(params)
 
     if isinstance(params, dict):
         params = EntryPoint._dict2list_param(params)
@@ -526,10 +523,26 @@ def param_names(params):
     return names
 
 
-# Script Mode ##################################################################
+class CreateParamHelp(object):
+    """ Print params help quickly but changing the logging format first.
 
+    Usage Example::
 
-if __name__ == '__main__':
-    raise EnvironmentError("{:s} is not supposed to run as main.".format(__file__))
+        import amplitude_detuning_analysis
+        help = CreateParamHelp()
+        help(amplitude_detuning_analysis)
+        help(amplitude_detuning_analysis, "_get_plot_params")
 
+    """
+    def __init__(self):
+        logtools.getLogger("").handlers = []  # remove all handlers from root-logger
+        logtools.get_logger("__main__", fmt="%(message)s")  # set up new
 
+    def __call__(self, module, param_fun=None):
+        if param_fun is None:
+            try:
+                module.get_params().help()
+            except AttributeError:
+                module._get_params().help()
+        else:
+            getattr(module, param_fun)().help()

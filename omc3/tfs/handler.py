@@ -295,6 +295,6 @@ def _validate(data_frame, info_str=""):
     bool_df = data_frame.apply(isnotfinite)
     if bool_df.values.any():
         LOGGER.warning(f"DataFrame {info_str:s} contains non-physical values at Index: "
-                       f"{bool_df.index[bool_df.any(axis='columns')].tolist():s}")
+                       f"{bool_df.index[bool_df.any(axis='columns')].tolist()}")
     else:
         LOGGER.debug(f"DataFrame {info_str:s} validated.")

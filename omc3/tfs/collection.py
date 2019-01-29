@@ -118,13 +118,13 @@ class TfsCollection(object):
     def read_tfs(self, filename):
         """Actually reads the TFS file from self.directory with filename.
 
-        This function can be ovewriten to use something instead of tfs_pandas
+        This function can be ovewriten to use something instead of tfs
         to load the files.
 
         Arguments:
             filename: The name of the file to load.
         Returns:
-            A tfs_pandas instance of the requested file.
+            A tfs instance of the requested file.
         """
         tfs_data = read_tfs(os.path.join(self.directory, filename))
         if "NAME" in tfs_data:
