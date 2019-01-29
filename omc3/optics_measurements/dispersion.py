@@ -90,25 +90,33 @@ def _calculate_dispersion(meas_input, input_files, model, plane, header, order=2
     return output_df
 
 
-def _calculate_normalised_dispersion(meas_input, input_files, model, beta, header):
+def _calculate_normalised_dispersion(meas_input, input_files, model, beta, header, order=2):
     # TODO there are no errors from orbit
     plane = "X"
     df_orbit = _get_merged_df(model, input_files, plane, ['CO', 'CORMS', f"AMP{plane}"])
     df_orbit[f"ND{plane}MDL"] = df_orbit.loc[:, f"D{plane}MDL"] / np.sqrt(
         df_orbit.loc[:, f"BET{plane}MDL"])
-
+    if order > 1:
+        df_orbit[f"ND2{plane}MDL"] = df_orbit.loc[:, f"D2{plane}MDL"] / np.sqrt(
+            df_orbit.loc[:, f"BET{plane}MDL"])
     df_orbit = pd.merge(df_orbit, beta.loc[:, ['BETX', 'ERRBETX']], how='inner', left_index=True,
                         right_index=True)
     dpps = input_files.dpps(plane)
     if np.max(dpps) - np.min(dpps) == 0.0:
         return  # temporary solution
         # raise ValueError('Cannot calculate dispersion, only a single dpoverp')
-    fit = np.polyfit(dpps, SCALES[meas_input.orbit_unit] * input_files.get_data(df_orbit, 'CO').T, 1, cov=True)
+    fit = np.polyfit(dpps, SCALES[meas_input.orbit_unit] * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
+    if order > 1:
+        df_orbit['ND2X_unscaled'] = fit[0][-3, :].T / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)
+        df_orbit['STDND2X_unscaled'] = np.sqrt(fit[1][-3, -3, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)
     df_orbit['NDX_unscaled'] = fit[0][-2, :].T / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)  # TODO there is no error from AMPX
     df_orbit['STDNDX_unscaled'] = np.sqrt(fit[1][-2, -2, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)
     df_orbit = df_orbit.loc[np.abs(fit[0][-1, :].T) < meas_input.max_closed_orbit * SCALES[meas_input.orbit_unit], :]
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     global_factor = np.sum(df_orbit.loc[mask, 'NDXMDL'].values) / np.sum(df_orbit.loc[mask, 'NDX_unscaled'].values)
+    if order > 1:
+        df_orbit['ND2X'] = global_factor * df_orbit.loc[:, 'ND2X_unscaled']
+        df_orbit['STDND2X'] = global_factor * df_orbit.loc[:, 'STDND2X_unscaled']
     df_orbit['NDX'] = global_factor * df_orbit.loc[:, 'NDX_unscaled']
     df_orbit['STDNDX'] = global_factor * df_orbit.loc[:, 'STDNDX_unscaled']
     df_orbit = _calculate_from_norm_disp(df_orbit, model, plane)
@@ -183,9 +191,9 @@ def _calculate_dp(model, disp, plane):
 
 
 def _get_merged_df(model, input_files, plane, meas_columns):
-    df = pd.DataFrame(model).loc[:, ["S", plane, f"D{plane}", f"DP{plane}", f"MU{plane}", f"BET{plane}"]]
+    df = pd.DataFrame(model).loc[:, ["S", plane, f"D{plane}", f"DP{plane}", f"MU{plane}", f"BET{plane}", f"DD{plane}"]]
     df.rename(columns={plane: f"{plane}MDL", f"D{plane}": f"D{plane}MDL", f"DP{plane}": f"DP{plane}MDL",
-                       f"MU{plane}": f"MU{plane}MDL", f"BET{plane}": f"BET{plane}MDL"}, inplace=True)
+                       f"MU{plane}": f"MU{plane}MDL", f"BET{plane}": f"BET{plane}MDL", f"DD{plane}" :f"D2{plane}MDL"}, inplace=True)
     df = pd.merge(df, input_files.joined_frame(plane, meas_columns), how='inner', left_index=True, right_index=True)
     df['COUNT'] = len(input_files.get_columns(df, meas_columns[0]))
     return df
@@ -210,7 +218,8 @@ def _get_output_columns(plane, df):
             _single_column_set_list(f"ND{plane}") +  # normalized dispersion columns
             _single_column_set_list(f"D{plane}") +  # dispersion columns
             [f"DP{plane}", f"DP{plane}MDL"] +  # more dispersion columns
-            [f"D2{plane}", f"STDD2{plane}"])      # second order dispersion columns
+            _single_column_set_list(f"D2{plane}") + # second order dispersion columns
+            _single_column_set_list(f"ND2{plane}") ) # second order normalized dispersion columns
     return [col for col in cols if col in df.columns]
 
 
@@ -226,7 +235,7 @@ def _calculate_from_norm_disp(df, model, plane):
 
 
 def _get_delta_columns(df, plane):
-    for col in [f"{plane}", f"D{plane}", f"ND{plane}"]:
+    for col in [f"{plane}", f"D{plane}", f"ND{plane}", f"D2{plane}", f"ND2{plane}"]:
         if col in df.columns:
             df[f"DELTA{col}"] = df.loc[:, col] - df.loc[:, f"{col}MDL"]
     return df
