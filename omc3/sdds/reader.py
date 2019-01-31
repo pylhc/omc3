@@ -1,4 +1,4 @@
-from typing import IO, Any, List, Optional, Generator, Dict, Union, Tuple
+from typing import IO, Any, List, Optional, Generator, Dict, Union, Tuple, Callable, Type
 import numpy as np
 from sdds.classes import (SddsFile, Column, Parameter, Definition, Array, Data, Description,
                           ENCODING, NUMTYPES, NUMTYPES_CAST, NUMTYPES_SIZES)
@@ -51,7 +51,7 @@ def _read_header(inbytes: IO[bytes]) ->Tuple[str, List[Definition], Optional[Des
             # TODO: This should be easy but I will not support it for now.
             raise NotImplementedError
         if word == Data.TAG:
-            data = Data(mode=def_dict.pop("mode"), **def_dict)
+            data = Data(mode=def_dict.pop("mode"))
             break
         raise ValueError(f"Unknown token: {word} encountered.")
     if data is None:
@@ -66,7 +66,8 @@ def _sort_definitions(orig_defs: List[Definition]) -> List[Definition]:
     According to the specification parameters appear first in data pages then arrays
     and then columns. Inside each group they follow the order of appearance in the header.
     """
-    definitions = [definition for definition in orig_defs if isinstance(definition, Parameter)]
+    definitions: List[Definition] = [definition for definition in orig_defs
+                                     if isinstance(definition, Parameter)]
     definitions.extend([definition for definition in orig_defs if isinstance(definition, Array)])
     definitions.extend([definition for definition in orig_defs if isinstance(definition, Column)])
     return definitions
@@ -84,12 +85,12 @@ def _read_data(data: Data, definitions: List[Definition], inbytes: IO[bytes]) ->
 
 def _read_data_binary(definitions: List[Definition], inbytes: IO[bytes]) -> List[Any]:
     row_count: int = _read_bin_int(inbytes)  # First int in bin data
-    return [
-        {Parameter: _read_bin_param,
-         Column: lambda x, y: _read_bin_column(x, y, row_count),
-         Array: _read_bin_array}[definition.__class__](inbytes, definition)
-        for definition in definitions
-    ]
+    functs_dict: Dict[Type[Definition], Callable] = {
+        Parameter: _read_bin_param,
+        Column: lambda x, y: _read_bin_column(x, y, row_count),
+        Array: _read_bin_array
+    }
+    return [functs_dict[definition.__class__](inbytes, definition) for definition in definitions]
 
 
 def _read_bin_param(inbytes: IO[bytes], definition: Parameter) -> Union[int, float, str]:
@@ -130,7 +131,7 @@ def _read_bin_array(inbytes: IO[bytes], definition: Array) -> Any:
 
 def _read_bin_array_len(inbytes: IO[bytes], num_dims: int) -> Tuple[List[int], int]:
     dims = [_read_bin_int(inbytes) for _ in range(num_dims)]
-    return dims, np.prod(dims)
+    return dims, int(np.prod(dims))
 
 
 def _read_bin_numeric(inbytes: IO[bytes], type_: str, count: int) -> Any:
