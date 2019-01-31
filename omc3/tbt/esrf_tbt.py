@@ -3,6 +3,7 @@ import json
 from scipy.io import loadmat
 import numpy as np
 
+
 def load_esrf_mat_file(infile):
     """
         Reads the ESRF TbT Matlab file, checks for nans and data duplicities from consecutive kicks
