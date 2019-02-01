@@ -1,7 +1,7 @@
 import os
 import pytest
-from .context import omc3
-from omc3.tfs import read_tfs, write_tfs
+from . import context
+from tfs import read_tfs, write_tfs
 
 
 CURRENT_DIR = os.path.dirname(__file__)
