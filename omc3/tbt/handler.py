@@ -41,7 +41,7 @@ def read_tbt(file_path):
     """
     if _is_ascii_file(file_path):
         matrices, date = _read_ascii(file_path)
-        return [TbtData(matrices, date, [0], matrices[0]["X"].shape[1])]
+        return TbtData(matrices, date, [0], matrices[0]["X"].shape[1])
     sdds_file = sdds.read(file_path)
     nbunches = sdds_file.values["nbOfCapBunches"]
     bunch_ids = sdds_file.values["BunchId" if "BunchId" in sdds_file.values else "horBunchId"]
@@ -78,7 +78,7 @@ def write_tbt(output_path, tbt_data, headers=None, no_binary=False):
             'Y': np.empty((nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float)}
     for index in range(tbt_data.nbunches):
         for plane in PLANES:
-            data[plane][:, index, :] = tbt_data.matrices[index]['X'].values
+            data[plane][:, index, :] = tbt_data.matrices[index][plane].values
     definitions = [
         sdds.classes.Parameter("acqStamp", "double"),
         sdds.classes.Parameter("nbOfCapBunches", "long"),
