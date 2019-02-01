@@ -8,14 +8,18 @@ CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
 
 
-def test_tbt_write_read(_sdds_file, _test_file):
+def test_tbt_write_read_binary(_sdds_file, _test_file):
     origin = tbt.read(_sdds_file)
     tbt.write(_test_file, origin)
-    newb = tbt.read(_test_file)
-    _compare_tbt(origin, newb, False)
+    new = tbt.read(_test_file)
+    _compare_tbt(origin, new, False)
+
+
+def test_tbt_write_read_ascii(_sdds_file, _test_file):
+    origin = tbt.read(_sdds_file)
     tbt.write(_test_file, origin, no_binary=True)
-    newa = tbt.read(_test_file)
-    _compare_tbt(origin, newa, True)
+    new = tbt.read(_test_file)
+    _compare_tbt(origin, new, True)
 
 
 def _compare_tbt(origin, new, no_binary):
