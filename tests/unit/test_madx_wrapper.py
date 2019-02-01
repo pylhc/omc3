@@ -1,8 +1,8 @@
 from os.path import join, exists, isfile
 import pytest
-from .context import omc3
-from omc3.utils.contexts import temporary_dir, silence
-from omc3 import madx_wrapper
+from . import context
+from utils.contexts import temporary_dir, silence
+import madx_wrapper
 
 
 def test_with_macro():
