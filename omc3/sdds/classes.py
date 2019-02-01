@@ -138,10 +138,17 @@ class Data:
 class SddsFile:
     """Holds the contents of the SDDS file as a pair of dictionaries.
 
-    The first dictionary "definitions" contains the
-    # TODO finish the documentation
+    The first dictionary "definitions" has the form: name (as a str) ->
+    Definition, containing an object of each field in the SDDS file (of type
+    Parameter, Array or Column). The "values" dictionary has the form:
+    name (as a str) -> value. To access them:
+    sdds_file = SddsFile(...)
+    >>> def_ = sdds_file.definitions["name"]
+    >>> val = sdds_file.values["name"]
+    >>> # The definitions and values can also be accessed like:
+    >>> def_, val = sdds_file["name"]
     """
-    version: str
+    version: str  # This should always be "SDDS1"
     description: Optional[Description]
     definitions: Dict[str, Definition]
     values: Dict[str, Any]
