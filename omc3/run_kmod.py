@@ -50,7 +50,7 @@ def analyse_kmod():
 
     LOG.info('write magnet df and results') 
 
-    for magnet_df in [magnet1_df, magnet2_df]   
+    for magnet_df in [magnet1_df, magnet2_df] : 
         tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), '{:s}.tfs'.format( magnet_df.headers['QUADRUPOLE'] ) ) , magnet_df )
     
     tfs.write_tfs( os.path.join( kmod_constants.get_working_directory( kmod_input_params ), 'results.tfs' ) , results_df )

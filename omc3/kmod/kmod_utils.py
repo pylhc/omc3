@@ -24,18 +24,19 @@ def define_params(kmod_input_params, magnet1_df, magnet2_df):
     LOG.debug(' adding additional parameters to header ')
     
     sequence = tfs.read( kmod_constants.get_sequence_filename( kmod_input_params.beam ), index='NAME' )
-
+    
     for magnet_df in [magnet1_df, magnet2_df]:
-
         magnet_df.headers['LENGTH'] = sequence.loc[ magnet_df.headers['QUADRUPOLE'], 'L' ]
         magnet_df.headers['POLARITY'] = np.sign(sequence.loc[ magnet_df.headers['QUADRUPOLE'], 'K1L' ])
-        magnet_df.headers['LSTAR'] = np.abs( ip_position - magnet_position_center ) - magnet_df.headers['LENGTH']/2.
-    
 
     magnet1_position_center = sequence.loc[ magnet1_df.headers['QUADRUPOLE'], 'S' ] - magnet1_df.headers['LENGTH']/2.
     magnet2_position_center = sequence.loc[ magnet2_df.headers['QUADRUPOLE'], 'S' ] - magnet2_df.headers['LENGTH']/2.
 
     ip_position = ( magnet1_position_center + magnet2_position_center )/2.
+
+    for magnet_df, magnet_position_center in zip([magnet1_df, magnet2_df],[magnet1_position_center, magnet2_position_center]):
+        magnet_df.headers['LSTAR'] = np.abs( ip_position - magnet_position_center ) - magnet_df.headers['LENGTH']/2.
+    
 
 
     if magnet1_position_center < magnet2_position_center:
