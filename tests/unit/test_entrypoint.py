@@ -1,7 +1,7 @@
 import os
-import sys
-
 import pytest
+import tempfile
+
 from .context import omc3
 from omc3.utils.entrypoint import (EntryPointParameters,
                                    entrypoint, EntryPoint,
@@ -10,6 +10,7 @@ from omc3.utils.entrypoint import (EntryPointParameters,
 from omc3.utils.dict_tools import print_dict_tree
 from omc3.utils import logging_tools
 from omc3.utils.contexts import silence
+
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -136,11 +137,52 @@ def test_strict_fail():
 
 
 def test_as_kwargs():
-    pass
+    opt, unknown = paramtest_function(
+        name="myname",
+        int=3,
+        list=[4, 5, 6],
+        unknown="myfinalargument"
+    )
+    assert(opt.name == "myname")
+    assert(opt.int == 3)
+    assert(len(opt.list) == 3)
+    assert(opt.list[1] == 5)
+    assert(len(unknown) > 0)
 
 
 def test_as_string():
-    pass
+    opt, unknown = paramtest_function(
+        ["--name", "myname",
+         "--int", "3",
+         "--list", "4", "5", "6",
+         "--other"]
+    )
+    assert(opt.name == "myname")
+    assert(opt.int == 3)
+    assert(len(opt.list) == 3)
+    assert(opt.list[1] == 5)
+    assert(len(unknown) > 0)
+
+
+def test_as_config():
+    with tempfile.TemporaryDirectory() as cwd:
+        cfg_file = os.path.join(cwd, "config.ini")
+        with open(cfg_file, "w") as f:
+            f.write("\n".join([
+                "[Section]",
+                "name = 'myname'",
+                "int = 3",
+                "list = 4, 5, 6",
+                "unknown = 'other'",
+            ]))
+        opt, unknown = paramtest_function(
+            entry_cfg=cfg_file, section="Section"
+        )
+    assert(opt.name == "myname")
+    assert(opt.int == 3)
+    assert(len(opt.list) == 3)
+    assert(opt.list[1] == 5)
+    assert(len(unknown) > 0)
 
 
 def test_all_missing():
@@ -179,14 +221,17 @@ def test_not_enough_length():
 
 def get_simple_params():
     """ Parameters as a list of dicts, to test this behaviour as well."""
-    return [
-        {"name": "arg1",
-         "flags": "--a1",
-         },
-        {"name": "arg2",
-         "flags": "--a2",
-         }
-    ]
+    return [{"name": "arg1", "flags": "--a1", },
+            {"name": "arg2", "flags": "--a2", },]
+
+
+def get_testing_params():
+    """ Parameters as a dict of dicts, to test this behaviour as well."""
+    return {
+        "name": dict(flags="--name", type=str),
+        "int": dict(flags="--int", type=int),
+        "list": dict(flags="--list", type=int, nargs="+")
+    }
 
 
 def get_params():
@@ -238,3 +283,7 @@ def strict_function(options):
     print_dict_tree(options, print_fun=LOG.debug)
     LOG.debug("\n")
 
+
+@entrypoint(get_testing_params())
+def paramtest_function(opt, unknown):
+    return opt, unknown
