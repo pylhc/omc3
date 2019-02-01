@@ -20,18 +20,22 @@ Usage:
 ++++++++++++++++++++++++
 
 To be used as a decorator::
+
     @entrypoint(parameters)
     def some_function(options, unknown_options)
 
 Using **strict** mode (see below)::
+
     @entrypoint(parameters, strict=True)
     def some_function(options)
 
 It is also possible to use the EntryPoint Class similar to a normal parser::
+
     ep_parser = EntryPoint(parameters)
     options, unknown_options = ep_parser.parse(arguments)
 
 Using **strict** mode (see below)::
+
     ep_parser = EntryPoint(parameters, strict=True)
     options = ep_parser.parse(arguments)
 
@@ -586,22 +590,17 @@ def param_names(params):
     return names
 
 
-class CreateParamHelp(object):
+def create_parameter_help(module, param_fun=None):
     """ Print params help quickly but changing the logging format first.
 
     Usage Example::
 
         import amplitude_detuning_analysis
-        help = CreateParamHelp()
-        help(amplitude_detuning_analysis)
-        help(amplitude_detuning_analysis, "_get_plot_params")
+        create_parameter_help(amplitude_detuning_analysis)
+        create_parameter_help(amplitude_detuning_analysis, "_get_plot_params")
 
     """
-    def __init__(self):
-        logging_tools.getLogger("").handlers = []  # remove all handlers from root-logger
-        logging_tools.get_logger("__main__", fmt="%(message)s")  # set up new
-
-    def __call__(self, module, param_fun=None):
+    with logging_tools.unformatted_console_logging():
         if param_fun is None:
             try:
                 module.get_params().help()
