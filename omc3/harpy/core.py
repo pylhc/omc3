@@ -36,7 +36,8 @@ def harpy(harpy_input, bpm_matrix_x, usv_x, bpm_matrix_y, usv_y):
     if usv_x is not None and usv_y is not None:
         tunes = get_tune_estimates(harpy_input, usv_x, usv_y)
     else:
-        tunes = get_tune_estimates(harpy_input, svd_decomposition(harpy_input, bpm_matrix_x), svd_decomposition(harpy_input,bpm_matrix_y))
+        tunes = get_tune_estimates(harpy_input, svd_decomposition(bpm_matrix_x, harpy_input.sing_val),
+                                   svd_decomposition(bpm_matrix_y, harpy_input.sing_val))
     cases = (("X", bpm_matrix_x, usv_x),
              ("Y", bpm_matrix_y, usv_y))
 

@@ -1,7 +1,7 @@
 """
 .. module: hole_in_one
 
-Created on 24/01/19
+Created on 27/01/19
 
 :author: Lukas Malina
 
@@ -19,13 +19,13 @@ Stages represented by different files:
 To run either of the two or both steps, use options:
                           --harpy                     --optics
 """
-import os
+from os.path import join, dirname, basename, abspath
+import tbt
 from utils import logging_tools, iotools
 from utils.entrypoint import entrypoint, EntryPoint, EntryPointParameters
 from utils.contexts import timeit
 
-LOGGER = logging_tools.get_logger(__name__)  # , level_console=logging_tools.DEBUG)
-LOG_SUFFIX = ".log"
+LOGGER = logging_tools.get_logger(__name__)
 
 
 def hole_in_one_entrypoint():
@@ -56,8 +56,8 @@ def _get_options(opt, rest):
         harpy_opt, rest = _harpy_entrypoint(rest)
         if opt.optics:
             rest.extend(['--files'] + harpy_opt.file)
-            rest.extend(['--outputdir'] + [os.path.join(harpy_opt.outputdir, 'optics')])
-            rest.extend(['--model_dir'] + [os.path.dirname(os.path.abspath(harpy_opt.model))])
+            rest.extend(['--outputdir'] + [join(harpy_opt.outputdir, 'optics')])
+            rest.extend(['--model_dir'] + [dirname(abspath(harpy_opt.model))])
     else:
         harpy_opt = None
     if opt.optics:
@@ -69,20 +69,21 @@ def _get_options(opt, rest):
     return harpy_opt, optics_opt
 
 
-def _run_harpy(harpy_opt):
+def _run_harpy(harpy_options):
     from harpy import handler
     import tbt
+    iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
-        all_options = replicate_harpy_options_per_file(harpy_opt)
-        tbt_files = [(tbt.read(option.file), option) for option in all_options]
-        for tbt_file, option in tbt_files:
-            lins.extend([handler.run_all_for_file(bunchfile, this_main_input)
-                         for this_main_input, bunchfile in handler._multibunch(option, tbt_file)])
+        all_options = _replicate_harpy_options_per_file(harpy_options)
+        tbt_datas = [(tbt.read(option.file), option) for option in all_options]
+        for tbt_data, option in tbt_datas:
+            lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
+                         for bunch_options, bunch_data in _multibunch(option, tbt_data)])
     return lins
 
 
-def replicate_harpy_options_per_file(options):
+def _replicate_harpy_options_per_file(options):
     list_of_options = []
     from copy import copy
     for input_file in options.file:
@@ -90,6 +91,19 @@ def replicate_harpy_options_per_file(options):
         new_options.file = input_file
         list_of_options.append(new_options)
     return list_of_options
+
+
+def _multibunch(options, tbt_datas):
+    if tbt_datas.nbunches == 1:
+        yield options, tbt_datas
+        return
+    from copy import copy
+    for index in range(tbt_datas.nbunches):
+        new_options = copy(options)
+        new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.file)}"
+        new_options.file = join(dirname(options.file), new_file_name)
+        yield new_options, tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
+                                       [tbt_datas.bunch_ids[index]], tbt_datas.nturns)
 
 
 def _measure_optics(lins, optics_opt):
@@ -122,8 +136,6 @@ def _harpy_entrypoint(unknown_params):
         options.nattunes = tuple(options.nattunes)
     if options.natdeltas is not None:
         options.natdeltas = tuple(options.natdeltas)
-    if options.outputdir is None:
-        options.outputdir = os.path.dirname(options.file)
     if options.bad_bpms is None:
         options.bad_bpms = []
     if options.wrong_polarity_bpms is None:
@@ -137,7 +149,7 @@ def harpy_params():
     params = EntryPointParameters()
     params.add_parameter(flags="--file", name="file", required=True, nargs='+',
                          help="TbT files to analyse")
-    params.add_parameter(flags="--outputdir", name="outputdir",
+    params.add_parameter(flags="--outputdir", name="outputdir", required=True,
                          help="Output directory. Default: the input file directory.")
     params.add_parameter(flags="--model", name="model", help="Model for BPM locations")
     params.add_parameter(flags="--unit", name="unit", type=str, choices=("m", "cm", "mm", "um"),
@@ -229,34 +241,29 @@ def optics_params():
                          help="Files for analysis")
     params.add_parameter(flags="--outputdir", name="outputdir", required=True,
                          help="Output directory")
-    params.add_parameter(flags="--max_closed_orbit", name="max_closed_orbit", type=float,
-                         default=OPTICS_DEFAULTS["max_closed_orbit"],
-                         help="Maximal closed orbit for dispersion measurement in 'orbit_unit'")
     params.add_parameter(flags="--calibrationdir", name="calibrationdir", type=str,
                          default=OPTICS_DEFAULTS["calibrationdir"],
                          help="Directory where the calibration files are stored")
     params.add_parameter(flags="--coupling_method", name="coupling_method", type=int,
                          choices=(0, 1, 2), default=OPTICS_DEFAULTS["coupling_method"],
                          help="Analysis option for coupling: disabled, 1 BPM or 2 BPMs")
-
     params.add_parameter(flags="--range_of_bpms", name="range_of_bpms", type=int,
                          choices=(5, 7, 9, 11, 13, 15),  default=OPTICS_DEFAULTS["range_of_bpms"],
                          help="Range of BPMs for beta from phase calculation")
     params.add_parameter(flags="--beta_model_cut", name="beta_model_cut", type=float,
                          default=OPTICS_DEFAULTS["beta_model_cut"],
                          help="Set beta-beating threshold for action calculations")
+    params.add_parameter(flags="--max_closed_orbit", name="max_closed_orbit", type=float,
+                         default=OPTICS_DEFAULTS["max_closed_orbit"],
+                         help="Maximal closed orbit for dispersion measurement in 'orbit_unit'")
     params.add_parameter(flags="--union", name="union", action="store_true",
                          help="The phase per BPM is calculated from at least 3 valid measurements.")
     params.add_parameter(flags="--nonlinear", name="nonlinear", action="store_true",
                          help="Run the RDT analysis")
     params.add_parameter(flags="--three_bpm_method", name="three_bpm_method", action="store_true",
-                         help="Use 3 BPM method only")  # TODO --no_systematic_errors instead?
+                         help="Use 3 BPM method only")
     params.add_parameter(flags="--only_coupling", name="only_coupling", action="store_true",
                          help="Only coupling is calculated. ")
-    # TODO remove
-    params.add_parameter(flags="--orbit_unit", name="orbit_unit", type=str,
-                         choices=("um", "mm", "cm", "m"), default=OPTICS_DEFAULTS["orbit_unit"],
-                         help="Unit of orbit position.")
     return params
 
 

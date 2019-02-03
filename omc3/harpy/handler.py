@@ -1,67 +1,58 @@
-import os
+from os.path import join, basename
 from collections import OrderedDict
-from copy import copy
 
 import numpy as np
 import pandas as pd
 
 import tfs
-import tbt
 from utils.contexts import timeit
 from utils import logging_tools
 from harpy import core, clean, kicker
 
-LOGGER = logging_tools.get_logger(__name__)  # , level_console=logging_tools.DEBUG)
-LOG_SUFFIX = ".log"
+LOGGER = logging_tools.get_logger(__name__)
 PLANES = ("X", "Y")
 
 
-def run_all_for_file(tbt_file, main_input):
-    bpm_datas = _get_cut_tbt_matrices(tbt_file, main_input.turns)
-    if main_input.unit != 'mm':
-        bpm_datas = _scale_to_mm(bpm_datas, main_input.unit)
-    model = tfs.read(main_input.model, index="NAME").loc[:, 'S']
-    bpm_datas, usvs, all_bad_bpms, bpm_ress = clean.clean(main_input, bpm_datas, model)
-    lins, bpm_datas = _closed_orbit_analysis(bpm_datas, model, bpm_ress)
-    # up to here it can be per plane
-    all_bad_bpms, lins = _do_harpy(main_input, bpm_datas, usvs, lins, all_bad_bpms)
+def run_per_bunch(tbt_data, harpy_input):
+    model = tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
+    bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
     for plane in PLANES:
-        write_bad_bpms(main_input.file, all_bad_bpms[plane], main_input.outputdir, plane)
+        bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
+        bpm_data = _scale_to_mm(bpm_data, harpy_input.unit)
+        bpm_data, usvs[plane], bad_bpms[plane], bpm_res = clean.clean(harpy_input, bpm_data, model)
+        lins[plane], bpm_datas[plane] = _closed_orbit_analysis(bpm_data, model, bpm_res)
+
+    all_bad_bpms, lins = _do_harpy(harpy_input, bpm_datas, usvs, lins, bad_bpms)
+    for plane in PLANES:
+        write_bad_bpms(harpy_input.file, all_bad_bpms[plane], harpy_input.outputdir, plane)
     return lins
 
 
-def _get_cut_tbt_matrices(tbt_file, turn_indices):
+def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
     start = max(0, min(turn_indices))
-    end = min(max(turn_indices), tbt_file.matrices[0]['X'].shape[1])
-    return {"X": tbt_file.matrices[0]['X'].iloc[:, start:end],
-            "Y": tbt_file.matrices[0]['Y'].iloc[:, start:end]}
+    end = min(max(turn_indices), tbt_data.matrices[0][plane].shape[1])
+    return tbt_data.matrices[0][plane].iloc[:, start:end]
 
 
-def _scale_to_mm(bpm_datas, unit):
+def _scale_to_mm(bpm_data, unit):
     scales_to_mm = {'um': 1000, 'mm': 1, 'cm': 0.1, 'm': 0.001}
-    for plane in PLANES:
-        bpm_datas[plane] = bpm_datas[plane] * scales_to_mm[unit]
-    return bpm_datas
+    return bpm_data * scales_to_mm[unit]
 
 
-def _closed_orbit_analysis(bpm_datas, model_tfs, bpm_ress):
-    lin_frames = {}
-    for plane in PLANES:
-        lin_frames[plane] = pd.DataFrame(
-                index=bpm_datas[plane].index,
-                data=OrderedDict([("NAME", bpm_datas[plane].index), ("S", model_tfs.loc[bpm_datas[plane].index])])
-            )
-        with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
-            lin_frames[plane] = _get_orbit_data(lin_frames[plane], bpm_datas[plane], bpm_ress[plane])
-        bpm_datas[plane] = bpm_datas[plane].subtract(bpm_datas[plane].mean(axis=1), axis=0)
-    return lin_frames, bpm_datas
+def _closed_orbit_analysis(bpm_data, model, bpm_res):
+    lin_frame = pd.DataFrame(index=bpm_data.index,
+                             data=OrderedDict([("NAME", bpm_data.index),
+                                               ("S", model.loc[bpm_data.index])]))
+    lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
+    with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
+        lin_frame = _get_orbit_data(lin_frame, bpm_data)
+    return lin_frame, bpm_data.subtract(bpm_data.mean(axis=1), axis=0)
 
 
-def _get_orbit_data(lin_frame, bpm_data, bpm_res):
+def _get_orbit_data(lin_frame, bpm_data):
     lin_frame['PK2PK'] = np.max(bpm_data, axis=1) - np.min(bpm_data, axis=1)
     lin_frame['CO'] = np.mean(bpm_data, axis=1)
     lin_frame['CORMS'] = np.std(bpm_data, axis=1) / np.sqrt(bpm_data.shape[1])
-    lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
     # TODO: Magic number 10?: Maybe accelerator dependent ... LHC 6-7?
     lin_frame['NOISE'] = lin_frame.loc[:, 'BPM_RES'] / np.sqrt(bpm_data.shape[1]) / 10.0
     return lin_frame
@@ -176,44 +167,30 @@ def _compute_headers(panda, plane):
 
 
 def write_bad_bpms(bin_path, bad_bpms_with_reasons, output_dir, plane):
-    bad_bpms_file = get_outpath_with_suffix(bin_path, output_dir, ".bad_bpms_" + plane.lower())
+    bad_bpms_file = get_output_path(output_dir, bin_path, ".bad_bpms_" + plane.lower())
     with open(bad_bpms_file, 'w') as bad_bpms_writer:
         for line in bad_bpms_with_reasons:
             bad_bpms_writer.write(line + '\n')
 
 
 def write_harpy_output(main_input, harpy_data_frame, headers, spectrum, plane):
-    output_file = get_outpath_with_suffix(
-        main_input.file, main_input.outputdir, ".lin" + plane.lower()
-    )
+    output_file = get_output_path(main_input.outputdir, main_input.file,
+                                          ".lin" + plane.lower())
     tfs.write(output_file, harpy_data_frame, headers)
     if "spectra" in main_input.to_write or "full_spectra" in main_input.to_write:
         _write_full_spectrum(main_input, spectrum, plane)
 
 
 def _write_full_spectrum(main_input, spectrum, plane):
-    spectr_amps_files = get_outpath_with_suffix(
-        main_input.file, main_input.outputdir, ".amps" + plane.lower()
-    )
+    spectr_amps_files = get_output_path(main_input.outputdir, main_input.file,
+                                                ".amps" + plane.lower())
     amps_df = spectrum["COEFS"].abs().T
     tfs.write(spectr_amps_files, amps_df)
-    spectr_freqs_files = get_outpath_with_suffix(
-        main_input.file, main_input.outputdir, ".freqs" + plane.lower()
-    )
+    spectr_freqs_files = get_output_path(main_input.outputdir, main_input.file,
+                                                 ".freqs" + plane.lower())
     freqs_df = spectrum["FREQS"].T
     tfs.write(spectr_freqs_files, freqs_df)
 
 
-def get_outpath_with_suffix(path, output_dir, suffix):
-    return os.path.join(output_dir, os.path.basename(path) + suffix)
-
-
-def _multibunch(main_input, tbt_files):
-    if tbt_files.nbunches == 1:
-        yield main_input, tbt_files
-        return
-    for index in range(tbt_files.nbunches):
-        new_input = copy(main_input)
-        outdirname = f"bunchid{tbt_files.bunch_ids[index]}_{os.path.basename(new_input.file)}"
-        new_input.file = os.path.join(os.path.dirname(main_input.file), outdirname)
-        yield new_input, tbt.TbtData([tbt_files.matrices[index]], tbt_files.date, [tbt_files.bunch_ids[index]], tbt_files.nturns)
+def get_output_path(output_dir, path, suffix):
+    return join(output_dir, basename(path) + suffix)

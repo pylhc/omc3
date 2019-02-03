@@ -6,58 +6,68 @@ from utils.contexts import timeit
 
 LOGGER = logging_tools.getLogger(__name__)
 NTS_LIMIT = 8.  # Noise to signal limit
-PLANES = ("X", "Y")
 
 
-def cut_clean(clean_input, bpm_data, model):
-    LOGGER.debug(f"clean: number of BPMs in the input {bpm_data.index.size}")
-    known_bad_bpms = detect_known_bad_bpms(bpm_data, clean_input.bad_bpms)
-    bpm_flatness = detect_flat_bpms(bpm_data, clean_input.peak_to_peak)
-    bpm_spikes = detect_bpms_with_spikes(bpm_data, clean_input.max_peak)
-    if not clean_input.no_exact_zeros:
-        exact_zeros = detect_bpms_with_exact_zeros(bpm_data)
-    else:
-        exact_zeros = pd.DataFrame()
-        LOGGER.debug(f"clean: Skipped exact zero check {exact_zeros.size}")
+def clean(harpy_input, bpm_data, model):
+    if not harpy_input.clean:
+        return bpm_data, None, [], None
+    bpm_data, bpms_not_in_model = _get_only_model_bpms(bpm_data, model)
+    if bpm_data.empty:
+        raise AssertionError("Check BPMs names! None of the BPMs was found in the model!")
+    with timeit(lambda spanned: LOGGER.debug(f"Time for filtering: {spanned}")):
+        bpm_data, bad_bpms_clean = _cut_cleaning(harpy_input, bpm_data, model)
+    with timeit(lambda spanned: LOGGER.debug(f"Time for SVD clean: {spanned}")):
+        bpm_data, bpm_res, bad_bpms_svd, usv = _svd_clean(bpm_data, harpy_input)
+        all_bad_bpms = bpms_not_in_model + bad_bpms_clean + bad_bpms_svd
+    return bpm_data, usv, all_bad_bpms, bpm_res
 
-    original_bpms = bpm_data.index
+
+def _get_only_model_bpms(bpm_data, model):
+    bpm_data_in_model = bpm_data.loc[model.index.intersection(bpm_data.index)]
+    not_in_model = bpm_data.index.difference(model.index)
+    return bpm_data_in_model, [f"{bpm} not found in model" for bpm in not_in_model]
+
+
+def _cut_cleaning(harpy_input, bpm_data, model):
+    LOGGER.debug(f"Number of BPMs in the input {bpm_data.index.size}")
+    known_bad_bpms = _detect_known_bad_bpms(bpm_data, harpy_input.bad_bpms)
+    bpm_flatness = _detect_flat_bpms(bpm_data, harpy_input.peak_to_peak)
+    bpm_spikes = _detect_bpms_with_spikes(bpm_data, harpy_input.max_peak)
+    exact_zeros = _detect_bpms_with_exact_zeros(bpm_data, harpy_input.no_exact_zeros)
     all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros)
-    bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms)]
+    original_bpms = bpm_data.index
 
+    bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms)]
     bad_bpms_with_reasons = _get_bad_bpms_summary(
-        clean_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros
+        harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros
     )
     _report_clean_stats(original_bpms.size, bpm_data.index.size)
-    bpm_data = fix_polarity(clean_input.wrong_polarity_bpms, bpm_data)
-    if clean_input.first_bpm is not None:
-        bpm_data = resync_bpms(clean_input, bpm_data, model)
+    bpm_data = _fix_polarity(harpy_input.wrong_polarity_bpms, bpm_data)
+    if harpy_input.first_bpm is not None:
+        bpm_data = _resync_bpms(harpy_input, bpm_data, model)
     return bpm_data, bad_bpms_with_reasons
 
 
-def fix_polarity(wrong_polarity_names, bpm_data):
-    """  Fixes wrong polarity  """
-    bpm_data.loc[wrong_polarity_names] *= -1
-    return bpm_data
+def _svd_clean(bpm_data, harpy_input):
+    u_mat, sv_mat, bpm_data_mean = svd_decomposition(bpm_data, harpy_input.sing_val)
+    clean_u, dominant_bpms = _clean_dominant_bpms(u_mat, harpy_input.svd_dominance_limit)
+    clean_data = clean_u.dot(sv_mat) + bpm_data_mean
+    bpm_res = (clean_data - bpm_data.loc[clean_u.index]).std(axis=1)
+    LOGGER.debug(f"Average BPM resolution: {np.mean(bpm_res)}")
+    average_signal = np.mean(np.std(clean_data, axis=1))
+    LOGGER.debug(f"np.mean(np.std(A, axis=1): {average_signal}")
+    if np.mean(bpm_res) > NTS_LIMIT * average_signal:
+        raise ValueError("The data is too noisy. The most probable explanation "
+                         "is that there was no excitation or it was very low.")
+    return clean_data, bpm_res, dominant_bpms, (clean_u, sv_mat - np.mean(sv_mat, axis=1)[:, None])
 
 
-def resync_bpms(clean_input, bpm_data, model):
-    """  Resynchronizes BPMs between the injection point and start of the lattice.  """
-    LOGGER.debug("Will resynchronize BPMs")
-    bpm_pos = model.index.get_loc(clean_input.first_bpm)
-    if clean_input.opposite_direction:
-        mask = np.array([x in model.index[bpm_pos::-1] for x in bpm_data.index])
-    else:
-        mask = np.array([x in model.index[bpm_pos:] for x in bpm_data.index])
-    bpm_data.loc[mask] = np.roll(bpm_data.loc[mask], -1, axis=1)
-    return bpm_data.iloc[:, :-1]
-
-
-def detect_known_bad_bpms(bpm_data, list_of_bad_bpms):
+def _detect_known_bad_bpms(bpm_data, list_of_bad_bpms):
     """  Searches for known bad BPMs  """
     return bpm_data.index.intersection(list_of_bad_bpms)
 
 
-def detect_flat_bpms(bpm_data, min_peak_to_peak):
+def _detect_flat_bpms(bpm_data, min_peak_to_peak):
     """  Detects BPMs with the same values for all turns  """
     cond = ((bpm_data.max(axis=1) - bpm_data.min(axis=1)).abs() < min_peak_to_peak)
     bpm_flatness = bpm_data[cond].index
@@ -67,7 +77,7 @@ def detect_flat_bpms(bpm_data, min_peak_to_peak):
     return bpm_flatness
 
 
-def detect_bpms_with_spikes(bpm_data, max_peak_cut):
+def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
     """  Detects BPMs with spikes > max_peak_cut  """
     too_high = bpm_data[bpm_data.max(axis=1) > max_peak_cut].index
     too_low = bpm_data[bpm_data.min(axis=1) < -max_peak_cut].index
@@ -77,41 +87,23 @@ def detect_bpms_with_spikes(bpm_data, max_peak_cut):
     return bpm_spikes
 
 
-def detect_bpms_with_exact_zeros(bpm_data):
+def _detect_bpms_with_exact_zeros(bpm_data, no_exact_zeros):
     """  Detects BPMs with exact zeros due to OP workaround  """
+    if no_exact_zeros:
+        LOGGER.debug("Skipped exact zero check")
+        return pd.DataFrame()
     exact_zeros = bpm_data[~np.all(bpm_data, axis=1)].index
     if exact_zeros.size:
         LOGGER.debug(f"Exact zeros detected. BPMs removed: {exact_zeros.size}")
     return exact_zeros
 
 
-def svd_decomposition(clean_input, bpm_data):
-    bpm_data_mean = bpm_data.values.mean()
-    normalized_data = bpm_data - bpm_data_mean
-    u_mat, svt_mat = _get_decomposition(normalized_data, clean_input.sing_val)
-    return pd.DataFrame(index=bpm_data.index, data=u_mat), svt_mat, bpm_data_mean
-
-
-def svd_clean(bpm_data, clean_input):
-    u_mat, sv_mat, bpm_data_mean = svd_decomposition(clean_input, bpm_data)
-    clean_u, dominance_summary = _clean_dominant_bpms(u_mat, clean_input.svd_dominance_limit)
-    good_bpm_data = clean_u.dot(sv_mat) + bpm_data_mean
-    bpm_res = (good_bpm_data - bpm_data.loc[clean_u.index]).std(axis=1)
-    LOGGER.debug(f"Average BPM resolution: {np.mean(bpm_res)}")
-    average_signal = np.mean(np.std(good_bpm_data, axis=1))
-    LOGGER.debug(f"np.mean(np.std(A, axis=1): {average_signal}")
-    if np.mean(bpm_res) > NTS_LIMIT * average_signal:
-        raise ValueError("The data is too noisy. The most probable explanation "
-                         "is that there was no excitation or it was very low.")
-    return good_bpm_data, bpm_res, dominance_summary, (clean_u, sv_mat - np.mean(sv_mat, axis=1)[:, None])
-
-
-def _get_bad_bpms_summary(clean_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros):
+def _get_bad_bpms_summary(harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros):
     return ([f"{bpm_name} Known bad BPM" for bpm_name in known_bad_bpms] +
             [f"{bpm_name} Flat BPM, the difference between min/max is smaller than "
-            f"{clean_input.peak_to_peak}" for bpm_name in bpm_flatness] +
+            f"{harpy_input.peak_to_peak}" for bpm_name in bpm_flatness] +
             [f"{bpm_name} Spiky BPM, found spike higher than "
-            f"{clean_input.max_peak}" for bpm_name in bpm_spikes] +
+            f"{harpy_input.max_peak}" for bpm_name in bpm_spikes] +
             [f"{bpm_name} Found an exact zero" for bpm_name in exact_zeros])
 
 
@@ -134,6 +126,38 @@ def _index_union(*indices):
     for index in indices:
         new_index = new_index.union(index)
     return new_index
+
+
+def _fix_polarity(wrong_polarity_names, bpm_data):
+    """  Fixes wrong polarity  """
+    bpm_data.loc[wrong_polarity_names] *= -1
+    return bpm_data
+
+
+def _resync_bpms(harpy_input, bpm_data, model):
+    """  Resynchronizes BPMs between the injection point and start of the lattice.  """
+    LOGGER.debug("Will resynchronize BPMs")
+    bpm_pos = model.index.get_loc(harpy_input.first_bpm)
+    if harpy_input.opposite_direction:
+        mask = np.array([x in model.index[bpm_pos::-1] for x in bpm_data.index])
+    else:
+        mask = np.array([x in model.index[bpm_pos:] for x in bpm_data.index])
+    bpm_data.loc[mask] = np.roll(bpm_data.loc[mask], -1, axis=1)
+    return bpm_data.iloc[:, :-1]
+
+
+def svd_decomposition(bpm_data, num_singular_values):
+    """
+    Computes reduced (n largest values) singular value docomposition of a matrix (bpm_data) 
+    Args:
+        bpm_data: matrix to be decomposed
+        num_singular_values: input options object that contains
+    Returns:
+        An indexed DataFrame of U matrix, product of S and V^T martices, and mean of original matrix
+    """
+    bpm_data_mean = bpm_data.values.mean()
+    u_mat, svt_mat = _get_decomposition(bpm_data - bpm_data_mean, num_singular_values)
+    return pd.DataFrame(index=bpm_data.index, data=u_mat), svt_mat, bpm_data_mean
 
 
 def _get_decomposition(matrix, num):
@@ -160,32 +184,3 @@ def _clean_dominant_bpms(u_mat, svd_dominance_limit):
     clean_u = u_mat.loc[u_mat.index.difference(dominant_bpms)]
     return clean_u, [f"{bpm_name} Dominant BPM in SVD, peak value > {svd_dominance_limit}"
                      for bpm_name in dominant_bpms]
-
-
-def get_only_model_bpms(bpm_data, model):
-    bpm_data_in_model = bpm_data.loc[model.index.intersection(bpm_data.index)]
-    not_in_model = bpm_data.index.difference(model.index)
-    return bpm_data_in_model, [f"{bpm} not found in model" for bpm in not_in_model]
-
-
-def clean(clean_input, bpm_datas, model_tfs):
-    usvs = {"X": None, "Y": None}
-    all_bad_bpms = {"X": [], "Y": []}
-    bpm_ress = {"X": None, "Y": None}
-    if not clean_input.clean:
-        return bpm_datas, usvs, all_bad_bpms, bpm_ress
-    new_bpm_datas = bpm_datas
-    for plane in PLANES:
-        bpm_data, bpms_not_in_model = get_only_model_bpms(bpm_datas[plane], model_tfs)
-        if bpm_data.empty:
-            raise AssertionError("Check BPMs names! None of the BPMs was found in the model!")
-        with timeit(lambda spanned: LOGGER.debug(f"Time for filtering: {spanned}")):
-            bpm_data, bad_bpms_clean = cut_clean(clean_input, bpm_data, model_tfs)
-        with timeit(lambda spanned: LOGGER.debug(f"Time for SVD clean: {spanned}")):
-            bpm_data, bpm_res, bad_bpms_svd, usv = svd_clean(bpm_data, clean_input,)
-        bpm_ress[plane] = bpm_res
-        all_bad_bpms[plane] = bpms_not_in_model + bad_bpms_clean + bad_bpms_svd
-        new_bpm_datas[plane] = bpm_data
-        usvs[plane] = usv
-
-    return new_bpm_datas, usvs, all_bad_bpms, bpm_ress
