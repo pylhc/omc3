@@ -65,7 +65,7 @@ def zeros():
 
 @pytest.fixture
 def a_nan():
-    a_nan = zeros()
+    a_nan = np.zeros(10)
     a_nan[3] = np.nan
     return a_nan
 
