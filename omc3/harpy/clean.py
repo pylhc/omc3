@@ -9,6 +9,16 @@ NTS_LIMIT = 8.  # Noise to signal limit
 
 
 def clean(harpy_input, bpm_data, model):
+    """
+    Cleans BPM TbT matrix: removes BPMs not present in the model and based on specified cuts.
+    Also cleans the noise using singular value decomposition.
+    Args:
+        harpy_input: The input object containing the analysis settings
+        bpm_data: DataFrame of BPM TbT matrix indexed by BPM names
+        model: model containing BPMs longitudinal locations indexed by BPM names
+    Returns:
+        Clean BPM matrix, its decomposition, bad BPMs summary and estimated BPM resolutions
+    """
     if not harpy_input.clean:
         return bpm_data, None, [], None
     bpm_data, bpms_not_in_model = _get_only_model_bpms(bpm_data, model)
@@ -172,7 +182,8 @@ def _get_decomposition(matrix, num):
         LOGGER.warning(f"Requested more singular values than available(={available})")
     keep = min(num, available)
     LOGGER.debug(f"Number of singular values to keep: {keep}")
-    return u_mat[:, :keep], np.dot(np.sqrt(matrix.shape[1]) * np.diag(s_mat[:keep]), vt_mat[:keep, :])
+    return (u_mat[:, :keep],
+            np.dot(np.sqrt(matrix.shape[1]) * np.diag(s_mat[:keep]), vt_mat[:keep, :]))
 
 
 def _clean_dominant_bpms(u_mat, svd_dominance_limit):
