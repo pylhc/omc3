@@ -11,7 +11,7 @@ from harpy.clean import svd_decomposition
 LOGGER = logging_tools.getLogger(__name__)
 PI2I = 2 * np.pi * complex(0, 1)
 
-RESONANCE_LISTS = {
+RESONANCES = {
     "X": ((0, 1, 0), (-2, 0, 0), (0, 2, 0), (-3, 0, 0), (-1, -1, 0),
           (2, -2, 0), (0, -2, 0), (1, -2, 0), (-1, 3, 0), (1, 2, 0),
           (-2, 1, 0), (1, 1, 0), (2, 0, 0), (-1, -2, 0), (3, 0, 0)),
@@ -177,7 +177,7 @@ def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
 
 def _amp_and_mu_from_avg(bpm_matrix, plane, panda):
     avg_coefs = _compute_coefs_for_freqs(bpm_matrix, np.mean(panda.loc[:, 'TUNE' + plane]))
-    #return panda  # TODO should there be the window? probably yes
+    #  return panda  #  TODO should there be the window? probably yes
     panda['AMP'+plane] = np.abs(avg_coefs)
     panda['MU'+plane] = np.angle(avg_coefs) / (2 * np.pi)
     return panda
@@ -186,7 +186,7 @@ def _amp_and_mu_from_avg(bpm_matrix, plane, panda):
 def _calculate_natural_tunes(frequencies, coefficients, nattunes, tolerance, plane, panda):
     if nattunes is None:
         return panda
-    x,y,z = nattunes
+    x, y, z = nattunes
     freq = x % 1 if plane == "X" else y % 1
     max_coefs, max_freqs = _search_highest_coefs(freq, tolerance, frequencies, coefficients)
     panda[f"NATTUNE{plane}"] = max_freqs
@@ -220,12 +220,12 @@ def _compute_resonances_with_freqs(plane, tunes):
     constant RESONANCE_LISTS, together with the natural tunes
     frequencies if given.
     """
-    freqs = [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in RESONANCE_LISTS[plane]]
-    return dict(zip(RESONANCE_LISTS[plane], freqs))
+    freqs = [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in RESONANCES[plane]]
+    return dict(zip(RESONANCES[plane], freqs))
 
 
 def _compute_resonance_freqs(plane, tunes):
-    return [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in RESONANCE_LISTS[plane]]
+    return [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in RESONANCES[plane]]
 
 
 def _get_resonance_tolerance(resonance, n_turns):
@@ -338,5 +338,5 @@ def _get_partial_freq_mask(start_mask, frequencies, tolerance, bins, sub_bins):
             continue
         mask[int(np.floor(max(0, freq - tolerance) * 2 * bins) * sub_bins):
              int(np.ceil(min(0.5, freq + tolerance) * 2 * bins) * sub_bins)] = True
-    mask[-1] = False # 2^n + 1 is undesired
+    mask[-1] = False  # 2^n + 1 is undesired
     return mask

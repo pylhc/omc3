@@ -39,6 +39,10 @@ def hole_in_one_entrypoint():
 
 @entrypoint(hole_in_one_entrypoint(), strict=False)
 def hole_in_one(opt, rest):
+    if not opt.harpy and not opt.optics:
+        raise SystemError("No module has been chosen.")
+    if not rest:
+        raise SystemError("No input has been set.")
     harpy_opt, optics_opt = _get_options(opt, rest)
     lins = []
     if harpy_opt is not None:
@@ -48,10 +52,6 @@ def hole_in_one(opt, rest):
 
 
 def _get_options(opt, rest):
-    if not opt.harpy and not opt.optics:
-        raise SystemError("No module has been chosen.")
-    if not rest:
-        raise SystemError("No input has been set.")
     if opt.harpy:
         harpy_opt, rest = _harpy_entrypoint(rest)
         if opt.optics:
@@ -119,23 +119,15 @@ def _measure_optics(lins, optics_opt):
 
 
 def _harpy_entrypoint(unknown_params):
-    parser = EntryPoint(harpy_params(), strict=False)
-    options, rest = parser.parse(unknown_params)
+    options, rest = EntryPoint(harpy_params(), strict=False).parse(unknown_params)
     if options.natdeltas is not None and options.nattunes is not None:
         raise AttributeError("Colliding options found: --nattunes and --natdeltas. Choose only one")
     if options.tunes is not None and options.autotunes is not None:
         raise AttributeError("Colliding options found: --tunes and --autotunes. Choose only one")
     if options.tunes is None and options.autotunes is None:
         raise AttributeError("One of the options --tunes and --autotunes has to be used.")
-    to_write_choices = ("lin", "spectra", "full_spectra", "bpm_summary")
-    if [x for x in options.to_write if x not in to_write_choices]:
+    if [x for x in options.to_write if x not in ("lin", "spectra", "full_spectra", "bpm_summary")]:
         raise ValueError(f"Unknown options found in to_write")
-    if options.tunes is not None:
-        options.tunes = tuple(options.tunes)
-    if options.nattunes is not None:
-        options.nattunes = tuple(options.nattunes)
-    if options.natdeltas is not None:
-        options.natdeltas = tuple(options.natdeltas)
     if options.bad_bpms is None:
         options.bad_bpms = []
     if options.wrong_polarity_bpms is None:
@@ -231,8 +223,7 @@ def harpy_params():
 
 
 def _optics_entrypoint(unknown_params):
-    parser = EntryPoint(optics_params(), strict=False)
-    return parser.parse(unknown_params)
+    return EntryPoint(optics_params(), strict=False).parse(unknown_params)
 
 
 def optics_params():
