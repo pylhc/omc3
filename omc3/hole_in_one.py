@@ -14,7 +14,7 @@ Generally, analysis flows as follows:
    Turn-by-Turn BPM data   --->    frequency spectra   --->    various lattice optics parameters
 
 Stages represented by different files:
-    SDDS file:  .sdds      --->   TFS files: .lin[xy]  --->    TFS files: .out
+    Sdds file:  .sdds      --->   Tfs files: .lin[xy]  --->    Tfs files: .out
 
 To run either of the two or both steps, use options:
                           --harpy                     --optics
@@ -164,12 +164,12 @@ def harpy_params():
     params.add_parameter(flags="--sing_val", name="sing_val", type=int,
                          default=HARPY_DEFAULTS["sing_val"],
                          help="Keep this amount of largest singular values. Default: %(default)s")
-    params.add_parameter(flags="--pk-2-pk", name="peak_to_peak", type=float,
+    params.add_parameter(flags="--peak_to_peak", name="peak_to_peak", type=float,
                          default=HARPY_DEFAULTS["peak_to_peak"],
                          help="Peak to peak amplitude cut. This removes BPMs, "
                               "where abs(max(turn values) - min(turn values)) <= threshold. "
                               "Default: %(default)s")
-    params.add_parameter(flags="--max-peak-cut", name="max_peak", type=float,
+    params.add_parameter(flags="--max_peak", name="max_peak", type=float,
                          default=HARPY_DEFAULTS["max_peak"],
                          help="Removes BPMs where the maximum orbit > limit. Default: %(default)s")
     params.add_parameter(flags="--svd_dominance_limit", name="svd_dominance_limit",
