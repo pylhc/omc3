@@ -2,7 +2,7 @@ import os
 import pytest
 import tempfile
 
-from .context import omc3
+from context import omc3
 from omc3.utils.entrypoint import (EntryPointParameters,
                                    entrypoint, EntryPoint,
                                    ArgumentError, ParameterError, OptionsError,
@@ -77,51 +77,11 @@ def test_wrong_param_creation_other():
         EntryPoint([{"name": "test", "flags": "--flag", "other": "unknown"}])
 
 
-def test_default_not_in_choices():
-    with pytest.raises(ParameterError):
-        EntryPoint([{"name": "test", "flags": "--flag", "default": "a", "choices": ["b", "c"]}])
-
-
-def test_default_not_in_choices_list():
-    with pytest.raises(ParameterError):
-        EntryPoint([{"name": "test", "flags": "--flag",
-                     "default": ["a", "b"], "choices": ["b", "c"],
-                     "nargs": "+",
-                     }])
-
-
-def test_default_not_of_type():
-    with pytest.raises(ParameterError):
-        EntryPoint([{"name": "test", "flags": "--flag",
-                     "default": 3, "type": str,
-                     }])
-
-
-def test_default_not_a_list_with_nargs():
-    with pytest.raises(ParameterError):
-        EntryPoint([{"name": "test", "flags": "--flag",
-                     "default": "a", "nargs": "+",
-                     }])
-
-
 def test_choices_not_iterable():
     with pytest.raises((ParameterError, ValueError)):
         # Value error comes from argparse (would be caught in dict_parser as well)
         EntryPoint([{"name": "test", "flags": "--flag",
                      "choices": 3,
-                     }])
-
-
-def test_choices_not_of_type():
-    with pytest.raises(ParameterError):
-        EntryPoint([{"name": "test", "flags": "--flag",
-                     "choices": ["b", 3], "type": str,
-                     }])
-
-
-def test_name_not_string():
-    with pytest.raises(ParameterError):
-        EntryPoint([{"name": 5, "flags": "--flag",
                      }])
 
 

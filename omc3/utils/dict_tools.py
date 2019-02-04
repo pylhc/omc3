@@ -108,13 +108,13 @@ class Parameter(object):
         self.choices = kwargs.pop('choices', None)
 
         if len(kwargs) > 0:
-            ParameterError("'{:s}' are not valid parameters for Argument.".format(kwargs.keys()))
+            ParameterError(f"'{kwargs.keys()}' are not valid parameters for Argument.")
 
         self._validate()
 
     def _validate(self):
         if not isinstance(self.name, str):
-            raise ParameterError(f"Parameter '{str(self.name):s}': " +
+            raise ParameterError(f"Parameter '{self.name}': " +
                                  "Name is not a valid string.")
 
         if self.default and self.type and not isinstance(self.default, self.type):
@@ -178,7 +178,8 @@ class Parameter(object):
 class DictParser(object):
     """ Provides functions to parse a dictionary.
 
-    First build a dictionary structure with Arguments as leafs via add_argument or on init.
+    First build a dictionary structure with Parameters or Parameter-like dicts as
+    leafs via add_parameter or on init.
     A similar structured option dictionary with the values as leafs can then be parsed.
     """
 
@@ -209,20 +210,31 @@ class DictParser(object):
         Args:
             dictionary: Dictionary to validate
         """
+        # Helper ------------------------------------------
+        def _check_key(key, param):
+            """ Checks if key coincides with param.name. """
+            if key != param.name:
+                raise ParameterError(f"'{key:s}': Key and name need to be the same.")
+
+        # Main --------------------------------------------
+        if len(dictionary) == 0:
+            raise ParameterError()
+
         for key in dictionary:
             param = dictionary[key]
             if isinstance(param, dict):
                 try:
                     DictParser._validate_parameters(param)
                 except ParameterError as e:
-                    e.message = f"'{key:s}.{e.message[1:]:s}"
-                    e.args = (e.message,)
-                    raise
+                    # Build error message recursively, to find key in structure
+                    if len(e.args):
+                        e.args = (f"'{key}.{e.args[0][1:]:s}",)
+                        raise
+                    raise ParameterError(f"'{key}' is not a valid entry.")
             elif not isinstance(param, Parameter):
-                raise ParameterError(f"'{key:s}' is not a valid entry.")
+                raise ParameterError(f"'{key}' is not a valid entry.")
             else:
-                if key != param.name:
-                    raise ParameterError(f"'{key:s}': Key and name need to be the same.")
+                _check_key(key, param)
 
     @staticmethod
     def _check_value(key, arg_dict, param_dict):
@@ -283,16 +295,16 @@ class DictParser(object):
                                 f"Help: {param.help:s}")
         return opt
 
-    def _parse_options(self, arg_dict, param_dict):
-        """ Use parse_options()!
+    def _parse_arguments(self, arg_dict, param_dict):
+        """ Use parse_arguments()!
 
-        This is a helper Function for parsing options. It does all the work. Called recursively.
+        This is a helper Function for parsing arguments. It does all the work. Called recursively.
 
         Args:
-            arg_dict: Dictionary with the input parameter
+            arg_dict: Dictionary with the input arguments
             param_dict: Dictionary with the parameters to check the parameter against
         Returns:
-            Dictionary with parsed options
+            Dictionary with parsed arguments, i.e. the options
         """
         checked_dict = DotDict()
         for key in param_dict:
@@ -301,30 +313,27 @@ class DictParser(object):
             elif isinstance(param_dict[key], dict):
                 try:
                     if not arg_dict or not (key in arg_dict):
-                        checked_dict[key] = DictParser._parse_options(None,
-                                                                      param_dict[key])
+                        checked_dict[key] = self._parse_arguments({}, param_dict[key])[0]
                     else:
-                        checked_dict[key] = DictParser._parse_options(arg_dict[key],
-                                                                      param_dict[key])
+                        checked_dict[key] = self._parse_arguments(arg_dict[key], param_dict[key])[0]
                 except ArgumentError as e:
-                    old_msg = e.message[1:]
+                    old_msg = ""
+                    if len(e.args):
+                        old_msg = e.args[0][1:]
                     if old_msg.startswith("'"):
-                        e.message = f"'{key:s}.{e.message[1:]:s}"
+                        e.args = (f"'{key}.{old_msg[1:]:s}",)
                     else:
-                        e.message = f"'{key:s}' has {e.message:s}"
-                    e.args = (e.message,)
+                        e.args = (f"'{key}' has {old_msg:s}",)
                     raise
 
             arg_dict.pop(key, None)  # Default value avoids KeyError
 
         if len(arg_dict) > 0:
-            error_message = f"Unknown Options: '{str(list(arg_dict.keys())):s}'."
+            error_message = f"Unknown Options: '{list(arg_dict.keys())}'."
             if self.strict:
                 raise ArgumentError(error_message)
             LOG.debug(error_message)
 
-        if self.strict:
-            return checked_dict
         return checked_dict, arg_dict
 
     #########################
@@ -332,15 +341,18 @@ class DictParser(object):
     #########################
 
     def parse_arguments(self, arguments):
-        """ Parse a given option dictionary and return parsed options.
+        """ Parse a given argument dictionary and return parsed options.
 
         Args:
             arguments: Arguments to parse
 
         Return:
-            Parsed options
+            Options [, Unknown Options]
         """
-        return self._parse_options(copy.deepcopy(arguments), self.dictionary)
+        checked = self._parse_arguments(copy.deepcopy(arguments), self.dictionary)
+        if self.strict:
+            return checked[0]
+        return checked
 
     def parse_config_items(self, items):
         """ Parse a list of (name, value) items, where the values are all strings.
@@ -352,7 +364,7 @@ class DictParser(object):
             Parsed options
         """
         options = self._convert_config_items(items)
-        return self._parse_options(options, self.dictionary)
+        return self.parse_arguments(options)
 
     def add_parameter(self, param, **kwargs):
         """ Adds an parameter to the parser.
@@ -373,7 +385,7 @@ class DictParser(object):
         self._add_param_to_dict(param, loc)
         return self
 
-    def add_argument_dict(self, dictionary, loc):
+    def add_parameter_dict(self, dictionary, loc):
         """ Appends a complete subdictionary to existing argument structure at node 'loc'.
 
         Args:
@@ -388,7 +400,7 @@ class DictParser(object):
         sub_dict = self._traverse_dict('.'.join(fields[:-1]))
 
         if name in sub_dict:
-            raise ParameterError(f"'{name:s}' already exists in parser!")
+            raise ParameterError(f"'{name}' already exists in parser!")
 
         self._validate_parameters(dictionary)
         sub_dict[name] = dictionary
@@ -414,16 +426,16 @@ class DictParser(object):
                 else:
                     leaf = tree[key]
                     LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
-                             f" Required: {leaf.required:s}")
+                             f" Required: {leaf.required}")
 
                     LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
-                             f" Default: {leaf.default:s}")
+                             f" Default: {leaf.default}")
 
                     LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
-                             f" Type: {leaf.type.__name__ if leaf.type else 'None':s}")
+                             f" Type: {leaf.type.__name__ if leaf.type else 'None'}")
 
                     LOG.info(f"{level_char_pp + _TC['S'] + _TC['-']:s}"
-                             f" Choices: {leaf.choices:s}")
+                             f" Choices: {leaf.choices}")
 
                     LOG.info(f"{level_char_pp + _TC['L'] + _TC['-']:s}"
                              f" Help: {leaf.help:s}")
