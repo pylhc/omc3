@@ -7,6 +7,7 @@ from omc3.utils.entrypoint import (EntryPointParameters,
                                    entrypoint, EntryPoint,
                                    ArgumentError, ParameterError, OptionsError,
                                    )
+from omc3.utils.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
 from omc3.utils.dict_tools import print_dict_tree
 from omc3.utils import logging_tools
 from omc3.utils.contexts import silence
@@ -175,14 +176,29 @@ def test_as_config():
                 "list = 4, 5, 6",
                 "unknown = 'other'",
             ]))
-        opt, unknown = paramtest_function(
+
+
+        # test config as kwarg
+        opt1, unknown1 = paramtest_function(
             entry_cfg=cfg_file, section="Section"
         )
-    assert(opt.name == "myname")
-    assert(opt.int == 3)
-    assert(len(opt.list) == 3)
-    assert(opt.list[1] == 5)
-    assert(len(unknown) > 0)
+
+        # test config as commandline args
+        opt2, unknown2 = paramtest_function(
+            ["--entry_cfg", cfg_file, "--section", "Section"]
+        )
+
+    assert opt1.name == "myname"
+    assert opt1.int == 3
+    assert len(opt1.list) == 3
+    assert opt1.list[1] == 5
+    assert len(unknown1) > 0
+
+    assert opt2.name == "myname"
+    assert opt2.int == 3
+    assert len(opt2.list) == 3
+    assert opt2.list[1] == 5
+    assert len(unknown2) > 0
 
 
 def test_all_missing():
@@ -214,6 +230,121 @@ def test_wrong_type_in_list():
 def test_not_enough_length():
     with pytest.raises(ArgumentError):
         some_function(accel="LHCB1", anint=3, alist=[])
+
+
+# Test Special Datatypes
+
+def test_multiclass():
+    IntOrStr = get_multi_class(int, str)
+
+    @entrypoint([dict(flags="--ios", name="ios", type=IntOrStr)], strict=True)
+    def fun(opt):
+        return opt
+
+    opt = fun(ios=3)
+    assert(opt.ios == 3)
+
+    opt = fun(ios='3')
+    assert(opt.ios == '3')
+
+    opt = fun(["--ios", "3"])
+    assert(opt.ios == 3)
+
+    opt = fun(["--ios", "'3'"])
+    assert(opt.ios == "'3'")
+
+
+def test_dict_as_string():
+    @entrypoint([dict(flags="--dict", name="dict", type=DictAsString)], strict=True)
+    def fun(opt):
+        return opt
+
+    opt = fun(dict={'int': 5, 'str': 'hello'})
+    assert(opt.dict['int'] == 5)
+    assert(opt.dict['str'] == 'hello')
+
+    opt = fun(["--dict", "{'int': 5, 'str': 'hello'}"])
+    assert(opt.dict['int'] == 5)
+    assert(opt.dict['str'] == 'hello')
+
+
+def test_bool_or_str():
+    @entrypoint([dict(flags="--bos", name="bos", type=BoolOrString)], strict=True)
+    def fun(opt):
+        return opt
+
+    opt = fun(bos=True)
+    assert(opt.bos == True)
+
+    opt = fun(bos='myString')
+    assert(opt.bos == 'myString')
+
+    opt = fun(["--bos", "False"])
+    assert(opt.bos == False)
+
+    opt = fun(["--bos", "1"])
+    assert(opt.bos == True)
+
+    opt = fun(["--bos", "myString"])
+    assert(opt.bos == "myString")
+
+    with tempfile.TemporaryDirectory() as cwd:
+        cfg_file = os.path.join(cwd, "bos.ini")
+        with open(cfg_file, "w") as f:
+            f.write("[Section]\nbos = 'myString'")
+        opt = fun(entry_cfg=cfg_file)
+    assert(opt.bos == "myString")
+
+
+def test_bool_or_str_cfg():
+    @entrypoint([dict(flags="--bos1", name="bos1", type=BoolOrString),
+                 dict(flags="--bos2", name="bos2", type=BoolOrString)], strict=True)
+    def fun(opt):
+        return opt
+
+    with tempfile.TemporaryDirectory() as cwd:
+        cfg_file = os.path.join(cwd, "bos.ini")
+        with open(cfg_file, "w") as f:
+            f.write("[Section]\nbos1 = 'myString'\nbos2 = True")
+        opt = fun(entry_cfg=cfg_file)
+    assert(opt.bos1 == 'myString')
+    assert(opt.bos2 == True)
+
+
+def test_bool_or_list():
+    @entrypoint([dict(flags="--bol", name="bol", type=BoolOrList)], strict=True)
+    def fun(opt):
+        return opt
+
+    opt = fun(bol=True)
+    assert(opt.bol == True)
+
+    opt = fun(bol=[1, 2])
+    assert(opt.bol == [1, 2])
+
+    opt = fun(["--bol", "[1, 2]"])
+    assert(opt.bol == [1, 2])
+
+    opt = fun(["--bol", "0"])
+    assert(opt.bol == False)
+
+    opt = fun(["--bol", "True"])
+    assert(opt.bol == True)
+
+
+def test_bool_or_list_cfg():
+    @entrypoint([dict(flags="--bol1", name="bol1", type=BoolOrList),
+                 dict(flags="--bol2", name="bol2", type=BoolOrList)], strict=True)
+    def fun(opt):
+        return opt
+
+    with tempfile.TemporaryDirectory() as cwd:
+        cfg_file = os.path.join(cwd, "bol.ini")
+        with open(cfg_file, "w") as f:
+            f.write("[Section]\nbol1 = 1,2\nbol2 = True")
+        opt = fun(entry_cfg=cfg_file)
+    assert(opt.bol1 == [1, 2])
+    assert(opt.bol2 == True)
 
 
 # Example Parameter Definitions ################################################

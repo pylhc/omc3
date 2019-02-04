@@ -1,4 +1,8 @@
-""" Entry Point Decorator
+"""
+Module utils.entrypoint
+--------------------------
+
+Entry Point Parser and Decorator.
 
 Allows a function to be decorated as entrypoint.
 This function will then automatically accept console arguments, config files, json files,

@@ -1,3 +1,12 @@
+"""
+Module utils.logging tools
+----------------------------
+
+Functions for easier use of logging, like automatic logger setup
+(see: :meth:`~utils.logging_tools.get_logger`).
+"""
+
+
 import datetime
 import inspect
 import logging

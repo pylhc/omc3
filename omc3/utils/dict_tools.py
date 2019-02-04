@@ -1,5 +1,9 @@
 """
+Module utils.dict_tools
+-------------------------
 
+Advanced dictionary functionalities, including :class:`~utils.dict_tools.DotDict`,
+:class:`~utils.dict_tools.DictParser`.
 """
 import argparse
 import copy
