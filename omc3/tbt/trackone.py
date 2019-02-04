@@ -1,14 +1,18 @@
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
-from tbt import turn_by_turn_writer
-
+from tbt.handler import write_tbt, TbtData
 
 # Introduce a system for lists(dicts) of TbT files, trackones ... ,
-def trackone_to_sdds(nturns=0, npart=0, infile='trackone', outfile="trackone.sdds"):
+
+
+def trackone_to_sdds(infile, outfile, nturns=None, npart=None):
+    if nturns is None or npart is None:
+        nturns, npart = get_trackone_stats(infile)
     names, matrix = get_structure_from_trackone(nturns, npart, infile)
     # matrix[0, 2] contains just (x, y) samples.
-    turn_by_turn_writer.write_tbt_file(names, matrix[[0, 2]], outfile)
+    tbt_data = numpy_to_tbts(names, matrix[[0, 2]])
+    write_tbt(outfile, tbt_data)
 
 
 def save_dict(file_name, di):
@@ -94,4 +98,24 @@ def get_structure_from_trackone(nturns=0, npart=0, infile='trackone'):
                     bpms[bpm_name] = np.empty([npart, nturns, 8], dtype=float)
             elif 'BPM' in bpm_name:
                 bpms[bpm_name][int(parts[0]) - 1, int(parts[1]) - 1, :] = np.array(parts[2:])
-    return np.array(bpms.keys()), np.transpose(np.array(bpms.values()), axes=[3, 0, 1, 2])
+    return np.array(list(bpms.keys())), np.transpose(np.array(list(bpms.values())), axes=[3, 0, 1, 2])
+
+
+def numpy_to_tbts(names, matrix):
+    """Converts turn by turn data and names into TbTData.
+
+    Arguments:
+        names: Numpy array of BPM names
+        matrix: 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
+            quantities in order [x, y]
+    """
+    # get list of TbTFile from 4D matrix ...
+    _, nbpms, nbunches, nturns = matrix.shape
+    matrices = []
+    indices = []
+    for index in range(nbunches):
+        matrices.append({"X": pd.DataFrame(index=names, data=matrix[0, :, index, :]),
+                         "Y": pd.DataFrame(index=names, data=matrix[1, :, index, :])})
+        indices.append(index)
+    return TbtData(matrices, None, np.array(indices), nturns)
+
