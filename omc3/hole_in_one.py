@@ -233,7 +233,6 @@ def optics_params():
     params.add_parameter(flags="--outputdir", name="outputdir", required=True,
                          help="Output directory")
     params.add_parameter(flags="--calibrationdir", name="calibrationdir", type=str,
-                         default=OPTICS_DEFAULTS["calibrationdir"],
                          help="Directory where the calibration files are stored")
     params.add_parameter(flags="--coupling_method", name="coupling_method", type=int,
                          choices=(0, 1, 2), default=OPTICS_DEFAULTS["coupling_method"],
@@ -246,7 +245,7 @@ def optics_params():
                          help="Set beta-beating threshold for action calculations")
     params.add_parameter(flags="--max_closed_orbit", name="max_closed_orbit", type=float,
                          default=OPTICS_DEFAULTS["max_closed_orbit"],
-                         help="Maximal closed orbit for dispersion measurement in 'orbit_unit'")
+                         help="Maximal closed orbit for dispersion measurement in milimeters")
     params.add_parameter(flags="--union", name="union", action="store_true",
                          help="The phase per BPM is calculated from at least 3 valid measurements.")
     params.add_parameter(flags="--nonlinear", name="nonlinear", action="store_true",
@@ -274,10 +273,8 @@ HARPY_DEFAULTS = {
 }
 
 OPTICS_DEFAULTS = {
-        "calibrationdir": None,
         "max_closed_orbit": 4.0,
         "coupling_method": 2,
-        "orbit_unit": "mm",
         "range_of_bpms": 11,
         "beta_model_cut": 0.15,
 }
