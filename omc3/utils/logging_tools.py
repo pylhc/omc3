@@ -1,3 +1,12 @@
+"""
+Module utils.logging tools
+----------------------------
+
+Functions for easier use of logging, like automatic logger setup
+(see: :meth:`~utils.logging_tools.get_logger`).
+"""
+
+
 import datetime
 import inspect
 import logging
@@ -148,6 +157,31 @@ def log_pandas_settings_with_copy(log_func):
                 log_func("{:s} (l. {:d})".format(message[1], caller_line))
     finally:
         pd.options.mode.chained_assignment = old_mode
+
+
+@contextmanager
+def logging_silence():
+    """ Remove temporarily all loggers from root logger."""
+    root_logger = getLogger("")
+    handlers = list(root_logger.handlers)
+    root_logger.handlers = []
+
+    yield
+
+    root_logger.handlers = handlers
+
+
+@contextmanager
+def unformatted_console_logging():
+    """ Log only to console and only unformatted. """
+    with logging_silence():
+        handler = stream_handler(level=NOTSET, fmt="%(message)s")
+        rl = getLogger("")
+        rl.addHandler(handler)
+
+        yield
+
+        rl.removeHandler(handler)
 
 
 # Public Methods ###############################################################
