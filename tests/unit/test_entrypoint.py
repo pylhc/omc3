@@ -144,11 +144,11 @@ def test_as_kwargs():
         list=[4, 5, 6],
         unknown="myfinalargument"
     )
-    assert(opt.name == "myname")
-    assert(opt.int == 3)
-    assert(len(opt.list) == 3)
-    assert(opt.list[1] == 5)
-    assert(len(unknown) > 0)
+    assert opt.name == "myname"
+    assert opt.int == 3
+    assert len(opt.list) == 3
+    assert opt.list[1] == 5
+    assert len(unknown) > 0
 
 
 def test_as_string():
@@ -158,11 +158,11 @@ def test_as_string():
          "--list", "4", "5", "6",
          "--other"]
     )
-    assert(opt.name == "myname")
-    assert(opt.int == 3)
-    assert(len(opt.list) == 3)
-    assert(opt.list[1] == 5)
-    assert(len(unknown) > 0)
+    assert opt.name == "myname"
+    assert opt.int == 3
+    assert len(opt.list) == 3
+    assert opt.list[1] == 5
+    assert len(unknown) > 0
 
 
 def test_as_config():
@@ -176,7 +176,6 @@ def test_as_config():
                 "list = 4, 5, 6",
                 "unknown = 'other'",
             ]))
-
 
         # test config as kwarg
         opt1, unknown1 = paramtest_function(
@@ -234,6 +233,56 @@ def test_not_enough_length():
 
 # Test Special Datatypes
 
+
+def test_multiclass_class():
+    float_str = get_multi_class(float, str)
+    assert isinstance(1., float_str)
+    assert isinstance("", float_str)
+    assert isinstance(float_str(1.), float)
+    assert isinstance(float_str(1), float)
+    assert not isinstance(float_str(1), int)
+    assert float_str("myString") == "myString"
+    assert issubclass(str, float_str)
+    assert issubclass(float, float_str)
+
+
+def test_dict_as_string_class():
+    assert isinstance({}, DictAsString)
+    assert isinstance("", DictAsString)
+    assert isinstance(DictAsString("{}"), dict)
+    assert issubclass(dict, DictAsString)
+    assert issubclass(str, DictAsString)
+
+    with pytest.raises(ValueError):
+        DictAsString("1")
+
+
+def test_bool_or_str_class():
+    assert isinstance(True, BoolOrString)
+    assert isinstance("myString", BoolOrString)
+    assert BoolOrString("True") == True
+    assert BoolOrString("1") == True
+    assert BoolOrString(True) == True
+    assert BoolOrString(1) == True
+    assert BoolOrString("myString") == "myString"
+    assert issubclass(bool, BoolOrString)
+    assert issubclass(str, BoolOrString)
+    assert not issubclass(list, BoolOrString)
+
+
+def test_bool_or_list_class():
+    assert isinstance(True, BoolOrList)
+    assert isinstance([], BoolOrList)
+    assert BoolOrList("False") == False
+    assert BoolOrList("0") == False
+    assert BoolOrList(False) == False
+    assert BoolOrList(0) == False
+    assert BoolOrList("[1, 2]") == [1, 2]
+    assert issubclass(bool, BoolOrList)
+    assert issubclass(list, BoolOrList)
+    assert not issubclass(str, BoolOrList)
+
+
 def test_multiclass():
     IntOrStr = get_multi_class(int, str)
 
@@ -242,16 +291,16 @@ def test_multiclass():
         return opt
 
     opt = fun(ios=3)
-    assert(opt.ios == 3)
+    assert opt.ios == 3
 
     opt = fun(ios='3')
-    assert(opt.ios == '3')
+    assert opt.ios == '3'
 
     opt = fun(["--ios", "3"])
-    assert(opt.ios == 3)
+    assert opt.ios == 3
 
     opt = fun(["--ios", "'3'"])
-    assert(opt.ios == "'3'")
+    assert opt.ios == "'3'"
 
 
 def test_dict_as_string():
@@ -260,12 +309,12 @@ def test_dict_as_string():
         return opt
 
     opt = fun(dict={'int': 5, 'str': 'hello'})
-    assert(opt.dict['int'] == 5)
-    assert(opt.dict['str'] == 'hello')
+    assert opt.dict['int'] == 5
+    assert opt.dict['str'] == 'hello'
 
     opt = fun(["--dict", "{'int': 5, 'str': 'hello'}"])
-    assert(opt.dict['int'] == 5)
-    assert(opt.dict['str'] == 'hello')
+    assert opt.dict['int'] == 5
+    assert opt.dict['str'] == 'hello'
 
 
 def test_bool_or_str():
@@ -274,26 +323,26 @@ def test_bool_or_str():
         return opt
 
     opt = fun(bos=True)
-    assert(opt.bos == True)
+    assert opt.bos == True
 
     opt = fun(bos='myString')
-    assert(opt.bos == 'myString')
+    assert opt.bos == 'myString'
 
     opt = fun(["--bos", "False"])
-    assert(opt.bos == False)
+    assert opt.bos == False
 
     opt = fun(["--bos", "1"])
-    assert(opt.bos == True)
+    assert opt.bos == True
 
     opt = fun(["--bos", "myString"])
-    assert(opt.bos == "myString")
+    assert opt.bos == "myString"
 
     with tempfile.TemporaryDirectory() as cwd:
         cfg_file = os.path.join(cwd, "bos.ini")
         with open(cfg_file, "w") as f:
             f.write("[Section]\nbos = 'myString'")
         opt = fun(entry_cfg=cfg_file)
-    assert(opt.bos == "myString")
+    assert opt.bos == "myString"
 
 
 def test_bool_or_str_cfg():
@@ -307,8 +356,8 @@ def test_bool_or_str_cfg():
         with open(cfg_file, "w") as f:
             f.write("[Section]\nbos1 = 'myString'\nbos2 = True")
         opt = fun(entry_cfg=cfg_file)
-    assert(opt.bos1 == 'myString')
-    assert(opt.bos2 == True)
+    assert opt.bos1 == 'myString'
+    assert opt.bos2 == True
 
 
 def test_bool_or_list():
@@ -317,19 +366,19 @@ def test_bool_or_list():
         return opt
 
     opt = fun(bol=True)
-    assert(opt.bol == True)
+    assert opt.bol == True
 
     opt = fun(bol=[1, 2])
-    assert(opt.bol == [1, 2])
+    assert opt.bol == [1, 2]
 
     opt = fun(["--bol", "[1, 2]"])
-    assert(opt.bol == [1, 2])
+    assert opt.bol == [1, 2]
 
     opt = fun(["--bol", "0"])
-    assert(opt.bol == False)
+    assert opt.bol == False
 
     opt = fun(["--bol", "True"])
-    assert(opt.bol == True)
+    assert opt.bol == True
 
 
 def test_bool_or_list_cfg():
@@ -343,8 +392,8 @@ def test_bool_or_list_cfg():
         with open(cfg_file, "w") as f:
             f.write("[Section]\nbol1 = 1,2\nbol2 = True")
         opt = fun(entry_cfg=cfg_file)
-    assert(opt.bol1 == [1, 2])
-    assert(opt.bol2 == True)
+    assert opt.bol1 == [1, 2]
+    assert opt.bol2 == True
 
 
 # Example Parameter Definitions ################################################

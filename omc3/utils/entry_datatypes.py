@@ -7,6 +7,9 @@ from __future__ import print_function
 
 import abc
 
+TRUE_ITEMS = ["True", "1", True, 1]  # items that count as True
+FALSE_ITEMS = ["False", "0", False, 0]  # items that count as False
+
 
 # Meta Class Helper ############################################################
 
@@ -40,7 +43,7 @@ def get_multi_class(*classes):
             for c in classes:
                 try:
                     return c.__new__(c, value)
-                except ValueError:
+                except (ValueError, TypeError):
                     pass
             else:
                 cls_string = ','.join([c.__name__ for c in classes])
@@ -74,12 +77,14 @@ class DictAsString(metaclass=get_instance_faker_meta(str, dict)):
 class BoolOrString(metaclass=get_instance_faker_meta(bool, str)):
     """ A class that behaves like a boolean when possible, otherwise like a string."""
     def __new__(cls, value):
-        value = value.strip("\'\"")  # behavior like dict-parser
-        if value in ["True", "1", True, 1]:
-            return bool.__new__(bool, True)
+        if isinstance(value, str):
+            value = value.strip("\'\"")  # behavior like dict-parser
 
-        elif value in ["False", "0", False, 0]:
-            return bool.__new__(bool, False)
+        if value in TRUE_ITEMS:
+            return True
+
+        elif value in FALSE_ITEMS:
+            return False
 
         else:
             return str(value)
@@ -90,11 +95,11 @@ class BoolOrList(metaclass=get_instance_faker_meta(bool, list)):
 
     Hint: 'list.__new__(list, value)' returns an empty list."""
     def __new__(cls, value):
-        if value in ["True", "1", True, 1]:
-            return bool.__new__(bool, True)
+        if value in TRUE_ITEMS:
+            return True
 
-        elif value in ["False", "0", False, 0]:
-            return bool.__new__(bool, False)
+        elif value in FALSE_ITEMS:
+            return False
         else:
             if isinstance(value, str):
                 value = eval(value)
