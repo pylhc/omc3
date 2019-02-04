@@ -2,15 +2,15 @@ import os
 import pytest
 import tempfile
 
-from context import omc3
-from omc3.utils.entrypoint import (EntryPointParameters,
-                                   entrypoint, EntryPoint,
-                                   ArgumentError, ParameterError, OptionsError,
-                                   )
-from omc3.utils.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
-from omc3.utils.dict_tools import print_dict_tree
-from omc3.utils import logging_tools
-from omc3.utils.contexts import silence
+from . import context
+from utils.entrypoint import (EntryPointParameters,
+                              entrypoint, EntryPoint,
+                              ArgumentError, ParameterError, OptionsError,
+                              )
+from utils.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
+from utils.dict_tools import print_dict_tree
+from utils import logging_tools
+from utils.contexts import silence
 
 
 LOG = logging_tools.get_logger(__name__)

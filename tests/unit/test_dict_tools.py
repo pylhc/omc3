@@ -1,9 +1,7 @@
-import os
 import pytest
-import tempfile
 
-from context import omc3
-from omc3.utils.dict_tools import DotDict, DictParser, ParameterError, Parameter
+from . import context
+from utils.dict_tools import DotDict, DictParser, ParameterError, Parameter
 
 
 def test_deep_dict():
