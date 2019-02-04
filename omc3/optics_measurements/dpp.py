@@ -3,13 +3,14 @@
 
 Created on 2017
 
-:author: Elena Fol
+:author: Elena Fol, Lukas Malina
 
 Arranges \frac{\Delta p}{p} of given files
 """
 
 import logging
 import numpy as np
+import pandas as pd
 
 DPP_TOLERANCE = 0.0001
 LOGGER = logging.getLogger(__name__)
@@ -88,27 +89,41 @@ def _compute_ranges(list_of_tfs, ordered_indices):
 def _is_in_same_range(a, b):
     return a + DPP_TOLERANCE >= b >= a - DPP_TOLERANCE
 
-# TODO actual dpp calculation from orbit moved from hole_in_one
-"""
-def _calc_dp_over_p(main_input, bpm_data):
-    model_twiss = tfs.read(main_input.model)
-    model_twiss.set_index("NAME", inplace=True)
-    sequence = model_twiss.headers["SEQUENCE"].lower().replace("b1", "").replace("b2", "")
-    if sequence != "lhc":
-        return 0.0  # TODO: What do we do with other accels.
-    accel_cls = manager.get_accel_class(accel=sequence)
-    arc_bpms_mask = accel_cls.get_element_types_mask(bpm_data.index, types=["arc_bpm"])
-    mask = accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
 
-    arc_bpms_mask = np.array([bool(x) for x in arc_bpms_mask])
-    arc_bpm_data = bpm_data.loc[arc_bpms_mask]
-    # We need it in mm:
-    dispersions = model_twiss.loc[arc_bpm_data.index, "DX"] * 1e3
-    closed_orbits = np.mean(arc_bpm_data, axis=1)
-    numer = np.sum(dispersions * closed_orbits)
+#TODO
+def calculate_dpoverp(meas_input, input_files, model, header_dict):
+    df_orbit = pd.DataFrame(model).loc[:, ['S', 'DX']]
+    df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['CO', 'CORMS']), how='inner',
+                        left_index=True, right_index=True)
+    mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
+    df_filtered = df_orbit.loc[mask, :]
+    dispersions = df_filtered.loc[:, "DX"] * 1e3 # conversion to milimeters
     denom = np.sum(dispersions ** 2)
     if denom == 0.:
         raise ValueError("Cannot compute dpp probably no arc BPMs.")
-    dp_over_p = numer / denom
-    return dp_over_p
-"""
+    numer = np.sum(dispersions[:, None] * df_filtered.loc[:, input_files.get_columns(df_orbit, 'CO')].values, axis=0)
+    return numer / denom
+
+
+def calculate_amp_dpoverp(meas_input, input_files, model, header_dict):
+    df_orbit = pd.DataFrame(model).loc[:, ['S', 'DX']]
+    df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['AMPX', 'AMPZ']), how='inner',
+                        left_index=True, right_index=True)
+    mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
+    df_filtered = df_orbit.loc[mask, :]
+    amps = df_filtered.loc[:, input_files.get_columns(df_orbit, 'AMPX')].values * df_filtered.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].values
+    mask_zeros = (amps > 0) if amps.ndim == 1 else (np.sum(amps,axis=1) > 0)
+
+    dispersions = df_filtered.loc[mask_zeros, "DX"] * 1e3 # conversion to milimeters
+    denom = np.sum(dispersions ** 2)
+    if denom == 0.:
+        raise ValueError("Cannot compute dpp probably no arc BPMs.")
+    if amps.ndim == 1:
+        numer = np.sum(dispersions * amps[mask_zeros])
+    else:
+        numer = np.sum(dispersions[:, None] * amps[mask_zeros, :], axis=0)
+    print(numer / denom)
+    return numer / denom
+
+
+
