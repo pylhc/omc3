@@ -5,25 +5,25 @@ Created on 11/07/18
 
 :author: Lukas Malina
 
-Top-level script, which computes various lattice optics parameters from frequency spectra
+Computes various lattice optics parameters from frequency spectra
 """
 
 import os
 import sys
 import traceback
 import datetime
-from time import time
 import re
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
+
 import tfs
 from utils import logging_tools, iotools
-from optics_measurements import optics_input, dpp, tune, phase, beta_from_phase
+from optics_measurements import dpp, tune, phase, beta_from_phase
 from optics_measurements import beta_from_amplitude, dispersion, interaction_point, kick
 
 
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 LOGGER = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
 PLANES = ('X', 'Y')
 LOG_FILE = "measure_optics.log"
@@ -38,24 +38,21 @@ def measure_optics(input_files, measure_input):
 
     Returns:
     """
-    LOGGER.info("Calculating optics parameters - code version " + VERSION)
-    global __start_time
-    __start_time = time()
+    LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
     iotools.create_dirs(measure_input.outputdir)
     logging_tools.add_module_handler(logging_tools.file_handler(
         os.path.join(measure_input.outputdir, LOG_FILE)))
     common_header = _get_header(measure_input)
-    print_time()
     try:
         tune_dict = tune.calculate_tunes(measure_input, input_files)
         phase_dict = phase.calculate_phases(measure_input, input_files, tune_dict, common_header)
     except:
         raise ValueError("Phase advance or tune calculation failed: No other calculation will run")
-    print_time()
     # try:
     #    coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
     # except:
     #    _tb_()
+
     if measure_input.only_coupling:
         LOGGER.info("Finished as only coupling calculation was requested.")
         return
@@ -91,7 +88,8 @@ def measure_optics(input_files, measure_input):
         _tb_()
     try:
         dispersion.calculate_dx_from_3d(measure_input, input_files, mad_twiss, common_header, tune_dict)
-        dispersion.calculate_ndx_from_3d(measure_input, input_files, mad_twiss, mad_ac, beta_dict["X"]["F"], dispersion._get_header(common_header, tune_dict, 'getNDx.out'))
+        dispersion.calculate_ndx_from_3d(measure_input, input_files, mad_twiss, mad_ac, beta_dict["X"]["F"],
+                                         dispersion._get_header(common_header, tune_dict, 'getNDx.out'))
     except:
         #LOGGER.info("Calculate dispersion from 3D kicks failed.")
         try:
@@ -108,12 +106,11 @@ def measure_optics(input_files, measure_input):
     #        resonant_driving_terms.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
     #    except:
     #        _tb_()
-    print_time()
 
 
 def _get_header(meas_input):
     return OrderedDict([('Measure_optics:version', VERSION),
-                        ('Command', sys.executable + " '" + "' '".join([] + sys.argv) + "'"),
+                        ('Command', f"{sys.executable} {' '.join(sys.argv)}"),
                         ('CWD', os.getcwd()),
                         ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
                         ('Model_directory', meas_input.accelerator.model_dir)])
@@ -131,10 +128,6 @@ def _tb_():
         LOGGER.error(traceback.format_exc())
 
 
-def print_time():
-    LOGGER.debug(f":::  Elapsed time  >>>>>>>>>> {time() - __start_time:8.3f} s")
-
-
 class InputFiles(dict):
     """
     Stores the input files, provides methods to gather quantity specific data
@@ -147,14 +140,14 @@ class InputFiles(dict):
     """
     def __init__(self, files_to_analyse):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
-        if isinstance(files_to_analyse, str):
-            for file_in in files_to_analyse.split(','):
+        if isinstance(files_to_analyse[0], str):
+            for file_in in files_to_analyse:
                 for plane in PLANES:
                     self[plane].append(tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME"))
         else:
             for file_in in files_to_analyse:
                 for plane in PLANES:
-                    self[plane].append(file_in[plane.lower()])
+                    self[plane].append(file_in[plane])
         for plane in PLANES:
             self[plane] = dpp.arrange_dpp(self[plane])
         if len(self['X']) + len(self['Y']) == 0:
@@ -231,7 +224,7 @@ class InputFiles(dict):
             list of columns
         """
         str_list = list(frame.columns[frame.columns.str.startswith(column + '__')].values)
-        new_list = list(map(lambda s: s.strip(column + '__'), str_list))
+        new_list = list(map(lambda s: s[len(f"{column}__"):], str_list))
         new_list.sort(key=int)
         return [f"{column}__{x}" for x in new_list]
 
@@ -247,7 +240,7 @@ class InputFiles(dict):
         return frame.loc[:, self.get_columns(frame, column)].values
 
 
-def _copy_calibration_files(outputdir, calibrationdir):
+def copy_calibration_files(outputdir, calibrationdir):
     if calibrationdir is None:
         return None
     calibs = {}
@@ -256,12 +249,3 @@ def _copy_calibration_files(outputdir, calibrationdir):
         iotools.copy_item(os.path.join(calibrationdir, cal_file), os.path.join(outputdir, cal_file))
         calibs[plane] = tfs.read(os.path.join(outputdir, cal_file)).set_index("NAME")
     return calibs
-
-
-if __name__ == "__main__":
-    arguments = optics_input.parse_args()
-    inputs = InputFiles(arguments.files)
-    iotools.create_dirs(arguments.outputdir)
-    calibrations = _copy_calibration_files(arguments.outputdir, arguments.calibrationdir)
-    inputs.calibrate(calibrations)
-    measure_optics(inputs, arguments)

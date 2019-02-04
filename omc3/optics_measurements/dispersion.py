@@ -13,8 +13,6 @@ import numpy as np
 import tfs
 from utils import stats
 
-
-SCALES = {'um': 1.0e-6, 'mm': 1.0e-3, 'cm': 1.0e-2, 'm': 1.0}
 PLANES = ("X", "Y")
 PI2I = 2 * np.pi * complex(0, 1)
 
@@ -71,7 +69,7 @@ def _calculate_dispersion(meas_input, input_files, model, plane, header, order=2
     if np.max(dpps) - np.min(dpps) == 0.0:
         return  # temporary solution
         # raise ValueError('Cannot calculate dispersion, only a single momentum data')
-    fit = np.polyfit(dpps, SCALES[meas_input.orbit_unit] * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
+    fit = np.polyfit(dpps, 0.001 * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
     # in the fit results the coefficients are sorted by power in decreasing order
     if order > 1:
         df_orbit['D2' + plane] = fit[0][-3, :].T
@@ -81,7 +79,7 @@ def _calculate_dispersion(meas_input, input_files, model, plane, header, order=2
     df_orbit[plane] = fit[0][-1, :].T
     df_orbit['STD' + plane] = np.sqrt(fit[1][-1, -1, :].T)
     # since we get variances from the fit, maybe we can include the variances of fitted points
-    df_orbit = df_orbit.loc[np.abs(df_orbit.loc[:, plane]) < meas_input.max_closed_orbit*SCALES[meas_input.orbit_unit], :]
+    df_orbit = df_orbit.loc[np.abs(df_orbit.loc[:, plane]) < meas_input.max_closed_orbit * 0.001, :]
     df_orbit['DP' + plane] = _calculate_dp(model,
                                            df_orbit.loc[:, [f"D{plane}", f"STDD{plane}"]], plane)
     df_orbit = _get_delta_columns(df_orbit, plane)
@@ -105,13 +103,13 @@ def _calculate_normalised_dispersion(meas_input, input_files, model, beta, heade
     if np.max(dpps) - np.min(dpps) == 0.0:
         return  # temporary solution
         # raise ValueError('Cannot calculate dispersion, only a single dpoverp')
-    fit = np.polyfit(dpps, SCALES[meas_input.orbit_unit] * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
+    fit = np.polyfit(dpps, 0.001 * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
     if order > 1:
         df_orbit['ND2X_unscaled'] = fit[0][-3, :].T / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)
         df_orbit['STDND2X_unscaled'] = np.sqrt(fit[1][-3, -3, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)
     df_orbit['NDX_unscaled'] = fit[0][-2, :].T / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)  # TODO there is no error from AMPX
     df_orbit['STDNDX_unscaled'] = np.sqrt(fit[1][-2, -2, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, 'AMPX'), axis=1)
-    df_orbit = df_orbit.loc[np.abs(fit[0][-1, :].T) < meas_input.max_closed_orbit * SCALES[meas_input.orbit_unit], :]
+    df_orbit = df_orbit.loc[np.abs(fit[0][-1, :].T) < meas_input.max_closed_orbit * 0.001, :]
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     global_factor = np.sum(df_orbit.loc[mask, 'NDXMDL'].values) / np.sum(df_orbit.loc[mask, 'NDX_unscaled'].values)
     if order > 1:
