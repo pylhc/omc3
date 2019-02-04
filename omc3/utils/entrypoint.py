@@ -1,4 +1,8 @@
-""" Entry Point Decorator
+"""
+Module utils.entrypoint
+--------------------------
+
+Entry Point Parser and Decorator.
 
 Allows a function to be decorated as entrypoint.
 This function will then automatically accept console arguments, config files, json files,
@@ -20,18 +24,22 @@ Usage:
 ++++++++++++++++++++++++
 
 To be used as a decorator::
+
     @entrypoint(parameters)
     def some_function(options, unknown_options)
 
 Using **strict** mode (see below)::
+
     @entrypoint(parameters, strict=True)
     def some_function(options)
 
 It is also possible to use the EntryPoint Class similar to a normal parser::
+
     ep_parser = EntryPoint(parameters)
     options, unknown_options = ep_parser.parse(arguments)
 
 Using **strict** mode (see below)::
+
     ep_parser = EntryPoint(parameters, strict=True)
     options = ep_parser.parse(arguments)
 
@@ -56,6 +64,62 @@ Parameters need to be a list or a dictionary of dictionaries with the following 
  and the default to ``False`` and ``True`` respectively.
 
 
+Alternatively, you can use the provided ``EntryPointParameters()`` class.
+
+Example with ``EntryPointParameters``:
+
+.. code-block:: python
+
+    args = EntryPointParameters()
+    args.add_parameter(name="accel",
+                       flags=["-a", "--accel"],
+                       help="Which accelerator?",
+                       choices=["LHCB1","LHCB2","LHCB5"],
+                       default="LHCB1")
+    args.add_parameter(name="dict",
+                       flags=["-d", "--dictionary"],
+                       help="File with the BPM dictionary",
+                       default="bpm.txt",
+                       type=str)
+
+
+Example with dictionary of dictionaries:
+
+.. code-block:: python
+
+    args = {
+        "accel": dict(
+            flags=["-a", "--accel"],
+            help="Which accelerator?",
+            choices=["LHCB1", "LHCB2", "LHCB5"],
+            default="LHCB1"),
+        "dict": dict(
+            flags=["-d", "--dictionary"],
+            help="File with the BPM dictionary",
+            default="bpm.txt",
+            type=str),
+            }
+
+
+Example with list of dictionaries:
+
+.. code-block:: python
+    args = [
+        "dict(
+            name="accel",
+            flags=["-a", "--accel"],
+            help="Which accelerator?",
+            choices=["LHCB1", "LHCB2", "LHCB5"],
+            default="LHCB1"),
+        dict(
+            name="dict",
+            flags=["-d", "--dictionary"],
+            help="File with the BPM dictionary",
+            default="bpm.txt",
+            type=str),
+            ]
+
+
 The **strict** option changes the behaviour for unknown parameters:
 ``strict=True`` raises exceptions, ``strict=False`` loggs debug messages and returns the options.
 Hence a wrapped function with ``strict=True`` must accept one input, with ``strict=False`` two.
@@ -71,7 +135,7 @@ from configparser import ConfigParser
 from inspect import getfullargspec
 from functools import wraps
 
-from utils import logging_tools as logtools
+from utils import logging_tools
 from utils.dict_tools import DictParser
 from utils.dict_tools import DotDict
 from utils.dict_tools import ArgumentError
@@ -80,7 +144,7 @@ from utils.dict_tools import ParameterError
 from utils.contexts import silence
 
 
-LOG = logtools.get_logger(__name__)
+LOG = logging_tools.get_logger(__name__)
 
 
 ID_CONFIG = "entry_cfg"
@@ -99,7 +163,7 @@ class EntryPoint(object):
 
         # add argument dictionary to EntryPoint
         self.remainder = None
-        self.parameter = EntryPoint._dict2list_param(parameter)
+        self.parameter = dict2list_param(parameter)
         self._check_parameter()
 
         # add config-argparser
@@ -222,7 +286,7 @@ class EntryPoint(object):
         if ID_CONFIG in kwargs:
             if len(kwargs) > 2 or (len(kwargs) == 2 and ID_SECTION not in kwargs):
                 raise ArgumentError(
-                    "Only '{:s}' and '{:s}'".format(ID_CONFIG, ID_SECTION) +
+                    f"Only '{ID_CONFIG:s}' and '{ID_SECTION:s}'" +
                     " arguments are allowed, when using a config file.")
             options = self._read_config(kwargs[ID_CONFIG],
                                         kwargs.get(ID_SECTION, None))
@@ -236,7 +300,7 @@ class EntryPoint(object):
         elif ID_JSON in kwargs:
             if len(kwargs) > 2 or (len(kwargs) == 2 and ID_SECTION not in kwargs):
                 raise ArgumentError(
-                    "Only '{:s}' and '{:s}'".format(ID_JSON, ID_SECTION) +
+                    f"Only '{ID_JSON:s}' and '{ID_SECTION:s}'" +
                     " arguments are allowed, when using a json file.")
             with open(kwargs[ID_JSON], 'r') as json_file:
                 json_dict = json.load(json_file)
@@ -263,40 +327,31 @@ class EntryPoint(object):
                 raise ParameterError("A Parameter needs a Name!")
 
             if param.get("nargs", None) == argparse.REMAINDER:
-                raise ParameterError("Parameter '{:s}' is set as remainder.".format(arg_name) +
+                raise ParameterError(f"Parameter '{arg_name:s}' is set as remainder." +
                                      "This method is really buggy, hence it is forbidden.")
 
+            if param.get("nargs", None) == argparse.OPTIONAL:
+                raise ParameterError(f"Parameter '{arg_name:s}' is set as optional." +
+                                     "As entrypoint does not use 'const', the use is prohibited.")
+
             if param.get("flags", None) is None:
-                raise ParameterError("Parameter '{:s}'".format(arg_name) +
-                                     "does not have flags.")
+                raise ParameterError(f"Parameter '{arg_name:s}' does not have flags.")
 
     def _read_config(self, cfgfile_path, section=None):
         """ Get content from config file"""
         cfgparse = self.configparse
 
         with open(cfgfile_path) as config_file:
-            cfgparse.readfp(config_file)
+            cfgparse.read_file(config_file)
 
         sections = cfgparse.sections()
         if not section and len(sections) == 1:
             section = sections[0]
         elif not section:
-            raise ArgumentError("'{:s}' contains multiple sections. Please specify one!")
+            raise ArgumentError(f"'{cfgfile_path:s}' contains multiple sections. " +
+                                " Please specify one!")
 
         return cfgparse.items(section)
-
-    @staticmethod
-    def _dict2list_param(param):
-        """ Convert dictionary to list and add name by key """
-        if isinstance(param, dict):
-            out = []
-            for key in param:
-                item = param[key]
-                item["name"] = key
-                out.append(item)
-            return out
-        else:
-            return param
 
 
 # entrypoint Decorator #########################################################
@@ -318,39 +373,44 @@ class entrypoint(EntryPoint):
         (should be) either ``self`` or ``cls``.
         One could check that there are no varargs and keywords, but let's assume the user
         is doing the right things.
+
+        Hint: To check for bound functions (i.e. with ``self`` or ``cls``) via
+        ``hasattr(func, "__self__")`` will not work here, as functions are bound later.
         """
-        nargs = len(getfullargspec(func).args)
+        func_args = getfullargspec(func).args
+        nargs = len(func_args)
+        is_bound = func_args[0] in ['self', 'cls']  # naming assumption...sorry (jdilly)
 
         if self.strict:
-            if nargs == 1:
+            if not is_bound and nargs == 1:
                 @wraps(func)
                 def wrapper(*args, **kwargs):
                     return func(self.parse(*args, **kwargs))
-            elif nargs == 2:
+            elif is_bound and nargs == 2:
                 @wraps(func)
                 def wrapper(other, *args, **kwargs):
                     return func(other, self.parse(*args, **kwargs))
             else:
-                raise ArgumentError("In strict mode, only one option-structure will be passed."
-                                    " The entrypoint needs to have the following structure: "
-                                    " ([self/cls,] options)."
-                                    " Found: {:s}".format(getfullargspec(func).args))
+                raise OptionsError("In strict mode, only one option-structure will be passed."
+                                   " The entrypoint needs to have the following structure: "
+                                   " ([self/cls,] options)."
+                                   f" Found: '{func.__name__:s}({', '.join(func_args):s})'")
         else:
-            if nargs == 2:
+            if not is_bound and nargs == 2:
                 @wraps(func)
                 def wrapper(*args, **kwargs):
                     options, unknown_options = self.parse(*args, **kwargs)
                     return func(options, unknown_options)
-            elif nargs == 3:
+            elif is_bound and nargs == 3:
                 @wraps(func)
                 def wrapper(other, *args, **kwargs):
                     options, unknown_options = self.parse(*args, **kwargs)
                     return func(other, options, unknown_options)
             else:
-                raise ArgumentError("Two option-structures will be passed."
-                                    " The entrypoint needs to have the following structure: "
-                                    " ([self/cls,] options, unknown_options)."
-                                    " Found: {:s}".format(getfullargspec(func).args))
+                raise OptionsError("Two option-structures will be passed."
+                                   " The entrypoint needs to have the following structure: "
+                                   " ([self/cls,] options, unknown_options)."
+                                   f" Found: '{func.__name__:s}({', '.join(func_args):s})'")
         return wrapper
 
 
@@ -365,7 +425,7 @@ class EntryPointParameters(DotDict):
         """ Add parameter """
         name = kwargs.pop("name")
         if name in self:
-            raise ParameterError("'{:s}' is already a parameter.".format(name))
+            raise ParameterError(f"'{name:s}' is already a parameter.")
         else:
             self[name] = kwargs
 
@@ -378,14 +438,14 @@ class EntryPointParameters(DotDict):
             item_str = ""
             item = self[name]
             try:
-                name_type = "{n:s} ({t:s})".format(n=name, t=item["type"].__name__)
+                name_type = f"{name:s} ({item['type'].__name__:s})"
             except KeyError:
-                name_type = "{n:s}".format(n=name)
+                name_type = f"{name:s}"
 
             try:
-                item_str += "{n:s}: {h:s}".format(n=name_type, h=item["help"])
+                item_str += f"{name_type:s}: {item['help']:s}"
             except KeyError:
-                item_str += "{n:s}: -Help not available- ".format(n=name_type)
+                item_str += f"{name_type:s}: -Help not available- "
 
             space = " " * (len(name_type) + 2)
 
@@ -405,7 +465,7 @@ class EntryPointParameters(DotDict):
                 pass
 
             try:
-                item_str += "\n{s:s}**Action**: ``{d:s}``".format(s=space, d=str(item["action"]))
+                item_str += f"\n{space:s}**Action**: ``{str(item['action']):s}``"
             except KeyError:
                 pass
 
@@ -426,18 +486,33 @@ class EntryPointParameters(DotDict):
 # Public Helpers ###############################################################
 
 
+class OptionsError(Exception):
+    pass
+
+
+def dict2list_param(param):
+    """ Convert dictionary to list and add name by key """
+    if isinstance(param, dict):
+        out = []
+        for key in param:
+            item = param[key]
+            item["name"] = key
+            out.append(item)
+        return out
+    else:
+        return param
+
+
 def add_params_to_generic(parser, params):
     """ Adds entry-point style parameter to either
-    ArgumentParser, DictParser or EntryPointArguments
+    ArgumentParser, DictParser or EntryPointParameters
     """
     params = copy.deepcopy(params)
-
-    if isinstance(params, dict):
-        params = EntryPoint._dict2list_param(params)
+    params = dict2list_param(params)
 
     if isinstance(parser, EntryPointParameters):
         for param in params:
-            parser.add_parameter(param)
+            parser.add_parameter(**param)
 
     elif isinstance(parser, ArgumentParser):
         for param in params:
@@ -453,19 +528,15 @@ def add_params_to_generic(parser, params):
     elif isinstance(parser, DictParser):
         for param in params:
             if "nargs" in param:
-                if param["nargs"] != "?":
-                    param["subtype"] = param.get("type", None)
-                    param["type"] = list
-
-                if isinstance(param["nargs"], str):
-                    param.pop("nargs")
+                param["subtype"] = param.get("type", None)
+                param["type"] = list
 
             if "action" in param:
                 if param["action"] in ("store_true", "store_false"):
                     param["type"] = bool
                     param["default"] = not param["action"][6] == "t"
                 else:
-                    raise ParameterError("Action '{:s}' not allowed in EntryPoint")
+                    raise ParameterError(f"Action '{param['action']:s}' not allowed in EntryPoint")
                 param.pop("action")
 
             param.pop("flags", None)
@@ -523,22 +594,17 @@ def param_names(params):
     return names
 
 
-class CreateParamHelp(object):
+def create_parameter_help(module, param_fun=None):
     """ Print params help quickly but changing the logging format first.
 
     Usage Example::
 
         import amplitude_detuning_analysis
-        help = CreateParamHelp()
-        help(amplitude_detuning_analysis)
-        help(amplitude_detuning_analysis, "_get_plot_params")
+        create_parameter_help(amplitude_detuning_analysis)
+        create_parameter_help(amplitude_detuning_analysis, "_get_plot_params")
 
     """
-    def __init__(self):
-        logtools.getLogger("").handlers = []  # remove all handlers from root-logger
-        logtools.get_logger("__main__", fmt="%(message)s")  # set up new
-
-    def __call__(self, module, param_fun=None):
+    with logging_tools.unformatted_console_logging():
         if param_fun is None:
             try:
                 module.get_params().help()
