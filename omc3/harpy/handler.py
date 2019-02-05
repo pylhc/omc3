@@ -7,7 +7,7 @@ import pandas as pd
 import tfs
 from utils.contexts import timeit
 from utils import logging_tools
-from harpy import core, clean
+from harpy import frequency, clean
 
 LOGGER = logging_tools.get_logger(__name__)
 PLANES = ("X", "Y")
@@ -25,7 +25,7 @@ def run_per_bunch(tbt_data, harpy_input):
         bpm_data, usvs[plane], bad_bpms[plane], bpm_res = clean.clean(harpy_input, bpm_data, model)
         lins[plane], bpm_datas[plane] = _closed_orbit_analysis(bpm_data, model, bpm_res)
 
-    tune_estimates = harpy_input.tunes if harpy_input.autotunes is None else core.estimate_tunes(
+    tune_estimates = harpy_input.tunes if harpy_input.autotunes is None else frequency.estimate_tunes(
         harpy_input, usvs if harpy_input.clean else
         dict(X=clean.svd_decomposition(bpm_datas["X"], harpy_input.sing_val),
              Y=clean.svd_decomposition(bpm_datas["Y"], harpy_input.sing_val)))
@@ -33,7 +33,7 @@ def run_per_bunch(tbt_data, harpy_input):
     spectra = {}
     for plane in PLANES:
         with timeit(lambda spanned: LOGGER.debug(f"Time for harmonic_analysis: {spanned}")):
-            harpy_results, spectra[plane], bad_bpms_summaries = core.harpy_per_plane(
+            harpy_results, spectra[plane], bad_bpms_summaries = frequency.harpy_per_plane(
                 harpy_input, bpm_datas[plane], usvs[plane], tune_estimates, plane)
         if "bpm_summary" in harpy_input.to_write:
             bad_bpms[plane].extend(bad_bpms_summaries)
@@ -47,7 +47,7 @@ def run_per_bunch(tbt_data, harpy_input):
     nturns = bpm_datas["X"].shape[1]
 
     for plane in PLANES:
-        lins[plane] = core.find_resonances(lins[plane], measured_tunes, nturns, plane, spectra[plane])
+        lins[plane] = lins[plane].join(frequency.find_resonances(measured_tunes, nturns, plane, spectra[plane]))
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
