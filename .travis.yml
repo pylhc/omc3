@@ -7,4 +7,4 @@ email:
 python:
  - "3.6"
 script:
- - pytest --cov=omc3 tests/unit
+ - pytest --cov=omc3 tests/unit tests/accuracy
