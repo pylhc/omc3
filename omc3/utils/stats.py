@@ -72,12 +72,13 @@ def circular_error(data, period=PI2, errors=None, axis=None, t_value_corr=True):
     complex_phases = np.exp(phases)
     complex_average = np.average(complex_phases, axis=axis, weights=weights)
 
-    (sample_variance, sum_of_weights) = np.average(np.square(np.abs(complex_phases - complex_average.reshape(
-            _get_shape(complex_phases.shape, axis)))), weights=weights, axis=axis, returned=True)
+    (sample_variance, sum_of_weights) = np.average(
+            np.square(np.abs(complex_phases - complex_average.reshape(_get_shape(
+                    complex_phases.shape, axis)))), weights=weights, axis=axis, returned=True)
     if weights is not None:
         sample_variance = sample_variance + 1. / sum_of_weights
     error_of_complex_average = np.sqrt(sample_variance * unbias_variance(data, weights, axis=axis))
-    phase_error = error_of_complex_average / np.abs(complex_average)
+    phase_error = np.nan_to_num(error_of_complex_average / np.abs(complex_average))
     if t_value_corr:
         phase_error = phase_error * t_value_correction(effective_sample_size(data, weights, axis=axis))
     return np.where(phase_error > 0.25 * PI2, 0.3 * period, phase_error * period / PI2)
@@ -134,7 +135,7 @@ def weighted_error(data, errors=None, axis=None, t_value_corr=True):
             _get_shape(data.shape, axis)))), weights=weights, axis=axis, returned=True)
     if weights is not None:
         sample_variance = sample_variance + 1 / sum_of_weights
-    error = np.sqrt(sample_variance * unbias_variance(data, weights, axis=axis))
+    error = np.nan_to_num(np.sqrt(sample_variance * unbias_variance(data, weights, axis=axis)))
     if t_value_corr:
         error = error * t_value_correction(effective_sample_size(data, weights, axis=axis))
     return error
@@ -219,7 +220,7 @@ def unbias_variance(data, weights, axis=None):
     sample_size = effective_sample_size(data, weights, axis=axis)
     try:
         return sample_size / (sample_size - 1)
-    except ZeroDivisionError:
+    except ZeroDivisionError or RuntimeWarning:
         return np.zeros(sample_size.shape)
 
 
@@ -235,4 +236,4 @@ def t_value_correction(sample_size):
         multiplicative correction factor(s) of same shape as sample_size
             can contain nans
     """
-    return t.ppf(CONFIDENCE_LEVEL, sample_size - 1)
+    return np.nan_to_num(t.ppf(CONFIDENCE_LEVEL, sample_size - 1))
