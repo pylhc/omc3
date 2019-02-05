@@ -57,14 +57,16 @@ def _get_model_dataframe():
 def _write_tbt_file(model):
     ints = np.arange(NTURNS)
     data_x = model.loc[:, "AMPX"].values[:, None] * np.cos(
-        2 * np.pi * (model.loc[:, "MUX"].values[:, None] + model.loc[:, "TUNEX"].values[:, None] * ints[None, :]))
+        2 * np.pi * (model.loc[:, "MUX"].values[:, None] +
+                     model.loc[:, "TUNEX"].values[:, None] * ints[None, :]))
     data_y = model.loc[:, "AMPY"].values[:, None] * np.cos(
-        2 * np.pi * (model.loc[:, "MUY"].values[:, None] + model.loc[:, "TUNEY"].values[:, None] * ints[None, :]))
-    matrices = dict(X=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_x
-                                        + COUPLING * data_y, index=model.index),
-                    Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
-                                        + COUPLING * data_x, index=model.index))
-    tbt.write(os.path.join(CURRENT_DIR, "test_file.sdds"), tbt.TbtData([matrices], None, [0], NTURNS))
+        2 * np.pi * (model.loc[:, "MUY"].values[:, None] +
+                     model.loc[:, "TUNEY"].values[:, None] * ints[None, :]))
+    mats = dict(X=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_x
+                               + COUPLING * data_y, index=model.index),
+                Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
+                               + COUPLING * data_x, index=model.index))
+    tbt.write(os.path.join(CURRENT_DIR, "test_file.sdds"), tbt.TbtData([mats], None, [0], NTURNS))
 
 
 def _other(plane):

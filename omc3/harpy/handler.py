@@ -47,7 +47,8 @@ def run_per_bunch(tbt_data, harpy_input):
     nturns = bpm_datas["X"].shape[1]
 
     for plane in PLANES:
-        lins[plane] = lins[plane].join(frequency.find_resonances(measured_tunes, nturns, plane, spectra[plane]))
+        lins[plane] = lins[plane].join(frequency.find_resonances(
+            measured_tunes, nturns, plane, spectra[plane]))
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
@@ -133,7 +134,7 @@ def _compute_headers(panda):
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
-    headers["DPP"] = 0.0  # TODO remove - should be calculated in measure_optics
+    headers["DPP"] = 0.0  # TODO later remove - should be calculated in measure_optics
     return headers
 
 
@@ -158,8 +159,8 @@ def _get_output_path_without_suffix(output_dir, file_path):
 
 def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     """
-    TODO    should be remove - follows not transpararent convention
-    TODO    the consequent analysis has to be changed
+    TODO    follows not transpararent convention
+    TODO    the consequent analysis has to be changed if removed
     """
     cols = [col for col in panda.columns.values if col.startswith('AMP')]
     cols.remove(f"AMP{plane}")

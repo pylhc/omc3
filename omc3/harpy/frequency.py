@@ -25,17 +25,26 @@ PLANES = ("X", "Y")
 
 
 def estimate_tunes(harpy_input, usvs):
-    tunex = get_tune_estimate(usvs["X"][1], harpy_input.window, q_s=False)
-    tuney = get_tune_estimate(usvs["Y"][1], harpy_input.window, q_s=False)
+    """
+    Estimates the tunes from FFT of decomposed data
+    Args:
+        harpy_input: Analysis settings
+        usvs: dictionary per plane of (U and SV^T matrices)
+
+    Returns:
+        list of estimated tunes [x, y, z]
+    """
+    tunex = _estimate_tune(usvs["X"][1], harpy_input.window, q_s=False)
+    tuney = _estimate_tune(usvs["Y"][1], harpy_input.window, q_s=False)
     if harpy_input.autotunes == "transverse":
         return [tunex, tuney, 0]
-    tunez = get_tune_estimate(usvs["X"][1], harpy_input.window, q_s=True)
+    tunez = _estimate_tune(usvs["X"][1], harpy_input.window, q_s=True)
     return [tunex, tuney, tunez]
 
 
-def get_tune_estimate(sv_mat, window, q_s=False):
+def _estimate_tune(sv_mat, window, q_s=False):
     upper_power = int(np.power(2, np.ceil(np.log2(sv_mat.shape[1]))))
-    synchro_limit = int(upper_power / 16)  # 0.03125
+    synchro_limit = int(upper_power / 16)  # 0.03125: synchrotron tunes are lower, betatron higher
     coefs = np.abs(np.fft.rfft(np.mean(sv_mat, axis=0) * windowing(sv_mat.shape[1], window),
                                n=2 * upper_power))
     if q_s:
@@ -44,16 +53,29 @@ def get_tune_estimate(sv_mat, window, q_s=False):
 
 
 def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
+    """
+    Calculates spectra of TbT data, finds the main lines and cleans the BPMs,
+    for which the main line hasn't been found or is too far from its average over BPMs
+    Args:
+        harpy_input: Analysis settings
+        bpm_matrix: TbT BPM matrix
+        usv: U and SV^T matrices decomposed matrices, can be None
+        tunes: list of tunes [x, y, z]
+        plane: "X" or "Y" marking the horizontal or vertical plane
+
+    Returns:
+        DataFrame, Spectra, Bad BPMs summary
+    """
     panda = pd.DataFrame(index=bpm_matrix.index, columns=OrderedDict())
     frequencies, coefficients = windowed_padded_rfft(harpy_input, bpm_matrix, tunes, usv)
     panda, not_tune_bpms = _get_main_resonances(tunes, dict(FREQS=frequencies, COEFFS=coefficients),
                                                 plane, harpy_input.tolerance, panda)
-    cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, 'TUNE' + plane], harpy_input.tune_clean_limit)
+    cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"TUNE{plane}"], harpy_input.tune_clean_limit)
     panda = panda.loc[panda.index.difference(cleaned_by_tune_bpms)]
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
     bpm_matrix = bpm_matrix.loc[panda.index]
     spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
-    panda = _amp_and_mu_from_avg(bpm_matrix, plane, panda)
+    panda = _amp_and_mu_from_avg(harpy_input, bpm_matrix, plane, panda)
     if harpy_input.is_free_kick:
         panda = kicker.phase_correction(bpm_matrix, panda, plane)
     if _get_natural_tunes(harpy_input, tunes) is not None:
@@ -65,6 +87,17 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
 
 
 def find_resonances(tunes, nturns, plane, spectra):
+    """
+    Finds higher order lines in the spectra
+    Args:
+        tunes: list of tunes [x, y, z]
+        nturns: length of analysed data
+        plane: "X" or "Y" marking the horizontal or vertical plane
+        spectra: frequencies and complex coefficients
+
+    Returns:
+        DataFrame
+    """
     df = pd.DataFrame(index=spectra["FREQS"].index, columns=OrderedDict())
     resonances_freqs = _compute_resonances_with_freqs(plane, tunes)
     if tunes[2] > 0.0:
@@ -128,13 +161,6 @@ def _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms):
             [f"{bpm_name} tune is too far from average" for bpm_name in cleaned_by_tune_bpms])
 
 
-def _compute_coefs_for_freqs(samples, freqs):
-    """ Samples is a matrix """  # TODO there should be window
-    n = samples.shape[1]
-    # 2 is two halfs of complex spectra
-    return 2 * samples.dot(np.exp(-PI2I * np.outer(np.arange(n), freqs))) / n
-
-
 def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     """
     :param freq: frequncy from [0,1]
@@ -158,12 +184,18 @@ def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     return max_coefs, max_freqs
 
 
-def _amp_and_mu_from_avg(bpm_matrix, plane, panda):
-    avg_coefs = _compute_coefs_for_freqs(bpm_matrix, np.mean(panda.loc[:, 'TUNE' + plane]))
-    #  return panda  #  TODO should there be the window? probably yes
-    panda['AMP'+plane] = np.abs(avg_coefs)
-    panda['MU'+plane] = np.angle(avg_coefs) / (2 * np.pi)
+def _amp_and_mu_from_avg(harpy_input, bpm_matrix, plane, panda):
+    window = windowing(bpm_matrix.shape[1], window=harpy_input.window)
+    avg_coefs = _compute_coefs_for_freqs(bpm_matrix * window, np.mean(panda.loc[:, f"TUNE{plane}"]))
+    panda[f"AMP{plane}"] = np.abs(avg_coefs)
+    panda[f"MU{plane}"] = np.angle(avg_coefs) / (2 * np.pi)
     return panda
+
+
+def _compute_coefs_for_freqs(samples, freqs):
+    """ Samples is a matrix """
+    # 2 is for two halfs of complex spectra
+    return 2 * samples.dot(np.exp(-PI2I * np.outer(np.arange(samples.shape[1]), freqs)))
 
 
 def _get_resonance_suffix(resonance):
@@ -173,9 +205,8 @@ def _get_resonance_suffix(resonance):
 
 def _compute_resonances_with_freqs(plane, tunes):
     """
-    Computes the frequencies in [0, 1) for all the resonances listed in the
-    constant RESONANCE_LISTS, together with the natural tunes
-    frequencies if given.
+    Computes the frequencies in [0, 1) for all the resonances listed in the RESONANCE_LISTS,
+    together with the natural tunes frequencies if given.
     """
     freqs = [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in RESONANCES[plane]]
     return dict(zip(RESONANCES[plane], freqs))
@@ -192,9 +223,9 @@ def _get_resonance_tolerance(resonance, n_turns):
 
 def windowed_padded_rfft(harpy_input, matrix, tunes, svd=None):
     """
-
+    Calculates the spectra using specified windowing function and zero-padding
     Args:
-        tunes:
+        tunes: list of tunes [x, y, z]
         harpy_input: HarpyInput object
         matrix: pd.DataFrame of TbT matrix (BPMs x turns)
         svd: reduced (U_matrix, np.dot(S_matrix, V_matrix)) of original TbT matrix, default None
@@ -225,7 +256,7 @@ def windowed_padded_rfft(harpy_input, matrix, tunes, svd=None):
     return frequencies, coefficients
 
 
-def windowing(length, window='nuttal3'):
+def windowing(length, window='hamming'):
     """
     Provides specified windowing function of given length
     Args:
@@ -251,8 +282,8 @@ def get_freq_mask(harpy_input, tunes, auto_tol):
     """
     Computes mask to get intervals around resonances in frequency domain
     Args:
-        tunes:
-        auto_tol:
+        tunes: list of tunes [x, y, z]
+        auto_tol: automatically calculated tolerance
         harpy_input: HarpyInput object
 
     Returns:
