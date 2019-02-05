@@ -1,6 +1,7 @@
 """
-This module is the actual implementation of the resonance search for turn-by-turn data.
-It uses a combination of SVD decomposition zero_padded fft to speed up the search of resonances.
+Calculates the frequency spectra of turn-by-turn data.
+Uses a combination of SVD decomposition zero_padded fft to speed up the analysis
+Also searches of resonances in the calculated spectra.
 """
 from collections import OrderedDict
 import numpy as np
