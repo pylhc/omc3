@@ -2,6 +2,7 @@ language: python
 email:
     recipients:
       - lmalina@cern.ch
+      - jcoellodcern.ch
     on_success: always
     on_failure: always
 python:
