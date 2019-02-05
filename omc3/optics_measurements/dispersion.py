@@ -59,6 +59,8 @@ def _calculate_orbit(meas_input, input_files, model, plane, header):
     df_orbit[f"STD{plane}"] = stats.weighted_error(input_files.get_data(df_orbit, 'CO'), axis=1)
     df_orbit[f"DELTA{plane}"] = df_orbit.loc[:, plane] - df_orbit.loc[:, f"{plane}MDL"]
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
+    if {f"DD{plane}"}.issubset(pd.DataFrame(model).columns) == False:
+        output_df = output_df.drop(columns=[f'D2{plane}MDL'], errors='ignore')
     tfs.write(join(meas_input.outputdir, header['FILENAME']), output_df, header, save_index='NAME')
     return output_df
 
@@ -84,6 +86,8 @@ def _calculate_dispersion(meas_input, input_files, model, plane, header, order=2
                                            df_orbit.loc[:, [f"D{plane}", f"STDD{plane}"]], plane)
     df_orbit = _get_delta_columns(df_orbit, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
+    if {f"DD{plane}"}.issubset(pd.DataFrame(model).columns) == False:
+        output_df = output_df.drop(columns=[f'D2{plane}MDL', f'DELTAD2{plane}'], errors='ignore')
     tfs.write(join(meas_input.outputdir, header['FILENAME']), output_df, header, save_index='NAME')
     return output_df
 
@@ -119,6 +123,8 @@ def _calculate_normalised_dispersion(meas_input, input_files, model, beta, heade
     df_orbit['STDNDX'] = global_factor * df_orbit.loc[:, 'STDNDX_unscaled']
     df_orbit = _calculate_from_norm_disp(df_orbit, model, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
+    if {f"DD{plane}"}.issubset(pd.DataFrame(model).columns) == False:
+        output_df = output_df.drop(columns=[f'D2{plane}MDL', f'DELTAD2{plane}', f'ND2{plane}MDL', f'DELTAND2{plane}'], errors='ignore')
     tfs.write(join(meas_input.outputdir, header['FILENAME']), output_df, header, save_index='NAME')
     return output_df
 
