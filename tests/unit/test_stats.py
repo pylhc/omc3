@@ -11,7 +11,6 @@ def test_circular_zeros(zeros):
 
 def test_circular_nans(a_nan):
     assert np.isnan(stats.circular_mean(a_nan))
-    assert np.isnan(stats.circular_error(a_nan))
 
 
 def test_circular_empties():
@@ -65,7 +64,7 @@ def zeros():
 
 @pytest.fixture
 def a_nan():
-    a_nan = zeros()
+    a_nan = np.zeros(10)
     a_nan[3] = np.nan
     return a_nan
 

@@ -28,7 +28,7 @@ from utils.contexts import timeit
 LOGGER = logging_tools.get_logger(__name__)
 
 
-def hole_in_one_entrypoint():
+def hole_in_one_params():
     params = EntryPointParameters()
     params.add_parameter(flags="--harpy", name="harpy", action="store_true",
                          help="Runs frequency analysis")
@@ -37,13 +37,13 @@ def hole_in_one_entrypoint():
     return params
 
 
-@entrypoint(hole_in_one_entrypoint(), strict=False)
-def hole_in_one(opt, rest):
+@entrypoint(hole_in_one_params(), strict=False)
+def hole_in_one_entrypoint(opt, rest):
     if not opt.harpy and not opt.optics:
         raise SystemError("No module has been chosen.")
     if not rest:
         raise SystemError("No input has been set.")
-    harpy_opt, optics_opt = _get_options(opt, rest)
+    harpy_opt, optics_opt = _get_suboptions(opt, rest)
     lins = []
     if harpy_opt is not None:
         lins = _run_harpy(harpy_opt)
@@ -51,7 +51,7 @@ def hole_in_one(opt, rest):
         _measure_optics(lins, optics_opt)
 
 
-def _get_options(opt, rest):
+def _get_suboptions(opt, rest):
     if opt.harpy:
         harpy_opt, rest = _harpy_entrypoint(rest)
         if opt.optics:
@@ -118,8 +118,8 @@ def _measure_optics(lins, optics_opt):
     measure_optics.measure_optics(inputs, optics_opt)
 
 
-def _harpy_entrypoint(unknown_params):
-    options, rest = EntryPoint(harpy_params(), strict=False).parse(unknown_params)
+def _harpy_entrypoint(params):
+    options, rest = EntryPoint(harpy_params(), strict=False).parse(params)
     if options.natdeltas is not None and options.nattunes is not None:
         raise AttributeError("Colliding options found: --nattunes and --natdeltas. Choose only one")
     if options.tunes is not None and options.autotunes is not None:
@@ -222,8 +222,8 @@ def harpy_params():
     return params
 
 
-def _optics_entrypoint(unknown_params):
-    return EntryPoint(optics_params(), strict=False).parse(unknown_params)
+def _optics_entrypoint(params):
+    return EntryPoint(optics_params(), strict=False).parse(params)
 
 
 def optics_params():
@@ -280,4 +280,4 @@ OPTICS_DEFAULTS = {
 }
 
 if __name__ == "__main__":
-    hole_in_one()
+    hole_in_one_entrypoint()
