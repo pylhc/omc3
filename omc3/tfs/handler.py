@@ -198,7 +198,7 @@ def _get_header_line(name, value):
 
 
 def _get_colnames_str(colnames, colwidth):
-    fmt = _get_row_fmt_str([str] * len(colnames), colwidth)
+    fmt = _get_row_fmt_str([None] * len(colnames), colwidth)
     return "* " + fmt.format(*colnames)
 
 
@@ -273,12 +273,13 @@ def _dtype_to_str(type_):
 
 
 def _dtype_to_format(type_, colsize):
+    if type_ is None:
+        return f"{colsize}"
     if np.issubdtype(type_, np.integer) or np.issubdtype(type_, np.bool_):
         return f"{colsize}d"
-    elif np.issubdtype(type_, np.floating):
+    if np.issubdtype(type_, np.floating):
         return f"{colsize}.{colsize - len('-0.e-000')}g"
-    else:
-        return f"{colsize}s"
+    return f"{colsize}s"
 
 
 def _validate(data_frame, info_str=""):
