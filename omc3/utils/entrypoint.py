@@ -499,8 +499,44 @@ def dict2list_param(param):
             item["name"] = key
             out.append(item)
         return out
+    return param
+
+
+def list2dict_param(param):
+    """ Convert list to dictionary for quicker find """
+    if isinstance(param, list):
+        out = {}
+        for p in param:
+            out[p["name"]] = p
+        return out
+    return param
+
+
+def add_to_arguments(args, entry_params=None, **kwargs):
+    """ Adds arguments to an existing list or dictionary of arguments.
+
+    If args is a list, the flags of the names given will be added and `entry_params` is required.
+
+    Args:
+        args (list,dict): Arguments (e.g. from unknown)
+        entry_params (list, dict): Parameter belonging to the arguments
+
+    Keyword Args:
+        Name and value of the arguments to add.
+    """
+    if isinstance(args, list):
+        if entry_params is None:
+            raise ParameterError("For commandline arguments, entry_params need to be supplied.")
+
+        params = list2dict_param(entry_params)
+        for key, value in kwargs.items():
+            flag = params[key]["flags"]
+            if isinstance(flag, list):
+                flag = flag[0]
+            args.extend([flag, str(value)])
     else:
-        return param
+        args.update(kwargs)
+    return args
 
 
 def add_params_to_generic(parser, params):
