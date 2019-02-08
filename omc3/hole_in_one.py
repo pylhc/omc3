@@ -110,7 +110,7 @@ def _measure_optics(lins, optics_opt):
     from optics_measurements import measure_optics
     if len(lins) == 0:
         lins = optics_opt.files
-    inputs = measure_optics.InputFiles(lins)
+    inputs = measure_optics.InputFiles(lins, optics_opt)
     iotools.create_dirs(optics_opt.outputdir)
     calibrations = measure_optics.copy_calibration_files(optics_opt.outputdir,
                                                          optics_opt.calibrationdir)

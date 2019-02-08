@@ -43,6 +43,8 @@ def measure_optics(input_files, measure_input):
     logging_tools.add_module_handler(logging_tools.file_handler(
         os.path.join(measure_input.outputdir, LOG_FILE)))
     common_header = _get_header(measure_input)
+    
+    
     try:
         tune_dict = tune.calculate_tunes(measure_input, input_files)
         phase_dict = phase.calculate_phases(measure_input, input_files, tune_dict, common_header)
@@ -86,6 +88,9 @@ def measure_optics(input_files, measure_input):
             ), common_header, measure_input.outputdir)
     except:
         _tb_()
+    
+    # dpps = dpp.arrange_dpp(measure_input, input_files, mad_twiss, common_header) 
+    
     try:
         dispersion.calculate_dx_from_3d(measure_input, input_files, mad_twiss, common_header, tune_dict)
         dispersion.calculate_ndx_from_3d(measure_input, input_files, mad_twiss, mad_ac, beta_dict["X"]["F"],
@@ -138,7 +143,7 @@ class InputFiles(dict):
         get_columns(frame, column)
         get_data(frame, column)
     """
-    def __init__(self, files_to_analyse):
+    def __init__(self, files_to_analyse, optics_opt):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
         if isinstance(files_to_analyse[0], str):
             for file_in in files_to_analyse:
@@ -148,8 +153,13 @@ class InputFiles(dict):
             for file_in in files_to_analyse:
                 for plane in PLANES:
                     self[plane].append(file_in[plane])
+        
+        self.optics_opt = optics_opt
+        dpp_values = dpp.calculate_dpoverp(self, optics_opt)
+
         for plane in PLANES:
-            self[plane] = dpp.arrange_dpp(self[plane])
+            self[plane] = dpp.arrange_dpp(self[plane], dpp_values)
+            
         if len(self['X']) + len(self['Y']) == 0:
             raise IOError("No valid input files")
 

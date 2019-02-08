@@ -16,14 +16,18 @@ DPP_TOLERANCE = 0.0001
 LOGGER = logging.getLogger(__name__)
 
 
-def arrange_dpp(list_of_tfs):
+def arrange_dpp(list_of_tfs, dpp_values): # meas_input, input_files, model, header_dict, list_of_tfs
     """
     Grouping of dpp-values in the given linx,liny-files and computing new values
     """
+    for i in range(len(dpp_values)):
+        list_of_tfs[i].headers["DPP"] = dpp_values[i]
     list_of_tfs_arranged = []
+    
     for tfs_file in list_of_tfs:
         if "DPP" not in tfs_file.headers:
-            tfs_file.headers["DPP"] = 0.0  # calculate_dpp(tfs_file, model)
+            tfs_file.headers["DPP"] = 0.0
+
     if len(list_of_tfs) == 1:
         only_dpp = list_of_tfs[0].headers["DPP"]
         if np.abs(only_dpp) > DPP_TOLERANCE:
@@ -91,7 +95,8 @@ def _is_in_same_range(a, b):
 
 
 #TODO
-def calculate_dpoverp(meas_input, input_files, model, header_dict):
+def calculate_dpoverp(input_files, meas_input): 
+    model = meas_input.accelerator.get_model_tfs()
     df_orbit = pd.DataFrame(model).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['CO', 'CORMS']), how='inner',
                         left_index=True, right_index=True)
