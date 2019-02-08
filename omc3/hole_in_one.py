@@ -22,7 +22,7 @@ To run either of the two or both steps, use options:
 from os.path import join, dirname, basename, abspath
 import tbt
 from utils import logging_tools, iotools
-from utils.entrypoint import entrypoint, EntryPoint, EntryPointParameters
+from utils.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -55,9 +55,11 @@ def _get_suboptions(opt, rest):
     if opt.harpy:
         harpy_opt, rest = _harpy_entrypoint(rest)
         if opt.optics:
-            rest.extend(['--files'] + harpy_opt.file)
-            rest.extend(['--outputdir'] + [join(harpy_opt.outputdir, 'optics')])
-            rest.extend(['--model_dir'] + [dirname(abspath(harpy_opt.model))])
+            rest = add_to_arguments(rest, entry_params=optics_params(),
+                                    files=harpy_opt.file,
+                                    outputdir=join(harpy_opt.outputdir, 'optics'))
+            rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
+                                    model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
     if opt.optics:
