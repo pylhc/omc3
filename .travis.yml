@@ -9,3 +9,6 @@ python:
  - "3.6"
 script:
  - pytest --cov=omc3 tests/unit tests/accuracy
+ - travis-sphinx build --source=doc/ --nowarn
+after_success:
+ - travis-sphinx deploy
