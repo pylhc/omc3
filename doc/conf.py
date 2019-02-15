@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Beta-Beat.src documentation build configuration file, created by
+# omc3 documentation build configuration file, created by
 # sphinx-quickstart on Tue Feb  6 12:10:18 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -126,7 +126,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Beta-Beatsrcdoc'
+htmlhelp_basename = 'omc3doc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -153,7 +153,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Beta-Beatsrc.tex', u'Beta-Beat.src Documentation',
+    (master_doc, 'omc3.tex', u'omc3 Documentation',
      u'OMC-TEAM', 'manual'),
 ]
 
@@ -163,7 +163,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'beta-beatsrc', u'Beta-Beat.src Documentation',
+    (master_doc, 'omc3', u'omc3 Documentation',
      [author], 1)
 ]
 
@@ -174,8 +174,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Beta-Beatsrc', u'Beta-Beat.src Documentation',
-     author, 'Beta-Beatsrc', 'One line description of project.',
+    (master_doc, 'omc3', u'omc3 Documentation',
+     author, 'omc3', 'One line description of project.',
      'Miscellaneous'),
 ]
 
