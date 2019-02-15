@@ -1,3 +1,9 @@
+"""
+Module harpy.kicker
+-------------------
+
+NEEDS DOCUMENTATION!
+"""
 import numpy as np
 from utils import logging_tools
 

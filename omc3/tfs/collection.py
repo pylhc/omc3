@@ -1,3 +1,10 @@
+"""
+Module tfs.collection
+----------------------
+
+Advanced tfs reading and writing functionality.
+
+"""
 import os
 from tfs import read_tfs, write_tfs
 

@@ -1,3 +1,9 @@
+"""
+Module utils.contexts
+----------------------
+
+Provides contexts to use.
+"""
 import sys
 import os
 import time
@@ -9,6 +15,7 @@ from contextlib import contextmanager
 
 @contextmanager
 def log_out(stdout=sys.stdout, stderr=sys.stderr):
+    """ Temporarily changes sys.stdout and sys.stderr. """
     old_stdout = sys.stdout
     old_stderr = sys.stderr
     sys.stdout = stdout
@@ -22,6 +29,10 @@ def log_out(stdout=sys.stdout, stderr=sys.stderr):
 
 @contextmanager
 def silence():
+    """ Suppress all console output.
+
+    sys.stdout and sys.stderr are rerouted to devnull.
+    """
     devnull = open(os.devnull, "w")
     with log_out(stdout=devnull, stderr=devnull):
         try:
@@ -32,6 +43,7 @@ def silence():
 
 @contextmanager
 def timeit(function):
+    """ Prints the time at the end of the context via ``function``. """
     start_time = time.time()
     try:
         yield
@@ -42,6 +54,7 @@ def timeit(function):
 
 @contextmanager
 def suppress_warnings(warning_classes):
+    """ Suppress all warnings of given classes. """
     with warnings.catch_warnings(record=True) as warn_list:
         yield
     for w in warn_list:
@@ -58,6 +71,7 @@ def suppress_warnings(warning_classes):
 
 @contextmanager
 def temporary_dir():
+    """ Create a temporary dir and remove it afterwards. """
     try:
         dir_path = tempfile.mkdtemp()
         yield dir_path

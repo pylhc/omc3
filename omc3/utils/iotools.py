@@ -1,5 +1,6 @@
 """
-.. module: utils.iotools
+Module utils.iotools
+---------------------
 
 Created on 1 Jul 2013
 

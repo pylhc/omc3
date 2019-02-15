@@ -1,3 +1,10 @@
+"""
+Module harpy.handler
+---------------------
+
+NEEDS DOCUMENTATION!!
+
+"""
 from os.path import join, basename
 from collections import OrderedDict
 

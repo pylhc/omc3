@@ -1,3 +1,12 @@
+"""
+Module harpy.clean
+--------------------
+
+Cleaning functionality of harpy.
+
+"""
+
+
 import numpy as np
 import pandas as pd
 
