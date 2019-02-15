@@ -11,4 +11,4 @@ script:
  - pytest --cov=omc3 tests/unit tests/accuracy
  - travis-sphinx build --source=doc/ --nowarn
 after_success:
- - travis-sphinx deploy
+ - travis-sphinx deploy --branches=feature/16/documentation
