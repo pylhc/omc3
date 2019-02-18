@@ -1,4 +1,7 @@
 """
+Module harpy.frequency
+---------------------------
+
 Calculates the frequency spectra of turn-by-turn data.
 Uses a combination of SVD decomposition zero_padded fft to speed up the analysis
 Also searches of resonances in the calculated spectra.

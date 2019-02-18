@@ -1,3 +1,10 @@
+"""
+Module harpy.handler
+---------------------
+
+Handles the cleaning, frequency analysis and resonance search for a single-bunch TbtData.
+
+"""
 from os.path import join, basename
 from collections import OrderedDict
 

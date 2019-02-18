@@ -1,12 +1,11 @@
 r"""
-..module: utils.outliers
+Module utils.outliers
+----------------------
 
 Created on 08/05/17
 
 :author: Lukas Malina
-
 """
-
 import numpy as np
 from scipy.stats import t
 

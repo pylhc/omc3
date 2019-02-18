@@ -1,3 +1,10 @@
+"""
+Module harpy.kicker
+-------------------
+
+Corrects phase of main spectral line in a case,
+when damped (exponentially decaying) oscillations are analysed.
+"""
 import numpy as np
 from utils import logging_tools
 

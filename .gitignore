@@ -20,5 +20,5 @@ udillyties/
 .pydevproject
 .vscode
 .cache
-/doc/_*
+/doc/_build/*
 *pycache*

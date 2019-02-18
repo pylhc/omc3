@@ -1,7 +1,8 @@
 """
-.. module: stats
+Module utils.stats
+-------------------
 
-Created on 03/07/18
+Created on 03.07.18
 
 :author: Lukas Malina
 

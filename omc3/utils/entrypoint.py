@@ -87,7 +87,7 @@ Example with dictionary of dictionaries:
 
 .. code-block:: python
 
-    args = {
+    args = EntryPointParameters({
         "accel": dict(
             flags=["-a", "--accel"],
             help="Which accelerator?",
@@ -98,12 +98,13 @@ Example with dictionary of dictionaries:
             help="File with the BPM dictionary",
             default="bpm.txt",
             type=str),
-            }
+            })
 
 
 Example with list of dictionaries:
 
 .. code-block:: python
+
     args = [
         "dict(
             name="accel",

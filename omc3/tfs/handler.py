@@ -1,3 +1,9 @@
+"""
+Module tfs.handler
+-------------------
+
+Basic tfs-to-pandas io-functionality.
+"""
 from collections import OrderedDict
 from os.path import basename, dirname
 import logging

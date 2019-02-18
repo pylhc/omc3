@@ -1,5 +1,6 @@
 """
-.. module: hole_in_one
+Entrypoint hole_in_one
+------------------------
 
 Created on 27/01/19
 

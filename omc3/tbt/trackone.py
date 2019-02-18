@@ -1,3 +1,10 @@
+"""
+Module tbt.trackone
+----------------------
+
+Tbt data handling from PTC trackone.
+
+"""
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
