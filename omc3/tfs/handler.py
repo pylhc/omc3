@@ -303,5 +303,11 @@ def _validate(data_frame, info_str=""):
     if bool_df.values.any():
         LOGGER.warning(f"DataFrame {info_str:s} contains non-physical values at Index: "
                        f"{bool_df.index[bool_df.any(axis='columns')].tolist()}")
-    else:
-        LOGGER.debug(f"DataFrame {info_str:s} validated.")
+
+    if not len(set(data_frame.index)) == len(data_frame.index):
+        raise TfsFormatError("Indices are not unique.")
+
+    if not len(set(data_frame.columns)) == len(data_frame.columns):
+        raise TfsFormatError("Column names are not unique.")
+
+    LOGGER.debug(f"DataFrame {info_str:s} validated.")
