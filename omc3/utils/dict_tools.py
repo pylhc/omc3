@@ -39,7 +39,7 @@ class DotDict(dict):
         try:
             return super(DotDict, self).__getitem__(key)
         except KeyError as e:
-            raise AttributeError(e)  # TODO: Adapt traceback to not link here (Python3 does that?)
+            raise AttributeError(e).with_traceback(e.__traceback__) from e
 
     def get_subdict(self, keys, strict=True):
         """ See get_subdict in dict_tools. """
