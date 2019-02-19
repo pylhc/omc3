@@ -439,34 +439,34 @@ class EntryPointParameters(DotDict):
             item_str = ""
             item = self[name]
             try:
-                name_type = f"{name:s} ({item['type'].__name__:s})"
+                name_type = f"{name} ({item['type'].__name__})"
             except KeyError:
-                name_type = f"{name:s}"
+                name_type = f"{name}"
 
             try:
-                item_str += f"{name_type:s}: {item['help']:s}"
+                item_str += f"{name_type}: {item['help']}"
             except KeyError:
-                item_str += f"{name_type:s}: -Help not available- "
+                item_str += f"{name_type}: -Help not available- "
 
             space = " " * (len(name_type) + 2)
 
             try:
-                item_str += f"\n{space:s}**Flags**: {item['flags']:s}"
+                item_str += f"\n{space}**Flags**: {item['flags']}"
             except KeyError:
                 pass
 
             try:
-                item_str += f"\n{space:s}**Choices**: {item['choices']:s}"
+                item_str += f"{space}**Choices**: {item['choices']}"
             except KeyError:
                 pass
 
             try:
-                item_str += f"\n{space:s}**Default**: ``{item['default']:s}``"
+                item_str += f"\n{space}**Default**: ``{item['default']}``"
             except KeyError:
                 pass
 
             try:
-                item_str += f"\n{space:s}**Action**: ``{str(item['action']):s}``"
+                item_str += f"\n{space}**Action**: ``{str(item['action'])}``"
             except KeyError:
                 pass
 

@@ -23,9 +23,19 @@ PLANE_TO_NUM = {"X": 1, "Y": 2, "Z": 3}
 
 
 def run_per_bunch(tbt_data, harpy_input):
+    """
+    Cleans data, analyses frequencies and searches resonances
+
+    Args:
+        tbt_data: single bunch TbtData
+        harpy_input: Analysis settings
+
+    Returns:
+        dictionary of TfsDataFrames per plane
+    """
     model = tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
-    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.file)
+    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
         bpm_data = _scale_to_mm(bpm_data, harpy_input.unit)

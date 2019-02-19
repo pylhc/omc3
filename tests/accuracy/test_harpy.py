@@ -24,7 +24,7 @@ def test_harpy(_test_file, _model_file):
     tfs.write(_model_file, model, save_index="NAME")
     _write_tbt_file(model)
     hole_in_one_entrypoint(harpy=True, clean=True, autotunes="transverse", outputdir=CURRENT_DIR,
-                           file=[_test_file], model=_model_file, to_write=["lin"])
+                           files=[_test_file], model=_model_file, to_write=["lin"])
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
     for plane in PLANES:
@@ -48,8 +48,8 @@ def _get_model_dataframe():
     return pd.DataFrame(data=dict(S=np.arange(NBPMS, dtype=float),
                                   AMPX=np.random.rand(NBPMS) + 1, AMPY=np.random.rand(NBPMS) + 1,
                                   MUX=np.random.rand(NBPMS) - 0.5, MUY=np.random.rand(NBPMS) - 0.5,
-                                  TUNEX=0.25 + np.random.rand(1)[0] / 20,
-                                  TUNEY=0.3 + np.random.rand(1)[0] / 20),
+                                  TUNEX=0.25 + np.random.rand(1)[0] / 40,
+                                  TUNEY=0.3 + np.random.rand(1)[0] / 40),
                         index=np.array([''.join(random.choices(string.ascii_uppercase, k=7))
                                         for _ in range(NBPMS)]))
 

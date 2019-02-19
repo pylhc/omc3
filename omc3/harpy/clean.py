@@ -52,7 +52,7 @@ def _cut_cleaning(harpy_input, bpm_data, model):
     known_bad_bpms = _detect_known_bad_bpms(bpm_data, harpy_input.bad_bpms)
     bpm_flatness = _detect_flat_bpms(bpm_data, harpy_input.peak_to_peak)
     bpm_spikes = _detect_bpms_with_spikes(bpm_data, harpy_input.max_peak)
-    exact_zeros = _detect_bpms_with_exact_zeros(bpm_data, harpy_input.no_exact_zeros)
+    exact_zeros = _detect_bpms_with_exact_zeros(bpm_data, harpy_input.keep_exact_zeros)
     all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros)
     original_bpms = bpm_data.index
 
@@ -106,9 +106,9 @@ def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
     return bpm_spikes
 
 
-def _detect_bpms_with_exact_zeros(bpm_data, no_exact_zeros):
+def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
     """  Detects BPMs with exact zeros due to OP workaround  """
-    if no_exact_zeros:
+    if keep_exact_zeros:
         LOGGER.debug("Skipped exact zero check")
         return pd.DataFrame()
     exact_zeros = bpm_data[~np.all(bpm_data, axis=1)].index
