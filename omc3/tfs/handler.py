@@ -289,7 +289,10 @@ def _dtype_to_format(type_, colsize):
 
 
 def _validate(data_frame, info_str=""):
-    """ Check if Dataframe contains finite values only """
+    """ 
+    Check if Dataframe contains finite values only 
+    and both indices and columns are unique.  
+    """
     def isnotfinite(x):
         try:
             return ~np.isfinite(x)
