@@ -21,10 +21,12 @@ def clean(harpy_input, bpm_data, model):
     """
     Cleans BPM TbT matrix: removes BPMs not present in the model and based on specified cuts.
     Also cleans the noise using singular value decomposition.
+
     Args:
         harpy_input: The input object containing the analysis settings
         bpm_data: DataFrame of BPM TbT matrix indexed by BPM names
         model: model containing BPMs longitudinal locations indexed by BPM names
+
     Returns:
         Clean BPM matrix, its decomposition, bad BPMs summary and estimated BPM resolutions
     """
@@ -167,10 +169,12 @@ def _resync_bpms(harpy_input, bpm_data, model):
 
 def svd_decomposition(bpm_data, num_singular_values):
     """
-    Computes reduced (n largest values) singular value docomposition of a matrix (bpm_data) 
+    Computes reduced (n largest values) singular value docomposition of a matrix (bpm_data)
+
     Args:
         bpm_data: matrix to be decomposed
         num_singular_values: input options object that contains
+
     Returns:
         An indexed DataFrame of U matrix, product of S and V^T martices, and mean of original matrix
     """
@@ -183,7 +187,9 @@ def _get_decomposition(matrix, num):
     """
     Removes noise floor
     Requiring K singular values from MxN matrix results in matrices sized: ((MxK) x diag(K) x (K,N))
-    Returns: U (MxK),  SVt (diag(K).(K,N))
+
+    Returns:
+        U (MxK),  SVt (diag(K).(K,N))
     """
     u_mat, s_mat, vt_mat = np.linalg.svd(matrix / np.sqrt(matrix.shape[1]), full_matrices=False)
     available = np.sum(s_mat > 0.)

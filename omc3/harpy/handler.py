@@ -31,7 +31,7 @@ def run_per_bunch(tbt_data, harpy_input):
         harpy_input: Analysis settings
 
     Returns:
-        dictionary of TfsDataFrames per plane
+        Dictionary of TfsDataFrames per plane
     """
     model = tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}

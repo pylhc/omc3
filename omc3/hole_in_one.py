@@ -123,7 +123,7 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--wrong_polarity_bpms**
 
-      *--Frequency analysis--*
+      *--Frequency Analysis--*
 
       - **autotunes** *(str)*: The main tunes are guessed as the strongest line in SV^T matrix
         frequency spectrum: Synchrotron tune below ~0.03, betatron tunes above ~0.03.
