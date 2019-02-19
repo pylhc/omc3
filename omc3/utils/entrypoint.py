@@ -439,34 +439,35 @@ class EntryPointParameters(DotDict):
             item_str = ""
             item = self[name]
             try:
-                name_type = f"{name} ({item['type'].__name__})"
+                name_type = f"- **{name}** *({item['type'].__name__})*"
             except KeyError:
-                name_type = f"{name}"
+                name_type = f"- **{name}**"
 
             try:
                 item_str += f"{name_type}: {item['help']}"
             except KeyError:
                 item_str += f"{name_type}: -Help not available- "
 
-            space = " " * (len(name_type) + 2)
+            item_str += "\n"
+            space = " " * 2
 
             try:
-                item_str += f"\n{space}**Flags**: {item['flags']}"
+                item_str += f"\n{space}Flags: **{item['flags']}**"
             except KeyError:
                 pass
 
             try:
-                item_str += f"{space}**Choices**: {item['choices']}"
+                item_str += f"\n{space}Choices: ``{item['choices']}``"
             except KeyError:
                 pass
 
             try:
-                item_str += f"\n{space}**Default**: ``{item['default']}``"
+                item_str += f"\n{space}Default: ``{item['default']}``"
             except KeyError:
                 pass
 
             try:
-                item_str += f"\n{space}**Action**: ``{str(item['action'])}``"
+                item_str += f"\n{space}Action: ``{item['action']}``"
             except KeyError:
                 pass
 
@@ -476,11 +477,11 @@ class EntryPointParameters(DotDict):
                 optional_param += item_str + "\n"
 
         if required_param:
-            LOG.info("Required")
+            LOG.info("*--Required--*")
             LOG.info(required_param)
 
         if optional_param:
-            LOG.info("Optional")
+            LOG.info("*--Optional--*")
             LOG.info(optional_param)
 
 

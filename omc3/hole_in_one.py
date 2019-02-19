@@ -44,139 +44,185 @@ def hole_in_one_entrypoint(opt, rest):
     Runs frequency analysis and measures lattice optics.
 
     Hole_in_one Kwargs:
-        harpy: Runs frequency analysis
-               **Flags**: --harpy
-               **Action**: ``store_true``
-        optics: Measures the lattice optics
-                **Flags**: --optics
-                **Action**: ``store_true``
+      - **harpy**: Runs frequency analysis
+
+        Flags: **--harpy**
+        Action: ``store_true``
+      - **optics**: Measures the lattice optics
+
+        Flags: **--optics**
+        Action: ``store_true``
 
     Harpy Kwargs:
-        files: TbT files to analyse
-               **Flags**: --files
-               **Required**: ``True``
-        outputdir: Output directory.
-                   **Flags**: --outputdir
-                   **Required**: ``True``
-        to_write: Choose the type of output.
-                  **Flags**: --to_write
-                  **Choices**: ('lin', 'spectra', 'full_spectra', 'bpm_summary')
-                  **Default**: ``['lin', 'bpm_summary']``
-        turns (int): Turn index to start and first turn index to be ignored.
-                     **Flags**: --turns
-                     **Default**: ``[0, 50000]``
-        unit (str): A unit of TbT BPM orbit data. All cuts and output are in 'mm'.
-                    **Flags**: --unit            **Choices**: ('m', 'cm', 'mm', 'um')
-                    **Default**: ``mm``
+      - **files**: TbT files to analyse
 
-        #Cleaning
-        clean: If present, the data are first cleaned.
-               **Flags**: --clean
-               **Action**: ``store_true``
-        bad_bpms: Bad BPMs to clean.
-                  **Flags**: --bad_bpms
-        first_bpm (str): First BPM in the measurement to resynchronise the TbT data with the model.
-                         **Flags**: --first_bpm
-        keep_exact_zeros: If present, will not remove BPMs with exact zeros in TbT data.
-                          **Flags**: --keep_exact_zeros
-                          **Action**: ``store_true``
-        max_peak (float): Removes BPMs where the maximum orbit > limit.
-                          **Flags**: --max_peak
-                          **Default**: ``20.0``
-        model: Model for BPM locations
-               **Flags**: --model
-        is_free_kick: If present, it will perform the free kick phase correction
-                      **Flags**: --free_kick
-                      **Action**: ``store_true``
-        opposite_direction: If present, beam in the opposite direction to model is assumed
-            for resynchronisation of BPMs.
-                            **Flags**: --opposite_direction
-                            **Action**: ``store_true``
-        peak_to_peak (float): Peak to peak amplitude cut. This removes BPMs,
-            where abs(max(turn values) - min(turn values)) <= threshold.
-                              **Flags**: --peak_to_peak
-                              **Default**: ``1e-05``
-        sing_val (int): Keep this amount of largest singular values.
-                        **Flags**: --sing_val
-                        **Default**: ``12``
-        svd_dominance_limit (float): Limit for single BPM dominating a mode.
-                                     **Flags**: --svd_dominance_limit
-                                     **Default**: ``0.925``
-        wrong_polarity_bpms: BPMs with swapped polarity in both planes.
-                             **Flags**: --wrong_polarity_bpms
+        Flags: **--files**
+        Required: ``True``
+      - **outputdir**: Output directory.
 
-        #Frequency analysis
-        autotunes (str): The main tunes are guessed as the strongest line in SV^T matrix
-            frequency spectrum: Synchrotron tune below ~0.03, betatron tunes above ~0.03.
-                         **Flags**: --autotunes
-                         **Choices**: ('all', 'transverse')
-        natdeltas (float): Guess for the offsets of natural tunes from the driven tunes (x, y, z).
-            Disabled when set to 0.
-                           **Flags**: --natdeltas
-        nattunes (float): Guess for the natural tunes (x, y, z).  Disabled when set to 0.
-                          **Flags**: --nattunes
-        output_bits (int): Number (frequency, complex coefficient) pairs in the output is
-            up to 2 ** output_bits (maximal in case full spectra is output).
-            There is one pair (with maximal amplitude of complex coefficient) per
-            interval of size 2 ** (- output_bits - 1).
-                           **Flags**: --output_bits
-                           **Default**: ``12``
-        tolerance (float): Tolerance specifying an interval in frequency domain,
-            where to look for the tunes.
-                           **Flags**: --tolerance
-                           **Default**: ``0.01``
-        tune_clean_limit (float): The tune cleaning wont remove BPMs because of measured
-            tune outliers closer to the average tune than this limit.
-                                  **Flags**: --tune_clean_limit
-                                  **Default**: ``1e-05``
-        tunes (float): Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0.
-                       **Flags**: --tunes
-        turn_bits (int): Number (frequency, complex coefficient) pairs in the calculation
-            is 2 ** turn_bits, i.e. the difference between two neighbouring frequencies
-            is 2 ** (- turn_bits - 1).
-                         **Flags**: --turn_bits
-                         **Default**: ``20``
-        window (str): Windowing function to be used for frequency analysis.
-                      **Flags**: --window
-                      **Choices**: ('rectangle', 'hamming', 'nuttal3', 'nuttal4')
-                      **Default**: ``hamming``
+        Flags: **--outputdir**
+        Required: ``True``
+      - **to_write**: Choose the type of output.
+
+        Flags: **--to_write**
+        Choices: ``('lin', 'spectra', 'full_spectra', 'bpm_summary')``
+        Default: ``['lin', 'bpm_summary']``
+      - **turns** *(int)*: Turn index to start and first turn index to be ignored.
+
+        Flags: **--turns**
+        Default: ``[0, 50000]``
+      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'mm'.
+
+        Flags: **--unit**
+        Choices: ``('m', 'cm', 'mm', 'um')``
+        Default: ``mm``
+
+      *--Cleaning--*
+
+      - **clean**: If present, the data are first cleaned.
+
+        Flags: **--clean**
+        Action: ``store_true``
+      - **bad_bpms**: Bad BPMs to clean.
+
+        Flags: **--bad_bpms**
+      - **first_bpm** *(str)*: First BPM in the measurement.
+        Used to resynchronise the TbT data with model.
+
+        Flags: **--first_bpm**
+      - **keep_exact_zeros**: If present, will not remove BPMs with exact zeros in TbT data.
+
+        Flags: **--keep_exact_zeros**
+        Action: ``store_true``
+      - **max_peak** *(float)*: Removes BPMs where the maximum orbit > limit.
+
+        Flags: **--max_peak**
+        Default: ``20.0``
+      - **model**: Model for BPM locations
+
+        Flags: **--model**
+      - **opposite_direction**: If present, beam in the opposite direction to model
+        is assumed for resynchronisation of BPMs.
+
+        Flags: **--opposite_direction**
+        Action: ``store_true``
+      - **peak_to_peak** *(float)*: Peak to peak amplitude cut. This removes BPMs,
+        where abs(max(turn values) - min(turn values)) <= threshold.
+
+        Flags: **--peak_to_peak**
+        Default: ``1e-05``
+      - **sing_val** *(int)*: Keep this amount of largest singular values.
+
+        Flags: **--sing_val**
+        Default: ``12``
+      - **svd_dominance_limit** *(float)*: Limit for single BPM dominating a mode.
+
+        Flags: **--svd_dominance_limit**
+        Default: ``0.925``
+      - **wrong_polarity_bpms**: BPMs with swapped polarity in both planes.
+
+        Flags: **--wrong_polarity_bpms**
+
+      *--Frequency analysis--*
+
+      - **autotunes** *(str)*: The main tunes are guessed as the strongest line in SV^T matrix
+        frequency spectrum: Synchrotron tune below ~0.03, betatron tunes above ~0.03.
+
+        Flags: **--autotunes**
+        Choices: ``('all', 'transverse')``
+      - **is_free_kick**: If present, it will perform the free kick phase correction
+
+        Flags: **--free_kick**
+        Action: ``store_true``
+      - **natdeltas** *(float)*: Guess for the offsets of natural tunes from
+        the driven tunes (x, y, z). Disabled when set to 0.
+
+        Flags: **--natdeltas**
+      - **nattunes** *(float)*: Guess for the natural tunes (x, y, z).  Disabled when set to 0.
+
+        Flags: **--nattunes**
+      - **output_bits** *(int)*: Number (frequency, complex coefficient) pairs in the output
+        is up to 2 ** output_bits (maximal in case full spectra is output).
+        There is one pair (with maximal amplitude of complex coefficient) per interval
+        of size 2 ** (- output_bits - 1).
+
+        Flags: **--output_bits**
+        Default: ``12``
+      - **tolerance** *(float)*: Tolerance specifying an interval in frequency domain,
+        where to look for the tunes.
+
+        Flags: **--tolerance**
+        Default: ``0.01``
+      - **tune_clean_limit** *(float)*: The tune cleaning wont remove BPMs because of measured
+        tune outliers closer to the average tune than this limit.
+
+        Flags: **--tune_clean_limit**
+        Default: ``1e-05``
+      - **tunes** *(float)*: Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0
+
+        Flags: **--tunes**
+      - **turn_bits** *(int)*: Number (frequency, complex coefficient) pairs in the calculation
+        is 2 ** turn_bits, i.e. the difference between two neighbouring frequencies
+        is 2 ** (- turn_bits - 1).
+
+        Flags: **--turn_bits**
+        Default: ``20``
+      - **window** *(str)*: Windowing function to be used for frequency analysis.
+
+        Flags: **--window**
+        Choices: ``('rectangle', 'hamming', 'nuttal3', 'nuttal4')``
+        Default: ``hamming``
+
 
     Optics Kwargs:
-        files: Files for analysis
-               **Flags**: --files
-               **Required**: ``True``
-        outputdir: Output directory
-                   **Flags**: --outputdir
-                   **Required**: ``True``
-        calibrationdir (str): Path to calibration files directory.
-                              **Flags**: --calibrationdir
-        coupling_method (int): Analysis option for coupling: disabled, 1 BPM or 2 BPMs method
-                               **Flags**: --coupling_method
-                               **Choices**: (0, 1, 2)
-                               **Default**: ``2``
-        max_beta_beating (float): Maximal beta-beating allowed for action calculation.
-                                  **Flags**: --max_beta_beating
-                                  **Default**: ``0.15``
-        max_closed_orbit (float): Maximal closed orbit in 'mm' allowed for dispersion measurement
-                                  **Flags**: --max_closed_orbit
-                                  **Default**: ``4.0``
-        nonlinear: Calculate higher order RDTs
-                   **Flags**: --nonlinear
-                   **Action**: ``store_true``
-        only_coupling: Calculate only coupling.
-                       **Flags**: --only_coupling
-                       **Action**: ``store_true``
-        range_of_bpms (int): Range of BPMs for beta from phase calculation
-                             **Flags**: --range_of_bpms
-                             **Choices**: (5, 7, 9, 11, 13, 15)
-                             **Default**: ``11``
-        three_bpm_method: Use 3 BPM method in beta from phase
-                          **Flags**: --three_bpm_method
-                          **Action**: ``store_true``
-        union: If present, the phase advances are calculate for union of BPMs
-            with at least 3 valid measurements, instead of intersection.
-               **Flags**: --union
-               **Action**: ``store_true``
+      - **files**: Files for analysis
+
+        Flags: **--files**
+        Required: ``True``
+      - **outputdir**: Output directory
+
+        Flags: **--outputdir**
+        Required: ``True``
+      - **calibrationdir** *(str)*: Path to calibration files directory.
+
+        Flags: **--calibrationdir**
+      - **coupling_method** *(int)*: Coupling analysis option: disabled, 1 BPM or 2 BPMs method
+
+        Flags: **--coupling_method**
+        Choices: ``(0, 1, 2)``
+        Default: ``2``
+      - **max_beta_beating** *(float)*: Maximal beta-beating allowed for action calculation.
+
+        Flags: **--max_beta_beating**
+        Default: ``0.15``
+      - **max_closed_orbit** *(float)*: Maximal closed orbit in 'mm'
+        allowed for dispersion measurement
+
+        Flags: **--max_closed_orbit**
+        Default: ``4.0``
+      - **nonlinear**: Calculate higher order RDTs
+
+        Flags: **--nonlinear**
+        Action: ``store_true``
+      - **only_coupling**: Calculate only coupling.
+
+        Flags: **--only_coupling**
+        Action: ``store_true``
+      - **range_of_bpms** *(int)*: Range of BPMs for beta from phase calculation
+
+        Flags: **--range_of_bpms**
+        Choices: ``(5, 7, 9, 11, 13, 15)``
+        Default: ``11``
+      - **three_bpm_method**: Use 3 BPM method in beta from phase
+
+        Flags: **--three_bpm_method**
+        Action: ``store_true``
+      - **union**: If present, the phase advances are calculate for union of BPMs
+        with at least 3 valid measurements, instead of intersection .
+
+        Flags: **--union**
+        Action: ``store_true``
+
 
     Accelerator Kwargs:  TODO
 
