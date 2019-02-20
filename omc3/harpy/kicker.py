@@ -12,6 +12,17 @@ LOGGER = logging_tools.getLogger(__name__)
 
 
 def phase_correction(bpm_data_orig, lin_frame, plane):
+    """
+    Corrects phase of main spectral line assuming exponentially decaying oscillations
+
+    Args:
+        bpm_data_orig: matrix of original TbtData
+        lin_frame: DataFrame in which to correct the results
+        plane: "X" or "Y"
+
+    Returns:
+        DataFrame with corrected phases
+    """
     bpm_data = bpm_data_orig.loc[lin_frame.index, :]
     damp, dstd = _get_damping(bpm_data)
     LOGGER.debug(f"Damping factor X: {damp:2.2e} +- {dstd:2.2e}")
