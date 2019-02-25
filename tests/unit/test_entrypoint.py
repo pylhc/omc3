@@ -2,7 +2,6 @@ import os
 import pytest
 import sys
 import tempfile
-from io import StringIO
 
 from . import context
 from parser.entrypoint import (EntryPointParameters,
@@ -384,7 +383,7 @@ def test_split_dictargs():
 def test_create_param_help():
     this_module = sys.modules[__name__]
     entrypoint_module = sys.modules[create_parameter_help.__module__].__name__
-    with StringLogger(entrypoint_module) as log:
+    with logging_tools.TempStringLogger(entrypoint_module) as log:
         create_parameter_help(this_module)
     text = log.get_log()
     for name in get_params().keys():
@@ -394,7 +393,7 @@ def test_create_param_help():
 def test_create_param_help_other():
     this_module = sys.modules[__name__]
     entrypoint_module = sys.modules[create_parameter_help.__module__].__name__
-    with StringLogger(entrypoint_module) as log:
+    with logging_tools.TempStringLogger(entrypoint_module) as log:
         create_parameter_help(this_module, "get_other_params")
     text = log.get_log()
     for name in get_other_params().keys():
@@ -484,25 +483,3 @@ def strict_function(options):
 @entrypoint(get_testing_params())
 def paramtest_function(opt, unknown):
     return opt, unknown
-
-
-# Other ########################################################################
-
-
-class StringLogger:
-    def __init__(self, module):
-        self.stream = StringIO()
-        self.handler = logging_tools.stream_handler(stream=self.stream)
-        self.log = logging_tools.getLogger(module)
-
-    def __enter__(self):
-        self.log.propagate = False
-        self.log.setLevel(logging_tools.INFO)
-        self.log.addHandler(self.handler)
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.log.removeHandler(self.handler)
-
-    def get_log(self):
-        return self.stream.getvalue()

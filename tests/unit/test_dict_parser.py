@@ -1,7 +1,9 @@
 import pytest
+import sys
 
 from . import context
 from parser.dict_parser import ParameterError, Parameter, DictParser
+from utils.logging_tools import TempStringLogger
 
 
 def test_deep_dict():
@@ -104,3 +106,18 @@ def test_name_not_key():
     with pytest.raises(ParameterError):
         DictParser({"test": Parameter(name="nottest")})
 
+
+def test_print_tree():
+    parser = DictParser()
+    param = Parameter("test", default="c", required=False, choices=["a", "b", "c"], help="help")
+    loc = "sub.suub.suuub"
+    parser.add_parameter(param, loc=loc)
+    parser_module = sys.modules[parser.tree.__module__].__name__
+    with TempStringLogger(parser_module) as log:
+        parser.tree()
+
+    text = log.get_log()
+    for l in loc.split("."):
+        assert l in text
+    for attr in ["name", "default", "required", "choices", "help"]:
+        assert str(getattr(param, attr)) in text
