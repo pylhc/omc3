@@ -1,7 +1,8 @@
 import pytest
 
 from . import context
-from utils.dict_tools import DotDict, DictParser, ParameterError, Parameter
+from utils.dict_tools import DotDict
+from parser.dict_parser import ParameterError, Parameter, DictParser
 
 
 def test_deep_dict():

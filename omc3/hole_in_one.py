@@ -23,7 +23,7 @@ To run either of the two or both steps, use options:
 from os.path import join, dirname, basename, abspath
 import tbt
 from utils import logging_tools, iotools
-from utils.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
+from parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)

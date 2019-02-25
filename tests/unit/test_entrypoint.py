@@ -2,12 +2,12 @@ import os
 import pytest
 import tempfile
 
-from . import context
-from utils.entrypoint import (EntryPointParameters,
-                              entrypoint, EntryPoint,
-                              ArgumentError, ParameterError, OptionsError,
-                              )
-from utils.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
+from parser.entrypoint import (EntryPointParameters,
+                               entrypoint, EntryPoint,
+                               OptionsError,
+                               )
+from parser.dict_parser import ParameterError, ArgumentError
+from parser.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
 from utils.dict_tools import print_dict_tree
 from utils import logging_tools
 from utils.contexts import silence
