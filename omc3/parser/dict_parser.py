@@ -332,11 +332,6 @@ class DictParser(object):
 
     def _convert_config_items(self, items):
         """ Converts items list to a dictionary with types already in place """
-        def list_check(value):
-            if not value.replace(" ", "").startswith("range("):
-                value = "[" + value + "]"
-            return value
-
         def evaluate(name, item):
             try:
                 return eval(item)  # sorry for using that
@@ -356,7 +351,6 @@ class DictParser(object):
             if name in self.dictionary:
                 arg = self.dictionary[name]
                 if arg.type == list:
-                    value = list_check(value)
                     value = evaluate(name, value)
                     if arg.subtype:
                         for idx, entry in enumerate(value):

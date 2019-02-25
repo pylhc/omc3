@@ -136,7 +136,7 @@ def test_as_config():
                 "[Section]",
                 "name = 'myname'",
                 "int = 3",
-                "list = 4, 5, 6",
+                "list = [4, 5, 6]",
                 "unknown = 'other'",
             ]))
 
