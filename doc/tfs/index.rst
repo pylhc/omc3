@@ -1,11 +1,6 @@
 TFS
 **************************
 
-
-Package Content
-=======================
-
-
 .. automodule:: tfs.collection
     :members:
 

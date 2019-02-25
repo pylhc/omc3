@@ -1,10 +1,6 @@
 SDDS
 **************************
 
-
-Package Content
-=======================
-
 .. automodule:: sdds.classes
     :members:
 

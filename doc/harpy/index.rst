@@ -1,10 +1,6 @@
 Harpy
 **************************
 
-
-Package Content
-=======================
-
 .. automodule:: harpy.clean
     :members:
 
