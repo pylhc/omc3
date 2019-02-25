@@ -1,10 +1,14 @@
 import os
 import pytest
+import sys
 import tempfile
+from io import StringIO
 
+from . import context
 from parser.entrypoint import (EntryPointParameters,
                                entrypoint, EntryPoint,
-                               OptionsError,
+                               OptionsError, split_arguments,
+                               create_parameter_help
                                )
 from parser.dict_parser import ParameterError, ArgumentError
 from parser.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
@@ -356,6 +360,47 @@ def test_bool_or_list_cfg():
     assert opt.bol2 == True
 
 
+# Test the Helpers #################################################################
+
+
+def test_split_listargs():
+    args = ["--a1", "1", "--a2", "2", "--a3", "3"]
+    split = split_arguments(args, get_simple_params())
+    assert split[0].pop("arg1", None) == "1"
+    assert split[0].pop("arg2", None) == "2"
+    assert len(split[0]) == 0
+    assert split[1] == args[-2:]
+
+
+def test_split_dictargs():
+    args = {"arg1": "1", "arg2": 2, "arg3": 3}
+    split = split_arguments(args, get_simple_params())
+    assert split[0].pop("arg1", None) == "1"
+    assert split[0].pop("arg2", None) == 2
+    assert len(split[0]) == 0
+    assert split[1].pop("arg3") == 3
+
+
+def test_create_param_help():
+    this_module = sys.modules[__name__]
+    entrypoint_module = sys.modules[create_parameter_help.__module__].__name__
+    with StringLogger(entrypoint_module) as log:
+        create_parameter_help(this_module)
+    text = log.get_log()
+    for name in get_params().keys():
+        assert name in text
+
+
+def test_create_param_help_other():
+    this_module = sys.modules[__name__]
+    entrypoint_module = sys.modules[create_parameter_help.__module__].__name__
+    with StringLogger(entrypoint_module) as log:
+        create_parameter_help(this_module, "get_other_params")
+    text = log.get_log()
+    for name in get_other_params().keys():
+        assert name in text
+
+
 # Example Parameter Definitions ################################################
 
 
@@ -406,6 +451,18 @@ def get_params():
     return args
 
 
+def get_other_params():
+    """ For testing the create_param_help()"""
+    args = EntryPointParameters({
+        "arg1": dict(flags="--arg1", help="A help.", default=1,),
+        "arg2": dict(flags="--arg2", help="More help.", default=2,),
+        "arg3": dict(flags="--arg3", help="Even more...", default=3,),
+        "arg4": dict(flags="--arg4", help="...heeeeeeeeelp.", default=4,),
+    })
+    return args
+
+
+
 # Example Wrapped Functions ####################################################
 
 
@@ -427,3 +484,25 @@ def strict_function(options):
 @entrypoint(get_testing_params())
 def paramtest_function(opt, unknown):
     return opt, unknown
+
+
+# Other ########################################################################
+
+
+class StringLogger:
+    def __init__(self, module):
+        self.stream = StringIO()
+        self.handler = logging_tools.stream_handler(stream=self.stream)
+        self.log = logging_tools.getLogger(module)
+
+    def __enter__(self):
+        self.log.propagate = False
+        self.log.setLevel(logging_tools.INFO)
+        self.log.addHandler(self.handler)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.log.removeHandler(self.handler)
+
+    def get_log(self):
+        return self.stream.getvalue()

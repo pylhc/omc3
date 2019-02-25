@@ -616,7 +616,8 @@ def split_arguments(args, *param_list):
         # should be a dictionary of params, so do it the manual way
         for params in param_list:
             params = param_names(params)
-            split_args.append(DotDict([(key, args.pop(key)) for key in args if key in params]))
+            split_args.append(DotDict([(key, args.pop(key))
+                                       for key in list(args.keys()) if key in params]))
         split_args.append(DotDict(args))
     return split_args
 
