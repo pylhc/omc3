@@ -10,6 +10,7 @@ Functions for easier use of logging, like automatic logger setup
 import datetime
 import inspect
 import logging
+from io import StringIO
 import os
 import sys
 import time
@@ -184,6 +185,35 @@ def unformatted_console_logging():
         rl.removeHandler(handler)
 
 
+class TempStringLogger:
+    """ Temporarily log into a string that can be retrieved by get_log
+
+    Args:
+        module: module to log, default: caller file.
+        level: logging level, default INFO.
+    """
+    def __init__(self, module=None, level=INFO):
+        if module is None:
+            module = _get_caller_logger_name()
+
+        self.stream = StringIO()
+        self.level = level
+        self.handler = stream_handler(stream=self.stream)
+        self.log = getLogger(module)
+
+    def __enter__(self):
+        self.log.propagate = False
+        self.log.setLevel(self.level)
+        self.log.addHandler(self.handler)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.log.removeHandler(self.handler)
+
+    def get_log(self):
+        """ Get the log as string. """
+        return self.stream.getvalue()
+
 # Public Methods ###############################################################
 
 
@@ -200,9 +230,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
     Returns:
         Logger instance.
     """
-    # get current module
-    caller_file = _get_caller()
-    current_module = _get_current_module(caller_file)
+    logger_name = _get_caller_logger_name()
 
     if name == "__main__":
         # set up root logger
@@ -237,7 +265,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
         )
 
     # logger for the current file
-    return logging.getLogger(".".join([current_module, os.path.basename(caller_file)]))
+    return logging.getLogger(logger_name)
 
 
 def file_handler(logfile, level=DEBUG, fmt=BASIC_FORMAT):
@@ -276,6 +304,11 @@ def getLogger(name):
     return logging.getLogger(name)
 
 
+def get_my_logger_name():
+    """ Return the logger name for the caller. """
+    return _get_caller_logger_name()
+
+
 # Private Methods ##############################################################
 
 
@@ -303,6 +336,13 @@ def _get_current_module(current_file=None):
 
     current_module = '.'.join(path_parts[len(repo_parts):-1])
     return current_module
+
+
+def _get_caller_logger_name():
+    """ Returns logger name of the caller. """
+    caller_file = _get_caller()
+    current_module = _get_current_module(caller_file)
+    return ".".join([current_module, os.path.basename(caller_file)])
 
 
 def _bring_color(format_string, colorlevel=INFO):

@@ -14,14 +14,6 @@ Package Content
     :members:
 
 
-.. automodule:: utils.entry_datatypes
-    :members:
-
-
-.. automodule:: utils.entrypoint
-    :members:
-
-
 .. automodule:: utils.iotools
     :members:
 

@@ -13,6 +13,7 @@ Contents:
 
    entrypoints/index
    harpy/index
+   parser/index
    sdds/index
    tbt/index
    tfs/index

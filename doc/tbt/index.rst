@@ -1,10 +1,6 @@
 Turn-by-Turn
 **************************
 
-
-Package Content
-=======================
-
 .. automodule:: tbt.esrf_tbt
     :members:
 
