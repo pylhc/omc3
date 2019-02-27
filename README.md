@@ -52,11 +52,18 @@ rewritten for python 3.6+.
 
 - k-mod
 
+- Accuracy tests
 
-## Testing
+- Regression tests
+
+## Quality checks
+
+### Tests
 
 - Pytest unit tests are run automatically after each commit via 
 [Travis-CI](https://travis-ci.com/pylhc/omc3). 
+
+### Maintainability
 
 - Additional checks for code-complexity, design-rules, test-coverage, duplication on 
 [CodeClimate](https://codeclimate.com/github/pylhc/omc3)
