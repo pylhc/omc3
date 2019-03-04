@@ -35,7 +35,7 @@ rewritten for python 3.6+.
 
 - Still building up to first release.
 
-### Transferred
+### Implemented
 
 - Main functions: hole_in_one, harpy
 
@@ -44,7 +44,7 @@ rewritten for python 3.6+.
 - Madx wrapper
 
 
-### Transfer in progress
+### Development in progress
 
 - optics measurement
 
