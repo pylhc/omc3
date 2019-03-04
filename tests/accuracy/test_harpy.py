@@ -34,10 +34,11 @@ def test_harpy(_test_file, _model_file):
         assert _rms(_diff(lin[plane].loc[:, f"FREQ{_couple(plane)}"].values,
                           model.loc[:, f"TUNE{_other(plane)}"].values)) < LIMITS["F2"]
         #main and secondary amplitudes
-        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values,
+        # TODO remove factor 2 - only for backwards compatibility with Drive
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values * 2,
                               model.loc[:, f"AMP{plane}"].values)) < LIMITS["A1"]
         assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{_couple(plane)}"].values *
-                              lin[plane].loc[:, f"AMP{plane}"].values,
+                              lin[plane].loc[:, f"AMP{plane}"].values * 2,
                               COUPLING * model.loc[:, f"AMP{_other(plane)}"].values)) < LIMITS["A2"]
         # main and secondary phases
         assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].values,

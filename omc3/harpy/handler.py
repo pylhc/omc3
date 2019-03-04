@@ -176,12 +176,17 @@ def _get_output_path_without_suffix(output_dir, file_path):
 
 def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     """
-    TODO    follows not transpararent convention
+    TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
     cols = [col for col in panda.columns.values if col.startswith('AMP')]
     cols.remove(f"AMP{plane}")
     panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"AMP{plane}"], axis="index")
+    # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
+    panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].values / 2
+    if f"NATAMP{plane}" in panda.columns:
+        panda[f"NATAMP{plane}"] = panda.loc[:, f"NATAMP{plane}"].values / 2
+
     if np.max(panda.loc[:, 'NOISE'].values) == 0.0:
         return panda  # Do not calculated errors when no noise was calculated
     noise_scaled = panda.loc[:, 'NOISE'] / panda.loc[:, f"AMP{plane}"]
