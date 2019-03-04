@@ -78,15 +78,20 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
                                                 plane, harpy_input.tolerance, panda)
     cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"TUNE{plane}"], harpy_input.tune_clean_limit)
     panda = panda.loc[panda.index.difference(cleaned_by_tune_bpms)]
+    panda[f"MU{plane}"] = _realign_phases(panda.loc[:, f"MU{plane}"].values,
+                                          panda.loc[:, f"TUNE{plane}"].values, bpm_matrix.shape[1])
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
     bpm_matrix = bpm_matrix.loc[panda.index]
     spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
-    panda = _amp_and_mu_from_avg(harpy_input, bpm_matrix, plane, panda)
+
     if harpy_input.is_free_kick:
         panda = kicker.phase_correction(bpm_matrix, panda, plane)
     if _get_natural_tunes(harpy_input, tunes) is not None:
         panda = panda.join(_calculate_natural_tunes(spectra, _get_natural_tunes(harpy_input, tunes),
                                                     harpy_input.tolerance, plane))
+        panda[f"NATMU{plane}"] = _realign_phases(panda.loc[:, f"NATMU{plane}"].values,
+                                                 panda.loc[:, f"NATTUNE{plane}"].values,
+                                                 bpm_matrix.shape[1])
     if tunes[2] > 0:
         panda, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, panda)
     return panda, spectra, bad_bpms_summaries
@@ -116,6 +121,8 @@ def find_resonances(tunes, nturns, plane, spectra):
         resstr = _get_resonance_suffix(resonance)
         df[f"FREQ{resstr}"], df[f"AMP{resstr}"], df[f"PHASE{resstr}"] = _get_freqs_amps_phases(
             max_freqs, max_coefs, resonances_freqs[resonance])
+        df[f"PHASE{resstr}"] = _realign_phases(df.loc[:, f"PHASE{resstr}"].values,
+                                               df.loc[:, f"FREQ{resstr}"].values, nturns)
     return df
 
 
@@ -145,6 +152,11 @@ def _calculate_natural_tunes(spectra, nattunes, tolerance, plane):
 
 def _get_freqs_amps_phases(max_freqs, max_coefs, freq):
     return max_freqs, np.abs(max_coefs), np.sign(0.5 - freq) * np.angle(max_coefs) / (2 * np.pi)
+
+
+def _realign_phases(phase_data, freq_data, nturns):
+    mid_phase = (phase_data + freq_data * nturns / 2) % 1
+    return np.where(np.abs(mid_phase) > 0.5, mid_phase - np.sign(mid_phase), mid_phase)
 
 
 def clean_by_tune(tunes, tune_clean_limit):
@@ -195,20 +207,6 @@ def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     max_freqs = freq_vals[np.arange(freq_vals.shape[0]), max_indices]
     max_freqs = pd.Series(index=coefficients.index, data=np.where(max_coefs != 0, max_freqs, 0))
     return max_coefs, max_freqs
-
-
-def _amp_and_mu_from_avg(harpy_input, bpm_matrix, plane, panda):
-    window = windowing(bpm_matrix.shape[1], window=harpy_input.window)
-    avg_coefs = _compute_coefs_for_freqs(bpm_matrix * window, np.mean(panda.loc[:, f"TUNE{plane}"]))
-    panda[f"AMP{plane}"] = np.abs(avg_coefs)
-    panda[f"MU{plane}"] = np.angle(avg_coefs) / (2 * np.pi)
-    return panda
-
-
-def _compute_coefs_for_freqs(samples, freqs):
-    """ Samples is a matrix """
-    # 2 is for two halfs of complex spectra
-    return 2 * samples.dot(np.exp(-PI2I * np.outer(np.arange(samples.shape[1]), freqs)))
 
 
 def _get_resonance_suffix(resonance):
@@ -277,8 +275,8 @@ def windowing(length, window='hamming'):
     Provides specified windowing function of given length.
 
     Currently, the following windowing functions are implemented
-    (sorted by increasing width of main lobe, also decreasing spectral leakage):
-    ``rectangle``, ``hamming``, ``nuttal3``, ``nuttal4``
+    (sorted by increasing width of main lobe, also decreasing spectral leakage in closest lobes):
+    ``rectangle``, ``welch``, ``trinagle``, ``hann``, ``hamming``, ``nuttal3``, ``nuttal4``
 
     Args:
         length: length of the window
@@ -292,6 +290,9 @@ def windowing(length, window='hamming'):
         "nuttal4": 0.3125 - 0.46875 * np.cos(ints2pi) + 0.1875 * np.cos(2 * ints2pi) - 0.03125 * np.cos(3 * ints2pi),
         "nuttal3": 0.375 - 0.5 * np.cos(ints2pi) + 0.125 * np.cos(2 * ints2pi),
         "hamming": (25 / 46) - (21 / 46) * np.cos(ints2pi),
+        "hann": 0.5 - 0.5 * np.cos(ints2pi),
+        "welch": 1 - np.square((ints2pi / np.pi) - 1),
+        "triangle": 1 - np.abs((ints2pi / np.pi) - 1),
         "rectangle": np.ones(length)
     }
     if window not in windows.keys():
