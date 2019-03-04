@@ -1,3 +1,10 @@
+"""
+Module tbt.esrf_tbt
+--------------------
+
+Data handling for tbt data from ESRF.
+
+"""
 from os.path import abspath, join, dirname
 import json
 from scipy.io import loadmat

@@ -1,5 +1,6 @@
 """
-:module: madx.madx_wrapper
+Entrypoint madx_wrapper
+--------------------------
 
 Runs MADX with a file or a string as an input, it processes @required macros.
 If defined, writes the processed MADX script and logging output into files.

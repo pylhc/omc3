@@ -1,7 +1,12 @@
-"""This module holds the classes handled by the sdds handler.
+"""
+Module sdds.classes
+----------------------
+
+This module holds the classes handled by the sdds handler.
 
 Most of the documentation comes from:
 https://ops.aps.anl.gov/manuals/SDDStoolkit/SDDStoolkitsu2.html
+
 """
 from typing import Any, Tuple, List, Iterator, Optional, Dict
 
@@ -143,10 +148,14 @@ class SddsFile:
     Parameter, Array or Column). The "values" dictionary has the form:
     name (as a str) -> value. To access them:
     sdds_file = SddsFile(...)
-    >>> def_ = sdds_file.definitions["name"]
-    >>> val = sdds_file.values["name"]
-    >>> # The definitions and values can also be accessed like:
-    >>> def_, val = sdds_file["name"]
+
+    .. code-block:: python
+
+        def_ = sdds_file.definitions["name"]
+        val = sdds_file.values["name"]
+        # The definitions and values can also be accessed like:
+        def_, val = sdds_file["name"]
+
     """
     version: str  # This should always be "SDDS1"
     description: Optional[Description]

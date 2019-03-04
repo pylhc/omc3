@@ -1,113 +1,43 @@
+from io import StringIO
 import pytest
 
+
 from . import context
-from utils.dict_tools import DotDict, DictParser, ParameterError, Parameter
+from utils.dict_tools import DotDict, print_dict_tree
 
 
-def test_deep_dict():
-    parser = DictParser({
-        'sub': {'param': Parameter('param', type=int)},
-        'sub2': {'suub': {'param': Parameter("param", type=str)}}
-    }, strict=True)
-
-    # parser.tree()
-    opt = {
-        'sub': {'param': 4},
-        'sub2': {'suub': {'param': "myString"}}
-    }
-
-    opt = parser.parse_arguments(opt)
-    assert opt.sub.param == 4
-    assert opt.sub2.suub.param == "myString"
-
-
-def test_add_param_loc():
-    parser = DictParser()
-    parser.add_parameter(Parameter("test", default="def"), loc="sub.suub.suuub")
-    assert parser.dictionary["sub"]["suub"]["suuub"]["test"].name == "test"
-    assert parser.dictionary["sub"]["suub"]["suuub"]["test"].default == "def"
-
-
-def test_add_param_loc2():
-    parser = DictParser()
-    parser.add_parameter("test", loc="sub.suub.suuub", default="def")
-    assert parser.dictionary["sub"]["suub"]["suuub"]["test"].name == "test"
-    assert parser.dictionary["sub"]["suub"]["suuub"]["test"].default == "def"
-
-
-def test_add_param_already_exist_loc():
-    parser = DictParser()
-    parser.add_parameter("test", loc="sub.suub")
-    with pytest.raises(ParameterError):
-        parser.add_parameter("suub", loc="sub")
-
-
-def test_add_parameter_dict():
-    parser = DictParser()
-    parser.add_parameter("param1", loc="sub.suub")
-    parser2 = DictParser()
-    parser2.add_parameter("param2")
-    parser2.add_parameter_dict(parser.dictionary, loc="sb")
-    assert parser2.dictionary["sb"]["sub"]["suub"]["param1"].name == "param1"
-    assert parser2.dictionary["param2"].name == "param2"
-
-
-def test_most_basic_init():
-    p = Parameter(name='test')
-    assert p.name == 'test'
-
-
-def test_missing_name():
-    with pytest.raises(TypeError):
-        Parameter(default="a")
-
-
-def test_default_not_a_list_with_nargs():
-    with pytest.raises(ParameterError):
-        Parameter(name="test", default="a", nargs="+")
-
-
-def test_default_not_in_choices():
-    with pytest.raises(ParameterError):
-        Parameter(name="test", default="a", choices=["b", "c"])
-
-
-def test_default_not_in_choices_list():
-    with pytest.raises(ParameterError):
-        Parameter(name="test", default=["a", "b"], choices=["b", "c"], nargs="+")
-
-
-def test_default_not_of_type():
-    with pytest.raises(ParameterError):
-        Parameter(name="test", default=3, type=str)
-
-
-def test_choices_not_iterable():
-    with pytest.raises(ParameterError):
-        Parameter(name="test", choices=3)
-
-
-def test_choices_not_of_type():
-    with pytest.raises(ParameterError):
-        Parameter(name="test", choices=["a", 3], type=str)
-
-
-def test_name_not_string():
-    with pytest.raises(ParameterError):
-        Parameter(name=5)
-
-    with pytest.raises(ParameterError):
-        DictParser({5: dict()})
-
-
-def test_name_not_key():
-    with pytest.raises(ParameterError):
-        DictParser({"test": Parameter(name="nottest")})
-
-
-def test_dot_dict():
-    dd = DotDict(dict(a=1, b='str', c=dict(e=[1,2,3])))
+def test_dot_dict(simple_dict):
+    dd = DotDict(simple_dict)
     assert dd.a == 1
     assert dd.b == 'str'
     assert dd.c.e == [1, 2, 3]
 
+
+def test_get_subdict(simple_dict):
+    dd = DotDict(simple_dict)
+    sub = dd.get_subdict(["a", "b"])
+    assert sub.a == 1
+    assert sub.b == 'str'
+    assert "c" not in sub
+
+
+def test_print_tree(simple_dict):
+    name = "A Dict"
+    stream = StringIO()
+    fun = lambda s: stream.write("\n" + s)
+
+    print_dict_tree(simple_dict, name, print_fun=fun)
+
+    text = stream.getvalue()
+    # print(text)  # I'll leave it here, in case you want to see the dict
+    assert name in text
+    for l in simple_dict.keys():
+        assert l in text
+
+
+# Fixtures #####################################################################
+
+
+@pytest.fixture()
+def simple_dict():
+    return dict(a=1, b='str', c=dict(e=[1,2,3]))

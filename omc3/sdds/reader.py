@@ -1,3 +1,10 @@
+"""
+Module sdds.reader
+-------------------
+
+Read sdds files.
+
+"""
 from typing import IO, Any, List, Optional, Generator, Dict, Union, Tuple, Callable, Type
 import numpy as np
 from sdds.classes import (SddsFile, Column, Parameter, Definition, Array, Data, Description,

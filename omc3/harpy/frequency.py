@@ -1,4 +1,7 @@
 """
+Module harpy.frequency
+---------------------------
+
 Calculates the frequency spectra of turn-by-turn data.
 Uses a combination of SVD decomposition zero_padded fft to speed up the analysis
 Also searches of resonances in the calculated spectra.
@@ -28,6 +31,7 @@ PLANES = ("X", "Y")
 def estimate_tunes(harpy_input, usvs):
     """
     Estimates the tunes from FFT of decomposed data
+
     Args:
         harpy_input: Analysis settings
         usvs: dictionary per plane of (U and SV^T matrices)
@@ -57,6 +61,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     """
     Calculates spectra of TbT data, finds the main lines and cleans the BPMs,
     for which the main line hasn't been found or is too far from its average over BPMs
+
     Args:
         harpy_input: Analysis settings
         bpm_matrix: TbT BPM matrix
@@ -90,6 +95,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
 def find_resonances(tunes, nturns, plane, spectra):
     """
     Finds higher order lines in the spectra
+
     Args:
         tunes: list of tunes [x, y, z]
         nturns: length of analysed data
@@ -164,11 +170,17 @@ def _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms):
 
 def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     """
-    :param freq: frequncy from [0,1]
-    :param tolerance:
-    :param frequencies:
-    :param coefficients:
-    :return:
+    Finds highest coefficients in frequencies/coefficients in freq +- tolerance.
+
+    Args:
+        freq: frequency from interval (0, 1)
+        tolerance:
+        frequencies:
+        coefficients:
+
+    Returns:
+        Tupel of maximum coefficients and corresponding frequencies
+
     """
     p_freq = freq if freq < 0.5 else 1 - freq
     min_val, max_val = p_freq - tolerance, p_freq + tolerance
@@ -225,12 +237,15 @@ def _get_resonance_tolerance(resonance, n_turns):
 def windowed_padded_rfft(harpy_input, matrix, tunes, svd=None):
     """
     Calculates the spectra using specified windowing function and zero-padding
+
     Args:
-        tunes: list of tunes [x, y, z]
         harpy_input: HarpyInput object
         matrix: pd.DataFrame of TbT matrix (BPMs x turns)
+        tunes: list of tunes [x, y, z]
         svd: reduced (U_matrix, np.dot(S_matrix, V_matrix)) of original TbT matrix, default None
+
     Returns:
+        DataFrames (tupel): frequencies, coefficients
 
     """
     padded_len, output_len = np.power(2, harpy_input.turn_bits), np.power(2, harpy_input.output_bits)
@@ -259,7 +274,12 @@ def windowed_padded_rfft(harpy_input, matrix, tunes, svd=None):
 
 def windowing(length, window='hamming'):
     """
-    Provides specified windowing function of given length
+    Provides specified windowing function of given length.
+
+    Currently, the following windowing functions are implemented
+    (sorted by increasing width of main lobe, also decreasing spectral leakage):
+    ``rectangle``, ``hamming``, ``nuttal3``, ``nuttal4``
+
     Args:
         length: length of the window
         window: type of the windowing function
@@ -282,12 +302,14 @@ def windowing(length, window='hamming'):
 def get_freq_mask(harpy_input, tunes, auto_tol):
     """
     Computes mask to get intervals around resonances in frequency domain
+
     Args:
+        harpy_input: HarpyInput object
         tunes: list of tunes [x, y, z]
         auto_tol: automatically calculated tolerance
-        harpy_input: HarpyInput object
 
     Returns:
+        Boolean array
 
     """
     if "full_spectra" in harpy_input.to_write:

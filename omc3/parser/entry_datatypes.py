@@ -1,8 +1,10 @@
 """
-Module utils.entry_datatypes
+Module parser.entry_datatypes
 -----------------------------
 
-Advanced Datatypes to add as type to entrypoint. Or any parser, really. """
+Advanced Datatypes to add as type to entrypoint. Or any parser, really.
+
+"""
 import abc
 
 TRUE_ITEMS = ["True", "1", True, 1]  # items that count as True
