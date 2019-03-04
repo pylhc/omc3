@@ -396,8 +396,8 @@ def harpy_params():
     params.add_parameter(flags="--free_kick", name="is_free_kick", action="store_true",
                          help="If present, it will perform the free kick phase correction")
     params.add_parameter(flags="--window", name="window", type=str,
-                         choices=("rectangle", "hamming", "nuttal3", "nuttal4"),
-                         default=HARPY_DEFAULTS["window"],
+                         choices=("rectangle", "hann", "triangle", "welch", "hamming", "nuttal3",
+                                  "nuttal4"), default=HARPY_DEFAULTS["window"],
                          help="Windowing function to be used for frequency analysis.")
     params.add_parameter(flags="--turn_bits", name="turn_bits", type=int,
                          default=HARPY_DEFAULTS["turn_bits"],
@@ -458,7 +458,7 @@ HARPY_DEFAULTS = {
     "svd_dominance_limit": 0.925,
     "tolerance": 0.01,
     "tune_clean_limit": 1e-5,
-    "window": "hamming",
+    "window": "hann",
     "turn_bits": 20,
     "output_bits": 12,
     "to_write": ["lin", "bpm_summary"]
