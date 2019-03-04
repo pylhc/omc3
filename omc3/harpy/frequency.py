@@ -1,4 +1,7 @@
 """
+Module harpy.frequency
+---------------------------
+
 Calculates the frequency spectra of turn-by-turn data.
 Uses a combination of SVD decomposition zero_padded fft to speed up the analysis
 Also searches of resonances in the calculated spectra.
@@ -28,6 +31,7 @@ PLANES = ("X", "Y")
 def estimate_tunes(harpy_input, usvs):
     """
     Estimates the tunes from FFT of decomposed data
+
     Args:
         harpy_input: Analysis settings
         usvs: dictionary per plane of (U and SV^T matrices)
@@ -57,6 +61,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     """
     Calculates spectra of TbT data, finds the main lines and cleans the BPMs,
     for which the main line hasn't been found or is too far from its average over BPMs
+
     Args:
         harpy_input: Analysis settings
         bpm_matrix: TbT BPM matrix
@@ -73,15 +78,20 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
                                                 plane, harpy_input.tolerance, panda)
     cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"TUNE{plane}"], harpy_input.tune_clean_limit)
     panda = panda.loc[panda.index.difference(cleaned_by_tune_bpms)]
+    panda[f"MU{plane}"] = _realign_phases(panda.loc[:, f"MU{plane}"].values,
+                                          panda.loc[:, f"TUNE{plane}"].values, bpm_matrix.shape[1])
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
     bpm_matrix = bpm_matrix.loc[panda.index]
     spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
-    panda = _amp_and_mu_from_avg(harpy_input, bpm_matrix, plane, panda)
+
     if harpy_input.is_free_kick:
         panda = kicker.phase_correction(bpm_matrix, panda, plane)
     if _get_natural_tunes(harpy_input, tunes) is not None:
         panda = panda.join(_calculate_natural_tunes(spectra, _get_natural_tunes(harpy_input, tunes),
                                                     harpy_input.tolerance, plane))
+        panda[f"NATMU{plane}"] = _realign_phases(panda.loc[:, f"NATMU{plane}"].values,
+                                                 panda.loc[:, f"NATTUNE{plane}"].values,
+                                                 bpm_matrix.shape[1])
     if tunes[2] > 0:
         panda, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, panda)
     return panda, spectra, bad_bpms_summaries
@@ -90,6 +100,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
 def find_resonances(tunes, nturns, plane, spectra):
     """
     Finds higher order lines in the spectra
+
     Args:
         tunes: list of tunes [x, y, z]
         nturns: length of analysed data
@@ -110,6 +121,8 @@ def find_resonances(tunes, nturns, plane, spectra):
         resstr = _get_resonance_suffix(resonance)
         df[f"FREQ{resstr}"], df[f"AMP{resstr}"], df[f"PHASE{resstr}"] = _get_freqs_amps_phases(
             max_freqs, max_coefs, resonances_freqs[resonance])
+        df[f"PHASE{resstr}"] = _realign_phases(df.loc[:, f"PHASE{resstr}"].values,
+                                               df.loc[:, f"FREQ{resstr}"].values, nturns)
     return df
 
 
@@ -141,6 +154,11 @@ def _get_freqs_amps_phases(max_freqs, max_coefs, freq):
     return max_freqs, np.abs(max_coefs), np.sign(0.5 - freq) * np.angle(max_coefs) / (2 * np.pi)
 
 
+def _realign_phases(phase_data, freq_data, nturns):
+    mid_phase = (phase_data + freq_data * nturns / 2) % 1
+    return np.where(np.abs(mid_phase) > 0.5, mid_phase - np.sign(mid_phase), mid_phase)
+
+
 def clean_by_tune(tunes, tune_clean_limit):
     """
     This function looks for outliers in the tunes pandas Series and returns
@@ -164,11 +182,17 @@ def _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms):
 
 def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     """
-    :param freq: frequncy from [0,1]
-    :param tolerance:
-    :param frequencies:
-    :param coefficients:
-    :return:
+    Finds highest coefficients in frequencies/coefficients in freq +- tolerance.
+
+    Args:
+        freq: frequency from interval (0, 1)
+        tolerance:
+        frequencies:
+        coefficients:
+
+    Returns:
+        Tupel of maximum coefficients and corresponding frequencies
+
     """
     p_freq = freq if freq < 0.5 else 1 - freq
     min_val, max_val = p_freq - tolerance, p_freq + tolerance
@@ -183,20 +207,6 @@ def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     max_freqs = freq_vals[np.arange(freq_vals.shape[0]), max_indices]
     max_freqs = pd.Series(index=coefficients.index, data=np.where(max_coefs != 0, max_freqs, 0))
     return max_coefs, max_freqs
-
-
-def _amp_and_mu_from_avg(harpy_input, bpm_matrix, plane, panda):
-    window = windowing(bpm_matrix.shape[1], window=harpy_input.window)
-    avg_coefs = _compute_coefs_for_freqs(bpm_matrix * window, np.mean(panda.loc[:, f"TUNE{plane}"]))
-    panda[f"AMP{plane}"] = np.abs(avg_coefs)
-    panda[f"MU{plane}"] = np.angle(avg_coefs) / (2 * np.pi)
-    return panda
-
-
-def _compute_coefs_for_freqs(samples, freqs):
-    """ Samples is a matrix """
-    # 2 is for two halfs of complex spectra
-    return 2 * samples.dot(np.exp(-PI2I * np.outer(np.arange(samples.shape[1]), freqs)))
 
 
 def _get_resonance_suffix(resonance):
@@ -225,12 +235,15 @@ def _get_resonance_tolerance(resonance, n_turns):
 def windowed_padded_rfft(harpy_input, matrix, tunes, svd=None):
     """
     Calculates the spectra using specified windowing function and zero-padding
+
     Args:
-        tunes: list of tunes [x, y, z]
         harpy_input: HarpyInput object
         matrix: pd.DataFrame of TbT matrix (BPMs x turns)
+        tunes: list of tunes [x, y, z]
         svd: reduced (U_matrix, np.dot(S_matrix, V_matrix)) of original TbT matrix, default None
+
     Returns:
+        DataFrames (tupel): frequencies, coefficients
 
     """
     padded_len, output_len = np.power(2, harpy_input.turn_bits), np.power(2, harpy_input.output_bits)
@@ -259,7 +272,12 @@ def windowed_padded_rfft(harpy_input, matrix, tunes, svd=None):
 
 def windowing(length, window='hamming'):
     """
-    Provides specified windowing function of given length
+    Provides specified windowing function of given length.
+
+    Currently, the following windowing functions are implemented
+    (sorted by increasing width of main lobe, also decreasing spectral leakage in closest lobes):
+    ``rectangle``, ``welch``, ``trinagle``, ``hann``, ``hamming``, ``nuttal3``, ``nuttal4``
+
     Args:
         length: length of the window
         window: type of the windowing function
@@ -272,6 +290,9 @@ def windowing(length, window='hamming'):
         "nuttal4": 0.3125 - 0.46875 * np.cos(ints2pi) + 0.1875 * np.cos(2 * ints2pi) - 0.03125 * np.cos(3 * ints2pi),
         "nuttal3": 0.375 - 0.5 * np.cos(ints2pi) + 0.125 * np.cos(2 * ints2pi),
         "hamming": (25 / 46) - (21 / 46) * np.cos(ints2pi),
+        "hann": 0.5 - 0.5 * np.cos(ints2pi),
+        "welch": 1 - np.square((ints2pi / np.pi) - 1),
+        "triangle": 1 - np.abs((ints2pi / np.pi) - 1),
         "rectangle": np.ones(length)
     }
     if window not in windows.keys():
@@ -282,12 +303,14 @@ def windowing(length, window='hamming'):
 def get_freq_mask(harpy_input, tunes, auto_tol):
     """
     Computes mask to get intervals around resonances in frequency domain
+
     Args:
+        harpy_input: HarpyInput object
         tunes: list of tunes [x, y, z]
         auto_tol: automatically calculated tolerance
-        harpy_input: HarpyInput object
 
     Returns:
+        Boolean array
 
     """
     if "full_spectra" in harpy_input.to_write:

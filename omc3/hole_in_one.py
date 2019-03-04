@@ -1,5 +1,6 @@
 """
-.. module: hole_in_one
+Entrypoint hole_in_one
+------------------------
 
 Created on 27/01/19
 
@@ -22,7 +23,7 @@ To run either of the two or both steps, use options:
 from os.path import join, dirname, basename, abspath
 import tbt
 from utils import logging_tools, iotools
-from utils.entrypoint import entrypoint, EntryPoint, EntryPointParameters
+from parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -39,6 +40,193 @@ def hole_in_one_params():
 
 @entrypoint(hole_in_one_params(), strict=False)
 def hole_in_one_entrypoint(opt, rest):
+    """
+    Runs frequency analysis and measures lattice optics.
+
+    Hole_in_one Kwargs:
+      - **harpy**: Runs frequency analysis
+
+        Flags: **--harpy**
+        Action: ``store_true``
+      - **optics**: Measures the lattice optics
+
+        Flags: **--optics**
+        Action: ``store_true``
+
+    Harpy Kwargs:
+      - **files**: TbT files to analyse
+
+        Flags: **--files**
+        Required: ``True``
+      - **outputdir**: Output directory.
+
+        Flags: **--outputdir**
+        Required: ``True``
+      - **to_write**: Choose the type of output.
+
+        Flags: **--to_write**
+        Choices: ``('lin', 'spectra', 'full_spectra', 'bpm_summary')``
+        Default: ``['lin', 'bpm_summary']``
+      - **turns** *(int)*: Turn index to start and first turn index to be ignored.
+
+        Flags: **--turns**
+        Default: ``[0, 50000]``
+      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'mm'.
+
+        Flags: **--unit**
+        Choices: ``('m', 'cm', 'mm', 'um')``
+        Default: ``mm``
+
+      *--Cleaning--*
+
+      - **clean**: If present, the data are first cleaned.
+
+        Flags: **--clean**
+        Action: ``store_true``
+      - **bad_bpms**: Bad BPMs to clean.
+
+        Flags: **--bad_bpms**
+      - **first_bpm** *(str)*: First BPM in the measurement.
+        Used to resynchronise the TbT data with model.
+
+        Flags: **--first_bpm**
+      - **keep_exact_zeros**: If present, will not remove BPMs with exact zeros in TbT data.
+
+        Flags: **--keep_exact_zeros**
+        Action: ``store_true``
+      - **max_peak** *(float)*: Removes BPMs where the maximum orbit > limit.
+
+        Flags: **--max_peak**
+        Default: ``20.0``
+      - **model**: Model for BPM locations
+
+        Flags: **--model**
+      - **opposite_direction**: If present, beam in the opposite direction to model
+        is assumed for resynchronisation of BPMs.
+
+        Flags: **--opposite_direction**
+        Action: ``store_true``
+      - **peak_to_peak** *(float)*: Peak to peak amplitude cut. This removes BPMs,
+        where abs(max(turn values) - min(turn values)) <= threshold.
+
+        Flags: **--peak_to_peak**
+        Default: ``1e-05``
+      - **sing_val** *(int)*: Keep this amount of largest singular values.
+
+        Flags: **--sing_val**
+        Default: ``12``
+      - **svd_dominance_limit** *(float)*: Limit for single BPM dominating a mode.
+
+        Flags: **--svd_dominance_limit**
+        Default: ``0.925``
+      - **wrong_polarity_bpms**: BPMs with swapped polarity in both planes.
+
+        Flags: **--wrong_polarity_bpms**
+
+      *--Frequency Analysis--*
+
+      - **autotunes** *(str)*: The main tunes are guessed as the strongest line in SV^T matrix
+        frequency spectrum: Synchrotron tune below ~0.03, betatron tunes above ~0.03.
+
+        Flags: **--autotunes**
+        Choices: ``('all', 'transverse')``
+      - **is_free_kick**: If present, it will perform the free kick phase correction
+
+        Flags: **--free_kick**
+        Action: ``store_true``
+      - **natdeltas** *(float)*: Guess for the offsets of natural tunes from
+        the driven tunes (x, y, z). Disabled when set to 0.
+
+        Flags: **--natdeltas**
+      - **nattunes** *(float)*: Guess for the natural tunes (x, y, z).  Disabled when set to 0.
+
+        Flags: **--nattunes**
+      - **output_bits** *(int)*: Number (frequency, complex coefficient) pairs in the output
+        is up to 2 ** output_bits (maximal in case full spectra is output).
+        There is one pair (with maximal amplitude of complex coefficient) per interval
+        of size 2 ** (- output_bits - 1).
+
+        Flags: **--output_bits**
+        Default: ``12``
+      - **tolerance** *(float)*: Tolerance specifying an interval in frequency domain,
+        where to look for the tunes.
+
+        Flags: **--tolerance**
+        Default: ``0.01``
+      - **tune_clean_limit** *(float)*: The tune cleaning wont remove BPMs because of measured
+        tune outliers closer to the average tune than this limit.
+
+        Flags: **--tune_clean_limit**
+        Default: ``1e-05``
+      - **tunes** *(float)*: Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0
+
+        Flags: **--tunes**
+      - **turn_bits** *(int)*: Number (frequency, complex coefficient) pairs in the calculation
+        is 2 ** turn_bits, i.e. the difference between two neighbouring frequencies
+        is 2 ** (- turn_bits - 1).
+
+        Flags: **--turn_bits**
+        Default: ``20``
+      - **window** *(str)*: Windowing function to be used for frequency analysis.
+
+        Flags: **--window**
+        Choices: ``('rectangle', 'hamming', 'nuttal3', 'nuttal4')``
+        Default: ``hamming``
+
+
+    Optics Kwargs:
+      - **files**: Files for analysis
+
+        Flags: **--files**
+        Required: ``True``
+      - **outputdir**: Output directory
+
+        Flags: **--outputdir**
+        Required: ``True``
+      - **calibrationdir** *(str)*: Path to calibration files directory.
+
+        Flags: **--calibrationdir**
+      - **coupling_method** *(int)*: Coupling analysis option: disabled, 1 BPM or 2 BPMs method
+
+        Flags: **--coupling_method**
+        Choices: ``(0, 1, 2)``
+        Default: ``2``
+      - **max_beta_beating** *(float)*: Maximal beta-beating allowed for action calculation.
+
+        Flags: **--max_beta_beating**
+        Default: ``0.15``
+      - **max_closed_orbit** *(float)*: Maximal closed orbit in 'mm'
+        allowed for dispersion measurement
+
+        Flags: **--max_closed_orbit**
+        Default: ``4.0``
+      - **nonlinear**: Calculate higher order RDTs
+
+        Flags: **--nonlinear**
+        Action: ``store_true``
+      - **only_coupling**: Calculate only coupling.
+
+        Flags: **--only_coupling**
+        Action: ``store_true``
+      - **range_of_bpms** *(int)*: Range of BPMs for beta from phase calculation
+
+        Flags: **--range_of_bpms**
+        Choices: ``(5, 7, 9, 11, 13, 15)``
+        Default: ``11``
+      - **three_bpm_method**: Use 3 BPM method in beta from phase
+
+        Flags: **--three_bpm_method**
+        Action: ``store_true``
+      - **union**: If present, the phase advances are calculate for union of BPMs
+        with at least 3 valid measurements, instead of intersection .
+
+        Flags: **--union**
+        Action: ``store_true``
+
+
+    Accelerator Kwargs:  TODO
+
+    """
     if not opt.harpy and not opt.optics:
         raise SystemError("No module has been chosen.")
     if not rest:
@@ -55,9 +243,11 @@ def _get_suboptions(opt, rest):
     if opt.harpy:
         harpy_opt, rest = _harpy_entrypoint(rest)
         if opt.optics:
-            rest.extend(['--files'] + harpy_opt.file)
-            rest.extend(['--outputdir'] + [join(harpy_opt.outputdir, 'optics')])
-            rest.extend(['--model_dir'] + [dirname(abspath(harpy_opt.model))])
+            rest = add_to_arguments(rest, entry_params=optics_params(),
+                                    files=harpy_opt.files,
+                                    outputdir=join(harpy_opt.outputdir, 'optics'))
+            rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
+                                    model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
     if opt.optics:
@@ -76,7 +266,7 @@ def _run_harpy(harpy_options):
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
         all_options = _replicate_harpy_options_per_file(harpy_options)
-        tbt_datas = [(tbt.read(option.file), option) for option in all_options]
+        tbt_datas = [(tbt.read(option.files), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
                          for bunch_options, bunch_data in _multibunch(option, tbt_data)])
@@ -86,9 +276,9 @@ def _run_harpy(harpy_options):
 def _replicate_harpy_options_per_file(options):
     list_of_options = []
     from copy import copy
-    for input_file in options.file:
+    for input_file in options.files:
         new_options = copy(options)
-        new_options.file = input_file
+        new_options.files = input_file
         list_of_options.append(new_options)
     return list_of_options
 
@@ -100,8 +290,8 @@ def _multibunch(options, tbt_datas):
     from copy import copy
     for index in range(tbt_datas.nbunches):
         new_options = copy(options)
-        new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.file)}"
-        new_options.file = join(dirname(options.file), new_file_name)
+        new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
+        new_options.files = join(dirname(options.files), new_file_name)
         yield new_options, tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
                                        [tbt_datas.bunch_ids[index]], tbt_datas.nturns)
 
@@ -126,8 +316,6 @@ def _harpy_entrypoint(params):
         raise AttributeError("Colliding options found: --tunes and --autotunes. Choose only one")
     if options.tunes is None and options.autotunes is None:
         raise AttributeError("One of the options --tunes and --autotunes has to be used.")
-    if [x for x in options.to_write if x not in ("lin", "spectra", "full_spectra", "bpm_summary")]:
-        raise ValueError(f"Unknown options found in to_write")
     if options.bad_bpms is None:
         options.bad_bpms = []
     if options.wrong_polarity_bpms is None:
@@ -139,47 +327,43 @@ def _harpy_entrypoint(params):
 
 def harpy_params():
     params = EntryPointParameters()
-    params.add_parameter(flags="--file", name="file", required=True, nargs='+',
+    params.add_parameter(flags="--files", name="files", required=True, nargs='+',
                          help="TbT files to analyse")
     params.add_parameter(flags="--outputdir", name="outputdir", required=True,
-                         help="Output directory. Default: the input file directory.")
+                         help="Output directory.")
     params.add_parameter(flags="--model", name="model", help="Model for BPM locations")
     params.add_parameter(flags="--unit", name="unit", type=str, choices=("m", "cm", "mm", "um"),
                          default=HARPY_DEFAULTS["unit"],
-                         help="A unit of TbT BPM orbit data. Default is: %(default)s. "
-                              "Cuts and output are in milimeters.")
+                         help=f"A unit of TbT BPM orbit data. All cuts and output are in 'mm'.")
     params.add_parameter(flags="--turns", name="turns", type=int, nargs=2,
                          default=HARPY_DEFAULTS["turns"],
-                         help="Turn index to start and first turn index to be ignored. "
-                              "Default: %(default)s")
-    params.add_parameter(flags="--sequential", name="sequential", action="store_true",
-                         help="If set, it will run in only one process.")
+                         help="Turn index to start and first turn index to be ignored.")
     params.add_parameter(flags="--to_write", name="to_write", nargs='+',
                          default=HARPY_DEFAULTS["to_write"],
-                         help="Choose the output: 'lin'  'spectra' 'full_spectra' 'bpm_summary'")
+                         choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
+                         help="Choose the type of output. ")
 
     # Cleaning parameters
     params.add_parameter(flags="--clean", name="clean", action="store_true",
                          help="If present, the data are first cleaned.")
     params.add_parameter(flags="--sing_val", name="sing_val", type=int,
                          default=HARPY_DEFAULTS["sing_val"],
-                         help="Keep this amount of largest singular values. Default: %(default)s")
+                         help="Keep this amount of largest singular values.")
     params.add_parameter(flags="--peak_to_peak", name="peak_to_peak", type=float,
                          default=HARPY_DEFAULTS["peak_to_peak"],
                          help="Peak to peak amplitude cut. This removes BPMs, "
-                              "where abs(max(turn values) - min(turn values)) <= threshold. "
-                              "Default: %(default)s")
+                              "where abs(max(turn values) - min(turn values)) <= threshold.")
     params.add_parameter(flags="--max_peak", name="max_peak", type=float,
                          default=HARPY_DEFAULTS["max_peak"],
-                         help="Removes BPMs where the maximum orbit > limit. Default: %(default)s")
+                         help="Removes BPMs where the maximum orbit > limit.")
     params.add_parameter(flags="--svd_dominance_limit", name="svd_dominance_limit",
                          type=float, default=HARPY_DEFAULTS["svd_dominance_limit"],
-                         help="Threshold for single BPM dominating a mode. Default: %(default)s")
+                         help="Limit for single BPM dominating a mode.")
     params.add_parameter(flags="--bad_bpms", name="bad_bpms", nargs='*', help="Bad BPMs to clean.")
     params.add_parameter(flags="--wrong_polarity_bpms", name="wrong_polarity_bpms", nargs='*',
                          help="BPMs with swapped polarity in both planes.")
-    params.add_parameter(flags="--no_exact_zeros", name="no_exact_zeros", action="store_true",
-                         help="If present, will not remove BPMs with a single zero.")
+    params.add_parameter(flags="--keep_exact_zeros", name="keep_exact_zeros", action="store_true",
+                         help="If present, will not remove BPMs with exact zeros in TbT data.")
     params.add_parameter(flags="--first_bpm", name="first_bpm", type=str,
                          help="First BPM in the measurement. "
                               "Used to resynchronise the TbT data with model.")
@@ -190,35 +374,42 @@ def harpy_params():
 
     # Harmonic analysis parameters
     params.add_parameter(flags="--tunes", name="tunes", type=float, nargs=3,
-                         help="Guess for the main tunes(x, y, z). Tunez is disabled when set to 0")
+                         help="Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0")
     params.add_parameter(flags="--nattunes", name="nattunes", type=float, nargs=3,
                          help="Guess for the natural tunes (x, y, z).  Disabled when set to 0.")
     params.add_parameter(flags="--natdeltas", name="natdeltas", type=float, nargs=3,
                          help="Guess for the offsets of natural tunes from the driven tunes"
-                              " (x, y, z). Disabled when set to zero.")
+                              " (x, y, z). Disabled when set to 0.")
     params.add_parameter(flags="--autotunes", name="autotunes", type=str,
                          choices=("all", "transverse"),
-                         help="If present, the main tunes are guessed as "
-                              "the strongest line in SV^T matrix. "
-                              "In (0.0, 0.03) resp (0.03,0.5) for sychrpotron resp betatron tunes")
+                         help="The main tunes are guessed as "
+                              "the strongest line in SV^T matrix frequency spectrum: "
+                              "Synchrotron tune below ~0.03, betatron tunes above ~0.03.")
     params.add_parameter(flags="--tune_clean_limit", name="tune_clean_limit", type=float,
                          default=HARPY_DEFAULTS["tune_clean_limit"],
-                         help="The autoclean wont remove tune deviation lower than this limit.")
+                         help="The tune cleaning wont remove BPMs because of measured tune outliers"
+                              " closer to the average tune than this limit.")
     params.add_parameter(flags="--tolerance", name="tolerance", type=float,
                          default=HARPY_DEFAULTS["tolerance"],
-                         help="Tolerance on the guess for the tunes.")
+                         help="Tolerance specifying an interval in frequency domain, where to look "
+                              "for the tunes.")
     params.add_parameter(flags="--free_kick", name="is_free_kick", action="store_true",
                          help="If present, it will perform the free kick phase correction")
     params.add_parameter(flags="--window", name="window", type=str,
-                         choices=("nuttal3", "nuttal4", "hamming", "rectangle"),
-                         default=HARPY_DEFAULTS["window"],
+                         choices=("rectangle", "hann", "triangle", "welch", "hamming", "nuttal3",
+                                  "nuttal4"), default=HARPY_DEFAULTS["window"],
                          help="Windowing function to be used for frequency analysis.")
     params.add_parameter(flags="--turn_bits", name="turn_bits", type=int,
                          default=HARPY_DEFAULTS["turn_bits"],
-                         help="Number of bits of required DFT peaks in the calculation [0, 0.5)")
+                         help="Number (frequency, complex coefficient) pairs in the calculation"
+                              " is 2 ** turn_bits, i.e. the difference between "
+                              "two neighbouring frequencies is 2 ** (- turn_bits - 1).")
     params.add_parameter(flags="--output_bits", name="output_bits", type=int,
                          default=HARPY_DEFAULTS["output_bits"],
-                         help="Number of bits of required DFT peaks in the output [0, 0.5)")
+                         help="Number (frequency, complex coefficient) pairs in the output "
+                              "is up to 2 ** output_bits (maximal in case full spectra is output). "
+                              "There is one pair (with maximal amplitude of complex coefficient) "
+                              "per interval of size 2 ** (- output_bits - 1).")
     return params
 
 
@@ -228,32 +419,33 @@ def _optics_entrypoint(params):
 
 def optics_params():
     params = EntryPointParameters()
-    params.add_parameter(flags=["--files", "--file"], name="files",  required=True, nargs='+',
+    params.add_parameter(flags="--files", name="files",  required=True, nargs='+',
                          help="Files for analysis")
     params.add_parameter(flags="--outputdir", name="outputdir", required=True,
                          help="Output directory")
     params.add_parameter(flags="--calibrationdir", name="calibrationdir", type=str,
-                         help="Directory where the calibration files are stored")
+                         help="Path to calibration files directory.")
     params.add_parameter(flags="--coupling_method", name="coupling_method", type=int,
                          choices=(0, 1, 2), default=OPTICS_DEFAULTS["coupling_method"],
-                         help="Analysis option for coupling: disabled, 1 BPM or 2 BPMs")
+                         help="Analysis option for coupling: disabled, 1 BPM or 2 BPMs method")
     params.add_parameter(flags="--range_of_bpms", name="range_of_bpms", type=int,
                          choices=(5, 7, 9, 11, 13, 15),  default=OPTICS_DEFAULTS["range_of_bpms"],
                          help="Range of BPMs for beta from phase calculation")
-    params.add_parameter(flags="--beta_model_cut", name="beta_model_cut", type=float,
-                         default=OPTICS_DEFAULTS["beta_model_cut"],
-                         help="Set beta-beating threshold for action calculations")
+    params.add_parameter(flags="--max_beta_beating", name="max_beta_beating", type=float,
+                         default=OPTICS_DEFAULTS["max_beta_beating"],
+                         help="Maximal beta-beating allowed for action calculation.")
     params.add_parameter(flags="--max_closed_orbit", name="max_closed_orbit", type=float,
                          default=OPTICS_DEFAULTS["max_closed_orbit"],
-                         help="Maximal closed orbit for dispersion measurement in milimeters")
+                         help="Maximal closed orbit in 'mm' allowed for dispersion measurement")
     params.add_parameter(flags="--union", name="union", action="store_true",
-                         help="The phase per BPM is calculated from at least 3 valid measurements.")
+                         help="If present, the phase advances are calculate for union of BPMs "
+                              "with at least 3 valid measurements, instead of intersection .")
     params.add_parameter(flags="--nonlinear", name="nonlinear", action="store_true",
-                         help="Run the RDT analysis")
+                         help="Calculate higher order RDTs")
     params.add_parameter(flags="--three_bpm_method", name="three_bpm_method", action="store_true",
-                         help="Use 3 BPM method only")
+                         help="Use 3 BPM method in beta from phase")
     params.add_parameter(flags="--only_coupling", name="only_coupling", action="store_true",
-                         help="Only coupling is calculated. ")
+                         help="Calculate only coupling. ")
     return params
 
 
@@ -266,7 +458,7 @@ HARPY_DEFAULTS = {
     "svd_dominance_limit": 0.925,
     "tolerance": 0.01,
     "tune_clean_limit": 1e-5,
-    "window": "hamming",
+    "window": "hann",
     "turn_bits": 20,
     "output_bits": 12,
     "to_write": ["lin", "bpm_summary"]
@@ -276,7 +468,7 @@ OPTICS_DEFAULTS = {
         "max_closed_orbit": 4.0,
         "coupling_method": 2,
         "range_of_bpms": 11,
-        "beta_model_cut": 0.15,
+        "max_beta_beating": 0.15,
 }
 
 if __name__ == "__main__":

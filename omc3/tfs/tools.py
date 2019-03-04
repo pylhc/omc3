@@ -1,3 +1,10 @@
+"""
+Module tfs.tools
+-----------------
+
+Additional functions to modify tfs files.
+
+"""
 from tfs import read_tfs, write_tfs
 from tfs.handler import TfsFormatError
 from utils import logging_tools as logtools

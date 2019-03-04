@@ -12,10 +12,10 @@ from hole_in_one import hole_in_one_entrypoint
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
-LIMITS = dict(F1=3e-7, A1=1e-3, P1=1e-3, F2=1e-5, A2=1.5e-3, P2=0.03)
-NOISE = 0.05
+LIMITS = dict(F1=1e-6, A1=1.5e-3, P1=3e-4, F2=1.5e-4, A2=1.5e-1, P2=0.03)
+NOISE = 0.032
 COUPLING = 0.01
-NTURNS = 6600
+NTURNS = 1024
 NBPMS = 100
 
 
@@ -24,22 +24,25 @@ def test_harpy(_test_file, _model_file):
     tfs.write(_model_file, model, save_index="NAME")
     _write_tbt_file(model)
     hole_in_one_entrypoint(harpy=True, clean=True, autotunes="transverse", outputdir=CURRENT_DIR,
-                           file=[_test_file], model=_model_file, to_write=["lin"])
+                           files=[_test_file], model=_model_file, to_write=["lin"], turn_bits=18)
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
     for plane in PLANES:
+        # main and secondary frequencies
         assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].values,
                           model.loc[:, f"TUNE{plane}"].values)) < LIMITS["F1"]
-        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values,
-                              model.loc[:, f"AMP{plane}"].values)) < LIMITS["A1"]
-        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].values,
-                                model.loc[:, f"MU{plane}"].values)) < LIMITS["P1"]
-
         assert _rms(_diff(lin[plane].loc[:, f"FREQ{_couple(plane)}"].values,
                           model.loc[:, f"TUNE{_other(plane)}"].values)) < LIMITS["F2"]
-        assert _rms(_diff(lin[plane].loc[:, f"AMP{_couple(plane)}"].values *
-                          lin[plane].loc[:, f"AMP{plane}"].values,
-                          COUPLING * model.loc[:, f"AMP{_other(plane)}"].values)) < LIMITS["A2"]
+        #main and secondary amplitudes
+        # TODO remove factor 2 - only for backwards compatibility with Drive
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values * 2,
+                              model.loc[:, f"AMP{plane}"].values)) < LIMITS["A1"]
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{_couple(plane)}"].values *
+                              lin[plane].loc[:, f"AMP{plane}"].values * 2,
+                              COUPLING * model.loc[:, f"AMP{_other(plane)}"].values)) < LIMITS["A2"]
+        # main and secondary phases
+        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].values,
+                                model.loc[:, f"MU{plane}"].values)) < LIMITS["P1"]
         assert _rms(_angle_diff(lin[plane].loc[:, f"PHASE{_couple(plane)}"].values,
                                 model.loc[:, f"MU{_other(plane)}"].values)) < LIMITS["P2"]
 
@@ -48,14 +51,14 @@ def _get_model_dataframe():
     return pd.DataFrame(data=dict(S=np.arange(NBPMS, dtype=float),
                                   AMPX=np.random.rand(NBPMS) + 1, AMPY=np.random.rand(NBPMS) + 1,
                                   MUX=np.random.rand(NBPMS) - 0.5, MUY=np.random.rand(NBPMS) - 0.5,
-                                  TUNEX=0.25 + np.random.rand(1)[0] / 20,
-                                  TUNEY=0.3 + np.random.rand(1)[0] / 20),
+                                  TUNEX=0.25 + np.random.rand(1)[0] / 40,
+                                  TUNEY=0.3 + np.random.rand(1)[0] / 40),
                         index=np.array([''.join(random.choices(string.ascii_uppercase, k=7))
                                         for _ in range(NBPMS)]))
 
 
 def _write_tbt_file(model):
-    ints = np.arange(NTURNS)
+    ints = np.arange(NTURNS) - NTURNS / 2
     data_x = model.loc[:, "AMPX"].values[:, None] * np.cos(
         2 * np.pi * (model.loc[:, "MUX"].values[:, None] +
                      model.loc[:, "TUNEX"].values[:, None] * ints[None, :]))

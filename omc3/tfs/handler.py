@@ -1,3 +1,9 @@
+"""
+Module tfs.handler
+-------------------
+
+Basic tfs-to-pandas io-functionality.
+"""
 from collections import OrderedDict
 from os.path import basename, dirname
 import logging
@@ -198,7 +204,7 @@ def _get_header_line(name, value):
 
 
 def _get_colnames_str(colnames, colwidth):
-    fmt = _get_row_fmt_str([str] * len(colnames), colwidth)
+    fmt = _get_row_fmt_str([None] * len(colnames), colwidth)
     return "* " + fmt.format(*colnames)
 
 
@@ -273,16 +279,20 @@ def _dtype_to_str(type_):
 
 
 def _dtype_to_format(type_, colsize):
+    if type_ is None:
+        return f"{colsize}"
     if np.issubdtype(type_, np.integer) or np.issubdtype(type_, np.bool_):
         return f"{colsize}d"
-    elif np.issubdtype(type_, np.floating):
+    if np.issubdtype(type_, np.floating):
         return f"{colsize}.{colsize - len('-0.e-000')}g"
-    else:
-        return f"{colsize}s"
+    return f"{colsize}s"
 
 
 def _validate(data_frame, info_str=""):
-    """ Check if Dataframe contains finite values only """
+    """ 
+    Check if Dataframe contains finite values only 
+    and both indices and columns are unique.  
+    """
     def isnotfinite(x):
         try:
             return ~np.isfinite(x)
@@ -296,5 +306,11 @@ def _validate(data_frame, info_str=""):
     if bool_df.values.any():
         LOGGER.warning(f"DataFrame {info_str:s} contains non-physical values at Index: "
                        f"{bool_df.index[bool_df.any(axis='columns')].tolist()}")
-    else:
-        LOGGER.debug(f"DataFrame {info_str:s} validated.")
+
+    if not len(set(data_frame.index)) == len(data_frame.index):
+        raise TfsFormatError("Indices are not unique.")
+
+    if not len(set(data_frame.columns)) == len(data_frame.columns):
+        raise TfsFormatError("Column names are not unique.")
+
+    LOGGER.debug(f"DataFrame {info_str:s} validated.")

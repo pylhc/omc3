@@ -1,3 +1,10 @@
+"""
+Module harpy.handler
+---------------------
+
+Handles the cleaning, frequency analysis and resonance search for a single-bunch TbtData.
+
+"""
 from os.path import join, basename
 from collections import OrderedDict
 
@@ -16,9 +23,19 @@ PLANE_TO_NUM = {"X": 1, "Y": 2, "Z": 3}
 
 
 def run_per_bunch(tbt_data, harpy_input):
+    """
+    Cleans data, analyses frequencies and searches resonances
+
+    Args:
+        tbt_data: single bunch TbtData
+        harpy_input: Analysis settings
+
+    Returns:
+        Dictionary of TfsDataFrames per plane
+    """
     model = tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
-    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.file)
+    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
         bpm_data = _scale_to_mm(bpm_data, harpy_input.unit)
@@ -159,12 +176,17 @@ def _get_output_path_without_suffix(output_dir, file_path):
 
 def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     """
-    TODO    follows not transpararent convention
+    TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
     cols = [col for col in panda.columns.values if col.startswith('AMP')]
     cols.remove(f"AMP{plane}")
     panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"AMP{plane}"], axis="index")
+    # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
+    panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].values / 2
+    if f"NATAMP{plane}" in panda.columns:
+        panda[f"NATAMP{plane}"] = panda.loc[:, f"NATAMP{plane}"].values / 2
+
     if np.max(panda.loc[:, 'NOISE'].values) == 0.0:
         return panda  # Do not calculated errors when no noise was calculated
     noise_scaled = panda.loc[:, 'NOISE'] / panda.loc[:, f"AMP{plane}"]

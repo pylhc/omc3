@@ -1,5 +1,5 @@
 """
-Module utils.entrypoint
+Module parser.entrypoint
 --------------------------
 
 Entry Point Parser and Decorator.
@@ -87,7 +87,7 @@ Example with dictionary of dictionaries:
 
 .. code-block:: python
 
-    args = {
+    args = EntryPointParameters({
         "accel": dict(
             flags=["-a", "--accel"],
             help="Which accelerator?",
@@ -98,12 +98,13 @@ Example with dictionary of dictionaries:
             help="File with the BPM dictionary",
             default="bpm.txt",
             type=str),
-            }
+            })
 
 
 Example with list of dictionaries:
 
 .. code-block:: python
+
     args = [
         "dict(
             name="accel",
@@ -136,10 +137,8 @@ from inspect import getfullargspec
 from functools import wraps
 
 from utils import logging_tools
-from utils.dict_tools import DictParser
 from utils.dict_tools import DotDict
-from utils.dict_tools import ArgumentError
-from utils.dict_tools import ParameterError
+from parser.dict_parser import ParameterError, ArgumentError, DictParser
 
 from utils.contexts import silence
 
@@ -438,34 +437,35 @@ class EntryPointParameters(DotDict):
             item_str = ""
             item = self[name]
             try:
-                name_type = f"{name:s} ({item['type'].__name__:s})"
+                name_type = f"- **{name}** *({item['type'].__name__})*"
             except KeyError:
-                name_type = f"{name:s}"
+                name_type = f"- **{name}**"
 
             try:
-                item_str += f"{name_type:s}: {item['help']:s}"
+                item_str += f"{name_type}: {item['help']}"
             except KeyError:
-                item_str += f"{name_type:s}: -Help not available- "
+                item_str += f"{name_type}: -Help not available- "
 
-            space = " " * (len(name_type) + 2)
+            item_str += "\n"
+            space = " " * 2
 
             try:
-                item_str += f"\n{space:s}**Flags**: {item['flags']:s}"
-            except KeyError:
-                pass
-
-            try:
-                item_str += f"\n{space:s}**Choices**: {item['choices']:s}"
+                item_str += f"\n{space}Flags: **{item['flags']}**"
             except KeyError:
                 pass
 
             try:
-                item_str += f"\n{space:s}**Default**: ``{item['default']:s}``"
+                item_str += f"\n{space}Choices: ``{item['choices']}``"
             except KeyError:
                 pass
 
             try:
-                item_str += f"\n{space:s}**Action**: ``{str(item['action']):s}``"
+                item_str += f"\n{space}Default: ``{item['default']}``"
+            except KeyError:
+                pass
+
+            try:
+                item_str += f"\n{space}Action: ``{item['action']}``"
             except KeyError:
                 pass
 
@@ -475,11 +475,11 @@ class EntryPointParameters(DotDict):
                 optional_param += item_str + "\n"
 
         if required_param:
-            LOG.info("Required")
+            LOG.info("*--Required--*")
             LOG.info(required_param)
 
         if optional_param:
-            LOG.info("Optional")
+            LOG.info("*--Optional--*")
             LOG.info(optional_param)
 
 
@@ -499,8 +499,44 @@ def dict2list_param(param):
             item["name"] = key
             out.append(item)
         return out
+    return param
+
+
+def list2dict_param(param):
+    """ Convert list to dictionary for quicker find """
+    if isinstance(param, list):
+        out = {}
+        for p in param:
+            out[p["name"]] = p
+        return out
+    return param
+
+
+def add_to_arguments(args, entry_params=None, **kwargs):
+    """ Adds arguments to an existing list or dictionary of arguments.
+
+    If args is a list, the flags of the names given will be added and `entry_params` is required.
+
+    Args:
+        args (list,dict): Arguments (e.g. from unknown)
+        entry_params (list, dict): Parameter belonging to the arguments
+
+    Keyword Args:
+        Name and value of the arguments to add.
+    """
+    if isinstance(args, list):
+        if entry_params is None:
+            raise ParameterError("For commandline arguments, entry_params need to be supplied.")
+
+        params = list2dict_param(entry_params)
+        for key, value in kwargs.items():
+            flag = params[key]["flags"]
+            if isinstance(flag, list):
+                flag = flag[0]
+            args.extend([flag, str(value)])
     else:
-        return param
+        args.update(kwargs)
+    return args
 
 
 def add_params_to_generic(parser, params):
@@ -580,7 +616,8 @@ def split_arguments(args, *param_list):
         # should be a dictionary of params, so do it the manual way
         for params in param_list:
             params = param_names(params)
-            split_args.append(DotDict([(key, args.pop(key)) for key in args if key in params]))
+            split_args.append(DotDict([(key, args.pop(key))
+                                       for key in list(args.keys()) if key in params]))
         split_args.append(DotDict(args))
     return split_args
 
