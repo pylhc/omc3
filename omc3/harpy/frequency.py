@@ -204,7 +204,8 @@ def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     max_indices = np.argmax(filtered_amps, axis=1)
     max_coefs = filtered_coefs[np.arange(coefs_vals.shape[0]), max_indices]
     max_coefs = pd.Series(index=coefficients.index, data=max_coefs)
-    max_freqs = freq_vals[np.arange(freq_vals.shape[0]), max_indices]
+    max_pfreqs = freq_vals[np.arange(freq_vals.shape[0]), max_indices]
+    max_freqs = max_pfreqs if freq < 0.5 else 1 - max_pfreqs
     max_freqs = pd.Series(index=coefficients.index, data=np.where(max_coefs != 0, max_freqs, 0))
     return max_coefs, max_freqs
 
