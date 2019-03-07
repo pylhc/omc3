@@ -2,7 +2,7 @@ import sys
 import logging
 from model import manager
 from utils.iotools import create_dirs
-from utils.entrypoint import EntryPointParameters, entrypoint
+from parser.entrypoint import EntryPointParameters, entrypoint
 from model.model_creators.lhc_model_creator import (  # noqa
     LhcModelCreator,
     LhcBestKnowledgeCreator,
