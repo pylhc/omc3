@@ -2,7 +2,7 @@ import os
 import re
 import pandas as pd
 from model.accelerators.accelerator import Accelerator, Element
-from utils.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 import tfs
 import logging
 
