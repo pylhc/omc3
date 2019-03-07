@@ -249,11 +249,11 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, tune, mdltune,
     loc_range = np.arange(-m, m + 1)
     max_ncomb = m * (2 * m - 1)
     loc_range_no_zero = loc_range[np.nonzero(loc_range)]
+    phases_meas = phase["MEAS"] * TWOPI
+    phases_err = phase["ERRMEAS"] * TWOPI
+    phases_err.where(phases_err.notnull(), 1, inplace=True)
 
     for indx, probed_bpm_name in enumerate(bk_model.index):
-        phases_meas = phase["MEAS"] * TWOPI
-        phases_err = phase["ERRMEAS"] * TWOPI
-        phases_err.where(phases_err.notnull(), 1, inplace=True)
         indx_el_first = elements.index.get_loc(bk_model.index[(indx - m) % nbpms])
         indx_el_last = elements.index.get_loc(bk_model.index[(indx + m) % nbpms])
         mu_column = "MU" + plane

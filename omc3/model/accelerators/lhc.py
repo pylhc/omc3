@@ -7,7 +7,7 @@ import pandas as pd
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, Element, AccExcitationMode
 from utils import logging_tools
 import tfs
-from utils.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)

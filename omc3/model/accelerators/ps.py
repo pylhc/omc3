@@ -3,7 +3,7 @@ import pandas as pd
 import datetime as dt
 from model.accelerators.accelerator import Accelerator, Element
 import tfs
-from utils.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 import logging
 
 LOGGER = logging.getLogger(__name__)
