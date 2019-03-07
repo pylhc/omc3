@@ -5,7 +5,7 @@ from model.accelerators.accelerator import (Accelerator, AcceleratorDefinitionEr
                                             AccExcitationMode)
 import tfs
 from utils import logging_tools
-from utils.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 
 CURRENT_DIR = os.path.dirname(__file__)
 LOGGER = logging_tools.get_logger(__name__)

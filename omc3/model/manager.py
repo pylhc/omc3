@@ -1,4 +1,4 @@
-from utils.entrypoint import entrypoint, EntryPoint, EntryPointParameters, split_arguments
+from parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, split_arguments
 from model.accelerators import lhc, ps, esrf, psbooster, skekb
 
 
