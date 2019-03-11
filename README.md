@@ -1,9 +1,9 @@
 # <img src="https://twiki.cern.ch/twiki/pub/BEABP/Logos/OMC_logo.png" height="28"> 3
-![Travis (.com)](https://img.shields.io/travis/com/pylhc/omc3.svg?style=popout)
-![Code Climate coverage](https://img.shields.io/codeclimate/coverage/pylhc/omc3.svg?style=popout)
-![Code Climate maintainability (percentage)](https://img.shields.io/codeclimate/maintainability-percentage/pylhc/omc3.svg?style=popout)
-![GitHub last commit](https://img.shields.io/github/last-commit/pylhc/omc3.svg?style=popout)
-![GitHub release](https://img.shields.io/github/release/pylhc/omc3.svg?style=popout)
+[![Travis (.com)](https://img.shields.io/travis/com/pylhc/omc3.svg?style=popout)](https://travis-ci.com/pylhc/omc3/)
+[![Code Climate coverage](https://img.shields.io/codeclimate/coverage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)
+[![Code Climate maintainability (percentage)](https://img.shields.io/codeclimate/maintainability-percentage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)
+[![GitHub last commit](https://img.shields.io/github/last-commit/pylhc/omc3.svg?style=popout)](https://github.com/pylhc/omc3/)
+[![GitHub release](https://img.shields.io/github/release/pylhc/omc3.svg?style=popout)](https://github.com/pylhc/omc3/)
 
 This is the python-tool package of the optics measurements and corrections group (OMC).
 
