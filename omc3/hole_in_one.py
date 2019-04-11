@@ -254,6 +254,9 @@ def _get_suboptions(opt, rest):
         optics_opt, rest = _optics_entrypoint(rest)
         from model import manager
         optics_opt.accelerator = manager.get_accel_instance(rest)
+        if not optics_opt.accelerator.excitation and optics_opt.compesation != "none":
+            raise AttributeError("Compensation requested and no driven model was provided.")
+
     else:
         optics_opt = None
     return harpy_opt, optics_opt
@@ -446,6 +449,11 @@ def optics_params():
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(flags="--only_coupling", name="only_coupling", action="store_true",
                          help="Calculate only coupling. ")
+    params.add_parameter(flags="--compensation", name="compensation", type=str,
+                         choices=("model", "equation", "none"), default=OPTICS_DEFAULTS["compensation"],
+                         help="Mode of compensation for the analysis after driven beam excitation")
+    params.add_parameter(flags="--three_d", name="three_d", action="store_true",
+                         help="Use 3D kicks to calculate dispersion ")
     return params
 
 
@@ -469,6 +477,7 @@ OPTICS_DEFAULTS = {
         "coupling_method": 2,
         "range_of_bpms": 11,
         "max_beta_beating": 0.15,
+        "compensation": "model",
 }
 
 if __name__ == "__main__":
