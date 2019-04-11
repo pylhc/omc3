@@ -14,40 +14,6 @@ from utils import logging_tools
 LOGGER = logging_tools.get_logger(__name__)
 
 
-def get_lambda(driven_tune, free_tune):
-    """
-    Tunes are fractional in units of 2PI
-    """
-    return np.sin(np.pi * (driven_tune - free_tune)) / np.sin(np.pi * (driven_tune + free_tune))
-
-
-def phase_ac2bpm(df_idx_by_bpms, driven_tune, free_tune, plane, accelerator):
-    """Returns the necessary values for the exciter compensation.
-
-    See: doi:10.1103/PhysRevSTAB.11.084002
-
-    Args:
-        df_idx_by_bpms (pandas.DataFrame): commonbpms (see GetLLM._get_commonbpms)
-        driven_tune: Driven fractional tunes.
-        free_tune: Natural fractional tunes.
-        plane (char): X,Y
-        accelerator: accelerator class instance.
-
-    Returns tupel(a,b,c,d):
-        a (string): name of the nearest BPM.
-        b (float): compensated phase advance between the exciter and the nearest BPM.
-        c (int): k of the nearest BPM.
-        d (string): name of the exciter element.
-    """
-    model = accelerator.get_elements_tfs()
-    r = get_lambda(driven_tune % 1.0, free_tune % 1.0)
-    [k, bpmac1], exciter = accelerator.get_exciter_bpm(plane, df_idx_by_bpms.index)
-    psi = model.loc[bpmac1, "MU" + plane] - model.loc[exciter, "MU" + plane]
-    psi = np.arctan((1+r)/(1-r) * np.tan(2 * np.pi * psi + np.pi * free_tune)) % np.pi - np.pi * driven_tune
-    psi = psi / (2 * np.pi)
-    return bpmac1, psi, k, exciter
-
-
 def get_kick_from_bpm_list_w_acdipole(model_ac, bpm_list, measurements, plane):
     """
     @author: F Carlier

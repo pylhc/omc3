@@ -19,7 +19,7 @@ import pandas as pd
 
 import tfs
 from utils import logging_tools, iotools
-from optics_measurements import dpp, tune, phase, beta_from_phase
+from optics_measurements import dpp, tune, phase, beta_from_phase, iforest
 from optics_measurements import beta_from_amplitude, dispersion, interaction_point, kick
 
 
@@ -43,82 +43,54 @@ def measure_optics(input_files, measure_input):
     logging_tools.add_module_handler(logging_tools.file_handler(
         os.path.join(measure_input.outputdir, LOG_FILE)))
     common_header = _get_header(measure_input)
-    
-    
-    try:
-        tune_dict = tune.calculate_tunes(measure_input, input_files)
-        phase_dict = phase.calculate_phases(measure_input, input_files, tune_dict, common_header)
-    except:
-        raise ValueError("Phase advance or tune calculation failed: No other calculation will run")
-    # try:
-    #    coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
-    # except:
-    #    _tb_()
 
-    if measure_input.only_coupling:
-        LOGGER.info("Finished as only coupling calculation was requested.")
-        return
-    try:
-        beta_dict = beta_from_phase.calculate_beta_from_phase(
-            measure_input, tune_dict, phase_dict, common_header)
-    except:
-        _tb_()
-    if beta_dict["X"]["D"] is None:
-        beta_df_dict = {"X": beta_dict["X"]["F"], "Y": beta_dict["Y"]["F"]}
-    else:
-        beta_df_dict = {"X": beta_dict["X"]["D"], "Y": beta_dict["Y"]["D"]}
+    tune_dict = tune.calculate(measure_input, input_files)
+    ratio = {}
+    for plane in PLANES:
+        phase_dict = phase.calculate(measure_input, input_files, tune_dict, common_header, plane)
+        if measure_input.only_coupling:
+            break
+        beta_phase = beta_from_phase.calculate(measure_input, tune_dict, phase_dict, common_header, plane)
+        ratio[plane] = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_phase, common_header, plane)
 
-    try:
-        ratio = beta_from_amplitude.calculate_beta_from_amplitude(measure_input, input_files,
-                                                                  tune_dict, phase_dict,
-                                                                  beta_df_dict, common_header)
-    except:
-        _tb_()
-    # in the following functions, nothing should change, so we choose the models now
+        # in the following functions, nothing should change, so we choose the models now
+        mad_ac, mad_twiss = get_driven_and_free_models(measure_input)
+        interaction_point.write_betastar_from_phase(interaction_point.betastar_from_phase(measure_input.accelerator, phase_dict, mad_twiss), common_header, measure_input.outputdir, plane)
+        dispersion.calculate_orbit(measure_input, input_files, mad_twiss, common_header, plane)
+        if not measure_input.three_d:
+            dispersion.calculate_dispersion(measure_input, input_files, mad_twiss, common_header, plane)
+            if plane == "X":
+                dispersion.calculate_normalised_dispersion(measure_input, input_files, mad_twiss,
+                                                   beta_phase, common_header)
+        elif plane == "X":
+            dispersion.calculate_normalised_dispersion_3d(measure_input, input_files, mad_twiss, mad_ac,
+                                                          beta_phase, common_header)
+
+    if measure_input.three_d:
+        dispersion.calculate_dispersion_3d(measure_input, input_files, mad_twiss, common_header)
+    inv_x, inv_y = kick.calculate_kick(measure_input, input_files, mad_twiss, mad_ac, ratio, common_header)
+    # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
+    if measure_input.nonlinear:
+        pass #resonant_driving_terms.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
+
+
+def get_driven_and_free_models(measure_input):
     mad_twiss = measure_input.accelerator.get_model_tfs()
-    #  mad_elements = measure_input.accelerator.get_elements_tfs()
     if measure_input.accelerator.excitation:
         mad_ac = measure_input.accelerator.get_driven_tfs()
     else:
         mad_ac = mad_twiss
-    try:
-        interaction_point.write_betastar_from_phase(
-            interaction_point.betastar_from_phase(
-                measure_input.accelerator, phase_dict, mad_twiss
-            ), common_header, measure_input.outputdir)
-    except:
-        _tb_()
-    
-    # dpps = dpp.arrange_dpp(measure_input, input_files, mad_twiss, common_header) 
-    
-    try:
-        dispersion.calculate_dx_from_3d(measure_input, input_files, mad_twiss, common_header, tune_dict)
-        dispersion.calculate_ndx_from_3d(measure_input, input_files, mad_twiss, mad_ac, beta_dict["X"]["F"],
-                                         dispersion._get_header(common_header, tune_dict, 'getNDx.out'))
-    except:
-        #LOGGER.info("Calculate dispersion from 3D kicks failed.")
-        try:
-            dispersion.calculate_orbit_and_dispersion(measure_input, input_files, tune_dict, mad_twiss,
-                                                  beta_df_dict, common_header)
-        except:
-            _tb_()
-    try:
-        inv_x, inv_y = kick.calculate_kick(measure_input, input_files, mad_twiss, mad_ac, ratio, common_header)
-    except:
-        _tb_()
-    #if measure_input.nonlinear:
-    #    try:
-    #        resonant_driving_terms.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
-    #    except:
-    #        _tb_()
+    return mad_ac, mad_twiss
 
 
 def _get_header(meas_input):
+    compensation = {'model': "by model", 'equation': "by equation", 'none': "None"}
     return OrderedDict([('Measure_optics:version', VERSION),
                         ('Command', f"{sys.executable} {' '.join(sys.argv)}"),
                         ('CWD', os.getcwd()),
                         ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
-                        ('Model_directory', meas_input.accelerator.model_dir)])
+                        ('Model_directory', meas_input.accelerator.model_dir),
+                        ('Compensation', compensation[meas_input.compensation])])
 
 
 def _tb_():
@@ -158,6 +130,7 @@ class InputFiles(dict):
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
 
         for plane in PLANES:
+            #self[plane] = iforest.clean_with_isolation_forest(self[plane], optics_opt, plane)
             self[plane] = dpp.arrange_dpp(self[plane], dpp_values)
             
         if len(self['X']) + len(self['Y']) == 0:
