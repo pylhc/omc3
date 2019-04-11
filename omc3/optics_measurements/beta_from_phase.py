@@ -14,8 +14,10 @@ import pandas as pd
 from scipy.linalg import circulant
 import tfs
 from utils import logging_tools, stats
+from optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff
+from optics_measurements.constants import BETA_NAME, EXT, ERR, DELTA, MDL
 
-__version__ = "2018.8.a"
+__version__ = "2019.0.a"
 LOGGER = logging_tools.get_logger(__name__)
 
 TWOPI = 2 * np.pi
@@ -27,20 +29,9 @@ RCOND = 1.0e-10
 METH_3BPM = "3BPM method"
 METH_A_NBPM = "Analytical N-BPM method"
 METH_NO_ERR = "No Errors"
-PLANES = ("X", "Y")
 
 
-class BetaDict(dict):
-    """
-    Used as data structure to hold beta-function results per plane and type of oscillation
-    """
-    def __init__(self):
-        super(BetaDict, self).__init__(
-            zip(PLANES, ({"D": None, "F": None, "F2": None},
-                         {"D": None, "F": None, "F2": None})))
-
-
-def calculate_beta_from_phase(meas_input, tune_dict, phase_dict, header_dict):
+def calculate(meas_input, tune_dict, phase_dict, header_dict, plane):
     """
     Calculates betas and alphas from phase advances
     Args:
@@ -48,18 +39,25 @@ def calculate_beta_from_phase(meas_input, tune_dict, phase_dict, header_dict):
         tune_dict: TuneDict contains measured tunes
         phase_dict: PhaseDict contains measured phase advances
         header_dict:  dictionary of header items common for all output files
+        plane: plane
 
     Returns:
         BetaDict object containing specific TfsDataFrames with results
     """
-    free_model = meas_input.accelerator.get_model_tfs()
-    elements = meas_input.accelerator.get_elements_tfs()
-    try:
-        free_bk_model = meas_input.accelerator.get_best_knowledge_model_tfs()
-    except AttributeError:
-        LOGGER.debug("No best knowledge model - using the normal one.")
-        free_bk_model = free_model
+    if meas_input.compensation == "none" and meas_input.accelerator.excitation:
+        meas_and_model_tunes = (tune_dict[plane]["Q"], tune_dict[plane]["QM"] % 1)
+        model = meas_input.accelerator.get_driven_tfs()
+        bk_model = model  # TODO we need driven bk model
+    else:
+        meas_and_model_tunes = (tune_dict[plane]["QF"], tune_dict[plane]["QFM"] % 1)
+        model = meas_input.accelerator.get_model_tfs()
+        try:
+            bk_model = meas_input.accelerator.get_best_knowledge_model_tfs()
+        except AttributeError:
+            LOGGER.debug("No best knowledge model - using the normal one.")
+            bk_model = model
 
+    elements = meas_input.accelerator.get_elements_tfs().loc[:, ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
     if meas_input.three_bpm_method:
         error_method = METH_3BPM
     else:
@@ -69,30 +67,13 @@ def calculate_beta_from_phase(meas_input, tune_dict, phase_dict, header_dict):
             raise IOError(f"Error definition file could not be found")
         elements = _assign_uncertainties(elements, error_defs_path)
         error_method = METH_A_NBPM
-
-    beta_dict = BetaDict()
-    for plane in PLANES:
-        header = _get_header(header_dict, error_method, meas_input.range_of_bpms,
-                             f"getbeta{plane.lower()}.out")
-        LOGGER.info(f"Beta {plane} free calculation")
-        beta_dict[plane]["F"] = betas_alphas_from_phase(free_bk_model, free_model, elements, phase_dict[plane]["F"], plane, meas_input.range_of_bpms, error_method, tune_dict[plane]["QF"], tune_dict[plane]["QFM"] % 1)
-        LOGGER.info(f"Beta {plane} driven calculation")
-        # remove BPMs that are not in the input
-        if phase_dict[plane]["D"] is not None and meas_input.accelerator.excitation:
-            driven_model = meas_input.accelerator.get_driven_tfs()
-            driven_bk_model = driven_model  # TODO we need driven bk model
-            beta_dict[plane]["D"] = betas_alphas_from_phase(driven_bk_model, driven_model, elements, phase_dict[plane]["D"], plane, meas_input.range_of_bpms,
-                                                            error_method, tune_dict[plane]["Q"], tune_dict[plane]["QM"] % 1)
-            tfs.write(os.path.join(meas_input.outputdir, header["FILENAME"]), beta_dict[plane]["D"], header, save_index="NAME")
-            header["FILENAME"] = f"getbeta{plane.lower()}_free.out"
-
-        tfs.write(os.path.join(meas_input.outputdir, header["FILENAME"]), beta_dict[plane]["F"], header, save_index="NAME")
-
-        LOGGER.warning("Skip free2 calculation")
-    return beta_dict
+    header = _get_header(header_dict, error_method, meas_input.range_of_bpms)
+    beta_df = betas_alphas_from_phase(bk_model, model, elements, phase_dict, plane, meas_input.range_of_bpms, error_method, meas_and_model_tunes)
+    tfs.write(os.path.join(meas_input.outputdir, f"{BETA_NAME}{plane.lower()}{EXT}"), beta_df, header, save_index="NAME")
+    return beta_df
 
 
-def betas_alphas_from_phase(bk_model, model, elements, phase, plane, range_of_bpms, errors_method, tune, mdltune):
+def betas_alphas_from_phase(bk_model, model, elements, phase, plane, range_of_bpms, errors_method, meas_and_model_tunes):
     """
     Calculates betas and alphas from phase using specified method
     Args:
@@ -109,123 +90,31 @@ def betas_alphas_from_phase(bk_model, model, elements, phase, plane, range_of_bp
     Returns:
         tfs.DataFrame containing betas and alfas from phase
     """
-    beta_df = tfs.TfsDataFrame(model).loc[phase["MEAS"].index, ["S", "BET" + plane, "ALF" + plane]]
-    beta_df = beta_df.rename(columns={"BET" + plane: "BET" + plane + "MDL", "ALF" + plane: "ALF" + plane + "MDL"})
+    beta_df = tfs.TfsDataFrame(model).loc[phase["MEAS"].index, ["S", f"BET{plane}", f"ALF{plane}"]]
+    beta_df = beta_df.rename(columns={f"BET{plane}": f"BET{plane}{MDL}", f"ALF{plane}": f"ALF{plane}{MDL}"})
     errors_assigned = (len(elements["dK1"].nonzero()[0]) + len(elements["dX"].nonzero()[0]) + len(elements["KdS"].nonzero()[0])) > 0
     if errors_method == METH_A_NBPM:
-        beta_df = n_bpm_method(bk_model.loc[phase["MEAS"].index, :], elements, phase, plane, range_of_bpms, tune, mdltune, beta_df)
+        beta_df = n_bpm_method(bk_model.loc[phase["MEAS"].index, :], elements, phase, plane, range_of_bpms, meas_and_model_tunes, beta_df)
         errors = METH_A_NBPM if errors_assigned else METH_NO_ERR
         if not errors_assigned:
             LOGGER.warning("No systematic errors were given or no element was found for the given "
                            "error definitions. The analytical N-BPM method was not used.")
     else:
-        beta_df = three_bpm_method(phase, plane, tune, mdltune, beta_df)
+        beta_df = three_bpm_method(phase, plane, meas_and_model_tunes, beta_df)
         errors = METH_3BPM
-
-    rmsbb = stats.weighted_rms(beta_df["BBEAT" + plane]) * 100
-    beta_df.headers["RMS_BETABEAT"] = "{:.3f} %".format(rmsbb)
-    LOGGER.info(" - RMS beta beat: {:.2f}%".format(rmsbb))
-    beta_df["DELTABET"+plane] = (beta_df.loc[:, 'BET' + plane] / beta_df.loc[:, 'BET' + plane + 'MDL'] - 1.0)
+    beta_df[f"{DELTA}BET{plane}"] = df_rel_diff(beta_df, f"BET{plane}", f"BET{plane}{MDL}")
+    beta_df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(beta_df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
+    beta_df[f"{DELTA}ALF{plane}"] = df_diff(beta_df, f"ALF{plane}", f"ALF{plane}{MDL}")
+    beta_df[f"{ERR}{DELTA}ALF{plane}"] = beta_df.loc[:, f"{ERR}ALF{plane}"].values
+    rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].values) * 100
+    beta_df.headers["RMS_BETABEAT"] = f"{rmsbb:.3f} %"
+    LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
     LOGGER.info(f"Errors from {errors}")
     beta_df.headers["ErrorsFrom:"] = errors
     return beta_df
 
 
-def three_bpm_method(phase, plane, tune, mdltune, beta_df):
-    """
-        Calculates betas and alphas from using adjacent BPMs (3 combiantion)
-
-        ``phase["MEAS"]``, ``phase["MODEL"]``, ``phase["ERRMEAS"]`` (from ``get_phases``) are of the
-    form:
-
-    +----------+----------+----------+----------+----------+
-    |          |   BPM1   |   BPM2   |   BPM3   |   BPM4   |
-    +----------+----------+----------+----------+----------+
-    |   BPM1   |    0     |  phi_21  |  phi_31  |  phi_41  |
-    +----------+----------+----------+----------+----------+
-    |   BPM2   |  phi_12  |     0    |  phi_32  |  phi_42  |
-    +----------+----------+----------+----------+----------+
-    |   BPM3   |  phi_13  |  phi_23  |    0     |  phi_43  |
-    +----------+----------+----------+----------+----------+
-
-    aa ``tilt_slice_matrix(matrix, shift, slice, tune)`` brings it into the form:
-
-    +-----------+--------+--------+--------+--------+
-    |           |  BPM1  |  BPM2  |  BPM3  |  BPM4  |
-    +-----------+--------+--------+--------+--------+
-    | BPM_(i-1) | phi_1n | phi_21 | phi_32 | phi_43 |
-    +-----------+--------+--------+--------+--------+
-    | BPM_i     |    0   |    0   |    0   |    0   |
-    +-----------+--------+--------+--------+--------+
-    | BPM_(i+1) | phi_12 | phi_23 | phi_34 | phi_45 |
-    +-----------+--------+--------+--------+--------+
-
-    ``cot_phase_*_shift1``:
-
-    +-----------------------------+-----------------------------+-----------------------------+
-    | cot(phi_1n) - cot(phi_1n-1) |  cot(phi_21) - cot(phi_2n)  |   cot(phi_32) - cot(phi_31) |
-    +-----------------------------+-----------------------------+-----------------------------+
-    |         NaN                 |         NaN                 |         NaN                 |
-    +-----------------------------+-----------------------------+-----------------------------+
-    |         NaN                 |         NaN                 |         NaN                 |
-    +-----------------------------+-----------------------------+-----------------------------+
-    |  cot(phi_13) - cot(phi_12)  |  cot(phi_24) - cot(phi_23)  |   cot(phi_35) - cot(phi_34) |
-    +-----------------------------+-----------------------------+-----------------------------+
-
-    for the combination xxxABBx: first row
-    for the combinstion xBBAxxx: fourth row and
-    for the combination xxBABxx: second row of ``cot_phase_*_shift2``
-
-        Args:
-            phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
-            plane: plane either X or Y
-            tune: measured tune
-            mdltune: model tune
-            beta_df: tfs skeleton
-
-        Returns:
-            tfs.DataFrame containing betas and alfas from phase
-        """
-    # tilt phase advances in order to have the phase advances in a neighbourhood
-    tilted_meas = _tilt_slice_matrix(phase["MEAS"].values, 2, 5, tune) * TWOPI
-    tilted_model = _tilt_slice_matrix(phase["MODEL"].values, 2, 5, mdltune) * TWOPI
-    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].values, 2, 5, mdltune) * TWOPI
-    betmdl = beta_df.loc[:]["BET" + plane + "MDL"].values
-    alfmdl = beta_df.loc[:]["ALF" + plane + "MDL"].values
-    with np.errstate(divide='ignore'):
-        cot_phase_meas = 1 / np.tan(tilted_meas)
-        cot_phase_model = 1 / np.tan(tilted_model)
-    # calculate enumerators and denominators for far more cases than needed
-    # shift1 are the cases BBA, ABB, AxBB, AxxBB etc. (the used BPMs are adjacent)
-    # shift2 are the cases where the used BPMs are separated by one. only BAB is used for  3-BPM
-    cot_phase_meas_shift1 = cot_phase_meas - np.roll(cot_phase_meas, -1, axis=0)
-    cot_phase_model_shift1 = cot_phase_model - np.roll(cot_phase_model, -1, axis=0) + EPSILON
-    cot_phase_meas_shift2 = cot_phase_meas - np.roll(cot_phase_meas, -2, axis=0)
-    cot_phase_model_shift2 = cot_phase_model - np.roll(cot_phase_model, -2, axis=0) + EPSILON
-    # calculate the sum of the fractions
-    bet_frac = (cot_phase_meas_shift1[0]/cot_phase_model_shift1[0] +
-                cot_phase_meas_shift1[3]/cot_phase_model_shift1[3] +
-                cot_phase_meas_shift2[1]/cot_phase_model_shift2[1]) / 3
-    # multiply the fractions by betmdl and calculate the arithmetic mean
-    beti = bet_frac * betmdl
-    alfi = (bet_frac * (cot_phase_model[1] + cot_phase_model[3] + 2 * alfmdl) - (cot_phase_meas[1] + cot_phase_meas[3])) / 2
-    # calculate errphi_ij^2 / sin^2 phimdl_ij * beta
-    with np.errstate(divide='ignore', invalid='ignore'):
-        sin_squared_model = tilted_errmeas / np.square(np.sin(tilted_model)) * betmdl
-    # square it again beacause it's used in a vector length
-    sin_squared_model = np.square(sin_squared_model)
-    sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
-    sin_squ_model_shift2 = sin_squared_model + np.roll(sin_squared_model, -2, axis=0) / np.square(cot_phase_model_shift2)
-    beterr = np.sqrt(sin_squ_model_shift1[0] + sin_squ_model_shift1[3] + sin_squ_model_shift2[1]) / 3
-    beta_df["BET" + plane] = beti
-    beta_df["ERRBET" + plane] = beterr
-    beta_df["ALF" + plane] = alfi
-    beta_df["ERRALF" + plane] = 0  # TODO calculate alferr
-    beta_df["BBEAT" + plane] = bet_frac - 1.0
-    return beta_df
-
-
-def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, tune, mdltune, beta_df):
+def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_tunes, beta_df):
     """
     Calculates betas and alphas from using all BPM combination within range_of_bpms,
     it also accounts for systematic errors
@@ -242,13 +131,12 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, tune, mdltune,
     Returns:
         tfs.DataFrame containing betas and alfas from phase
     """
+    tune, mdltune = meas_and_mdl_tunes
     betas_alfas = np.zeros((len(phase["MEAS"].index), 4))
     nbpms = len(bk_model.index)
     n_comb = np.zeros(nbpms, dtype=int)
     m = int(range_of_bpms / 2)
-    loc_range = np.arange(-m, m + 1)
-    max_ncomb = m * (2 * m - 1)
-    loc_range_no_zero = loc_range[np.nonzero(loc_range)]
+    loc_range = np.arange(-m , m + 1)
     phases_meas = phase["MEAS"] * TWOPI
     phases_err = phase["ERRMEAS"] * TWOPI
     phases_err.where(phases_err.notnull(), 1, inplace=True)
@@ -285,32 +173,22 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, tune, mdltune,
                                outer_elmts.loc[:]["dX"], outer_elmts.loc[:]["KdS"],
                                outer_elmts.loc[:]["mKdS"]))
         outer_elmts = outer_elmts.rename(columns={"BET" + plane: "BETA"})
-        mat_t_beta, mat_t_alpha = np.zeros((max_ncomb, len(diag))), np.zeros((max_ncomb, len(diag)))
-        betas, alphas = np.empty(max_ncomb), np.empty(max_ncomb)
-        beta_mask = np.ones(max_ncomb, dtype=bool)
-        for i, c in enumerate([[x, y] for x in loc_range_no_zero for y in loc_range_no_zero if x < y]):
-            beta, alfa, betaline, alfaline = \
+        index_tuples = [[x, y] for x in loc_range[patter] + m for y in loc_range[patter] + m
+                        if (x < y) and (abs(cot_model[x] - cot_model[y]) > ZERO_THRESHOLD) and
+                        (np.sign(cot_model[x] - cot_model[y]) * np.sign(cot_meas[x] - cot_meas[y]) > 0)]
+        mat_t_beta, mat_t_alpha = np.zeros((len(index_tuples), len(diag))), np.zeros((len(index_tuples), len(diag)))
+        betas, alphas = np.empty(len(index_tuples)), np.empty(len(index_tuples))
+        for i, c in enumerate(index_tuples):
+            betas[i], alphas[i], mat_t_beta[i], mat_t_alpha[i] = \
                 calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_elmts, cot_model,
                                                              cot_meas, outer_meas_phase_adv, probed_bpm_name,
                                                              bk_model.at[probed_bpm_name, "BET" + plane],
                                                              bk_model.at[probed_bpm_name, "ALF" + plane], range_of_bpms)
-            if beta < 0:
-                beta_mask[i] = False
-                continue
-            mat_t_beta[i] = betaline
-            mat_t_alpha[i] = alfaline
-            betas[i] = beta
-            alphas[i] = alfa
 
         mask = diag != 0
         mat_diag = np.diag(diag[mask])
-        mat_t_beta = mat_t_beta[:, mask][beta_mask]
-        betas = betas[beta_mask]
-        mat_v_beta = np.dot(mat_t_beta, np.dot(mat_diag, np.transpose(mat_t_beta)))
-
-        mat_t_alpha = mat_t_alpha[:, mask][beta_mask]
-        alphas = alphas[beta_mask]
-        mat_v_alpha = np.dot(mat_t_alpha, np.dot(mat_diag, np.transpose(mat_t_alpha)))
+        mat_v_beta = np.dot(mat_t_beta[:, mask], np.dot(mat_diag, np.transpose(mat_t_beta[:, mask])))
+        mat_v_alpha = np.dot(mat_t_alpha[:, mask], np.dot(mat_diag, np.transpose(mat_t_alpha[:, mask])))
 
         if np.any(mat_v_beta) and np.any(mat_v_alpha):
             beti, beterr = _covariant_weighting(mat_v_beta, betas)
@@ -323,12 +201,11 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, tune, mdltune,
             continue
         betas_alfas[indx, :] = np.array([beti, beterr, alfi, alferr])
 
-    beta_df["BET" + plane] = betas_alfas[:, 0]
-    beta_df["ERRBET" + plane] = betas_alfas[:, 1]
-    beta_df["ALF" + plane] = betas_alfas[:, 2]
-    beta_df["ERRALF" + plane] = betas_alfas[:, 3]
+    beta_df[f"BET{plane}"] = betas_alfas[:, 0]
+    beta_df[f"{ERR}BET{plane}"] = betas_alfas[:, 1]
+    beta_df[f"ALF{plane}"] = betas_alfas[:, 2]
+    beta_df[f"{ERR}ALF{plane}"] = betas_alfas[:, 3]
     beta_df["NCOMB"] = n_comb
-    beta_df["BBEAT" + plane] = beta_df["BET" + plane] / beta_df["BET" + plane + "MDL"] - 1
     beta_df = beta_df.loc[beta_df["NCOMB"] > 0]
     return beta_df
 
@@ -355,27 +232,12 @@ def calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_
 
     """
     m = int(range_of_bpms / 2)
-    lng = len(outer_elmts)
-    line_length = 4 * len(outer_elmts.index) + 2 * m + 1
-
-    outer_elmts_bet = outer_elmts.loc[:, "BETA"].values
-    outer_el_k2 = outer_elmts.loc[:, "K2L"].values
-    betaline = np.zeros(line_length)
-    alfaline = np.zeros(line_length)
-    ix = c[0] + m
-    iy = c[1] + m
-    fac1, fac2 = -np.sign(c[0]), np.sign(c[1])
-    # remove bad combination
-    if abs(cot_model[ix]) > COT_THRESHOLD or abs(cot_model[iy]) > COT_THRESHOLD or abs(cot_meas[ix]) > COT_THRESHOLD or abs(cot_meas[iy]) > COT_THRESHOLD:
-        return -1.0, -1.0, None, None
+    ix = c[0]
+    iy = c[1]
+    fac1, fac2 = -np.sign(c[0]-m), np.sign(c[1]-m)
     dif_cot_model = cot_model[ix] - cot_model[iy]
-    if abs(dif_cot_model) < ZERO_THRESHOLD:
-        return -1.0, -1.0, None, None
-
     # calculate beta
     dif_cot_meas = cot_meas[ix] - cot_meas[iy]
-    if np.sign(dif_cot_model) * np.sign(dif_cot_meas) < 0:
-        return -1.0, -1.0, None, None
     denom = dif_cot_model / betmdl1
     beta_i = dif_cot_meas / denom
     avg_cot_model = (cot_model[ix] + cot_model[iy]) / 2
@@ -383,6 +245,13 @@ def calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_
     avg_cot_meas = (cot_meas[ix] + cot_meas[iy]) / 2
 
     alfa_i = 0.5 * (denomalf * dif_cot_meas / dif_cot_model - 2 * avg_cot_meas)
+
+    lng = len(outer_elmts)
+    line_length = 4 * len(outer_elmts.index) + 2 * m + 1
+    outer_elmts_bet = outer_elmts.loc[:, "BETA"].values
+    outer_el_k2 = outer_elmts.loc[:, "K2L"].values
+    betaline = np.zeros(line_length)
+    alfaline = np.zeros(line_length)
 
     # slice
     mloc = outer_elmts.index.get_loc(probed_bpm_name)
@@ -488,16 +357,109 @@ def _assign_uncertainties(twiss_full, errordefspath):
     twiss_full.loc[:, "UNC"] = np.logical_or(abs(np.roll(twiss_full.loc[:, "dK1"], -1)) > 1.0e-12,
                                              twiss_full.loc[:, "UNC"])
     LOGGER.debug("DONE creating uncertainty information")
-    return twiss_full[twiss_full["UNC"]]
+    return twiss_full.loc[twiss_full["UNC"]]
 
 
-def _get_header(header_dict, error_method, range_of_bpms, filename):
+def _get_header(header_dict, error_method, range_of_bpms):
     header = header_dict.copy()
     header['BetaAlgorithmVersion'] = __version__
     header['RCond'] = RCOND
     header['RangeOfBPMs'] = "Adjacent" if error_method == METH_3BPM else range_of_bpms
-    header['FILENAME'] = filename
     return header
+
+
+def three_bpm_method(phase, plane, meas_and_mdl_tunes, beta_df):
+    """
+        Calculates betas and alphas from using adjacent BPMs (3 combiantion)
+
+        ``phase["MEAS"]``, ``phase["MODEL"]``, ``phase["ERRMEAS"]`` (from ``get_phases``) are of the
+    form:
+
+    +----------+----------+----------+----------+----------+
+    |          |   BPM1   |   BPM2   |   BPM3   |   BPM4   |
+    +----------+----------+----------+----------+----------+
+    |   BPM1   |    0     |  phi_21  |  phi_31  |  phi_41  |
+    +----------+----------+----------+----------+----------+
+    |   BPM2   |  phi_12  |     0    |  phi_32  |  phi_42  |
+    +----------+----------+----------+----------+----------+
+    |   BPM3   |  phi_13  |  phi_23  |    0     |  phi_43  |
+    +----------+----------+----------+----------+----------+
+
+    aa ``tilt_slice_matrix(matrix, shift, slice, tune)`` brings it into the form:
+
+    +-----------+--------+--------+--------+--------+
+    |           |  BPM1  |  BPM2  |  BPM3  |  BPM4  |
+    +-----------+--------+--------+--------+--------+
+    | BPM_(i-1) | phi_1n | phi_21 | phi_32 | phi_43 |
+    +-----------+--------+--------+--------+--------+
+    | BPM_i     |    0   |    0   |    0   |    0   |
+    +-----------+--------+--------+--------+--------+
+    | BPM_(i+1) | phi_12 | phi_23 | phi_34 | phi_45 |
+    +-----------+--------+--------+--------+--------+
+
+    ``cot_phase_*_shift1``:
+
+    +-----------------------------+-----------------------------+-----------------------------+
+    | cot(phi_1n) - cot(phi_1n-1) |  cot(phi_21) - cot(phi_2n)  |   cot(phi_32) - cot(phi_31) |
+    +-----------------------------+-----------------------------+-----------------------------+
+    |         NaN                 |         NaN                 |         NaN                 |
+    +-----------------------------+-----------------------------+-----------------------------+
+    |         NaN                 |         NaN                 |         NaN                 |
+    +-----------------------------+-----------------------------+-----------------------------+
+    |  cot(phi_13) - cot(phi_12)  |  cot(phi_24) - cot(phi_23)  |   cot(phi_35) - cot(phi_34) |
+    +-----------------------------+-----------------------------+-----------------------------+
+
+    for the combination xxxABBx: first row
+    for the combinstion xBBAxxx: fourth row and
+    for the combination xxBABxx: second row of ``cot_phase_*_shift2``
+
+        Args:
+            phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
+            plane: plane either X or Y
+            tune: measured tune
+            mdltune: model tune
+            beta_df: tfs skeleton
+
+        Returns:
+            tfs.DataFrame containing betas and alfas from phase
+        """
+    tune, mdltune = meas_and_mdl_tunes
+    # tilt phase advances in order to have the phase advances in a neighbourhood
+    tilted_meas = _tilt_slice_matrix(phase["MEAS"].values, 2, 5, tune) * TWOPI
+    tilted_model = _tilt_slice_matrix(phase["MODEL"].values, 2, 5, mdltune) * TWOPI
+    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].values, 2, 5, mdltune) * TWOPI
+    betmdl = beta_df.loc[:]["BET" + plane + "MDL"].values
+    alfmdl = beta_df.loc[:]["ALF" + plane + "MDL"].values
+    with np.errstate(divide='ignore'):
+        cot_phase_meas = 1 / np.tan(tilted_meas)
+        cot_phase_model = 1 / np.tan(tilted_model)
+    # calculate enumerators and denominators for far more cases than needed
+    # shift1 are the cases BBA, ABB, AxBB, AxxBB etc. (the used BPMs are adjacent)
+    # shift2 are the cases where the used BPMs are separated by one. only BAB is used for  3-BPM
+    cot_phase_meas_shift1 = cot_phase_meas - np.roll(cot_phase_meas, -1, axis=0)
+    cot_phase_model_shift1 = cot_phase_model - np.roll(cot_phase_model, -1, axis=0) + EPSILON
+    cot_phase_meas_shift2 = cot_phase_meas - np.roll(cot_phase_meas, -2, axis=0)
+    cot_phase_model_shift2 = cot_phase_model - np.roll(cot_phase_model, -2, axis=0) + EPSILON
+    # calculate the sum of the fractions
+    bet_frac = (cot_phase_meas_shift1[0]/cot_phase_model_shift1[0] +
+                cot_phase_meas_shift1[3]/cot_phase_model_shift1[3] +
+                cot_phase_meas_shift2[1]/cot_phase_model_shift2[1]) / 3
+    # multiply the fractions by betmdl and calculate the arithmetic mean
+    beti = bet_frac * betmdl
+    alfi = (bet_frac * (cot_phase_model[1] + cot_phase_model[3] + 2 * alfmdl) - (cot_phase_meas[1] + cot_phase_meas[3])) / 2
+    # calculate errphi_ij^2 / sin^2 phimdl_ij * beta
+    with np.errstate(divide='ignore', invalid='ignore'):
+        sin_squared_model = tilted_errmeas / np.square(np.sin(tilted_model)) * betmdl
+    # square it again beacause it's used in a vector length
+    sin_squared_model = np.square(sin_squared_model)
+    sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
+    sin_squ_model_shift2 = sin_squared_model + np.roll(sin_squared_model, -2, axis=0) / np.square(cot_phase_model_shift2)
+    beterr = np.sqrt(sin_squ_model_shift1[0] + sin_squ_model_shift1[3] + sin_squ_model_shift2[1]) / 3
+    beta_df["BET" + plane] = beti
+    beta_df["ERRBET" + plane] = beterr
+    beta_df["ALF" + plane] = alfi
+    beta_df["ERRALF" + plane] = 0  # TODO calculate alferr
+    return beta_df
 
 
 def _tilt_slice_matrix(matrix, slice_shift, slice_width, tune=0):
