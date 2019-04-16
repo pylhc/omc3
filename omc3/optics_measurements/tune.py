@@ -18,8 +18,8 @@ def calculate(measure_input, input_files):
     accelerator = measure_input.accelerator
     for plane in PLANES:
         tune_d[plane]["QM"] = accelerator.get_model_tfs().headers["Q" + CHAR[plane]]
-        tune_list = [df.headers["Q" + CHAR[plane]] for df in input_files.zero_dpp_frames(plane)]
-        tune_rms_list = [df.headers["Q" + CHAR[plane] + "RMS"] for df in input_files.zero_dpp_frames(plane)]
+        tune_list = [df.headers["Q" + CHAR[plane]] for df in input_files.dpp_frames(plane, 0)]
+        tune_rms_list = [df.headers["Q" + CHAR[plane] + "RMS"] for df in input_files.dpp_frames(plane,0)]
         measured_tune = stats.weighted_mean(np.array(tune_list), errors=np.array(tune_rms_list))
         tune_d[plane]["Q"], tune_d[plane]["QF"] = measured_tune, measured_tune
         tune_d[plane]["QFM"] = accelerator.nat_tune_x if plane is "X" else accelerator.nat_tune_y
@@ -27,7 +27,7 @@ def calculate(measure_input, input_files):
             tune_d[plane]["QM"] = accelerator.drv_tune_x if plane is "X" else accelerator.drv_tune_y
             tune_d[plane]["QF"] = tune_d[plane]["Q"] - tune_d[plane]["QM"] + tune_d[plane]["QFM"]
         tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
-            input_files.joined_frame(plane, [f"MU{plane}"], zero_dpp=True, how='inner'),
+            input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0, how='inner'),
             plane, measure_input.accelerator)
     return tune_d
 

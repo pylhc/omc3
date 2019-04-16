@@ -11,93 +11,80 @@ from os.path import join
 import pandas as pd
 import numpy as np
 import tfs
+from optics_measurements.constants import ERR, RES, EXT, KICK_NAME
+
+PLANE_TO_NUM = dict(X=1, Y=2)
+# column_names = ["DPP", "QX", "QXRMS", "QY", "QYRMS", "NATQX", "NATQXRMS", "NATQY", "NATQYRMS", "sqrt2JX", "sqrt2JXSTD", "sqrt2JY", "sqrt2JYSTD", "2JX", "2JXSTD", "2JY", "2JYSTD"]
+#  column_names_ac = column_names + ["sqrt2JXRES", "sqrt2JXSTDRES", "sqrt2JYRES", "sqrt2JYSTDRES", "2JXRES", "2JXSTDRES", "2JYRES", "2JYSTDRES"]
 
 
-def calculate_kick(measure_input, input_files, model, mad_ac, beta_d, header_dict):
+def calculate(measure_input, input_files, scale, header_dict, plane):
     """
-    Fills the following TfsFiles:
-     - getkick.out getkickac.out
 
     Args:
         measure_input: Optics_input object
         input_files: Stores the input files tfs
-        model:  Model tfs panda
-        mad_ac:  Model tfs panda with AC-dipole in
-        beta_d: measured beta functions
+        scale: measured beta functions
         header_dict: OrderedDict containing information about the analysis
+        plane: "X" or "Y"
 
     Returns:
+        DataFrame containing actions and their errors
     """
     try:
-        tunes_actions = _getkick(input_files, _get_model_arc_betas(measure_input, model), ac=False)
+        tunes_actions = _getkick(measure_input, input_files, plane)
     except IndexError:  # occurs if either no x or no y files exist
-        return pd.DataFrame, pd.DataFrame
-    column_names = ["DPP", "QX", "QXRMS", "QY", "QYRMS", "NATQX", "NATQXRMS", "NATQY", "NATQYRMS",
-                    "sqrt2JX", "sqrt2JXSTD", "sqrt2JY", "sqrt2JYSTD", "2JX", "2JXSTD", "2JY",
-                    "2JYSTD"]
-    kick_frame = pd.DataFrame(data=tunes_actions, columns=column_names)
-    header = _get_header(header_dict, beta_d)
-    tfs.write(join(measure_input.outputdir, header['FILENAME']), kick_frame, header)
-    actions_x, actions_y = tunes_actions[:, 9:11], tunes_actions[:, 11:13]  # sqrt2jx, sqrt2Jy
-
-    if measure_input.accelerator.excitation:
-        column_names_ac = column_names + ["sqrt2JXRES", "sqrt2JXSTDRES", "sqrt2JYRES", "sqrt2JYSTDRES", "2JXRES",
-                            "2JXSTDRES", "2JYRES", "2JYSTDRES"]
-        tunes_actions_ac = _getkick(input_files, _get_model_arc_betas(measure_input, mad_ac), ac=True)
-        x, y = beta_d["X"], beta_d["Y"]
-        tunes_actions_ac_res = tunes_actions_ac[:, 9:] / np.array([np.sqrt(x), np.sqrt(x), np.sqrt(y), np.sqrt(y), x, x, y, y])
-        kick_frame_ac = pd.DataFrame(data=np.hstack((tunes_actions_ac, tunes_actions_ac_res)), columns=column_names_ac)
-        header_ac = _get_header(header_dict, beta_d, ac=True)
-        tfs.write(join(measure_input.outputdir, header_ac['FILENAME']), kick_frame_ac, header_ac)
-        actions_x, actions_y = tunes_actions_ac[:, 9:11], tunes_actions_ac[:, 11:13]
-    return actions_x, actions_y
+        return pd.DataFrame
+    col_names = ["DPP", "DPPAMP", f"Q{plane}", f"{ERR}Q{plane}", f"NATQ{plane}", f"{ERR}NATQ{plane}",
+                 f"sqrt2J{plane}", f"{ERR}sqrt2J{plane}", f"2J{plane}", f"{ERR}2J{plane}"]
+    kick_frame = pd.DataFrame(data=tunes_actions, columns=col_names)
+    kick_frame = _rescale_actions(kick_frame, scale, plane)
+    header = _get_header(header_dict, scale)
+    tfs.write(join(measure_input.outputdir, f"{KICK_NAME}{plane.lower()}{EXT}"), kick_frame, header)
+    return kick_frame.loc[:, [f"sqrt2J{plane}", f"{ERR}sqrt2J{plane}"]].values
 
 
-def _get_model_arc_betas(measure_input, model):
-    return model.loc[:, ['S', 'BETX', 'BETY']].loc[
-           measure_input.accelerator.get_element_types_mask(model.index, ["arc_bpm"]), :]
-
-
-def _get_header(header_dict, beta_d, ac=False):
+def _get_header(header_dict, beta_d):
     header = header_dict.copy()
-    header['COMMENT'] = "Calculates the kick from the model beta function"
-    header['FILENAME'] = 'getkick' + ac * 'ac' + '.out'
-    if ac:
-        header["RescalingFactor_for_X"] = beta_d["X"]
-        header["RescalingFactor_for_Y"] = beta_d["Y"]
+    header["RescalingFactor"] = beta_d
     return header
 
 
-def _getkick(files, model_beta, ac):
-    out = np.zeros([len(files["X"]), 17])
-    for i in range(len(files["X"])):
-        action_x_model = _gen_kick_calc(files["X"][i], model_beta, "X", ac)
-        action_y_model = _gen_kick_calc(files["Y"][i], model_beta, "Y", ac)
+def _rescale_actions(df, scaling_factor, plane):
+    for col in (f"sqrt2J{plane}", f"{ERR}sqrt2J{plane}", f"2J{plane}", f"{ERR}2J{plane}"):
+        df[f"{col}{RES}"] = df.loc[:, col].values * scaling_factor
+    return df
+
+
+def _getkick(measure_input, files, plane):
+    out = np.zeros([len(files[plane]), 10])
+    for i, df in enumerate(files[plane]):
         # what if the following is not there - except KeyError?
-        out[i, 0] = files["X"][i].DPP
-        out[i, 1] = files["X"][i].Q1
-        out[i, 2] = files["X"][i].Q1RMS
-        out[i, 3] = files["Y"][i].Q2
-        out[i, 4] = files["Y"][i].Q2RMS
-        out[i, 5] = files["X"][i].NATQ1
-        out[i, 6] = files["X"][i].NATQ1RMS
-        out[i, 7] = files["Y"][i].NATQ2
-        out[i, 8] = files["Y"][i].NATQ2RMS
-        out[i, 9:] = np.ravel(np.concatenate((action_x_model, action_y_model), axis=1))
+        out[i, 0] = df["DPP"]
+        out[i, 1] = df["DPPAMP"]
+        out[i, 2] = df[f"Q{PLANE_TO_NUM[plane]}"]
+        out[i, 3] = df[f"Q{PLANE_TO_NUM[plane]}RMS"]
+        out[i, 4] = df[f"NATQ{PLANE_TO_NUM[plane]}"]
+        out[i, 5] = df[f"NATQ{PLANE_TO_NUM[plane]}RMS"]
+        out[i, 6:] = _gen_kick_calc(measure_input, df, plane)
     return out
 
 
-def _gen_kick_calc(lin, beta, plane, ac):
+def _gen_kick_calc(meas_input, lin, plane):
     """
-    Takes either PK2PK/2 for kicker excitation or 2 * AMP for AC-dipole excitation(complex spectra)
+    Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation
     """
-    if ac:
-        frame = pd.merge(beta, lin.loc[:, ['AMP' + plane]], how='inner', left_index=True,
-                         right_index=True)
-        amps = 2.0 * frame.loc[:, 'AMP' + plane].values  # multiplied by 2.0 due to complex spectra
-    else:
-        frame = pd.merge(beta, lin.loc[:, ['PK2PK']], how='inner', left_index=True, right_index=True)
-        amps = frame.loc[:, 'PK2PK'].values / 2.0
-    meansqrt2j = amps / np.sqrt(frame.loc[:, 'BET' + plane].values)
-    mean2j = np.square(amps) / frame.loc[:, 'BET' + plane].values
-    return np.array([[np.mean(meansqrt2j), np.std(meansqrt2j)], [np.mean(mean2j), np.std(mean2j)]])
+    frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin.loc[:, [f"AMP{plane}", "PK2PK"]],
+                     how='inner', left_index=True, right_index=True)
+    amps = (frame.loc[:, f"AMP{plane}"].values if meas_input.accelerator.excitation
+            else frame.loc[:, 'PK2PK'].values / 2.0)
+    meansqrt2j = amps / np.sqrt(frame.loc[:, f"BET{plane}"].values)
+    mean2j = np.square(amps) / frame.loc[:, f"BET{plane}"].values
+    return np.array([np.mean(meansqrt2j), np.std(meansqrt2j), np.mean(mean2j), np.std(mean2j)])
+
+
+def _get_model_arc_betas(measure_input, plane):
+    accel = measure_input.accelerator
+    model = (accel.get_driven_tfs() if accel.excitation else accel.get_model_tfs())
+    return model.loc[:, ['S', f"BET{plane}"]].loc[
+           accel.get_element_types_mask(model.index, ["arc_bpm"]), :]

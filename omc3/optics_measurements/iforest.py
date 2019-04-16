@@ -15,7 +15,7 @@ def clean_with_isolation_forest(input_files, meas_input, plane):
     input_files = remove_bad_bpms(input_files, list(set(bad_bpms.NAME)), plane)
     LOGGER.info(str(list(set(bad_bpms.NAME))))
     # TODO potentially write output files ... currently not unique indices!
-    #tfs.write(os.path.join(meas_input.outputdir, f"bad_bpms_iforest_{plane.lower()}.tfs"), bad_bpms)
+    #  tfs.write(os.path.join(meas_input.outputdir, f"bad_bpms_iforest_{plane.lower()}.tfs"), bad_bpms)
     return input_files
 
 

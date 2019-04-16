@@ -10,9 +10,7 @@ Computes various lattice optics parameters from frequency spectra
 
 import os
 import sys
-import traceback
 import datetime
-import re
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
@@ -21,7 +19,7 @@ import tfs
 from utils import logging_tools, iotools
 from optics_measurements import dpp, tune, phase, beta_from_phase, iforest, rdt
 from optics_measurements import beta_from_amplitude, dispersion, interaction_point, kick
-from optics_measurements.constants import PLANES
+from optics_measurements.constants import PLANES, ERR
 
 
 VERSION = '0.4.0'
@@ -45,42 +43,23 @@ def measure_optics(input_files, measure_input):
     common_header = _get_header(measure_input)
 
     tune_dict = tune.calculate(measure_input, input_files)
-    ratio = {}
+    invariants = {}
     for plane in PLANES:
         phase_dict = phase.calculate(measure_input, input_files, tune_dict, common_header, plane)
         if measure_input.only_coupling:
             break
         beta_phase = beta_from_phase.calculate(measure_input, tune_dict, phase_dict, common_header, plane)
-        ratio[plane] = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_phase, common_header, plane)
-
-        # in the following functions, nothing should change, so we choose the models now
-        mad_ac, mad_twiss = get_driven_and_free_models(measure_input)
-        interaction_point.write_betastar_from_phase(interaction_point.betastar_from_phase(measure_input.accelerator, phase_dict, mad_twiss), common_header, measure_input.outputdir, plane)
-        dispersion.calculate_orbit(measure_input, input_files, mad_twiss, common_header, plane)
-        if not measure_input.three_d:
-            dispersion.calculate_dispersion(measure_input, input_files, mad_twiss, common_header, plane)
-            if plane == "X":
-                dispersion.calculate_normalised_dispersion(measure_input, input_files, mad_twiss,
-                                                   beta_phase, common_header)
-        elif plane == "X":
-            dispersion.calculate_normalised_dispersion_3d(measure_input, input_files, mad_twiss, mad_ac,
-                                                          beta_phase, common_header)
-    if measure_input.three_d:
-        dispersion.calculate_dispersion_3d(measure_input, input_files, mad_twiss, common_header)
-    inv_x, inv_y = kick.calculate_kick(measure_input, input_files, mad_twiss, mad_ac, ratio, common_header)
+        ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_phase, common_header, plane)
+        invariants[plane] = kick.calculate(measure_input, input_files, ratio, common_header, plane)
+        interaction_point.write_betastar_from_phase(interaction_point.betastar_from_phase(measure_input.accelerator, phase_dict, measure_input.accelerator.get_model_tfs()), common_header, measure_input.outputdir, plane)
+        dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
+        dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
+        if plane == "X":
+            dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_phase, common_header)
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
     #if measure_input.nonlinear:
     #    pass #
         #rdt.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
-
-
-def get_driven_and_free_models(measure_input):
-    mad_twiss = measure_input.accelerator.get_model_tfs()
-    if measure_input.accelerator.excitation:
-        mad_ac = measure_input.accelerator.get_driven_tfs()
-    else:
-        mad_ac = mad_twiss
-    return mad_ac, mad_twiss
 
 
 def _get_header(meas_input):
@@ -91,18 +70,6 @@ def _get_header(meas_input):
                         ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
                         ('Model_directory', meas_input.accelerator.model_dir),
                         ('Compensation', compensation[meas_input.compensation])])
-
-
-def _tb_():
-    if sys.stdout.isatty():
-        err_exc = re.sub(r"line\s([0-9]+)", "\33[1mline \33[38;2;80;160;255m\\1\33[0m\33[21m",
-                         traceback.format_exc())
-        err_exc = re.sub("File\\s\"([^\"]+)\",", "File \33[38;2;0;255;100m\\1\33[0m", err_exc)
-        err_excs = err_exc.split("\n")
-        for line in err_excs:
-            LOGGER.error(line)
-    else:
-        LOGGER.error(traceback.format_exc())
 
 
 class InputFiles(dict):
@@ -117,26 +84,33 @@ class InputFiles(dict):
     """
     def __init__(self, files_to_analyse, optics_opt):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
-        if isinstance(files_to_analyse[0], str):
-            for file_in in files_to_analyse:
-                for plane in PLANES:
-                    self[plane].append(tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME"))
-        else:
-            for file_in in files_to_analyse:
-                for plane in PLANES:
-                    self[plane].append(file_in[plane])
+        read_files = isinstance(files_to_analyse[0], str)
+        for file_in in files_to_analyse:
+            for plane in PLANES:
+                df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME")
+                              if read_files else file_in[plane])
+                self[plane].append(self._repair_backwards_compatible_frame(df_to_load, plane))
 
         if len(self['X']) + len(self['Y']) == 0:
             raise IOError("No valid input files")
         
-        self.optics_opt = optics_opt
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
         amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)
-
         for plane in PLANES:
             #self[plane] = iforest.clean_with_isolation_forest(self[plane], optics_opt, plane)
             self[plane] = dpp.append_dpp(self[plane], dpp.arrange_dpps(dpp_values))
             self[plane] = dpp.append_amp_dpp(self[plane], amp_dpp_values)
+
+    @staticmethod  # TODO later remove
+    def _repair_backwards_compatible_frame(df, plane):
+        """
+        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones
+        This is for backwards compatibility with Drive
+        """
+        df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].values * 2
+        if f"NATAMP{plane}" in df.columns:
+            df[f"NATAMP{plane}"] = df.loc[:, f"NATAMP{plane}"].values * 2
+        return df
 
     def dpps(self, plane):
         """
@@ -157,24 +131,24 @@ class InputFiles(dict):
             raise ValueError(f"No data found for dp/p {dpp}")
         return dpp_dfs
 
-
     def _all_frames(self, plane):
         return self[plane]
 
-    def joined_frame(self, plane, columns, dpp=None, dpp_amp=False, how='inner'):
+    def joined_frame(self, plane, columns, dpp_value=None, dpp_amp=False, how='inner'):
         """
         Constructs merged DataFrame from InputFiles
         Parameters:
             plane:  "X" or "Y"
             columns: list of columns from input files
-            zero_dpp: if True merges only zero-dpp files, default is False
+            dpp_value: merges only files with given dpp_value
+            dpp_amp: merges only files with non-zero dpp amplitude (i.e. 3Dkicks)
             how: way of merging:  'inner' (intersection) or 'outer' (union), default is 'inner'
         Returns:
             merged DataFrame from InputFiles
         """
         if how not in ['inner', 'outer']:
             raise RuntimeWarning("'how' should be either 'inner' or 'outer', 'inner' will be used.")
-        frames_to_join = self.dpp_frames(plane, dpp) if dpp is not None else self._all_frames(plane)
+        frames_to_join = self.dpp_frames(plane, dpp_value) if dpp_value is not None else self._all_frames(plane)
         if dpp_amp:
             frames_to_join = [df for df in frames_to_join if df.DPP_AMP > 0]
         if len(frames_to_join) == 0:
@@ -196,8 +170,8 @@ class InputFiles(dict):
                 data = pd.merge(self[plane][i].loc[:, ["AMP" + plane]], calibs[plane], how='left',
                                 left_index=True, right_index=True).fillna(
                     value={"CALIBRATION": 1., "ERROR_CALIBRATION": 0.})
-                self[plane][i]["AMP" + plane] = self[plane][i].loc[:, "AMP" + plane] * data.loc[:,"CALIBRATION"]
-                self[plane][i]["ERRAMP" + plane] = data.loc[:, "ERROR_CALIBRATION"]  # TODO
+                self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:,"CALIBRATION"]
+                self[plane][i][f"{ERR}AMP{plane}"] = data.loc[:, "ERROR_CALIBRATION"]  # TODO
 
     @ staticmethod
     def get_columns(frame, column):
@@ -231,7 +205,7 @@ def copy_calibration_files(outputdir, calibrationdir):
         return None
     calibs = {}
     for plane in PLANES:
-        cal_file = "calibration_{}.out".format(plane.lower())
+        cal_file = f"calibration_{plane.lower()}.out"
         iotools.copy_item(os.path.join(calibrationdir, cal_file), os.path.join(outputdir, cal_file))
         calibs[plane] = tfs.read(os.path.join(outputdir, cal_file)).set_index("NAME")
     return calibs
