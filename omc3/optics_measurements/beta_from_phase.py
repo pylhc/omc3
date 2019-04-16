@@ -84,8 +84,7 @@ def betas_alphas_from_phase(bk_model, model, elements, phase, plane, range_of_bp
         plane: plane either X or Y
         range_of_bpms: size of a range centered at probed BPM
         errors_method: specified method
-        tune: measured tune
-        mdltune: model tune
+        meas_and_model_tunes: measured  and model tunes
 
     Returns:
         tfs.DataFrame containing betas and alfas from phase
@@ -124,8 +123,7 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_t
         phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
         plane: plane either X or Y
         range_of_bpms: size of a range centered at probed BPM
-        tune: measured tune
-        mdltune: model tune
+        meas_and_mdl_tunes: measured  and model tunes
         beta_df: tfs skeleton
 
     Returns:
@@ -416,8 +414,7 @@ def three_bpm_method(phase, plane, meas_and_mdl_tunes, beta_df):
         Args:
             phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
             plane: plane either X or Y
-            tune: measured tune
-            mdltune: model tune
+            meas_and_mdl_tunes: measured  and model tunes
             beta_df: tfs skeleton
 
         Returns:

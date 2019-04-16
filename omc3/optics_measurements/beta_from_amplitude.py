@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import tfs
 from optics_measurements.toolbox import df_rel_diff, df_ratio
-from optics_measurements.constants import AMP_BETA_NAME, EXT, ERR, DELTA, MDL
+from optics_measurements.constants import AMP_BETA_NAME, EXT, ERR, DELTA, MDL, RES
 
 
 def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane):
@@ -54,8 +54,8 @@ def phase_to_amp_ratio(measure_input, beta_phase, beta_amp, plane):
 
 
 def add_rescaled_beta_columns(df, ratio, plane):
-    df[f"BET{plane}RES"] = df.loc[:, f"BET{plane}"].values * ratio
-    df[f"{ERR}BET{plane}RES"] = df.loc[:, f"{ERR}BET{plane}"].values * ratio
+    df[f"BET{plane}{RES}"] = df.loc[:, f"BET{plane}"].values * ratio
+    df[f"{ERR}BET{plane}{RES}"] = df.loc[:, f"{ERR}BET{plane}"].values * ratio
     return df
 
 
@@ -63,8 +63,8 @@ def beta_from_amplitude(meas_input, input_files, model, plane, eq_comp=None, mod
     df = pd.DataFrame(model).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
     df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
                        f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
-    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"]),
-                           how='inner', left_index=True, right_index=True)
+    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=0),
+                  how='inner', left_index=True, right_index=True)
     if model_comp is not None:
         df = pd.merge(df, pd.DataFrame(model_comp.loc[:, ["S", f"BET{plane}"]].rename(columns={f"BET{plane}": f"BET{plane}comp"})),
                       how='inner', left_index=True, right_index=True)

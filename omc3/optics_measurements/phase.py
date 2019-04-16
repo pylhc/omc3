@@ -27,6 +27,7 @@ def calculate(meas_input, input_files, tunes, header_dict, plane):
         input_files: includes measurement tfs
         tunes: TunesDict object containing measured and model tunes
         header_dict: part of the header common for all output files
+        plane: "X" or "Y"
 
     Returns:
         an instance of PhaseDict filled with the results of get_phases
@@ -85,7 +86,7 @@ def get_phases(meas_input, input_files, model, plane, eq_comp=None, model_comp=N
     how = 'outer' if meas_input.union else 'inner'
     phase_frame = pd.merge(phase_frame,
                            input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}_MU{plane}"],
-                                                    zero_dpp=True, how=how),
+                                                    dpp_value=0, how=how),
                            how='inner', left_index=True, right_index=True)
     if model_comp is not None:
         phase_frame = pd.merge(phase_frame, pd.DataFrame(model_comp.loc[:, [f"MU{plane}"]].rename(
