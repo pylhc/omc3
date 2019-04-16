@@ -19,13 +19,13 @@ import pandas as pd
 
 import tfs
 from utils import logging_tools, iotools
-from optics_measurements import dpp, tune, phase, beta_from_phase, iforest
+from optics_measurements import dpp, tune, phase, beta_from_phase, iforest, rdt
 from optics_measurements import beta_from_amplitude, dispersion, interaction_point, kick
+from optics_measurements.constants import PLANES
 
 
 VERSION = '0.4.0'
 LOGGER = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
-PLANES = ('X', 'Y')
 LOG_FILE = "measure_optics.log"
 
 
@@ -65,13 +65,13 @@ def measure_optics(input_files, measure_input):
         elif plane == "X":
             dispersion.calculate_normalised_dispersion_3d(measure_input, input_files, mad_twiss, mad_ac,
                                                           beta_phase, common_header)
-
     if measure_input.three_d:
         dispersion.calculate_dispersion_3d(measure_input, input_files, mad_twiss, common_header)
     inv_x, inv_y = kick.calculate_kick(measure_input, input_files, mad_twiss, mad_ac, ratio, common_header)
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
-    if measure_input.nonlinear:
-        pass #resonant_driving_terms.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
+    #if measure_input.nonlinear:
+    #    pass #
+        #rdt.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
 
 
 def get_driven_and_free_models(measure_input):
@@ -125,16 +125,18 @@ class InputFiles(dict):
             for file_in in files_to_analyse:
                 for plane in PLANES:
                     self[plane].append(file_in[plane])
+
+        if len(self['X']) + len(self['Y']) == 0:
+            raise IOError("No valid input files")
         
         self.optics_opt = optics_opt
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
+        amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)
 
         for plane in PLANES:
             #self[plane] = iforest.clean_with_isolation_forest(self[plane], optics_opt, plane)
-            self[plane] = dpp.arrange_dpp(self[plane], dpp_values)
-            
-        if len(self['X']) + len(self['Y']) == 0:
-            raise IOError("No valid input files")
+            self[plane] = dpp.append_dpp(self[plane], dpp.arrange_dpps(dpp_values))
+            self[plane] = dpp.append_amp_dpp(self[plane], amp_dpp_values)
 
     def dpps(self, plane):
         """
@@ -147,18 +149,19 @@ class InputFiles(dict):
         """
         return np.array([df.DPP for df in self[plane]])
 
-    def zero_dpp_frames(self, plane):
-        _zero_dpp_frames = []
-        for i in np.argwhere(self.dpps(plane) == 0.0).T[0]:
-            _zero_dpp_frames.append(self[plane][i])
-        if len(_zero_dpp_frames) > 0:
-            return _zero_dpp_frames
-        return self._all_frames(plane)
+    def dpp_frames(self, plane, dpp_value):
+        dpp_dfs = []
+        for i in np.argwhere(np.abs(self.dpps(plane) - dpp_value) < 1e-6).T[0]:
+            dpp_dfs.append(self[plane][i])
+        if len(dpp_dfs) == 0:
+            raise ValueError(f"No data found for dp/p {dpp}")
+        return dpp_dfs
+
 
     def _all_frames(self, plane):
         return self[plane]
 
-    def joined_frame(self, plane, columns, zero_dpp=False, how='inner'):
+    def joined_frame(self, plane, columns, dpp=None, dpp_amp=False, how='inner'):
         """
         Constructs merged DataFrame from InputFiles
         Parameters:
@@ -171,16 +174,16 @@ class InputFiles(dict):
         """
         if how not in ['inner', 'outer']:
             raise RuntimeWarning("'how' should be either 'inner' or 'outer', 'inner' will be used.")
-        if zero_dpp:
-            frames_to_join = self.zero_dpp_frames(plane)
-        else:
-            frames_to_join = self._all_frames(plane)
+        frames_to_join = self.dpp_frames(plane, dpp) if dpp is not None else self._all_frames(plane)
+        if dpp_amp:
+            frames_to_join = [df for df in frames_to_join if df.DPP_AMP > 0]
         if len(frames_to_join) == 0:
-            raise ValueError("No data found")
-        joined_frame = pd.DataFrame(self[plane][0]).loc[:, columns]
-        for i, df in enumerate(self[plane][1:]):
-            joined_frame = pd.merge(joined_frame, df.loc[:, columns], how=how, left_index=True,
-                                    right_index=True, suffixes=('', '__' + str(i + 1)))
+            raise ValueError(f"No data found for non-zero |dp/p|")
+        joined_frame = pd.DataFrame(frames_to_join[0]).loc[:, columns]
+        if len(frames_to_join) > 1:
+            for i, df in enumerate(frames_to_join[1:]):
+                joined_frame = pd.merge(joined_frame, df.loc[:, columns], how=how, left_index=True,
+                                        right_index=True, suffixes=('', '__' + str(i + 1)))
         for column in columns:
             joined_frame.rename(columns={column: column + '__0'}, inplace=True)
         return joined_frame
