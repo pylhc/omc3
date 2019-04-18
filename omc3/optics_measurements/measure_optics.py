@@ -14,12 +14,13 @@ import datetime
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
+from copy import copy
 
 import tfs
 from utils import logging_tools, iotools
-from optics_measurements import dpp, tune, phase, beta_from_phase, iforest, rdt
+from optics_measurements import dpp, tune, phase, beta_from_phase, iforest, chromatic, rdt
 from optics_measurements import beta_from_amplitude, dispersion, interaction_point, kick
-from optics_measurements.constants import PLANES, ERR
+from optics_measurements.constants import PLANES, ERR, EXT, CHROM_BETA_NAME
 
 
 VERSION = '0.4.0'
@@ -40,36 +41,67 @@ def measure_optics(input_files, measure_input):
     iotools.create_dirs(measure_input.outputdir)
     logging_tools.add_module_handler(logging_tools.file_handler(
         os.path.join(measure_input.outputdir, LOG_FILE)))
-    common_header = _get_header(measure_input)
-
     tune_dict = tune.calculate(measure_input, input_files)
+    common_header = _get_header(measure_input, tune_dict)
     invariants = {}
     for plane in PLANES:
-        phase_dict = phase.calculate(measure_input, input_files, tune_dict, common_header, plane)
+        phase_dict, out_dfs = phase.calculate(measure_input, input_files, tune_dict, plane)
+        phase.write(out_dfs, [common_header, common_header], measure_input.outputdir, plane)
+        phase.write_special(measure_input, phase_dict, tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
             break
-        beta_phase = beta_from_phase.calculate(measure_input, tune_dict, phase_dict, common_header, plane)
-        ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_phase, common_header, plane)
+        beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict, common_header, plane)
+        beta_from_phase.write(beta_df, beta_header, measure_input.outputdir, plane)
+
+        ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_df, common_header, plane)
         invariants[plane] = kick.calculate(measure_input, input_files, ratio, common_header, plane)
-        interaction_point.write_betastar_from_phase(interaction_point.betastar_from_phase(measure_input.accelerator, phase_dict, measure_input.accelerator.get_model_tfs()), common_header, measure_input.outputdir, plane)
+        ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict)
+        interaction_point.write(ip_df, common_header, measure_input.outputdir, plane)
         dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
         dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
         if plane == "X":
-            dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_phase, common_header)
+            dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
+    chromatic_beating(input_files, measure_input, tune_dict)
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
     #if measure_input.nonlinear:
     #    pass #
         #rdt.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
 
 
-def _get_header(meas_input):
+def chromatic_beating(input_files, measure_input, tune_dict):
+    """
+    Main function to compute chromatic optics beating
+    Args:
+        input_files: InputFiles object containing frequency spectra files (linx/y)
+        measure_input: OpticsInput object containing analysis settings
+
+    Returns:
+    """
+    dpps = np.array([dpp_val for dpp_val in set(input_files.dpps("X"))])
+    if np.max(dpps) - np.min(dpps) == 0.0:
+        return
+    for plane in PLANES:
+        betas = []
+        for dpp_val in dpps:
+            dpp_meas_input = copy(measure_input)
+            dpp_meas_input["dpp"] = dpp_val
+            phase_dict, out_dfs = phase.calculate(dpp_meas_input, input_files, tune_dict, plane)
+            beta_df, _ = beta_from_phase.calculate(dpp_meas_input, tune_dict, phase_dict, OrderedDict(), plane)
+            betas.append(beta_df)
+        output_df = chromatic.calculate_w_and_phi(betas, dpps, input_files, measure_input, plane)
+        tfs.write(os.path.join(measure_input.outputdir, f"{CHROM_BETA_NAME}{plane.lower()}{EXT}"), output_df, {}, save_index="NAME")
+
+
+def _get_header(meas_input, tune_dict):
     compensation = {'model': "by model", 'equation': "by equation", 'none': "None"}
     return OrderedDict([('Measure_optics:version', VERSION),
                         ('Command', f"{sys.executable} {' '.join(sys.argv)}"),
                         ('CWD', os.getcwd()),
                         ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
                         ('Model_directory', meas_input.accelerator.model_dir),
-                        ('Compensation', compensation[meas_input.compensation])])
+                        ('Compensation', compensation[meas_input.compensation]),
+                        ('Q1', tune_dict["X"]["QF"]),
+                        ('Q2', tune_dict["Y"]["QF"])])
 
 
 class InputFiles(dict):
@@ -97,7 +129,8 @@ class InputFiles(dict):
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
         amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)
         for plane in PLANES:
-            #self[plane] = iforest.clean_with_isolation_forest(self[plane], optics_opt, plane)
+            if optics_opt.isolation_forest:
+                self[plane] = iforest.clean_with_isolation_forest(self[plane], optics_opt, plane)
             self[plane] = dpp.append_dpp(self[plane], dpp.arrange_dpps(dpp_values))
             self[plane] = dpp.append_amp_dpp(self[plane], amp_dpp_values)
 

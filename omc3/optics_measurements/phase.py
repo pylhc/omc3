@@ -17,49 +17,15 @@ from optics_measurements.constants import EXT, PHASE_NAME, TOTAL_PHASE_NAME, ERR
 LOGGER = logging_tools.get_logger(__name__)
 
 
-def calculate(meas_input, input_files, tunes, header_dict, plane):
+def calculate(meas_input, input_files, tunes, plane, no_errors=True):
     """
-    Calculates phase advances and fills the following files:
-        getphase(tot)(x/y)(_free).out
+    Calculates phase advances
 
     Parameters:
         meas_input: the input object including settings and the accelerator class
         input_files: includes measurement tfs
-        tunes: TunesDict object containing measured and model tunes
-        header_dict: part of the header common for all output files
+        tunes: TunesDict object containing measured and model tunes and ac2bpm object
         plane: "X" or "Y"
-
-    Returns:
-        an instance of PhaseDict filled with the results of get_phases
-    """
-    if meas_input.compensation == "none" and meas_input.accelerator.excitation:
-        model = meas_input.accelerator.get_driven_tfs()
-    else:
-        model = meas_input.accelerator.get_model_tfs()
-    comp_dict = {"equation": dict(eq_comp=tunes),
-                 "model": dict(model_comp=meas_input.accelerator.get_driven_tfs()),
-                 "none": dict()}
-    LOGGER.info("Calculating phase advances")
-    LOGGER.info(f"Measured tune in plane {plane} = {tunes[plane]['Q']}")
-    phase_d, output_dfs = get_phases(meas_input, input_files, model, plane, **comp_dict[meas_input.compensation])
-    headers = _get_headers(header_dict, tunes, free=(meas_input.compensation != "none"))
-    _write_output(headers, output_dfs, meas_input.outputdir, plane)
-    _write_special_phase_file(plane, phase_d, tunes[plane]["QF"] if (meas_input.compensation != "none") else tunes[plane]["Q"],
-                              meas_input.accelerator, meas_input.outputdir)
-
-    return phase_d
-
-
-def get_phases(meas_input, input_files, model, plane, eq_comp=None, model_comp=None, no_errors=True):
-    """
-    Computes phase advances among all BPMs.
-
-    Args:
-        meas_input: OpticsInput object
-        input_files: InputFiles object
-        model: model tfs_panda to be used
-        plane: "X" or "Y"
-        eq_comp: (driven_tune,free_tune,ac2bpm object)
         no_errors: if True measured errors shall not be propagated (only their spread)
 
     Returns:
@@ -82,42 +48,33 @@ def get_phases(meas_input, input_files, model, plane, eq_comp=None, model_comp=N
                 phase_advances["MEAS"].loc[BPMi,BPMj]
         list of output data frames(for files)
     """
-    phase_frame = pd.DataFrame(model).loc[:, ["S", f"MU{plane}"]]
+    LOGGER.info("Calculating phase advances")
+    LOGGER.info(f"Measured tune in plane {plane} = {tunes[plane]['Q']}")
+
+    model = (meas_input.accelerator.get_driven_tfs()
+             if meas_input.compensation == "none" and meas_input.accelerator.excitation
+             else meas_input.accelerator.get_model_tfs())
+    df = pd.DataFrame(model).loc[:, ["S", f"MU{plane}"]]
     how = 'outer' if meas_input.union else 'inner'
-    phase_frame = pd.merge(phase_frame,
-                           input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}_MU{plane}"],
-                                                    dpp_value=0, how=how),
-                           how='inner', left_index=True, right_index=True)
-    if model_comp is not None:
-        phase_frame = pd.merge(phase_frame, pd.DataFrame(model_comp.loc[:, [f"MU{plane}"]].rename(
-            columns={f"MU{plane}": f"MU{plane}comp"})),
-                      how='inner', left_index=True, right_index=True)
-        phase_compensation = df_diff(phase_frame, f"MU{plane}", f"MU{plane}comp")
-        phase_frame[input_files.get_columns(phase_frame, f"MU{plane}")] = ang_sum(input_files.get_data(phase_frame, f"MU{plane}"), phase_compensation[:, np.newaxis])
-
-    phases_mdl = phase_frame.loc[:, f"MU{plane}"].values
+    dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
+    df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}_MU{plane}"],
+                                               dpp_value=dpp_value, how=how),
+                  how='inner', left_index=True, right_index=True)
+    phases_mdl = df.loc[:, f"MU{plane}"].values
     phase_advances = {"MODEL": _get_square_data_frame(
-            (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, phase_frame.index)}
-    phases_meas = input_files.get_data(phase_frame, f"MU{plane}") * meas_input.accelerator.get_beam_direction()
-    phases_errors = input_files.get_data(phase_frame, f"{ERR}_MU{plane}")
+        (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
+    if meas_input.compensation == "model":
+        df = _compensate_by_model(input_files, meas_input, df, plane)
+    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.get_beam_direction()
+    if meas_input.compensation == "equation":
+        phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
-
-    if eq_comp is not None:
-        driven_tune, free_tune, ac2bpmac = eq_comp[plane]["Q"], eq_comp[plane]["QF"], eq_comp[plane]["ac2bpm"]
-        k_bpmac = ac2bpmac[2]
-        phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
-        phases_meas = phases_meas + phase_corr[np.newaxis, :]
-        r = eq_comp.get_lambda(plane)
-        phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
-        psi = (np.arctan((1 - r) / (1 + r) * np.tan(2 * np.pi * phases_meas)) / (2 * np.pi)) % 0.5
-        phases_meas = np.where(phases_meas % 1.0 > 0.5, psi + .5, psi)
-        phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] + free_tune
-
+    phases_errors = input_files.get_data(df, f"{ERR}_MU{plane}")
     if phases_meas.ndim < 2:
         phase_advances["MEAS"] = _get_square_data_frame(
-                (phases_meas[np.newaxis, :] - phases_meas[:, np.newaxis]) % 1.0, phase_frame.index)
+                (phases_meas[np.newaxis, :] - phases_meas[:, np.newaxis]) % 1.0, df.index)
         phase_advances["ERRMEAS"] = _get_square_data_frame(
-                np.zeros((len(phases_meas), len(phases_meas))), phase_frame.index)
+                np.zeros((len(phases_meas), len(phases_meas))), df.index)
         return phase_advances
     if meas_input.union:
         mask = np.isnan(phases_meas)
@@ -132,17 +89,40 @@ def get_phases(meas_input, input_files, model, plane, eq_comp=None, model_comp=N
     else:
         errors_3d = None
     phase_advances["MEAS"] = _get_square_data_frame(stats.circular_mean(
-            phases_3d, period=1, errors=errors_3d, axis=2) % 1.0, phase_frame.index)
+            phases_3d, period=1, errors=errors_3d, axis=2) % 1.0, df.index)
     phase_advances["ERRMEAS"] = _get_square_data_frame(stats.circular_error(
-            phases_3d, period=1, errors=errors_3d, axis=2), phase_frame.index)
-    return phase_advances, [_create_output_df(phase_advances, phase_frame, plane),
-                            _create_output_df(phase_advances, phase_frame, plane, tot=True)]
+            phases_3d, period=1, errors=errors_3d, axis=2), df.index)
+    return phase_advances, [_create_output_df(phase_advances, df, plane),
+                            _create_output_df(phase_advances, df, plane, tot=True)]
 
 
-def _write_output(headers, dfs, output, plane):
+def _compensate_by_equation(phases_meas, plane, tunes):
+    driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
+    k_bpmac = ac2bpmac[2]
+    phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
+    phases_meas = phases_meas + phase_corr[np.newaxis, :]
+    r = tunes.get_lambda(plane)
+    phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
+    psi = (np.arctan((1 - r) / (1 + r) * np.tan(2 * np.pi * phases_meas)) / (2 * np.pi)) % 0.5
+    phases_meas = np.where(phases_meas % 1.0 > 0.5, psi + .5, psi)
+    phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] + free_tune
+    return phases_meas
+
+
+def _compensate_by_model(input_files, meas_input, df, plane):
+    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.get_driven_tfs().loc[:, [f"MU{plane}"]]),
+                  how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
+    phase_compensation = df_diff(df, f"MU{plane}", f"MU{plane}comp")
+    df[input_files.get_columns(df, f"MU{plane}")] = ang_sum(
+        input_files.get_data(df, f"MU{plane}"), phase_compensation[:, np.newaxis])
+    return df
+
+
+def write(dfs, headers, output, plane):
     for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME)):
         tfs.write(join(output, f"{name}{plane.lower()}{EXT}"), df, head)
-        LOGGER.info(f"Phase advance beating in {name}{plane.lower()}{EXT} = {stats.weighted_rms(df.loc[:, f'{DELTA}PHASE{plane}'])}")
+        LOGGER.info(f"Phase advance beating in {name}{plane.lower()}{EXT} = "
+                    f"{stats.weighted_rms(df.loc[:, f'{DELTA}PHASE{plane}'])}")
 
 
 def _create_output_df(phase_advances, model, plane, tot=False):
@@ -169,51 +149,43 @@ def _create_output_df(phase_advances, model, plane, tot=False):
     return output_data
 
 
-def _get_headers(header_dict, tunes, free=False):
-    header = header_dict.copy()
-    header['Q1'] = tunes["X"]["QF"] if free else tunes["X"]["Q"]
-    header['Q2'] = tunes["Y"]["QF"] if free else tunes["Y"]["Q"]
-    header_tot = header.copy()
-    return [header, header_tot]
-
-
 def _get_square_data_frame(data, index):
     return pd.DataFrame(data=data, index=index, columns=index)
 
 
-def _write_special_phase_file(plane, phase_advances, plane_tune, accel, outputdir):
+def write_special(meas_input, phase_advances, plane_tune, plane):
     # TODO REFACTOR AND SIMPLIFY
-    plane_mu = "MU" + plane
+    accel = meas_input.accelerator
     meas = phase_advances["MEAS"]
     bd = accel.get_beam_direction()
     elements = accel.get_elements_tfs()
     lines = []
     for elem1, elem2 in accel.get_important_phase_advances():
-        mus1 = elements.loc[elem1, plane_mu] - elements.loc[:, plane_mu]
+        mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
-        mus2 = elements.loc[:, plane_mu] - elements.loc[elem2, plane_mu]
+        mus2 = elements.loc[:, f"MU{plane}"] - elements.loc[elem2, f"MU{plane}"]
         minmu2 = abs(mus2.loc[meas.index]).idxmin()
         bpm_phase_advance = meas.loc[minmu1, minmu2]
-        model_value = elements.loc[elem2, plane_mu] - elements.loc[elem1, plane_mu]
+        model_value = elements.loc[elem2, f"MU{plane}"] - elements.loc[elem1, f"MU{plane}"]
         if (elements.loc[elem1, "S"] - elements.loc[elem2, "S"]) * bd > 0.0:
             bpm_phase_advance += plane_tune
             model_value += plane_tune
         bpm_err = phase_advances["ERRMEAS"].loc[minmu1, minmu2]
-        phase_to_first = -mus1.loc[minmu1]
-        phase_to_second = -mus2.loc[minmu2]
-        ph_result = ((bpm_phase_advance + phase_to_first + phase_to_second) * bd)
-        model_value = (model_value * bd)
-        resultdeg = ph_result % .5 * 360
-        if resultdeg > 90:
-            resultdeg -= 180
-        modeldeg = model_value % .5 * 360
-        if modeldeg > 90:
-            modeldeg -= 180
-        model_desc = f"{elem1} to {elem2} MODEL: {model_value % 1:8.4f}     {'':6s} = {modeldeg:6.2f} deg"
-        result_desc = f"{elem1} to {elem2} MEAS : {ph_result % 1:8.4f}  +- {bpm_err:6.4f} = "
-        f"{resultdeg:6.2f} +- {bpm_err * 360:3.2f} deg ({bpm_phase_advance:8.4f} + {phase_to_first + phase_to_second:8.4f} [{minmu1}, {minmu2}])"
+        elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
+        ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
+        model_value = (model_value * bd) % 1
+        model_desc = f"{elem1} to {elem2} MODEL: {model_value:8.4f}     {'':6s} = {_to_deg(model_value):6.2f} deg"
+        result_desc = (f"{elem1} to {elem2} MEAS : {ph_result % 1:8.4f}  +- {bpm_err:6.4f} = "
+                       f"{_to_deg(ph_result):6.2f} +- {bpm_err * 360:3.2f} deg ({bpm_phase_advance:8.4f} + {elems_to_bpms:8.4f} [{minmu1}, {minmu2}])")
         lines.extend([model_desc, result_desc])
-    with open(join(outputdir, f"special_phase_{plane.lower()}.txt"), 'w') as special_phase_writer:
-        special_phase_writer.write('Special phase advances\n')
+    with open(join(meas_input.outputdir, f"special_phase_{plane.lower()}.txt"), 'w') as spec_phase:
+        spec_phase.write('Special phase advances\n')
         for line in lines:
-            special_phase_writer.write(line + '\n')
+            spec_phase.write(line + '\n')
+
+
+def _to_deg(phase):  # -90 to 90 degrees
+    phase = phase % 0.5 * 360
+    if phase < 90:
+        return phase
+    return phase - 180

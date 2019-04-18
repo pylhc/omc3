@@ -39,3 +39,7 @@ def ang_sum(a, b):
 
 def _interval_check(ang):
     return np.where(np.abs(ang) > 0.5, ang - np.sign(ang), ang)
+
+
+def df_prod(df, a_col, b_col):
+    return df.loc[:, a_col].values * df.loc[:, b_col].values

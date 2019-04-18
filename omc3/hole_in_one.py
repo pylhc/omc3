@@ -452,8 +452,12 @@ def optics_params():
     params.add_parameter(flags="--compensation", name="compensation", type=str,
                          choices=("model", "equation", "none"), default=OPTICS_DEFAULTS["compensation"],
                          help="Mode of compensation for the analysis after driven beam excitation")
-    params.add_parameter(flags="--three_d", name="three_d", action="store_true",
-                         help="Use 3D kicks to calculate dispersion ")
+    params.add_parameter(flags="--three_d_excitation", name="three_d_excitation",
+                         action="store_true", help="Use 3D kicks to calculate dispersion")
+    params.add_parameter(flags="--isolation_forest", name="isolation_forest", action="store_true",
+                         help="Remove outlying BPMs with isolation forest")
+    params.add_parameter(flags="--second_order_dispersion", name="second_order_dispersion",
+                         action="store_true", help="Calculate second order dispersion")
     return params
 
 

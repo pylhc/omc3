@@ -28,17 +28,13 @@ def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane
         'plane': plane
     Returns:
     """
-    if meas_input.compensation == "none" and meas_input.accelerator.excitation:
-        model = meas_input.accelerator.get_driven_tfs()
-    else:
-        model = meas_input.accelerator.get_model_tfs()
     comp_dict = {"equation": dict(eq_comp=tune_dict),
                  "model": dict(model_comp=meas_input.accelerator.get_driven_tfs()),
                  "none": dict()}
-    beta_amp = beta_from_amplitude(meas_input, input_files, model, plane, **comp_dict[meas_input.compensation])
+    beta_amp = beta_from_amplitude(meas_input, input_files, plane, **comp_dict[meas_input.compensation])
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
     beta_amp = add_rescaled_beta_columns(beta_amp, x_ratio, plane)
-    header_d = _get_header(header_dict, tune_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].values), x_ratio, free=(meas_input.compensation != "none"))
+    header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].values), x_ratio)
     tfs.write(join(meas_input.outputdir, f"{AMP_BETA_NAME}{plane.lower()}{EXT}"), beta_amp, header_d, save_index='NAME')
     return x_ratio
 
@@ -59,11 +55,16 @@ def add_rescaled_beta_columns(df, ratio, plane):
     return df
 
 
-def beta_from_amplitude(meas_input, input_files, model, plane, eq_comp=None, model_comp=None):
+def beta_from_amplitude(meas_input, input_files, plane, eq_comp=None, model_comp=None):
+    if meas_input.compensation == "none" and meas_input.accelerator.excitation:
+        model = meas_input.accelerator.get_driven_tfs()
+    else:
+        model = meas_input.accelerator.get_model_tfs()
     df = pd.DataFrame(model).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
     df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
                        f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
-    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=0),
+    dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
+    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=dpp_value),
                   how='inner', left_index=True, right_index=True)
     if model_comp is not None:
         df = pd.merge(df, pd.DataFrame(model_comp.loc[:, ["S", f"BET{plane}"]].rename(columns={f"BET{plane}": f"BET{plane}comp"})),
@@ -104,14 +105,8 @@ def beta_from_amplitude(meas_input, input_files, model, plane, eq_comp=None, mod
                       f"MU{plane}{MDL}", f"{DELTA}BET{plane}", f"{ERR}{DELTA}BET{plane}"]]
 
 
-def _get_header(header_dict, tune_d, rmsbbeat, scaling_factor, free=True):
+def _get_header(header_dict, rmsbbeat, scaling_factor):
     header = header_dict.copy()
-    if free:
-        header['Q1'] = tune_d["X"]["QF"]
-        header['Q2'] = tune_d["Y"]["QF"]
-    else:
-        header['Q1'] = tune_d["X"]["Q"]
-        header['Q2'] = tune_d["Y"]["Q"]
     header['RMSbetabeat'] = rmsbbeat
     header['RescalingFactor'] = scaling_factor
     return header
