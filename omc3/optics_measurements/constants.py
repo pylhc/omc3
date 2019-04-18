@@ -3,6 +3,7 @@ TWOPI = PI * 2.0
 kEPSILON = 1.0e-12
 AMP_BETA_NAME = "beta_amplitude_"
 BETA_NAME = "beta_phase_"
+CHROM_BETA_NAME = "chrom_beta_"
 PHASE_NAME = "phase_"
 TOTAL_PHASE_NAME = "total_phase_"
 DISPERSION_NAME = "dispersion_"

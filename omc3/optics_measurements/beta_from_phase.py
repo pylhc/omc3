@@ -66,11 +66,21 @@ def calculate(meas_input, tune_dict, phase_dict, header_dict, plane):
         if error_defs_path is None:
             raise IOError(f"Error definition file could not be found")
         elements = _assign_uncertainties(elements, error_defs_path)
-        error_method = METH_A_NBPM
-    header = _get_header(header_dict, error_method, meas_input.range_of_bpms)
-    beta_df = betas_alphas_from_phase(bk_model, model, elements, phase_dict, plane, meas_input.range_of_bpms, error_method, meas_and_model_tunes)
-    tfs.write(os.path.join(meas_input.outputdir, f"{BETA_NAME}{plane.lower()}{EXT}"), beta_df, header, save_index="NAME")
-    return beta_df
+        errors_assigned = (len(elements["dK1"].nonzero()[0]) + len(
+            elements["dX"].nonzero()[0]) + len(elements["KdS"].nonzero()[0])) > 0
+        if not errors_assigned:
+            LOGGER.warning("No systematic errors were given or no element was found for the given "
+                           "error definitions. The systematic lattice errors are not used.")
+        error_method = METH_A_NBPM if errors_assigned else METH_NO_ERR
+    LOGGER.info(f"Errors from {error_method}")
+    beta_df, rmsbb = betas_alphas_from_phase(bk_model, model, elements, phase_dict, plane, meas_input.range_of_bpms, error_method, meas_and_model_tunes)
+    header = _get_header(header_dict, error_method, meas_input.range_of_bpms, rmsbb)
+    return beta_df, header
+
+
+def write(beta_df, header, outputdir, plane):
+    tfs.write(os.path.join(outputdir, f"{BETA_NAME}{plane.lower()}{EXT}"), beta_df,
+              header, save_index="NAME")
 
 
 def betas_alphas_from_phase(bk_model, model, elements, phase, plane, range_of_bpms, errors_method, meas_and_model_tunes):
@@ -91,26 +101,17 @@ def betas_alphas_from_phase(bk_model, model, elements, phase, plane, range_of_bp
     """
     beta_df = tfs.TfsDataFrame(model).loc[phase["MEAS"].index, ["S", f"BET{plane}", f"ALF{plane}"]]
     beta_df = beta_df.rename(columns={f"BET{plane}": f"BET{plane}{MDL}", f"ALF{plane}": f"ALF{plane}{MDL}"})
-    errors_assigned = (len(elements["dK1"].nonzero()[0]) + len(elements["dX"].nonzero()[0]) + len(elements["KdS"].nonzero()[0])) > 0
-    if errors_method == METH_A_NBPM:
-        beta_df = n_bpm_method(bk_model.loc[phase["MEAS"].index, :], elements, phase, plane, range_of_bpms, meas_and_model_tunes, beta_df)
-        errors = METH_A_NBPM if errors_assigned else METH_NO_ERR
-        if not errors_assigned:
-            LOGGER.warning("No systematic errors were given or no element was found for the given "
-                           "error definitions. The analytical N-BPM method was not used.")
-    else:
+    if errors_method == METH_3BPM:
         beta_df = three_bpm_method(phase, plane, meas_and_model_tunes, beta_df)
-        errors = METH_3BPM
+    else:
+        beta_df = n_bpm_method(bk_model.loc[phase["MEAS"].index, :], elements, phase, plane, range_of_bpms, meas_and_model_tunes, beta_df)
     beta_df[f"{DELTA}BET{plane}"] = df_rel_diff(beta_df, f"BET{plane}", f"BET{plane}{MDL}")
     beta_df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(beta_df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
     beta_df[f"{DELTA}ALF{plane}"] = df_diff(beta_df, f"ALF{plane}", f"ALF{plane}{MDL}")
     beta_df[f"{ERR}{DELTA}ALF{plane}"] = beta_df.loc[:, f"{ERR}ALF{plane}"].values
     rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].values) * 100
-    beta_df.headers["RMS_BETABEAT"] = f"{rmsbb:.3f} %"
     LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
-    LOGGER.info(f"Errors from {errors}")
-    beta_df.headers["ErrorsFrom:"] = errors
-    return beta_df
+    return beta_df, rmsbb
 
 
 def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_tunes, beta_df):
@@ -134,7 +135,7 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_t
     nbpms = len(bk_model.index)
     n_comb = np.zeros(nbpms, dtype=int)
     m = int(range_of_bpms / 2)
-    loc_range = np.arange(-m , m + 1)
+    loc_range = np.arange(-m, m + 1)
     phases_meas = phase["MEAS"] * TWOPI
     phases_err = phase["ERRMEAS"] * TWOPI
     phases_err.where(phases_err.notnull(), 1, inplace=True)
@@ -358,11 +359,13 @@ def _assign_uncertainties(twiss_full, errordefspath):
     return twiss_full.loc[twiss_full["UNC"]]
 
 
-def _get_header(header_dict, error_method, range_of_bpms):
+def _get_header(header_dict, error_method, range_of_bpms, rmsbb):
     header = header_dict.copy()
     header['BetaAlgorithmVersion'] = __version__
     header['RCond'] = RCOND
     header['RangeOfBPMs'] = "Adjacent" if error_method == METH_3BPM else range_of_bpms
+    header['ErrorsFrom:'] = error_method
+    header["RMS_BETABEAT"] = f"{rmsbb:.3f} %"
     return header
 
 

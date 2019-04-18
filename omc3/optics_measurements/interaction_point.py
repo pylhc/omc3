@@ -20,7 +20,7 @@ PI2 = 2 * np.pi
 COLUMNS = ("IP", "BETASTAR", "ERRBETASTAR", "PHASEADV", "ERRPHASEADV", "PHASEDVMDL", "LSTAR")
 
 
-def betastar_from_phase(accel, phase_d, model):
+def betastar_from_phase(meas_input, phase_d):
     """Writes the getIP files with the betastar computed using phase advance.
 
     Arguments:
@@ -30,6 +30,8 @@ def betastar_from_phase(accel, phase_d, model):
     Returns:
         A nested dict with the same structure as the phase_d dict.
     """
+    accel = meas_input.accelerator
+    model = accel.get_model_tfs()
     try:
         ips = list(accel.get_ips())
     except AttributeError:
@@ -48,7 +50,7 @@ def betastar_from_phase(accel, phase_d, model):
     return pd.DataFrame(columns=COLUMNS, data=rows)
 
 
-def write_betastar_from_phase(ips_d, headers, output_dir, plane):
+def write(ips_d, headers, output_dir, plane):
     tfs.write(join(output_dir, f"{IP_NAME}{plane.lower()}{EXT}"), ips_d, headers_dict=headers,)
 
 

@@ -30,7 +30,7 @@ def calculate_orbit(meas_input, input_files, header, plane):
         TfsDataFrame corresponding to output file
     """
     model = meas_input.accelerator.get_model_tfs()
-    df_orbit = _get_merged_df(model, input_files, plane, ['CO', 'CORMS'])
+    df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS'])
     df_orbit[plane] = stats.weighted_mean(input_files.get_data(df_orbit, 'CO'), axis=1)
     df_orbit[f"{ERR}{plane}"] = stats.weighted_error(input_files.get_data(df_orbit, 'CO'), axis=1)
     df_orbit[f"{DELTA}{plane}"] = df_orbit.loc[:, plane] - df_orbit.loc[:, f"{plane}MDL"]
@@ -41,7 +41,7 @@ def calculate_orbit(meas_input, input_files, header, plane):
     return output_df
 
 
-def calculate_dispersion(meas_input, input_files, header_dict, plane, order=2):
+def calculate_dispersion(meas_input, input_files, header_dict, plane):
     """
     Calculates dispersion.
     Args:
@@ -54,12 +54,12 @@ def calculate_dispersion(meas_input, input_files, header_dict, plane, order=2):
     Returns:
         TfsDataFrame corresponding to output file
     """
-    if meas_input.three_d:
+    if meas_input.three_d_excitation:
         return _calculate_dispersion_3d(meas_input, input_files, header_dict, plane)
-    return _calculate_dispersion_2d(meas_input, input_files, header_dict, plane, order)
+    return _calculate_dispersion_2d(meas_input, input_files, header_dict, plane)
 
 
-def calculate_normalised_dispersion(meas_input, input_files, beta, header_dict, order=2):
+def calculate_normalised_dispersion(meas_input, input_files, beta, header_dict):
     """
     Calculates normalised dispersion.
     Args:
@@ -72,17 +72,18 @@ def calculate_normalised_dispersion(meas_input, input_files, beta, header_dict, 
     Returns:
         TfsDataFrame corresponding to output file
     """
-    if meas_input.three_d:
+    if meas_input.three_d_excitation:
         return _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header_dict)
-    return _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header_dict, order)
+    return _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header_dict)
 
 
-def _calculate_dispersion_2d(meas_input, input_files, header, plane, order):
+def _calculate_dispersion_2d(meas_input, input_files, header, plane):
+    order = 2 if meas_input.second_order_dispersion else 1
     dpps = input_files.dpps(plane)
     if np.max(dpps) - np.min(dpps) == 0.0:
         return  # temporary solution
     model = meas_input.accelerator.get_model_tfs()
-    df_orbit = _get_merged_df(model, input_files, plane, ['CO', 'CORMS'])
+    df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS'])
     fit = np.polyfit(dpps, 0.001 * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
     # in the fit results the coefficients are sorted by power in decreasing order
     if order > 1:
@@ -108,7 +109,7 @@ def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
     """It computes  dispersion from 3 D kicks"""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.get_model_tfs()
-    df_orbit = _get_merged_df(model, input_files, plane, ['AMPZ', 'MUZ', f"AMP{plane}"], three_d=True)
+    df_orbit = _get_merged_df(meas_input, input_files, plane, ['AMPZ', 'MUZ', f"AMP{plane}"])
     # work around due to scaling to main line in lin files
     unscaled_amps = (df_orbit.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].values *
                      df_orbit.loc[:, input_files.get_columns(df_orbit, f"AMP{plane}")].values)
@@ -124,11 +125,12 @@ def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
     return output_df
 
 
-def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header, order=1):
+def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
     # TODO there are no errors from orbit
+    order = 2 if meas_input.second_order_dispersion else 1
     plane = "X"
     model = meas_input.accelerator.get_model_tfs()
-    df_orbit = _get_merged_df(model, input_files, plane, ['CO', 'CORMS', f"AMP{plane}"])
+    df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS', f"AMP{plane}"])
     df_orbit[f"ND{plane}{MDL}"] = df_orbit.loc[:, f"D{plane}{MDL}"] / np.sqrt(
         df_orbit.loc[:, f"BET{plane}{MDL}"])
     if order > 1:
@@ -169,7 +171,7 @@ def _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header):
     model = accelerator.get_model_tfs()
     driven_model = accelerator.get_driven_tfs() if accelerator.excitation else model
     plane = "X"
-    df_orbit = _get_merged_df(model, input_files, plane, ['AMPZ', 'MUZ'], three_d=True)
+    df_orbit = _get_merged_df(meas_input, input_files, plane, ['AMPZ', 'MUZ'])
     df_orbit[f"ND{plane}{MDL}"] = df_orbit.loc[:, f"D{plane}{MDL}"] / np.sqrt(df_orbit.loc[:, f"BET{plane}{MDL}"])
     df_orbit = pd.merge(df_orbit, beta.loc[:, [f"BET{plane}", f"{ERR}BET{plane}"]], how='inner', left_index=True, right_index=True)
     df_orbit = pd.merge(df_orbit, driven_model.loc[:, [f"BET{plane}"]], how='inner', left_index=True,
@@ -204,11 +206,12 @@ def _calculate_dp(model, disp, plane):
     return (-m13 + df.loc[shifted, f"D{plane}{_m}"] - m11 * df.loc[:, f"D{plane}{_m}"]) / m12
 
 
-def _get_merged_df(model, input_files, plane, meas_columns, three_d=False):
+def _get_merged_df(meas_input, input_files, plane, meas_columns):
+    model = meas_input.accelerator.get_model_tfs()
     df = pd.DataFrame(model).loc[:, ["S", plane, f"D{plane}", f"DP{plane}", f"MU{plane}", f"BET{plane}", f"DD{plane}"]]
     df.rename(columns={plane: f"{plane}{MDL}", f"D{plane}": f"D{plane}{MDL}", f"DP{plane}": f"DP{plane}{MDL}",
                        f"MU{plane}": f"MU{plane}{MDL}", f"BET{plane}": f"BET{plane}{MDL}", f"DD{plane}": f"D2{plane}{MDL}"}, inplace=True)
-    df = pd.merge(df, input_files.joined_frame(plane, meas_columns, dpp_amp=three_d), how='inner', left_index=True, right_index=True)
+    df = pd.merge(df, input_files.joined_frame(plane, meas_columns, dpp_amp=meas_input.three_d_excitation), how='inner', left_index=True, right_index=True)
     df['COUNT'] = len(input_files.get_columns(df, meas_columns[0]))
     return df
 
