@@ -21,6 +21,7 @@ To run either of the two or both steps, use options:
                           --harpy                     --optics
 """
 from os.path import join, dirname, basename, abspath
+from copy import deepcopy
 import tbt
 from utils import logging_tools, iotools
 from parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
@@ -278,9 +279,8 @@ def _run_harpy(harpy_options):
 
 def _replicate_harpy_options_per_file(options):
     list_of_options = []
-    from copy import copy
     for input_file in options.files:
-        new_options = copy(options)
+        new_options = deepcopy(options)
         new_options.files = input_file
         list_of_options.append(new_options)
     return list_of_options
@@ -290,9 +290,8 @@ def _multibunch(options, tbt_datas):
     if tbt_datas.nbunches == 1:
         yield options, tbt_datas
         return
-    from copy import copy
     for index in range(tbt_datas.nbunches):
-        new_options = copy(options)
+        new_options = deepcopy(options)
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
         yield new_options, tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
@@ -458,6 +457,8 @@ def optics_params():
                          help="Remove outlying BPMs with isolation forest")
     params.add_parameter(flags="--second_order_dispersion", name="second_order_dispersion",
                          action="store_true", help="Calculate second order dispersion")
+    params.add_parameter(flags="--chromatic_beating", name="chromatic_beating",
+                         action="store_true", help="Calculate chromatic beatings: W, PHI and coupling")
     return params
 
 

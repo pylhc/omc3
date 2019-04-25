@@ -14,7 +14,7 @@ import datetime
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
-from copy import copy
+from copy import deepcopy
 
 import tfs
 from utils import logging_tools, iotools
@@ -61,11 +61,12 @@ def measure_optics(input_files, measure_input):
         dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
         if plane == "X":
             dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
-    chromatic_beating(input_files, measure_input, tune_dict)
+
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
-    #if measure_input.nonlinear:
-    #    pass #
-        #rdt.calculate_RDTs(measure_input, input_files, mad_twiss, phase_dict, common_header, inv_x, inv_y)
+    if measure_input.nonlinear:
+        rdt.calculate(measure_input, input_files, tune_dict, invariants, common_header)
+    if measure_input.chromatic_beating:
+        chromatic_beating(input_files, measure_input, tune_dict)
 
 
 def chromatic_beating(input_files, measure_input, tune_dict):
@@ -83,7 +84,7 @@ def chromatic_beating(input_files, measure_input, tune_dict):
     for plane in PLANES:
         betas = []
         for dpp_val in dpps:
-            dpp_meas_input = copy(measure_input)
+            dpp_meas_input = deepcopy(measure_input)
             dpp_meas_input["dpp"] = dpp_val
             phase_dict, out_dfs = phase.calculate(dpp_meas_input, input_files, tune_dict, plane)
             beta_df, _ = beta_from_phase.calculate(dpp_meas_input, tune_dict, phase_dict, OrderedDict(), plane)
@@ -127,7 +128,9 @@ class InputFiles(dict):
             raise IOError("No valid input files")
         
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
+        LOGGER.info(f"DPPS: {dpp_values}")
         amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)
+        LOGGER.info(f"DPP_AMPS: {amp_dpp_values}")
         for plane in PLANES:
             if optics_opt.isolation_forest:
                 self[plane] = iforest.clean_with_isolation_forest(self[plane], optics_opt, plane)
@@ -183,7 +186,7 @@ class InputFiles(dict):
             raise RuntimeWarning("'how' should be either 'inner' or 'outer', 'inner' will be used.")
         frames_to_join = self.dpp_frames(plane, dpp_value) if dpp_value is not None else self._all_frames(plane)
         if dpp_amp:
-            frames_to_join = [df for df in frames_to_join if df.DPP_AMP > 0]
+            frames_to_join = [df for df in frames_to_join if df.DPPAMP > 0]
         if len(frames_to_join) == 0:
             raise ValueError(f"No data found for non-zero |dp/p|")
         joined_frame = pd.DataFrame(frames_to_join[0]).loc[:, columns]
@@ -194,6 +197,14 @@ class InputFiles(dict):
         for column in columns:
             joined_frame.rename(columns={column: column + '__0'}, inplace=True)
         return joined_frame
+
+    def bpms(self, plane=None, dpp_value=None):
+        if plane is None:
+            return self.bpms(plane="X", dpp_value=dpp_value).intersection(self.bpms(plane="Y", dpp_value=dpp_value))
+        indices = [df.index for df in (self.dpp_frames(plane, dpp_value) if dpp_value is not None else self._all_frames(plane))]
+        for ind in indices[1:]:
+            indices[0] = indices[0].intersection(ind)
+        return indices[0]
 
     def calibrate(self, calibs):
         if calibs is None:
