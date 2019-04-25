@@ -126,14 +126,14 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
     df[f"PHASE"] = rdt_angles
     df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
-    df["AMP"], df[f"{ERR}AMP"] = _fit_rdt_amplitudes2(invariants, line_amp, plane, rdt)
-    amp, erramp = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    df["DELTAAMP"] = df.loc[:,"AMP"].values - amp
-    df["DELTAERRAMP"] = (df.loc[:, "ERRAMP"].values - erramp)/erramp
+    df["AMP"], df[f"{ERR}AMP"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
+    #amp, erramp = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
+    #df["DELTAAMP"] = df.loc[:,"AMP"].values - amp
+    #df["DELTAERRAMP"] = (df.loc[:, "ERRAMP"].values - erramp)/erramp
     df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].values
     df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].values
     # in old files there was "EAMP" and "PHASE_STD"
-    return df.loc[:, ["S", "COUNT", "AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG", "DELTAAMP", "DELTAERRAMP"]]
+    return df.loc[:, ["S", "COUNT", "AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]#, "DELTAAMP", "DELTAERRAMP"]]
 
 
 def _add_tunes_if_in_second_turn(df, input_files, line, phase2):
@@ -155,16 +155,6 @@ def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase):
 
 def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
-    kick_data = np.vstack((np.transpose(invariants["X"])[0] ** 2, np.transpose(invariants["Y"])[0] ** 2))
-    func = rdt_function_gen(rdt, plane)
-    for i, bpm_rdt_data in enumerate(line_amp):
-        popt, pcov = curve_fit(func, kick_data, bpm_rdt_data)
-        amps[i], err_amps[i] = popt[0], np.sqrt(np.diag(pcov))[0]
-    return amps, err_amps
-
-
-def _fit_rdt_amplitudes2(invariants, line_amp, plane, rdt):
-    amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
     kick_data = get_linearized_problem(invariants, plane, rdt)
 
     def fitting(x, f):
@@ -176,41 +166,22 @@ def _fit_rdt_amplitudes2(invariants, line_amp, plane, rdt):
     return amps, err_amps
 
 
-def rdt_function(invariants, line_amp, plane, rdt):
-    x = np.vstack(
-        (np.transpose(invariants["X"])[0] ** 2, np.transpose(invariants["Y"])[0] ** 2))
-    j, k, l, m = rdt
-    denom = (2 * j * x[0] ** ((j + k - 2) / 2.) * x[1] ** ((l + m) / 2.)) if plane == "X" \
-        else (2 * l * x[0] ** ((j + k) / 2.) * x[1] ** ((l + m - 2) / 2.))
+def rdt_function(invs, line_amp, plane, rdt):
+    denom = get_linearized_problem(invs, plane, rdt)
     data = line_amp / denom
     return np.mean(data, axis=1), np.std(data, axis=1)
 
 
-def get_linearized_problem(invariants, plane, rdt):
-    x = np.vstack(
-        (np.transpose(invariants["X"])[0] ** 2, np.transpose(invariants["Y"])[0] ** 2))
-    j, k, l, m = rdt
-    denom = (2 * j * x[0] ** ((j + k - 2) / 2.) * x[1] ** ((l + m) / 2.)) if plane == "X" \
-        else (2 * l * x[0] ** ((j + k) / 2.) * x[1] ** ((l + m - 2) / 2.))
-    return denom
-
-
-def rdt_function_gen(rdt, plane):
+def get_linearized_problem(invs, plane, rdt):
     """
-    Note that the factor 2 in 2*j*f_jklm*.... is absent due to the normalization with the main line.
-    The main line has an amplitude of sqrt(2J*beta)/2
+        Note that the factor 2 in 2*j*f_jklm*.... is absent due to the normalization with the main line.
+        The main line has an amplitude of sqrt(2J*beta)/2
+        # TODO I quite didn't get this comment
     """
     j, k, l, m = rdt
-    if plane == 'X':
-        def rdt_function(x, f):
-            return 2 * j * f * x[0] ** ((j + k - 2) / 2.) * x[1] ** ((l + m) / 2.)
-
-        return rdt_function
-
-    def rdt_function(x, f):
-        return 2 * l * f * x[0] ** ((j + k) / 2.) * x[1] ** ((l + m - 2) / 2.)
-
-    return rdt_function
+    if plane == "X":
+        return 2 * j * invs["X"].T[0] ** (j + k - 2) * invs["Y"].T[0] ** (l + m)
+    return 2 * l * invs["X"].T[0] ** (j + k) * invs["Y"].T[0] ** (l + m - 2)
 
 
 def get_line_sign_and_suffix(line, input_files, plane):
