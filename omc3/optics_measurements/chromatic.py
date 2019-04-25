@@ -9,8 +9,8 @@ Computes various chromatic beam properties
 """
 import numpy as np
 import pandas as pd
-from optics_measurements.constants import PLANES, ERR, DELTA, MDL, EXT, CHROM_BETA_NAME
-from optics_measurements.toolbox import df_prod, df_ratio, _interval_check
+from optics_measurements.constants import ERR, DELTA, MDL
+from optics_measurements.toolbox import df_prod, df_ratio
 
 
 def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):
@@ -80,4 +80,3 @@ def calculate_chromatic_coupling(couplings, dpps, input_files, measure_input):
                          how="inner", left_index=True,
                          right_index=True)
     return output_df
-
