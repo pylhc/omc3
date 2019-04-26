@@ -183,6 +183,7 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     cols.remove(f"AMP{plane}")
     panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"AMP{plane}"], axis="index")
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
+    # TODO  later remove
     panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].values / 2
     if f"NATAMP{plane}" in panda.columns:
         panda[f"NATAMP{plane}"] = panda.loc[:, f"NATAMP{plane}"].values / 2
