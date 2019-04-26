@@ -13,6 +13,12 @@ import tfs
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
+SINGLE_PLANE_RDTS = {"X": ((3, 0, 0, 0), (1, 2, 0, 0),      # Normal Sextupolar
+                           (4, 0, 0, 0), (1, 3, 0, 0),      # Normal Octupolar
+                           ),
+                     "Y": ((0, 0, 3, 0), (0, 0, 1, 2),   # Skew Sextupolar
+                           (0, 0, 4, 0), (0, 0, 1, 3)    # Normal Octupolar
+                           )}
 DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Quadrupole
                            (1, 0, 2, 0), (1, 0, 0, 2),  # Normal Sextupole
                            (1, 1, 0, 1), (2, 0, 1, 0), (1, 1, 1, 0), (2, 0, 0, 1),  # Skew Sextupole
@@ -22,12 +28,6 @@ DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Quadrupole
                            (0, 1, 1, 1), (1, 0, 2, 0), (0, 1, 2, 0), (1, 0, 1, 1), # Normal Sextupole
                            (0, 2, 1, 0), (2, 0, 1, 0),  # Skew Sextupole
                            (2, 0, 2, 0), (2, 0, 1, 1), (0, 2, 2, 0), (0, 2, 1, 1)  # Normal Octupole
-                           )}
-SINGLE_PLANE_RDTS = {"X": ((3, 0, 0, 0), (1, 2, 0, 0),      # Normal Sextupolar
-                           (4, 0, 0, 0), (1, 3, 0, 0),      # Normal Octupolar
-                           ),
-                     "Y": ((0, 0, 3, 0), (0, 0, 1, 2),   # Skew Sextupolar
-                           (0, 0, 4, 0), (0, 0, 1, 3)    # Normal Octupolar
                            )}
 
 
@@ -39,7 +39,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
         input_files:
         tunes:
         invariants:
-
+        header:
     Returns:
 
     """
@@ -47,7 +47,6 @@ def calculate(measure_input, input_files, tunes, invariants, header):
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
     phases = {}
-    print(measure_input.compensation)
     for plane in PLANES:
         phases[plane], _ = phase.calculate(meas_input, input_files, tunes, plane)
         bpm_names = input_files.bpms(plane=plane, dpp_value=0)
@@ -108,8 +107,6 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
     df["COUNT"] = len(input_files.dpp_frames(plane, 0))
     line = _determine_line(rdt, plane)
     phase_sign, suffix = get_line_sign_and_suffix(line, input_files, plane)
-    if phase_sign is None:  # TODO remove
-        return df.loc[:, ["S"]]
     comp_coeffs1 = to_complex(
         input_files.joined_frame(plane, [f"AMP{suffix}"], dpp_value=0).loc[df.index, :].values,
         phase_sign * input_files.joined_frame(plane, [f"PHASE{suffix}"], dpp_value=0).loc[df.index, :].values)
@@ -127,13 +124,10 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
     df[f"PHASE"] = rdt_angles
     df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
     df["AMP"], df[f"{ERR}AMP"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    #amp, erramp = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    #df["DELTAAMP"] = df.loc[:,"AMP"].values - amp
-    #df["DELTAERRAMP"] = (df.loc[:, "ERRAMP"].values - erramp)/erramp
     df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].values
     df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].values
     # in old files there was "EAMP" and "PHASE_STD"
-    return df.loc[:, ["S", "COUNT", "AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]#, "DELTAAMP", "DELTAERRAMP"]]
+    return df.loc[:, ["S", "COUNT", "AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 
 
 def _add_tunes_if_in_second_turn(df, input_files, line, phase2):
@@ -156,27 +150,20 @@ def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase):
 def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
     kick_data = get_linearized_problem(invariants, plane, rdt)
+    guess = np.mean(line_amp / kick_data, axis=1)
 
     def fitting(x, f):
         return f * x
 
     for i, bpm_rdt_data in enumerate(line_amp):
-        popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data)
-        amps[i], err_amps[i] = popt[0], np.sqrt(np.diag(pcov))[0]
+        popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
+        amps[i], err_amps[i] = popt[0], np.sqrt(pcov)[0]
     return amps, err_amps
-
-
-def rdt_function(invs, line_amp, plane, rdt):
-    denom = get_linearized_problem(invs, plane, rdt)
-    data = line_amp / denom
-    return np.mean(data, axis=1), np.std(data, axis=1)
 
 
 def get_linearized_problem(invs, plane, rdt):
     """
-        Note that the factor 2 in 2*j*f_jklm*.... is absent due to the normalization with the main line.
-        The main line has an amplitude of sqrt(2J*beta)/2
-        # TODO I quite didn't get this comment
+    2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
     """
     j, k, l, m = rdt
     if plane == "X":
@@ -191,8 +178,7 @@ def get_line_sign_and_suffix(line, input_files, plane):
         return 1, suffix
     if f"AMP{conj_suffix}" in input_files[plane][0].columns:
         return -1, conj_suffix
-    return None, None   # TODO remove
-    raise ValueError(f"No data for line {line}")
+    raise ValueError(f"No data for line {line} in plane {plane}")
 
 
 def complex_secondary_lines(phase_adv, err_padv, sig1, sig2):
