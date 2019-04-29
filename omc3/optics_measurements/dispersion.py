@@ -99,8 +99,6 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
                                            df_orbit.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], plane)
     df_orbit = _get_delta_columns(df_orbit, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    if not {f"DD{plane}"}.issubset(pd.DataFrame(model).columns):
-        output_df = output_df.drop(columns=[f"D2{plane}{MDL}", f"{DELTA}D2{plane}"], errors='ignore')
     tfs.write(join(meas_input.outputdir, f"{DISPERSION_NAME}{plane.lower()}{EXT}"), output_df, header, save_index='NAME')
     return output_df
 
@@ -158,8 +156,6 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
     df_orbit[f"{ERR}ND{plane}"] = global_factor * df_orbit.loc[:, 'STDNDX_unscaled']
     df_orbit = _calculate_from_norm_disp(df_orbit, model, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    if not {f"DD{plane}"}.issubset(pd.DataFrame(model).columns):
-        output_df = output_df.drop(columns=[f'D2{plane}{MDL}', f'{DELTA}D2{plane}', f'ND2{plane}{MDL}', f'{DELTA}ND2{plane}'], errors='ignore')
     tfs.write(join(meas_input.outputdir, f"{NORM_DISP_NAME}{plane.lower()}{EXT}"), output_df, header, save_index='NAME')
     return output_df
 
@@ -211,6 +207,8 @@ def _get_merged_df(meas_input, input_files, plane, meas_columns):
     df = pd.DataFrame(model).loc[:, ["S", plane, f"D{plane}", f"DP{plane}", f"MU{plane}", f"BET{plane}", f"DD{plane}"]]
     df.rename(columns={plane: f"{plane}{MDL}", f"D{plane}": f"D{plane}{MDL}", f"DP{plane}": f"DP{plane}{MDL}",
                        f"MU{plane}": f"MU{plane}{MDL}", f"BET{plane}": f"BET{plane}{MDL}", f"DD{plane}": f"D2{plane}{MDL}"}, inplace=True)
+    if not meas_input.second_order_dispersion:
+        df.drop(columns=[f'D2{plane}{MDL}'], inplace=True)
     df = pd.merge(df, input_files.joined_frame(plane, meas_columns, dpp_amp=meas_input.three_d_excitation), how='inner', left_index=True, right_index=True)
     df['COUNT'] = len(input_files.get_columns(df, meas_columns[0]))
     return df
