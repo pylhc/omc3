@@ -28,10 +28,7 @@ def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane
         'plane': plane
     Returns:
     """
-    comp_dict = {"equation": dict(eq_comp=tune_dict),
-                 "model": dict(model_comp=meas_input.accelerator.get_driven_tfs()),
-                 "none": dict()}
-    beta_amp = beta_from_amplitude(meas_input, input_files, plane, **comp_dict[meas_input.compensation])
+    beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
     beta_amp = add_rescaled_beta_columns(beta_amp, x_ratio, plane)
     header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].values), x_ratio)
@@ -55,7 +52,7 @@ def add_rescaled_beta_columns(df, ratio, plane):
     return df
 
 
-def beta_from_amplitude(meas_input, input_files, plane, eq_comp=None, model_comp=None):
+def beta_from_amplitude(meas_input, input_files, plane, tunes):
     if meas_input.compensation == "none" and meas_input.accelerator.excitation:
         model = meas_input.accelerator.get_driven_tfs()
     else:
@@ -66,43 +63,46 @@ def beta_from_amplitude(meas_input, input_files, plane, eq_comp=None, model_comp
     dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
     df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=dpp_value),
                   how='inner', left_index=True, right_index=True)
-    if model_comp is not None:
-        df = pd.merge(df, pd.DataFrame(model_comp.loc[:, ["S", f"BET{plane}"]].rename(columns={f"BET{plane}": f"BET{plane}comp"})),
-                      how='inner', left_index=True, right_index=True)
-        amp_compensation = np.sqrt(df_ratio(df, f"BET{plane}{MDL}", f"BET{plane}comp"))
-        df[input_files.get_columns(df, f"AMP{plane}")] = input_files.get_data(df, f"AMP{plane}") * amp_compensation[:, np.newaxis]
-
     df['COUNT'] = len(input_files.get_columns(df, f"AMP{plane}"))
-    df[f"AMP{plane}"] = np.mean(input_files.get_data(df, f"AMP{plane}"), axis=1)
 
-    if eq_comp is not None:
-        phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.get_beam_direction()
-        driven_tune, free_tune, ac2bpmac = eq_comp[plane]["Q"], eq_comp[plane]["QF"], eq_comp[plane]["ac2bpm"]
-        k_bpmac = ac2bpmac[2]
-        phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
-        phases_meas = phases_meas + phase_corr[np.newaxis, :]
-        r = eq_comp.get_lambda(plane)
-        phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
-        for_sqrt2j = input_files.get_data(df, f"AMP{plane}") / np.sqrt(
-            df.loc[:, f"BET{plane}{MDL}"].values[:, np.newaxis])
-        sqrt2j = np.mean(for_sqrt2j[meas_input.accelerator.get_element_types_mask(df.index, ["arc_bpm"])], axis=0)
-        betall = (np.square(
-            (input_files.get_data(df, f"AMP{plane}").T / sqrt2j[:, np.newaxis]).T) *
-                  (1 + r ** 2 + 2 * r * np.cos(4 * np.pi * phases_meas)) / (1 - r ** 2))
-        df[f"BET{plane}"] = np.mean(betall, axis=1)
-        df[f"{ERR}BET{plane}"] = np.std(betall, axis=1)
-    else:
-        # amplitudes are first averaged over files then squared and averaged over BPMs
-        kick = np.mean(np.square(df.loc[:, f"AMP{plane}"].values) / df.loc[:, f"BET{plane}{MDL}"].values)
-        # amplitudes are first squared then averaged
-        kick2 = np.mean(np.square(input_files.get_data(df, f"AMP{plane}")) / df.loc[:, f"BET{plane}{MDL}"].values[:, np.newaxis], axis=0)
-        df[f"BET{plane}"] = np.square(df.loc[:, f"AMP{plane}"].values) / kick
-        df[f"{ERR}BET{plane}"] = np.std((np.square(input_files.get_data(df, f"AMP{plane}")).T / kick2[:, np.newaxis]).T, axis=1)
+    if meas_input.compensation == "model":
+        df = _compensate_by_model(input_files, meas_input, df, plane)
+    if meas_input.compensation == "equation":
+        df = _compensate_by_equation(input_files, meas_input, df, plane, tunes)
 
+    amps_squared = np.square(input_files.get_data(df, f"AMP{plane}"))
+    mask = meas_input.accelerator.get_element_types_mask(df.index, ["arc_bpm"])
+    actions = amps_squared / df.loc[:, f"BET{plane}{MDL}"].values[:, np.newaxis]
+    betas = amps_squared / np.mean(actions[mask], axis=0, keepdims=True)
+    df[f"BET{plane}"] = np.mean(betas, axis=1)
+    df[f"{ERR}BET{plane}"] = np.std(betas, axis=1)
     df[f"{DELTA}BET{plane}"] = df_rel_diff(df, f"BET{plane}", f"BET{plane}{MDL}")
     df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
     return df.loc[:, ['S', 'COUNT', f"BET{plane}", f"{ERR}BET{plane}", f"BET{plane}{MDL}",
                       f"MU{plane}{MDL}", f"{DELTA}BET{plane}", f"{ERR}{DELTA}BET{plane}"]]
+
+
+def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
+    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.get_beam_direction()
+    driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
+    k_bpmac = ac2bpmac[2]
+    phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
+    phases_meas = phases_meas + phase_corr[np.newaxis, :]
+    r = tunes.get_lambda(plane)
+    phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
+    amp_compensation = np.sqrt((1 + r ** 2 + 2 * r * np.cos(4 * np.pi * phases_meas)) / (1 - r ** 2))
+    df[input_files.get_columns(df, f"AMP{plane}")] = input_files.get_data(df, f"AMP{plane}") * amp_compensation
+    return df
+
+
+def _compensate_by_model(input_files, meas_input, df, plane):
+    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.get_driven_tfs().loc[:, [f"BET{plane}"]]
+                                   .rename(columns={f"BET{plane}": f"BET{plane}comp"})),
+                  how='inner', left_index=True, right_index=True)
+    amp_compensation = np.sqrt(df_ratio(df, f"BET{plane}{MDL}", f"BET{plane}comp"))
+    df[input_files.get_columns(df, f"AMP{plane}")] = (input_files.get_data(df, f"AMP{plane}")
+                                                      * amp_compensation[:, np.newaxis])
+    return df
 
 
 def _get_header(header_dict, rmsbbeat, scaling_factor):
