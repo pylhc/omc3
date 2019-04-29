@@ -151,7 +151,6 @@ def _compute_headers(panda):
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
-    headers["DPP"] = 0.0  # TODO later remove - should be calculated in measure_optics
     return headers
 
 
@@ -182,6 +181,7 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     cols = [col for col in panda.columns.values if col.startswith('AMP')]
     cols.remove(f"AMP{plane}")
     panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"AMP{plane}"], axis="index")
+    amps = panda.loc[:, f"AMP{plane}"].values
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
     # TODO  later remove
     panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].values / 2
@@ -190,7 +190,7 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
 
     if np.max(panda.loc[:, 'NOISE'].values) == 0.0:
         return panda  # Do not calculated errors when no noise was calculated
-    noise_scaled = panda.loc[:, 'NOISE'] / panda.loc[:, f"AMP{plane}"]
+    noise_scaled = panda.loc[:, 'NOISE'] / amps
     panda.loc[:, "NOISE_SCALED"] = noise_scaled
     panda.loc[:, f"ERR_AMP{plane}"] = panda.loc[:, 'NOISE']
     if f"NATTUNE{plane}" in panda.columns:
