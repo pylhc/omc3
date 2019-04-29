@@ -29,7 +29,7 @@ def arrange_dpps(dpps):
         LOGGER.warning(f"Analysed files have large momentum deviation {zero_offset}. "
                        f"Optics parameters might be wrong.")
     LOGGER.debug(f"Detected dpp differences, aranging as: {ranges}, zero offset: {zero_offset}.")
-    arranged_dpps=[]
+    arranged_dpps = []
     for idx in range(len(dpps)):
         dpps_from_range = _values_in_range(_find_range_with_element(ranges, idx), dpps)
         arranged_dpps.append(np.mean(dpps_from_range) - zero_offset)
@@ -75,7 +75,7 @@ def calculate_dpoverp(input_files, meas_input):
                         left_index=True, right_index=True)
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     df_filtered = df_orbit.loc[mask, :]
-    dispersions = df_filtered.loc[:, "DX"] * 1e3 # conversion to milimeters
+    dispersions = df_filtered.loc[:, "DX"] * 1e3  # conversion to milimeters
     denom = np.sum(dispersions ** 2)
     if denom == 0.:
         raise ValueError("Cannot compute dpp probably no arc BPMs.")
@@ -93,7 +93,7 @@ def calculate_amp_dpoverp(input_files, meas_input):
     df_filtered = df_orbit.loc[mask, :]
     amps = input_files.get_data(df_filtered, 'AMPX') * input_files.get_data(df_filtered, 'AMPZ')
     mask_zeros = (amps > 0) if amps.ndim == 1 else (np.sum(amps, axis=1) > 0)
-    dispersions = df_filtered.loc[mask_zeros, "DX"] * 1e3 # conversion to milimeters
+    dispersions = df_filtered.loc[mask_zeros, "DX"] * 1e3  # conversion to milimeters
     denom = np.sum(dispersions ** 2)
     if denom == 0.:
         raise ValueError("Cannot compute dpp probably no arc BPMs.")
