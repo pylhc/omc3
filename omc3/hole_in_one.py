@@ -307,7 +307,8 @@ def _measure_optics(lins, optics_opt):
     calibrations = measure_optics.copy_calibration_files(optics_opt.outputdir,
                                                          optics_opt.calibrationdir)
     inputs.calibrate(calibrations)
-    measure_optics.measure_optics(inputs, optics_opt)
+    with timeit(lambda spanned: LOGGER.info(f"Total time for optics measurements: {spanned}")):
+        measure_optics.measure_optics(inputs, optics_opt)
 
 
 def _harpy_entrypoint(params):
