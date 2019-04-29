@@ -9,17 +9,16 @@ It computes betatron tunes and provides structures to store them.
 """
 import numpy as np
 from utils import stats
-PLANES = ('X', 'Y')
-CHAR = {"X": "1", "Y": "2"}
+from optics_measurements.constants import PLANES, PLANE_TO_NUM
 
 
 def calculate(measure_input, input_files):
     tune_d = TuneDict()
     accelerator = measure_input.accelerator
     for plane in PLANES:
-        tune_d[plane]["QM"] = accelerator.get_model_tfs().headers["Q" + CHAR[plane]]
-        tune_list = [df.headers["Q" + CHAR[plane]] for df in input_files.dpp_frames(plane, 0)]
-        tune_rms_list = [df.headers["Q" + CHAR[plane] + "RMS"] for df in input_files.dpp_frames(plane,0)]
+        tune_d[plane]["QM"] = accelerator.get_model_tfs().headers["Q" + PLANE_TO_NUM[plane]]
+        tune_list = [df.headers["Q" + PLANE_TO_NUM[plane]] for df in input_files.dpp_frames(plane, 0)]
+        tune_rms_list = [df.headers["Q" + PLANE_TO_NUM[plane] + "RMS"] for df in input_files.dpp_frames(plane, 0)]
         measured_tune = stats.weighted_mean(np.array(tune_list), errors=np.array(tune_rms_list))
         tune_d[plane]["Q"], tune_d[plane]["QF"] = measured_tune, measured_tune
         tune_d[plane]["QFM"] = accelerator.nat_tune_x if plane is "X" else accelerator.nat_tune_y

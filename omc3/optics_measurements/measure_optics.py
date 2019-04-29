@@ -12,16 +12,15 @@ import os
 import sys
 import datetime
 from collections import OrderedDict
+from copy import deepcopy
 import numpy as np
 import pandas as pd
-from copy import deepcopy
-
 import tfs
 from utils import logging_tools, iotools
 from optics_measurements import dpp, tune, phase, beta_from_phase, iforest, chromatic, rdt
 from optics_measurements import beta_from_amplitude, dispersion, interaction_point, kick
 from optics_measurements.constants import PLANES, ERR, EXT, CHROM_BETA_NAME
-
+from utils.contexts import timeit
 
 VERSION = '0.4.0'
 LOGGER = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
@@ -73,6 +72,7 @@ def chromatic_beating(input_files, measure_input, tune_dict):
     """
     Main function to compute chromatic optics beating
     Args:
+        tune_dict:
         input_files: InputFiles object containing frequency spectra files (linx/y)
         measure_input: OpticsInput object containing analysis settings
 
@@ -214,7 +214,7 @@ class InputFiles(dict):
                 data = pd.merge(self[plane][i].loc[:, ["AMP" + plane]], calibs[plane], how='left',
                                 left_index=True, right_index=True).fillna(
                     value={"CALIBRATION": 1., "ERROR_CALIBRATION": 0.})
-                self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:,"CALIBRATION"]
+                self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:, "CALIBRATION"]
                 self[plane][i][f"{ERR}AMP{plane}"] = data.loc[:, "ERROR_CALIBRATION"]  # TODO
 
     @ staticmethod
@@ -241,7 +241,10 @@ class InputFiles(dict):
         Returns:
             data in numpy array corresponding to column in original files
         """
-        return frame.loc[:, self.get_columns(frame, column)].values
+        columns = self.get_columns(frame, column)
+        if len(columns) < 2:
+            return frame.loc[:, columns].values[:, np.newaxis]
+        return frame.loc[:, columns].values
 
 
 def copy_calibration_files(outputdir, calibrationdir):

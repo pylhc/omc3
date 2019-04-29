@@ -2,12 +2,10 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 from utils import logging_tools
-
+from optics_measurements.constants import PLANE_TO_NUM
 LOGGER = logging_tools.get_logger(__name__)
 ARCS_CONT = 0.01
 IRS_CONT = 0.025
-PLANES = ("X", "Y")
-PLANE_TO_NUM = dict(X=1, Y=2)
 
 
 def clean_with_isolation_forest(input_files, meas_input, plane):

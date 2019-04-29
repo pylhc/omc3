@@ -25,7 +25,7 @@ DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Quadrupole
                            (2, 0, 0, 2), (1, 1, 2, 0), (1, 1, 0, 2), (2, 0, 2, 0)  # Normal Octupole
                            ),
                      "Y": ((0, 1, 1, 0), (1, 0, 1, 0),  # Quadrupole
-                           (0, 1, 1, 1), (1, 0, 2, 0), (0, 1, 2, 0), (1, 0, 1, 1), # Normal Sextupole
+                           (0, 1, 1, 1), (1, 0, 2, 0), (0, 1, 2, 0), (1, 0, 1, 1),  # Normal Sextupole
                            (0, 2, 1, 0), (2, 0, 1, 0),  # Skew Sextupole
                            (2, 0, 2, 0), (2, 0, 1, 1), (0, 2, 2, 0), (0, 2, 1, 1)  # Normal Octupole
                            )}
@@ -65,7 +65,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
 
 
 def write(df, header, meas_input, plane, rdt):
-    tfs.write(join(meas_input.outputdir, f"rdt_{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df,
+    tfs.write(join(meas_input.outputdir, f"rdt_f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df,
               header, save_index="NAME")
 
 

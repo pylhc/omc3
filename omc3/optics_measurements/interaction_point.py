@@ -12,11 +12,10 @@ import numpy as np
 import pandas as pd
 import tfs
 from utils import logging_tools
-from optics_measurements.constants import IP_NAME, EXT
+from optics_measurements.constants import IP_NAME, EXT, PI2
 
 
 LOGGER = logging_tools.get_logger(__name__)
-PI2 = 2 * np.pi
 COLUMNS = ("IP", "BETASTAR", "ERRBETASTAR", "PHASEADV", "ERRPHASEADV", "PHASEDVMDL", "LSTAR")
 
 
@@ -24,9 +23,9 @@ def betastar_from_phase(meas_input, phase_d):
     """Writes the getIP files with the betastar computed using phase advance.
 
     Arguments:
-        accel: The accelerator class to be used.
-        phase_d: The GetLLM phase_d object, output of calculate_phase.
-        model: tfs instance with a model of the machine.
+        meas_input: Measurement_input object
+        phase_d: Output of calculation
+
     Returns:
         A nested dict with the same structure as the phase_d dict.
     """
@@ -51,7 +50,8 @@ def betastar_from_phase(meas_input, phase_d):
 
 
 def write(ips_d, headers, output_dir, plane):
-    tfs.write(join(output_dir, f"{IP_NAME}{plane.lower()}{EXT}"), ips_d, headers_dict=headers,)
+    if ips_d is not None:
+        tfs.write(join(output_dir, f"{IP_NAME}{plane.lower()}{EXT}"), ips_d, headers_dict=headers,)
 
 
 def phase_to_betastar(lstar, phase, errphase):

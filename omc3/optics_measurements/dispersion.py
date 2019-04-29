@@ -12,9 +12,8 @@ import pandas as pd
 import numpy as np
 import tfs
 from utils import stats
-from optics_measurements.constants import ORBIT_NAME, NORM_DISP_NAME, DISPERSION_NAME, EXT, ERR, DELTA, MDL
-
-PI2I = 2 * np.pi * complex(0, 1)
+from optics_measurements.constants import EXT, ERR, DELTA, MDL, PI2I
+from optics_measurements.constants import ORBIT_NAME, NORM_DISP_NAME, DISPERSION_NAME
 
 
 def calculate_orbit(meas_input, input_files, header, plane):
@@ -49,7 +48,6 @@ def calculate_dispersion(meas_input, input_files, header_dict, plane):
         input_files: Stores the input files tfs
         header_dict: OrderedDict containing information about the analysis
         plane: "X" or "Y"
-        order: Polynomial order of fit orbit vs dpp(up to 2)
 
     Returns:
         TfsDataFrame corresponding to output file
@@ -67,7 +65,6 @@ def calculate_normalised_dispersion(meas_input, input_files, beta, header_dict):
         input_files: Stores the input files tfs
         beta: measured betas to get dispersion from normalised dispersion
         header_dict: OrderedDict containing information about the analysis
-        order: Polynomial order of fit orbit vs dpp(up to 2)
 
     Returns:
         TfsDataFrame corresponding to output file
@@ -113,7 +110,7 @@ def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
                      df_orbit.loc[:, input_files.get_columns(df_orbit, f"AMP{plane}")].values)
     mask = accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     global_factors = np.array([0.001 / df.headers["DPPAMP"] for df in input_files[plane]])
-   # scaling to the model, and getting the synchrotron phase in the arcs
+    # scaling to the model, and getting the synchrotron phase in the arcs
     df_orbit[f"D{plane}"], df_orbit[f"{ERR}D{plane}"] = _get_signed_dispersion(
             input_files, df_orbit, unscaled_amps * global_factors, mask)
     df_orbit[f"DP{plane}"] = _calculate_dp(model, df_orbit.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], plane)

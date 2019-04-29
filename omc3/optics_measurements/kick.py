@@ -11,11 +11,7 @@ from os.path import join
 import pandas as pd
 import numpy as np
 import tfs
-from optics_measurements.constants import ERR, RES, EXT, KICK_NAME
-
-PLANE_TO_NUM = dict(X=1, Y=2)
-# column_names = ["DPP", "QX", "QXRMS", "QY", "QYRMS", "NATQX", "NATQXRMS", "NATQY", "NATQYRMS", "sqrt2JX", "sqrt2JXSTD", "sqrt2JY", "sqrt2JYSTD", "2JX", "2JXSTD", "2JY", "2JYSTD"]
-#  column_names_ac = column_names + ["sqrt2JXRES", "sqrt2JXSTDRES", "sqrt2JYRES", "sqrt2JYSTDRES", "2JXRES", "2JXSTDRES", "2JYRES", "2JYSTDRES"]
+from optics_measurements.constants import ERR, RES, EXT, KICK_NAME, PLANE_TO_NUM
 
 
 def calculate(measure_input, input_files, scale, header_dict, plane):
