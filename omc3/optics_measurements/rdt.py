@@ -148,8 +148,11 @@ def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase):
 
 
 def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
+    """
+    Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT
+    """
     amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
-    kick_data = get_linearized_problem(invariants, plane, rdt)
+    kick_data = get_linearized_problem(invariants, plane, rdt)  # corresponding to actions in meters
     guess = np.mean(line_amp / kick_data, axis=1)
 
     def fitting(x, f):
@@ -164,11 +167,14 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
 def get_linearized_problem(invs, plane, rdt):
     """
     2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
+    we use sqrt(2J): unit is sqrt(um) ... divide by 1000
     """
     j, k, l, m = rdt
+    act_x = invs["X"].T[0] / 1000
+    act_y = invs["Y"].T[0] / 1000
     if plane == "X":
-        return 2 * j * invs["X"].T[0] ** (j + k - 2) * invs["Y"].T[0] ** (l + m)
-    return 2 * l * invs["X"].T[0] ** (j + k) * invs["Y"].T[0] ** (l + m - 2)
+        return 2 * j * act_x ** (j + k - 2) * act_y ** (l + m)
+    return 2 * l * act_x ** (j + k) * act_y ** (l + m - 2)
 
 
 def get_line_sign_and_suffix(line, input_files, plane):
