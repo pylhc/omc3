@@ -8,6 +8,7 @@ from kmod import kmod_input, kmod_get_files, kmod_utils, kmod_cleaning, kmod_ana
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 LOG = logging_tools.get_logger(__name__)
 
+
 def analyse_kmod():
     """
     Run Kmod analysis 

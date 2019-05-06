@@ -44,7 +44,7 @@ def _parse_args():
                         help='misalignment of the modulated quadrupoles in m',
                         action='store', type=float, dest='misalignment', default=argparse.SUPPRESS)
     parser.add_argument('--errorK',
-                        help='error in K of the modulated quadrupoles, unit m^-2',
+                        help='error in K of the modulated quadrupoles, relative to gradient',
                         action='store', type=float, dest='errorK', default=argparse.SUPPRESS)
     parser.add_argument('--errorL',
                         help='error in length of the modulated quadrupoles, unit m',
