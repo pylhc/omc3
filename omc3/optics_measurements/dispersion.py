@@ -28,14 +28,11 @@ def calculate_orbit(meas_input, input_files, header, plane):
     Returns:
         TfsDataFrame corresponding to output file
     """
-    model = meas_input.accelerator.get_model_tfs()
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS'])
     df_orbit[plane] = stats.weighted_mean(input_files.get_data(df_orbit, 'CO'), axis=1)
     df_orbit[f"{ERR}{plane}"] = stats.weighted_error(input_files.get_data(df_orbit, 'CO'), axis=1)
-    df_orbit[f"{DELTA}{plane}"] = df_orbit.loc[:, plane] - df_orbit.loc[:, f"{plane}MDL"]
+    df_orbit = _get_delta_columns(df_orbit, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    if not {f"DD{plane}"}.issubset(pd.DataFrame(model).columns):
-        output_df = output_df.drop(columns=[f'D2{plane}MDL'], errors='ignore')
     tfs.write(join(meas_input.outputdir, f"{ORBIT_NAME}{plane.lower()}{EXT}"), output_df, header, save_index='NAME')
     return output_df
 
@@ -236,7 +233,7 @@ def _get_output_columns(plane, df):
 
 
 def _single_column_set_list(base_name):
-    return [f"{base_name}", f"STD{base_name}", f"DELTA{base_name}", f"{base_name}MDL"]
+    return [f"{base_name}", f"{ERR}{base_name}", f"{DELTA}{base_name}", f"{ERR}{DELTA}{base_name}", f"{base_name}{MDL}"]
 
 
 def _calculate_from_norm_disp(df, model, plane):
@@ -250,4 +247,5 @@ def _get_delta_columns(df, plane):
     for col in [f"{plane}", f"D{plane}", f"ND{plane}", f"D2{plane}", f"ND2{plane}"]:
         if col in df.columns:
             df[f"{DELTA}{col}"] = df.loc[:, col] - df.loc[:, f"{col}{MDL}"]
+            df[f"{ERR}{DELTA}{col}"] = df.loc[:, f"{ERR}{col}"]
     return df
