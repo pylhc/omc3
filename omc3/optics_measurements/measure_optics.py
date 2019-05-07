@@ -126,7 +126,6 @@ class InputFiles(dict):
 
         if len(self['X']) + len(self['Y']) == 0:
             raise IOError("No valid input files")
-        
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
         LOGGER.info(f"DPPS: {dpp_values}")
         amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)
@@ -242,8 +241,6 @@ class InputFiles(dict):
             data in numpy array corresponding to column in original files
         """
         columns = self.get_columns(frame, column)
-        if len(columns) < 2:
-            return frame.loc[:, columns].values[:, np.newaxis]
         return frame.loc[:, columns].values
 
 
