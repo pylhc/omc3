@@ -17,7 +17,7 @@ from optics_measurements.constants import EXT, PHASE_NAME, TOTAL_PHASE_NAME, ERR
 LOGGER = logging_tools.get_logger(__name__)
 
 
-def calculate(meas_input, input_files, tunes, plane, no_errors=True):
+def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     """
     Calculates phase advances
 
@@ -57,7 +57,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=True):
     df = pd.DataFrame(model).loc[:, ["S", f"MU{plane}"]]
     how = 'outer' if meas_input.union else 'inner'
     dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
-    df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}_MU{plane}"],
+    df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
     phases_mdl = df.loc[:, f"MU{plane}"].values
@@ -69,7 +69,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=True):
     if meas_input.compensation == "equation":
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
-    phases_errors = input_files.get_data(df, f"{ERR}_MU{plane}")
+    phases_errors = input_files.get_data(df, f"{ERR}MU{plane}")
     if phases_meas.ndim < 2:
         phase_advances["MEAS"] = _get_square_data_frame(
                 (phases_meas[np.newaxis, :] - phases_meas[:, np.newaxis]) % 1.0, df.index)

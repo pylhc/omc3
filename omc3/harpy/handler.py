@@ -20,6 +20,7 @@ LOGGER = logging_tools.get_logger(__name__)
 PLANES = ("X", "Y")
 ALL_PLANES = ("X", "Y", "Z")
 PLANE_TO_NUM = {"X": 1, "Y": 2, "Z": 3}
+ERR = "ERR"
 
 
 def run_per_bunch(tbt_data, harpy_input):
@@ -113,7 +114,7 @@ def _add_calculated_phase_errors(lin_frame):
     for name_root in ('MU', 'PHASE'):
         cols = [col for col in lin_frame.columns.values if name_root in col]
         for col in cols:
-            lin_frame[f"ERR_{col}"] = _get_spectral_phase_error(
+            lin_frame[f"{ERR}{col}"] = _get_spectral_phase_error(
                 lin_frame.loc[:, f"{col.replace(name_root, 'AMP')}"], noise)
     return lin_frame
 
@@ -192,10 +193,10 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
         return panda  # Do not calculated errors when no noise was calculated
     noise_scaled = panda.loc[:, 'NOISE'] / amps
     panda.loc[:, "NOISE_SCALED"] = noise_scaled
-    panda.loc[:, f"ERR_AMP{plane}"] = panda.loc[:, 'NOISE']
+    panda.loc[:, f"{ERR}AMP{plane}"] = panda.loc[:, 'NOISE']
     if f"NATTUNE{plane}" in panda.columns:
-        panda.loc[:, f"ERR_NATAMP{plane}"] = panda.loc[:, 'NOISE']
+        panda.loc[:, f"{ERR}NATAMP{plane}"] = panda.loc[:, 'NOISE']
     for col in cols:
         this_amp = panda.loc[:, col]
-        panda.loc[:, f"ERR_{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
+        panda.loc[:, f"{ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
     return panda
