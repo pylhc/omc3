@@ -187,6 +187,9 @@ def do_fit(magnet_df, plane, use_approx=False):
         xdata=return_fit_input(magnet_df, plane),
         ydata=magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
             kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[kmod_constants.get_tune_col(plane)],
+        sigma=magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
+            kmod_constants.get_tune_err_col(plane)].dropna(),
+        absolute_sigma=True,
         p0=1
     )
 
