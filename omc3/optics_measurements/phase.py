@@ -51,10 +51,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     LOGGER.info("Calculating phase advances")
     LOGGER.info(f"Measured tune in plane {plane} = {tunes[plane]['Q']}")
 
-    model = (meas_input.accelerator.get_driven_tfs()
-             if meas_input.compensation == "none" and meas_input.accelerator.excitation
-             else meas_input.accelerator.get_model_tfs())
-    df = pd.DataFrame(model).loc[:, ["S", f"MU{plane}"]]
+    df = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ["S", f"MU{plane}"]]
     how = 'outer' if meas_input.union else 'inner'
     dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],

@@ -30,12 +30,12 @@ METH_A_NBPM = "Analytical N-BPM method"
 METH_NO_ERR = "No Errors"
 
 
-def calculate(meas_input, tune_dict, phase_dict, header_dict, plane):
+def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     """
     Calculates betas and alphas from phase advances
     Args:
         meas_input: OpticsInput object
-        tune_dict: TuneDict contains measured tunes
+        tunes: TuneDict contains measured tunes
         phase_dict: PhaseDict contains measured phase advances
         header_dict:  dictionary of header items common for all output files
         plane: plane
@@ -43,18 +43,14 @@ def calculate(meas_input, tune_dict, phase_dict, header_dict, plane):
     Returns:
         BetaDict object containing specific TfsDataFrames with results
     """
-    if meas_input.compensation == "none" and meas_input.accelerator.excitation:
-        meas_and_model_tunes = (tune_dict[plane]["Q"], tune_dict[plane]["QM"] % 1)
-        model = meas_input.accelerator.get_driven_tfs()
-        bk_model = model  # TODO we need driven bk model
-    else:
-        meas_and_model_tunes = (tune_dict[plane]["QF"], tune_dict[plane]["QFM"] % 1)
-        model = meas_input.accelerator.get_model_tfs()
-        try:
-            bk_model = meas_input.accelerator.get_best_knowledge_model_tfs()
-        except AttributeError:
-            LOGGER.debug("No best knowledge model - using the normal one.")
-            bk_model = model
+    meas_and_model_tunes = (tunes[plane]["Q"], tunes[plane]["QM"] % 1) \
+        if meas_input.compensation == "none" else (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
+    model = meas_input.accelerator.get_model_tfs()
+    try:
+        bk_model = meas_input.accelerator.get_best_knowledge_model_tfs()
+    except AttributeError:
+        LOGGER.debug("No best knowledge model - using the normal one.")
+        bk_model = model
 
     elements = meas_input.accelerator.get_elements_tfs().loc[:, ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
     if meas_input.three_bpm_method:

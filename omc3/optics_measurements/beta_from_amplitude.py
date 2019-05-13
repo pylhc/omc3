@@ -53,11 +53,7 @@ def add_rescaled_beta_columns(df, ratio, plane):
 
 
 def beta_from_amplitude(meas_input, input_files, plane, tunes):
-    if meas_input.compensation == "none" and meas_input.accelerator.excitation:
-        model = meas_input.accelerator.get_driven_tfs()
-    else:
-        model = meas_input.accelerator.get_model_tfs()
-    df = pd.DataFrame(model).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
+    df = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
     df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
                        f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
     dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
