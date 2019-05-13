@@ -246,7 +246,8 @@ def _get_suboptions(opt, rest):
         if opt.optics:
             rest = add_to_arguments(rest, entry_params=optics_params(),
                                     files=harpy_opt.files,
-                                    outputdir=join(harpy_opt.outputdir, 'optics'))
+                                    outputdir=harpy_opt.outputdir)
+            harpy_opt.outputdir = join(harpy_opt.outputdir, 'lin_files')
             rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
                                     model_dir=dirname(abspath(harpy_opt.model)))
     else:

@@ -65,7 +65,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
 
 
 def write(df, header, meas_input, plane, rdt):
-    tfs.write(join(meas_input.outputdir, f"rdt_f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df,
+    tfs.write(join(meas_input.outputdir, "rdt", f"f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df,
               header, save_index="NAME")
 
 
