@@ -78,9 +78,10 @@ def run_per_bunch(tbt_data, harpy_input):
 
 
 def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
+    print(tbt_data.matrices[0][plane].columns)
     start = max(0, min(turn_indices))
     end = min(max(turn_indices), tbt_data.matrices[0][plane].shape[1])
-    return tbt_data.matrices[0][plane].iloc[:, start:end]
+    return tbt_data.matrices[0][plane].iloc[:, start:end].T.reset_index(drop=True).T
 
 
 def _scale_to_mm(bpm_data, unit):
