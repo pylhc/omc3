@@ -7,6 +7,7 @@ from optics_measurements import phase
 from optics_measurements.toolbox import df_diff
 from optics_measurements.constants import PLANES, ERR, EXT
 from scipy.sparse import diags
+from utils import iotools
 import pandas as pd
 from utils import stats
 import tfs
@@ -65,13 +66,22 @@ def calculate(measure_input, input_files, tunes, invariants, header):
 
 
 def write(df, header, meas_input, plane, rdt):
-    tfs.write(join(meas_input.outputdir, "rdt", f"f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df,
-              header, save_index="NAME")
+    outputdir = join(meas_input.outputdir, "rdt", _rdt_to_order_and_type(rdt))
+    iotools.create_dirs(outputdir)
+    tfs.write(join(outputdir, f"f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df, header,
+              save_index="NAME")
 
 
 def _rdt_to_str(rdt):
     j, k, l, m = rdt
     return f"{j}{k}{l}{m}"
+
+
+def _rdt_to_order_and_type(rdt):
+    j, k, l, m = rdt
+    rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
+    orders = dict(((1, "dipole"), (2, "quadrupole"), (3, "sextupole"), (4, "octupole")))
+    return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
 def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
