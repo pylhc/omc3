@@ -36,7 +36,7 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     Args:
         meas_input: OpticsInput object
         tunes: TuneDict contains measured tunes
-        phase_dict: PhaseDict contains measured phase advances
+        phase_dict: contains measured phase advances
         header_dict:  dictionary of header items common for all output files
         plane: plane
 
@@ -45,30 +45,15 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     """
     meas_and_model_tunes = (tunes[plane]["Q"], tunes[plane]["QM"] % 1) \
         if meas_input.compensation == "none" else (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
-    model = meas_input.accelerator.get_model_tfs()
-    try:
-        bk_model = meas_input.accelerator.get_best_knowledge_model_tfs()
-    except AttributeError:
-        LOGGER.debug("No best knowledge model - using the normal one.")
-        bk_model = model
 
-    elements = meas_input.accelerator.get_elements_tfs().loc[:, ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
     if meas_input.three_bpm_method:
+        beta_df = three_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
         error_method = METH_3BPM
     else:
-        LOGGER.debug("Accelerator Error Definition")
-        error_defs_path = meas_input.accelerator.get_errordefspath()
-        if error_defs_path is None:
-            raise IOError(f"Error definition file could not be found")
-        elements = _assign_uncertainties(elements, error_defs_path)
-        errors_assigned = (len(elements["dK1"].nonzero()[0]) + len(
-            elements["dX"].nonzero()[0]) + len(elements["KdS"].nonzero()[0])) > 0
-        if not errors_assigned:
-            LOGGER.warning("No systematic errors were given or no element was found for the given "
-                           "error definitions. The systematic lattice errors are not used.")
-        error_method = METH_A_NBPM if errors_assigned else METH_NO_ERR
+        beta_df, error_method = n_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
     LOGGER.info(f"Errors from {error_method}")
-    beta_df, rmsbb = betas_alphas_from_phase(bk_model, model, elements, phase_dict, plane, meas_input.range_of_bpms, error_method, meas_and_model_tunes)
+    rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].values, errors=beta_df.loc[:, f"{ERR}{DELTA}BET{plane}"].values) * 100
+    LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
     header = _get_header(header_dict, error_method, meas_input.range_of_bpms, rmsbb)
     return beta_df, header
 
@@ -78,38 +63,7 @@ def write(beta_df, header, outputdir, plane):
               header, save_index="NAME")
 
 
-def betas_alphas_from_phase(bk_model, model, elements, phase, plane, range_of_bpms, errors_method, meas_and_model_tunes):
-    """
-    Calculates betas and alphas from phase using specified method
-    Args:
-        bk_model: Best knowledge model tfs
-        model: Nominal model tfs
-        elements: Model with all necessary elements and errors
-        phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
-        plane: plane either X or Y
-        range_of_bpms: size of a range centered at probed BPM
-        errors_method: specified method
-        meas_and_model_tunes: measured  and model tunes
-
-    Returns:
-        tfs.DataFrame containing betas and alfas from phase
-    """
-    beta_df = tfs.TfsDataFrame(model).loc[phase["MEAS"].index, ["S", f"BET{plane}", f"ALF{plane}"]]
-    beta_df = beta_df.rename(columns={f"BET{plane}": f"BET{plane}{MDL}", f"ALF{plane}": f"ALF{plane}{MDL}"})
-    if errors_method == METH_3BPM:
-        beta_df = three_bpm_method(phase, plane, meas_and_model_tunes, beta_df)
-    else:
-        beta_df = n_bpm_method(bk_model.loc[phase["MEAS"].index, :], elements, phase, plane, range_of_bpms, meas_and_model_tunes, beta_df)
-    beta_df[f"{DELTA}BET{plane}"] = df_rel_diff(beta_df, f"BET{plane}", f"BET{plane}{MDL}")
-    beta_df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(beta_df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
-    beta_df[f"{DELTA}ALF{plane}"] = df_diff(beta_df, f"ALF{plane}", f"ALF{plane}{MDL}")
-    beta_df[f"{ERR}{DELTA}ALF{plane}"] = beta_df.loc[:, f"{ERR}ALF{plane}"].values
-    rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].values) * 100
-    LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
-    return beta_df, rmsbb
-
-
-def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_tunes, beta_df):
+def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     """
     Calculates betas and alphas from using all BPM combination within range_of_bpms,
     it also accounts for systematic errors
@@ -125,11 +79,14 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_t
     Returns:
         tfs.DataFrame containing betas and alfas from phase
     """
+    elements, error_method = get_elements_with_errors(meas_input, plane)
+    beta_df = _get_filtered_model_df(meas_input, phase, plane)
+    bk_model = _get_filtered_model_df(meas_input, phase, plane, best=True)
     tune, mdltune = meas_and_mdl_tunes
     betas_alfas = np.zeros((len(phase["MEAS"].index), 4))
     nbpms = len(bk_model.index)
     n_comb = np.zeros(nbpms, dtype=int)
-    m = int(range_of_bpms / 2)
+    m = int(meas_input.range_of_bpms / 2)
     loc_range = np.arange(-m, m + 1)
     phases_meas = phase["MEAS"] * PI2
     phases_err = phase["ERRMEAS"] * PI2
@@ -177,7 +134,7 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_t
                 calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_elmts, cot_model,
                                                              cot_meas, outer_meas_phase_adv, probed_bpm_name,
                                                              bk_model.at[probed_bpm_name, "BET" + plane],
-                                                             bk_model.at[probed_bpm_name, "ALF" + plane], range_of_bpms)
+                                                             bk_model.at[probed_bpm_name, "ALF" + plane], meas_input.range_of_bpms)
 
         mask = diag != 0
         mat_diag = np.diag(diag[mask])
@@ -201,7 +158,24 @@ def n_bpm_method(bk_model, elements, phase, plane, range_of_bpms, meas_and_mdl_t
     beta_df[f"{ERR}ALF{plane}"] = betas_alfas[:, 3]
     beta_df["NCOMB"] = n_comb
     beta_df = beta_df.loc[beta_df["NCOMB"] > 0]
-    return beta_df
+    beta_df = _get_delta_columns(beta_df, plane)
+    return beta_df, error_method
+
+
+def get_elements_with_errors(meas_input, plane):
+    if meas_input.accelerator.get_errordefspath() is None:
+        raise IOError(f"Error definition file could not be found")
+    elements = meas_input.accelerator.get_elements_tfs().loc[:,
+               ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
+    LOGGER.debug("Accelerator Error Definition")
+    elements = _assign_uncertainties(elements, meas_input.accelerator.get_errordefspath())
+    errors_assigned = (len(elements["dK1"].nonzero()[0]) + len(
+        elements["dX"].nonzero()[0]) + len(elements["KdS"].nonzero()[0])) > 0
+    if not errors_assigned:
+        LOGGER.warning("No systematic errors were given or no element was found for the given "
+                       "error definitions. The systematic lattice errors are not used.")
+    error_method = METH_A_NBPM if errors_assigned else METH_NO_ERR
+    return elements, error_method
 
 
 def calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_elmts, cot_model,
@@ -364,7 +338,7 @@ def _get_header(header_dict, error_method, range_of_bpms, rmsbb):
     return header
 
 
-def three_bpm_method(phase, plane, meas_and_mdl_tunes, beta_df):
+def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     """
         Calculates betas and alphas from using adjacent BPMs (3 combiantion)
 
@@ -419,12 +393,13 @@ def three_bpm_method(phase, plane, meas_and_mdl_tunes, beta_df):
             tfs.DataFrame containing betas and alfas from phase
         """
     tune, mdltune = meas_and_mdl_tunes
+    beta_df = _get_filtered_model_df(meas_input, phase, plane)
     # tilt phase advances in order to have the phase advances in a neighbourhood
     tilted_meas = _tilt_slice_matrix(phase["MEAS"].values, 2, 5, tune) * PI2
     tilted_model = _tilt_slice_matrix(phase["MODEL"].values, 2, 5, mdltune) * PI2
     tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].values, 2, 5, mdltune) * PI2
-    betmdl = beta_df.loc[:]["BET" + plane + "MDL"].values
-    alfmdl = beta_df.loc[:]["ALF" + plane + "MDL"].values
+    betmdl = beta_df.loc[:, f"BET{plane}{MDL}"].values
+    alfmdl = beta_df.loc[:, f"ALF{plane}{MDL}"].values
     with np.errstate(divide='ignore'):
         cot_phase_meas = 1 / np.tan(tilted_meas)
         cot_phase_model = 1 / np.tan(tilted_model)
@@ -454,6 +429,15 @@ def three_bpm_method(phase, plane, meas_and_mdl_tunes, beta_df):
     beta_df["ERRBET" + plane] = beterr
     beta_df["ALF" + plane] = alfi
     beta_df["ERRALF" + plane] = 0  # TODO calculate alferr
+    beta_df = _get_delta_columns(beta_df, plane)
+    return beta_df
+
+
+def _get_delta_columns(beta_df, plane):
+    beta_df[f"{DELTA}BET{plane}"] = df_rel_diff(beta_df, f"BET{plane}", f"BET{plane}{MDL}")
+    beta_df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(beta_df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
+    beta_df[f"{DELTA}ALF{plane}"] = df_diff(beta_df, f"ALF{plane}", f"ALF{plane}{MDL}")
+    beta_df[f"{ERR}{DELTA}ALF{plane}"] = beta_df.loc[:, f"{ERR}ALF{plane}"].values
     return beta_df
 
 
@@ -474,3 +458,19 @@ def _tilt_slice_matrix(matrix, slice_shift, slice_width, tune=0):
     matrix[:slice_shift, matrix.shape[1] - slice_shift:] -= tune
     return np.roll(matrix[np.arange(matrix.shape[0]), circulant(invrange)[invrange]],
                    slice_shift, axis=0)[:slice_width]
+
+
+def _get_filtered_model_df(meas_input, phase, plane, best=False):
+    model = _try_best_model(meas_input) if best else meas_input.accelerator.get_model_tfs()
+    df = pd.DataFrame(model).loc[phase["MEAS"].index, ["S", f"BET{plane}", f"ALF{plane}", f"MU{plane}"]]
+    if not best:
+        df.rename(columns={f"BET{plane}": f"BET{plane}{MDL}", f"ALF{plane}": f"ALF{plane}{MDL}", f"MU{plane}": f"MU{plane}{MDL}"}, inplace=True)
+    return df
+
+
+def _try_best_model(meas_input):
+    try:
+        return meas_input.accelerator.get_best_knowledge_model_tfs()
+    except AttributeError:
+        LOGGER.debug("No best knowledge model - using the normal one.")
+        return meas_input.accelerator.get_model_tfs()
