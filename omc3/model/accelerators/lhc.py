@@ -30,39 +30,6 @@ def get_lhc_modes():
 
 class Lhc(Accelerator):
     """ Parent Class for Lhc-Types.
-
-    Keyword Args:
-        Required
-        nat_tune_x (float): Natural tune X without integer part.
-                            **Flags**: ['--nattunex']
-        nat_tune_y (float): Natural tune Y without integer part.
-                            **Flags**: ['--nattuney']
-        optics (str): Path to the optics file to use (modifiers file).
-                      **Flags**: ['--optics']
-
-        Optional
-        acd (bool): Activate excitation with ACD.
-                    **Flags**: ['--acd']
-                    **Default**: ``False``
-        adt (bool): Activate excitation with ADT.
-                    **Flags**: ['--adt']
-                    **Default**: ``False``
-        dpp (float or list): Delta p/p to use.
-                     **Flags**: ['--dpp']
-                     **Default**: ``0.0``
-        drv_tune_x (float): Driven tune X without integer part.
-                            **Flags**: ['--drvtunex']
-        drv_tune_y (float): Driven tune Y without integer part.
-                            **Flags**: ['--drvtuney']
-        energy (float): Energy in Tev.
-                        **Flags**: ['--energy']
-        fullresponse (bool): If True, fullresponse template will be filled
-        and put in the output directory.
-                             **Flags**: ['--fullresponse']
-                             **Default**: ``False``
-        xing (bool): If True, x-ing  angles will be applied to model
-                     **Flags**: ['--xing']
-                     **Default**: ``False``
     """
     NAME = "lhc"
     MACROS_NAME = "lhc"
@@ -70,255 +37,11 @@ class Lhc(Accelerator):
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(
-            flags=["--lhcmode"],
-            help=("LHC mode to use. Should be one of: " +
-                  str(get_lhc_modes().keys())),
-            name="lhc_mode",
-            type=str,
-            choices=list(get_lhc_modes().keys())
-        )
-        params.add_parameter(
-            flags=["--beam"],
-            help="Beam to use.",
-            name="beam",
-            type=int,
-        )
-        return params
-
-    @staticmethod
-    def get_instance_parameters():
-        params = EntryPointParameters()
-        params.add_parameter(
-            flags=["--model_dir", "-m"],
-            help="Path to model directory (loads tunes and excitation from model!).",
-            name="model_dir",
-            type=str,
-        )
-        params.add_parameter(
-            flags=["--nattunex"],
-            help="Natural tune X without integer part.",
-            name="nat_tune_x",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--nattuney"],
-            help="Natural tune Y without integer part.",
-            name="nat_tune_y",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--acd"],
-            help="Activate excitation with ACD.",
-            name="acd",
-            action="store_true"
-        )
-        params.add_parameter(
-            flags=["--adt"],
-            help="Activate excitation with ADT.",
-            name="adt",
-            action="store_true",
-        )
-        params.add_parameter(
-            flags=["--drvtunex"],
-            help="Driven tune X without integer part.",
-            name="drv_tune_x",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--drvtuney"],
-            help="Driven tune Y without integer part.",
-            name="drv_tune_y",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--dpp"],
-            help="Delta p/p to use.",
-            name="dpp",
-            default=0.0,
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--energy"],
-            help="Energy in Tev.",
-            name="energy",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--optics"],
-            help="Path to the optics file to use (modifiers file).",
-            name="optics",
-            type=str,
-        )
-        params.add_parameter(
-            flags=["--fullresponse"],
-            help=("If True, fullresponse template will "
-                  "be filled and put in the output directory."),
-            name="fullresponse",
-            action="store_true",
-        )
-        params.add_parameter(
-            flags=["--xing"],
-            help="If True, x-ing  angles will be applied to model",
-            name="xing",
-            action="store_true",
-        )
+        params.add_parameter(flags=["--lhcmode"], help=("LHC mode to use. Should be one of: " + str(get_lhc_modes().keys())), name="lhc_mode", type=str, choices=list(get_lhc_modes().keys()))
+        params.add_parameter(flags=["--beam"], help="Beam to use.", name="beam", type=int,)
         return params
 
     # Entry-Point Wrappers #####################################################
-
-    def __init__(self, *args, **kwargs):
-        # for reasons of import-order and class creation, decoration was not possible
-        parser = EntryPoint(self.get_instance_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
-
-        if opt.model_dir:
-            self.init_from_model_dir(opt.model_dir)
-            self.energy = None
-            self.dpp = 0.0
-            self.xing = None
-            if opt.nat_tune_x is not None:
-                raise AcceleratorDefinitionError(
-                    "Argument 'nat_tune_x' not allowed when loading from model directory."
-                )
-            if opt.nat_tune_y is not None:
-                raise AcceleratorDefinitionError(
-                    "Argument 'nat_tune_y' not allowed when loading from model directory."
-                )
-            if opt.drv_tune_x is not None:
-                raise AcceleratorDefinitionError(
-                    "Argument 'drv_tune_x' not allowed when loading from model directory."
-                )
-            if opt.drv_tune_y is not None:
-                raise AcceleratorDefinitionError(
-                    "Argument 'drv_tune_y' not allowed when loading from model directory."
-                )
-        else:
-            if opt.nat_tune_x is None:
-                raise AcceleratorDefinitionError("Argument 'nat_tune_x' is required.")
-            if opt.nat_tune_y is None:
-                raise AcceleratorDefinitionError("Argument 'nat_tune_y' is required.")
-
-            self.nat_tune_x = opt.nat_tune_x
-            self.nat_tune_y = opt.nat_tune_y
-
-            self.drv_tune_x = None
-            self.drv_tune_y = None
-            self._excitation = AccExcitationMode.FREE
-
-            if opt.acd or opt.adt:
-                if opt.acd and opt.adt:
-                    raise AcceleratorDefinitionError(
-                        "Select only one excitation type."
-                    )
-
-                if opt.drv_tune_x is None:
-                    raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
-                if opt.drv_tune_y is None:
-                    raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
-                self.drv_tune_x = opt.drv_tune_x
-                self.drv_tune_y = opt.drv_tune_y
-
-                if opt.acd:
-                    self._excitation = AccExcitationMode.ACD
-                elif opt.adt:
-                    self._excitation = AccExcitationMode.ADT
-
-            # optional with default
-            self.dpp = opt.dpp
-            self.fullresponse = opt.fullresponse
-
-            # optional no default
-            self.energy = opt.get("energy", None)
-            self.xing = opt.get("xing", None)
-            self.optics_file = opt.get("optics", None)
-
-            # for GetLLM
-            self.model_dir = None
-            self._model = None
-            self._model_driven = None
-            self._model_best_knowledge = None
-            self._elements = None
-            self._elements_centre = None
-            self._errordefspath = None
-
-        self.verify_object()
-
-    def init_from_model_dir(self, model_dir):
-        LOGGER.debug("Creating accelerator instance from model dir")
-        self.model_dir = model_dir
-
-        LOGGER.debug("  model path = " + os.path.join(model_dir, "twiss.dat"))
-        try:
-            self._model = tfs.read(
-                os.path.join(model_dir, "twiss.dat"), index="NAME")
-        except IOError:
-            self._model = tfs.read(
-                os.path.join(model_dir, "twiss_elements.dat"), index="NAME")
-            bpm_index = [idx for idx in self._model.index.values if idx.startswith("B")]
-            self._model = self._model.loc[bpm_index, :]
-        self.nat_tune_x = float(self._model.headers["Q1"])
-        self.nat_tune_y = float(self._model.headers["Q2"])
-
-        # Excitations #####################################
-        self._model_driven = None
-        self.drv_tune_x = None
-        self.drv_tune_y = None
-        self._excitation = AccExcitationMode.FREE
-
-        ac_filename = os.path.join(model_dir, "twiss_ac.dat")
-        adt_filename = os.path.join(model_dir, "twiss_adt.dat")
-
-        if os.path.isfile(ac_filename):
-            self._model_driven = tfs.read(ac_filename, index="NAME")
-            self._excitation = AccExcitationMode.ACD
-
-        if os.path.isfile(adt_filename):
-            if self._excitation == AccExcitationMode.ACD:
-                raise AcceleratorDefinitionError("ADT as well as ACD models provided."
-                                                 "Please choose only one.")
-
-            self._model_driven = tfs.read(adt_filename, index="NAME")
-            self._excitation = AccExcitationMode.ADT
-
-        if not self._excitation == AccExcitationMode.FREE:
-            self.drv_tune_x = float(self.get_driven_tfs().headers["Q1"])
-            self.drv_tune_y = float(self.get_driven_tfs().headers["Q2"])
-
-        # Best Knowledge #####################################
-        self._model_best_knowledge = None
-        best_knowledge_path = os.path.join(model_dir, "twiss_best_knowledge.dat")
-        if os.path.isfile(best_knowledge_path):
-            self._model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
-
-        # Elements #####################################
-        elements_path = os.path.join(model_dir, "twiss_elements.dat")
-        if os.path.isfile(elements_path):
-            self._elements = tfs.read(elements_path, index="NAME")
-        else:
-            raise AcceleratorDefinitionError("Elements twiss not found")
-
-        center_path = os.path.join(model_dir, "twiss_elements_centre.dat")
-        if os.path.isfile(center_path):
-            self._elements_centre = tfs.read(center_path, index="NAME")
-        else:
-            self._elements_centre = self._elements
-
-        # Optics File #########################################
-        self.optics_file = None
-        opticsfilepath = os.path.join(self.model_dir, "modifiers.madx")
-        if os.path.exists(opticsfilepath):
-            self.optics_file = opticsfilepath
-
-        # Error Def #####################################
-        self._errordefspath = None
-        errordefspath = os.path.join(self.model_dir, "error_deff.txt")
-        if os.path.exists(errordefspath):
-            self._errordefspath = errordefspath
-        else:  # until we have a proper file name convention
-            errordefspath = os.path.join(self.model_dir, "error_deffs.txt")
-            if os.path.exists(errordefspath):
-                self._errordefspath = errordefspath
 
     @classmethod
     def init_and_get_unknowns(cls, args=None):
@@ -373,28 +96,6 @@ class Lhc(Accelerator):
 
     # Public Methods ##########################################################
 
-    @classmethod
-    def get_segment(cls, label, first_elem, last_elem, optics_file, twiss_file):
-        segment_cls = type(cls.__name__ + "Segment",
-                           (_LhcSegmentMixin, cls),
-                           {})
-        segment_inst = segment_cls()
-        beam = cls.get_beam()
-        bpms_file_name = "beam1bpms.tfs" if beam == 1 else "beam2bpms.tfs"
-        bpms_file = _get_file_for_year(cls.YEAR, bpms_file_name)
-        bpms_file_data = tfs.read(bpms_file).set_index("NAME")
-        first_elem_s = bpms_file_data.loc[first_elem, "S"]
-        last_elem_s = bpms_file_data.loc[last_elem, "S"]
-        segment_inst.label = label
-        segment_inst.start = Element(first_elem, first_elem_s)
-        segment_inst.end = Element(last_elem, last_elem_s)
-        segment_inst.optics_file = optics_file
-        segment_inst.xing = False
-        segment_inst.fullresponse = False
-        segment_inst.kind = '' # '' means beta from phase, can be 'betaamp', in the future 'betakmod'
-
-        segment_inst.verify_object()
-        return segment_inst
 
     @classmethod
     def _get_beamed_class(cls, new_class, beam):
@@ -776,13 +477,6 @@ class Lhc(Accelerator):
                     return "ADTKV.C5L4.B2"
         return None
 
-    def get_s_first_BPM(self):
-        if self.get_beam() == 1:
-            return self._model.loc["BPMSW.1L2.B1", "S"]
-        elif self.get_beam() == 2:
-            return self._model.loc["BPMSW.1L8.B2", "S"]
-        return None
-
     def get_errordefspath(self):
         """Returns the path to the uncertainty definitions file (formerly called error definitions file.
         """
@@ -793,48 +487,12 @@ class Lhc(Accelerator):
     def set_errordefspath(self, path):
         self._errordefspath = path
 
-    def get_k_first_BPM(self, index):
-        if self.get_beam() == 1:
-            model_k = self._model.index.get_loc("BPMSW.1L2.B1")
-            while model_k < len(self._model.index):
-                kname = self._model.index[model_k]
-                if kname in index:
-                    return index.get_loc(kname)
-                model_k = model_k + 1
-        elif self.get_beam() == 2:
-            model_k = self._model.index.get_loc("BPMSW.1L8.B2")
-            while model_k < len(self._model.index):
-                kname = self._model.index[model_k]
-                if kname in index:
-                    return index.get_loc(kname)
-                model_k = model_k + 1
-        return None
-
     def get_synch_BPMs(self, index):
         # expect passing index.values
         if self.get_beam() == 1:
             return [i in index for i in self.model_tfs.loc["BPMSW.33L2.B1":].index]
         elif self.get_beam() == 2:
             return [i in index for i in self.model_tfs.loc["BPMSW.33R8.B2":].index]
-
-    def get_model_tfs(self):
-        return self._model
-
-    def get_driven_tfs(self):
-        if self._model_driven is None:
-            raise AttributeError("No driven model given in this accelerator instance.")
-        return self._model_driven
-
-    def get_best_knowledge_model_tfs(self):
-        if self._model_best_knowledge is None:
-            raise AttributeError("No best knowledge model given in this accelerator instance.")
-        return self._model_best_knowledge
-
-    def get_elements_tfs(self):
-        return self._elements
-
-    def get_elements_centre_tfs(self):
-        return self._elements_centre
 
     @classmethod
     def get_element_types_mask(cls, list_of_elements, types):
@@ -877,9 +535,7 @@ class _LhcSegmentMixin(object):
         self._end = None
 
     def get_segment_vars(self, classes=None):
-        return self.get_variables(frm=self.start.s,
-                                  to=self.end.s,
-                                  classes=classes)
+        return self.get_variables(frm=self.start.s, to=self.end.s, classes=classes)
 
     def verify_object(self):
         try:

@@ -1,10 +1,8 @@
 import pandas as pd
-
 from model.accelerators.accelerator import Accelerator
 
 
 class Esrf(Accelerator):
-
     NAME = "esrf"
 
     @classmethod
@@ -12,13 +10,9 @@ class Esrf(Accelerator):
         """
         Return boolean mask for elements in list_of_elements that belong
         to any of the specified types.
-        Needs to handle: "bpm", "magnet", "arc_bpm", "amp_bpm"
-        TODO: implement "magnet"
-
         arc_bpms are the ones with high beta, which are:
             bpms 1-5 in even cells.
             bpms 3-7 in odd cells.
-
 
         Args:
             list_of_elements: List of elements
@@ -30,9 +24,9 @@ class Esrf(Accelerator):
         """
         re_dict = {
             "bpm": r"BPM",
+            "magnet": r".*",
             "arc_bpm": r"BPM\.(\d*[02468]\.[1-5]|\d*[13579]\.[3-7])",
         }
-
         unknown_elements = [ty for ty in types if ty not in re_dict]
         if len(unknown_elements):
             raise TypeError("Unknown element(s): '{:s}'".format(str(unknown_elements)))
