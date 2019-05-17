@@ -1,6 +1,5 @@
 import os
 import re
-import pandas as pd
 from model.accelerators.accelerator import Accelerator, Element
 from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 import tfs
@@ -19,27 +18,6 @@ class Psbooster(Accelerator):
         Required
         ring (int): Ring number.
                             **Flags**: ['--ring']
-                            
-        nat_tune_x (float): Natural tune X without integer part.
-                            **Flags**: ['--nattunex']
-        nat_tune_y (float): Natural tune Y without integer part.
-                            **Flags**: ['--nattuney']
-
-        Optional
-        acd (bool): Activate excitation with ACD.
-                    **Flags**: ['--acd']
-                    **Default**: ``False``
-        drv_tune_x (float): Driven tune X without integer part.
-                            **Flags**: ['--drvtunex']
-        drv_tune_y (float): Driven tune Y without integer part.
-                            **Flags**: ['--drvtuney']
-        energy (float): Energy in Tev.
-                        **Flags**: ['--energy']
-        fullresponse (bool): If present, fullresponse template willbe filled and put
-                             in the output directory.
-                             **Flags**: ['--fullresponse']
-                             **Default**: ``False``
-
     """
     NAME = "psbooster"
 
@@ -49,96 +27,7 @@ class Psbooster(Accelerator):
         params.add_parameter(flags=["--ring"], help="Ring to use.", name="ring", type=int, choices=[1, 2, 3, 4])
         return params
 
-    @staticmethod
-    def get_instance_parameters():
-        params = EntryPointParameters()
-        params.add_parameter(
-            flags=["--nattunex"],
-            help="Natural tune X without integer part.",
-            required=True,
-            name="nat_tune_x",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--nattuney"],
-            help="Natural tune Y without integer part.",
-            required=True,
-            name="nat_tune_y",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--acd"],
-            help="Activate excitation with ACD.",
-            name="acd",
-            action="store_true",
-        )
-        params.add_parameter(
-            flags=["--drvtunex"],
-            help="Driven tune X without integer part.",
-            name="drv_tune_x",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--drvtuney"],
-            help="Driven tune Y without integer part.",
-            name="drv_tune_y",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--energy"],
-            help="Energy in Tev.",
-            name="energy",
-            type=float,
-        )
-
-        params.add_parameter(
-            flags=["--dpp"],
-            help="Delta p/p to use.",
-            name="dpp",
-            default=0.0,
-            type=float,
-        )
-
-        params.add_parameter(
-            flags=["--optics"],
-            help="Path to the optics file to use (modifiers file).",
-            name="optics",
-            type=str,
-        )
-
-        params.add_parameter(
-            flags=["--fullresponse"],
-            help=("If present, fullresponse template will" +
-                  "be filled and put in the output directory."),
-            name="fullresponse",
-            action="store_true",
-        )
-        return params
-
     # Entry-Point Wrappers #####################################################
-
-    def __init__(self, *args, **kwargs):
-        # for reasons of import-order and class creation, decoration was not possible
-        parser = EntryPoint(self.get_instance_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
-
-        # required
-        self.nat_tune_x = opt.nat_tune_x
-        self.nat_tune_y = opt.nat_tune_y
-        self.acd = opt.acd
-        if self.acd:
-            self.drv_tune_x = opt.drv_tune_x
-            self.drv_tune_y = opt.drv_tune_y
-
-        # optional with default
-        self.fullresponse = opt.fullresponse
-
-        # optional w/o default
-        self.energy = opt.get("energy", None)
-
-        self.dpp = opt.get("dpp", 0.0)
-        
-        self.optics_file = opt.get("optics", None)
 
     @classmethod
     def init_and_get_unknowns(cls, args=None):
@@ -195,20 +84,15 @@ class Psbooster(Accelerator):
     @classmethod
     def get_segment(cls, label, first_elem, last_elem, optics_file, twiss_file):
         segment_cls = type(cls.__name__ + "Segment",
-                          (_PsboosterSegmentMixin,cls),
+                          (_PsboosterSegmentMixin, cls),
                           {})
-
-
         LOGGER.debug('twiss_file is <%s>',twiss_file)
         tw = tfs.read(twiss_file)
         
         LOGGER.debug('twiss_file has tunes %f %f ',tw.Q1,tw.Q2)
         ring = _get_ring_from_seqname(tw.SEQUENCE)
 
-        #ring = cls.get_ring()
-
         segment_inst = segment_cls()
-        
 
         bpms_file = _get_file_for_ring(ring)
         bpms_file_data = tfs.read(bpms_file).set_index("NAME")
@@ -219,7 +103,6 @@ class Psbooster(Accelerator):
         segment_inst.end = Element(last_elem, last_elem_s)
         segment_inst.optics_file = optics_file
         segment_inst.fullresponse = None
-        
 
         segment_inst.nat_tune_x = tw.Q1
         segment_inst.nat_tune_y = tw.Q2
@@ -229,7 +112,6 @@ class Psbooster(Accelerator):
         segment_inst.kind = '' # '' means beta from phase, can be 'betaamp', in the future 'betakmod'
         
         return segment_inst    
-
 
     def verify_object(self):
         pass
@@ -253,27 +135,6 @@ class Psbooster(Accelerator):
     @classmethod
     def get_psb_dir(cls):
         return PSB_DIR
-
-    @classmethod
-    def get_element_types_mask(cls, list_of_elements, types):
-        # TODO: Anaaaaaa
-        raise NotImplementedError("Anaaaaa!")
-        re_dict = {
-            "bpm": r".*",
-            "magnet": r".*",
-            "arc_bpm": r".*",
-        }
-
-        unknown_elements = [ty for ty in types if ty not in re_dict]
-        if len(unknown_elements):
-            raise TypeError("Unknown element(s): '{:s}'".format(str(unknown_elements)))
-
-        series = pd.Series(list_of_elements)
-
-        mask = series.str.match(re_dict[types[0]], case=False)
-        for ty in types[1:]:
-            mask = mask | series.str.match(re_dict[ty], case=False)
-        return mask.values
 
     @classmethod
     def get_file(cls, filename):

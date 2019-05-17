@@ -1,5 +1,4 @@
 import os
-import pandas as pd
 import datetime as dt
 from model.accelerators.accelerator import Accelerator, Element
 import tfs
@@ -14,144 +13,10 @@ PS_DIR = os.path.join(CURRENT_DIR, "ps")
 
 
 class Ps(Accelerator):
-    """ Parent Class for Ps-Types.
-
-    Keyword Args:
-        Required
-        nat_tune_x (float): Natural tune X without integer part.
-                            **Flags**: ['--nattunex']
-        nat_tune_y (float): Natural tune Y without integer part.
-                            **Flags**: ['--nattuney']
-        energy (float): Energy in Tev.
-                        **Flags**: ['--energy']
-
-        Optional
-        acd (bool): Activate excitation with ACD.
-                    **Flags**: ['--acd']
-                    **Default**: ``False``
-        drv_tune_x (float): Driven tune X without integer part.
-                            **Flags**: ['--drvtunex']
-        drv_tune_y (float): Driven tune Y without integer part.
-                            **Flags**: ['--drvtuney']
-        fullresponse (bool): If present, fullresponse template willbe filled and put
-                             in the output directory.
-                             **Flags**: ['--fullresponse']
-                             **Default**: ``False``
-        year_opt (int): Year of the optics. Default is the current year.
-                        **Flags**: ['--year_opt']
-
-    """
+    """ Parent Class for Ps-Types. """
     NAME = "ps"
     MACROS_NAME = "ps"
-    YEAR = CURRENT_YEAR
-    
-    @staticmethod
-    def get_class_parameters():
-        params = EntryPointParameters()
-        return params
-
-    @staticmethod
-    def get_instance_parameters():
-        params = EntryPointParameters()
-        params.add_parameter(
-            flags=["--nattunex"],
-            help="Natural tune X without integer part.",
-            required=True,
-            name="nat_tune_x",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--nattuney"],
-            help="Natural tune Y without integer part.",
-            required=True,
-            name="nat_tune_y",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--acd"],
-            help="Activate excitation with ACD.",
-            name="acd",
-            action="store_true",
-        )
-        params.add_parameter(
-            flags=["--drvtunex"],
-            help="Driven tune X without integer part.",
-            name="drv_tune_x",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--drvtuney"],
-            help="Driven tune Y without integer part.",
-            name="drv_tune_y",
-            type=float,
-        )
-        params.add_parameter(
-            flags=["--energy"],
-            help="Energy in Tev.",
-            name="energy",
-            type=float,
-        )
-
-        params.add_parameter(
-            flags=["--year_opt"],
-            help="Year of the optics. Default is the current year.",
-            name="year_opt",
-            type=int,
-        )
-
-        params.add_parameter(
-            flags=["--dpp"],
-            help="Delta p/p to use.",
-            name="dpp",
-            default=0.0,
-            type=float,
-        )
-
-        params.add_parameter(
-            flags=["--optics"],
-            help="Path to the optics file to use (modifiers file).",
-            name="optics",
-            type=str,
-        )
-
-        params.add_parameter(
-            flags=["--fullresponse"],
-            help=("If present, fullresponse template will" +
-                  "be filled and put in the output directory."),
-            name="fullresponse",
-            action="store_true",
-        )
-        return params
-
-    # Entry-Point Wrappers #####################################################
-
-    def __init__(self, *args, **kwargs):
-        # for reasons of import-order and class creation, decoration was not possible
-        parser = EntryPoint(self.get_instance_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
-
-        # required
-        self.nat_tune_x = opt.nat_tune_x
-        self.nat_tune_y = opt.nat_tune_y
-        self.acd = opt.acd
-        if self.acd:
-            self.drv_tune_x = opt.drv_tune_x
-            self.drv_tune_y = opt.drv_tune_y
-
-        # optional with default
-        self.fullresponse = opt.fullresponse
-
-        # optional w/o default
-        self.energy = opt.get("energy", None)
-
-        Ps.YEAR = opt.year_opt
-        if Ps.YEAR is None:
-            Ps.YEAR = CURRENT_YEAR
-
-        self.dpp = opt.get("dpp", 0.0)
-        
-        self.optics_file = opt.get("optics", None)
-        
+    YEAR = 2018
 
     @classmethod
     def get_name(cls, args=None):
@@ -237,29 +102,7 @@ class Ps(Accelerator):
 
     @classmethod
     def get_ps_dir(cls):
-        #print('Year of the optics', self.year_opt)
-        return os.path.join(PS_DIR,str(cls.YEAR))
-
-    @classmethod
-    def get_element_types_mask(cls, list_of_elements, types):
-        # TODO: Anaaaaaa
-        raise NotImplementedError("Anaaaaa!")
-        re_dict = {
-            "bpm": r".*",
-            "magnet": r".*",
-            "arc_bpm": r".*",
-        }
-
-        unknown_elements = [ty for ty in types if ty not in re_dict]
-        if len(unknown_elements):
-            raise TypeError("Unknown element(s): '{:s}'".format(str(unknown_elements)))
-
-        series = pd.Series(list_of_elements)
-
-        mask = series.str.match(re_dict[types[0]], case=False)
-        for ty in types[1:]:
-            mask = mask | series.str.match(re_dict[ty], case=False)
-        return mask.values
+        return os.path.join(PS_DIR, str(cls.YEAR))
 
     @classmethod
     def get_iteration_tmpl(cls):
@@ -275,9 +118,10 @@ class Ps(Accelerator):
     
     # Private Methods ##########################################################
 
+
 class _PsSegmentMixin(object):
 
-   def __init__(self):
-       self._start = None
-       self._end = None
-       self.energy = None
+    def __init__(self):
+        self._start = None
+        self._end = None
+        self.energy = None
