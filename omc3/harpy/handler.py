@@ -85,7 +85,7 @@ def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
 
 
 def _scale_to_mm(bpm_data, unit):
-    scales_to_mm = {'um': 1000, 'mm': 1, 'cm': 0.1, 'm': 0.001}
+    scales_to_mm = {'um': 0.001, 'mm': 1, 'cm': 10, 'm': 1000}
     return bpm_data * scales_to_mm[unit]
 
 
