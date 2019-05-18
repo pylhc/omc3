@@ -1,13 +1,10 @@
 import json
 import os
 from collections import OrderedDict
-
-import pandas as pd
-
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, Element, AccExcitationMode
+from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
 from utils import logging_tools
 import tfs
-from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from parser.entrypoint import EntryPointParameters
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
@@ -33,6 +30,8 @@ class Lhc(Accelerator):
     """
     NAME = "lhc"
     MACROS_NAME = "lhc"
+    RE_DICT = {"bpm": r"BPM", "magnet": r"M",
+               "arc_bpm": r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]"}  # bpms > 14 L or R of IP
 
     @staticmethod
     def get_class_parameters():
@@ -42,47 +41,6 @@ class Lhc(Accelerator):
         return params
 
     # Entry-Point Wrappers #####################################################
-
-    @classmethod
-    def init_and_get_unknowns(cls, args=None):
-        """ Initializes but also returns unknowns.
-
-         For the desired philosophy of returning parameters all the time,
-         try to avoid this function, e.g. parse outside parameters first.
-         """
-        opt, rest_args = split_arguments(args, cls.get_instance_parameters())
-        return cls(opt), rest_args
-
-    @classmethod
-    def get_class(cls, *args, **kwargs):
-        """ Returns LHC subclass .
-
-        Keyword Args:
-            Optional
-            beam (int): Beam to use.
-                        **Flags**: ['--beam']
-            lhc_mode (str): LHC mode to use.
-                            **Flags**: ['--lhcmode']
-                            **Choices**: ['lhc_runII_2016_ats', 'hllhc12', 'hllhc10', 'lhc_runI',
-                            'lhc_runII', 'lhc_runII_2016', 'lhc_runII_2017']
-
-        Returns:
-            Lhc subclass.
-        """
-        parser = EntryPoint(cls.get_class_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
-        return cls._get_class(opt)
-
-    @classmethod
-    def get_class_and_unknown(cls, *args, **kwargs):
-        """ Returns LHC subclass and unkown args .
-
-        For the desired philosophy of returning parameters all the time,
-        try to avoid this function, e.g. parse outside parameters first.
-        """
-        parser = EntryPoint(cls.get_class_parameters(), strict=False)
-        opt, unknown_opt = parser.parse(*args, **kwargs)
-        return cls._get_class(opt), unknown_opt
 
     @classmethod
     def _get_class(cls, opt):
@@ -452,31 +410,6 @@ class Lhc(Accelerator):
             return [["MKD.O5L6.B1", "TCTPH.4L1.B1"],
                     ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
 
-    def get_exciter_name(self, plane):
-        if self.get_beam() == 1:
-            if self.excitation == AccExcitationMode.ACD:
-                if plane == "H":
-                    return 'MKQA.6L4.B1'
-                elif plane == "V":
-                    return 'MKQA.6L4.B1'
-            elif self.excitation == AccExcitationMode.ADT:
-                if plane == "H":
-                    return "ADTKH.C5L4.B1"
-                elif plane == "V":
-                    return "ADTKV.B5R4.B1"
-        elif self.get_beam() == 2:
-            if self.excitation == AccExcitationMode.ACD:
-                if plane == "H":
-                    return 'MKQA.6L4.B2'
-                elif plane == "V":
-                    return 'MKQA.6L4.B2'
-            elif self.excitation == AccExcitationMode.ADT:
-                if plane == "H":
-                    return "ADTKH.B5R4.B2"
-                elif plane == "V":
-                    return "ADTKV.C5L4.B2"
-        return None
-
     def get_errordefspath(self):
         """Returns the path to the uncertainty definitions file (formerly called error definitions file.
         """
@@ -493,39 +426,6 @@ class Lhc(Accelerator):
             return [i in index for i in self.model_tfs.loc["BPMSW.33L2.B1":].index]
         elif self.get_beam() == 2:
             return [i in index for i in self.model_tfs.loc["BPMSW.33R8.B2":].index]
-
-    @classmethod
-    def get_element_types_mask(cls, list_of_elements, types):
-        """
-        Return boolean mask for elements in list_of_elements that belong
-        to any of the specified types.
-        Needs to handle: "bpm", "magnet", "arc_bpm"
-
-        Args:
-            list_of_elements: List of elements
-            types: Kinds of elements to look for
-
-        Returns:
-            Boolean array of elements of specified kinds.
-
-        """
-
-        re_dict = {
-            "bpm": r"BPM",
-            "magnet": r"M",
-            "arc_bpm": r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]",  # bpms > 14 L or R of IP
-        }
-
-        unknown_elements = [ty for ty in types if ty not in re_dict]
-        if len(unknown_elements):
-            raise TypeError("Unknown element(s): '{:s}'".format(str(unknown_elements)))
-
-        series = pd.Series(list_of_elements)
-
-        mask = series.str.match(re_dict[types[0]], case=False)
-        for ty in types[1:]:
-            mask = mask | series.str.match(re_dict[ty], case=False)
-        return mask.values
 
 
 class _LhcSegmentMixin(object):

@@ -1,9 +1,11 @@
 from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 import os
+import pandas as pd
 import tfs
 from utils import logging_tools
 LOGGER = logging_tools.get_logger(__name__)
-import pandas as pd
+
+
 class AccExcitationMode(object):
     # it is very important that FREE = 0
     FREE, ACD, ADT = range(3)
@@ -11,9 +13,9 @@ class AccExcitationMode(object):
 
 class Accelerator(object):
     """
-    Abstract class to serve as an interface to implement the
-    rest of the accelerators.
+    Abstract class to serve as an interface to implement the rest of the accelerators.
     """
+    RE_DICT = {"bpm": r".*", "magnet": r".*", "arc_bpm": r".*"}
 
     @staticmethod
     def get_instance_parameters():
@@ -53,6 +55,7 @@ class Accelerator(object):
 
     def __init__(self, *args, **kwargs):
         # for reasons of import-order and class creation, decoration was not possible
+
         parser = EntryPoint(self.get_instance_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
 
@@ -61,62 +64,56 @@ class Accelerator(object):
             self.energy = None
             self.dpp = 0.0
             self.xing = None
-            if opt.nat_tune_x is not None:
-                raise AcceleratorDefinitionError("Argument 'nat_tune_x' not allowed when loading from model directory.")
-            if opt.nat_tune_y is not None:
-                raise AcceleratorDefinitionError("Argument 'nat_tune_y' not allowed when loading from model directory.")
-            if opt.drv_tune_x is not None:
-                raise AcceleratorDefinitionError("Argument 'drv_tune_x' not allowed when loading from model directory.")
-            if opt.drv_tune_y is not None:
-                raise AcceleratorDefinitionError("Argument 'drv_tune_y' not allowed when loading from model directory.")
+            if ((opt.nat_tune_x is not None) or (opt.nat_tune_y is not None) or
+                    (opt.drv_tune_x is not None) or (opt.drv_tune_y is not None)):
+                raise AcceleratorDefinitionError(
+                    "None of Arguments 'nat_tune_x', 'nat_tune_y', 'drv_tune_x' and 'drv_tune_y' "
+                    "are allowed when loading from model directory.")
         else:
-            if opt.nat_tune_x is None:
-                raise AcceleratorDefinitionError("Argument 'nat_tune_x' is required.")
-            if opt.nat_tune_y is None:
-                raise AcceleratorDefinitionError("Argument 'nat_tune_y' is required.")
-
-            self.nat_tune_x = opt.nat_tune_x
-            self.nat_tune_y = opt.nat_tune_y
-
-            self.drv_tune_x = None
-            self.drv_tune_y = None
-            self._excitation = AccExcitationMode.FREE
-
-            if opt.acd or opt.adt:
-                if opt.acd and opt.adt:
-                    raise AcceleratorDefinitionError("Select only one excitation type.")
-
-                if opt.drv_tune_x is None:
-                    raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
-                if opt.drv_tune_y is None:
-                    raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
-                self.drv_tune_x = opt.drv_tune_x
-                self.drv_tune_y = opt.drv_tune_y
-
-                if opt.acd:
-                    self._excitation = AccExcitationMode.ACD
-                elif opt.adt:
-                    self._excitation = AccExcitationMode.ADT
-
-            # optional with default
-            self.dpp = opt.dpp
-            self.fullresponse = opt.fullresponse
-
-            # optional no default
-            self.energy = opt.get("energy", None)
-            self.xing = opt.get("xing", None)
-            self.optics_file = opt.get("optics", None)
-
-            # for GetLLM
-            self.model_dir = None
-            self._model = None
-            self._model_driven = None
-            self._model_best_knowledge = None
-            self._elements = None
-            self._elements_centre = None
-            self._errordefspath = None
+            self.init_from_options(opt)
 
         self.verify_object()
+
+    def init_from_options(self, opt):
+        if opt.nat_tune_x is None:
+            raise AcceleratorDefinitionError("Argument 'nat_tune_x' is required.")
+        if opt.nat_tune_y is None:
+            raise AcceleratorDefinitionError("Argument 'nat_tune_y' is required.")
+        self.nat_tune_x = opt.nat_tune_x
+        self.nat_tune_y = opt.nat_tune_y
+        self.drv_tune_x = None
+        self.drv_tune_y = None
+        self._excitation = AccExcitationMode.FREE
+        if opt.acd or opt.adt:
+            if opt.acd and opt.adt:
+                raise AcceleratorDefinitionError("Select only one excitation type.")
+
+            if opt.drv_tune_x is None:
+                raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
+            if opt.drv_tune_y is None:
+                raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
+            self.drv_tune_x = opt.drv_tune_x
+            self.drv_tune_y = opt.drv_tune_y
+
+            if opt.acd:
+                self._excitation = AccExcitationMode.ACD
+            elif opt.adt:
+                self._excitation = AccExcitationMode.ADT
+        # optional with default
+        self.dpp = opt.dpp
+        self.fullresponse = opt.fullresponse
+        # optional no default
+        self.energy = opt.get("energy", None)
+        self.xing = opt.get("xing", None)
+        self.optics_file = opt.get("optics", None)
+        # for GetLLM
+        self.model_dir = None
+        self._model = None
+        self._model_driven = None
+        self._model_best_knowledge = None
+        self._elements = None
+        self._elements_centre = None
+        self._errordefspath = None
 
     def init_from_model_dir(self, model_dir):
         LOGGER.debug("Creating accelerator instance from model dir")
@@ -193,35 +190,44 @@ class Accelerator(object):
     @staticmethod
     def get_class_parameters():
         """
-        This method should return the parameter list of arguments needed
-        to create the class.
+        This method should return the parameter list of arguments needed to create the class.
         """
         params = EntryPointParameters()
         return params
 
     @classmethod
+    def init_and_get_unknowns(cls, args=None):
+        """ Initializes but also returns unknowns.
+         For the desired philosophy of returning parameters all the time,
+         try to avoid this function, e.g. parse outside parameters first.
+         """
+        opt, rest_args = split_arguments(args, cls.get_instance_parameters())
+        return cls(opt), rest_args
+
+    @classmethod
     def get_class(cls, *args, **kwargs):
         """
-        This method should return the accelerator class defined
-        in the arguments.
+        This method should return the accelerator class defined in the arguments.
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        parser = EntryPoint(cls.get_class_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
+        return cls._get_class(opt)
 
     @classmethod
-    def get_variables(cls, frm=None, to=None, classes=None):
+    def get_class_and_unknown(cls, *args, **kwargs):
+        """ Returns subclass and unknown args.
+        For the desired philosophy of returning parameters all the time,
+        try to avoid this function, e.g. parse outside parameters first.
         """
-        Gets the variables with elements in the given range and the given
-        classes. None means everything.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        parser = EntryPoint(cls.get_class_parameters(), strict=False)
+        opt, unknown_opt = parser.parse(*args, **kwargs)
+        return cls._get_class(opt), unknown_opt
 
     @classmethod
-    def get_correctors_variables(cls, frm=None, to=None, classes=None):
-        """
-        Returns the set of corrector variables between frm and to, with classes
-        in classes. None means select all.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+    def _get_class(cls, opt):
+        """ Actual get_class function """
+        new_class = cls
+        return new_class
 
     @classmethod
     def get_element_types_mask(cls, list_of_elements, types):
@@ -238,20 +244,30 @@ class Accelerator(object):
             Boolean array of elements of specified kinds.
 
         """
-        re_dict = {
-            "bpm": r".*",
-            "magnet": r".*",
-            "arc_bpm": r".*",
-        }
-
-        unknown_elements = [ty for ty in types if ty not in re_dict]
+        unknown_elements = [ty for ty in types if ty not in cls.RE_DICT]
         if len(unknown_elements):
             raise TypeError("Unknown element(s): '{:s}'".format(str(unknown_elements)))
         series = pd.Series(list_of_elements)
-        mask = series.str.match(re_dict[types[0]], case=False)
+        mask = series.str.match(cls.RE_DICT[types[0]], case=False)
         for ty in types[1:]:
-            mask = mask | series.str.match(re_dict[ty], case=False)
+            mask = mask | series.str.match(cls.RE_DICT[ty], case=False)
         return mask.values
+
+    @classmethod
+    def get_variables(cls, frm=None, to=None, classes=None):
+        """
+        Gets the variables with elements in the given range and the given
+        classes. None means everything.
+        """
+        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+
+    @classmethod
+    def get_correctors_variables(cls, frm=None, to=None, classes=None):
+        """
+        Returns the set of corrector variables between frm and to, with classes
+        in classes. None means select all.
+        """
+        raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     # Instance methods ########################################
 
@@ -275,12 +291,6 @@ class Accelerator(object):
     def get_important_phase_advances(self):
         return []
     
-    def get_exciter_name(self, plane):
-        """
-        Returns the name of the exciter.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
     def get_model_tfs(self):
         return self._model
 
