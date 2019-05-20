@@ -368,19 +368,6 @@ class Lhc(Accelerator):
         return os.path.join(correctors_dir,
                             "corrector_elems_b" + str(cls.get_beam()) + ".tfs")
 
-    @property
-    def excitation(self):
-        return self._excitation
-
-    @excitation.setter
-    def excitation(self, excitation_mode):
-        if excitation_mode not in (AccExcitationMode.FREE,
-                                   AccExcitationMode.ACD,
-                                   AccExcitationMode.ADT):
-            raise ValueError("Wrong excitation mode.")
-        self._excitation = excitation_mode
-
-
     def get_exciter_bpm(self, plane, commonbpms):
         beam = self.get_beam()
         adt = 'H.C' if plane == "X" else 'V.B'

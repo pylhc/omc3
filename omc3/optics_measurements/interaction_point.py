@@ -34,7 +34,7 @@ def betastar_from_phase(meas_input, phase_d):
     try:
         ips = list(accel.get_ips())
     except AttributeError:
-        LOGGER.debug(f"Accelerator {accel.__name__} has not get_ips method.")
+        LOGGER.debug(f"Accelerator {type(accel).__name__} has not get_ips method.")
         return None
     rows = []
     for ip_name, bpml, bpmr in ips:

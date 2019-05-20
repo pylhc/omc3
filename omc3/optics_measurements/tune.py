@@ -25,7 +25,7 @@ def calculate(measure_input, input_files):
         if accelerator.excitation:
             tune_d[plane]["QM"] = accelerator.drv_tune_x if plane is "X" else accelerator.drv_tune_y
             tune_d[plane]["QF"] = tune_d[plane]["Q"] - tune_d[plane]["QM"] + tune_d[plane]["QFM"]
-        tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
+            tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
             input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0, how='inner'),
             plane, measure_input.accelerator)
     return tune_d
