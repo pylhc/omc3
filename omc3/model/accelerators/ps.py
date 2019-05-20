@@ -22,16 +22,8 @@ class Ps(Accelerator):
         pass
 
     @classmethod
-    def get_nominal_tmpl(cls):
-        return os.path.join(PS_DIR, "nominal.madx")
-
-    @classmethod
     def get_ps_dir(cls):
         return os.path.join(PS_DIR, str(cls.YEAR))
-
-    @classmethod
-    def get_iteration_tmpl(cls):
-        return cls.get_file("template.iterate.madx")
 
     @classmethod
     def get_segment_tmpl(cls):

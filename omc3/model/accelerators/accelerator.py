@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import tfs
 from utils import logging_tools
+
 LOGGER = logging_tools.get_logger(__name__)
 
 
@@ -16,6 +17,14 @@ class Accelerator(object):
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
     RE_DICT = {"bpm": r".*", "magnet": r".*", "arc_bpm": r".*"}
+    MODIFIERS_MADX = "modifiers.madx"
+    ELEMENTS_CENTRE_DAT = "twiss_elements_centre.dat"
+    TWISS_BEST_KNOWLEDGE_DAT = "twiss_best_knowledge.dat"
+    TWISS_ADT_DAT = "twiss_adt.dat"
+    TWISS_AC_DAT = "twiss_ac.dat"
+    TWISS_ELEMENTS_DAT = "twiss_elements.dat"
+    TWISS_DAT = "twiss.dat"
+    ERROR_DEFFS_TXT = "error_deffs.txt"
 
     @staticmethod
     def get_instance_parameters():
@@ -119,11 +128,11 @@ class Accelerator(object):
         LOGGER.debug("Creating accelerator instance from model dir")
         self.model_dir = model_dir
 
-        LOGGER.debug("  model path = " + os.path.join(model_dir, "twiss.dat"))
+        LOGGER.debug("  model path = " + os.path.join(model_dir, self.TWISS_DAT))
         try:
-            self._model = tfs.read(os.path.join(model_dir, "twiss.dat"), index="NAME")
+            self._model = tfs.read(os.path.join(model_dir, self.TWISS_DAT), index="NAME")
         except IOError:
-            self._model = tfs.read(os.path.join(model_dir, "twiss_elements.dat"), index="NAME")
+            self._model = tfs.read(os.path.join(model_dir, self.TWISS_ELEMENTS_DAT), index="NAME")
             bpm_index = [idx for idx in self._model.index.values if idx.startswith("B")]
             self._model = self._model.loc[bpm_index, :]
         self.nat_tune_x = float(self._model.headers["Q1"])
@@ -135,8 +144,8 @@ class Accelerator(object):
         self.drv_tune_y = None
         self._excitation = AccExcitationMode.FREE
 
-        ac_filename = os.path.join(model_dir, "twiss_ac.dat")
-        adt_filename = os.path.join(model_dir, "twiss_adt.dat")
+        ac_filename = os.path.join(model_dir, self.TWISS_AC_DAT)
+        adt_filename = os.path.join(model_dir, self.TWISS_ADT_DAT)
 
         if os.path.isfile(ac_filename):
             self._model_driven = tfs.read(ac_filename, index="NAME")
@@ -156,18 +165,18 @@ class Accelerator(object):
 
         # Best Knowledge #####################################
         self._model_best_knowledge = None
-        best_knowledge_path = os.path.join(model_dir, "twiss_best_knowledge.dat")
+        best_knowledge_path = os.path.join(model_dir, self.TWISS_BEST_KNOWLEDGE_DAT)
         if os.path.isfile(best_knowledge_path):
             self._model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
 
         # Elements #####################################
-        elements_path = os.path.join(model_dir, "twiss_elements.dat")
+        elements_path = os.path.join(model_dir, self.TWISS_ELEMENTS_DAT)
         if os.path.isfile(elements_path):
             self._elements = tfs.read(elements_path, index="NAME")
         else:
             raise AcceleratorDefinitionError("Elements twiss not found")
 
-        center_path = os.path.join(model_dir, "twiss_elements_centre.dat")
+        center_path = os.path.join(model_dir, self.ELEMENTS_CENTRE_DAT)
         if os.path.isfile(center_path):
             self._elements_centre = tfs.read(center_path, index="NAME")
         else:
@@ -175,13 +184,13 @@ class Accelerator(object):
 
         # Optics File #########################################
         self.optics_file = None
-        opticsfilepath = os.path.join(self.model_dir, "modifiers.madx")
+        opticsfilepath = os.path.join(self.model_dir, self.MODIFIERS_MADX)
         if os.path.exists(opticsfilepath):
             self.optics_file = opticsfilepath
 
         # Error Def #####################################
         self._errordefspath = None
-        errordefspath = os.path.join(self.model_dir, "error_deffs.txt")
+        errordefspath = os.path.join(self.model_dir, self.ERROR_DEFFS_TXT)
         if os.path.exists(errordefspath):
             self._errordefspath = errordefspath
 
@@ -310,13 +319,6 @@ class Accelerator(object):
     def get_elements_centre_tfs(self):
         return self._elements_centre
 
-    def get_errordefspath(self):
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    def set_errordefspath(self, path):
-        # TODO: Jaime, are there virtual members for python base classes?
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
     @property
     def excitation(self):
         return self._excitation
@@ -329,15 +331,26 @@ class Accelerator(object):
             raise ValueError("Wrong excitation mode.")
         self._excitation = excitation_mode
 
-    # Templates ##############################################################
+    def get_errordefspath(self):
+        """Returns the path to the uncertainty definitions file (formerly called error definitions file.
+        """
+        if self._errordefspath is None:
+            raise AttributeError("No error definitions file given in this accelerator instance.")
+        return self._errordefspath
 
+    def set_errordefspath(self, path):
+        self._errordefspath = path
+
+
+    # Templates ##############################################################
     @classmethod
     def get_nominal_tmpl(cls):
-        """
-        Returns template for nominal model (Model Creator)
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        """ Returns template for nominal model (Model Creator) """
+        return cls.get_file("nominal.madx")
 
+    @classmethod
+    def get_file(cls, filename):
+        raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     @classmethod
     def get_iteration_tmpl(cls):
@@ -345,7 +358,7 @@ class Accelerator(object):
         Returns template to create fullresponse.
         TODO: only in _prepare_fullresponse in creator! Needs to be replaced by get_basic_seq
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        return cls.get_file("template.iterate.madx")
 
     # Jobs ###################################################################
 

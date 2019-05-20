@@ -68,13 +68,10 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     Calculates betas and alphas from using all BPM combination within range_of_bpms,
     it also accounts for systematic errors
     Args:
-        bk_model: Best knowledge model tfs
-        elements: Model with all necessary elements and errors
+        meas_input: Optics measurement configuration object
         phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
         plane: plane either X or Y
-        range_of_bpms: size of a range centered at probed BPM
-        meas_and_mdl_tunes: measured  and model tunes
-        beta_df: tfs skeleton
+        meas_and_mdl_tunes: measured and model tunes
 
     Returns:
         tfs.DataFrame containing betas and alfas from phase
@@ -384,10 +381,10 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     for the combination xxBABxx: second row of ``cot_phase_*_shift2``
 
         Args:
+            meas_input: Optics measurement configuration object
             phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
             plane: plane either X or Y
             meas_and_mdl_tunes: measured  and model tunes
-            beta_df: tfs skeleton
 
         Returns:
             tfs.DataFrame containing betas and alfas from phase

@@ -40,16 +40,8 @@ class Psbooster(Accelerator):
         pass
 
     @classmethod
-    def get_nominal_tmpl(cls):
-        return os.path.join(PSB_DIR, "nominal.madx")
-
-    @classmethod
     def get_segment_tmpl(cls):
         return cls.get_file("segment.madx")
-
-    @classmethod
-    def get_iteration_tmpl(cls):
-        return cls.get_file("template.iterate.madx")
 
     @classmethod
     def get_corrtest_tmpl(cls):
@@ -63,13 +55,15 @@ class Psbooster(Accelerator):
     def get_file(cls, filename):
         return os.path.join(CURRENT_DIR, "psbooster", filename)
 
+    def get_beam_direction(self):
+        return 1
+
 
 class _PsboosterSegmentMixin(object):
 
-   def __init__(self):
-       self._start = None
-       self._end = None
-
+    def __init__(self):
+        self._start = None
+        self._end = None
 
     # Private Methods ##########################################################
 

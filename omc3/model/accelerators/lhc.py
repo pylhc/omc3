@@ -107,10 +107,6 @@ class Lhc(Accelerator):
 
 
     @classmethod
-    def get_nominal_tmpl(cls):
-        return cls.get_file("nominal.madx")
-
-    @classmethod
     def get_nominal_multidpp_tmpl(cls):
         return cls.get_file("nominal_multidpp.madx")
     
@@ -125,10 +121,6 @@ class Lhc(Accelerator):
     @classmethod
     def get_segment_tmpl(cls):
         return cls.get_file("segment.madx")
-
-    @classmethod
-    def get_iteration_tmpl(cls):
-        return cls.get_file("template.iterate.madx")
 
     @classmethod
     def get_basic_seq_tmpl(cls):
@@ -396,16 +388,6 @@ class Lhc(Accelerator):
         if self.get_beam() == 1:
             return [["MKD.O5L6.B1", "TCTPH.4L1.B1"],
                     ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
-
-    def get_errordefspath(self):
-        """Returns the path to the uncertainty definitions file (formerly called error definitions file.
-        """
-        if self._errordefspath is None:
-            raise AttributeError("No error definitions file given in this accelerator instance.")
-        return self._errordefspath
-
-    def set_errordefspath(self, path):
-        self._errordefspath = path
 
     def get_synch_BPMs(self, index):
         # expect passing index.values
