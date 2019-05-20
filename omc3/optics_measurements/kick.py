@@ -60,8 +60,9 @@ def _getkick(measure_input, files, plane):
         out[i, 1] = df["DPPAMP"]
         out[i, 2] = df[f"Q{PLANE_TO_NUM[plane]}"]
         out[i, 3] = df[f"Q{PLANE_TO_NUM[plane]}RMS"]
-        out[i, 4] = df[f"NATQ{PLANE_TO_NUM[plane]}"]
-        out[i, 5] = df[f"NATQ{PLANE_TO_NUM[plane]}RMS"]
+        if f"NATQ{PLANE_TO_NUM[plane]}" in df.headers.keys():
+            out[i, 4] = df[f"NATQ{PLANE_TO_NUM[plane]}"]
+            out[i, 5] = df[f"NATQ{PLANE_TO_NUM[plane]}RMS"]
         out[i, 6:] = _gen_kick_calc(measure_input, df, plane)
     return out
 

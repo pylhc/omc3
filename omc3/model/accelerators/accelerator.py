@@ -317,6 +317,18 @@ class Accelerator(object):
         # TODO: Jaime, are there virtual members for python base classes?
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
+    @property
+    def excitation(self):
+        return self._excitation
+
+    @excitation.setter
+    def excitation(self, excitation_mode):
+        if excitation_mode not in (AccExcitationMode.FREE,
+                                   AccExcitationMode.ACD,
+                                   AccExcitationMode.ADT):
+            raise ValueError("Wrong excitation mode.")
+        self._excitation = excitation_mode
+
     # Templates ##############################################################
 
     @classmethod
