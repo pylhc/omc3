@@ -199,6 +199,7 @@ def _calculate_dp(model, disp, plane):
 def _get_merged_df(meas_input, input_files, plane, meas_columns):
     model = meas_input.accelerator.get_model_tfs()
     df = pd.DataFrame(model).loc[:, ["S", plane, f"D{plane}", f"DP{plane}", f"MU{plane}", f"BET{plane}", f"DD{plane}"]]
+    # TODO often missing second order dispersion causes FutureWarning in future will be KeyError
     df.rename(columns={plane: f"{plane}{MDL}", f"D{plane}": f"D{plane}{MDL}", f"DP{plane}": f"DP{plane}{MDL}",
                        f"MU{plane}": f"MU{plane}{MDL}", f"BET{plane}": f"BET{plane}{MDL}", f"DD{plane}": f"D2{plane}{MDL}"}, inplace=True)
     if not meas_input.second_order_dispersion:

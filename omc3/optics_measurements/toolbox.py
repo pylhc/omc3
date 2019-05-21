@@ -2,27 +2,15 @@ import numpy as np
 
 
 def df_diff(df, a_col, b_col):
-    return _diff(df.loc[:, a_col].values, df.loc[:, b_col].values)
-
-
-def _diff(a, b):
-    return a - b
+    return df.loc[:, a_col].values - df.loc[:, b_col].values
 
 
 def df_ratio(df, a_col, b_col):
-    return _ratio(df.loc[:, a_col].values, df.loc[:, b_col].values)
-
-
-def _ratio(a, b):
-    return a / b
+    return df.loc[:, a_col].values / df.loc[:, b_col].values
 
 
 def df_rel_diff(df, a_col, b_col):
-    return _rel_diff(df.loc[:, a_col].values, df.loc[:, b_col].values)
-
-
-def _rel_diff(a, b):
-    return (a / b) - 1
+    return (df.loc[:, a_col].values / df.loc[:, b_col].values) - 1
 
 
 def df_ang_diff(df, a_col, b_col):
