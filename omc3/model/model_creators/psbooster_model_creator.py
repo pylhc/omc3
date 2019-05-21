@@ -86,7 +86,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
         file_name = "error_deff_ring" + str(instance.get_ring()) + ".txt"
         file_path = instance.get_psb_dir()
         src_path = os.path.join(file_path, file_name)
-        dest_path = os.path.join(output_path, "error_deff.txt")
+        dest_path = os.path.join(output_path, "error_deffs.txt")
 
         shutil.copy(src_path, dest_path)
 

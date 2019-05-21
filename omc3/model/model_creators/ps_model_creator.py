@@ -72,7 +72,7 @@ class PsModelCreator(model_creator.ModelCreator):
         
         # get path of file from PS model directory (without year at the end)
         src_path = instance.get_file("error_deff.txt")
-        dest_path = os.path.join(output_path, "error_deff.txt")
+        dest_path = os.path.join(output_path, "error_deffs.txt")
         #print("error file: src=%s dst=%s"%(src_path,dest_path))
         shutil.copy(src_path, dest_path)
 
