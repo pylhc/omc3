@@ -5,7 +5,7 @@ Created on 2017
 
 :author: Elena Fol, Lukas Malina
 
-Arranges \frac{\Delta p}{p} of given files
+Arranges dp over p of given files
 """
 
 import logging
@@ -90,6 +90,7 @@ def calculate_amp_dpoverp(input_files, meas_input):
     df_orbit = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['AMPX', 'AMPZ']), how='inner',
                         left_index=True, right_index=True)
+    # TODO often missing AMPZ causes FutureWarning in future will be KeyError
     if np.all(np.isnan(input_files.get_data(df_orbit, "AMPZ"))):
         return np.zeros(len(input_files["X"]))
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
