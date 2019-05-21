@@ -145,6 +145,10 @@ class Lhc(Accelerator):
             )
 
     @classmethod
+    def get_lhc_error_dir(cls):
+        return os.path.join(LHC_DIR, "systematic_errors")
+
+    @classmethod
     def get_variables(cls, frm=None, to=None, classes=None):
         correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")
         all_corrs = _merge_jsons(
