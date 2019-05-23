@@ -41,7 +41,7 @@ def get_filter_mask(data, x_data=None, limit=0.0, niter=20, nsig=None, mask=None
         else:
             y, y_orig = _get_data_without_slope(mask, x_data, data)
         avg, std = _get_moments(y)
-        mask = np.abs(y_orig - avg) < np.max([limit, nsig * std])
+        mask = np.logical_and(mask,np.abs(y_orig - avg) < np.max([limit, nsig * std]))
     return mask
 
 

@@ -21,6 +21,7 @@ To run either of the two or both steps, use options:
                           --harpy                     --optics
 """
 from os.path import join, dirname, basename, abspath
+from copy import deepcopy
 import tbt
 from utils import logging_tools, iotools
 from parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
@@ -245,7 +246,8 @@ def _get_suboptions(opt, rest):
         if opt.optics:
             rest = add_to_arguments(rest, entry_params=optics_params(),
                                     files=harpy_opt.files,
-                                    outputdir=join(harpy_opt.outputdir, 'optics'))
+                                    outputdir=harpy_opt.outputdir)
+            harpy_opt.outputdir = join(harpy_opt.outputdir, 'lin_files')
             rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
                                     model_dir=dirname(abspath(harpy_opt.model)))
     else:
@@ -254,6 +256,9 @@ def _get_suboptions(opt, rest):
         optics_opt, rest = _optics_entrypoint(rest)
         from model import manager
         optics_opt.accelerator = manager.get_accel_instance(rest)
+        if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
+            raise AttributeError("Compensation requested and no driven model was provided.")
+
     else:
         optics_opt = None
     return harpy_opt, optics_opt
@@ -275,9 +280,8 @@ def _run_harpy(harpy_options):
 
 def _replicate_harpy_options_per_file(options):
     list_of_options = []
-    from copy import copy
     for input_file in options.files:
-        new_options = copy(options)
+        new_options = deepcopy(options)
         new_options.files = input_file
         list_of_options.append(new_options)
     return list_of_options
@@ -287,9 +291,8 @@ def _multibunch(options, tbt_datas):
     if tbt_datas.nbunches == 1:
         yield options, tbt_datas
         return
-    from copy import copy
     for index in range(tbt_datas.nbunches):
-        new_options = copy(options)
+        new_options = deepcopy(options)
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
         yield new_options, tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
@@ -300,12 +303,13 @@ def _measure_optics(lins, optics_opt):
     from optics_measurements import measure_optics
     if len(lins) == 0:
         lins = optics_opt.files
-    inputs = measure_optics.InputFiles(lins)
+    inputs = measure_optics.InputFiles(lins, optics_opt)
     iotools.create_dirs(optics_opt.outputdir)
     calibrations = measure_optics.copy_calibration_files(optics_opt.outputdir,
                                                          optics_opt.calibrationdir)
     inputs.calibrate(calibrations)
-    measure_optics.measure_optics(inputs, optics_opt)
+    with timeit(lambda spanned: LOGGER.info(f"Total time for optics measurements: {spanned}")):
+        measure_optics.measure_optics(inputs, optics_opt)
 
 
 def _harpy_entrypoint(params):
@@ -446,6 +450,17 @@ def optics_params():
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(flags="--only_coupling", name="only_coupling", action="store_true",
                          help="Calculate only coupling. ")
+    params.add_parameter(flags="--compensation", name="compensation", type=str,
+                         choices=("model", "equation", "none"), default=OPTICS_DEFAULTS["compensation"],
+                         help="Mode of compensation for the analysis after driven beam excitation")
+    params.add_parameter(flags="--three_d_excitation", name="three_d_excitation",
+                         action="store_true", help="Use 3D kicks to calculate dispersion")
+    params.add_parameter(flags="--isolation_forest", name="isolation_forest", action="store_true",
+                         help="Remove outlying BPMs with isolation forest")
+    params.add_parameter(flags="--second_order_dispersion", name="second_order_dispersion",
+                         action="store_true", help="Calculate second order dispersion")
+    params.add_parameter(flags="--chromatic_beating", name="chromatic_beating",
+                         action="store_true", help="Calculate chromatic beatings: W, PHI and coupling")
     return params
 
 
@@ -469,6 +484,7 @@ OPTICS_DEFAULTS = {
         "coupling_method": 2,
         "range_of_bpms": 11,
         "max_beta_beating": 0.15,
+        "compensation": "model",
 }
 
 if __name__ == "__main__":

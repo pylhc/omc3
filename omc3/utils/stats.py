@@ -187,7 +187,8 @@ def weights_from_errors(errors, period=PI2):
 
 def effective_sample_size(data, weights, axis=None):
     """
-    Computes effective sample size of weighted data along specifies axis
+    Computes effective sample size of weighted data along specifies axis,
+    the minimum value returned is 2 to avoid non-reasonable error blow-up
 
     Parameters:
         data: array-like
@@ -200,8 +201,10 @@ def effective_sample_size(data, weights, axis=None):
         Returns the error of weighted circular average along the specified axis.
     """
     if weights is None:
-        return np.sum(np.ones(data.shape), axis=axis)
-    return np.square(np.sum(weights, axis=axis)) / np.sum(np.square(weights), axis=axis)
+        sample_size = np.sum(np.ones(data.shape), axis=axis)
+    else:
+        sample_size = np.square(np.sum(weights, axis=axis)) / np.sum(np.square(weights), axis=axis)
+    return np.where(sample_size > 2, sample_size, 2)
 
 
 def unbias_variance(data, weights, axis=None):
@@ -229,6 +232,8 @@ def t_value_correction(sample_size):
     """
     Calculates the multiplicative correction factor to determine standard deviation of normally
     distributed quantity from standard deviation of its finite-sized sample
+    the minimum allowed sample size is 2 to avoid non-reasonable error blow-up
+    for smaller sample sizes 2 is used instead
 
     Args:
         sample_size: array-like
@@ -237,4 +242,4 @@ def t_value_correction(sample_size):
         multiplicative correction factor(s) of same shape as sample_size
             can contain nans
     """
-    return np.nan_to_num(t.ppf(CONFIDENCE_LEVEL, sample_size - 1))
+    return t.ppf(CONFIDENCE_LEVEL, np.where(sample_size > 2, sample_size, 2) - 1)
