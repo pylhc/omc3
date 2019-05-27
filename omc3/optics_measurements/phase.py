@@ -30,22 +30,25 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
 
     Returns:
         dictionary of DataFrames indexed (BPMi x BPMj) yielding phase advance phi_ij
-            "MEAS" measured phase advances
-            "ERRMEAS" errors of measured phase advances
-            "MODEL" model phase advances
 
-            +------++--------+--------+--------+--------+
-            |      ||  BPM1  |  BPM2  |  BPM3  |  BPM4  |
-            +======++========+========+========+========+
-            | BPM1 ||   0    | phi_12 | phi_13 | phi_14 |
-            +------++--------+--------+--------+--------+
-            | BPM2 || phi_21 |    0   | phi_23 | phi_24 |
-            +------++--------+--------+--------+--------+
-            | BPM3 || phi_31 | phi_32 |   0    | phi_34 |
-            +------++--------+--------+--------+--------+
+         - "MEAS" measured phase advances
+         - "ERRMEAS" errors of measured phase advances
+         - "MODEL" model phase advances
 
-            The phase advance between BPM_i and BPM_j can be obtained via:
-                phase_advances["MEAS"].loc[BPMi,BPMj]
+
+        +------++--------+--------+--------+--------+
+        |      ||  BPM1  |  BPM2  |  BPM3  |  BPM4  |
+        +======++========+========+========+========+
+        | BPM1 ||   0    | phi_12 | phi_13 | phi_14 |
+        +------++--------+--------+--------+--------+
+        | BPM2 || phi_21 |    0   | phi_23 | phi_24 |
+        +------++--------+--------+--------+--------+
+        | BPM3 || phi_31 | phi_32 |   0    | phi_34 |
+        +------++--------+--------+--------+--------+
+
+
+        The phase advance between BPM_i and BPM_j can be obtained via:
+        phase_advances["MEAS"].loc[BPMi,BPMj]
         list of output data frames(for files)
     """
     LOGGER.info("Calculating phase advances")

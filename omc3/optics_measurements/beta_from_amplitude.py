@@ -19,14 +19,18 @@ def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane
     """
     Calculates beta and fills the following TfsFiles:
         f"{AMP_BETA_NAME}{plane.lower()}{EXT}"
-    Parameters:
-        'measure_input': OpticsInput object
-        'input_files': InputFiles object contains measurement files
-        'tune_d': TuneDict contains measured tunes
-        'beta_phase': contains beta functions from measured from phase
-        'header_dict': dictionary of header items common for all output files
-        'plane': plane
+
+    Args:
+        measure_input: OpticsInput object
+        input_files: InputFiles object contains measurement files
+        tune_d: TuneDict contains measured tunes
+        beta_phase: contains beta functions from measured from phase
+        header_dict: dictionary of header items common for all output files
+        plane: plane
+
     Returns:
+
+        
     """
     beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
