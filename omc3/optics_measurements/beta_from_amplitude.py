@@ -1,11 +1,11 @@
 """
-.. module: beta_from_amplitude
+Beta from amplitude
+--------------------
 
-Created on 05/07/18
-
+:module: optics_measurements.beta_from_amplitude
 :author: Lukas Malina
 
-It computes beta from amplitude.
+Computes beta from amplitude.
 """
 from os.path import join
 import numpy as np

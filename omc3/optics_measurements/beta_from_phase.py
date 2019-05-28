@@ -1,12 +1,11 @@
 """
-Beta from Phase
+Beta from phase
 -----------------
-
 
 :module: optics_measurements.beta_from_phase
 :author: Viktor Maier, Andreas Wegscheider, Lukas Malina
 
-It computes betas and alphas from phase advances.
+Computes betas and alphas from phase advances.
 """
 import os
 import re

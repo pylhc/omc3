@@ -1,11 +1,11 @@
 """
-.. module: phase
+Phase advance
+----------------
 
-Created on 18/07/18
-
+:module: optics_measurements.phase
 :author: Lukas Malina
 
-It computes betatron phase advances and provides structures to store them.
+Computes betatron phase advances and provides structures to store them.
 """
 from os.path import join
 import numpy as np

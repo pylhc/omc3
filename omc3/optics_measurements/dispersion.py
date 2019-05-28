@@ -1,11 +1,11 @@
 """
-.. module: dispersion
+Dispersion
+----------------
 
-Created on 28/06/18
-
+:module: optics_measurements.dispersion
 :author: Lukas Malina
 
-It computes orbit, dispersion and normalised dispersion.
+Computes orbit, dispersion and normalised dispersion.
 """
 from os.path import join
 import pandas as pd
