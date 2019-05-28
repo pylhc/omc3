@@ -1,5 +1,5 @@
 """
-Module tbt.esrf_tbt
+esrf_tbt
 --------------------
 
 Data handling for tbt data from ESRF.

@@ -1,5 +1,5 @@
 """
-Module parser.dict_parser
+dict_parser
 ---------------------------
 """
 

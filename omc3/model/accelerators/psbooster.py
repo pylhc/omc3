@@ -1,3 +1,7 @@
+"""
+PS BOOSTER
+-------------------
+"""
 import os
 import re
 from model.accelerators.accelerator import Accelerator
