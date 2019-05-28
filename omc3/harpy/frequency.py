@@ -1,5 +1,5 @@
 """
-Module harpy.frequency
+frequency
 ---------------------------
 
 Calculates the frequency spectra of turn-by-turn data.

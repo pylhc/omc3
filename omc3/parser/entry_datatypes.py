@@ -1,5 +1,5 @@
 """
-Module parser.entry_datatypes
+entry_datatypes
 -----------------------------
 
 Advanced Datatypes to add as type to entrypoint. Or any parser, really.

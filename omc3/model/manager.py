@@ -1,3 +1,9 @@
+"""
+Manager
+-------------------
+
+Contains entrypoint wrappers to get accelerator classes or their instances
+"""
 from parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, split_arguments
 from model.accelerators import lhc, ps, esrf, psbooster, skekb
 

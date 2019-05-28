@@ -1,3 +1,7 @@
+"""
+Super KEK-B
+-------------------
+"""
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from utils import logging_tools
 

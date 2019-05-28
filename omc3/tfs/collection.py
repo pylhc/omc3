@@ -1,5 +1,5 @@
 """
-Module tfs.collection
+collection
 ----------------------
 
 Advanced tfs reading and writing functionality.

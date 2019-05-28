@@ -1,3 +1,9 @@
+"""
+RDTs
+-------------------
+
+Computes global resonance driving terms f_jklm.
+"""
 from os.path import join
 import numpy as np
 from copy import deepcopy

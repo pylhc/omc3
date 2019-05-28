@@ -1,5 +1,5 @@
 """
-Module sdds.reader
+reader
 -------------------
 
 Read sdds files.

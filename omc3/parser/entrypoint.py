@@ -1,5 +1,5 @@
 """
-Module parser.entrypoint
+entrypoint
 --------------------------
 
 Entry Point Parser and Decorator.
