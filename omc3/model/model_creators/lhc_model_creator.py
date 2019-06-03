@@ -1,29 +1,14 @@
 import logging
 import os
 import sys
-
+import shutil
 from model.model_creators import model_creator
 from model.accelerators.accelerator import AccExcitationMode
-
-AFS_ROOT = "/afs"
-if "win" in sys.platform and sys.platform != "darwin":
-    AFS_ROOT = "\\AFS"
 
 LOGGER = logging.getLogger(__name__)
 
 
 class LhcModelCreator(model_creator.ModelCreator):
-    ERR_DEF_PATH = os.path.join(AFS_ROOT, "cern.ch", "work", "o", "omc",
-                                "Error_definition_files")
-    ERR_DEF_FILES = {
-        "0.45": "0450GeV", "1.0": "1000GeV",
-        "1.5": "1500GeV", "2.0": "2000GeV",
-        "2.5": "2500GeV", "3.0": "3000GeV",
-        "3.5": "3500GeV", "4.0": "4000GeV",
-        "4.5": "4500GeV", "5.0": "5000GeV",
-        "5.5": "5500GeV", "6.0": "6000GeV",
-        "6.5": "6500GeV",
-    }
 
     @classmethod
     def get_madx_script(cls, lhc_instance, output_path):
@@ -66,15 +51,12 @@ class LhcModelCreator(model_creator.ModelCreator):
         if lhc_instance.fullresponse:
             cls._prepare_fullresponse(lhc_instance, output_path)
         if lhc_instance.energy is not None:
-            file_name = cls.ERR_DEF_FILES[str(lhc_instance.energy)]
-            file_path = os.path.join(cls.ERR_DEF_PATH, file_name)
-            # TODO: Windows?
-            link_path = os.path.join(output_path, "error_deff.txt")
-            try:
-                os.unlink(link_path)
-            except OSError:
-                pass
-            os.symlink(file_path, link_path)
+            file_name = f"{int(lhc_instance.energy*1000):04d}GeV.tfs"
+            file_path = lhc_instance.get_lhc_error_dir()
+            src_path = os.path.join(file_path, file_name)
+            dest_path = os.path.join(output_path, "error_deffs.txt")
+            shutil.copy(src_path, dest_path)
+
 
     @classmethod
     def _prepare_fullresponse(cls, lhc_instance, output_path):

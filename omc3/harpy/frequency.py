@@ -15,11 +15,10 @@ LOGGER = logging_tools.getLogger(__name__)
 PI2I = 2 * np.pi * complex(0, 1)
 
 RESONANCES = {
-    "X": ((0, 1, 0), (-2, 0, 0), (0, 2, 0), (-3, 0, 0), (-1, -1, 0),
-          (2, -2, 0), (0, -2, 0), (1, -2, 0), (-1, 3, 0), (1, 2, 0),
-          (-2, 1, 0), (1, 1, 0), (2, 0, 0), (-1, -2, 0), (3, 0, 0)),
-    "Y": ((1, 0, 0), (-1, 1, 0), (-2, 0, 0), (1, -1, 0), (0, -2, 0),
-          (0, -3, 0), (2, 1, 0), (-1, 3, 0), (1, 1, 0), (-1, 2, 0)),
+    "X": ((2, 0, 0), (3, 0, 0), (0, 1, 0), (0, 2, 0), (1, 1, 0), (1, -1, 0),
+          (1, 2, 0), (1, -2, 0), (1, -3, 0), (2, -2, 0), (2, -1, 0)),
+    "Y": ((0, 2, 0), (0, 3, 0), (1, 0, 0), (2, 0, 0), (1, 1, 0), (1, -1, 0),
+          (1, -2, 0), (1, -3, 0), (2, -1, 0), (2, 1, 0)),
     "Z": ((1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1))
 }
 
@@ -204,7 +203,8 @@ def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     max_indices = np.argmax(filtered_amps, axis=1)
     max_coefs = filtered_coefs[np.arange(coefs_vals.shape[0]), max_indices]
     max_coefs = pd.Series(index=coefficients.index, data=max_coefs)
-    max_freqs = freq_vals[np.arange(freq_vals.shape[0]), max_indices]
+    max_pfreqs = freq_vals[np.arange(freq_vals.shape[0]), max_indices]
+    max_freqs = max_pfreqs if freq < 0.5 else 1 - max_pfreqs
     max_freqs = pd.Series(index=coefficients.index, data=np.where(max_coefs != 0, max_freqs, 0))
     return max_coefs, max_freqs
 

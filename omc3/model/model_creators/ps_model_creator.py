@@ -1,17 +1,21 @@
 from model.model_creators import model_creator
+from model.accelerators.accelerator import AccExcitationMode
 import os
 import logging
 import shutil
 
 LOGGER = logging.getLogger("__name__")
 
+
 class PsModelCreator(model_creator.ModelCreator):
 
     @classmethod
     def get_madx_script(cls, instance, output_path):
+        use_acd = "1" if (instance.excitation ==
+                          AccExcitationMode.ACD) else "0"
         replace_dict = {
             "FILES_DIR": instance.get_ps_dir(),
-            "USE_ACD": 1 if instance.acd else 0,
+            "USE_ACD": use_acd,
             "NAT_TUNE_X": instance.nat_tune_x,
             "NAT_TUNE_Y": instance.nat_tune_y,
             "KINETICENERGY": instance.energy,
@@ -21,26 +25,17 @@ class PsModelCreator(model_creator.ModelCreator):
             "DRV_TUNE_Y": "",
             "OPTICS_PATH": instance.optics_file,
         }
-        LOGGER.info("instance name <%s>", instance.NAME)
-
-        
-        if instance.acd:
+        LOGGER.info(f"instance name {instance.NAME}")
+        if use_acd:
             replace_dict["DRV_TUNE_X"] = instance.drv_tune_x
             replace_dict["DRV_TUNE_Y"] = instance.drv_tune_y
-            LOGGER.debug("ACD is ON. Driven tunes %f %f",replace_dict["DRV_TUNE_X"], replace_dict["DRV_TUNE_Y"])
+            LOGGER.debug(f"ACD is ON. Driven tunes {replace_dict['DRV_TUNE_X']}, {replace_dict['DRV_TUNE_Y']}")
         else:
             LOGGER.debug("ACD is OFF")
 
         with open(instance.get_nominal_tmpl()) as textfile:
             madx_template = textfile.read()
-        
-        #print(replace_dict)
-        #print(madx_template)
-        
         out = madx_template % replace_dict
-        
-        #print(out)
-        
         return out
     
     @classmethod
@@ -48,7 +43,6 @@ class PsModelCreator(model_creator.ModelCreator):
         with open(instance.get_iteration_tmpl()) as textfile:
             iterate_template = textfile.read()
 
-       
         replace_dict = {
             "FILES_DIR": instance.get_ps_dir(),
             "LIB": instance.MACROS_NAME,
@@ -72,17 +66,15 @@ class PsModelCreator(model_creator.ModelCreator):
         
         # get path of file from PS model directory (without year at the end)
         src_path = instance.get_file("error_deff.txt")
-        dest_path = os.path.join(output_path, "error_deff.txt")
-        #print("error file: src=%s dst=%s"%(src_path,dest_path))
+        dest_path = os.path.join(output_path, "error_deffs.txt")
         shutil.copy(src_path, dest_path)
+
 
 class PsSegmentCreator(model_creator.ModelCreator):
     @classmethod
     def get_madx_script(cls, instance, output_path):
-        """ instance is Ps class
-        """
-        
-        LOGGER.info('instance.energy %f',instance.energy)
+        """ instance is Ps class"""
+        LOGGER.info(f"instance.energy {instance.energy}")
         
         with open(instance.get_segment_tmpl()) as textfile:
             madx_template = textfile.read()
@@ -100,4 +92,4 @@ class PsSegmentCreator(model_creator.ModelCreator):
         }
         madx_script = madx_template % replace_dict
         return madx_script
-            
+

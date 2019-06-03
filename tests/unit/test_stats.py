@@ -36,9 +36,8 @@ def test_one_important_number(some_numbers):
     errors = np.ones(10)
     errors[1:] = np.inf
     assert stats.circular_mean(some_numbers, errors=errors) == some_numbers[0]
-    with pytest.warns(RuntimeWarning):
-        assert stats.circular_error(some_numbers, errors=errors, t_value_corr=False) ==\
-               stats.circular_error(errors[0], errors=1., t_value_corr=False)
+    assert stats.circular_error(some_numbers, errors=errors, t_value_corr=False) ==\
+           stats.circular_error(errors[0], errors=1., t_value_corr=False)
 
 
 def test_mean_fall_back_to_linear():

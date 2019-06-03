@@ -11,131 +11,98 @@ from os.path import join
 import numpy as np
 import pandas as pd
 import tfs
-from optics_measurements.compensate_excitation import get_lambda
+from optics_measurements.toolbox import df_rel_diff, df_ratio
+from optics_measurements.constants import AMP_BETA_NAME, EXT, ERR, DELTA, MDL, RES
 
 
-def calculate_beta_from_amplitude(measure_input, input_files, tune_dict, phase_dict, beta_phase, header_dict):
+def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane):
     """
     Calculates beta and fills the following TfsFiles:
-        getampbetax.out        getampbetax_free.out        getampbetax_free2.out
-        getampbetay.out        getampbetay_free.out        getampbetay_free2.out
-
+        f"{AMP_BETA_NAME}{plane.lower()}{EXT}"
     Parameters:
         'measure_input': OpticsInput object
         'input_files': InputFiles object contains measurement files
         'tune_d': TuneDict contains measured tunes
-        'phase_d': PhaseDict contains measured phase advances
         'beta_phase': contains beta functions from measured from phase
         'header_dict': dictionary of header items common for all output files
-
+        'plane': plane
     Returns:
     """
-    mad_twiss = measure_input.accelerator.get_model_tfs()
-    if measure_input.accelerator.excitation:
-        mad_ac = measure_input.accelerator.get_driven_tfs()
-    else:
-        mad_ac = mad_twiss
-    ratios = {}
-    for plane in ['X', 'Y']:
-        beta_amp = beta_from_amplitude(measure_input, input_files, mad_ac, plane)
-        ratio = pd.merge(beta_phase[plane].loc[:, ['BET' + plane]], beta_amp.loc[:, ['BET' + plane]],
-                         how='inner', left_index=True, right_index=True, suffixes=('phase', 'amp'))
-        ratio['Ratio'] = ratio.loc[:, 'BET' + plane + 'phase'].values / ratio.loc[:, 'BET' + plane + 'amp'].values
-        mask = (np.array(0.1 < np.abs(ratio.loc[:, 'Ratio'].values)) &
-                np.array(np.abs(ratio.loc[:, 'Ratio'].values) < 10.0) &
-                np.array(measure_input.accelerator.get_element_types_mask(ratio.index, ["arc_bpm"])))
-        x_ratio = np.mean(ratio.loc[mask, 'Ratio'].values)
-        beta_amp['BET' + plane + 'RES'] = beta_amp.loc[:, 'BET' + plane] * x_ratio
-        beta_amp['BET' + plane + 'STDRES'] = beta_amp.loc[:, 'BET' + plane + 'STD'] * x_ratio
-        header_d = _get_header(header_dict, tune_dict, np.std(
-            beta_amp.loc[:, 'DELTABET' + plane].values), x_ratio, 'getampbeta' + plane.lower() + '.out', free=False)
-        tfs.write(join(measure_input.outputdir, header_d['FILENAME']), beta_amp, header_d, save_index='NAME')
-        ratios[plane] = x_ratio
-        # -- ac to free amp beta
-        if measure_input.accelerator.excitation:
-            beta_amp_f = beta_from_amplitude(measure_input, input_files, mad_twiss, plane,
-                                             (tune_dict[plane]["Q"], tune_dict[plane]["QF"], phase_dict[plane]["ac2bpm"]))
-            x_ratio_f = x_ratio
-            header_f = _get_header(header_dict, tune_dict, np.std(
-                    beta_amp_f.loc[:, 'DELTABET' + plane].values), x_ratio_f,
-                                   'getampbeta' + plane.lower() + '_free.out', free=True)
-
-            beta_amp_f['BET' + plane + 'RES'] = beta_amp_f.loc[:, 'BET' + plane] * x_ratio_f
-            beta_amp_f['BET' + plane + 'STDRES'] = beta_amp_f.loc[:, 'BET' + plane + 'STD'] * x_ratio_f
-            tfs.write(join(measure_input.outputdir, header_f['FILENAME']), beta_amp_f, header_f, save_index='NAME')
-            # FREE2 calculation
-            beta_amp_f2 = pd.DataFrame(beta_amp)
-            beta_amp_f2['BET' + plane] = _get_free_amp_beta(beta_amp_f2.loc[:, ['BET' + plane]],
-                                                            mad_ac, mad_twiss, plane)
-            beta_amp_f2['BET' + plane + 'RES'] = _get_free_amp_beta(
-                    beta_amp_f2.loc[:, ['BET' + plane + 'RES']].rename(
-                        columns={'BET' + plane + 'RES': 'BET' + plane}), mad_ac, mad_twiss, plane)
-            header_f2 = _get_header(header_dict, tune_dict, np.std(
-                    beta_amp_f2.loc[:, 'DELTABET' + plane].values), x_ratio,
-                                    'getampbeta' + plane.lower() + '_free2.out', free=True)
-            tfs.write(join(measure_input.outputdir, header_f2['FILENAME']), beta_amp_f2, header_f2)
-    return ratios
+    beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
+    x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
+    beta_amp = add_rescaled_beta_columns(beta_amp, x_ratio, plane)
+    header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].values), x_ratio)
+    tfs.write(join(meas_input.outputdir, f"{AMP_BETA_NAME}{plane.lower()}{EXT}"), beta_amp, header_d, save_index='NAME')
+    return x_ratio
 
 
-def _get_free_amp_beta(df_meas,  mad_ac, mad_twiss, plane):
-    df = pd.merge(pd.DataFrame(df_meas), mad_ac.loc[:, ['BET' + plane]], how='inner',
-                  left_index=True, right_index=True, suffixes=('', 'ac'))
-    df = pd.merge(df, mad_twiss.loc[:, ['BET' + plane]], how='inner', left_index=True,
-                  right_index=True, suffixes=('', 'f'))
-    return df.loc[:, "BET" + plane] * df.loc[:, "BET" + plane + 'f'] / df.loc[:, "BET" + plane + 'ac']
+def phase_to_amp_ratio(measure_input, beta_phase, beta_amp, plane):
+    ratio = pd.merge(beta_phase.loc[:, [f"BET{plane}"]], beta_amp.loc[:, [f"BET{plane}"]],
+                     how='inner', left_index=True, right_index=True, suffixes=("ph", "amp"))
+    ph_over_amp = df_ratio(ratio, f"BET{plane}ph", f"BET{plane}amp")
+    mask = (np.array(0.1 < np.abs(ph_over_amp)) & np.array(np.abs(ph_over_amp) < 10.0) &
+            np.array(measure_input.accelerator.get_element_types_mask(ratio.index, ["arc_bpm"])))
+    x_ratio = np.mean(ph_over_amp[mask])
+    return x_ratio
 
 
-def beta_from_amplitude(meas_input, input_files, model, plane, compensate=None):
-    df_amp_beta = pd.DataFrame(model).loc[:, ['S', 'MU' + plane, 'BET' + plane]]
-    df_amp_beta.rename(columns={'MU' + plane: 'MU' + plane + 'MDL',
-                                'BET' + plane: 'BET' + plane + 'MDL'}, inplace=True)
-    df_amp_beta = pd.merge(df_amp_beta, input_files.joined_frame(plane, ['AMP' + plane, 'MU' + plane]),
-                           how='inner', left_index=True, right_index=True)
-    df_amp_beta['COUNT'] = len(input_files.get_columns(df_amp_beta, 'AMP' + plane))
-    df_amp_beta['AMP' + plane] = np.mean(input_files.get_data(df_amp_beta, 'AMP' + plane), axis=1)
-
-    if compensate is not None:
-        phases_meas = input_files.get_data(df_amp_beta, 'MU' + plane) * meas_input.accelerator.get_beam_direction()
-        driven_tune, free_tune, ac2bpmac = compensate
-        k_bpmac = ac2bpmac[2]
-        phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
-        phases_meas = phases_meas + phase_corr[np.newaxis, :]
-        r = get_lambda(driven_tune % 1.0, free_tune % 1.0)
-        phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
-        for_sqrt2j = input_files.get_data(df_amp_beta, 'AMP' + plane) / np.sqrt(
-            df_amp_beta.loc[:, 'BET' + plane + 'MDL'].values[:, np.newaxis])
-        sqrt2j = np.mean(for_sqrt2j[meas_input.accelerator.get_element_types_mask(df_amp_beta.index, ["arc_bpm"])], axis=0)
-        betall = (np.square(
-            (input_files.get_data(df_amp_beta, 'AMP' + plane).T / sqrt2j[:, np.newaxis]).T) *
-                  (1 + r ** 2 + 2 * r * np.cos(4 * np.pi * phases_meas)) / (1 - r ** 2))
-        df_amp_beta['BET' + plane] = np.mean(betall, axis=1)
-        df_amp_beta['BET' + plane + 'STD'] = np.std(betall, axis=1)
-    else:
-        # amplitudes are first averaged over files then squared and averaged over BPMs
-        kick = np.mean(np.square(df_amp_beta.loc[:, 'AMP' + plane].values) /
-                       df_amp_beta.loc[:, 'BET' + plane + 'MDL'].values)
-        # amplitudes are first squared then averaged
-        kick2 = np.mean(np.square(input_files.get_data(df_amp_beta, 'AMP' + plane)) /
-                        df_amp_beta.loc[:, 'BET' + plane + 'MDL'].values[:, np.newaxis], axis=0)
-        df_amp_beta['BET' + plane] = np.square(df_amp_beta.loc[:, 'AMP' + plane].values) / kick
-        df_amp_beta['BET' + plane + 'STD'] = np.std((np.square(
-            input_files.get_data(df_amp_beta, 'AMP' + plane)).T / kick2[:, np.newaxis]).T, axis=1)
-    df_amp_beta['DELTABET' + plane] = ((df_amp_beta.loc[:, 'BET' + plane] -
-                                       df_amp_beta.loc[:, 'BET' + plane + 'MDL']) /
-                                       df_amp_beta.loc[:, 'BET' + plane + 'MDL'])
-    return df_amp_beta.loc[:, ['S', 'COUNT', 'BET' + plane, 'BET' + plane + 'STD',
-                               'BET' + plane + 'MDL', 'MU' + plane + 'MDL', 'DELTABET' + plane]]
+def add_rescaled_beta_columns(df, ratio, plane):
+    df[f"BET{plane}{RES}"] = df.loc[:, f"BET{plane}"].values * ratio
+    df[f"{ERR}BET{plane}{RES}"] = df.loc[:, f"{ERR}BET{plane}"].values * ratio
+    return df
 
 
-def _get_header(header_dict, tune_d, rmsbbeat, scaling_factor, file_name, free=False):
+def beta_from_amplitude(meas_input, input_files, plane, tunes):
+    df = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
+    df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
+                       f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
+    dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
+    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=dpp_value),
+                  how='inner', left_index=True, right_index=True)
+    df['COUNT'] = len(input_files.get_columns(df, f"AMP{plane}"))
+
+    if meas_input.compensation == "model":
+        df = _compensate_by_model(input_files, meas_input, df, plane)
+    if meas_input.compensation == "equation":
+        df = _compensate_by_equation(input_files, meas_input, df, plane, tunes)
+
+    amps_squared = np.square(input_files.get_data(df, f"AMP{plane}"))
+    mask = meas_input.accelerator.get_element_types_mask(df.index, ["arc_bpm"])
+    actions = amps_squared / df.loc[:, f"BET{plane}{MDL}"].values[:, np.newaxis]
+    betas = amps_squared / np.mean(actions[mask], axis=0, keepdims=True)
+    df[f"BET{plane}"] = np.mean(betas, axis=1)
+    df[f"{ERR}BET{plane}"] = np.std(betas, axis=1)
+    df[f"{DELTA}BET{plane}"] = df_rel_diff(df, f"BET{plane}", f"BET{plane}{MDL}")
+    df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
+    return df.loc[:, ['S', 'COUNT', f"BET{plane}", f"{ERR}BET{plane}", f"BET{plane}{MDL}",
+                      f"MU{plane}{MDL}", f"{DELTA}BET{plane}", f"{ERR}{DELTA}BET{plane}"]]
+
+
+def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
+    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.get_beam_direction()
+    driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
+    k_bpmac = ac2bpmac[2]
+    phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
+    phases_meas = phases_meas + phase_corr[np.newaxis, :]
+    r = tunes.get_lambda(plane)
+    phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
+    amp_compensation = np.sqrt((1 + r ** 2 + 2 * r * np.cos(4 * np.pi * phases_meas)) / (1 - r ** 2))
+    df[input_files.get_columns(df, f"AMP{plane}")] = input_files.get_data(df, f"AMP{plane}") * amp_compensation
+    return df
+
+
+def _compensate_by_model(input_files, meas_input, df, plane):
+    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.get_driven_tfs().loc[:, [f"BET{plane}"]]
+                                   .rename(columns={f"BET{plane}": f"BET{plane}comp"})),
+                  how='inner', left_index=True, right_index=True)
+    amp_compensation = np.sqrt(df_ratio(df, f"BET{plane}{MDL}", f"BET{plane}comp"))
+    df[input_files.get_columns(df, f"AMP{plane}")] = (input_files.get_data(df, f"AMP{plane}")
+                                                      * amp_compensation[:, np.newaxis])
+    return df
+
+
+def _get_header(header_dict, rmsbbeat, scaling_factor):
     header = header_dict.copy()
-    if free:
-        header['Q1'] = tune_d["X"]["QF"]
-        header['Q2'] = tune_d["Y"]["QF"]
-    else:
-        header['Q1'] = tune_d["X"]["Q"]
-        header['Q2'] = tune_d["Y"]["Q"]
     header['RMSbetabeat'] = rmsbbeat
     header['RescalingFactor'] = scaling_factor
-    header['FILENAME'] = file_name
     return header

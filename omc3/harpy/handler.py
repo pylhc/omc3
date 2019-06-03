@@ -20,6 +20,7 @@ LOGGER = logging_tools.get_logger(__name__)
 PLANES = ("X", "Y")
 ALL_PLANES = ("X", "Y", "Z")
 PLANE_TO_NUM = {"X": 1, "Y": 2, "Z": 3}
+ERR = "ERR"
 
 
 def run_per_bunch(tbt_data, harpy_input):
@@ -79,11 +80,11 @@ def run_per_bunch(tbt_data, harpy_input):
 def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
     start = max(0, min(turn_indices))
     end = min(max(turn_indices), tbt_data.matrices[0][plane].shape[1])
-    return tbt_data.matrices[0][plane].iloc[:, start:end]
+    return tbt_data.matrices[0][plane].iloc[:, start:end].T.reset_index(drop=True).T
 
 
 def _scale_to_mm(bpm_data, unit):
-    scales_to_mm = {'um': 1000, 'mm': 1, 'cm': 0.1, 'm': 0.001}
+    scales_to_mm = {'um': 0.001, 'mm': 1, 'cm': 10, 'm': 1000}
     return bpm_data * scales_to_mm[unit]
 
 
@@ -113,7 +114,7 @@ def _add_calculated_phase_errors(lin_frame):
     for name_root in ('MU', 'PHASE'):
         cols = [col for col in lin_frame.columns.values if name_root in col]
         for col in cols:
-            lin_frame[f"ERR_{col}"] = _get_spectral_phase_error(
+            lin_frame[f"{ERR}{col}"] = _get_spectral_phase_error(
                 lin_frame.loc[:, f"{col.replace(name_root, 'AMP')}"], noise)
     return lin_frame
 
@@ -151,7 +152,6 @@ def _compute_headers(panda):
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
-    headers["DPP"] = 0.0  # TODO later remove - should be calculated in measure_optics
     return headers
 
 
@@ -182,19 +182,21 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     cols = [col for col in panda.columns.values if col.startswith('AMP')]
     cols.remove(f"AMP{plane}")
     panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"AMP{plane}"], axis="index")
+    amps = panda.loc[:, f"AMP{plane}"].values
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
+    # TODO  later remove
     panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].values / 2
     if f"NATAMP{plane}" in panda.columns:
         panda[f"NATAMP{plane}"] = panda.loc[:, f"NATAMP{plane}"].values / 2
 
     if np.max(panda.loc[:, 'NOISE'].values) == 0.0:
         return panda  # Do not calculated errors when no noise was calculated
-    noise_scaled = panda.loc[:, 'NOISE'] / panda.loc[:, f"AMP{plane}"]
+    noise_scaled = panda.loc[:, 'NOISE'] / amps
     panda.loc[:, "NOISE_SCALED"] = noise_scaled
-    panda.loc[:, f"ERR_AMP{plane}"] = panda.loc[:, 'NOISE']
+    panda.loc[:, f"{ERR}AMP{plane}"] = panda.loc[:, 'NOISE']
     if f"NATTUNE{plane}" in panda.columns:
-        panda.loc[:, f"ERR_NATAMP{plane}"] = panda.loc[:, 'NOISE']
+        panda.loc[:, f"{ERR}NATAMP{plane}"] = panda.loc[:, 'NOISE']
     for col in cols:
         this_amp = panda.loc[:, col]
-        panda.loc[:, f"ERR_{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
+        panda.loc[:, f"{ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
     return panda

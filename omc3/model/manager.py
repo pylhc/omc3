@@ -14,15 +14,8 @@ ACCELS = {
 
 def _get_params():
     params = EntryPointParameters()
-    params.add_parameter(
-        flags=["--accel"],
-        help=("Choose the accelerator to use."
-              "Can be the class already."
-              ),
-        name="accel",
-        required=True,
-        choices=list(ACCELS.keys()),
-    )
+    params.add_parameter(flags=["--accel"], name="accel", required=True, choices=list(ACCELS.keys()),
+                         help="Choose the accelerator to use.Can be the class already.")
     return params
 
 
