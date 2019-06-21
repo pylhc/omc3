@@ -1,11 +1,11 @@
 """
-.. module: kick
+Kick
+----------------
 
-Created on 29/06/18
-
+:module: optics_measurements.kick
 :author: Lukas Malina
 
-It computes kick actions.
+Computes kick actions.
 """
 from os.path import join
 import pandas as pd

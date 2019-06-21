@@ -1,5 +1,5 @@
 """
-Module sdds.classes
+classes
 ----------------------
 
 This module holds the classes handled by the sdds handler.

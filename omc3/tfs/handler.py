@@ -1,5 +1,5 @@
 """
-Module tfs.handler
+handler
 -------------------
 
 Basic tfs-to-pandas io-functionality.

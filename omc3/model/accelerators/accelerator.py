@@ -1,3 +1,10 @@
+"""
+Accelerator
+-------------------
+
+Contains parent accelerator class and other support classes
+"""
+
 from omcparser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 import os
 import pandas as pd

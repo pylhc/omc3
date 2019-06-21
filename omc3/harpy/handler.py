@@ -1,5 +1,5 @@
 """
-Module harpy.handler
+handler
 ---------------------
 
 Handles the cleaning, frequency analysis and resonance search for a single-bunch TbtData.

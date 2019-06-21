@@ -1,5 +1,5 @@
 """
-Module tbt.trackone
+trackone
 ----------------------
 
 Tbt data handling from PTC trackone.

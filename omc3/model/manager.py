@@ -1,3 +1,9 @@
+"""
+Manager
+-------------------
+
+Contains entrypoint wrappers to get accelerator classes or their instances
+"""
 from omcparser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, split_arguments
 from model.accelerators import lhc, ps, esrf, psbooster, skekb
 
@@ -8,7 +14,8 @@ ACCELS = {
     esrf.Esrf.NAME: esrf.Esrf,
     psbooster.Psbooster.NAME: psbooster.Psbooster,
     skekb.SKekB.NAME: skekb.SKekB,
-    "JPARC": skekb.SKekB
+    "JPARC": skekb.SKekB,
+    petra.Petra.NAME: petra.Petra,
 }
 
 

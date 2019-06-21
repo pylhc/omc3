@@ -1,11 +1,11 @@
 """
-.. module: tune
+Tune
+----------------
 
-Created on 17/07/18
-
+:module: optics_measurements.tune
 :author: Lukas Malina
 
-It computes betatron tunes and provides structures to store them.
+Computes betatron tunes and provides structures to store them.
 """
 import numpy as np
 from utils import stats

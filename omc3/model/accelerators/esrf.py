@@ -1,3 +1,7 @@
+"""
+ESRF
+-------------------
+"""
 from model.accelerators.accelerator import Accelerator
 
 

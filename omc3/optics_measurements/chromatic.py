@@ -1,8 +1,8 @@
 """
-.. module: chromatic
+Chromatic
+----------------
 
-Created on 18/04/19
-
+:module: optics_measurements.chromatic
 :author: Lukas Malina
 
 Computes various chromatic beam properties

@@ -1,11 +1,11 @@
 """
-.. module: interaction_point
+IP
+----------------
 
-Created on 13/06/18
-
+:module: optics_measurements.interaction_point
 :author: Jaime Coello de Portugal
 
-It computes beta* from phase.
+Computes beta* from phase.
 """
 from os.path import join
 import numpy as np

@@ -1,8 +1,8 @@
 """
-.. module: measure_optics
+Measure optics
+----------------
 
-Created on 11/07/18
-
+:module: optics_measurements.measure_optics
 :author: Lukas Malina
 
 Computes various lattice optics parameters from frequency spectra
