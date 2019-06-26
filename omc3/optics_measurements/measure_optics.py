@@ -56,10 +56,10 @@ def measure_optics(input_files, measure_input):
         invariants[plane] = kick.calculate(measure_input, input_files, ratio, common_header, plane)
         ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict)
         interaction_point.write(ip_df, common_header, measure_input.outputdir, plane)
-        dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
-        dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
-        if plane == "X":
-            dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
+        #dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
+        #dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
+        #if plane == "X":
+        #    dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
 
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
     if measure_input.nonlinear:
