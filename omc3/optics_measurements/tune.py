@@ -70,9 +70,11 @@ class TuneDict(dict):
         """
         model = accelerator.get_elements_tfs()
         r = self.get_lambda(plane)
+        print("lambda (plane {}) = {}".format(plane, r))
         [k, bpmac1], exciter = accelerator.get_exciter_bpm(plane, df_idx_by_bpms.index)
-        psi = model.loc[bpmac1, f"MU{plane}"] - model.loc[exciter, f"MU{plane}"]
+        psi = model.loc[bpmac1, f"MU{plane}"] - model.loc[exciter, f"MU{plane}"].iloc[0]
         psi = np.arctan((1 + r) / (1 - r) * np.tan(
             2 * np.pi * psi + np.pi * self[plane]["QF"])) % np.pi - np.pi * self[plane]["Q"]
         psi = psi / (2 * np.pi)
+        print("--f {} {} {} {} --g".format(bpmac1, psi, k, exciter))
         return bpmac1, psi, k, exciter
