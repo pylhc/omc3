@@ -1,0 +1,87 @@
+! --------------------------------------------------------------------------------------------------
+! ------ macro defs --------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
+install_errors() : macro = {{
+  ! install errors
+
+  USE, sequence=ring;
+
+  {errors}
+
+  select flag = error, clear; select flag=error;
+  esave file='{err_path}';
+
+}};
+
+! --------------------------------------------------------------------------------------------------
+! ------ main part ---------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
+call, file='./models/p3x_v23.seq';
+BEAM, PARTICLE=POSITRON, ENERGY=6.0,bunched, RADIATE, sequence=RING;
+if ({PTC} == 0) {{
+  makethin, sequence=ring;
+}};
+use, sequence=ring;
+!select,flag=TWISS,clear;
+!select,flag=TWISS,column=name,s,x,y,betx,bety,mux,muy,dx,dy,k1l,k2l,l,angle,px,py,dpx,dpy,alfx,alfy,hkick,vkick,e1,e2,parent,ax,bx,ay,by;
+!TWISS,deltap=0.0, file='twiss_p3x_v23.out',sequence=RING;
+!plot,table=twiss,haxis=s,vaxis=betx,bety, style=100,colour=100;
+!plot,table=twiss,haxis=s,vaxis=dx,     style=100,colour=100;
+
+select, flag=twiss, clear;
+
+select, flag=twiss,
+  column=name, s, betx, alfx, bety, alfy, 
+  mux, muy, dx, dy, dpx, dpy, x, y,
+  k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
+  phiy, dmux, dmuy, keyword, dbx, dby,
+  r11, r12, r21, r22,
+  pattern="^BPM";
+twiss, chrom, sequence=ring, file='{TWISS_DAT}';
+
+
+select, flag=twiss,
+  column=name, s, betx, alfx, bety, alfy, 
+  mux, muy, dx, dy, dpx, dpy, x, y,
+  k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
+  phiy, dmux, dmuy, keyword, dbx, dby,
+  r11, r12, r21, r22,
+  pattern="^BPM";
+select, flag=twiss, class=monitor;
+select, flag=twiss, class=quadrupole;
+select, flag=twiss, class=skewquadrupole;
+select, flag=twiss, class=sextupole;
+select, flag=twiss, class=octupole;
+select, flag=twiss, class=tkicker;
+select, flag=twiss, class=rcollimator;
+select, flag=twiss, class=collimator;
+select, flag=twiss, class=rbend;
+!select, flag=twiss, class=drift;
+select, flag=twiss, pattern="^IP";
+twiss, chrom, sequence=ring, file='{TWISS_ELEM_DAT}';
+exec, install_errors();
+
+
+! ------ tracking ----------------------------------------------------------------------------------
+if ({PTC} == 1) {{
+  PTC_CREATE_UNIVERSE;
+  PTC_CREATE_LAYOUT, model=3, method=6, nst=10;
+  PTC_ALIGN;
+  call, file="./models/ptc_obs.madx";
+  PTC_START, x={kick}, y={kick}; !!!! change: kick (units m)
+  PTC_TRACK, deltap=0.0,icase=5, turns={RAMP3}, ELEMENT_BY_ELEMENT, dump, onetable, file=track;
+  PTC_TRACK_END;
+  PTC_END;
+}};
+else {{
+  track, deltap=0.0, dump, file="./trackone_mad", onetable;
+
+  start, x=.0, px=0.0, y=.0, py=0.0; 
+
+  call, file="./models/obs.madx";
+  run, turns=11000;
+  endtrack;
+  value, pbeam, betxac, betyac, Qx0, Qy0, Qx, Qy, Qxd, Qyd;
+}};
