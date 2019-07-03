@@ -1,0 +1,36 @@
+title, "Model creator for java";
+
+!@require %(LIB)s.macros.madx
+
+option, -echo;
+
+%(MAIN_SEQ)s
+exec, define_nominal_beams();
+call, file = "%(OPTICS_PATH)s";
+exec, cycle_sequences();
+
+if(%(CROSSING_ON)s==1){
+exec, set_crossing_scheme_ON();
+}else{
+exec, set_default_crossing_scheme();
+}
+
+use, period = LHCB%(NUM_BEAM)i;
+
+option, echo;
+
+exec, match_tunes(%(QMX)s, %(QMY)s, %(NUM_BEAM)i);
+exec, select_monitors();
+%(DPP)s
+
+exec, select_elements();
+%(DPP_ELEMS)s
+
+exec, select_monitors();
+if(%(USE_ACD)s == 1){
+    exec, install_ac_dipole(%(QX)s, %(QY)s, %(QDX)s, %(QDY)s, %(NUM_BEAM)s);
+    %(DPP_AC)s
+}else if(%(USE_ADT)s == 1){
+    exec, install_adt_dipole(%(QX)s, %(QY)s, %(QDX)s, %(QDY)s, %(NUM_BEAM)s);
+    %(DPP_ADT)s
+}

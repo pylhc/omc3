@@ -71,8 +71,8 @@ def get_accel_class_and_unkown(opt, cls_opt):
 
 def get_accel_class_from_args(args=None):
     """ LEGACY-FUNCTION SHOULD BE REPLACED BY USING get_accel_class """
-    parser = EntryPoint(_get_params())
-    opt, class_args = parser.parse(args)
+    omcparser = EntryPoint(_get_params())
+    opt, class_args = omcparser.parse(args)
 
     accel = _get_parent_class(opt.accel)
 

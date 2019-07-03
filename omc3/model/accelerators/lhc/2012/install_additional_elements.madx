@@ -1,0 +1,196 @@
+! install new elements, that are not yet in the
+! official sequence
+! 
+! Retrieve values from layout db with:
+!
+! select 	NAME, TYPE_NAME, FROM_IP, POSITION_FROM_IP
+! from LHCLAYOUT.MAD_SEQUENCES m
+! where m.version = 'STUDY'
+!	and USED_IN_MAD_SEQUENCES = 'YES'
+!    and m.NAME like 'YOUR_NAME'
+!
+
+! element definitions for B1
+
+BPMWF.A1R1.B1: MONITOR;
+BPMWF.A1L5.B1: MONITOR;
+BPMWF.A1R5.B1: MONITOR;
+BPMWF.A1L1.B1: MONITOR;
+
+BGIH.5L4.B1  : INSTRUMENT;	! should be BGIH but not defined in sequence yet
+BGIV.5L4.B1  : INSTRUMENT;	! should be BGIV but not defined in sequence yet
+BPMSA.7R1.B1 : BPMSA;
+XRPV.A7R1.B1 : XRPV;
+XRPV.B7R1.B1 : XRPV;
+
+! installation B1
+seqedit,sequence = lhcb1; flatten;
+install, element = BPMWF.A1R1.B1, at=  21.683 , from= IP1   ;
+install, element = BPMWF.A1L5.B1, at= -21.683 , from= IP5   ;
+install, element = BPMWF.A1R5.B1, at=  21.683 , from= IP5   ;
+install, element = BPMWF.A1L1.B1, at= -21.683 , from= IP1.L1;
+
+install, element = BGIH.5L4.B1  , at= -64.186 , from= IP4   ;	
+install, element = BGIV.5L4.B1  , at= -62.386 , from= IP4   ;	
+install, element = BPMSA.7R1.B1 , at= 237.7505, from= IP1   ;
+install, element = XRPV.A7R1.B1 , at= 237.398 , from= IP1   ;
+install, element = XRPV.B7R1.B1 , at= 241.538 , from= IP1   ;
+endedit;
+
+! element definitions for B2
+
+BPMWF.A1R1.B2: MONITOR;
+BPMWF.A1L5.B2: MONITOR;
+BPMWF.A1R5.B2: MONITOR;
+BPMWF.A1L1.B2: MONITOR;
+
+BGIH.5R4.B2  : INSTRUMENT;	! should be BGIH but not defined in sequence yet
+BGIV.5R4.B2  : INSTRUMENT;	! should be BGIV but not defined in sequence yet
+BPMSA.7L1.B2 : BPMSA;
+XRPV.B7L1.B2 : XRPV;
+XRPV.A7L1.B2 : XRPV;
+
+! installation B2
+seqedit,sequence = lhcb2; flatten;
+install, element = BPMWF.A1R1.B2, at=  21.683 , from= IP1   ;
+install, element = BPMWF.A1L5.B2, at= -21.683 , from= IP5   ;
+install, element = BPMWF.A1R5.B2, at=  21.683 , from= IP5   ;
+install, element = BPMWF.A1L1.B2, at= -21.683 , from= IP1.L1;
+
+install, element = BGIH.5R4.B2  , at=  64.186 , from= IP4   ;	
+install, element = BGIV.5R4.B2  , at=  62.386 , from= IP4   ;
+install, element = BPMSA.7L1.B2 , at=-237.7505, from= IP1.L1;
+install, element = XRPV.B7L1.B2 , at=-241.538 , from= IP1.L1;
+install, element = XRPV.A7L1.B2 , at=-237.398 , from= IP1.L1;
+endedit;
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! Update on the collimator layout after LS1
+! And remove Roman Pots to avoid conflict with Coll. Layout
+! B.Salvachua 2014-02-26
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+REAL CONST l.TCTPH            = 1.000000000000000;
+REAL CONST l.TCTPV            = 1.000000000000000;
+REAL CONST l.TCSP             = 1.000000000000000;
+
+TCTPH : RCOLLIMATOR, L:= l.TCTVPH;
+TCTPV : RCOLLIMATOR, L:= l.TCTVPV;
+TCSP  : RCOLLIMATOR, L:= l.TCSP;
+
+!! Edit Beam 1
+seqedit,sequence=lhcb1; flatten;
+	! IP1, remove old tct, install tctp, install tcl
+	remove,  element=tcth.4l1.b1; ! 26511.36320000
+	remove,  element=tctva.4l1.b1; ! 23199.14598362
+	install, element=tctpv.4l1.b1, class=tctpv, at=-145.84, from=ip1.l1;
+	install, element=tctph.4l1.b1, class=tctph, at=-147.52, from=ip1.l1;
+	
+	remove,  element=tcl.5r1.b1;
+	remove,  element=tclp.4r1.b1;
+	install, element=tcl.4r1.b1, class=tcl, at=149.73, from=ip1;	
+	install, element=tcl.5r1.b1, class=tcl, at=184.357, from=ip1;
+	install, element=tcl.6r1.b1, class=tcl, at=219.013, from=ip1;
+
+	! IP5, remove old tct, install tctp, install tcl, remove Roman Pots
+	remove,  element=tcth.4l5.b1;
+	remove,  element=tctva.4l5.b1;
+	!!!!!!!!!!!!
+	! Remove Roman Pots
+	remove,  element=xrph.a4r5.b1;
+	remove,  element=xrph.b4r5.b1;
+	!!!!!!!!!!!!
+	install, element=tctpv.4l5.b1, class=tctpv, at=-145.84, from=ip5;
+	install, element=tctph.4l5.b1, class=tctph, at=-147.52, from=ip5;
+		
+	remove,  element=tcl.5r5.b1;	
+	remove,  element=tclp.4r5.b1;
+	install, element=tcl.4r5.b1, class=tcl, at=149.73, from=ip5;
+	install, element=tcl.5r5.b1, class=tcl, at=184.264, from=ip5;
+	install, element=tcl.6r5.b1, class=tcl, at=221.574, from=ip5;
+
+	! IP2, remove old tct, move tcli, install tct
+	remove,  element=tctva.4l2.b1;
+	remove,  element=tctvb.4l2;
+	remove,  element=tctvb.4r2;
+	remove,  element=tcth.4l2.b1;
+	remove,  element=tclia.4r2;
+	install, element=tctpv.4l2.b1, class=tctpv, at= -116.533, from=ip2;
+	install, element=tctph.4l2.b1, class=tctph, at=	-118.533, from=ip2;	
+	install, element=tclia.4r2,    class=tclia, at=   73.748, from=ip2;
+
+	!IP8, remove old tct, move tcli, install tct
+	remove,  element=tctvb.4l8;
+   	remove,  element=tctvb.4r8;
+	remove,  element=tcth.4l8.b1;
+	remove,  element=tclia.4l8;
+	install, element=tctph.4l8.b1, class= tctph,at= -118.233, from=ip8;
+   	install, element=tctpv.4l8.b1, class= tctpv,at= -116.233, from=ip8;	
+   	install, element=tclia.4l8,    class= tclia,at=  -73.748, from=ip8;
+
+	! IP6, remove old tcsg, install tcsp
+	remove,  element=tcsg.4r6.b1;
+	install, element=tcsp.a4r6.b1,  class= tcsp, at=  154.2500, from=ip6;	
+endedit;
+
+!! Edit Beam 2
+seqedit,sequence=lhcb2; flatten;
+
+	! IP1, remove old tct, install tctp, install tcl
+	remove,  element=tcth.4r1.b2;
+	remove,  element=tctva.4r1.b2;
+	install, element=tctpv.4r1.b2, class=tctpv, at=145.84, from=ip1;
+	install, element=tctph.4r1.b2, class=tctph, at=147.52, from=ip1;
+	
+	remove,  element=tcl.5l1.b2;
+	remove,  element=tclp.4l1.b2;
+	install, element=tcl.4l1.b2, class=tcl, at= -149.73, from=ip1.l1;
+	install, element=tcl.5l1.b2, class=tcl, at= -184.264, from=ip1.l1;
+	install, element=tcl.6l1.b2, class=tcl, at= -219.62, from=ip1.l1;
+
+	! IP5, remove old tct, install tct, install tcl, remove roman pots
+	remove,  element= tcth.4r5.b2;
+	remove,  element=tctva.4r5.b2;
+	!!!!!!!!!!!!!!!
+	! Remove Roman Pots
+	remove,  element=xrph.b4l5.b2;
+	remove,  element=xrph.a4l5.b2;
+	!!!!!!!!!!!!!!!
+	install, element=tctpv.4r5.b2, class=tctpv, at= 145.84, from=ip5;
+	install, element=tctph.4r5.b2, class=tctph, at= 147.52, from=ip5;
+		
+	remove,  element=tcl.5l5.b2;
+	remove,  element=tclp.4l5.b2;	
+	install, element=tcl.4l5.b2, class=tcl, at=-149.73, from=ip5;
+	install, element=tcl.5l5.b2, class=tcl, at=-184.357, from=ip5;
+	install, element=tcl.6l5.b2, class=tcl, at=-221.564, from=ip5;
+
+	! IP2, remove old tct, move tcli, install tctp
+	remove,  element=tctva.4r2.b2;
+	remove,  element=tctvb.4l2;
+	remove,  element=tctvb.4r2;
+	remove,  element=tclia.4r2;
+	remove,  element= tcth.4r2.b2;
+	install, element=tctpv.4r2.b2, class=tctpv, at= 116.533, from=ip2;
+	install, element=tctph.4r2.b2, class=tctph, at= 118.533, from=ip2;
+	install, element=tclia.4r2,    class=tclia, at=  73.748, from=ip2;
+
+	!IP8, remove old tct, move tcli, install tctp
+	remove,  element=tctvb.4l8;
+   	remove,  element=tctvb.4r8;
+	remove,  element=tclia.4l8;
+	remove,  element= tcth.4r8.b2;
+	install, element=tctph.4r8.b2, class= tctph,at=118.233, from=ip8;
+   	install, element=tctpv.4r8.b2, class= tctpv,at=116.233, from=ip8;
+   	install, element=tclia.4l8,    class= tclia,at=-73.748, from=ip8;
+
+	! IP6, remove old tcsg, install tcsp
+	remove,  element=tcsg.4l6.b2;
+	install, element=tcsp.a4l6.b2,  class= tcsp, at= -154.25, from=ip6;
+endedit;
+
+
+return;

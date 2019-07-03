@@ -1,0 +1,1505 @@
+  /**********************************************************************************
+  *
+  * PS Booster version STUDY in MAD X SEQUENCE format
+  * Generated the 11-MAY-2017 17:56:21 from LHCLAYOUT@EDMSDB Database
+  *
+  * It consists of 16 identical periods, apart from the equipment
+  * in the straight sections.
+  * The BOOSTER has an average radius of 25m and a circonference of 157.08m
+  * The 4 rings are numbered 1,2,3,4 from the bottom,
+  * with ring 3 at the CPS beam level.
+  * 2.654 + 3.928077 + 1.6177*2 = 9.81748 =period length
+  * Length of straight section L1: 2.654
+  * Length of triplets path: 3.928077
+  * Length of bending magnets: 1.6177
+  *
+  * Converted from MAD8 to MADX                           21/07/2006 O.Berrig
+  * Generated from LHCLAYOUT@EDMSDB since                 04/02/2009 P.Le Roux
+  * BR.BHZ11 etc. defined separately to avoid warnings    16/01/2010 O.Berrig
+  ************************************************************************************/
+
+
+
+/************************************************************************************/
+/*                       PSB SEQUENCES                                              */
+/************************************************************************************/
+
+  /*********************************************************
+  * Basic period (for reference)
+  **********************************************************
+  PERIOD: sequence, refer = centre , l  =   9.81750;
+  L1                               , at =   1.3269999985;
+  B1                               , at =   3.46284869;
+  L2                               , at =   4.4548473865;
+  QF                               , at =   4.88979739;
+  L3                               , at =   5.46847239;
+  QD                               , at =   6.23479739;
+  L4                               , at =   7.00162239;
+  QF                               , at =   7.58079739;
+  L5                               , at =   8.0162000035;
+  B1                               , at =   9.00865131;
+  endsequence;
+  *********************************************************/
+
+
+hacmap21 := ac_s * (2*(cos(2*pi*Qxd)-cos(2*pi*Qx))/(betxac*sin(2*pi*Qx)));
+vacmap43 := ac_s * (2*(cos(2*pi*Qyd)-cos(2*pi*Qy))/(betyac*sin(2*pi*Qy)));
+hacmap: matrix, l=0, rm21 := hacmap21;
+vacmap: matrix, l=0, rm43 := vacmap43;
+
+
+//------------------------------------------------------------------------------------
+//                       RING 1                                                     
+//------------------------------------------------------------------------------------
+
+P01ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 01
+ BI1.KSW1L1          : MKMAG001     , AT = .585         , SLOT_ID = 2458828, ASSEMBLY_ID = 5736962;
+ BI.BTV50                           , AT = .792         , SLOT_ID = 2458832;
+ BI.SMH1L1                          , AT = 1.7274       , SLOT_ID = 2458834;
+ BI.BTV60                           , AT = 2.2479       , SLOT_ID = 2458835;
+ BR.BHZ11                           , AT = 3.462849     , SLOT_ID = 2458836;
+ BR.SPSCRAP11                       , AT = 4.2717       , SLOT_ID = 2458838, ASSEMBLY_ID = 2458836;
+ BR.QFO11                           , AT = 4.889797     , SLOT_ID = 2458839;
+ BR1.BPM1L3          : UES          , AT = 5.467797     , SLOT_ID = 2458847, ASSEMBLY_ID = 2452397;
+ BR1.ONOH0.1L3       : ONOH0        , AT = 5.467797     , SLOT_ID = 2458845, ASSEMBLY_ID = 2452398;
+ BR1.QSKH0.1L3       : QSKH0        , AT = 5.467797     , SLOT_ID = 2458846, ASSEMBLY_ID = 2452398;
+ BR1.XNOH0.1L3       : XNOH0        , AT = 5.467797     , SLOT_ID = 2458848, ASSEMBLY_ID = 2452398;
+ BR.QDE1                            , AT = 6.234797     , SLOT_ID = 2458861;
+ BI1.KSW1L4          : MKMAG002     , AT = 7.001797     , SLOT_ID = 2458862, ASSEMBLY_ID = 5736975;
+ BR.QFO12                           , AT = 7.580797     , SLOT_ID = 2458840;
+ BR1.BPP1L5          : BPPBA001     , AT = 7.997852     , SLOT_ID = 2458841, ASSEMBLY_ID = 2452396; ! Position is approximate
+ BR.STSCRAP12                       , AT = 8.1998       , SLOT_ID = 2458866, ASSEMBLY_ID = 2458837;
+ BR.BHZ12                           , AT = 9.008652     , SLOT_ID = 2458837;
+ENDSEQUENCE;
+
+P02ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 02
+ BR1.VVS2L1          : VVS          , AT = .1825        , SLOT_ID = 3783288;
+ BR1.BWS.2L1.V_ROT   : BWSV         , AT = .918         , SLOT_ID = 2458867, ASSEMBLY_ID = 2452403;
+ BR1.BWS.2L1.H_ROT   : BWSH         , AT = 1.016        , SLOT_ID = 2458871, ASSEMBLY_ID = 2452404;
+ BI1.KSW2L1          : MKMAG002     , AT = 1.737        , SLOT_ID = 2458875, ASSEMBLY_ID = 5736984;
+ BR.BHZ21                           , AT = 3.462849     , SLOT_ID = 2458879;
+ BR.STSCRAP21                       , AT = 4.2717       , SLOT_ID = 2458881, ASSEMBLY_ID = 2458879;
+ BR.QFO21                           , AT = 4.889797     , SLOT_ID = 2458883;
+ BR1.BPM2L3          : UES          , AT = 5.467802     , SLOT_ID = 2458887, ASSEMBLY_ID = 2452406;
+ BR1.ONOH0.2L3       : ONOH0        , AT = 5.467802     , SLOT_ID = 2458885, ASSEMBLY_ID = 2452407;
+ BR1.QSK2L3          : QSK          , AT = 5.467802     , SLOT_ID = 2458886, ASSEMBLY_ID = 2452407;
+ BR1.XNOH0.2L3       : XNOH0        , AT = 5.467802     , SLOT_ID = 2458888, ASSEMBLY_ID = 2452407;
+ BR.QDE2                            , AT = 6.234797     , SLOT_ID = 2458901;
+ BR1.DHZ2L4          : DHZ__A       , AT = 7.001802     , SLOT_ID = 2458902, ASSEMBLY_ID = 2452411;
+ BR1.DVT2L4          : DVT__A       , AT = 7.001802     , SLOT_ID = 2458903, ASSEMBLY_ID = 2452411;
+ BR1.OSK2L4          : OSK          , AT = 7.001802     , SLOT_ID = 2458904, ASSEMBLY_ID = 2452411;
+ BR1.XSK2L4          : XSK          , AT = 7.001802     , SLOT_ID = 2458905, ASSEMBLY_ID = 2452411;
+ BR.QFO22                           , AT = 7.580797     , SLOT_ID = 2458884;
+ BR.STSCRAP22                       , AT = 8.1998       , SLOT_ID = 2458882, ASSEMBLY_ID = 2458880;
+ BR.BHZ22                           , AT = 9.008652     , SLOT_ID = 2458880;
+ENDSEQUENCE;
+
+P03ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 03
+ BR1.DES3L1          : DES          , AT = .8065        , SLOT_ID = 2458918, ASSEMBLY_ID = 2452415;
+ hacmap                             , AT = 1.089;
+ vacmap                             , AT = 1.089;
+ BR1.ONO3L1          : ONO          , AT = 1.463        , SLOT_ID = 2458926, ASSEMBLY_ID = 2452417;
+ BR1.QNO3L1          : QNO__001     , AT = 1.463        , SLOT_ID = 2458927, ASSEMBLY_ID = 2452417;
+ BR1.UQD3L1          : UQD          , AT = 1.463        , SLOT_ID = 2458928;
+ BR1.XNO3L1          : XNO__001     , AT = 1.463        , SLOT_ID = 2458929, ASSEMBLY_ID = 2452417;
+ BR1.BPMT3L1         : UES          , AT = 2.043        , SLOT_ID = 2458939, ASSEMBLY_ID = 2452421;
+ BR.BHZ31                           , AT = 3.462849     , SLOT_ID = 2458943;
+ BR.STSCRAP31                       , AT = 4.2717       , SLOT_ID = 2458945, ASSEMBLY_ID = 2458943;
+ BR.QFO31                           , AT = 4.889797     , SLOT_ID = 2458947;
+ BR1.BPM3L3          : UES          , AT = 5.467807     , SLOT_ID = 2458951, ASSEMBLY_ID = 2452422;
+ BR1.ONOH0.3L3       : ONOH0        , AT = 5.467807     , SLOT_ID = 2458949, ASSEMBLY_ID = 2452423;
+ BR1.QSKH0.3L3       : QSKH0        , AT = 5.467807     , SLOT_ID = 2458950, ASSEMBLY_ID = 2452423;
+ BR1.XNOH0.3L3       : XNOH0        , AT = 5.467807     , SLOT_ID = 2458952, ASSEMBLY_ID = 2452423;
+ BR.QDE3                            , AT = 6.234797     , SLOT_ID = 2458965;
+ BR1.DHZ3L4          : DHZ__001     , AT = 7.001807     , SLOT_ID = 2458966, ASSEMBLY_ID = 2452427;
+ BR1.DVT3L4          : DVT__001     , AT = 7.001807     , SLOT_ID = 2458967, ASSEMBLY_ID = 2452427;
+ BR.QFO32                           , AT = 7.580797     , SLOT_ID = 2458948;
+ BR.STSCRAP32                       , AT = 8.1998       , SLOT_ID = 2458946, ASSEMBLY_ID = 2458944;
+ BR.BHZ32                           , AT = 9.008652     , SLOT_ID = 2458944;
+ENDSEQUENCE;
+
+P04ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 04
+ BR1.ONO4L1          : ONO          , AT = .37          , SLOT_ID = 2458974, ASSEMBLY_ID = 2452431;
+ BR1.OSK4L1          : OSK          , AT = .37          , SLOT_ID = 2458975, ASSEMBLY_ID = 2452431;
+ BR1.XNO4L1          : XNO__001     , AT = .37          , SLOT_ID = 2458976, ASSEMBLY_ID = 2452431;
+ BR1.XSK4L1          : XSK          , AT = .37          , SLOT_ID = 2458977, ASSEMBLY_ID = 2452431;
+ BE1.DHZ4L1          : DHZ__001     , AT = .904         , SLOT_ID = 2458990, ASSEMBLY_ID = 2452435;
+ BE1.DVT4L1          : DVT__001     , AT = .904         , SLOT_ID = 2458991, ASSEMBLY_ID = 2452435;
+ BR.BHZ41                           , AT = 3.462849     , SLOT_ID = 2458998;
+ BR.STSCRAP41                       , AT = 4.2717       , SLOT_ID = 2459000, ASSEMBLY_ID = 2458998;
+ BR.QFO41                           , AT = 4.889797     , SLOT_ID = 2459002;
+ BR1.BPM4L3          : UES          , AT = 5.467812     , SLOT_ID = 2459006, ASSEMBLY_ID = 2452439;
+ BR1.ONOH0.4L3       : ONOH0        , AT = 5.467812     , SLOT_ID = 2459004, ASSEMBLY_ID = 2452440;
+ BR1.QNO4L3          : QNO__001     , AT = 5.467812     , SLOT_ID = 2459005, ASSEMBLY_ID = 2452440;
+ BR1.XNOH0.4L3       : XNOH0        , AT = 5.467812     , SLOT_ID = 2459007, ASSEMBLY_ID = 2452440;
+ BR.QDE4                            , AT = 6.234797     , SLOT_ID = 2459020;
+ BR1.DHZ4L4          : DHZ__001     , AT = 7.001812     , SLOT_ID = 2459021, ASSEMBLY_ID = 2452444;
+ BR1.DSHAV4L4        : DSHAV        , AT = 7.001812     , SLOT_ID = 2459022, ASSEMBLY_ID = 2452444;
+ BR.QFO42                           , AT = 7.580797     , SLOT_ID = 2459003;
+ BR1.BPTF4L5         : UTFB         , AT = 7.99794      , SLOT_ID = 2459029, ASSEMBLY_ID = 2452448;
+ BR.STSCRAP42                       , AT = 8.1998       , SLOT_ID = 2459001, ASSEMBLY_ID = 2458999;
+ BR.BHZ42                           , AT = 9.008652     , SLOT_ID = 2458999;
+ENDSEQUENCE;
+
+P05ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 05
+ BR1.BPP5L1          : BPPBB001     , AT = .5225        , SLOT_ID = 2459033, ASSEMBLY_ID = 2452449;
+ BR1.C16.5L1         : ACC16        , AT = 1.63787      , SLOT_ID = 2459037, ASSEMBLY_ID = 2452450;
+ BR.BHZ51                           , AT = 3.462849     , SLOT_ID = 2459041;
+ BR.STSCRAP51                       , AT = 4.2717       , SLOT_ID = 2459043, ASSEMBLY_ID = 2459041;
+ BR.QFO51                           , AT = 4.889797     , SLOT_ID = 2459045;
+ BR1.BPM5L3          : UES          , AT = 5.467806     , SLOT_ID = 2459049, ASSEMBLY_ID = 2452451;
+ BR1.ONOH0.5L3       : ONOH0        , AT = 5.467806     , SLOT_ID = 2459047, ASSEMBLY_ID = 2452452;
+ BR1.QSKH0.5L3       : QSKH0        , AT = 5.467806     , SLOT_ID = 2459048, ASSEMBLY_ID = 2452452;
+ BR1.XNOH0.5L3       : XNOH0        , AT = 5.467806     , SLOT_ID = 2459050, ASSEMBLY_ID = 2452452;
+ BR.QDE5                            , AT = 6.234797     , SLOT_ID = 2459063;
+ BR1.DHZ5L4          : DHZ__001     , AT = 6.840806     , SLOT_ID = 2459064, ASSEMBLY_ID = 2452456;
+ BR1.DVT5L4          : DVT__001     , AT = 6.840806     , SLOT_ID = 2459065, ASSEMBLY_ID = 2452456;
+ BR.QFO52                           , AT = 7.580797     , SLOT_ID = 2459046;
+ BR.STSCRAP52                       , AT = 8.1998       , SLOT_ID = 2459044, ASSEMBLY_ID = 2459042;
+ BR.BHZ52                           , AT = 9.008652     , SLOT_ID = 2459042;
+ENDSEQUENCE;
+
+P06ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 06
+ BR1.ONO6L1          : ONO          , AT = .37          , SLOT_ID = 2459072, ASSEMBLY_ID = 2452460;
+ BR1.OSK6L1          : OSK          , AT = .37          , SLOT_ID = 2459073, ASSEMBLY_ID = 2452460;
+ BR1.XNO6L1          : XNO__001     , AT = .37          , SLOT_ID = 2459074, ASSEMBLY_ID = 2452460;
+ BR1.XSK6L1          : XSK          , AT = .37          , SLOT_ID = 2459075, ASSEMBLY_ID = 2452460;
+ BR.BHZ61                           , AT = 3.462849     , SLOT_ID = 2459088;
+ BR.STSCRAP61                       , AT = 4.2717       , SLOT_ID = 2459090, ASSEMBLY_ID = 2459088;
+ BR.QFO61                           , AT = 4.889797     , SLOT_ID = 2459092;
+ BR1.BPM6L3          : UES          , AT = 5.467811     , SLOT_ID = 2459096, ASSEMBLY_ID = 2452464;
+ BR1.ONOH0.6L3       : ONOH0        , AT = 5.467811     , SLOT_ID = 2459094, ASSEMBLY_ID = 2452465;
+ BR1.QSK6L3          : QSK          , AT = 5.467811     , SLOT_ID = 2459095, ASSEMBLY_ID = 2452465;
+ BR1.XNOH0.6L3       : XNOH0        , AT = 5.467811     , SLOT_ID = 2459097, ASSEMBLY_ID = 2452465;
+ BR.QDE6                            , AT = 6.234797     , SLOT_ID = 2459110;
+ BR1.DHZ6L4          : DHZ__A       , AT = 7.001811     , SLOT_ID = 2459111, ASSEMBLY_ID = 2452469;
+ BR1.DVT6L4          : DVT__A       , AT = 7.001811     , SLOT_ID = 2459112, ASSEMBLY_ID = 2452469;
+ BR1.OSK6L4          : OSK          , AT = 7.001811     , SLOT_ID = 2459113, ASSEMBLY_ID = 2452469;
+ BR1.XSK6L4          : XSK          , AT = 7.001811     , SLOT_ID = 2459114, ASSEMBLY_ID = 2452469;
+ BR.QFO62                           , AT = 7.580797     , SLOT_ID = 2459093;
+ BR.STSCRAP62                       , AT = 8.1998       , SLOT_ID = 2459091, ASSEMBLY_ID = 2459089;
+ BR.BHZ62                           , AT = 9.008652     , SLOT_ID = 2459089;
+ENDSEQUENCE;
+
+P07ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 07
+ BR.BHZ71                           , AT = 3.462849     , SLOT_ID = 2459129;
+ BR.STSCRAP71                       , AT = 4.2717       , SLOT_ID = 2459131, ASSEMBLY_ID = 2459129;
+ BR1.BPM7L2          : UES          , AT = 4.47354      , SLOT_ID = 2459133, ASSEMBLY_ID = 2452474;
+ BR.QFO71                           , AT = 4.889797     , SLOT_ID = 2459137;
+ BR1.BPM7L3          : UES          , AT = 5.467816     , SLOT_ID = 2459141, ASSEMBLY_ID = 2452475;
+ BR1.ONOH0.7L3       : ONOH0        , AT = 5.467816     , SLOT_ID = 2459139, ASSEMBLY_ID = 2452476;
+ BR1.QSKH0.7L3       : QSKH0        , AT = 5.467816     , SLOT_ID = 2459140, ASSEMBLY_ID = 2452476;
+ BR1.XNOH0.7L3       : XNOH0        , AT = 5.467816     , SLOT_ID = 2459142, ASSEMBLY_ID = 2452476;
+ BR.QDE7                            , AT = 6.234797     , SLOT_ID = 2459155;
+ BR1.DSHAH7L4        : DBSH         , AT = 7.001816     , SLOT_ID = 2459156, ASSEMBLY_ID = 2452480;
+ BR1.DSHAV7L4        : DBSV         , AT = 7.001816     , SLOT_ID = 2459157, ASSEMBLY_ID = 2452480;
+ BR.QFO72                           , AT = 7.580797     , SLOT_ID = 2459138;
+ BR.STSCRAP72                       , AT = 8.1998       , SLOT_ID = 2459132, ASSEMBLY_ID = 2459130;
+ BR.BHZ72                           , AT = 9.008652     , SLOT_ID = 2459130;
+ENDSEQUENCE;
+
+P08ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 08
+ BR1.ONO8L1          : ONO          , AT = .36375       , SLOT_ID = 2459164, ASSEMBLY_ID = 2452484;
+ BR1.QNO8L1          : QNO__001     , AT = .36375       , SLOT_ID = 2459165, ASSEMBLY_ID = 2452484;
+ BR1.XNO8L1          : XNO__001     , AT = .36375       , SLOT_ID = 2459166, ASSEMBLY_ID = 2452484;
+ BR1.DHZ8L1          : DHZ__001     , AT = .86675       , SLOT_ID = 2459176, ASSEMBLY_ID = 2452488;
+ BR1.DVT8L1          : DVT__001     , AT = .86675       , SLOT_ID = 2459177, ASSEMBLY_ID = 2452488;
+ BR1.BCTF8L1         : TFA          , AT = 1.4824       , SLOT_ID = 2459184, ASSEMBLY_ID = 2452492;
+ BR1.BCW8L1          : UWBL         , AT = 2.013023     , SLOT_ID = 2459188, ASSEMBLY_ID = 2452493;
+ BR1.BPP8L1          : BPPBA001     , AT = 2.183273     , SLOT_ID = 2459192, ASSEMBLY_ID = 2452494;
+ BR1.VVS8L1          : VVS          , AT = 2.1875       , SLOT_ID = 3783284;
+ BR.BHZ81                           , AT = 3.462849     , SLOT_ID = 2459196;
+ BR.STSCRAP81                       , AT = 4.2717       , SLOT_ID = 2459198, ASSEMBLY_ID = 2459196;
+ BR1.WBS8L2          : WBS          , AT = 4.47354      , SLOT_ID = 2459200, ASSEMBLY_ID = 2452495;
+ BR.QFO81                           , AT = 4.889797     , SLOT_ID = 2459204;
+ BR1.BPM8L3          : UES          , AT = 5.467821     , SLOT_ID = 2459208, ASSEMBLY_ID = 2452496;
+ BR1.ONOH0.8L3       : ONOH0        , AT = 5.467821     , SLOT_ID = 2459206, ASSEMBLY_ID = 2452497;
+ BR1.QNO8L3          : QNO__001     , AT = 5.467821     , SLOT_ID = 2459207, ASSEMBLY_ID = 2452497;
+ BR1.XNOH0.8L3       : XNOH0        , AT = 5.467821     , SLOT_ID = 2459209, ASSEMBLY_ID = 2452497;
+ BR.QDE8                            , AT = 6.234797     , SLOT_ID = 2459222;
+ BR1.DBSH8L4         : DBSH         , AT = 7.001821     , SLOT_ID = 2459223, ASSEMBLY_ID = 2452501;
+ BR1.DBSV8L4         : DBSV         , AT = 7.001821     , SLOT_ID = 2459224, ASSEMBLY_ID = 2452501;
+ BR.QFO82                           , AT = 7.580797     , SLOT_ID = 2459205;
+ BR.STSCRAP82                       , AT = 8.1998       , SLOT_ID = 2459199, ASSEMBLY_ID = 2459197;
+ BR.BHZ82                           , AT = 9.008652     , SLOT_ID = 2459197;
+ENDSEQUENCE;
+
+P09ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 09
+ BR1.DHZ9L1          : DHZ__001     , AT = .322         , SLOT_ID = 2459231, ASSEMBLY_ID = 2452505;
+ BR1.DVT9L1          : DVT__001     , AT = .322         , SLOT_ID = 2459232, ASSEMBLY_ID = 2452505;
+ BR1.BCTDC9L1        : TDC          , AT = 1.038321     , SLOT_ID = 2459239;
+ BR1.ONO9L1          : ONO          , AT = 2.094        , SLOT_ID = 2459243, ASSEMBLY_ID = 2452511;
+ BR1.OSK9L1          : OSK          , AT = 2.094        , SLOT_ID = 2459244, ASSEMBLY_ID = 2452511;
+ BR1.XNO9L1          : XNO__001     , AT = 2.094        , SLOT_ID = 2459245, ASSEMBLY_ID = 2452511;
+ BR1.XSK9L1          : XSK          , AT = 2.094        , SLOT_ID = 2459246, ASSEMBLY_ID = 2452511;
+ BR.BHZ91                           , AT = 3.462849     , SLOT_ID = 2459259;
+ BR.STSCRAP91                       , AT = 4.2717       , SLOT_ID = 2459261, ASSEMBLY_ID = 2459259;
+ BR.QFO91                           , AT = 4.889797     , SLOT_ID = 2459263;
+ BR1.BPM9L3          : UES          , AT = 5.467826     , SLOT_ID = 2459267, ASSEMBLY_ID = 2452515;
+ BR1.ONOH0.9L3       : ONOH0        , AT = 5.467826     , SLOT_ID = 2459265, ASSEMBLY_ID = 2452516;
+ BR1.QSKH0.9L3       : QSKH0        , AT = 5.467826     , SLOT_ID = 2459266, ASSEMBLY_ID = 2452516;
+ BR1.XNOH0.9L3       : XNOH0        , AT = 5.467826     , SLOT_ID = 2459268, ASSEMBLY_ID = 2452516;
+ BR.QDE9                            , AT = 6.234797     , SLOT_ID = 2459281;
+ BR1.DSHAH9L4        : DBSH         , AT = 7.001826     , SLOT_ID = 2459282, ASSEMBLY_ID = 2452520;
+ BR1.DSHAV9L4        : DBSV         , AT = 7.001826     , SLOT_ID = 2459283, ASSEMBLY_ID = 2452520;
+ BR.QFO92                           , AT = 7.580797     , SLOT_ID = 2459264;
+ BR.STSCRAP92                       , AT = 8.1998       , SLOT_ID = 2459262, ASSEMBLY_ID = 2459260;
+ BR.BHZ92                           , AT = 9.008652     , SLOT_ID = 2459260;
+ENDSEQUENCE;
+
+P10ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 10
+ BR1.C02.10L1        : ACC02        , AT = 1.327023     , SLOT_ID = 2459290, ASSEMBLY_ID = 2452524;
+ BR.BHZ101                          , AT = 3.462849     , SLOT_ID = 2459292;
+ BR.STSCRAP101                      , AT = 4.2717       , SLOT_ID = 2459294, ASSEMBLY_ID = 2459292;
+ BR.QFO101                          , AT = 4.889797     , SLOT_ID = 2459296;
+ BR1.BPM10L3         : UES          , AT = 5.46782      , SLOT_ID = 2459300, ASSEMBLY_ID = 2452525;
+ BR1.ONOH0.10L3      : ONOH0        , AT = 5.46782      , SLOT_ID = 2459298, ASSEMBLY_ID = 2452526;
+ BR1.QSK10L3         : QSK          , AT = 5.46782      , SLOT_ID = 2459299, ASSEMBLY_ID = 2452526;
+ BR1.XNOH0.10L3      : XNOH0        , AT = 5.46782      , SLOT_ID = 2459301, ASSEMBLY_ID = 2452526;
+ BR.QDE10                           , AT = 6.234797     , SLOT_ID = 2459314;
+ BR1.DSHAH10L4       : DSHAH        , AT = 7.00182      , SLOT_ID = 2459315, ASSEMBLY_ID = 2452530;
+ BR1.DVT10L4         : DVT__001     , AT = 7.00182      , SLOT_ID = 2459316, ASSEMBLY_ID = 2452530;
+ BR.QFO102                          , AT = 7.580797     , SLOT_ID = 2459297;
+ BR.STSCRAP102                      , AT = 8.1998       , SLOT_ID = 2459295, ASSEMBLY_ID = 2459293;
+ BR.BHZ102                          , AT = 9.008652     , SLOT_ID = 2459293;
+ENDSEQUENCE;
+
+P11ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 11
+ BE1.DHZ11L1         : DHZ__001     , AT = .296         , SLOT_ID = 2459323, ASSEMBLY_ID = 2452534;
+ BE1.DVT11L1         : DVT__001     , AT = .296         , SLOT_ID = 2459324, ASSEMBLY_ID = 2452534;
+ BR1.ONO11L1         : ONO          , AT = 1.463        , SLOT_ID = 2459331, ASSEMBLY_ID = 2452538;
+ BR1.QNO11L1         : QNO__001     , AT = 1.463        , SLOT_ID = 2459332, ASSEMBLY_ID = 2452538;
+ BR1.XNO11L1         : XNO__001     , AT = 1.463        , SLOT_ID = 2459333, ASSEMBLY_ID = 2452538;
+ BR.BHZ111                          , AT = 3.462849     , SLOT_ID = 2459343;
+ BR.STSCRAP111                      , AT = 4.2717       , SLOT_ID = 2459345, ASSEMBLY_ID = 2459343;
+ BR1.BPP11L2         : BPPBA001     , AT = 4.3037       , SLOT_ID = 2459347, ASSEMBLY_ID = 2452542;
+ BR.QFO111                          , AT = 4.889797     , SLOT_ID = 2459351;
+ BR1.BPM11L3         : UES          , AT = 5.467825     , SLOT_ID = 2459355, ASSEMBLY_ID = 2452543;
+ BR1.ONOH0.11L3      : ONOH0        , AT = 5.467825     , SLOT_ID = 2459353, ASSEMBLY_ID = 2452544;
+ BR1.QSKH0.11L3      : QSKH0        , AT = 5.467825     , SLOT_ID = 2459354, ASSEMBLY_ID = 2452544;
+ BR1.XNOH0.11L3      : XNOH0        , AT = 5.467825     , SLOT_ID = 2459356, ASSEMBLY_ID = 2452544;
+ BR.QDE11                           , AT = 6.234797     , SLOT_ID = 2459369;
+ BR1.DHZ11L4         : DHZ__A       , AT = 7.001825     , SLOT_ID = 2459370, ASSEMBLY_ID = 2452548;
+ BR1.DVT11L4         : DVT__A       , AT = 7.001825     , SLOT_ID = 2459371, ASSEMBLY_ID = 2452548;
+ BR1.OSK11L4         : OSK          , AT = 7.001825     , SLOT_ID = 2459372, ASSEMBLY_ID = 2452548;
+ BR1.XSK11L4         : XSK          , AT = 7.001825     , SLOT_ID = 2459373, ASSEMBLY_ID = 2452548;
+ BR.QFO112                          , AT = 7.580797     , SLOT_ID = 2459352;
+ BR.STSCRAP112                      , AT = 8.1998       , SLOT_ID = 2459346, ASSEMBLY_ID = 2459344;
+ BR.BHZ112                          , AT = 9.008652     , SLOT_ID = 2459344;
+ENDSEQUENCE;
+
+P12ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 12
+ BR1.KQM12L1         : KQM__002     , AT = .914         , SLOT_ID = 2459386, ASSEMBLY_ID = 2452552;
+ BR1.ONO12L1         : ONO          , AT = 2.094        , SLOT_ID = 2459390, ASSEMBLY_ID = 2452553;
+ BR1.OSK12L1         : OSK          , AT = 2.094        , SLOT_ID = 2459391, ASSEMBLY_ID = 2452553;
+ BR1.XNO12L1         : XNO__001     , AT = 2.094        , SLOT_ID = 2459392, ASSEMBLY_ID = 2452553;
+ BR1.XSK12L1         : XSK          , AT = 2.094        , SLOT_ID = 2459393, ASSEMBLY_ID = 2452553;
+ BR.BHZ121                          , AT = 3.462849     , SLOT_ID = 2459406;
+ BR.STSCRAP121                      , AT = 4.2717       , SLOT_ID = 2459408, ASSEMBLY_ID = 2459406;
+ BR.QFO121                          , AT = 4.889797     , SLOT_ID = 2459410;
+ BR1.BPM12L3         : UES          , AT = 5.46783      , SLOT_ID = 2459414, ASSEMBLY_ID = 2452557;
+ BR1.ONOH0.12L3      : ONOH0        , AT = 5.46783      , SLOT_ID = 2459412, ASSEMBLY_ID = 2452558;
+ BR1.QNO12L3         : QNO__001     , AT = 5.46783      , SLOT_ID = 2459413, ASSEMBLY_ID = 2452558;
+ BR1.XNOH0.12L3      : XNOH0        , AT = 5.46783      , SLOT_ID = 2459415, ASSEMBLY_ID = 2452558;
+ BR.QDE12                           , AT = 6.234797     , SLOT_ID = 2459428;
+ BR1.DHZ12L4         : DHZ__A       , AT = 7.00183      , SLOT_ID = 2459429, ASSEMBLY_ID = 2452562;
+ BR1.DVT12L4         : DVT__A       , AT = 7.00183      , SLOT_ID = 2459430, ASSEMBLY_ID = 2452562;
+ BR1.OSK12L4         : OSK          , AT = 7.00183      , SLOT_ID = 2459431, ASSEMBLY_ID = 2452562;
+ BR1.XSK12L4         : XSK          , AT = 7.00183      , SLOT_ID = 2459432, ASSEMBLY_ID = 2452562;
+ BR.QFO122                          , AT = 7.580797     , SLOT_ID = 2459411;
+ BR.STSCRAP122                      , AT = 8.1998       , SLOT_ID = 2459409, ASSEMBLY_ID = 2459407;
+ BR.BHZ122                          , AT = 9.008652     , SLOT_ID = 2459407;
+ENDSEQUENCE;
+
+P13ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 13
+ BR1.C04.13L1        : ACC04        , AT = 1.327        , SLOT_ID = 2459445, ASSEMBLY_ID = 2452566;
+ BR.BHZ131                          , AT = 3.462849     , SLOT_ID = 2459449;
+ BR.STSCRAP131                      , AT = 4.2717       , SLOT_ID = 2459451, ASSEMBLY_ID = 2459449;
+ BR.QFO131                          , AT = 4.889797     , SLOT_ID = 2459453;
+ BR1.BPM13L3         : UES          , AT = 5.467835     , SLOT_ID = 2459457, ASSEMBLY_ID = 2452567;
+ BR1.ONOH0.13L3      : ONOH0        , AT = 5.467835     , SLOT_ID = 2459455, ASSEMBLY_ID = 2452568;
+ BR1.QSKH0.13L3      : QSKH0        , AT = 5.467835     , SLOT_ID = 2459456, ASSEMBLY_ID = 2452568;
+ BR1.XNOH0.13L3      : XNOH0        , AT = 5.467835     , SLOT_ID = 2459458, ASSEMBLY_ID = 2452568;
+ BR.QDE13                           , AT = 6.234797     , SLOT_ID = 2459471;
+ BR1.DHZ13L4         : DHZ__001     , AT = 7.001835     , SLOT_ID = 2459472, ASSEMBLY_ID = 2452572;
+ BR1.DVT13L4         : DVT__001     , AT = 7.001835     , SLOT_ID = 2459473, ASSEMBLY_ID = 2452572;
+ BR.QFO132                          , AT = 7.580797     , SLOT_ID = 2459454;
+ BR.STSCRAP132                      , AT = 8.1998       , SLOT_ID = 2459452, ASSEMBLY_ID = 2459450;
+ BR.BHZ132                          , AT = 9.008652     , SLOT_ID = 2459450;
+ENDSEQUENCE;
+
+P14ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 14
+ BR1.DHZ14L1         : DHZ__001     , AT = .234928      , SLOT_ID = 2459480, ASSEMBLY_ID = 2452576;
+ BR1.DVT14L1         : DVT__001     , AT = .234928      , SLOT_ID = 2459481, ASSEMBLY_ID = 2452576;
+ BE1.KFA14L1         : MKMAG003     , AT = 1.52659      , SLOT_ID = 2459488, ASSEMBLY_ID = 5736994;
+ BR.BHZ141                          , AT = 3.462849     , SLOT_ID = 2459492;
+ BR.STSCRAP141                      , AT = 4.2717       , SLOT_ID = 2459494, ASSEMBLY_ID = 2459492;
+ BR1.VVS14L2         : VVS          , AT = 4.3725       , SLOT_ID = 3783356;
+ BR.QFO141                          , AT = 4.889797     , SLOT_ID = 2459495;
+ BR1.BPM14L3         : UES          , AT = 5.467839     , SLOT_ID = 2459499, ASSEMBLY_ID = 2452581;
+ BR1.ONOH0.14L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459497, ASSEMBLY_ID = 2452582;
+ BR1.QSK14L3         : QSK          , AT = 5.467839     , SLOT_ID = 2459498, ASSEMBLY_ID = 2452582;
+ BR1.XNOH0.14L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459500, ASSEMBLY_ID = 2452582;
+ BR.QDE14                           , AT = 6.234797     , SLOT_ID = 2459513;
+ BR1.BPP14L4         : BPPBB001     , AT = 6.79374      , SLOT_ID = 2459514, ASSEMBLY_ID = 2452586;
+ BE1.BSW14L4         : MDBAA        , AT = 7.06474      , SLOT_ID = 2459518; ! Position changed according to drawing: PS-SI-1-43-1033-E
+ BR.QFO142                          , AT = 7.580797     , SLOT_ID = 2459496;
+ BR.SPSCRAP142                      , AT = 8.1998       , SLOT_ID = 2459522, ASSEMBLY_ID = 2459493;
+ BR.BHZ142                          , AT = 9.008652     , SLOT_ID = 2459493;
+ENDSEQUENCE;
+
+P15ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 15
+ BR.BTV15L1                         , AT = .192         , SLOT_ID = 2459523;
+ BE1.SMH15L1         : SMH__006     , AT = .909892      , SLOT_ID = 2459524, ASSEMBLY_ID = 2452588;
+ BR1.DHZ15L1         : DHZ__002     , AT = 1.8213       , SLOT_ID = 2459528, ASSEMBLY_ID = 2452589;
+ BR1.DVT15L1         : DVT__002     , AT = 1.8213       , SLOT_ID = 2459529, ASSEMBLY_ID = 2452589;
+ BE1.BSW15L1         : MDBAB        , AT = 2.36866      , SLOT_ID = 2459536;
+ BR.BHZ151                          , AT = 3.462849     , SLOT_ID = 2459540;
+ BR.SPSCRAP151                      , AT = 4.2717       , SLOT_ID = 2459542, ASSEMBLY_ID = 2459540;
+ BR.QFO151                          , AT = 4.889797     , SLOT_ID = 2459543;
+ BR1.BPM15L3         : UES          , AT = 5.467834     , SLOT_ID = 2459547, ASSEMBLY_ID = 2452594;
+ BR1.ONOH0.15L3      : ONOH0        , AT = 5.467834     , SLOT_ID = 2459545, ASSEMBLY_ID = 2452595;
+ BR1.QSKH0.15L3      : QSKH0        , AT = 5.467834     , SLOT_ID = 2459546, ASSEMBLY_ID = 2452595;
+ BR1.XNOH0.15L3      : XNOH0        , AT = 5.467834     , SLOT_ID = 2459548, ASSEMBLY_ID = 2452595;
+ BR.QDE15                           , AT = 6.234797     , SLOT_ID = 2459561;
+ BE1.BSW15L4         : MDBAA        , AT = 7.011834     , SLOT_ID = 2459562; ! Position changed according to drawing: PS-SI-1-43-1033-E
+ BR.QFO152                          , AT = 7.580797     , SLOT_ID = 2459544;
+ BR.STSCRAP152                      , AT = 8.1998       , SLOT_ID = 2459566, ASSEMBLY_ID = 2459541;
+ BR.BHZ152                          , AT = 9.008652     , SLOT_ID = 2459541;
+ENDSEQUENCE;
+
+P16ring1: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 1, Period 16
+ BR1.ONO16L1         : ONO          , AT = .363         , SLOT_ID = 2459567, ASSEMBLY_ID = 2452600;
+ BR1.QNO16L1         : QNO__001     , AT = .363         , SLOT_ID = 2459568, ASSEMBLY_ID = 2452600;
+ BR1.XNO16L1         : XNO__001     , AT = .363         , SLOT_ID = 2459569, ASSEMBLY_ID = 2452600;
+ BI1.KSW16L1         : MKMAG002     , AT = .9605        , SLOT_ID = 40101120, ASSEMBLY_ID = 40101119;
+ BR1.DHZ16L1         : DHZ__001     , AT = 1.99601      , SLOT_ID = 2459579, ASSEMBLY_ID = 2452604;
+ BR1.DVT16L1         : DVT__001     , AT = 1.99601      , SLOT_ID = 2459580, ASSEMBLY_ID = 2452604;
+ BR.BHZ161                          , AT = 3.462849     , SLOT_ID = 2459587;
+ BR.STSCRAP161                      , AT = 4.2717       , SLOT_ID = 2459589, ASSEMBLY_ID = 2459587;
+ BR.QFO161                          , AT = 4.889797     , SLOT_ID = 2459591;
+ BR1.BPM16L3         : UES          , AT = 5.467839     , SLOT_ID = 2459595, ASSEMBLY_ID = 2452608;
+ BR1.ONOH0.16L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459593, ASSEMBLY_ID = 2452609;
+ BR1.QNO16L3         : QNO__001     , AT = 5.467839     , SLOT_ID = 2459594, ASSEMBLY_ID = 2452609;
+ BR1.XNOH0.16L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459596, ASSEMBLY_ID = 2452609;
+ BR.QDE16                           , AT = 6.234797     , SLOT_ID = 2459609;
+ BI1.KSW16L4         : MKMAG002     , AT = 7.001839     , SLOT_ID = 2459610, ASSEMBLY_ID = 5736989;
+ BR.QFO162                          , AT = 7.580797     , SLOT_ID = 2459592;
+ BR.STSCRAP162                      , AT = 8.1998       , SLOT_ID = 2459590, ASSEMBLY_ID = 2459588;
+ BR.BHZ162                          , AT = 9.008652     , SLOT_ID = 2459588;
+ENDSEQUENCE;
+
+//------------------------------------------------------------------------------------
+//                       RING 2                                                     
+//------------------------------------------------------------------------------------
+
+P01ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 01
+ BI2.KSW1L1          : MKMAG001     , AT = .585         , SLOT_ID = 2458829, ASSEMBLY_ID = 5736962;
+ BI.BTV50                           , AT = .792         , SLOT_ID = 2458832;
+ BI.SMH1L1                          , AT = 1.7274       , SLOT_ID = 2458834;
+ BI.BTV60                           , AT = 2.2479       , SLOT_ID = 2458835;
+ BR.BHZ11                           , AT = 3.462849     , SLOT_ID = 2458836;
+ BR.SPSCRAP11                       , AT = 4.2717       , SLOT_ID = 2458838, ASSEMBLY_ID = 2458836;
+ BR.QFO11                           , AT = 4.889797     , SLOT_ID = 2458839;
+ BR2.BPM1L3          : UES          , AT = 5.467797     , SLOT_ID = 2458851, ASSEMBLY_ID = 2452397;
+ BR2.ONOH0.1L3       : ONOH0        , AT = 5.467797     , SLOT_ID = 2458849, ASSEMBLY_ID = 2452399;
+ BR2.QSKH0.1L3       : QSKH0        , AT = 5.467797     , SLOT_ID = 2458850, ASSEMBLY_ID = 2452399;
+ BR2.XNOH0.1L3       : XNOH0        , AT = 5.467797     , SLOT_ID = 2458852, ASSEMBLY_ID = 2452399;
+ BR.QDE1                            , AT = 6.234797     , SLOT_ID = 2458861;
+ BI2.KSW1L4          : MKMAG002     , AT = 7.001797     , SLOT_ID = 2458863, ASSEMBLY_ID = 5736975;
+ BR.QFO12                           , AT = 7.580797     , SLOT_ID = 2458840;
+ BR2.BPP1L5          : BPPBA001     , AT = 7.997852     , SLOT_ID = 2458842, ASSEMBLY_ID = 2452396; ! Position is approximate
+ BR.STSCRAP12                       , AT = 8.1998       , SLOT_ID = 2458866, ASSEMBLY_ID = 2458837;
+ BR.BHZ12                           , AT = 9.008652     , SLOT_ID = 2458837;
+ENDSEQUENCE;
+
+P02ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 02
+ BR2.VVS2L1          : VVS          , AT = .1825        , SLOT_ID = 3783219;
+ BR2.BWS.2L1.V_ROT   : BWSV         , AT = .918         , SLOT_ID = 2458868, ASSEMBLY_ID = 2452403;
+ BR2.BWS.2L1.H_ROT   : BWSH         , AT = 1.016        , SLOT_ID = 2458872, ASSEMBLY_ID = 2452404;
+ BI2.KSW2L1          : MKMAG002     , AT = 1.737        , SLOT_ID = 2458876, ASSEMBLY_ID = 5736984;
+ BR.BHZ21                           , AT = 3.462849     , SLOT_ID = 2458879;
+ BR.STSCRAP21                       , AT = 4.2717       , SLOT_ID = 2458881, ASSEMBLY_ID = 2458879;
+ BR.QFO21                           , AT = 4.889797     , SLOT_ID = 2458883;
+ BR2.BPM2L3          : UES          , AT = 5.467802     , SLOT_ID = 2458891, ASSEMBLY_ID = 2452406;
+ BR2.ONOH0.2L3       : ONOH0        , AT = 5.467802     , SLOT_ID = 2458889, ASSEMBLY_ID = 2452408;
+ BR2.QSK2L3          : QSK          , AT = 5.467802     , SLOT_ID = 2458890, ASSEMBLY_ID = 2452408;
+ BR2.XNOH0.2L3       : XNOH0        , AT = 5.467802     , SLOT_ID = 2458892, ASSEMBLY_ID = 2452408;
+ BR.QDE2                            , AT = 6.234797     , SLOT_ID = 2458901;
+ BR2.DHZ2L4          : DHZ__A       , AT = 7.001802     , SLOT_ID = 2458906, ASSEMBLY_ID = 2452412;
+ BR2.DVT2L4          : DVT__A       , AT = 7.001802     , SLOT_ID = 2458907, ASSEMBLY_ID = 2452412;
+ BR2.OSK2L4          : OSK          , AT = 7.001802     , SLOT_ID = 2458908, ASSEMBLY_ID = 2452412;
+ BR2.XSK2L4          : XSK          , AT = 7.001802     , SLOT_ID = 2458909, ASSEMBLY_ID = 2452412;
+ BR.QFO22                           , AT = 7.580797     , SLOT_ID = 2458884;
+ BR.STSCRAP22                       , AT = 8.1998       , SLOT_ID = 2458882, ASSEMBLY_ID = 2458880;
+ BR.BHZ22                           , AT = 9.008652     , SLOT_ID = 2458880;
+ENDSEQUENCE;
+
+#hacmap21 := ac_s * (2*(cos(2*pi*Qxd)-cos(2*pi*Qx))/(betxac*sin(2*pi*Qx)));
+#vacmap43 := ac_s * (2*(cos(2*pi*Qyd)-cos(2*pi*Qy))/(betyac*sin(2*pi*Qy)));
+#hacmap: matrix, l=0, rm21 := hacmap21;
+#vacmap: matrix, l=0, rm43 := vacmap43;
+
+P03ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 03
+ BR2.DES3L1          : DES          , AT = .8065        , SLOT_ID = 2458920, ASSEMBLY_ID = 2452415;
+ hacmap                             , AT = 1.089;
+ vacmap                             , AT = 1.089;
+ BR2.ONO3L1          : ONO          , AT = 1.463        , SLOT_ID = 2458930, ASSEMBLY_ID = 2452418;
+ BR2.QNO3L1          : QNO__001     , AT = 1.463        , SLOT_ID = 2458931, ASSEMBLY_ID = 2452418;
+ BR2.XNO3L1          : XNO__001     , AT = 1.463        , SLOT_ID = 2458932, ASSEMBLY_ID = 2452418;
+ BR2.BPMT3L1         : UES          , AT = 2.043        , SLOT_ID = 2458940, ASSEMBLY_ID = 2452421;
+ BR.BHZ31                           , AT = 3.462849     , SLOT_ID = 2458943;
+ BR.STSCRAP31                       , AT = 4.2717       , SLOT_ID = 2458945, ASSEMBLY_ID = 2458943;
+ BR.QFO31                           , AT = 4.889797     , SLOT_ID = 2458947;
+ BR2.BPM3L3          : UES          , AT = 5.467807     , SLOT_ID = 2458955, ASSEMBLY_ID = 2452422;
+ BR2.ONOH0.3L3       : ONOH0        , AT = 5.467807     , SLOT_ID = 2458953, ASSEMBLY_ID = 2452424;
+ BR2.QSKH0.3L3       : QSKH0        , AT = 5.467807     , SLOT_ID = 2458954, ASSEMBLY_ID = 2452424;
+ BR2.XNOH0.3L3       : XNOH0        , AT = 5.467807     , SLOT_ID = 2458956, ASSEMBLY_ID = 2452424;
+ BR.QDE3                            , AT = 6.234797     , SLOT_ID = 2458965;
+ BR2.DHZ3L4          : DHZ__001     , AT = 7.001807     , SLOT_ID = 2458968, ASSEMBLY_ID = 2452428;
+ BR2.DVT3L4          : DVT__001     , AT = 7.001807     , SLOT_ID = 2458969, ASSEMBLY_ID = 2452428;
+ BR.QFO32                           , AT = 7.580797     , SLOT_ID = 2458948;
+ BR.STSCRAP32                       , AT = 8.1998       , SLOT_ID = 2458946, ASSEMBLY_ID = 2458944;
+ BR.BHZ32                           , AT = 9.008652     , SLOT_ID = 2458944;
+ENDSEQUENCE;
+
+P04ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 04
+ BR2.ONO4L1          : ONO          , AT = .37          , SLOT_ID = 2458978, ASSEMBLY_ID = 2452432;
+ BR2.OSK4L1          : OSK          , AT = .37          , SLOT_ID = 2458979, ASSEMBLY_ID = 2452432;
+ BR2.XNO4L1          : XNO__001     , AT = .37          , SLOT_ID = 2458980, ASSEMBLY_ID = 2452432;
+ BR2.XSK4L1          : XSK          , AT = .37          , SLOT_ID = 2458981, ASSEMBLY_ID = 2452432;
+ BE2.DHZ4L1          : DHZ__001     , AT = .904         , SLOT_ID = 2458992, ASSEMBLY_ID = 2452436;
+ BE2.DVT4L1          : DVT__001     , AT = .904         , SLOT_ID = 2458993, ASSEMBLY_ID = 2452436;
+ BR.BHZ41                           , AT = 3.462849     , SLOT_ID = 2458998;
+ BR.STSCRAP41                       , AT = 4.2717       , SLOT_ID = 2459000, ASSEMBLY_ID = 2458998;
+ BR.QFO41                           , AT = 4.889797     , SLOT_ID = 2459002;
+ BR2.BPM4L3          : UES          , AT = 5.467812     , SLOT_ID = 2459010, ASSEMBLY_ID = 2452439;
+ BR2.ONOH0.4L3       : ONOH0        , AT = 5.467812     , SLOT_ID = 2459008, ASSEMBLY_ID = 2452441;
+ BR2.QNO4L3          : QNO__001     , AT = 5.467812     , SLOT_ID = 2459009, ASSEMBLY_ID = 2452441;
+ BR2.XNOH0.4L3       : XNOH0        , AT = 5.467812     , SLOT_ID = 2459011, ASSEMBLY_ID = 2452441;
+ BR.QDE4                            , AT = 6.234797     , SLOT_ID = 2459020;
+ BR2.DHZ4L4          : DHZ__001     , AT = 7.001812     , SLOT_ID = 2459023, ASSEMBLY_ID = 2452445;
+ BR2.DSHAV4L4        : DSHAV        , AT = 7.001812     , SLOT_ID = 2459024, ASSEMBLY_ID = 2452445;
+ BR.QFO42                           , AT = 7.580797     , SLOT_ID = 2459003;
+ BR2.BPTF4L5         : UTFB         , AT = 7.99794      , SLOT_ID = 2459030, ASSEMBLY_ID = 2452448;
+ BR.STSCRAP42                       , AT = 8.1998       , SLOT_ID = 2459001, ASSEMBLY_ID = 2458999;
+ BR.BHZ42                           , AT = 9.008652     , SLOT_ID = 2458999;
+ENDSEQUENCE;
+
+P05ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 05
+ BR2.BPP5L1          : BPPBB001     , AT = .5225        , SLOT_ID = 2459034, ASSEMBLY_ID = 2452449;
+ BR2.C16.5L1         : ACC16        , AT = 1.63787      , SLOT_ID = 2459038, ASSEMBLY_ID = 2452450;
+ BR.BHZ51                           , AT = 3.462849     , SLOT_ID = 2459041;
+ BR.STSCRAP51                       , AT = 4.2717       , SLOT_ID = 2459043, ASSEMBLY_ID = 2459041;
+ BR.QFO51                           , AT = 4.889797     , SLOT_ID = 2459045;
+ BR2.BPM5L3          : UES          , AT = 5.467806     , SLOT_ID = 2459053, ASSEMBLY_ID = 2452451;
+ BR2.ONOH0.5L3       : ONOH0        , AT = 5.467806     , SLOT_ID = 2459051, ASSEMBLY_ID = 2452453;
+ BR2.QSKH0.5L3       : QSKH0        , AT = 5.467806     , SLOT_ID = 2459052, ASSEMBLY_ID = 2452453;
+ BR2.XNOH0.5L3       : XNOH0        , AT = 5.467806     , SLOT_ID = 2459054, ASSEMBLY_ID = 2452453;
+ BR.QDE5                            , AT = 6.234797     , SLOT_ID = 2459063;
+ BR2.DHZ5L4          : DHZ__001     , AT = 6.840806     , SLOT_ID = 2459066, ASSEMBLY_ID = 2452457;
+ BR2.DVT5L4          : DVT__001     , AT = 6.840806     , SLOT_ID = 2459067, ASSEMBLY_ID = 2452457;
+ BR.QFO52                           , AT = 7.580797     , SLOT_ID = 2459046;
+ BR.STSCRAP52                       , AT = 8.1998       , SLOT_ID = 2459044, ASSEMBLY_ID = 2459042;
+ BR.BHZ52                           , AT = 9.008652     , SLOT_ID = 2459042;
+ENDSEQUENCE;
+
+P06ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 06
+ BR2.ONO6L1          : ONO          , AT = .37          , SLOT_ID = 2459076, ASSEMBLY_ID = 2452461;
+ BR2.OSK6L1          : OSK          , AT = .37          , SLOT_ID = 2459077, ASSEMBLY_ID = 2452461;
+ BR2.XNO6L1          : XNO__001     , AT = .37          , SLOT_ID = 2459078, ASSEMBLY_ID = 2452461;
+ BR2.XSK6L1          : XSK          , AT = .37          , SLOT_ID = 2459079, ASSEMBLY_ID = 2452461;
+ BR.BHZ61                           , AT = 3.462849     , SLOT_ID = 2459088;
+ BR.STSCRAP61                       , AT = 4.2717       , SLOT_ID = 2459090, ASSEMBLY_ID = 2459088;
+ BR.QFO61                           , AT = 4.889797     , SLOT_ID = 2459092;
+ BR2.BPM6L3          : UES          , AT = 5.467811     , SLOT_ID = 2459100, ASSEMBLY_ID = 2452464;
+ BR2.ONOH0.6L3       : ONOH0        , AT = 5.467811     , SLOT_ID = 2459098, ASSEMBLY_ID = 2452466;
+ BR2.QSK6L3          : QSK          , AT = 5.467811     , SLOT_ID = 2459099, ASSEMBLY_ID = 2452466;
+ BR2.XNOH0.6L3       : XNOH0        , AT = 5.467811     , SLOT_ID = 2459101, ASSEMBLY_ID = 2452466;
+ BR.QDE6                            , AT = 6.234797     , SLOT_ID = 2459110;
+ BR2.DHZ6L4          : DHZ__A       , AT = 7.001811     , SLOT_ID = 2459115, ASSEMBLY_ID = 2452470;
+ BR2.DVT6L4          : DVT__A       , AT = 7.001811     , SLOT_ID = 2459116, ASSEMBLY_ID = 2452470;
+ BR2.OSK6L4          : OSK          , AT = 7.001811     , SLOT_ID = 2459117, ASSEMBLY_ID = 2452470;
+ BR2.XSK6L4          : XSK          , AT = 7.001811     , SLOT_ID = 2459118, ASSEMBLY_ID = 2452470;
+ BR.QFO62                           , AT = 7.580797     , SLOT_ID = 2459093;
+ BR.STSCRAP62                       , AT = 8.1998       , SLOT_ID = 2459091, ASSEMBLY_ID = 2459089;
+ BR.BHZ62                           , AT = 9.008652     , SLOT_ID = 2459089;
+ENDSEQUENCE;
+
+P07ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 07
+ BR2.C02.7L1         : ACC02        , AT = 1.327019     , SLOT_ID = 2459127, ASSEMBLY_ID = 2452473;
+ BR.BHZ71                           , AT = 3.462849     , SLOT_ID = 2459129;
+ BR.STSCRAP71                       , AT = 4.2717       , SLOT_ID = 2459131, ASSEMBLY_ID = 2459129;
+ BR2.BPM7L2          : UES          , AT = 4.47354      , SLOT_ID = 2459134, ASSEMBLY_ID = 2452474;
+ BR.QFO71                           , AT = 4.889797     , SLOT_ID = 2459137;
+ BR2.BPM7L3          : UES          , AT = 5.467816     , SLOT_ID = 2459145, ASSEMBLY_ID = 2452475;
+ BR2.ONOH0.7L3       : ONOH0        , AT = 5.467816     , SLOT_ID = 2459143, ASSEMBLY_ID = 2452477;
+ BR2.QSKH0.7L3       : QSKH0        , AT = 5.467816     , SLOT_ID = 2459144, ASSEMBLY_ID = 2452477;
+ BR2.XNOH0.7L3       : XNOH0        , AT = 5.467816     , SLOT_ID = 2459146, ASSEMBLY_ID = 2452477;
+ BR.QDE7                            , AT = 6.234797     , SLOT_ID = 2459155;
+ BR2.DSHAH7L4        : DBSH         , AT = 7.001816     , SLOT_ID = 2459158, ASSEMBLY_ID = 2452481;
+ BR2.DSHAV7L4        : DBSV         , AT = 7.001816     , SLOT_ID = 2459159, ASSEMBLY_ID = 2452481;
+ BR.QFO72                           , AT = 7.580797     , SLOT_ID = 2459138;
+ BR.STSCRAP72                       , AT = 8.1998       , SLOT_ID = 2459132, ASSEMBLY_ID = 2459130;
+ BR.BHZ72                           , AT = 9.008652     , SLOT_ID = 2459130;
+ENDSEQUENCE;
+
+P08ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 08
+ BR2.ONO8L1          : ONO          , AT = .36375       , SLOT_ID = 2459167, ASSEMBLY_ID = 2452485;
+ BR2.QNO8L1          : QNO__001     , AT = .36375       , SLOT_ID = 2459168, ASSEMBLY_ID = 2452485;
+ BR2.XNO8L1          : XNO__001     , AT = .36375       , SLOT_ID = 2459169, ASSEMBLY_ID = 2452485;
+ BR2.DHZ8L1          : DHZ__001     , AT = .86675       , SLOT_ID = 2459178, ASSEMBLY_ID = 2452489;
+ BR2.DVT8L1          : DVT__001     , AT = .86675       , SLOT_ID = 2459179, ASSEMBLY_ID = 2452489;
+ BR2.BCTF8L1         : TFA          , AT = 1.4824       , SLOT_ID = 2459185, ASSEMBLY_ID = 2452492;
+ BR2.BCW8L1          : UWBL         , AT = 2.013023     , SLOT_ID = 2459189, ASSEMBLY_ID = 2452493;
+ BR2.BPP8L1          : BPPBA001     , AT = 2.183273     , SLOT_ID = 2459193, ASSEMBLY_ID = 2452494;
+ BR2.VVS8L1          : VVS          , AT = 2.1875       , SLOT_ID = 3783285;
+ BR.BHZ81                           , AT = 3.462849     , SLOT_ID = 2459196;
+ BR.STSCRAP81                       , AT = 4.2717       , SLOT_ID = 2459198, ASSEMBLY_ID = 2459196;
+ BR2.WBS8L2          : WBS          , AT = 4.47354      , SLOT_ID = 2459201, ASSEMBLY_ID = 2452495;
+ BR.QFO81                           , AT = 4.889797     , SLOT_ID = 2459204;
+ BR2.BPM8L3          : UES          , AT = 5.467821     , SLOT_ID = 2459212, ASSEMBLY_ID = 2452496;
+ BR2.ONOH0.8L3       : ONOH0        , AT = 5.467821     , SLOT_ID = 2459210, ASSEMBLY_ID = 2452498;
+ BR2.QNO8L3          : QNO__001     , AT = 5.467821     , SLOT_ID = 2459211, ASSEMBLY_ID = 2452498;
+ BR2.XNOH0.8L3       : XNOH0        , AT = 5.467821     , SLOT_ID = 2459213, ASSEMBLY_ID = 2452498;
+ BR.QDE8                            , AT = 6.234797     , SLOT_ID = 2459222;
+ BR2.DBSH8L4         : DBSH         , AT = 7.001821     , SLOT_ID = 2459225, ASSEMBLY_ID = 2452502;
+ BR2.DBSV8L4         : DBSV         , AT = 7.001821     , SLOT_ID = 2459226, ASSEMBLY_ID = 2452502;
+ BR.QFO82                           , AT = 7.580797     , SLOT_ID = 2459205;
+ BR.STSCRAP82                       , AT = 8.1998       , SLOT_ID = 2459199, ASSEMBLY_ID = 2459197;
+ BR.BHZ82                           , AT = 9.008652     , SLOT_ID = 2459197;
+ENDSEQUENCE;
+
+P09ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 09
+ BR2.DHZ9L1          : DHZ__001     , AT = .322         , SLOT_ID = 2459233, ASSEMBLY_ID = 2452506;
+ BR2.DVT9L1          : DVT__001     , AT = .322         , SLOT_ID = 2459234, ASSEMBLY_ID = 2452506;
+ BR2.BCTDC9L1        : TDC          , AT = 1.377681     , SLOT_ID = 2459241;
+ BR2.ONO9L1          : ONO          , AT = 2.094        , SLOT_ID = 2459247, ASSEMBLY_ID = 2452512;
+ BR2.OSK9L1          : OSK          , AT = 2.094        , SLOT_ID = 2459248, ASSEMBLY_ID = 2452512;
+ BR2.XNO9L1          : XNO__001     , AT = 2.094        , SLOT_ID = 2459249, ASSEMBLY_ID = 2452512;
+ BR2.XSK9L1          : XSK          , AT = 2.094        , SLOT_ID = 2459250, ASSEMBLY_ID = 2452512;
+ BR.BHZ91                           , AT = 3.462849     , SLOT_ID = 2459259;
+ BR.STSCRAP91                       , AT = 4.2717       , SLOT_ID = 2459261, ASSEMBLY_ID = 2459259;
+ BR.QFO91                           , AT = 4.889797     , SLOT_ID = 2459263;
+ BR2.BPM9L3          : UES          , AT = 5.467826     , SLOT_ID = 2459271, ASSEMBLY_ID = 2452515;
+ BR2.ONOH0.9L3       : ONOH0        , AT = 5.467826     , SLOT_ID = 2459269, ASSEMBLY_ID = 2452517;
+ BR2.QSKH0.9L3       : QSKH0        , AT = 5.467826     , SLOT_ID = 2459270, ASSEMBLY_ID = 2452517;
+ BR2.XNOH0.9L3       : XNOH0        , AT = 5.467826     , SLOT_ID = 2459272, ASSEMBLY_ID = 2452517;
+ BR.QDE9                            , AT = 6.234797     , SLOT_ID = 2459281;
+ BR2.DSHAH9L4        : DBSH         , AT = 7.001826     , SLOT_ID = 2459284, ASSEMBLY_ID = 2452521;
+ BR2.DSHAV9L4        : DBSV         , AT = 7.001826     , SLOT_ID = 2459285, ASSEMBLY_ID = 2452521;
+ BR.QFO92                           , AT = 7.580797     , SLOT_ID = 2459264;
+ BR.STSCRAP92                       , AT = 8.1998       , SLOT_ID = 2459262, ASSEMBLY_ID = 2459260;
+ BR.BHZ92                           , AT = 9.008652     , SLOT_ID = 2459260;
+ENDSEQUENCE;
+
+P10ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 10
+ BR.BHZ101                          , AT = 3.462849     , SLOT_ID = 2459292;
+ BR.STSCRAP101                      , AT = 4.2717       , SLOT_ID = 2459294, ASSEMBLY_ID = 2459292;
+ BR.QFO101                          , AT = 4.889797     , SLOT_ID = 2459296;
+ BR2.BPM10L3         : UES          , AT = 5.46782      , SLOT_ID = 2459304, ASSEMBLY_ID = 2452525;
+ BR2.ONOH0.10L3      : ONOH0        , AT = 5.46782      , SLOT_ID = 2459302, ASSEMBLY_ID = 2452527;
+ BR2.QSK10L3         : QSK          , AT = 5.46782      , SLOT_ID = 2459303, ASSEMBLY_ID = 2452527;
+ BR2.XNOH0.10L3      : XNOH0        , AT = 5.46782      , SLOT_ID = 2459305, ASSEMBLY_ID = 2452527;
+ BR.QDE10                           , AT = 6.234797     , SLOT_ID = 2459314;
+ BR2.DSHAH10L4       : DSHAH        , AT = 7.00182      , SLOT_ID = 2459317, ASSEMBLY_ID = 2452531;
+ BR2.DVT10L4         : DVT__001     , AT = 7.00182      , SLOT_ID = 2459318, ASSEMBLY_ID = 2452531;
+ BR.QFO102                          , AT = 7.580797     , SLOT_ID = 2459297;
+ BR.STSCRAP102                      , AT = 8.1998       , SLOT_ID = 2459295, ASSEMBLY_ID = 2459293;
+ BR.BHZ102                          , AT = 9.008652     , SLOT_ID = 2459293;
+ENDSEQUENCE;
+
+P11ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 11
+ BE2.DHZ11L1         : DHZ__001     , AT = .296         , SLOT_ID = 2459325, ASSEMBLY_ID = 2452535;
+ BE2.DVT11L1         : DVT__001     , AT = .296         , SLOT_ID = 2459326, ASSEMBLY_ID = 2452535;
+ BR2.ONO11L1         : ONO          , AT = 1.463        , SLOT_ID = 2459334, ASSEMBLY_ID = 2452539;
+ BR2.QNO11L1         : QNO__001     , AT = 1.463        , SLOT_ID = 2459335, ASSEMBLY_ID = 2452539;
+ BR2.XNO11L1         : XNO__001     , AT = 1.463        , SLOT_ID = 2459336, ASSEMBLY_ID = 2452539;
+ BR.BHZ111                          , AT = 3.462849     , SLOT_ID = 2459343;
+ BR.STSCRAP111                      , AT = 4.2717       , SLOT_ID = 2459345, ASSEMBLY_ID = 2459343;
+ BR2.BPP11L2         : BPPBA001     , AT = 4.3037       , SLOT_ID = 2459348, ASSEMBLY_ID = 2452542;
+ BR.QFO111                          , AT = 4.889797     , SLOT_ID = 2459351;
+ BR2.BPM11L3         : UES          , AT = 5.467825     , SLOT_ID = 2459359, ASSEMBLY_ID = 2452543;
+ BR2.ONOH0.11L3      : ONOH0        , AT = 5.467825     , SLOT_ID = 2459357, ASSEMBLY_ID = 2452545;
+ BR2.QSKH0.11L3      : QSKH0        , AT = 5.467825     , SLOT_ID = 2459358, ASSEMBLY_ID = 2452545;
+ BR2.XNOH0.11L3      : XNOH0        , AT = 5.467825     , SLOT_ID = 2459360, ASSEMBLY_ID = 2452545;
+ BR.QDE11                           , AT = 6.234797     , SLOT_ID = 2459369;
+ BR2.DHZ11L4         : DHZ__A       , AT = 7.001825     , SLOT_ID = 2459374, ASSEMBLY_ID = 2452549;
+ BR2.DVT11L4         : DVT__A       , AT = 7.001825     , SLOT_ID = 2459375, ASSEMBLY_ID = 2452549;
+ BR2.OSK11L4         : OSK          , AT = 7.001825     , SLOT_ID = 2459376, ASSEMBLY_ID = 2452549;
+ BR2.XSK11L4         : XSK          , AT = 7.001825     , SLOT_ID = 2459377, ASSEMBLY_ID = 2452549;
+ BR.QFO112                          , AT = 7.580797     , SLOT_ID = 2459352;
+ BR.STSCRAP112                      , AT = 8.1998       , SLOT_ID = 2459346, ASSEMBLY_ID = 2459344;
+ BR.BHZ112                          , AT = 9.008652     , SLOT_ID = 2459344;
+ENDSEQUENCE;
+
+P12ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 12
+ BR2.KQM12L1         : KQM__002     , AT = .914         , SLOT_ID = 2459387, ASSEMBLY_ID = 2452552;
+ BR2.ONO12L1         : ONO          , AT = 2.094        , SLOT_ID = 2459394, ASSEMBLY_ID = 2452554;
+ BR2.OSK12L1         : OSK          , AT = 2.094        , SLOT_ID = 2459395, ASSEMBLY_ID = 2452554;
+ BR2.XNO12L1         : XNO__001     , AT = 2.094        , SLOT_ID = 2459396, ASSEMBLY_ID = 2452554;
+ BR2.XSK12L1         : XSK          , AT = 2.094        , SLOT_ID = 2459397, ASSEMBLY_ID = 2452554;
+ BR.BHZ121                          , AT = 3.462849     , SLOT_ID = 2459406;
+ BR.STSCRAP121                      , AT = 4.2717       , SLOT_ID = 2459408, ASSEMBLY_ID = 2459406;
+ BR.QFO121                          , AT = 4.889797     , SLOT_ID = 2459410;
+ BR2.BPM12L3         : UES          , AT = 5.46783      , SLOT_ID = 2459418, ASSEMBLY_ID = 2452557;
+ BR2.ONOH0.12L3      : ONOH0        , AT = 5.46783      , SLOT_ID = 2459416, ASSEMBLY_ID = 2452559;
+ BR2.QNO12L3         : QNO__001     , AT = 5.46783      , SLOT_ID = 2459417, ASSEMBLY_ID = 2452559;
+ BR2.XNOH0.12L3      : XNOH0        , AT = 5.46783      , SLOT_ID = 2459419, ASSEMBLY_ID = 2452559;
+ BR.QDE12                           , AT = 6.234797     , SLOT_ID = 2459428;
+ BR2.DHZ12L4         : DHZ__A       , AT = 7.00183      , SLOT_ID = 2459433, ASSEMBLY_ID = 2452563;
+ BR2.DVT12L4         : DVT__A       , AT = 7.00183      , SLOT_ID = 2459434, ASSEMBLY_ID = 2452563;
+ BR2.OSK12L4         : OSK          , AT = 7.00183      , SLOT_ID = 2459435, ASSEMBLY_ID = 2452563;
+ BR2.XSK12L4         : XSK          , AT = 7.00183      , SLOT_ID = 2459436, ASSEMBLY_ID = 2452563;
+ BR.QFO122                          , AT = 7.580797     , SLOT_ID = 2459411;
+ BR.STSCRAP122                      , AT = 8.1998       , SLOT_ID = 2459409, ASSEMBLY_ID = 2459407;
+ BR.BHZ122                          , AT = 9.008652     , SLOT_ID = 2459407;
+ENDSEQUENCE;
+
+P13ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 13
+ BR2.C04.13L1        : ACC04        , AT = 1.327        , SLOT_ID = 2459446, ASSEMBLY_ID = 2452566;
+ BR.BHZ131                          , AT = 3.462849     , SLOT_ID = 2459449;
+ BR.STSCRAP131                      , AT = 4.2717       , SLOT_ID = 2459451, ASSEMBLY_ID = 2459449;
+ BR.QFO131                          , AT = 4.889797     , SLOT_ID = 2459453;
+ BR2.BPM13L3         : UES          , AT = 5.467835     , SLOT_ID = 2459461, ASSEMBLY_ID = 2452567;
+ BR2.ONOH0.13L3      : ONOH0        , AT = 5.467835     , SLOT_ID = 2459459, ASSEMBLY_ID = 2452569;
+ BR2.QSKH0.13L3      : QSKH0        , AT = 5.467835     , SLOT_ID = 2459460, ASSEMBLY_ID = 2452569;
+ BR2.XNOH0.13L3      : XNOH0        , AT = 5.467835     , SLOT_ID = 2459462, ASSEMBLY_ID = 2452569;
+ BR.QDE13                           , AT = 6.234797     , SLOT_ID = 2459471;
+ BR2.DHZ13L4         : DHZ__001     , AT = 7.001835     , SLOT_ID = 2459474, ASSEMBLY_ID = 2452573;
+ BR2.DVT13L4         : DVT__001     , AT = 7.001835     , SLOT_ID = 2459475, ASSEMBLY_ID = 2452573;
+ BR.QFO132                          , AT = 7.580797     , SLOT_ID = 2459454;
+ BR.STSCRAP132                      , AT = 8.1998       , SLOT_ID = 2459452, ASSEMBLY_ID = 2459450;
+ BR.BHZ132                          , AT = 9.008652     , SLOT_ID = 2459450;
+ENDSEQUENCE;
+
+P14ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 14
+ BR2.DHZ14L1         : DHZ__001     , AT = .234928      , SLOT_ID = 2459482, ASSEMBLY_ID = 2452577;
+ BR2.DVT14L1         : DVT__001     , AT = .234928      , SLOT_ID = 2459483, ASSEMBLY_ID = 2452577;
+ BE2.KFA14L1         : MKMAG003     , AT = 1.52659      , SLOT_ID = 2459489, ASSEMBLY_ID = 5736994;
+ BR.BHZ141                          , AT = 3.462849     , SLOT_ID = 2459492;
+ BR.STSCRAP141                      , AT = 4.2717       , SLOT_ID = 2459494, ASSEMBLY_ID = 2459492;
+ BR2.VVS14L2         : VVS          , AT = 4.3725       , SLOT_ID = 3783357;
+ BR.QFO141                          , AT = 4.889797     , SLOT_ID = 2459495;
+ BR2.BPM14L3         : UES          , AT = 5.467839     , SLOT_ID = 2459503, ASSEMBLY_ID = 2452581;
+ BR2.ONOH0.14L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459501, ASSEMBLY_ID = 2452583;
+ BR2.QSK14L3         : QSK          , AT = 5.467839     , SLOT_ID = 2459502, ASSEMBLY_ID = 2452583;
+ BR2.XNOH0.14L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459504, ASSEMBLY_ID = 2452583;
+ BR.QDE14                           , AT = 6.234797     , SLOT_ID = 2459513;
+ BR2.BPP14L4         : BPPBB001     , AT = 6.79374      , SLOT_ID = 2459515, ASSEMBLY_ID = 2452586;
+ BE2.BSW14L4         : MDBAA        , AT = 7.05474      , SLOT_ID = 2459519;
+ BR.QFO142                          , AT = 7.580797     , SLOT_ID = 2459496;
+ BR.SPSCRAP142                      , AT = 8.1998       , SLOT_ID = 2459522, ASSEMBLY_ID = 2459493;
+ BR.BHZ142                          , AT = 9.008652     , SLOT_ID = 2459493;
+ENDSEQUENCE;
+
+P15ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 15
+ BR.BTV15L1                         , AT = .192         , SLOT_ID = 2459523;
+ BE2.SMH15L1         : SMH__006     , AT = .909892      , SLOT_ID = 2459525, ASSEMBLY_ID = 2452588;
+ BR2.DHZ15L1         : DHZ__002     , AT = 1.8213       , SLOT_ID = 2459530, ASSEMBLY_ID = 2452590;
+ BR2.DVT15L1         : DVT__002     , AT = 1.8213       , SLOT_ID = 2459531, ASSEMBLY_ID = 2452590;
+ BE2.BSW15L1         : MDBAB        , AT = 2.36866      , SLOT_ID = 2459537;
+ BR.BHZ151                          , AT = 3.462849     , SLOT_ID = 2459540;
+ BR.SPSCRAP151                      , AT = 4.2717       , SLOT_ID = 2459542, ASSEMBLY_ID = 2459540;
+ BR.QFO151                          , AT = 4.889797     , SLOT_ID = 2459543;
+ BR2.BPM15L3         : UES          , AT = 5.467834     , SLOT_ID = 2459551, ASSEMBLY_ID = 2452594;
+ BR2.ONOH0.15L3      : ONOH0        , AT = 5.467834     , SLOT_ID = 2459549, ASSEMBLY_ID = 2452596;
+ BR2.QSKH0.15L3      : QSKH0        , AT = 5.467834     , SLOT_ID = 2459550, ASSEMBLY_ID = 2452596;
+ BR2.XNOH0.15L3      : XNOH0        , AT = 5.467834     , SLOT_ID = 2459552, ASSEMBLY_ID = 2452596;
+ BR.QDE15                           , AT = 6.234797     , SLOT_ID = 2459561;
+ BE2.BSW15L4         : MDBAA        , AT = 7.001834     , SLOT_ID = 2459563;
+ BR.QFO152                          , AT = 7.580797     , SLOT_ID = 2459544;
+ BR.STSCRAP152                      , AT = 8.1998       , SLOT_ID = 2459566, ASSEMBLY_ID = 2459541;
+ BR.BHZ152                          , AT = 9.008652     , SLOT_ID = 2459541;
+ENDSEQUENCE;
+
+P16ring2: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 2, Period 16
+ BR2.ONO16L1         : ONO          , AT = .363         , SLOT_ID = 2459570, ASSEMBLY_ID = 2452601;
+ BR2.QNO16L1         : QNO__001     , AT = .363         , SLOT_ID = 2459571, ASSEMBLY_ID = 2452601;
+ BR2.XNO16L1         : XNO__001     , AT = .363         , SLOT_ID = 2459572, ASSEMBLY_ID = 2452601;
+ BI2.KSW16L1         : MKMAG002     , AT = .9605        , SLOT_ID = 40101123, ASSEMBLY_ID = 40101119;
+ BR2.DHZ16L1         : DHZ__001     , AT = 1.99601      , SLOT_ID = 2459581, ASSEMBLY_ID = 2452605;
+ BR2.DVT16L1         : DVT__001     , AT = 1.99601      , SLOT_ID = 2459582, ASSEMBLY_ID = 2452605;
+ BR.BHZ161                          , AT = 3.462849     , SLOT_ID = 2459587;
+ BR.STSCRAP161                      , AT = 4.2717       , SLOT_ID = 2459589, ASSEMBLY_ID = 2459587;
+ BR.QFO161                          , AT = 4.889797     , SLOT_ID = 2459591;
+ BR2.BPM16L3         : UES          , AT = 5.467839     , SLOT_ID = 2459599, ASSEMBLY_ID = 2452608;
+ BR2.ONOH0.16L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459597, ASSEMBLY_ID = 2452610;
+ BR2.QNO16L3         : QNO__001     , AT = 5.467839     , SLOT_ID = 2459598, ASSEMBLY_ID = 2452610;
+ BR2.XNOH0.16L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459600, ASSEMBLY_ID = 2452610;
+ BR.QDE16                           , AT = 6.234797     , SLOT_ID = 2459609;
+ BI2.KSW16L4         : MKMAG002     , AT = 7.001839     , SLOT_ID = 2459611, ASSEMBLY_ID = 5736989;
+ BR.QFO162                          , AT = 7.580797     , SLOT_ID = 2459592;
+ BR.STSCRAP162                      , AT = 8.1998       , SLOT_ID = 2459590, ASSEMBLY_ID = 2459588;
+ BR.BHZ162                          , AT = 9.008652     , SLOT_ID = 2459588;
+ENDSEQUENCE;
+
+//------------------------------------------------------------------------------------
+//                       RING 3                                                     
+//------------------------------------------------------------------------------------
+
+P01ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 01
+ BI3.KSW1L1          : MKMAG001     , AT = .585         , SLOT_ID = 2458830, ASSEMBLY_ID = 5736962;
+ BI.BTV50                           , AT = .792         , SLOT_ID = 2458832;
+ BR3.MSF1L1          : MSF          , AT = 1.2069       , SLOT_ID = 2458833;
+ BI.SMH1L1                          , AT = 1.7274       , SLOT_ID = 2458834;
+ BI.BTV60                           , AT = 2.2479       , SLOT_ID = 2458835;
+ BR.BHZ11                           , AT = 3.462849     , SLOT_ID = 2458836;
+ BR.SPSCRAP11                       , AT = 4.2717       , SLOT_ID = 2458838, ASSEMBLY_ID = 2458836;
+ BR.QFO11                           , AT = 4.889797     , SLOT_ID = 2458839;
+ BR3.BPM1L3          : UES          , AT = 5.467797     , SLOT_ID = 2458855, ASSEMBLY_ID = 2452397;
+ BR3.ONOH0.1L3       : ONOH0        , AT = 5.467797     , SLOT_ID = 2458853, ASSEMBLY_ID = 2452400;
+ BR3.QSKH0.1L3       : QSKH0        , AT = 5.467797     , SLOT_ID = 2458854, ASSEMBLY_ID = 2452400;
+ BR3.XNOH0.1L3       : XNOH0        , AT = 5.467797     , SLOT_ID = 2458856, ASSEMBLY_ID = 2452400;
+ BR.QDE1                            , AT = 6.234797     , SLOT_ID = 2458861;
+ BI3.KSW1L4          : MKMAG002     , AT = 7.001797     , SLOT_ID = 2458864, ASSEMBLY_ID = 5736975;
+ BR.QFO12                           , AT = 7.580797     , SLOT_ID = 2458840;
+ BR3.BPP1L5          : BPPBA001     , AT = 7.997852     , SLOT_ID = 2458843, ASSEMBLY_ID = 2452396; ! Position is approximate
+ BR.STSCRAP12                       , AT = 8.1998       , SLOT_ID = 2458866, ASSEMBLY_ID = 2458837;
+ BR.BHZ12                           , AT = 9.008652     , SLOT_ID = 2458837;
+ENDSEQUENCE;
+
+P02ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 02
+ BR3.VVS2L1          : VVS          , AT = .1825        , SLOT_ID = 3783289;
+ BR3.BWS.2L1.V_ROT   : BWSV         , AT = .918         , SLOT_ID = 2458869, ASSEMBLY_ID = 2452403;
+ BR3.BWS.2L1.H_ROT   : BWSH         , AT = 1.016        , SLOT_ID = 2458873, ASSEMBLY_ID = 2452404;
+ BI3.KSW2L1          : MKMAG002     , AT = 1.737        , SLOT_ID = 2458877, ASSEMBLY_ID = 5736984;
+ BR.BHZ21                           , AT = 3.462849     , SLOT_ID = 2458879;
+ BR.STSCRAP21                       , AT = 4.2717       , SLOT_ID = 2458881, ASSEMBLY_ID = 2458879;
+ BR.QFO21                           , AT = 4.889797     , SLOT_ID = 2458883;
+ BR3.BPM2L3          : UES          , AT = 5.467802     , SLOT_ID = 2458895, ASSEMBLY_ID = 2452406;
+ BR3.ONOH0.2L3       : ONOH0        , AT = 5.467802     , SLOT_ID = 2458893, ASSEMBLY_ID = 2452409;
+ BR3.QSK2L3          : QSK          , AT = 5.467802     , SLOT_ID = 2458894, ASSEMBLY_ID = 2452409;
+ BR3.XNOH0.2L3       : XNOH0        , AT = 5.467802     , SLOT_ID = 2458896, ASSEMBLY_ID = 2452409;
+ BR.QDE2                            , AT = 6.234797     , SLOT_ID = 2458901;
+ BR3.DHZ2L4          : DHZ__A       , AT = 7.001802     , SLOT_ID = 2458910, ASSEMBLY_ID = 2452413;
+ BR3.DVT2L4          : DVT__A       , AT = 7.001802     , SLOT_ID = 2458911, ASSEMBLY_ID = 2452413;
+ BR3.OSK2L4          : OSK          , AT = 7.001802     , SLOT_ID = 2458912, ASSEMBLY_ID = 2452413;
+ BR3.XSK2L4          : XSK          , AT = 7.001802     , SLOT_ID = 2458913, ASSEMBLY_ID = 2452413;
+ BR.QFO22                           , AT = 7.580797     , SLOT_ID = 2458884;
+ BR.STSCRAP22                       , AT = 8.1998       , SLOT_ID = 2458882, ASSEMBLY_ID = 2458880;
+ BR.BHZ22                           , AT = 9.008652     , SLOT_ID = 2458880;
+ENDSEQUENCE;
+
+P03ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 03
+ BR3.DES3L1          : DES          , AT = .8065        , SLOT_ID = 2458922, ASSEMBLY_ID = 2452415;
+ hacmap                             , AT = 1.089;
+ vacmap                             , AT = 1.089;
+ BR3.ONO3L1          : ONO          , AT = 1.463        , SLOT_ID = 2458933, ASSEMBLY_ID = 2452419;
+ BR3.QNO3L1          : QNO__001     , AT = 1.463        , SLOT_ID = 2458934, ASSEMBLY_ID = 2452419;
+ BR3.XNO3L1          : XNO__001     , AT = 1.463        , SLOT_ID = 2458935, ASSEMBLY_ID = 2452419;
+ BR3.BPMT3L1         : UES          , AT = 2.043        , SLOT_ID = 2458941, ASSEMBLY_ID = 2452421;
+ BR.BHZ31                           , AT = 3.462849     , SLOT_ID = 2458943;
+ BR.STSCRAP31                       , AT = 4.2717       , SLOT_ID = 2458945, ASSEMBLY_ID = 2458943;
+ BR.QFO31                           , AT = 4.889797     , SLOT_ID = 2458947;
+ BR3.BPM3L3          : UES          , AT = 5.467807     , SLOT_ID = 2458959, ASSEMBLY_ID = 2452422;
+ BR3.ONOH0.3L3       : ONOH0        , AT = 5.467807     , SLOT_ID = 2458957, ASSEMBLY_ID = 2452425;
+ BR3.QSKH0.3L3       : QSKH0        , AT = 5.467807     , SLOT_ID = 2458958, ASSEMBLY_ID = 2452425;
+ BR3.XNOH0.3L3       : XNOH0        , AT = 5.467807     , SLOT_ID = 2458960, ASSEMBLY_ID = 2452425;
+ BR.QDE3                            , AT = 6.234797     , SLOT_ID = 2458965;
+ BR3.DHZ3L4          : DHZ__001     , AT = 7.001807     , SLOT_ID = 2458970, ASSEMBLY_ID = 2452429;
+ BR3.DVT3L4          : DVT__001     , AT = 7.001807     , SLOT_ID = 2458971, ASSEMBLY_ID = 2452429;
+ BR.QFO32                           , AT = 7.580797     , SLOT_ID = 2458948;
+ BR.STSCRAP32                       , AT = 8.1998       , SLOT_ID = 2458946, ASSEMBLY_ID = 2458944;
+ BR.BHZ32                           , AT = 9.008652     , SLOT_ID = 2458944;
+ENDSEQUENCE;
+
+P04ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 04
+ BR3.ONO4L1          : ONO          , AT = .37          , SLOT_ID = 2458982, ASSEMBLY_ID = 2452433;
+ BR3.OSK4L1          : OSK          , AT = .37          , SLOT_ID = 2458983, ASSEMBLY_ID = 2452433;
+ BR3.XNO4L1          : XNO__001     , AT = .37          , SLOT_ID = 2458984, ASSEMBLY_ID = 2452433;
+ BR3.XSK4L1          : XSK          , AT = .37          , SLOT_ID = 2458985, ASSEMBLY_ID = 2452433;
+ BE3.DHZ4L1          : DHZ__001     , AT = .904         , SLOT_ID = 2458994, ASSEMBLY_ID = 2452437;
+ BE3.DVT4L1          : DVT__001     , AT = .904         , SLOT_ID = 2458995, ASSEMBLY_ID = 2452437;
+ BR3.BWSH4L1         : BWSRA        , AT = 1.8365       , SLOT_ID = 40095061;
+ BR.BHZ41                           , AT = 3.462849     , SLOT_ID = 2458998;
+ BR.STSCRAP41                       , AT = 4.2717       , SLOT_ID = 2459000, ASSEMBLY_ID = 2458998;
+ BR.QFO41                           , AT = 4.889797     , SLOT_ID = 2459002;
+ BR3.BPM4L3          : UES          , AT = 5.467812     , SLOT_ID = 2459014, ASSEMBLY_ID = 2452439;
+ BR3.ONOH0.4L3       : ONOH0        , AT = 5.467812     , SLOT_ID = 2459012, ASSEMBLY_ID = 2452442;
+ BR3.QNO4L3          : QNO__001     , AT = 5.467812     , SLOT_ID = 2459013, ASSEMBLY_ID = 2452442;
+ BR3.XNOH0.4L3       : XNOH0        , AT = 5.467812     , SLOT_ID = 2459015, ASSEMBLY_ID = 2452442;
+ BR.QDE4                            , AT = 6.234797     , SLOT_ID = 2459020;
+ BR3.DHZ4L4          : DHZ__001     , AT = 7.001812     , SLOT_ID = 2459025, ASSEMBLY_ID = 2452446;
+ BR3.DSHAV4L4        : DSHAV        , AT = 7.001812     , SLOT_ID = 2459026, ASSEMBLY_ID = 2452446;
+ BR.QFO42                           , AT = 7.580797     , SLOT_ID = 2459003;
+ BR3.BPTF4L5         : UTFB         , AT = 7.99794      , SLOT_ID = 2459031, ASSEMBLY_ID = 2452448;
+ BR.STSCRAP42                       , AT = 8.1998       , SLOT_ID = 2459001, ASSEMBLY_ID = 2458999;
+ BR.BHZ42                           , AT = 9.008652     , SLOT_ID = 2458999;
+ENDSEQUENCE;
+
+P05ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 05
+ BR3.BPP5L1          : BPPBB001     , AT = .5225        , SLOT_ID = 2459035, ASSEMBLY_ID = 2452449;
+ BR3.C16.5L1         : ACC16        , AT = 1.63787      , SLOT_ID = 2459039, ASSEMBLY_ID = 2452450;
+ BR.BHZ51                           , AT = 3.462849     , SLOT_ID = 2459041;
+ BR.STSCRAP51                       , AT = 4.2717       , SLOT_ID = 2459043, ASSEMBLY_ID = 2459041;
+ BR.QFO51                           , AT = 4.889797     , SLOT_ID = 2459045;
+ BR3.BPM5L3          : UES          , AT = 5.467806     , SLOT_ID = 2459057, ASSEMBLY_ID = 2452451;
+ BR3.ONOH0.5L3       : ONOH0        , AT = 5.467806     , SLOT_ID = 2459055, ASSEMBLY_ID = 2452454;
+ BR3.QSKH0.5L3       : QSKH0        , AT = 5.467806     , SLOT_ID = 2459056, ASSEMBLY_ID = 2452454;
+ BR3.XNOH0.5L3       : XNOH0        , AT = 5.467806     , SLOT_ID = 2459058, ASSEMBLY_ID = 2452454;
+ BR.QDE5                            , AT = 6.234797     , SLOT_ID = 2459063;
+ BR3.DHZ5L4          : DHZ__001     , AT = 6.840806     , SLOT_ID = 2459068, ASSEMBLY_ID = 2452458;
+ BR3.DVT5L4          : DVT__001     , AT = 6.840806     , SLOT_ID = 2459069, ASSEMBLY_ID = 2452458;
+ BR.QFO52                           , AT = 7.580797     , SLOT_ID = 2459046;
+ BR.STSCRAP52                       , AT = 8.1998       , SLOT_ID = 2459044, ASSEMBLY_ID = 2459042;
+ BR.BHZ52                           , AT = 9.008652     , SLOT_ID = 2459042;
+ENDSEQUENCE;
+
+P06ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 06
+ BR3.ONO6L1          : ONO          , AT = .37          , SLOT_ID = 2459080, ASSEMBLY_ID = 2452462;
+ BR3.OSK6L1          : OSK          , AT = .37          , SLOT_ID = 2459081, ASSEMBLY_ID = 2452462;
+ BR3.XNO6L1          : XNO__001     , AT = .37          , SLOT_ID = 2459082, ASSEMBLY_ID = 2452462;
+ BR3.XSK6L1          : XSK          , AT = .37          , SLOT_ID = 2459083, ASSEMBLY_ID = 2452462;
+ BR.BHZ61                           , AT = 3.462849     , SLOT_ID = 2459088;
+ BR.STSCRAP61                       , AT = 4.2717       , SLOT_ID = 2459090, ASSEMBLY_ID = 2459088;
+ BR.QFO61                           , AT = 4.889797     , SLOT_ID = 2459092;
+ BR3.BPM6L3          : UES          , AT = 5.467811     , SLOT_ID = 2459104, ASSEMBLY_ID = 2452464;
+ BR3.ONOH0.6L3       : ONOH0        , AT = 5.467811     , SLOT_ID = 2459102, ASSEMBLY_ID = 2452467;
+ BR3.QSK6L3          : QSK          , AT = 5.467811     , SLOT_ID = 2459103, ASSEMBLY_ID = 2452467;
+ BR3.XNOH0.6L3       : XNOH0        , AT = 5.467811     , SLOT_ID = 2459105, ASSEMBLY_ID = 2452467;
+ BR.QDE6                            , AT = 6.234797     , SLOT_ID = 2459110;
+ BR3.DHZ6L4          : DHZ__A       , AT = 7.001811     , SLOT_ID = 2459119, ASSEMBLY_ID = 2452471;
+ BR3.DVT6L4          : DVT__A       , AT = 7.001811     , SLOT_ID = 2459120, ASSEMBLY_ID = 2452471;
+ BR3.OSK6L4          : OSK          , AT = 7.001811     , SLOT_ID = 2459121, ASSEMBLY_ID = 2452471;
+ BR3.XSK6L4          : XSK          , AT = 7.001811     , SLOT_ID = 2459122, ASSEMBLY_ID = 2452471;
+ BR.QFO62                           , AT = 7.580797     , SLOT_ID = 2459093;
+ BR.STSCRAP62                       , AT = 8.1998       , SLOT_ID = 2459091, ASSEMBLY_ID = 2459089;
+ BR.BHZ62                           , AT = 9.008652     , SLOT_ID = 2459089;
+ENDSEQUENCE;
+
+P07ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 07
+ BR.BHZ71                           , AT = 3.462849     , SLOT_ID = 2459129;
+ BR.STSCRAP71                       , AT = 4.2717       , SLOT_ID = 2459131, ASSEMBLY_ID = 2459129;
+ BR3.BPM7L2          : UES          , AT = 4.47354      , SLOT_ID = 2459135, ASSEMBLY_ID = 2452474;
+ BR.QFO71                           , AT = 4.889797     , SLOT_ID = 2459137;
+ BR3.BPM7L3          : UES          , AT = 5.467816     , SLOT_ID = 2459149, ASSEMBLY_ID = 2452475;
+ BR3.ONOH0.7L3       : ONOH0        , AT = 5.467816     , SLOT_ID = 2459147, ASSEMBLY_ID = 2452478;
+ BR3.QSKH0.7L3       : QSKH0        , AT = 5.467816     , SLOT_ID = 2459148, ASSEMBLY_ID = 2452478;
+ BR3.XNOH0.7L3       : XNOH0        , AT = 5.467816     , SLOT_ID = 2459150, ASSEMBLY_ID = 2452478;
+ BR.QDE7                            , AT = 6.234797     , SLOT_ID = 2459155;
+ BR3.DSHAH7L4        : DBSH         , AT = 7.001816     , SLOT_ID = 2459160, ASSEMBLY_ID = 2452482;
+ BR3.DSHAV7L4        : DBSV         , AT = 7.001816     , SLOT_ID = 2459161, ASSEMBLY_ID = 2452482;
+ BR.QFO72                           , AT = 7.580797     , SLOT_ID = 2459138;
+ BR.STSCRAP72                       , AT = 8.1998       , SLOT_ID = 2459132, ASSEMBLY_ID = 2459130;
+ BR.BHZ72                           , AT = 9.008652     , SLOT_ID = 2459130;
+ENDSEQUENCE;
+
+P08ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 08
+ BR3.ONO8L1          : ONO          , AT = .36375       , SLOT_ID = 2459170, ASSEMBLY_ID = 2452486;
+ BR3.QNO8L1          : QNO__001     , AT = .36375       , SLOT_ID = 2459171, ASSEMBLY_ID = 2452486;
+ BR3.XNO8L1          : XNO__001     , AT = .36375       , SLOT_ID = 2459172, ASSEMBLY_ID = 2452486;
+ BR3.DHZ8L1          : DHZ__001     , AT = .86675       , SLOT_ID = 2459180, ASSEMBLY_ID = 2452490;
+ BR3.DVT8L1          : DVT__001     , AT = .86675       , SLOT_ID = 2459181, ASSEMBLY_ID = 2452490;
+ BR3.BCTF8L1         : TFA          , AT = 1.4824       , SLOT_ID = 2459186, ASSEMBLY_ID = 2452492;
+ BR3.BCW8L1          : UWBL         , AT = 2.013023     , SLOT_ID = 2459190, ASSEMBLY_ID = 2452493;
+ BR3.BPP8L1          : BPPBA001     , AT = 2.183273     , SLOT_ID = 2459194, ASSEMBLY_ID = 2452494;
+ BR3.VVS8L1          : VVS          , AT = 2.1875       , SLOT_ID = 3783286;
+ BR.BHZ81                           , AT = 3.462849     , SLOT_ID = 2459196;
+ BR.STSCRAP81                       , AT = 4.2717       , SLOT_ID = 2459198, ASSEMBLY_ID = 2459196;
+ BR3.WBS8L2          : WBS          , AT = 4.47354      , SLOT_ID = 2459202, ASSEMBLY_ID = 2452495;
+ BR.QFO81                           , AT = 4.889797     , SLOT_ID = 2459204;
+ BR3.BPM8L3          : UES          , AT = 5.467821     , SLOT_ID = 2459216, ASSEMBLY_ID = 2452496;
+ BR3.ONOH0.8L3       : ONOH0        , AT = 5.467821     , SLOT_ID = 2459214, ASSEMBLY_ID = 2452499;
+ BR3.QNO8L3          : QNO__001     , AT = 5.467821     , SLOT_ID = 2459215, ASSEMBLY_ID = 2452499;
+ BR3.XNOH0.8L3       : XNOH0        , AT = 5.467821     , SLOT_ID = 2459217, ASSEMBLY_ID = 2452499;
+ BR.QDE8                            , AT = 6.234797     , SLOT_ID = 2459222;
+ BR3.DBSH8L4         : DBSH         , AT = 7.001821     , SLOT_ID = 2459227, ASSEMBLY_ID = 2452503;
+ BR3.DBSV8L4         : DBSV         , AT = 7.001821     , SLOT_ID = 2459228, ASSEMBLY_ID = 2452503;
+ BR.QFO82                           , AT = 7.580797     , SLOT_ID = 2459205;
+ BR.STSCRAP82                       , AT = 8.1998       , SLOT_ID = 2459199, ASSEMBLY_ID = 2459197;
+ BR.BHZ82                           , AT = 9.008652     , SLOT_ID = 2459197;
+ENDSEQUENCE;
+
+P09ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 09
+ BR3.DHZ9L1          : DHZ__001     , AT = .322         , SLOT_ID = 2459235, ASSEMBLY_ID = 2452507;
+ BR3.DVT9L1          : DVT__001     , AT = .322         , SLOT_ID = 2459236, ASSEMBLY_ID = 2452507;
+ BR3.BCTDC9L1        : TDC          , AT = 1.038321     , SLOT_ID = 2459240;
+ BR3.ONO9L1          : ONO          , AT = 2.094        , SLOT_ID = 2459251, ASSEMBLY_ID = 2452513;
+ BR3.OSK9L1          : OSK          , AT = 2.094        , SLOT_ID = 2459252, ASSEMBLY_ID = 2452513;
+ BR3.XNO9L1          : XNO__001     , AT = 2.094        , SLOT_ID = 2459253, ASSEMBLY_ID = 2452513;
+ BR3.XSK9L1          : XSK          , AT = 2.094        , SLOT_ID = 2459254, ASSEMBLY_ID = 2452513;
+ BR.BHZ91                           , AT = 3.462849     , SLOT_ID = 2459259;
+ BR.STSCRAP91                       , AT = 4.2717       , SLOT_ID = 2459261, ASSEMBLY_ID = 2459259;
+ BR.QFO91                           , AT = 4.889797     , SLOT_ID = 2459263;
+ BR3.BPM9L3          : UES          , AT = 5.467826     , SLOT_ID = 2459275, ASSEMBLY_ID = 2452515;
+ BR3.ONOH0.9L3       : ONOH0        , AT = 5.467826     , SLOT_ID = 2459273, ASSEMBLY_ID = 2452518;
+ BR3.QSKH0.9L3       : QSKH0        , AT = 5.467826     , SLOT_ID = 2459274, ASSEMBLY_ID = 2452518;
+ BR3.XNOH0.9L3       : XNOH0        , AT = 5.467826     , SLOT_ID = 2459276, ASSEMBLY_ID = 2452518;
+ BR.QDE9                            , AT = 6.234797     , SLOT_ID = 2459281;
+ BR3.DSHAH9L4        : DBSH         , AT = 7.001826     , SLOT_ID = 2459286, ASSEMBLY_ID = 2452522;
+ BR3.DSHAV9L4        : DBSV         , AT = 7.001826     , SLOT_ID = 2459287, ASSEMBLY_ID = 2452522;
+ BR.QFO92                           , AT = 7.580797     , SLOT_ID = 2459264;
+ BR.STSCRAP92                       , AT = 8.1998       , SLOT_ID = 2459262, ASSEMBLY_ID = 2459260;
+ BR.BHZ92                           , AT = 9.008652     , SLOT_ID = 2459260;
+ENDSEQUENCE;
+
+P10ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 10
+ BR3.C02.10L1        : ACC02        , AT = 1.327023     , SLOT_ID = 2459291, ASSEMBLY_ID = 2452524;
+ BR.BHZ101                          , AT = 3.462849     , SLOT_ID = 2459292;
+ BR.STSCRAP101                      , AT = 4.2717       , SLOT_ID = 2459294, ASSEMBLY_ID = 2459292;
+ BR.QFO101                          , AT = 4.889797     , SLOT_ID = 2459296;
+ BR3.BPM10L3         : UES          , AT = 5.46782      , SLOT_ID = 2459308, ASSEMBLY_ID = 2452525;
+ BR3.ONOH0.10L3      : ONOH0        , AT = 5.46782      , SLOT_ID = 2459306, ASSEMBLY_ID = 2452528;
+ BR3.QSK10L3         : QSK          , AT = 5.46782      , SLOT_ID = 2459307, ASSEMBLY_ID = 2452528;
+ BR3.XNOH0.10L3      : XNOH0        , AT = 5.46782      , SLOT_ID = 2459309, ASSEMBLY_ID = 2452528;
+ BR.QDE10                           , AT = 6.234797     , SLOT_ID = 2459314;
+ BR3.DSHAH10L4       : DSHAH        , AT = 7.00182      , SLOT_ID = 2459319, ASSEMBLY_ID = 2452532;
+ BR3.DVT10L4         : DVT__001     , AT = 7.00182      , SLOT_ID = 2459320, ASSEMBLY_ID = 2452532;
+ BR.QFO102                          , AT = 7.580797     , SLOT_ID = 2459297;
+ BR.STSCRAP102                      , AT = 8.1998       , SLOT_ID = 2459295, ASSEMBLY_ID = 2459293;
+ BR.BHZ102                          , AT = 9.008652     , SLOT_ID = 2459293;
+ENDSEQUENCE;
+
+P11ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 11
+ BE3.DHZ11L1         : DHZ__001     , AT = .296         , SLOT_ID = 2459327, ASSEMBLY_ID = 2452536;
+ BE3.DVT11L1         : DVT__001     , AT = .296         , SLOT_ID = 2459328, ASSEMBLY_ID = 2452536;
+ BR3.ONO11L1         : ONO          , AT = 1.463        , SLOT_ID = 2459337, ASSEMBLY_ID = 2452540;
+ BR3.QNO11L1         : QNO__001     , AT = 1.463        , SLOT_ID = 2459338, ASSEMBLY_ID = 2452540;
+ BR3.XNO11L1         : XNO__001     , AT = 1.463        , SLOT_ID = 2459339, ASSEMBLY_ID = 2452540;
+ BR.BHZ111                          , AT = 3.462849     , SLOT_ID = 2459343;
+ BR.STSCRAP111                      , AT = 4.2717       , SLOT_ID = 2459345, ASSEMBLY_ID = 2459343;
+ BR3.BPP11L2         : BPPBA001     , AT = 4.3037       , SLOT_ID = 2459349, ASSEMBLY_ID = 2452542;
+ BR.QFO111                          , AT = 4.889797     , SLOT_ID = 2459351;
+ BR3.BPM11L3         : UES          , AT = 5.467825     , SLOT_ID = 2459363, ASSEMBLY_ID = 2452543;
+ BR3.ONOH0.11L3      : ONOH0        , AT = 5.467825     , SLOT_ID = 2459361, ASSEMBLY_ID = 2452546;
+ BR3.QSKH0.11L3      : QSKH0        , AT = 5.467825     , SLOT_ID = 2459362, ASSEMBLY_ID = 2452546;
+ BR3.XNOH0.11L3      : XNOH0        , AT = 5.467825     , SLOT_ID = 2459364, ASSEMBLY_ID = 2452546;
+ BR.QDE11                           , AT = 6.234797     , SLOT_ID = 2459369;
+ BR3.DHZ11L4         : DHZ__A       , AT = 7.001825     , SLOT_ID = 2459378, ASSEMBLY_ID = 2452550;
+ BR3.DVT11L4         : DVT__A       , AT = 7.001825     , SLOT_ID = 2459379, ASSEMBLY_ID = 2452550;
+ BR3.OSK11L4         : OSK          , AT = 7.001825     , SLOT_ID = 2459380, ASSEMBLY_ID = 2452550;
+ BR3.XSK11L4         : XSK          , AT = 7.001825     , SLOT_ID = 2459381, ASSEMBLY_ID = 2452550;
+ BR.QFO112                          , AT = 7.580797     , SLOT_ID = 2459352;
+ BR.STSCRAP112                      , AT = 8.1998       , SLOT_ID = 2459346, ASSEMBLY_ID = 2459344;
+ BR.BHZ112                          , AT = 9.008652     , SLOT_ID = 2459344;
+ENDSEQUENCE;
+
+P12ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 12
+ BR3.KQM12L1         : KQM__002     , AT = .914         , SLOT_ID = 2459388, ASSEMBLY_ID = 2452552;
+ BR3.ONO12L1         : ONO          , AT = 2.094        , SLOT_ID = 2459398, ASSEMBLY_ID = 2452555;
+ BR3.OSK12L1         : OSK          , AT = 2.094        , SLOT_ID = 2459399, ASSEMBLY_ID = 2452555;
+ BR3.XNO12L1         : XNO__001     , AT = 2.094        , SLOT_ID = 2459400, ASSEMBLY_ID = 2452555;
+ BR3.XSK12L1         : XSK          , AT = 2.094        , SLOT_ID = 2459401, ASSEMBLY_ID = 2452555;
+ BR.BHZ121                          , AT = 3.462849     , SLOT_ID = 2459406;
+ BR.STSCRAP121                      , AT = 4.2717       , SLOT_ID = 2459408, ASSEMBLY_ID = 2459406;
+ BR.QFO121                          , AT = 4.889797     , SLOT_ID = 2459410;
+ BR3.BPM12L3         : UES          , AT = 5.46783      , SLOT_ID = 2459422, ASSEMBLY_ID = 2452557;
+ BR3.ONOH0.12L3      : ONOH0        , AT = 5.46783      , SLOT_ID = 2459420, ASSEMBLY_ID = 2452560;
+ BR3.QNO12L3         : QNO__001     , AT = 5.46783      , SLOT_ID = 2459421, ASSEMBLY_ID = 2452560;
+ BR3.XNOH0.12L3      : XNOH0        , AT = 5.46783      , SLOT_ID = 2459423, ASSEMBLY_ID = 2452560;
+ BR.QDE12                           , AT = 6.234797     , SLOT_ID = 2459428;
+ BR3.DHZ12L4         : DHZ__A       , AT = 7.00183      , SLOT_ID = 2459437, ASSEMBLY_ID = 2452564;
+ BR3.DVT12L4         : DVT__A       , AT = 7.00183      , SLOT_ID = 2459438, ASSEMBLY_ID = 2452564;
+ BR3.OSK12L4         : OSK          , AT = 7.00183      , SLOT_ID = 2459439, ASSEMBLY_ID = 2452564;
+ BR3.XSK12L4         : XSK          , AT = 7.00183      , SLOT_ID = 2459440, ASSEMBLY_ID = 2452564;
+ BR.QFO122                          , AT = 7.580797     , SLOT_ID = 2459411;
+ BR.STSCRAP122                      , AT = 8.1998       , SLOT_ID = 2459409, ASSEMBLY_ID = 2459407;
+ BR.BHZ122                          , AT = 9.008652     , SLOT_ID = 2459407;
+ENDSEQUENCE;
+
+P13ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 13
+ BR3.C04.13L1        : ACC04        , AT = 1.327        , SLOT_ID = 2459447, ASSEMBLY_ID = 2452566;
+ BR.BHZ131                          , AT = 3.462849     , SLOT_ID = 2459449;
+ BR.STSCRAP131                      , AT = 4.2717       , SLOT_ID = 2459451, ASSEMBLY_ID = 2459449;
+ BR.QFO131                          , AT = 4.889797     , SLOT_ID = 2459453;
+ BR3.BPM13L3         : UES          , AT = 5.467835     , SLOT_ID = 2459465, ASSEMBLY_ID = 2452567;
+ BR3.ONOH0.13L3      : ONOH0        , AT = 5.467835     , SLOT_ID = 2459463, ASSEMBLY_ID = 2452570;
+ BR3.QSKH0.13L3      : QSKH0        , AT = 5.467835     , SLOT_ID = 2459464, ASSEMBLY_ID = 2452570;
+ BR3.XNOH0.13L3      : XNOH0        , AT = 5.467835     , SLOT_ID = 2459466, ASSEMBLY_ID = 2452570;
+ BR.QDE13                           , AT = 6.234797     , SLOT_ID = 2459471;
+ BR3.DHZ13L4         : DHZ__001     , AT = 7.001835     , SLOT_ID = 2459476, ASSEMBLY_ID = 2452574;
+ BR3.DVT13L4         : DVT__001     , AT = 7.001835     , SLOT_ID = 2459477, ASSEMBLY_ID = 2452574;
+ BR.QFO132                          , AT = 7.580797     , SLOT_ID = 2459454;
+ BR.STSCRAP132                      , AT = 8.1998       , SLOT_ID = 2459452, ASSEMBLY_ID = 2459450;
+ BR.BHZ132                          , AT = 9.008652     , SLOT_ID = 2459450;
+ENDSEQUENCE;
+
+P14ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 14
+ BR3.DHZ14L1         : DHZ__001     , AT = .234928      , SLOT_ID = 2459484, ASSEMBLY_ID = 2452578;
+ BR3.DVT14L1         : DVT__001     , AT = .234928      , SLOT_ID = 2459485, ASSEMBLY_ID = 2452578;
+ BE3.KFA14L1         : MKMAG003     , AT = 1.52659      , SLOT_ID = 2459490, ASSEMBLY_ID = 5736994;
+ BR.BHZ141                          , AT = 3.462849     , SLOT_ID = 2459492;
+ BR.STSCRAP141                      , AT = 4.2717       , SLOT_ID = 2459494, ASSEMBLY_ID = 2459492;
+ BR3.VVS14L2         : VVS          , AT = 4.3725       , SLOT_ID = 3783358;
+ BR.QFO141                          , AT = 4.889797     , SLOT_ID = 2459495;
+ BR3.BPM14L3         : UES          , AT = 5.467839     , SLOT_ID = 2459507, ASSEMBLY_ID = 2452581;
+ BR3.ONOH0.14L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459505, ASSEMBLY_ID = 2452584;
+ BR3.QSK14L3         : QSK          , AT = 5.467839     , SLOT_ID = 2459506, ASSEMBLY_ID = 2452584;
+ BR3.XNOH0.14L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459508, ASSEMBLY_ID = 2452584;
+ BR.QDE14                           , AT = 6.234797     , SLOT_ID = 2459513;
+ BR3.BPP14L4         : BPPBB001     , AT = 6.79374      , SLOT_ID = 2459516, ASSEMBLY_ID = 2452586;
+ BE3.BSW14L4         : MDBAA        , AT = 7.06474      , SLOT_ID = 2459520; ! Position changed according to drawing: PS-SI-1-43-1033-E
+ BR.QFO142                          , AT = 7.580797     , SLOT_ID = 2459496;
+ BR.SPSCRAP142                      , AT = 8.1998       , SLOT_ID = 2459522, ASSEMBLY_ID = 2459493;
+ BR.BHZ142                          , AT = 9.008652     , SLOT_ID = 2459493;
+ENDSEQUENCE;
+
+P15ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 15
+ BR.BTV15L1                         , AT = .192         , SLOT_ID = 2459523;
+ BE3.SMH15L1         : SMH__006     , AT = .909892      , SLOT_ID = 2459526, ASSEMBLY_ID = 2452588;
+ BR3.DHZ15L1         : DHZ__002     , AT = 1.8213       , SLOT_ID = 2459532, ASSEMBLY_ID = 2452591;
+ BR3.DVT15L1         : DVT__002     , AT = 1.8213       , SLOT_ID = 2459533, ASSEMBLY_ID = 2452591;
+ BE3.BSW15L1         : MDBAB        , AT = 2.36866      , SLOT_ID = 2459538;
+ BR.BHZ151                          , AT = 3.462849     , SLOT_ID = 2459540;
+ BR.SPSCRAP151                      , AT = 4.2717       , SLOT_ID = 2459542, ASSEMBLY_ID = 2459540;
+ BR.QFO151                          , AT = 4.889797     , SLOT_ID = 2459543;
+ BR3.BPM15L3         : UES          , AT = 5.467834     , SLOT_ID = 2459555, ASSEMBLY_ID = 2452594;
+ BR3.ONOH0.15L3      : ONOH0        , AT = 5.467834     , SLOT_ID = 2459553, ASSEMBLY_ID = 2452597;
+ BR3.QSKH0.15L3      : QSKH0        , AT = 5.467834     , SLOT_ID = 2459554, ASSEMBLY_ID = 2452597;
+ BR3.XNOH0.15L3      : XNOH0        , AT = 5.467834     , SLOT_ID = 2459556, ASSEMBLY_ID = 2452597;
+ BR.QDE15                           , AT = 6.234797     , SLOT_ID = 2459561;
+ BE3.BSW15L4         : MDBAA        , AT = 7.011834     , SLOT_ID = 2459564; ! Position changed according to drawing: PS-SI-1-43-1033-E
+ BR.QFO152                          , AT = 7.580797     , SLOT_ID = 2459544;
+ BR.STSCRAP152                      , AT = 8.1998       , SLOT_ID = 2459566, ASSEMBLY_ID = 2459541;
+ BR.BHZ152                          , AT = 9.008652     , SLOT_ID = 2459541;
+ENDSEQUENCE;
+
+P16ring3: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 3, Period 16
+ BR3.ONO16L1         : ONO          , AT = .363         , SLOT_ID = 2459573, ASSEMBLY_ID = 2452602;
+ BR3.QNO16L1         : QNO__001     , AT = .363         , SLOT_ID = 2459574, ASSEMBLY_ID = 2452602;
+ BR3.XNO16L1         : XNO__001     , AT = .363         , SLOT_ID = 2459575, ASSEMBLY_ID = 2452602;
+ BI3.KSW16L1         : MKMAG002     , AT = .9605        , SLOT_ID = 40101124, ASSEMBLY_ID = 40101119;
+ BR3.DHZ16L1         : DHZ__001     , AT = 1.99601      , SLOT_ID = 2459583, ASSEMBLY_ID = 2452606;
+ BR3.DVT16L1         : DVT__001     , AT = 1.99601      , SLOT_ID = 2459584, ASSEMBLY_ID = 2452606;
+ BR.BHZ161                          , AT = 3.462849     , SLOT_ID = 2459587;
+ BR.STSCRAP161                      , AT = 4.2717       , SLOT_ID = 2459589, ASSEMBLY_ID = 2459587;
+ BR.QFO161                          , AT = 4.889797     , SLOT_ID = 2459591;
+ BR3.BPM16L3         : UES          , AT = 5.467839     , SLOT_ID = 2459603, ASSEMBLY_ID = 2452608;
+ BR3.ONOH0.16L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459601, ASSEMBLY_ID = 2452611;
+ BR3.QNO16L3         : QNO__001     , AT = 5.467839     , SLOT_ID = 2459602, ASSEMBLY_ID = 2452611;
+ BR3.XNOH0.16L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459604, ASSEMBLY_ID = 2452611;
+ BR.QDE16                           , AT = 6.234797     , SLOT_ID = 2459609;
+ BI3.KSW16L4         : MKMAG002     , AT = 7.001839     , SLOT_ID = 2459612, ASSEMBLY_ID = 5736989;
+ BR.QFO162                          , AT = 7.580797     , SLOT_ID = 2459592;
+ BR.STSCRAP162                      , AT = 8.1998       , SLOT_ID = 2459590, ASSEMBLY_ID = 2459588;
+ BR.BHZ162                          , AT = 9.008652     , SLOT_ID = 2459588;
+ENDSEQUENCE;
+
+//------------------------------------------------------------------------------------
+//                       RING 4                                                     
+//------------------------------------------------------------------------------------
+
+P01ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 01
+ BI4.KSW1L1          : MKMAG001     , AT = .585         , SLOT_ID = 2458831, ASSEMBLY_ID = 5736962;
+ BI.BTV50                           , AT = .792         , SLOT_ID = 2458832;
+ BI.SMH1L1                          , AT = 1.7274       , SLOT_ID = 2458834;
+ BI.BTV60                           , AT = 2.2479       , SLOT_ID = 2458835;
+ BR.BHZ11                           , AT = 3.462849     , SLOT_ID = 2458836;
+ BR.SPSCRAP11                       , AT = 4.2717       , SLOT_ID = 2458838, ASSEMBLY_ID = 2458836;
+ BR.QFO11                           , AT = 4.889797     , SLOT_ID = 2458839;
+ BR4.BPM1L3          : UES          , AT = 5.467797     , SLOT_ID = 2458859, ASSEMBLY_ID = 2452397;
+ BR4.ONOH0.1L3       : ONOH0        , AT = 5.467797     , SLOT_ID = 2458857, ASSEMBLY_ID = 2452401;
+ BR4.QSKH0.1L3       : QSKH0        , AT = 5.467797     , SLOT_ID = 2458858, ASSEMBLY_ID = 2452401;
+ BR4.XNOH0.1L3       : XNOH0        , AT = 5.467797     , SLOT_ID = 2458860, ASSEMBLY_ID = 2452401;
+ BR.QDE1                            , AT = 6.234797     , SLOT_ID = 2458861;
+ BI4.KSW1L4          : MKMAG002     , AT = 7.001797     , SLOT_ID = 2458865, ASSEMBLY_ID = 5736975;
+ BR.QFO12                           , AT = 7.580797     , SLOT_ID = 2458840;
+ BR4.BPP1L5          : BPPBA001     , AT = 7.997852     , SLOT_ID = 2458844, ASSEMBLY_ID = 2452396; ! Position is approximate
+ BR.STSCRAP12                       , AT = 8.1998       , SLOT_ID = 2458866, ASSEMBLY_ID = 2458837;
+ BR.BHZ12                           , AT = 9.008652     , SLOT_ID = 2458837;
+ENDSEQUENCE;
+
+P02ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 02
+ BR4.VVS2L1          : VVS          , AT = .1825        , SLOT_ID = 3783290;
+ BR4.BWS.2L1.V_ROT   : BWSV         , AT = .918         , SLOT_ID = 2458870, ASSEMBLY_ID = 2452403;
+ BR4.BWS.2L1.H_ROT   : BWSH         , AT = 1.016        , SLOT_ID = 2458874, ASSEMBLY_ID = 2452404;
+ BI4.KSW2L1          : MKMAG002     , AT = 1.737        , SLOT_ID = 2458878, ASSEMBLY_ID = 5736984;
+ BR.BHZ21                           , AT = 3.462849     , SLOT_ID = 2458879;
+ BR.STSCRAP21                       , AT = 4.2717       , SLOT_ID = 2458881, ASSEMBLY_ID = 2458879;
+ BR.QFO21                           , AT = 4.889797     , SLOT_ID = 2458883;
+ BR4.BPM2L3          : UES          , AT = 5.467802     , SLOT_ID = 2458899, ASSEMBLY_ID = 2452406;
+ BR4.ONOH0.2L3       : ONOH0        , AT = 5.467802     , SLOT_ID = 2458897, ASSEMBLY_ID = 2452410;
+ BR4.QSK2L3          : QSK          , AT = 5.467802     , SLOT_ID = 2458898, ASSEMBLY_ID = 2452410;
+ BR4.XNOH0.2L3       : XNOH0        , AT = 5.467802     , SLOT_ID = 2458900, ASSEMBLY_ID = 2452410;
+ BR.QDE2                            , AT = 6.234797     , SLOT_ID = 2458901;
+ BR4.DHZ2L4          : DHZ__A       , AT = 7.001802     , SLOT_ID = 2458914, ASSEMBLY_ID = 2452414;
+ BR4.DVT2L4          : DVT__A       , AT = 7.001802     , SLOT_ID = 2458915, ASSEMBLY_ID = 2452414;
+ BR4.OSK2L4          : OSK          , AT = 7.001802     , SLOT_ID = 2458916, ASSEMBLY_ID = 2452414;
+ BR4.XSK2L4          : XSK          , AT = 7.001802     , SLOT_ID = 2458917, ASSEMBLY_ID = 2452414;
+ BR.QFO22                           , AT = 7.580797     , SLOT_ID = 2458884;
+ BR.STSCRAP22                       , AT = 8.1998       , SLOT_ID = 2458882, ASSEMBLY_ID = 2458880;
+ BR.BHZ22                           , AT = 9.008652     , SLOT_ID = 2458880;
+ENDSEQUENCE;
+
+P03ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 03
+ BR4.DES3L1          : DES          , AT = .8065        , SLOT_ID = 2458924, ASSEMBLY_ID = 2452415;
+ hacmap                             , AT = 1.089;
+ vacmap                             , AT = 1.089;
+ BR4.ONO3L1          : ONO          , AT = 1.463        , SLOT_ID = 2458936, ASSEMBLY_ID = 2452420;
+ BR4.QNO3L1          : QNO__001     , AT = 1.463        , SLOT_ID = 2458937, ASSEMBLY_ID = 2452420;
+ BR4.XNO3L1          : XNO__001     , AT = 1.463        , SLOT_ID = 2458938, ASSEMBLY_ID = 2452420;
+ BR4.BPMT3L1         : UES          , AT = 2.043        , SLOT_ID = 2458942, ASSEMBLY_ID = 2452421;
+ BR.BHZ31                           , AT = 3.462849     , SLOT_ID = 2458943;
+ BR.STSCRAP31                       , AT = 4.2717       , SLOT_ID = 2458945, ASSEMBLY_ID = 2458943;
+ BR.QFO31                           , AT = 4.889797     , SLOT_ID = 2458947;
+ BR4.BPM3L3          : UES          , AT = 5.467807     , SLOT_ID = 2458963, ASSEMBLY_ID = 2452422;
+ BR4.ONOH0.3L3       : ONOH0        , AT = 5.467807     , SLOT_ID = 2458961, ASSEMBLY_ID = 2452426;
+ BR4.QSKH0.3L3       : QSKH0        , AT = 5.467807     , SLOT_ID = 2458962, ASSEMBLY_ID = 2452426;
+ BR4.XNOH0.3L3       : XNOH0        , AT = 5.467807     , SLOT_ID = 2458964, ASSEMBLY_ID = 2452426;
+ BR.QDE3                            , AT = 6.234797     , SLOT_ID = 2458965;
+ BR4.DHZ3L4          : DHZ__001     , AT = 7.001807     , SLOT_ID = 2458972, ASSEMBLY_ID = 2452430;
+ BR4.DVT3L4          : DVT__001     , AT = 7.001807     , SLOT_ID = 2458973, ASSEMBLY_ID = 2452430;
+ BR.QFO32                           , AT = 7.580797     , SLOT_ID = 2458948;
+ BR.STSCRAP32                       , AT = 8.1998       , SLOT_ID = 2458946, ASSEMBLY_ID = 2458944;
+ BR.BHZ32                           , AT = 9.008652     , SLOT_ID = 2458944;
+ENDSEQUENCE;
+
+P04ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 04
+ BR4.ONO4L1          : ONO          , AT = .37          , SLOT_ID = 2458986, ASSEMBLY_ID = 2452434;
+ BR4.OSK4L1          : OSK          , AT = .37          , SLOT_ID = 2458987, ASSEMBLY_ID = 2452434;
+ BR4.XNO4L1          : XNO__001     , AT = .37          , SLOT_ID = 2458988, ASSEMBLY_ID = 2452434;
+ BR4.XSK4L1          : XSK          , AT = .37          , SLOT_ID = 2458989, ASSEMBLY_ID = 2452434;
+ BE4.DHZ4L1          : DHZ__001     , AT = .904         , SLOT_ID = 2458996, ASSEMBLY_ID = 2452438;
+ BE4.DVT4L1          : DVT__001     , AT = .904         , SLOT_ID = 2458997, ASSEMBLY_ID = 2452438;
+ BR.BHZ41                           , AT = 3.462849     , SLOT_ID = 2458998;
+ BR.STSCRAP41                       , AT = 4.2717       , SLOT_ID = 2459000, ASSEMBLY_ID = 2458998;
+ BR.QFO41                           , AT = 4.889797     , SLOT_ID = 2459002;
+ BR4.BPM4L3          : UES          , AT = 5.467812     , SLOT_ID = 2459018, ASSEMBLY_ID = 2452439;
+ BR4.ONOH0.4L3       : ONOH0        , AT = 5.467812     , SLOT_ID = 2459016, ASSEMBLY_ID = 2452443;
+ BR4.QNO4L3          : QNO__001     , AT = 5.467812     , SLOT_ID = 2459017, ASSEMBLY_ID = 2452443;
+ BR4.XNOH0.4L3       : XNOH0        , AT = 5.467812     , SLOT_ID = 2459019, ASSEMBLY_ID = 2452443;
+ BR.QDE4                            , AT = 6.234797     , SLOT_ID = 2459020;
+ BR4.DHZ4L4          : DHZ__001     , AT = 7.001812     , SLOT_ID = 2459027, ASSEMBLY_ID = 2452447;
+ BR4.DSHAV4L4        : DSHAV        , AT = 7.001812     , SLOT_ID = 2459028, ASSEMBLY_ID = 2452447;
+ BR.QFO42                           , AT = 7.580797     , SLOT_ID = 2459003;
+ BR4.BPTF4L5         : UTFB         , AT = 7.99794      , SLOT_ID = 2459032, ASSEMBLY_ID = 2452448;
+ BR.STSCRAP42                       , AT = 8.1998       , SLOT_ID = 2459001, ASSEMBLY_ID = 2458999;
+ BR.BHZ42                           , AT = 9.008652     , SLOT_ID = 2458999;
+ENDSEQUENCE;
+
+P05ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 05
+ BR4.BPP5L1          : BPPBB001     , AT = .5225        , SLOT_ID = 2459036, ASSEMBLY_ID = 2452449;
+ BR4.C16.5L1         : ACC16        , AT = 1.63787      , SLOT_ID = 2459040, ASSEMBLY_ID = 2452450;
+ BR.BHZ51                           , AT = 3.462849     , SLOT_ID = 2459041;
+ BR.STSCRAP51                       , AT = 4.2717       , SLOT_ID = 2459043, ASSEMBLY_ID = 2459041;
+ BR.QFO51                           , AT = 4.889797     , SLOT_ID = 2459045;
+ BR4.BPM5L3          : UES          , AT = 5.467806     , SLOT_ID = 2459061, ASSEMBLY_ID = 2452451;
+ BR4.ONOH0.5L3       : ONOH0        , AT = 5.467806     , SLOT_ID = 2459059, ASSEMBLY_ID = 2452455;
+ BR4.QSKH0.5L3       : QSKH0        , AT = 5.467806     , SLOT_ID = 2459060, ASSEMBLY_ID = 2452455;
+ BR4.XNOH0.5L3       : XNOH0        , AT = 5.467806     , SLOT_ID = 2459062, ASSEMBLY_ID = 2452455;
+ BR.QDE5                            , AT = 6.234797     , SLOT_ID = 2459063;
+ BR4.DHZ5L4          : DHZ__001     , AT = 6.840806     , SLOT_ID = 2459070, ASSEMBLY_ID = 2452459;
+ BR4.DVT5L4          : DVT__001     , AT = 6.840806     , SLOT_ID = 2459071, ASSEMBLY_ID = 2452459;
+ BR.QFO52                           , AT = 7.580797     , SLOT_ID = 2459046;
+ BR.STSCRAP52                       , AT = 8.1998       , SLOT_ID = 2459044, ASSEMBLY_ID = 2459042;
+ BR.BHZ52                           , AT = 9.008652     , SLOT_ID = 2459042;
+ENDSEQUENCE;
+
+P06ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 06
+ BR4.ONO6L1          : ONO          , AT = .37          , SLOT_ID = 2459084, ASSEMBLY_ID = 2452463;
+ BR4.OSK6L1          : OSK          , AT = .37          , SLOT_ID = 2459085, ASSEMBLY_ID = 2452463;
+ BR4.XNO6L1          : XNO__001     , AT = .37          , SLOT_ID = 2459086, ASSEMBLY_ID = 2452463;
+ BR4.XSK6L1          : XSK          , AT = .37          , SLOT_ID = 2459087, ASSEMBLY_ID = 2452463;
+ BR4.ACWF6L1.1       : ACWF         , AT = 1.012        , SLOT_ID = 8200220, ASSEMBLY_ID = 14920751;
+ BR4.ACWF6L1.2       : ACWF         , AT = 1.8735       , SLOT_ID = 14920749, ASSEMBLY_ID = 14920751;
+ BR.BHZ61                           , AT = 3.462849     , SLOT_ID = 2459088;
+ BR.STSCRAP61                       , AT = 4.2717       , SLOT_ID = 2459090, ASSEMBLY_ID = 2459088;
+ BR.QFO61                           , AT = 4.889797     , SLOT_ID = 2459092;
+ BR4.BPM6L3          : UES          , AT = 5.467811     , SLOT_ID = 2459108, ASSEMBLY_ID = 2452464;
+ BR4.ONOH0.6L3       : ONOH0        , AT = 5.467811     , SLOT_ID = 2459106, ASSEMBLY_ID = 2452468;
+ BR4.QSK6L3          : QSK          , AT = 5.467811     , SLOT_ID = 2459107, ASSEMBLY_ID = 2452468;
+ BR4.XNOH0.6L3       : XNOH0        , AT = 5.467811     , SLOT_ID = 2459109, ASSEMBLY_ID = 2452468;
+ BR.QDE6                            , AT = 6.234797     , SLOT_ID = 2459110;
+ BR4.DHZ6L4          : DHZ__A       , AT = 7.001811     , SLOT_ID = 2459123, ASSEMBLY_ID = 2452472;
+ BR4.DVT6L4          : DVT__A       , AT = 7.001811     , SLOT_ID = 2459124, ASSEMBLY_ID = 2452472;
+ BR4.OSK6L4          : OSK          , AT = 7.001811     , SLOT_ID = 2459125, ASSEMBLY_ID = 2452472;
+ BR4.XSK6L4          : XSK          , AT = 7.001811     , SLOT_ID = 2459126, ASSEMBLY_ID = 2452472;
+ BR.QFO62                           , AT = 7.580797     , SLOT_ID = 2459093;
+ BR.STSCRAP62                       , AT = 8.1998       , SLOT_ID = 2459091, ASSEMBLY_ID = 2459089;
+ BR.BHZ62                           , AT = 9.008652     , SLOT_ID = 2459089;
+ENDSEQUENCE;
+
+P07ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 07
+ BR4.C02.7L1         : ACC02        , AT = 1.327019     , SLOT_ID = 2459128, ASSEMBLY_ID = 2452473;
+ BR.BHZ71                           , AT = 3.462849     , SLOT_ID = 2459129;
+ BR.STSCRAP71                       , AT = 4.2717       , SLOT_ID = 2459131, ASSEMBLY_ID = 2459129;
+ BR4.BPM7L2          : UES          , AT = 4.47354      , SLOT_ID = 2459136, ASSEMBLY_ID = 2452474;
+ BR.QFO71                           , AT = 4.889797     , SLOT_ID = 2459137;
+ BR4.BPM7L3          : UES          , AT = 5.467816     , SLOT_ID = 2459153, ASSEMBLY_ID = 2452475;
+ BR4.ONOH0.7L3       : ONOH0        , AT = 5.467816     , SLOT_ID = 2459151, ASSEMBLY_ID = 2452479;
+ BR4.QSKH0.7L3       : QSKH0        , AT = 5.467816     , SLOT_ID = 2459152, ASSEMBLY_ID = 2452479;
+ BR4.XNOH0.7L3       : XNOH0        , AT = 5.467816     , SLOT_ID = 2459154, ASSEMBLY_ID = 2452479;
+ BR.QDE7                            , AT = 6.234797     , SLOT_ID = 2459155;
+ BR4.DSHAH7L4        : DBSH         , AT = 7.001816     , SLOT_ID = 2459162, ASSEMBLY_ID = 2452483;
+ BR4.DSHAV7L4        : DBSV         , AT = 7.001816     , SLOT_ID = 2459163, ASSEMBLY_ID = 2452483;
+ BR.QFO72                           , AT = 7.580797     , SLOT_ID = 2459138;
+ BR.STSCRAP72                       , AT = 8.1998       , SLOT_ID = 2459132, ASSEMBLY_ID = 2459130;
+ BR.BHZ72                           , AT = 9.008652     , SLOT_ID = 2459130;
+ENDSEQUENCE;
+
+P08ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 08
+ BR4.ONO8L1          : ONO          , AT = .36375       , SLOT_ID = 2459173, ASSEMBLY_ID = 2452487;
+ BR4.QNO8L1          : QNO__001     , AT = .36375       , SLOT_ID = 2459174, ASSEMBLY_ID = 2452487;
+ BR4.XNO8L1          : XNO__001     , AT = .36375       , SLOT_ID = 2459175, ASSEMBLY_ID = 2452487;
+ BR4.DHZ8L1          : DHZ__001     , AT = .86675       , SLOT_ID = 2459182, ASSEMBLY_ID = 2452491;
+ BR4.DVT8L1          : DVT__001     , AT = .86675       , SLOT_ID = 2459183, ASSEMBLY_ID = 2452491;
+ BR4.BCTF8L1         : TFA          , AT = 1.4824       , SLOT_ID = 2459187, ASSEMBLY_ID = 2452492;
+ BR4.BCW8L1          : UWBL         , AT = 2.013023     , SLOT_ID = 2459191, ASSEMBLY_ID = 2452493;
+ BR4.BPP8L1          : BPPBA001     , AT = 2.183273     , SLOT_ID = 2459195, ASSEMBLY_ID = 2452494;
+ BR4.VVS8L1          : VVS          , AT = 2.1875       , SLOT_ID = 3783287;
+ BR.BHZ81                           , AT = 3.462849     , SLOT_ID = 2459196;
+ BR.STSCRAP81                       , AT = 4.2717       , SLOT_ID = 2459198, ASSEMBLY_ID = 2459196;
+ BR4.WBS8L2          : WBS          , AT = 4.47354      , SLOT_ID = 2459203, ASSEMBLY_ID = 2452495;
+ BR.QFO81                           , AT = 4.889797     , SLOT_ID = 2459204;
+ BR4.BPM8L3          : UES          , AT = 5.467821     , SLOT_ID = 2459220, ASSEMBLY_ID = 2452496;
+ BR4.ONOH0.8L3       : ONOH0        , AT = 5.467821     , SLOT_ID = 2459218, ASSEMBLY_ID = 2452500;
+ BR4.QNO8L3          : QNO__001     , AT = 5.467821     , SLOT_ID = 2459219, ASSEMBLY_ID = 2452500;
+ BR4.XNOH0.8L3       : XNOH0        , AT = 5.467821     , SLOT_ID = 2459221, ASSEMBLY_ID = 2452500;
+ BR.QDE8                            , AT = 6.234797     , SLOT_ID = 2459222;
+ BR4.DBSH8L4         : DBSH         , AT = 7.001821     , SLOT_ID = 2459229, ASSEMBLY_ID = 2452504;
+ BR4.DBSV8L4         : DBSV         , AT = 7.001821     , SLOT_ID = 2459230, ASSEMBLY_ID = 2452504;
+ BR.QFO82                           , AT = 7.580797     , SLOT_ID = 2459205;
+ BR.STSCRAP82                       , AT = 8.1998       , SLOT_ID = 2459199, ASSEMBLY_ID = 2459197;
+ BR.BHZ82                           , AT = 9.008652     , SLOT_ID = 2459197;
+ENDSEQUENCE;
+
+P09ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 09
+ BR4.DHZ9L1          : DHZ__001     , AT = .322         , SLOT_ID = 2459237, ASSEMBLY_ID = 2452508;
+ BR4.DVT9L1          : DVT__001     , AT = .322         , SLOT_ID = 2459238, ASSEMBLY_ID = 2452508;
+ BR4.BCTDC9L1        : TDC          , AT = 1.377681     , SLOT_ID = 2459242;
+ BR4.ONO9L1          : ONO          , AT = 2.094        , SLOT_ID = 2459255, ASSEMBLY_ID = 2452514;
+ BR4.OSK9L1          : OSK          , AT = 2.094        , SLOT_ID = 2459256, ASSEMBLY_ID = 2452514;
+ BR4.XNO9L1          : XNO__001     , AT = 2.094        , SLOT_ID = 2459257, ASSEMBLY_ID = 2452514;
+ BR4.XSK9L1          : XSK          , AT = 2.094        , SLOT_ID = 2459258, ASSEMBLY_ID = 2452514;
+ BR.BHZ91                           , AT = 3.462849     , SLOT_ID = 2459259;
+ BR.STSCRAP91                       , AT = 4.2717       , SLOT_ID = 2459261, ASSEMBLY_ID = 2459259;
+ BR.QFO91                           , AT = 4.889797     , SLOT_ID = 2459263;
+ BR4.BPM9L3          : UES          , AT = 5.467826     , SLOT_ID = 2459279, ASSEMBLY_ID = 2452515;
+ BR4.ONOH0.9L3       : ONOH0        , AT = 5.467826     , SLOT_ID = 2459277, ASSEMBLY_ID = 2452519;
+ BR4.QSKH0.9L3       : QSKH0        , AT = 5.467826     , SLOT_ID = 2459278, ASSEMBLY_ID = 2452519;
+ BR4.XNOH0.9L3       : XNOH0        , AT = 5.467826     , SLOT_ID = 2459280, ASSEMBLY_ID = 2452519;
+ BR.QDE9                            , AT = 6.234797     , SLOT_ID = 2459281;
+ BR4.DSHAH9L4        : DBSH         , AT = 7.001826     , SLOT_ID = 2459288, ASSEMBLY_ID = 2452523;
+ BR4.DSHAV9L4        : DBSV         , AT = 7.001826     , SLOT_ID = 2459289, ASSEMBLY_ID = 2452523;
+ BR.QFO92                           , AT = 7.580797     , SLOT_ID = 2459264;
+ BR.STSCRAP92                       , AT = 8.1998       , SLOT_ID = 2459262, ASSEMBLY_ID = 2459260;
+ BR.BHZ92                           , AT = 9.008652     , SLOT_ID = 2459260;
+ENDSEQUENCE;
+
+P10ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 10
+ BR.BHZ101                          , AT = 3.462849     , SLOT_ID = 2459292;
+ BR.STSCRAP101                      , AT = 4.2717       , SLOT_ID = 2459294, ASSEMBLY_ID = 2459292;
+ BR.QFO101                          , AT = 4.889797     , SLOT_ID = 2459296;
+ BR4.BPM10L3         : UES          , AT = 5.46782      , SLOT_ID = 2459312, ASSEMBLY_ID = 2452525;
+ BR4.ONOH0.10L3      : ONOH0        , AT = 5.46782      , SLOT_ID = 2459310, ASSEMBLY_ID = 2452529;
+ BR4.QSK10L3         : QSK          , AT = 5.46782      , SLOT_ID = 2459311, ASSEMBLY_ID = 2452529;
+ BR4.XNOH0.10L3      : XNOH0        , AT = 5.46782      , SLOT_ID = 2459313, ASSEMBLY_ID = 2452529;
+ BR.QDE10                           , AT = 6.234797     , SLOT_ID = 2459314;
+ BR4.DSHAH10L4       : DSHAH        , AT = 7.00182      , SLOT_ID = 2459321, ASSEMBLY_ID = 2452533;
+ BR4.DVT10L4         : DVT__001     , AT = 7.00182      , SLOT_ID = 2459322, ASSEMBLY_ID = 2452533;
+ BR.QFO102                          , AT = 7.580797     , SLOT_ID = 2459297;
+ BR.STSCRAP102                      , AT = 8.1998       , SLOT_ID = 2459295, ASSEMBLY_ID = 2459293;
+ BR.BHZ102                          , AT = 9.008652     , SLOT_ID = 2459293;
+ENDSEQUENCE;
+
+P11ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 11
+ BE4.DHZ11L1         : DHZ__001     , AT = .296         , SLOT_ID = 2459329, ASSEMBLY_ID = 2452537;
+ BE4.DVT11L1         : DVT__001     , AT = .296         , SLOT_ID = 2459330, ASSEMBLY_ID = 2452537;
+ BR4.ONO11L1         : ONO          , AT = 1.463        , SLOT_ID = 2459340, ASSEMBLY_ID = 2452541;
+ BR4.QNO11L1         : QNO__001     , AT = 1.463        , SLOT_ID = 2459341, ASSEMBLY_ID = 2452541;
+ BR4.XNO11L1         : XNO__001     , AT = 1.463        , SLOT_ID = 2459342, ASSEMBLY_ID = 2452541;
+ BR.BHZ111                          , AT = 3.462849     , SLOT_ID = 2459343;
+ BR.STSCRAP111                      , AT = 4.2717       , SLOT_ID = 2459345, ASSEMBLY_ID = 2459343;
+ BR4.BPP11L2         : BPPBA001     , AT = 4.3037       , SLOT_ID = 2459350, ASSEMBLY_ID = 2452542;
+ BR.QFO111                          , AT = 4.889797     , SLOT_ID = 2459351;
+ BR4.BPM11L3         : UES          , AT = 5.467825     , SLOT_ID = 2459367, ASSEMBLY_ID = 2452543;
+ BR4.ONOH0.11L3      : ONOH0        , AT = 5.467825     , SLOT_ID = 2459365, ASSEMBLY_ID = 2452547;
+ BR4.QSKH0.11L3      : QSKH0        , AT = 5.467825     , SLOT_ID = 2459366, ASSEMBLY_ID = 2452547;
+ BR4.XNOH0.11L3      : XNOH0        , AT = 5.467825     , SLOT_ID = 2459368, ASSEMBLY_ID = 2452547;
+ BR.QDE11                           , AT = 6.234797     , SLOT_ID = 2459369;
+ BR4.DHZ11L4         : DHZ__A       , AT = 7.001825     , SLOT_ID = 2459382, ASSEMBLY_ID = 2452551;
+ BR4.DVT11L4         : DVT__A       , AT = 7.001825     , SLOT_ID = 2459383, ASSEMBLY_ID = 2452551;
+ BR4.OSK11L4         : OSK          , AT = 7.001825     , SLOT_ID = 2459384, ASSEMBLY_ID = 2452551;
+ BR4.XSK11L4         : XSK          , AT = 7.001825     , SLOT_ID = 2459385, ASSEMBLY_ID = 2452551;
+ BR.QFO112                          , AT = 7.580797     , SLOT_ID = 2459352;
+ BR.STSCRAP112                      , AT = 8.1998       , SLOT_ID = 2459346, ASSEMBLY_ID = 2459344;
+ BR.BHZ112                          , AT = 9.008652     , SLOT_ID = 2459344;
+ENDSEQUENCE;
+
+P12ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 12
+ BR4.KQM12L1         : KQM__002     , AT = .914         , SLOT_ID = 2459389, ASSEMBLY_ID = 2452552;
+ BR4.ONO12L1         : ONO          , AT = 2.094        , SLOT_ID = 2459402, ASSEMBLY_ID = 2452556;
+ BR4.OSK12L1         : OSK          , AT = 2.094        , SLOT_ID = 2459403, ASSEMBLY_ID = 2452556;
+ BR4.XNO12L1         : XNO__001     , AT = 2.094        , SLOT_ID = 2459404, ASSEMBLY_ID = 2452556;
+ BR4.XSK12L1         : XSK          , AT = 2.094        , SLOT_ID = 2459405, ASSEMBLY_ID = 2452556;
+ BR.BHZ121                          , AT = 3.462849     , SLOT_ID = 2459406;
+ BR.STSCRAP121                      , AT = 4.2717       , SLOT_ID = 2459408, ASSEMBLY_ID = 2459406;
+ BR.QFO121                          , AT = 4.889797     , SLOT_ID = 2459410;
+ BR4.BPM12L3         : UES          , AT = 5.46783      , SLOT_ID = 2459426, ASSEMBLY_ID = 2452557;
+ BR4.ONOH0.12L3      : ONOH0        , AT = 5.46783      , SLOT_ID = 2459424, ASSEMBLY_ID = 2452561;
+ BR4.QNO12L3         : QNO__001     , AT = 5.46783      , SLOT_ID = 2459425, ASSEMBLY_ID = 2452561;
+ BR4.XNOH0.12L3      : XNOH0        , AT = 5.46783      , SLOT_ID = 2459427, ASSEMBLY_ID = 2452561;
+ BR.QDE12                           , AT = 6.234797     , SLOT_ID = 2459428;
+ BR4.DHZ12L4         : DHZ__A       , AT = 7.00183      , SLOT_ID = 2459441, ASSEMBLY_ID = 2452565;
+ BR4.DVT12L4         : DVT__A       , AT = 7.00183      , SLOT_ID = 2459442, ASSEMBLY_ID = 2452565;
+ BR4.OSK12L4         : OSK          , AT = 7.00183      , SLOT_ID = 2459443, ASSEMBLY_ID = 2452565;
+ BR4.XSK12L4         : XSK          , AT = 7.00183      , SLOT_ID = 2459444, ASSEMBLY_ID = 2452565;
+ BR.QFO122                          , AT = 7.580797     , SLOT_ID = 2459411;
+ BR.STSCRAP122                      , AT = 8.1998       , SLOT_ID = 2459409, ASSEMBLY_ID = 2459407;
+ BR.BHZ122                          , AT = 9.008652     , SLOT_ID = 2459407;
+ENDSEQUENCE;
+
+P13ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 13
+ BR4.C04.13L1        : ACC04        , AT = 1.327        , SLOT_ID = 2459448, ASSEMBLY_ID = 2452566;
+ BR.BHZ131                          , AT = 3.462849     , SLOT_ID = 2459449;
+ BR.STSCRAP131                      , AT = 4.2717       , SLOT_ID = 2459451, ASSEMBLY_ID = 2459449;
+ BR.QFO131                          , AT = 4.889797     , SLOT_ID = 2459453;
+ BR4.BPM13L3         : UES          , AT = 5.467835     , SLOT_ID = 2459469, ASSEMBLY_ID = 2452567;
+ BR4.ONOH0.13L3      : ONOH0        , AT = 5.467835     , SLOT_ID = 2459467, ASSEMBLY_ID = 2452571;
+ BR4.QSKH0.13L3      : QSKH0        , AT = 5.467835     , SLOT_ID = 2459468, ASSEMBLY_ID = 2452571;
+ BR4.XNOH0.13L3      : XNOH0        , AT = 5.467835     , SLOT_ID = 2459470, ASSEMBLY_ID = 2452571;
+ BR.QDE13                           , AT = 6.234797     , SLOT_ID = 2459471;
+ BR4.DHZ13L4         : DHZ__001     , AT = 7.001835     , SLOT_ID = 2459478, ASSEMBLY_ID = 2452575;
+ BR4.DVT13L4         : DVT__001     , AT = 7.001835     , SLOT_ID = 2459479, ASSEMBLY_ID = 2452575;
+ BR.QFO132                          , AT = 7.580797     , SLOT_ID = 2459454;
+ BR.STSCRAP132                      , AT = 8.1998       , SLOT_ID = 2459452, ASSEMBLY_ID = 2459450;
+ BR.BHZ132                          , AT = 9.008652     , SLOT_ID = 2459450;
+ENDSEQUENCE;
+
+P14ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 14
+ BR4.DHZ14L1         : DHZ__001     , AT = .234928      , SLOT_ID = 2459486, ASSEMBLY_ID = 2452579;
+ BR4.DVT14L1         : DVT__001     , AT = .234928      , SLOT_ID = 2459487, ASSEMBLY_ID = 2452579;
+ BE4.KFA14L1         : MKMAG003     , AT = 1.52659      , SLOT_ID = 2459491, ASSEMBLY_ID = 5736994;
+ BR.BHZ141                          , AT = 3.462849     , SLOT_ID = 2459492;
+ BR.STSCRAP141                      , AT = 4.2717       , SLOT_ID = 2459494, ASSEMBLY_ID = 2459492;
+ BR4.VVS14L2         : VVS          , AT = 4.3725       , SLOT_ID = 3783359;
+ BR.QFO141                          , AT = 4.889797     , SLOT_ID = 2459495;
+ BR4.BPM14L3         : UES          , AT = 5.467839     , SLOT_ID = 2459511, ASSEMBLY_ID = 2452581;
+ BR4.ONOH0.14L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459509, ASSEMBLY_ID = 2452585;
+ BR4.QSK14L3         : QSK          , AT = 5.467839     , SLOT_ID = 2459510, ASSEMBLY_ID = 2452585;
+ BR4.XNOH0.14L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459512, ASSEMBLY_ID = 2452585;
+ BR.QDE14                           , AT = 6.234797     , SLOT_ID = 2459513;
+ BR4.BPP14L4         : BPPBB001     , AT = 6.79374      , SLOT_ID = 2459517, ASSEMBLY_ID = 2452586;
+ BE4.BSW14L4         : MDBAA        , AT = 7.05474      , SLOT_ID = 2459521;
+ BR.QFO142                          , AT = 7.580797     , SLOT_ID = 2459496;
+ BR.SPSCRAP142                      , AT = 8.1998       , SLOT_ID = 2459522, ASSEMBLY_ID = 2459493;
+ BR.BHZ142                          , AT = 9.008652     , SLOT_ID = 2459493;
+ENDSEQUENCE;
+
+P15ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 15
+ BR.BTV15L1                         , AT = .192         , SLOT_ID = 2459523;
+ BE4.SMH15L1         : SMH__006     , AT = .909892      , SLOT_ID = 2459527, ASSEMBLY_ID = 2452588;
+ BR4.DHZ15L1         : DHZ__002     , AT = 1.8213       , SLOT_ID = 2459534, ASSEMBLY_ID = 2452592;
+ BR4.DVT15L1         : DVT__002     , AT = 1.8213       , SLOT_ID = 2459535, ASSEMBLY_ID = 2452592;
+ BE4.BSW15L1         : MDBAB        , AT = 2.36866      , SLOT_ID = 2459539;
+ BR.BHZ151                          , AT = 3.462849     , SLOT_ID = 2459540;
+ BR.SPSCRAP151                      , AT = 4.2717       , SLOT_ID = 2459542, ASSEMBLY_ID = 2459540;
+ BR.QFO151                          , AT = 4.889797     , SLOT_ID = 2459543;
+ BR4.BPM15L3         : UES          , AT = 5.467834     , SLOT_ID = 2459559, ASSEMBLY_ID = 2452594;
+ BR4.ONOH0.15L3      : ONOH0        , AT = 5.467834     , SLOT_ID = 2459557, ASSEMBLY_ID = 2452598;
+ BR4.QSKH0.15L3      : QSKH0        , AT = 5.467834     , SLOT_ID = 2459558, ASSEMBLY_ID = 2452598;
+ BR4.XNOH0.15L3      : XNOH0        , AT = 5.467834     , SLOT_ID = 2459560, ASSEMBLY_ID = 2452598;
+ BR.QDE15                           , AT = 6.234797     , SLOT_ID = 2459561;
+ BE4.BSW15L4         : MDBAA        , AT = 7.001834     , SLOT_ID = 2459565;
+ BR.QFO152                          , AT = 7.580797     , SLOT_ID = 2459544;
+ BR.STSCRAP152                      , AT = 8.1998       , SLOT_ID = 2459566, ASSEMBLY_ID = 2459541;
+ BR.BHZ152                          , AT = 9.008652     , SLOT_ID = 2459541;
+ENDSEQUENCE;
+
+P16ring4: SEQUENCE, REFER = centre, L  = 9.8175; !Ring 4, Period 16
+ BR4.ONO16L1         : ONO          , AT = .363         , SLOT_ID = 2459576, ASSEMBLY_ID = 2452603;
+ BR4.QNO16L1         : QNO__001     , AT = .363         , SLOT_ID = 2459577, ASSEMBLY_ID = 2452603;
+ BR4.XNO16L1         : XNO__001     , AT = .363         , SLOT_ID = 2459578, ASSEMBLY_ID = 2452603;
+ BI4.KSW16L1         : MKMAG002     , AT = .9605        , SLOT_ID = 40101125, ASSEMBLY_ID = 40101119;
+ BR4.DHZ16L1         : DHZ__001     , AT = 1.99601      , SLOT_ID = 2459585, ASSEMBLY_ID = 2452607;
+ BR4.DVT16L1         : DVT__001     , AT = 1.99601      , SLOT_ID = 2459586, ASSEMBLY_ID = 2452607;
+ BR.BHZ161                          , AT = 3.462849     , SLOT_ID = 2459587;
+ BR.STSCRAP161                      , AT = 4.2717       , SLOT_ID = 2459589, ASSEMBLY_ID = 2459587;
+ BR.QFO161                          , AT = 4.889797     , SLOT_ID = 2459591;
+ BR4.BPM16L3         : UES          , AT = 5.467839     , SLOT_ID = 2459607, ASSEMBLY_ID = 2452608;
+ BR4.ONOH0.16L3      : ONOH0        , AT = 5.467839     , SLOT_ID = 2459605, ASSEMBLY_ID = 2452612;
+ BR4.QNO16L3         : QNO__001     , AT = 5.467839     , SLOT_ID = 2459606, ASSEMBLY_ID = 2452612;
+ BR4.XNOH0.16L3      : XNOH0        , AT = 5.467839     , SLOT_ID = 2459608, ASSEMBLY_ID = 2452612;
+ BR.QDE16                           , AT = 6.234797     , SLOT_ID = 2459609;
+ BI4.KSW16L4         : MKMAG002     , AT = 7.001839     , SLOT_ID = 2459613, ASSEMBLY_ID = 5736989;
+ BR.QFO162                          , AT = 7.580797     , SLOT_ID = 2459592;
+ BR.STSCRAP162                      , AT = 8.1998       , SLOT_ID = 2459590, ASSEMBLY_ID = 2459588;
+ BR.BHZ162                          , AT = 9.008652     , SLOT_ID = 2459588;
+ENDSEQUENCE;
+
+
+/************************************************************************************/
+/*                       PSB RINGS                                                  */
+/************************************************************************************/
+
+
+
+PSB4: SEQUENCE, REFER = ENTRY, L  = 157.08; !Ring 4 TOPRING
+ P01ring4                   , AT = 0;
+ P02ring4                   , AT = 9.8175;
+ P03ring4                   , AT = 19.635;
+ P04ring4                   , AT = 29.4525;
+ P05ring4                   , AT = 39.27;
+ P06ring4                   , AT = 49.0875;
+ P07ring4                   , AT = 58.905;
+ P08ring4                   , AT = 68.7225;
+ P09ring4                   , AT = 78.54;
+ P10ring4                   , AT = 88.3575;
+ P11ring4                   , AT = 98.175;
+ P12ring4                   , AT = 107.9925;
+ P13ring4                   , AT = 117.81;
+ P14ring4                   , AT = 127.6275;
+ P15ring4                   , AT = 137.445;
+ P16ring4                   , AT = 147.2625;
+ENDSEQUENCE;
+
+PSB3: SEQUENCE, REFER = ENTRY, L  = 157.08; !Ring 3 TOPMIDRING
+ P01ring3                   , AT = 0;
+ P02ring3                   , AT = 9.8175;
+ P03ring3                   , AT = 19.635;
+ P04ring3                   , AT = 29.4525;
+ P05ring3                   , AT = 39.27;
+ P06ring3                   , AT = 49.0875;
+ P07ring3                   , AT = 58.905;
+ P08ring3                   , AT = 68.7225;
+ P09ring3                   , AT = 78.54;
+ P10ring3                   , AT = 88.3575;
+ P11ring3                   , AT = 98.175;
+ P12ring3                   , AT = 107.9925;
+ P13ring3                   , AT = 117.81;
+ P14ring3                   , AT = 127.6275;
+ P15ring3                   , AT = 137.445;
+ P16ring3                   , AT = 147.2625;
+ENDSEQUENCE;
+
+PSB2: SEQUENCE, REFER = ENTRY, L  = 157.08; !Ring 2 BOTMIDRING
+ P01ring2                   , AT = 0;
+ P02ring2                   , AT = 9.8175;
+ P03ring2                   , AT = 19.635;
+ P04ring2                   , AT = 29.4525;
+ P05ring2                   , AT = 39.27;
+ P06ring2                   , AT = 49.0875;
+ P07ring2                   , AT = 58.905;
+ P08ring2                   , AT = 68.7225;
+ P09ring2                   , AT = 78.54;
+ P10ring2                   , AT = 88.3575;
+ P11ring2                   , AT = 98.175;
+ P12ring2                   , AT = 107.9925;
+ P13ring2                   , AT = 117.81;
+ P14ring2                   , AT = 127.6275;
+ P15ring2                   , AT = 137.445;
+ P16ring2                   , AT = 147.2625;
+ENDSEQUENCE;
+
+PSB1: SEQUENCE, REFER = ENTRY, L  = 157.08; !Ring 1 BOTRING
+ P01ring1                   , AT = 0;
+ P02ring1                   , AT = 9.8175;
+ P03ring1                   , AT = 19.635;
+ P04ring1                   , AT = 29.4525;
+ P05ring1                   , AT = 39.27;
+ P06ring1                   , AT = 49.0875;
+ P07ring1                   , AT = 58.905;
+ P08ring1                   , AT = 68.7225;
+ P09ring1                   , AT = 78.54;
+ P10ring1                   , AT = 88.3575;
+ P11ring1                   , AT = 98.175;
+ P12ring1                   , AT = 107.9925;
+ P13ring1                   , AT = 117.81;
+ P14ring1                   , AT = 127.6275;
+ P15ring1                   , AT = 137.445;
+ P16ring1                   , AT = 147.2625;
+ENDSEQUENCE;
+
+
+return;

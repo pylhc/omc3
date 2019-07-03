@@ -38,18 +38,18 @@ class MadxError(Exception):
 
 
 def _parse_args():
-    parser = optparse.OptionParser()
-    parser.add_option("-f", "--file", metavar="FILE", dest="file",
+    omcparser = optparse.OptionParser()
+    omcparser.add_option("-f", "--file", metavar="FILE", dest="file",
                       help="The file with the annotated MADX input to run.")
-    parser.add_option("-o", "--output", metavar="OUTPUT", dest="output",
+    omcparser.add_option("-o", "--output", metavar="OUTPUT", dest="output",
                       help="If defined, it will write the processed MADX script into the file.")
-    parser.add_option("-l", "--log", metavar="LOG", dest="log",
+    omcparser.add_option("-l", "--log", metavar="LOG", dest="log",
                       help="File where to write the MADX log output.")
-    parser.add_option("-m", "--madx", metavar="MADX", dest="madx_path",
+    omcparser.add_option("-m", "--madx", metavar="MADX", dest="madx_path",
                       help="Path to the MAD-X executable to use", default=MADX_PATH)
-    parser.add_option("-c", "--cwd", metavar="CWD", dest="cwd",
+    omcparser.add_option("-c", "--cwd", metavar="CWD", dest="cwd",
                       help="Set current working directory")
-    (options, args) = parser.parse_args()
+    (options, args) = omcparser.parse_args()
     if len(args) > 1 or ((options.file is None) == (len(args) == 0)):
         raise IOError("No input found: either pass the file as first parameter or use --file (-f)")
     if len(args) == 1:

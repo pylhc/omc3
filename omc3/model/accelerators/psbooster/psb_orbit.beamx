@@ -1,0 +1,11 @@
+
+/*****************************************************************************************
+*
+* PS BOOSTER beam characteristics
+*
+* orbit parameters
+*****************************************************************************************/
+
+beam, particle=PROTON, pc=0.348;  ! change depending on c-time of orbit measurement; pc=momentum
+
+return;

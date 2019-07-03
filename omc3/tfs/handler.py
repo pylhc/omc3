@@ -84,7 +84,7 @@ class _Indx(object):
         return name_series[name_series == key].index[0]
 
 
-def read_tfs(tfs_path, index=None):
+def read_tfs(tfs_path, index=None, make_index_unique=True):
     """
     Parses the TFS table present in tfs_path and returns a custom Pandas DataFrame (TfsDataFrame).
 
@@ -125,6 +125,15 @@ def read_tfs(tfs_path, index=None):
     data_frame = _create_data_frame(column_names, column_types, rows_list, headers)
 
     if index is not None:  # Use given column as index
+        if make_index_unique:
+            index_list = {}
+            for i_ in range(len(data_frame[index])):
+                key = data_frame[index].iloc[i_]
+                if key in index_list.keys():
+                    data_frame[index].iloc[i_] += str(index_list[key])
+                    index_list[key] += 1
+                else:
+                    index_list[key] = 1
         data_frame = data_frame.set_index(index)
     else:  # Try to find Index automatically
         index_column = [c for c in data_frame.columns if c.startswith(INDEX_ID)]

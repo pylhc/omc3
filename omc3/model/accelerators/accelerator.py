@@ -72,8 +72,8 @@ class Accelerator(object):
     def __init__(self, *args, **kwargs):
         # for reasons of import-order and class creation, decoration was not possible
 
-        parser = EntryPoint(self.get_instance_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
+        omcparser = EntryPoint(self.get_instance_parameters(), strict=True)
+        opt = omcparser.parse(*args, **kwargs)
 
         if opt.model_dir:
             self.init_from_model_dir(opt.model_dir)
@@ -225,8 +225,8 @@ class Accelerator(object):
         """
         This method should return the accelerator class defined in the arguments.
         """
-        parser = EntryPoint(cls.get_class_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
+        omcparser = EntryPoint(cls.get_class_parameters(), strict=True)
+        opt = omcparser.parse(*args, **kwargs)
         return cls._get_class(opt)
 
     @classmethod
@@ -235,8 +235,8 @@ class Accelerator(object):
         For the desired philosophy of returning parameters all the time,
         try to avoid this function, e.g. parse outside parameters first.
         """
-        parser = EntryPoint(cls.get_class_parameters(), strict=False)
-        opt, unknown_opt = parser.parse(*args, **kwargs)
+        omcparser = EntryPoint(cls.get_class_parameters(), strict=False)
+        opt, unknown_opt = omcparser.parse(*args, **kwargs)
         return cls._get_class(opt), unknown_opt
 
     @classmethod
