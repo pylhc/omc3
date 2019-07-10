@@ -1,5 +1,5 @@
 """
-Module omcparser.entrypoint
+entrypoint
 --------------------------
 
 Entry Point Parser and Decorator.
@@ -33,7 +33,7 @@ Using **strict** mode (see below)::
     @entrypoint(parameters, strict=True)
     def some_function(options)
 
-It is also possible to use the EntryPoint Class similar to a normal omcparser::
+It is also possible to use the EntryPoint Class similar to a normal parser::
 
     ep_parser = EntryPoint(parameters)
     options, unknown_options = ep_parser.parse(arguments)
@@ -138,7 +138,7 @@ from functools import wraps
 
 from utils import logging_tools
 from utils.dict_tools import DotDict
-from omcparser.dict_parser import ParameterError, ArgumentError, DictParser
+from generic_parser.dict_parser import ParameterError, ArgumentError, DictParser
 
 from utils.contexts import silence
 
@@ -168,7 +168,7 @@ class EntryPoint(object):
         # add config-argparser
         self.configarg = self._create_config_argument()
 
-        # create omcparsers from parameter
+        # create parsers from parameter
         self.argparse = self._create_argument_parser()
         self.dictparse = self._create_dict_parser()
         self.configparse = self._create_config_parser()
@@ -215,28 +215,28 @@ class EntryPoint(object):
     #########################
 
     def _create_config_argument(self):
-        """ Creates the config-file argument omcparser """
-        omcparser = ArgumentParser()
-        omcparser.add_argument('--{}'.format(ID_CONFIG), type=str, dest=ID_CONFIG, required=True,)
-        omcparser.add_argument('--{}'.format(ID_SECTION), type=str, dest=ID_SECTION,)
-        return omcparser
+        """ Creates the config-file argument parser """
+        parser = ArgumentParser()
+        parser.add_argument('--{}'.format(ID_CONFIG), type=str, dest=ID_CONFIG, required=True,)
+        parser.add_argument('--{}'.format(ID_SECTION), type=str, dest=ID_SECTION,)
+        return parser
 
     def _create_argument_parser(self):
         """ Creates the ArgumentParser from parameter. """
-        omcparser = ArgumentParser()
-        omcparser = add_params_to_generic(omcparser, self.parameter)
-        return omcparser
+        parser = ArgumentParser()
+        parser = add_params_to_generic(parser, self.parameter)
+        return parser
 
     def _create_dict_parser(self):
         """ Creates the DictParser from parameter. """
-        omcparser = DictParser(strict=self.strict)
-        omcparser = add_params_to_generic(omcparser, self.parameter)
-        return omcparser
+        parser = DictParser(strict=self.strict)
+        parser = add_params_to_generic(parser, self.parameter)
+        return parser
 
     def _create_config_parser(self):
-        """ Creates the config omcparser. Maybe more to do here later with parameter. """
-        omcparser = ConfigParser()
-        return omcparser
+        """ Creates the config parser. Maybe more to do here later with parameter. """
+        parser = ConfigParser()
+        return parser
 
     #########################
     # Handlers
@@ -539,29 +539,29 @@ def add_to_arguments(args, entry_params=None, **kwargs):
     return args
 
 
-def add_params_to_generic(omcparser, params):
+def add_params_to_generic(parser, params):
     """ Adds entry-point style parameter to either
     ArgumentParser, DictParser or EntryPointParameters
     """
     params = copy.deepcopy(params)
     params = dict2list_param(params)
 
-    if isinstance(omcparser, EntryPointParameters):
+    if isinstance(parser, EntryPointParameters):
         for param in params:
-            omcparser.add_parameter(**param)
+            parser.add_parameter(**param)
 
-    elif isinstance(omcparser, ArgumentParser):
+    elif isinstance(parser, ArgumentParser):
         for param in params:
             param["dest"] = param.pop("name", None)
             flags = param.pop("flags", None)
             if flags is None:
-                omcparser.add_argument(**param)
+                parser.add_argument(**param)
             else:
                 if isinstance(flags, str):
                     flags = [flags]
-                omcparser.add_argument(*flags, **param)
+                parser.add_argument(*flags, **param)
 
-    elif isinstance(omcparser, DictParser):
+    elif isinstance(parser, DictParser):
         for param in params:
             if "nargs" in param:
                 param["subtype"] = param.get("type", None)
@@ -578,10 +578,10 @@ def add_params_to_generic(omcparser, params):
             param.pop("flags", None)
 
             name = param.pop("name")
-            omcparser.add_parameter(name, **param)
+            parser.add_parameter(name, **param)
     else:
         raise TypeError("Parser not recognised.")
-    return omcparser
+    return parser
 
 
 def split_arguments(args, *param_list):
@@ -607,9 +607,9 @@ def split_arguments(args, *param_list):
         # strings of commandline parameters, has to be parsed twice
         # (as I don't know how to handle flags properly)
         for params in param_list:
-            omcparser = argparse.ArgumentParser()
-            omcparser = add_params_to_generic(omcparser, params)
-            this_args, args = omcparser.parse_known_args(args)
+            parser = argparse.ArgumentParser()
+            parser = add_params_to_generic(parser, params)
+            this_args, args = parser.parse_known_args(args)
             split_args.append(DotDict(this_args.__dict__))
         split_args.append(args)
     else:

@@ -1,8 +1,8 @@
 """
-Module omcparser.entry_datatypes
+entry_datatypes
 -----------------------------
 
-Advanced Datatypes to add as type to entrypoint. Or any omcparser, really.
+Advanced Datatypes to add as type to entrypoint. Or any parser, really.
 
 """
 import abc
@@ -78,7 +78,7 @@ class BoolOrString(metaclass=get_instance_faker_meta(bool, str)):
     """ A class that behaves like a boolean when possible, otherwise like a string."""
     def __new__(cls, value):
         if isinstance(value, str):
-            value = value.strip("\'\"")  # behavior like dict-omcparser
+            value = value.strip("\'\"")  # behavior like dict-parser
 
         if value in TRUE_ITEMS:
             return True

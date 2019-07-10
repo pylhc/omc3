@@ -4,13 +4,13 @@ import sys
 import tempfile
 
 from . import context
-from parser.entrypoint import (EntryPointParameters,
-                               entrypoint, EntryPoint,
-                               OptionsError, split_arguments,
-                               create_parameter_help
-                               )
-from parser.dict_parser import ParameterError, ArgumentError
-from parser.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
+from generic_parser.entrypoint import (EntryPointParameters,
+                                       entrypoint, EntryPoint,
+                                       OptionsError, split_arguments,
+                                       create_parameter_help
+                                       )
+from generic_parser.dict_parser import ParameterError, ArgumentError
+from generic_parser.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
 from utils.dict_tools import print_dict_tree
 from utils import logging_tools
 from utils.contexts import silence

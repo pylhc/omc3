@@ -1,5 +1,5 @@
 """
-Module omcparser.dict_parser
+dict_parser
 ---------------------------
 """
 
@@ -207,7 +207,7 @@ class DictParser(object):
         return self.parse_arguments(options)
 
     def add_parameter(self, param, **kwargs):
-        """ Adds an parameter to the omcparser.
+        """ Adds an parameter to the parser.
 
         If you want it to be an parameter of a sub-dictionary add
         the 'loc=subdict.subdict' keyword to the input.
@@ -240,7 +240,7 @@ class DictParser(object):
         sub_dict = self._traverse_dict('.'.join(fields[:-1]))
 
         if name in sub_dict:
-            raise ParameterError(f"'{name}' already exists in omcparser!")
+            raise ParameterError(f"'{name}' already exists in parser!")
 
         self._validate_parameters(dictionary)
         sub_dict[name] = dictionary
@@ -300,7 +300,7 @@ class DictParser(object):
         """
         sub_dict = self._traverse_dict(loc)
         if param.name in sub_dict:
-            raise ParameterError(f"'{param.name:s}' already exists in omcparser!")
+            raise ParameterError(f"'{param.name:s}' already exists in parser!")
         sub_dict[param.name] = param
         return self
 

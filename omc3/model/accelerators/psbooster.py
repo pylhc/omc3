@@ -5,7 +5,7 @@ PS BOOSTER
 import os
 import re
 from model.accelerators.accelerator import Accelerator
-from omcparser.entrypoint import EntryPointParameters
+from generic_parser.entrypoint import EntryPointParameters
 import logging
 
 LOGGER = logging.getLogger(__name__)
