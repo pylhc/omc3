@@ -24,7 +24,7 @@ from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 import tbt
 from utils import logging_tools, iotools
-from parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
+from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)

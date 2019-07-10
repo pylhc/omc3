@@ -2,7 +2,7 @@ import pytest
 import sys
 
 from . import context
-from parser.dict_parser import ParameterError, Parameter, DictParser
+from generic_parser.dict_parser import ParameterError, Parameter, DictParser
 from utils.logging_tools import TempStringLogger
 
 
