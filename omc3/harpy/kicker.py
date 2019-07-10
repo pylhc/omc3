@@ -1,5 +1,5 @@
 """
-Module harpy.kicker
+kicker
 -------------------
 
 Corrects phase of main spectral line in a case,

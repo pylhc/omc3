@@ -1,5 +1,5 @@
 """
-Module parser.entrypoint
+entrypoint
 --------------------------
 
 Entry Point Parser and Decorator.
@@ -138,7 +138,7 @@ from functools import wraps
 
 from utils import logging_tools
 from utils.dict_tools import DotDict
-from parser.dict_parser import ParameterError, ArgumentError, DictParser
+from generic_parser.dict_parser import ParameterError, ArgumentError, DictParser
 
 from utils.contexts import silence
 

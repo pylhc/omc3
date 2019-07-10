@@ -1,11 +1,11 @@
 """
-.. module: dpp
+Dpp
+----------------
 
-Created on 2017
-
+:module: optics_measurements.dpp
 :author: Elena Fol, Lukas Malina
 
-Arranges dp over p of given files
+Computes and arranges dp over p
 """
 
 import logging

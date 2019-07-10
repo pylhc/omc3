@@ -1,5 +1,5 @@
 """
-Module harpy.clean
+clean
 --------------------
 
 Cleaning functionality of harpy.

@@ -1,4 +1,11 @@
-from parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+"""
+Accelerator
+-------------------
+
+Contains parent accelerator class and other support classes
+"""
+
+from generic_parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
 import os
 import pandas as pd
 import tfs

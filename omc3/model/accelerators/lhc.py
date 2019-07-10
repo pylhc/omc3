@@ -1,10 +1,14 @@
+"""
+LHC
+-------------------
+"""
 import json
 import os
 from collections import OrderedDict
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
 from utils import logging_tools
 import tfs
-from parser.entrypoint import EntryPointParameters
+from generic_parser.entrypoint import EntryPointParameters
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)

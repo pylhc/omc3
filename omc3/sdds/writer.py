@@ -1,5 +1,5 @@
 """
-Module sdds.writer
+writer
 -------------------
 
 Write sdds files.

@@ -1,5 +1,5 @@
 """
-Module tfs.tools
+tools
 -----------------
 
 Additional functions to modify tfs files.

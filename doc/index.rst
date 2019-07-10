@@ -13,6 +13,8 @@ Contents:
 
    entrypoints/index
    harpy/index
+   model/index
+   optics_measurements/index
    parser/index
    sdds/index
    tbt/index
