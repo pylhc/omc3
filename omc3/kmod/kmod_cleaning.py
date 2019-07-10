@@ -8,6 +8,7 @@ LOG = logging_tools.get_logger(__name__)
 
 PLANES = ['X', 'Y']
 
+
 class clicker_class(object):
     def __init__(self, ax, data, pix_err=1):
         self.canvas = ax.get_figure().canvas
@@ -149,24 +150,22 @@ def manual_cleaning_data(k, tune_data, tune_data_err):
     plt.show()
     return cc.return_clean_data()
 
-def automatic_cleaning_data(k,tune_data, tune_data_err, limit=1e-5):
+
+def automatic_cleaning_data(k, tune_data, tune_data_err, limit=1e-5):
     LOG.debug('Automatic Tune cleaning')
-    mask = outliers.get_filter_mask(tune_data, x_data=k, limit=limit)    
+    mask = outliers.get_filter_mask(tune_data, x_data=k, limit=limit)
     return mask
 
-def clean_data( kmod_input_params, magnet_df ):
+
+def clean_data(kmod_input_params, magnet_df):
 
     if kmod_input_params.no_autoclean == True:
-        #TODO currently not working due to python2 - python3 issues
+        # TODO currently not working due to python2 - python3 issues
         for plane in PLANES:
-            magnet_df[kmod_constants.get_cleaned_col( plane )] = True
-            
+            magnet_df[kmod_constants.get_cleaned_col(plane)] = True
 
     else:
         for plane in PLANES:
-            magnet_df[kmod_constants.get_cleaned_col( plane )] = automatic_cleaning_data( magnet_df[kmod_constants.get_k_col()], magnet_df[kmod_constants.get_tune_col( plane )], magnet_df[kmod_constants.get_tune_err_col( plane )] )
-        
+            magnet_df[kmod_constants.get_cleaned_col(plane)] = automatic_cleaning_data(magnet_df[kmod_constants.get_k_col()], magnet_df[kmod_constants.get_tune_col( plane )], magnet_df[kmod_constants.get_tune_err_col( plane )] )
 
     return magnet_df
-
-

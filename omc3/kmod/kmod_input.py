@@ -4,25 +4,26 @@ from kmod import kmod_utils
 
 LOG = logging_tools.get_logger(__name__)
 DEFAULTS_IP = {
-    "cminus": 1E-3 ,
-    "misalignment": 0.006 ,
-    "errorK": 0.001 ,
-    "errorL": 0.001 ,
+    "cminus": 1E-3,
+    "misalignment": 0.006,
+    "errorK": 0.001,
+    "errorL": 0.001,
 }
 
 DEFAULTS_CIRCUITS = {
-    "cminus": 1E-3 ,
-    "misalignment": 0.001 ,
-    "errorK": 0.001, 
+    "cminus": 1E-3,
+    "misalignment": 0.001,
+    "errorK": 0.001,
     "errorL": 0.001,
 }
 
 MAGNETS_IP = {
-    "IP1": ['MQXA.1L1', 'MQXA.1R1'] ,
-    "IP2": ['MQXA.1L2', 'MQXA.1R2'] ,
-    "IP5": ['MQXA.1L5', 'MQXA.1R5'] ,
-    "IP8": ['MQXA.1L8', 'MQXA.1R8'] 
+    "IP1": ['MQXA.1L1', 'MQXA.1R1'],
+    "IP2": ['MQXA.1L2', 'MQXA.1R2'],
+    "IP5": ['MQXA.1L5', 'MQXA.1R5'],
+    "IP8": ['MQXA.1L8', 'MQXA.1R8']
 }
+
 
 def _parse_args():
 
@@ -34,8 +35,9 @@ def _parse_args():
                         help='path to working directory with stored KMOD measurement files',
                         action='store', type=str, dest='work_dir', required=True)
     parser.add_argument('--beam',
-                    help='define beam used: b1 or b2',
-                    action='store', type=str, dest='beam', choices=['b1', 'b2', 'B1', 'B2'], required=True)
+                        help='define beam used: b1 or b2',
+                        action='store', type=str, dest='beam', choices=['b1', 'b2', 'B1', 'B2'],
+                        required=True)
 
     parser.add_argument('--cminus',
                         help='C Minus',
@@ -68,10 +70,10 @@ def _parse_args():
                         action='store_true', dest='a_clean')
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument( '--circuit',
+    group.add_argument('--circuit',
                        help='circuit names of the modulated quadrupoles',
                        action='store', type=str, dest='circuits')
-    group.add_argument( '--interaction_point',
+    group.add_argument('--interaction_point',
                        help='define interaction point',
                        action='store', type=str, dest='ip', choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'])
 
@@ -79,7 +81,8 @@ def _parse_args():
 
     return options
 
-class KmodInput():  
+
+class KmodInput():
     """
     Class for holding all input variables required for Kmodulation analysis
     """
@@ -108,8 +111,8 @@ class KmodInput():
         self.log = None
         self.simulation = None
         self.no_autoclean = None
-        self.betastar_required=False
-        self.instruments_found=[]
+        self.betastar_required = False
+        self.instruments_found = []
 
     def set_params_from_parser(self, options):
 
@@ -117,10 +120,10 @@ class KmodInput():
         self.beam = options.beam.upper()
         self.ip = options.ip
         self.circuits = options.circuits
-        self.betastar_and_waist=options.betastar
+        self.betastar_and_waist = options.betastar
 
         self.tune_uncertainty = options.tunemeasuncertainty
-        self.instruments = list(map( str.upper ,options.instruments.split(",")  ))
+        self.instruments = list(map(str.upper, options.instruments.split(",")))
 
         self.log = options.log
         self.simulation = options.simulation
@@ -131,40 +134,40 @@ class KmodInput():
         self.set_error(options, "errorL")
         self.set_error(options, "misalignment")
 
-        self.set_betastar_and_waist( options )
-        self.set_magnets( options )
+        self.set_betastar_and_waist(options)
+        self.set_magnets(options)
 
     def set_betastar_required(self):
-        self.betastar_required=True
+        self.betastar_required = True
 
     def set_instruments_found(self, found):
         self.instruments_found.append(found)
 
-    def set_instrument_position( self, instrument, positions ):
+    def set_instrument_position(self, instrument, positions):
         setattr(self, instrument, positions)
 
     def set_betastar_and_waist(self, options):
-        
+
         bs = options.betastar.split(",")
         if len(bs) == 2:
-            self.betastar_x, self.betastar_y, self.waist_x, self.waist_y = map( float, (bs[0], bs[0], bs[1], bs[1]))
+            self.betastar_x, self.betastar_y, self.waist_x, self.waist_y = map(float, (bs[0], bs[0], bs[1], bs[1]))
         elif len(bs) == 3:
-            self.betastar_x, self.betastar_y, self.waist_x, self.waist_y = map( float, (bs[0], bs[1], bs[2], bs[2]))
+            self.betastar_x, self.betastar_y, self.waist_x, self.waist_y = map(float, (bs[0], bs[1], bs[2], bs[2]))
         elif len(bs) == 4:
-            self.betastar_x, self.betastar_y, self.waist_x, self.waist_y = map( float, (bs[0], bs[1], bs[2], bs[3]))
+            self.betastar_x, self.betastar_y, self.waist_x, self.waist_y = map(float, (bs[0], bs[1], bs[2], bs[3]))
 
     def set_magnets(self, options):
 
         if options.ip is not None:
             LOG.info('IP trim analysis')
             self.magnet1, self.magnet2 = MAGNETS_IP[options.ip.upper()]
-        
+
         else:
-            LOG.info('Indiv magnets analysis')
-            self.circuit1, self.circuit2 =  options.circuits.split(',')
+            LOG.info('Individual magnets analysis')
+            self.circuit1, self.circuit2 = options.circuits.split(',')
             self.magnet1 = kmod_utils.find_magnet(self.beam, self.circuit1)
-            self.magnet2 = kmod_utils.find_magnet(self.beam, self.circuit2) 
-    
+            self.magnet2 = kmod_utils.find_magnet(self.beam, self.circuit2)
+
     def return_guess(self, plane):
 
         if plane == 'X':
@@ -172,23 +175,23 @@ class KmodInput():
         elif plane == 'Y':
             return [self.betastar_y, self.waist_y]
 
-    def set_error( self, options, error ):
+    def set_error(self, options, error):
         if error not in options:
 
-            if options.ip != None:
+            if options.ip is not None:
                 setattr(self, error, DEFAULTS_IP[error])  
-            
-            elif options.circuits != None:
+
+            elif options.circuits is not None:
                 setattr(self, error, DEFAULTS_CIRCUITS[error])  
         else:
-            setattr(self, error, getattr(options, error))   
+            setattr(self, error, getattr(options, error))
 
 
 def get_input():
-    
+
     arguments = KmodInput()
     options = _parse_args()
 
-    arguments.set_params_from_parser( options )     
+    arguments.set_params_from_parser(options)     
 
     return arguments
