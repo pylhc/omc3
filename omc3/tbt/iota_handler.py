@@ -27,7 +27,6 @@ FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
 _ACQ_DATE_PREFIX = "#Acquisition date: "
 
 
-
 def read_tbt(file_path):
     """
     Reads TbTData object from provided file_path

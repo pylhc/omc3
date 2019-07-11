@@ -497,8 +497,8 @@ OPTICS_DEFAULTS = {
 }
 
 ACCELERATOR_HANDLERS = {
-      "LHC": 'lhc_handler',
-      "IOTA": 'iota_handler'
+      "LHC": 'tbt.lhc_handler',
+      "IOTA": 'tbt.iota_handler'
 }
 
 if __name__ == "__main__":
