@@ -77,6 +77,11 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--unit**
         Choices: ``('m', 'cm', 'mm', 'um')``
         Default: ``mm``
+      - **accelerator** *(str)*: Choose the datatype from which to import.
+
+        Flags: **--accelerator**
+        Default: ``LHC``
+
 
       *--Cleaning--*
 
@@ -266,12 +271,12 @@ def _get_suboptions(opt, rest):
 
 def _run_harpy(harpy_options):
     from harpy import handler
-    import tbt
+    tbt_reader = __import__(ACCELERATOR_HANDLERS[harpy_options.accelerator])
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
         all_options = _replicate_harpy_options_per_file(harpy_options)
-        tbt_datas = [(tbt.read(option.files), option) for option in all_options]
+        tbt_datas = [(tbt_reader.read(option.files), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
                          for bunch_options, bunch_data in _multibunch(option, tbt_data)])
@@ -346,6 +351,9 @@ def harpy_params():
                          default=HARPY_DEFAULTS["to_write"],
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output. ")
+    params.add_parameter(flags="--accelerator", name="accelerator",
+                         default=HARPY_DEFAULTS["accelerator"],
+                         help="Choose the datatype from which to import. ")
 
     # Cleaning parameters
     params.add_parameter(flags="--clean", name="clean", action="store_true",
@@ -476,7 +484,8 @@ HARPY_DEFAULTS = {
     "window": "hann",
     "turn_bits": 20,
     "output_bits": 12,
-    "to_write": ["lin", "bpm_summary"]
+    "to_write": ["lin", "bpm_summary"],
+    "accelerator": "LHC"
 }
 
 OPTICS_DEFAULTS = {
@@ -485,6 +494,11 @@ OPTICS_DEFAULTS = {
         "range_of_bpms": 11,
         "max_beta_beating": 0.15,
         "compensation": "model",
+}
+
+ACCELERATOR_HANDLERS = {
+      "LHC": 'lhc_handler',
+      "IOTA": 'iota_handler'
 }
 
 if __name__ == "__main__":
