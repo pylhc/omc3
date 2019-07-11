@@ -22,6 +22,7 @@ To run either of the two or both steps, use options:
 """
 from os.path import join, dirname, basename, abspath
 from copy import deepcopy
+import importlib
 import tbt
 from utils import logging_tools, iotools
 from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
@@ -271,7 +272,7 @@ def _get_suboptions(opt, rest):
 
 def _run_harpy(harpy_options):
     from harpy import handler
-    tbt_reader = __import__(ACCELERATOR_HANDLERS[harpy_options.accelerator])
+    tbt_reader = importlib.import_module(ACCELERATOR_HANDLERS[harpy_options.accelerator])
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []

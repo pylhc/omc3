@@ -10,18 +10,15 @@ from datetime import datetime
 import time
 import numpy as np
 import pandas as pd
+import h5py
 
-import sdds
 from tbt import data_class
 from utils import logging_tools
 
 
 LOGGER = logging_tools.getLogger(__name__)
 
-PLANES = ('X', 'Y')
-NUM_TO_PLANE = {"0": "X", "1": "Y"}
-PLANE_TO_NUM = {"X": "0", "Y": "1"}
-POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}
+PLANES = ('H', 'V')
 PRINT_PRECISION = 6
 FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
 _ACQ_DATE_PREFIX = "#Acquisition date: "
@@ -36,10 +33,8 @@ def read_tbt(file_path):
     Returns:
         TbtData
     """
-    if _is_ascii_file(file_path):
-        matrices, date = _read_ascii(file_path)
-        return TbtData(matrices, date, [0], matrices[0]["X"].shape[1])
-    sdds_file = sdds.read(file_path)
+
+    hdf_file = h5py.File(file_path, 'r')
     nbunches = sdds_file.values["nbOfCapBunches"]
     bunch_ids = sdds_file.values["BunchId" if "BunchId" in sdds_file.values else "horBunchId"]
     if len(bunch_ids) > nbunches:
