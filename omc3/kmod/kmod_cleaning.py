@@ -166,6 +166,6 @@ def clean_data(kmod_input_params, magnet_df):
 
     else:
         for plane in PLANES:
-            magnet_df[kmod_constants.get_cleaned_col(plane)] = automatic_cleaning_data(magnet_df[kmod_constants.get_k_col()], magnet_df[kmod_constants.get_tune_col( plane )], magnet_df[kmod_constants.get_tune_err_col( plane )] )
+            magnet_df[kmod_constants.get_cleaned_col(plane)] = automatic_cleaning_data(magnet_df[kmod_constants.get_k_col()].values, magnet_df[kmod_constants.get_tune_col( plane )].values, magnet_df[kmod_constants.get_tune_err_col( plane )].values )
 
     return magnet_df
