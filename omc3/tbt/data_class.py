@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class TbtData(object):
     """
     Object holding a representation of a Turn-by-Turn Data

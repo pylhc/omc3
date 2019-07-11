@@ -2,23 +2,23 @@ import os
 import pytest
 import numpy as np
 from . import context
-import tbt
+import lhc_handler as tbt
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
 
 
 def test_tbt_write_read_binary(_sdds_file, _test_file):
-    origin = tbt.read(_sdds_file)
-    tbt.write(_test_file, origin)
-    new = tbt.read(_test_file)
+    origin = tbt.read_tbt(_sdds_file)
+    tbt.write_tbt(_test_file, origin)
+    new = tbt.read_tbt(_test_file)
     _compare_tbt(origin, new, False)
 
 
 def test_tbt_write_read_ascii(_sdds_file, _test_file):
-    origin = tbt.read(_sdds_file)
-    tbt.write(_test_file, origin, no_binary=True)
-    new = tbt.read(_test_file)
+    origin = tbt.read_tbt(_sdds_file)
+    tbt.write_tbt(_test_file, origin, no_binary=True)
+    new = tbt.read_tbt(_test_file)
     _compare_tbt(origin, new, True)
 
 

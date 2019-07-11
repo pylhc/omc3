@@ -276,7 +276,7 @@ def _run_harpy(harpy_options):
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
         all_options = _replicate_harpy_options_per_file(harpy_options)
-        tbt_datas = [(tbt_reader.read(option.files), option) for option in all_options]
+        tbt_datas = [(tbt_reader.read_tbt(option.files), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
                          for bunch_options, bunch_data in _multibunch(option, tbt_data)])
