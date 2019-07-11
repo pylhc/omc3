@@ -2,7 +2,7 @@ import os
 import pytest
 import numpy as np
 from . import context
-import lhc_handler as tbt
+import tbt.lhc_handler as tbt
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')

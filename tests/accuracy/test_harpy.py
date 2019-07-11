@@ -5,7 +5,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from . import context
-import lhc_handler as tbt
+import tbt.lhc_handler as tbt
 import tfs
 
 from hole_in_one import hole_in_one_entrypoint
