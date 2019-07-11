@@ -43,4 +43,4 @@ def test_with_nonexistent_file():
         with pytest.raises(madx_wrapper.MadxError) as e:
             madx_wrapper.resolve_and_run_string(content, log_file=log_file, cwd=tmpdir)
         assert isfile(log_file)
-        assert call_file in str(e)
+        assert call_file in str(e.value)

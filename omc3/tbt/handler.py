@@ -1,3 +1,11 @@
+"""
+handler
+---------------------
+
+
+Basic tbt io-functionality.
+
+"""
 from datetime import datetime
 import time
 import numpy as np

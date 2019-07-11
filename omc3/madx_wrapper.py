@@ -1,5 +1,6 @@
 """
-:module: madx.madx_wrapper
+Entrypoint madx_wrapper
+--------------------------
 
 Runs MADX with a file or a string as an input, it processes @required macros.
 If defined, writes the processed MADX script and logging output into files.
@@ -17,9 +18,7 @@ from utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 LIB = abspath(join(dirname(__file__), "lib"))
-
 _LOCAL_PATH = join(dirname(__file__), pardir, "bin")
-_AFS_PATH = join("/", "afs", "cern.ch", "user", "m", "mad", "madx", "releases", "last-rel")
 
 if "darwin" in sys.platform:
     _MADX_BIN = "madx-macosx64-intel"
@@ -29,7 +28,6 @@ else:
     _MADX_BIN = "madx-linux64-gnu"
 
 MADX_PATH = abspath(join(_LOCAL_PATH, _MADX_BIN))
-MADX_AFS_PATH = abspath(join(_AFS_PATH, _MADX_BIN))
 
 
 class MadxError(Exception):

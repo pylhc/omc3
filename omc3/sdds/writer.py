@@ -1,3 +1,10 @@
+"""
+writer
+-------------------
+
+Write sdds files.
+
+"""
 from typing import IO, List, Union, Iterable
 import numpy as np
 from sdds.classes import (SddsFile, Column, Parameter, Definition, Array, Data, Description,
