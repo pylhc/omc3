@@ -42,7 +42,7 @@ def calc_betastar(kmod_input_params, results_df, magnet1_df, magnet2_df):
         betastar_err = get_err(betastar[1::2]-betastar[0])
 
         results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = tfstools.significant_numbers(betastar[0], betastar_err)
-        
+
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
     cols = [cols[0]]+cols[-4:]+cols[1:-4]
@@ -93,7 +93,7 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df):
             (float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) +
             sign[:, 0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values)),
             ((waist - position) +
-            sign[:, 1] * float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values)) )
+            sign[:, 1] * float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values)))
 
         beta_err = get_err(beta[1::2]-beta[0])
 
@@ -127,8 +127,8 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
 
 def fit_prec(x, beta_av):
 
-    dQ = (1/(2.*np.pi)) * np.arccos(np.cos(2 * np.pi * np.modf(x[1])[
-        0]) - 0.5 * beta_av * x[0] * np.sin(2 * np.pi * np.modf(x[1])[0])) - np.modf(x[1])[0]
+    dQ = (1/(2.*np.pi)) * np.arccos(np.cos(2 * np.pi * np.modf(x[1])[0]) -
+    0.5 * beta_av * x[0] * np.sin(2 * np.pi * np.modf(x[1])[0])) - np.modf(x[1])[0]
     return dQ
 
 
@@ -202,8 +202,8 @@ def return_fit_input(magnet_df, plane):
 
     x = np.zeros((2, len(magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(
         plane)] == True)[kmod_constants.get_k_col()].dropna())))
-    sign = magnet_df.headers['POLARITY'] if plane == 'X' else - \
-        1*magnet_df.headers['POLARITY']
+
+    sign = magnet_df.headers['POLARITY'] if plane == 'X' else -1 * magnet_df.headers['POLARITY']
     x[0, :] = sign*(
             magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_k_col()].dropna() -
             magnet_df.headers[kmod_constants.get_k_col()]) * magnet_df.headers['LENGTH']
@@ -241,18 +241,22 @@ def get_av_beta(magnet_df):
     return magnet_df
 
 
+def check_polarity(magnet1_df, magnet2_df, left, right):
+    return (magnet1_df.headers['POLARITY'] == left and magnet2_df.headers['POLARITY'] == right)
+
+
 def return_df(magnet1_df, magnet2_df, plane):
 
     if plane == 'X':
-        if magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
+        if check_polarity(magnet1_df, magnet2_df, 1, -1):
             return magnet1_df, magnet2_df
-        elif magnet1_df.headers['POLARITY'] == -1 and magnet2_df.headers['POLARITY'] == 1:
+        elif check_polarity(magnet1_df, magnet2_df, -1, 1):
             return magnet2_df, magnet1_df
 
     elif plane == 'Y':
-        if magnet1_df.headers['POLARITY'] == -1 and magnet2_df.headers['POLARITY'] == 1:
+        if check_polarity(magnet1_df, magnet2_df, -1, 1):
             return magnet1_df, magnet2_df
-        elif magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
+        elif check_polarity(magnet1_df, magnet2_df, 1, -1):
             return magnet2_df, magnet1_df
 
 
@@ -262,19 +266,19 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     w = x[1]
 
     c2 = ((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
-          sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[kmod_constants.get_k_col()] +
-          sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[kmod_constants.get_k_col()],
-          foc_magnet_df.headers['LSTAR'] +
-          sign[2] * kmod_input_params.misalignment) -
-          foc_magnet_df.headers[kmod_constants.get_av_beta_col(plane)] +
-          sign[3] * foc_magnet_df.headers[kmod_constants.get_av_beta_err_col(plane)]) ** 2 +
+           sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[kmod_constants.get_k_col()] +
+           sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[kmod_constants.get_k_col()],
+           foc_magnet_df.headers['LSTAR'] +
+           sign[2] * kmod_input_params.misalignment) -
+           foc_magnet_df.headers[kmod_constants.get_av_beta_col(plane)] +
+           sign[3] * foc_magnet_df.headers[kmod_constants.get_av_beta_err_col(plane)]) ** 2 +
           (average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
-          sign[4] * kmod_input_params.errorL, def_magnet_df.headers[kmod_constants.get_k_col()] +
-          sign[5] * kmod_input_params.errorK * def_magnet_df.headers[kmod_constants.get_k_col()],
-          def_magnet_df.headers['LSTAR'] +
-          sign[6] * kmod_input_params.misalignment) -
-          def_magnet_df.headers[kmod_constants.get_av_beta_col(plane)] +
-          sign[7] * foc_magnet_df.headers[kmod_constants.get_av_beta_err_col(plane)]) ** 2)
+           sign[4] * kmod_input_params.errorL, def_magnet_df.headers[kmod_constants.get_k_col()] +
+           sign[5] * kmod_input_params.errorK * def_magnet_df.headers[kmod_constants.get_k_col()],
+           def_magnet_df.headers['LSTAR'] +
+           sign[6] * kmod_input_params.misalignment) -
+           def_magnet_df.headers[kmod_constants.get_av_beta_col(plane)] +
+           sign[7] * foc_magnet_df.headers[kmod_constants.get_av_beta_err_col(plane)]) ** 2)
 
     return c2
 
@@ -290,8 +294,7 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
     results = np.zeros((2*n+1, 2))
     for i, s in enumerate(sign):
 
-        def fun(x): return chi2(x, foc_magnet_df,
-                                def_magnet_df, plane, kmod_input_params, s)
+        def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s)
         fitresults = scipy.optimize.minimize(
             fun, kmod_input_params.return_guess(plane), method='nelder-mead', tol=1E-9)
         results[i, :] = fitresults.x[0], fitresults.x[1]
