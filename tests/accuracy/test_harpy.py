@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from . import context
 import tbt.lhc_handler as tbt
+from tbt import data_class
 import tfs
 
 from hole_in_one import hole_in_one_entrypoint
@@ -69,7 +70,7 @@ def _write_tbt_file(model):
                                + COUPLING * data_y, index=model.index),
                 Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
                                + COUPLING * data_x, index=model.index))
-    tbt.write_tbt(os.path.join(CURRENT_DIR, "test_file.sdds"), tbt.TbtData([mats], None, [0], NTURNS))
+    tbt.write_tbt(os.path.join(CURRENT_DIR, "test_file.sdds"), data_class.TbtData([mats], None, [0], NTURNS))
 
 
 def _other(plane):

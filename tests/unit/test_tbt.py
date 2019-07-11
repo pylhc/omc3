@@ -32,7 +32,7 @@ def _compare_tbt(origin, new, no_binary):
             origin_mat = origin.matrices[index][plane].values
             new_mat = new.matrices[index][plane].values
             if no_binary:
-                ascii_precision = 0.5 / np.power(10, tbt.handler.PRINT_PRECISION)
+                ascii_precision = 0.5 / np.power(10, tbt.PRINT_PRECISION)
                 assert np.max(np.abs(origin_mat - new_mat)) < ascii_precision
             else:
                 assert np.all(origin_mat == new_mat)
