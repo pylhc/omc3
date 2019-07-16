@@ -13,11 +13,11 @@ from hole_in_one import hole_in_one_entrypoint
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
 LIMITS = dict(F1=1e-6, A1=1.5e-3, P1=3e-4, F2=1.5e-4, A2=1.5e-1, P2=0.03)
-NOISE = 0.032
+NOISE = 3.2e-5
 COUPLING = 0.01
 NTURNS = 1024
 NBPMS = 100
-
+BASEAMP=0.001
 
 def test_harpy(_test_file, _model_file):
     model = _get_model_dataframe()
@@ -49,7 +49,7 @@ def test_harpy(_test_file, _model_file):
 
 def _get_model_dataframe():
     return pd.DataFrame(data=dict(S=np.arange(NBPMS, dtype=float),
-                                  AMPX=np.random.rand(NBPMS) + 1, AMPY=np.random.rand(NBPMS) + 1,
+                                  AMPX=(np.random.rand(NBPMS) + 1) * BASEAMP, AMPY=(np.random.rand(NBPMS) + 1) * BASEAMP,
                                   MUX=np.random.rand(NBPMS) - 0.5, MUY=np.random.rand(NBPMS) - 0.5,
                                   TUNEX=0.25 + np.random.rand(1)[0] / 40,
                                   TUNEY=0.3 + np.random.rand(1)[0] / 40),

@@ -72,11 +72,11 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--turns**
         Default: ``[0, 50000]``
-      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'mm'.
+      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'm'.
 
         Flags: **--unit**
         Choices: ``('m', 'cm', 'mm', 'um')``
-        Default: ``mm``
+        Default: ``m``
 
       *--Cleaning--*
 
@@ -98,7 +98,7 @@ def hole_in_one_entrypoint(opt, rest):
       - **max_peak** *(float)*: Removes BPMs where the maximum orbit > limit.
 
         Flags: **--max_peak**
-        Default: ``20.0``
+        Default: ``0.02``
       - **model**: Model for BPM locations
 
         Flags: **--model**
@@ -111,7 +111,7 @@ def hole_in_one_entrypoint(opt, rest):
         where abs(max(turn values) - min(turn values)) <= threshold.
 
         Flags: **--peak_to_peak**
-        Default: ``1e-05``
+        Default: ``1e-08``
       - **sing_val** *(int)*: Keep this amount of largest singular values.
 
         Flags: **--sing_val**
@@ -171,8 +171,8 @@ def hole_in_one_entrypoint(opt, rest):
       - **window** *(str)*: Windowing function to be used for frequency analysis.
 
         Flags: **--window**
-        Choices: ``('rectangle', 'hamming', 'nuttal3', 'nuttal4')``
-        Default: ``hamming``
+        Choices: ``('rectangle', , 'hann', 'hamming', 'nuttal3', 'nuttal4')``
+        Default: ``hann``
 
 
     Optics Kwargs:
@@ -200,7 +200,7 @@ def hole_in_one_entrypoint(opt, rest):
         allowed for dispersion measurement
 
         Flags: **--max_closed_orbit**
-        Default: ``4.0``
+        Default: ``0.004``
       - **nonlinear**: Calculate higher order RDTs
 
         Flags: **--nonlinear**
@@ -338,7 +338,7 @@ def harpy_params():
     params.add_parameter(flags="--model", name="model", help="Model for BPM locations")
     params.add_parameter(flags="--unit", name="unit", type=str, choices=("m", "cm", "mm", "um"),
                          default=HARPY_DEFAULTS["unit"],
-                         help=f"A unit of TbT BPM orbit data. All cuts and output are in 'mm'.")
+                         help=f"A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
     params.add_parameter(flags="--turns", name="turns", type=int, nargs=2,
                          default=HARPY_DEFAULTS["turns"],
                          help="Turn index to start and first turn index to be ignored.")
@@ -466,10 +466,10 @@ def optics_params():
 
 HARPY_DEFAULTS = {
     "turns": [0, 50000],
-    "unit": "mm",
+    "unit": "m",
     "sing_val": 12,
-    "peak_to_peak": 1e-5,
-    "max_peak": 20.0,
+    "peak_to_peak": 1e-8,
+    "max_peak": 0.02,
     "svd_dominance_limit": 0.925,
     "tolerance": 0.01,
     "tune_clean_limit": 1e-5,
@@ -480,7 +480,7 @@ HARPY_DEFAULTS = {
 }
 
 OPTICS_DEFAULTS = {
-        "max_closed_orbit": 4.0,
+        "max_closed_orbit": 0.004,
         "coupling_method": 2,
         "range_of_bpms": 11,
         "max_beta_beating": 0.15,
