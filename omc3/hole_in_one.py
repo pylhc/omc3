@@ -15,7 +15,7 @@ Generally, analysis flows as follows:
    Turn-by-Turn BPM data   --->    frequency spectra   --->    various lattice optics parameters
 
 Stages represented by different files:
-    Sdds file:  .sdds      --->   Tfs files: .lin[xy]  --->    Tfs files: .out
+    Sdds file:  .sdds      --->   Tfs files: .lin[xy]  --->    Tfs files: .tfs
 
 To run either of the two or both steps, use options:
                           --harpy                     --optics
@@ -196,7 +196,7 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--max_beta_beating**
         Default: ``0.15``
-      - **max_closed_orbit** *(float)*: Maximal closed orbit in 'mm'
+      - **max_closed_orbit** *(float)*: Maximal closed orbit in 'm'
         allowed for dispersion measurement
 
         Flags: **--max_closed_orbit**
