@@ -239,8 +239,8 @@ def hole_in_one_entrypoint(opt, rest):
         raise SystemError("No module has been chosen.")
     if not rest:
         raise SystemError("No input has been set.")
-    harpy_opt, optics_opt = _get_suboptions(opt, rest)
-    _write_config_file(harpy_opt, optics_opt)
+    harpy_opt, optics_opt, accel_opt = _get_suboptions(opt, rest)
+    _write_config_file(harpy_opt, optics_opt, accel_opt)
     lins = []
     if harpy_opt is not None:
         lins = _run_harpy(harpy_opt)
@@ -260,19 +260,21 @@ def _get_suboptions(opt, rest):
                                     model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
+
     if opt.optics:
         optics_opt, rest = _optics_entrypoint(rest)
         from model import manager
+        accel_opt = manager.get_parsed_opt(rest)
         optics_opt.accelerator = manager.get_accel_instance(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
             raise AttributeError("Compensation requested and no driven model was provided.")
-
     else:
         optics_opt = None
-    return harpy_opt, optics_opt
+        accel_opt = None
+    return harpy_opt, optics_opt, accel_opt
 
 
-def _write_config_file(harpy_opt, optics_opt):
+def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
     """ Write the parsed options into a config file for later use. """
     all_opt = OrderedDict()
     if harpy_opt is not None:
@@ -281,7 +283,7 @@ def _write_config_file(harpy_opt, optics_opt):
 
     if optics_opt is not None:
         optics_opt = OrderedDict(sorted(optics_opt.items()))
-        accelerator_opt = optics_opt.pop('accelerator', {})
+        optics_opt.pop('accelerator')
 
         all_opt["optics"] = True
         all_opt.update(optics_opt)
