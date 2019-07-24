@@ -20,14 +20,21 @@ Stages represented by different files:
 To run either of the two or both steps, use options:
                           --harpy                     --optics
 """
+import os
+from collections import OrderedDict
+from datetime import datetime
 from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 import tbt
 from utils import logging_tools, iotools
-from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
+from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
+                                       add_to_arguments, save_options_to_config)
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
+
+DEFAULT_CONFIG_FILENAME = "run_{time:s}.ini"
+TIME_FORMAT = "%y-%m-%d_%H:%M:%S"
 
 
 def hole_in_one_params():
@@ -233,6 +240,7 @@ def hole_in_one_entrypoint(opt, rest):
     if not rest:
         raise SystemError("No input has been set.")
     harpy_opt, optics_opt = _get_suboptions(opt, rest)
+    _write_config_file(harpy_opt, optics_opt)
     lins = []
     if harpy_opt is not None:
         lins = _run_harpy(harpy_opt)
@@ -262,6 +270,31 @@ def _get_suboptions(opt, rest):
     else:
         optics_opt = None
     return harpy_opt, optics_opt
+
+
+def _write_config_file(harpy_opt, optics_opt):
+    """ Write the parsed options into a config file for later use. """
+    if harpy_opt is not None:
+        harpy_opt = OrderedDict(sorted(harpy_opt.items()))
+        harpy_opt["harpy"] = True
+        harpy_opt.move_to_end("harpy", last=False)  # move to top
+    else:
+        harpy_opt = {}
+
+    if optics_opt is not None:
+        optics_opt = OrderedDict(sorted(optics_opt.items()))
+        accelerator_opt = optics_opt.pop('accelerator', {})
+        optics_opt["optics"] = True
+        optics_opt.move_to_end("optics", last=False)  # move to top
+    else:
+        optics_opt = {}
+        accelerator_opt = {}
+
+    out_dir = optics_opt.get("outputdir", harpy_opt["outputdir"])
+    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(TIME_FORMAT))
+
+    save_options_to_config(os.path.join(out_dir, file_name),
+                           OrderedDict(**harpy_opt, **optics_opt, **accelerator_opt))
 
 
 def _run_harpy(harpy_options):
