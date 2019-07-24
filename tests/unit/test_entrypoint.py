@@ -7,7 +7,7 @@ from . import context
 from generic_parser.entrypoint import (EntryPointParameters,
                                        entrypoint, EntryPoint,
                                        OptionsError, split_arguments,
-                                       create_parameter_help
+                                       create_parameter_help, save_options_to_config
                                        )
 from generic_parser.dict_parser import ParameterError, ArgumentError
 from generic_parser.entry_datatypes import get_multi_class, DictAsString, BoolOrString, BoolOrList
@@ -192,6 +192,47 @@ def test_wrong_type_in_list():
 def test_not_enough_length():
     with pytest.raises(ArgumentError):
         some_function(accel="LHCB1", anint=3, alist=[])
+
+
+# Config Saver Test
+
+def test_save_options():
+    opt, unknown = paramtest_function(
+        name="myname",
+        int=3,
+        list=[4, 5, 6],
+        unknown="myfinalargument",
+        unknoown=10,
+    )
+    with tempfile.TemporaryDirectory() as cwd:
+        cfg_file = os.path.join(cwd, "config.ini")
+        save_options_to_config(cfg_file, opt, unknown)
+        opt_load, unknown_load = paramtest_function(entry_cfg=cfg_file)
+
+    _assert_dicts(opt, opt_load)
+    _assert_dicts(unknown, unknown_load)
+
+
+def test_save_cli_options():
+    opt, unknown = paramtest_function(
+        ["--name", "myname",
+         "--int", "3",
+         "--list", "4", "5", "6",
+         "--other"]
+    )
+    with tempfile.TemporaryDirectory() as cwd:
+        cfg_file = os.path.join(cwd, "config.ini")
+        save_options_to_config(cfg_file, opt, unknown)
+        opt_load, unknown_load = paramtest_function(entry_cfg=cfg_file)
+
+    _assert_dicts(opt, opt_load)
+    assert len(unknown_load) == 0
+
+
+def _assert_dicts(d1, d2):
+    for key in d1:
+        assert d1[key] == d2[key]
+    assert len(d2) == len(d1)
 
 
 # Test Special Datatypes

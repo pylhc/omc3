@@ -235,7 +235,7 @@ class EntryPoint(object):
 
     def _create_config_parser(self):
         """ Creates the config parser. Maybe more to do here later with parameter. """
-        parser = ConfigParser()
+        parser = ConfigParser({})
         return parser
 
     #########################
@@ -344,13 +344,18 @@ class EntryPoint(object):
             cfgparse.read_file(config_file)
 
         sections = cfgparse.sections()
-        if not section and len(sections) == 1:
-            section = sections[0]
-        elif not section:
-            raise ArgumentError(f"'{cfgfile_path:s}' contains multiple sections. " +
-                                " Please specify one!")
+        if not section:
+            if len(sections) == 0:
+                section = "DEFAULT"  # name does not matter, takes defaults, but None is not allowed
+            elif len(sections) == 1:
+                section = sections[0]  # our convention
+            elif len(sections) > 1:
+                raise ArgumentError(f"'{cfgfile_path:s}' contains multiple sections. " +
+                                    " Please specify one!")
 
-        return cfgparse.items(section)
+        items = cfgparse.items(section)
+        self.configparse = self._create_config_parser()  # clear the config parser, it keeps defaults between files
+        return items
 
 
 # entrypoint Decorator #########################################################
@@ -649,3 +654,33 @@ def create_parameter_help(module, param_fun=None):
                 module._get_params().help()
         else:
             getattr(module, param_fun)().help()
+
+
+def save_options_to_config(filepath, opt, unknown=None):
+    """ Saves the parsed options to a config file to be used as arguments.
+
+    Args:
+        filepath: path to write the config file to
+        opt: parsed known options
+        unknown: unknown options (only safe for non-commandline parameters)
+
+    """
+    def _check_for_string(key, value):
+        if isinstance(value, str):
+            value = f'"{value}"'
+        return f"{key}={value}\n"
+
+    lines = "[DEFAULT]\n"
+    for o in opt:
+        lines += _check_for_string(o, opt[o])
+
+    if unknown is not None:
+        lines += "; Unknown options --------------------------\n"
+        if isinstance(unknown, dict):
+            for o in unknown:
+                lines += _check_for_string(o, unknown[o])
+        else:
+            lines += f"; {' '.join(unknown)}\n"
+
+    with open(filepath, "w") as f:
+        f.write(lines)
