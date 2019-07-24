@@ -33,7 +33,7 @@ from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
 
-DEFAULT_CONFIG_FILENAME = "run_{time:s}.ini"
+DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
 TIME_FORMAT = "%y-%m-%d_%H:%M:%S"
 
 
@@ -291,6 +291,7 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
 
     out_dir = all_opt["outputdir"]
     file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(TIME_FORMAT))
+    iotools.create_dirs(out_dir)
 
     save_options_to_config(os.path.join(out_dir, file_name), all_opt)
 
