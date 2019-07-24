@@ -15,7 +15,7 @@ Contents:
    harpy/index
    model/index
    optics_measurements/index
-   parser/index
+   generic_parser/index
    sdds/index
    tbt/index
    tfs/index
