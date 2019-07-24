@@ -274,27 +274,23 @@ def _get_suboptions(opt, rest):
 
 def _write_config_file(harpy_opt, optics_opt):
     """ Write the parsed options into a config file for later use. """
+    all_opt = OrderedDict()
     if harpy_opt is not None:
-        harpy_opt = OrderedDict(sorted(harpy_opt.items()))
-        harpy_opt["harpy"] = True
-        harpy_opt.move_to_end("harpy", last=False)  # move to top
-    else:
-        harpy_opt = {}
+        all_opt["harpy"] = True
+        all_opt.update(OrderedDict(sorted(harpy_opt.items())))
 
     if optics_opt is not None:
         optics_opt = OrderedDict(sorted(optics_opt.items()))
         accelerator_opt = optics_opt.pop('accelerator', {})
-        optics_opt["optics"] = True
-        optics_opt.move_to_end("optics", last=False)  # move to top
-    else:
-        optics_opt = {}
-        accelerator_opt = {}
 
-    out_dir = optics_opt.get("outputdir", harpy_opt["outputdir"])
+        all_opt["optics"] = True
+        all_opt.update(optics_opt)
+        all_opt.update(sorted(accelerator_opt.items()))
+
+    out_dir = all_opt["outputdir"]
     file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(TIME_FORMAT))
 
-    save_options_to_config(os.path.join(out_dir, file_name),
-                           OrderedDict(**harpy_opt, **optics_opt, **accelerator_opt))
+    save_options_to_config(os.path.join(out_dir, file_name), all_opt)
 
 
 def _run_harpy(harpy_options):
