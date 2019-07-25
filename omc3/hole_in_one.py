@@ -20,14 +20,21 @@ Stages represented by different files:
 To run either of the two or both steps, use options:
                           --harpy                     --optics
 """
+import os
+from collections import OrderedDict
+from datetime import datetime
 from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 import tbt
 from utils import logging_tools, iotools
-from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
+from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
+                                       add_to_arguments, save_options_to_config)
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
+
+DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
+TIME_FORMAT = "%y_%m_%d@%H_%M_%S"  # CERN default
 
 
 def hole_in_one_params():
@@ -232,7 +239,8 @@ def hole_in_one_entrypoint(opt, rest):
         raise SystemError("No module has been chosen.")
     if not rest:
         raise SystemError("No input has been set.")
-    harpy_opt, optics_opt = _get_suboptions(opt, rest)
+    harpy_opt, optics_opt, accel_opt = _get_suboptions(opt, rest)
+    _write_config_file(harpy_opt, optics_opt, accel_opt)
     lins = []
     if harpy_opt is not None:
         lins = _run_harpy(harpy_opt)
@@ -252,16 +260,40 @@ def _get_suboptions(opt, rest):
                                     model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
+
     if opt.optics:
         optics_opt, rest = _optics_entrypoint(rest)
         from model import manager
+        accel_opt = manager.get_parsed_opt(rest)
         optics_opt.accelerator = manager.get_accel_instance(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
             raise AttributeError("Compensation requested and no driven model was provided.")
-
     else:
         optics_opt = None
-    return harpy_opt, optics_opt
+        accel_opt = None
+    return harpy_opt, optics_opt, accel_opt
+
+
+def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
+    """ Write the parsed options into a config file for later use. """
+    all_opt = OrderedDict()
+    if harpy_opt is not None:
+        all_opt["harpy"] = True
+        all_opt.update(OrderedDict(sorted(harpy_opt.items())))
+
+    if optics_opt is not None:
+        optics_opt = OrderedDict(sorted(optics_opt.items()))
+        optics_opt.pop('accelerator')
+
+        all_opt["optics"] = True
+        all_opt.update(optics_opt)
+        all_opt.update(sorted(accelerator_opt.items()))
+
+    out_dir = all_opt["outputdir"]
+    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(TIME_FORMAT))
+    iotools.create_dirs(out_dir)
+
+    save_options_to_config(os.path.join(out_dir, file_name), all_opt)
 
 
 def _run_harpy(harpy_options):
