@@ -39,7 +39,7 @@ def run_per_bunch(tbt_data, harpy_input):
     output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
-        bpm_data = _scale_to_mm(bpm_data, harpy_input.unit)
+        bpm_data = _scale_to_meters(bpm_data, harpy_input.unit)
         bpm_data, usvs[plane], bad_bpms[plane], bpm_res = clean.clean(harpy_input, bpm_data, model)
         lins[plane], bpm_datas[plane] = _closed_orbit_analysis(bpm_data, model, bpm_res)
 
@@ -83,9 +83,9 @@ def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
     return tbt_data.matrices[0][plane].iloc[:, start:end].T.reset_index(drop=True).T
 
 
-def _scale_to_mm(bpm_data, unit):
-    scales_to_mm = {'um': 0.001, 'mm': 1, 'cm': 10, 'm': 1000}
-    return bpm_data * scales_to_mm[unit]
+def _scale_to_meters(bpm_data, unit):
+    scales_to_meters = {'um': 1e-6, 'mm': 0.001, 'cm': 0.01, 'm': 1}
+    return bpm_data * scales_to_meters[unit]
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):

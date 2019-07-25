@@ -1,6 +1,8 @@
 import os
 import string
 import random
+import tempfile
+
 import pytest
 import pandas as pd
 import numpy as np
@@ -10,20 +12,20 @@ import tfs
 
 from hole_in_one import hole_in_one_entrypoint
 
-CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
 LIMITS = dict(F1=1e-6, A1=1.5e-3, P1=3e-4, F2=1.5e-4, A2=1.5e-1, P2=0.03)
-NOISE = 0.032
+NOISE = 3.2e-5
 COUPLING = 0.01
 NTURNS = 1024
 NBPMS = 100
+BASEAMP=0.001
 
 
 def test_harpy(_test_file, _model_file):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
-    _write_tbt_file(model)
-    hole_in_one_entrypoint(harpy=True, clean=True, autotunes="transverse", outputdir=CURRENT_DIR,
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True, clean=True, autotunes="transverse", outputdir=os.path.dirname(_test_file),
                            files=[_test_file], model=_model_file, to_write=["lin"], turn_bits=18)
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
@@ -49,7 +51,7 @@ def test_harpy(_test_file, _model_file):
 
 def _get_model_dataframe():
     return pd.DataFrame(data=dict(S=np.arange(NBPMS, dtype=float),
-                                  AMPX=np.random.rand(NBPMS) + 1, AMPY=np.random.rand(NBPMS) + 1,
+                                  AMPX=(np.random.rand(NBPMS) + 1) * BASEAMP, AMPY=(np.random.rand(NBPMS) + 1) * BASEAMP,
                                   MUX=np.random.rand(NBPMS) - 0.5, MUY=np.random.rand(NBPMS) - 0.5,
                                   TUNEX=0.25 + np.random.rand(1)[0] / 40,
                                   TUNEY=0.3 + np.random.rand(1)[0] / 40),
@@ -57,7 +59,7 @@ def _get_model_dataframe():
                                         for _ in range(NBPMS)]))
 
 
-def _write_tbt_file(model):
+def _write_tbt_file(model, dir_path):
     ints = np.arange(NTURNS) - NTURNS / 2
     data_x = model.loc[:, "AMPX"].values[:, None] * np.cos(
         2 * np.pi * (model.loc[:, "MUX"].values[:, None] +
@@ -69,7 +71,7 @@ def _write_tbt_file(model):
                                + COUPLING * data_y, index=model.index),
                 Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
                                + COUPLING * data_x, index=model.index))
-    tbt.write(os.path.join(CURRENT_DIR, "test_file.sdds"), tbt.TbtData([mats], None, [0], NTURNS))
+    tbt.write(os.path.join(dir_path, "test_file.sdds"), tbt.TbtData([mats], None, [0], NTURNS))
 
 
 def _other(plane):
@@ -97,28 +99,15 @@ def _angle_diff(a, b):
     return np.where(np.abs(ang) > 0.5, ang - np.sign(ang), ang)
 
 
-
-
-
 @pytest.fixture()
 def _test_file():
-    test_file = os.path.join(CURRENT_DIR, "test_file.sdds")
-    try:
+    with tempfile.TemporaryDirectory() as cwd:
+        test_file = os.path.join(cwd, "test_file.sdds")
         yield test_file
-    finally:
-        if os.path.isfile(test_file):
-            os.remove(test_file)
-        if os.path.isfile(test_file + ".linx"):
-            os.remove(test_file + ".linx")
-        if os.path.isfile(test_file + ".liny"):
-            os.remove(test_file + ".liny")
 
 
 @pytest.fixture()
 def _model_file():
-    test_file = os.path.join(CURRENT_DIR, "model.tfs")
-    try:
+    with tempfile.TemporaryDirectory() as cwd:
+        test_file = os.path.join(cwd, "model.tfs")
         yield test_file
-    finally:
-        if os.path.isfile(test_file):
-            os.remove(test_file)
