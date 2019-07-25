@@ -81,7 +81,7 @@ class Lhc(Accelerator):
             )
 
         if self.model_dir is None:  # is the class is used to create full response?
-            if self.optics_file is None:
+            if self.modifiers_file is None:
                 raise AcceleratorDefinitionError(
                     "The accelerator definition is incomplete, optics "
                     "file or model directory has not been specified."
@@ -96,9 +96,9 @@ class Lhc(Accelerator):
             if self.drv_tune_x is None or self.drv_tune_y is None:
                 raise AcceleratorDefinitionError("Driven tunes not set.")
 
-        if self.optics_file is not None and not os.path.exists(self.optics_file):
+        if self.modifiers_file is not None and not os.path.exists(self.modifiers_file):
             raise AcceleratorDefinitionError(
-                "Optics file '{:s}' does not exist.".format(self.optics_file))
+                "Optics file '{:s}' does not exist.".format(self.modifiers_file))
 
         # print info about the accelerator
         # TODO: write more output prints
@@ -196,7 +196,7 @@ class Lhc(Accelerator):
             replace_dict = {
                 "LIB": self.MACROS_NAME,
                 "MAIN_SEQ": self.load_main_seq_madx(),
-                "OPTICS_PATH": self.optics_file,
+                "OPTICS_PATH": self.modifiers_file,
                 "CROSSING_ON": "1" if self.xing else "0",
                 "NUM_BEAM": self.get_beam(),
                 "DPP": self.dpp,
@@ -220,7 +220,7 @@ class Lhc(Accelerator):
             replace_dict = {
                 "LIB": self.MACROS_NAME,
                 "MAIN_SEQ": self.load_main_seq_madx(),
-                "OPTICS_PATH": self.optics_file,
+                "OPTICS_PATH": self.modifiers_file,
                 "CROSSING_ON": "1" if self.xing else "0",
                 "NUM_BEAM": self.get_beam(),
                 "DPP": self.dpp,
@@ -250,7 +250,7 @@ class Lhc(Accelerator):
             replace_dict = {
                 "LIB": self.MACROS_NAME,
                 "MAIN_SEQ": self.load_main_seq_madx(),
-                "OPTICS_PATH": self.optics_file,
+                "OPTICS_PATH": self.modifiers_file,
                 "NUM_BEAM": beam,
                 "PATH": output_path,
                 "QMX": self.nat_tune_x,

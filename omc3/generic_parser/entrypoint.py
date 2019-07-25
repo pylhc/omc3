@@ -538,7 +538,10 @@ def add_to_arguments(args, entry_params=None, **kwargs):
             flag = params[key]["flags"]
             if isinstance(flag, list):
                 flag = flag[0]
-            args.extend([flag, str(value)])
+            if isinstance(value, list):
+                args.extend([flag] + [str(v) for v in value])
+            else:
+                args.extend([flag, str(value)])
     else:
         args.update(kwargs)
     return args

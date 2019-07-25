@@ -54,8 +54,8 @@ class Accelerator(object):
         params.add_parameter(flags=["--dpp"], help="Delta p/p to use.", name="dpp", default=0.0,
                              type=float, )
         params.add_parameter(flags=["--energy"], help="Energy in Tev.", name="energy", type=float, )
-        params.add_parameter(flags=["--optics"],
-                             help="Path to the optics file to use (modifiers file).", name="optics",
+        params.add_parameter(flags=["--optics_file"],
+                             help="Path to the optics file to use (modifiers file).", name="modifiers",
                              type=str, )
         params.add_parameter(flags=["--fullresponse"], help=(
             "If True, fullresponse template will be filled and put in the output directory."),
@@ -121,7 +121,7 @@ class Accelerator(object):
         # optional no default
         self.energy = opt.get("energy", None)
         self.xing = opt.get("xing", None)
-        self.optics_file = opt.get("optics", None)
+        self.modifiers_file = opt.get("modifiers", None)
         # for GetLLM
         self.model_dir = None
         self._model = None
@@ -190,10 +190,10 @@ class Accelerator(object):
             self._elements_centre = self._elements
 
         # Optics File #########################################
-        self.optics_file = None
+        self.modifiers_file = None
         opticsfilepath = os.path.join(self.model_dir, self.MODIFIERS_MADX)
         if os.path.exists(opticsfilepath):
-            self.optics_file = opticsfilepath
+            self.modifiers_file = opticsfilepath
 
         # Error Def #####################################
         self._errordefspath = None
