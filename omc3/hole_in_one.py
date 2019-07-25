@@ -34,7 +34,7 @@ from utils.contexts import timeit
 LOGGER = logging_tools.get_logger(__name__)
 
 DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
-TIME_FORMAT = "%y-%m-%d_%H:%M:%S"
+TIME_FORMAT = "%y_%m_%d@%H_%M_%S"  # CERN default
 
 
 def hole_in_one_params():
