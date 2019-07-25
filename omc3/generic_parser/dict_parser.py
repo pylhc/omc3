@@ -100,6 +100,7 @@ class DictParser(object):
             if param.required:
                 raise ArgumentError(f"'{key:s}' required in options.\n"
                                     f"Help: {param.help:s}")
+            return opt
 
         if param.type and not isinstance(opt, param.type):
             raise ArgumentError(f"'{key:s}' is not of type {param.type.__name__:s}.\n"
