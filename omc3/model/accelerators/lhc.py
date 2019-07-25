@@ -422,7 +422,7 @@ class _LhcSegmentMixin(object):
                 "The accelerator definition is incomplete, beam "
                 "has to be specified (--beam option missing?)."
             )
-        if self.optics_file is None:
+        if self.modifiers_file is None:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete, optics "
                 "file has not been specified."

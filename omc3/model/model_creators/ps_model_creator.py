@@ -23,7 +23,7 @@ class PsModelCreator(model_creator.ModelCreator):
             "OUTPUT": output_path,
             "DRV_TUNE_X": "", 
             "DRV_TUNE_Y": "",
-            "OPTICS_PATH": instance.optics_file,
+            "OPTICS_PATH": instance.modifiers_file,
         }
         LOGGER.info(f"instance name {instance.NAME}")
         if use_acd:
@@ -46,7 +46,7 @@ class PsModelCreator(model_creator.ModelCreator):
         replace_dict = {
             "FILES_DIR": instance.get_ps_dir(),
             "LIB": instance.MACROS_NAME,
-            "OPTICS_PATH": instance.optics_file,
+            "OPTICS_PATH": instance.modifiers_file,
             "PATH": output_path,
             "KINETICENERGY": instance.energy,
             "NAT_TUNE_X": instance.nat_tune_x,
@@ -83,7 +83,7 @@ class PsSegmentCreator(model_creator.ModelCreator):
             "NAT_TUNE_X": instance.nat_tune_x,
             "NAT_TUNE_Y": instance.nat_tune_y,
             "FILES_DIR": instance.get_ps_dir(),
-            "OPTICS_PATH": instance.optics_file,
+            "OPTICS_PATH": instance.modifiers_file,
             "PATH": output_path,
             "LABEL": instance.label,
             "BETAKIND": instance.kind,

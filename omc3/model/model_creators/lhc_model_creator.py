@@ -22,7 +22,7 @@ class LhcModelCreator(model_creator.ModelCreator):
         replace_dict = {
             "LIB": lhc_instance.MACROS_NAME,
             "MAIN_SEQ": lhc_instance.load_main_seq_madx(),
-            "OPTICS_PATH": lhc_instance.optics_file,
+            "OPTICS_PATH": lhc_instance.modifiers_file,
             "NUM_BEAM": beam,
             "PATH": output_path,
             "QMX": lhc_instance.nat_tune_x,
@@ -67,7 +67,7 @@ class LhcModelCreator(model_creator.ModelCreator):
         replace_dict = {
             "LIB": lhc_instance.MACROS_NAME,
             "MAIN_SEQ": lhc_instance.load_main_seq_madx(),
-            "OPTICS_PATH": lhc_instance.optics_file,
+            "OPTICS_PATH": lhc_instance.modifiers_file,
             "NUM_BEAM": lhc_instance.get_beam(),
             "PATH": output_path,
             "QMX": lhc_instance.nat_tune_x,
@@ -98,7 +98,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         replace_dict = {
             "LIB": lhc_instance.MACROS_NAME,
             "MAIN_SEQ": lhc_instance.load_main_seq_madx(),
-            "OPTICS_PATH": lhc_instance.optics_file,
+            "OPTICS_PATH": lhc_instance.modifiers_file,
             "NUM_BEAM": lhc_instance.get_beam(),
             "PATH": output_path,
             "DPP": lhc_instance.dpp,
@@ -119,7 +119,7 @@ class LhcSegmentCreator(model_creator.ModelCreator):
         replace_dict = {
             "LIB": lhc_instance.MACROS_NAME,
             "MAIN_SEQ": lhc_instance.load_main_seq_madx(),
-            "OPTICS_PATH": lhc_instance.optics_file,
+            "OPTICS_PATH": lhc_instance.modifiers_file,
             "NUM_BEAM": lhc_instance.get_beam(),
             "PATH": output_path,
             "LABEL": lhc_instance.label,
@@ -141,7 +141,7 @@ class LhcCouplingCreator(model_creator.ModelCreator):
         replace_dict = {
             "LIB": lhc_instance.MACROS_NAME,
             "MAIN_SEQ": lhc_instance.load_main_seq_madx(),
-            "OPTICS_PATH": lhc_instance.optics_file,
+            "OPTICS_PATH": lhc_instance.modifiers_file,
             "NUM_BEAM": lhc_instance.get_beam(),
             "PATH": output_path,
             "QMX": lhc_instance.nat_tune_x,

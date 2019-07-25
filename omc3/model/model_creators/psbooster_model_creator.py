@@ -40,7 +40,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             "FILES_DIR": instance.get_psb_dir(),
             "RING": instance.get_ring(),
             "LIB": instance.NAME,  # "psbooster"
-            "OPTICS_PATH": instance.optics_file,
+            "OPTICS_PATH": instance.modifiers_file,
             "PATH": output_path,
             "KINETICENERGY": instance.energy,
             "NAT_TUNE_X": instance.nat_tune_x,
@@ -107,7 +107,7 @@ class PsboosterSegmentCreator(model_creator.ModelCreator):
             "NAT_TUNE_X": instance.nat_tune_x,
             "NAT_TUNE_Y": instance.nat_tune_y,
             "LIB": instance.NAME,  # "psbooster"
-            "OPTICS_PATH": instance.optics_file,
+            "OPTICS_PATH": instance.modifiers_file,
             "PATH": output_path,
             "OUTPUT": output_path,
             "LABEL": instance.label,
