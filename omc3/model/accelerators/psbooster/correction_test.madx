@@ -1,0 +1,99 @@
+/******************************************************************************************
+*
+* MAD-X File for PS Booster optics calculations
+*
+* Mask file to run correction test in booster
+* Not all variables are replaced by Python model creator
+* namely COR and TESTPATH are replaced by Java GUI in the second stage 
+*
+* Execute with:  >madx < psb_orbit.madx
+*
+******************************************************************************************/
+
+ title, 'BOOSTER lattice';
+
+ !for the time being not used
+ beam_Ek=%(KINETICENERGY)s;
+ beam_Etot = beam_Ek + pmass;
+ beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+ 
+
+ option, echo;
+ option, RBARC=FALSE;
+
+/******************************************************************************************
+ * BOOSTER
+ ******************************************************************************************/
+ call, file = '%(FILES_DIR)s/psb.ele';
+ call, file = '%(FILES_DIR)s/psb.seq';
+ call, file = '%(FILES_DIR)s/defseries.seq';
+ call, file = '%(FILES_DIR)s/powering.seq';
+ call, file = '%(FILES_DIR)s/psb.dbx';
+ call, file = '%(FILES_DIR)s/psb_orbit.str';
+
+
+/******************************************************************************************
+ * beam, use
+ ******************************************************************************************/
+ 
+ 
+ beam, particle=PROTON, pc=beam_pc;  ! change depending on c-time of orbit measurement; pc=momentum
+
+ 
+ use, sequence=psb%(RING)s;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+
+ hacmap21 = 0;
+ vacmap43 = 0;
+
+
+ MATCH,sequence=psb%(RING)s;
+  vary, NAME=kKF, step = 0.0001;
+  vary, NAME=kKD, step = 0.0001;
+  constraint, range=#E, MUX=Qx, MUY=Qy;
+  lmdif, calls = 10000, tolerance = 1.0E-21;
+ ENDMATCH;
+
+
+/******************************************************************************************
+ * TWISS
+ ******************************************************************************************/
+
+ PSHIFT=0;
+
+/************************************************************
+ * MAD uses pt as the 5th variable NOT delta-p.
+ * The result is that all derivatives are with repect to pt.
+ * This is the reason for the non-standard dispersion values
+ * for non-relativistic machines, like the PSB
+ ************************************************************/
+ select, flag=twiss, clear;
+ select, flag=twiss, pattern="^BR.*BPM", column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ twiss, centre, DELTAP = %(DPP)s, sequence=psb%(RING)s, file="%(PATH)s/twiss_no.dat";
+
+ %(COR)s
+
+ ! linking knobs of given ring to ring independent variables of AllLists_XXX.json
+ 
+ !normal quad correctors
+ 
+ k1lBR%(RING)sQNO311L1 := k1lQNO311L1;
+ k1lBR%(RING)sQNO412L3 := k1lQNO412L3;
+ k1lBR%(RING)sQNO816L1 := k1lQNO816L1;
+ k1lBR%(RING)sQNO816L3 := k1lQNO816L3;
+ 
+ !skew quad knobs
+ k1lBR%(RING)sQSKH0    := k1lQSKH0;
+ k1lBR%(RING)sQSK614L3 := k1lQSK614L3;
+ k1lBR%(RING)sQSK210L3 := k1lQSK210L3;
+
+ select, flag=twiss, clear;
+ select, flag=twiss, pattern="^BR.*BPM", column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ twiss, centre, DELTAP = %(DPP)s, sequence=psb%(RING)s, file="%(PATH)s/twiss_cor.dat";
+
