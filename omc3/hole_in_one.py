@@ -84,16 +84,11 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--unit**
         Choices: ``('m', 'cm', 'mm', 'um')``
-<<<<<<< HEAD
-        Default: ``mm``
-      - **accelerator** *(str)*: Choose the datatype from which to import.
+        Default: ``m``
+      - **accelerator** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS, numpy npz).
 
         Flags: **--accelerator**
         Default: ``LHC``
-
-=======
-        Default: ``m``
->>>>>>> 99d7eab89f43a443b896fc5dc052874bc3ace002
 
       *--Cleaning--*
 
