@@ -22,10 +22,10 @@ To run either of the two or both steps, use options:
 """
 from os.path import join, dirname, basename, abspath
 from copy import deepcopy
-import importlib
-import tbt
 from utils import logging_tools, iotools
 from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
+from tbt import lhc_handler, iota_handler
+
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -272,7 +272,7 @@ def _get_suboptions(opt, rest):
 
 def _run_harpy(harpy_options):
     from harpy import handler
-    tbt_reader = importlib.import_module(ACCELERATOR_HANDLERS[harpy_options.accelerator])
+    tbt_reader = DATA_HANDLERS[harpy_options.accelerator]
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
@@ -497,10 +497,13 @@ OPTICS_DEFAULTS = {
         "compensation": "model",
 }
 
-ACCELERATOR_HANDLERS = {
-      "LHC": 'tbt.lhc_handler',
-      "IOTA": 'tbt.iota_handler'
+
+DATA_HANDLERS = {
+      "LHC": lhc_handler,
+      "IOTA": iota_handler,
+      # TODO add handlers for mad-x/ptc tracking (use methods from tbt.trackone), make accel indepent defaults
 }
+
 
 if __name__ == "__main__":
     hole_in_one_entrypoint()
