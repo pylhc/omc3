@@ -7,7 +7,6 @@ import pytest
 import pandas as pd
 import numpy as np
 from . import context
-import tbt.lhc_handler as tbt
 from tbt import data_class
 import tfs
 
@@ -72,7 +71,7 @@ def _write_tbt_file(model, dir_path):
                                + COUPLING * data_y, index=model.index),
                 Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
                                + COUPLING * data_x, index=model.index))
-    tbt.write_tbt(os.path.join(CURRENT_DIR, "test_file.sdds"), data_class.TbtData([mats], None, [0], NTURNS))
+    data_class.write_tbt_data(os.path.join(dir_path, "test_file"), data_class.TbtData([mats], None, [0], NTURNS), 'LHCSDDS')
 
 
 def _other(plane):

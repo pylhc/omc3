@@ -14,6 +14,7 @@ PLANE_TO_NUM = {"X": "0", "Y": "1"}
 PRINT_PRECISION = 6
 FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
 
+
 class TbtData(object):
     """
     Object holding a representation of a Turn-by-Turn Data

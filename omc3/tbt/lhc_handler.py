@@ -54,3 +54,56 @@ def read_tbt(file_path):
             'X': pd.DataFrame(index=bpm_names, data=data_x[:, index, :], dtype=float),
             'Y': pd.DataFrame(index=bpm_names, data=data_y[:, index, :], dtype=float)})
     return data_class.TbtData(matrices, date, bunch_ids, nturns)
+
+
+def _is_ascii_file(file_path):
+    """
+    Returns true only if the file looks like a readable tbt ASCII file.
+    """
+    with open(file_path, "r") as file_data:
+        try:
+            for line in file_data:
+                if line.strip() == "":
+                    continue
+                return line.startswith("#")
+        except UnicodeDecodeError:
+            return False
+    return False
+
+
+def _read_ascii(file_path):
+    bpm_names = {"X": [], "Y": []}
+    matrix = {"X": [], "Y": []}
+    date = None
+    with open(file_path, "r") as file_data:
+        for line in file_data:
+            line = line.strip()
+            # Empty lines and comments:
+            if line == "" or "#" in line:
+                continue
+            if _ACQ_DATE_PREFIX in line:
+                date = _parse_date(line)
+                continue
+            # Samples:
+            parts = line.split()
+            plane_num = parts.pop(0)
+            bpm_name = parts.pop(0)
+            parts.pop(0)
+            bpm_samples = np.array([float(part) for part in parts])
+            try:
+                bpm_names[NUM_TO_PLANE[plane_num]].append(bpm_name)
+                matrix[NUM_TO_PLANE[plane_num]].append(bpm_samples)
+            except KeyError:
+                raise ValueError(f"Wrong plane found in: {file_path}")
+    matrices = {}
+    for plane in PLANES:
+        matrices[plane] = pd.DataFrame(index=bpm_names[plane], data=np.array(matrix[plane]))
+    return [matrices], date 
+
+
+def _parse_date(line):
+    date_str = line.replace(_ACQ_DATE_PREFIX, "")
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d at %H:%M:%S")
+    except ValueError:
+        return datetime.today()
