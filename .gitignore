@@ -22,3 +22,4 @@ udillyties/
 .cache
 /doc/_build/*
 *pycache*
+tags

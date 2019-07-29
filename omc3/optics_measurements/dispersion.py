@@ -78,15 +78,15 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
         return  # temporary solution
     model = meas_input.accelerator.get_model_tfs()
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS'])
-    fit = np.polyfit(dpps, 0.001 * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
+    fit = np.polyfit(dpps, input_files.get_data(df_orbit, 'CO').T, order, cov=True)
     # in the fit results the coefficients are sorted by power in decreasing order
     if order > 1:
         df_orbit[f"D2{plane}"] = fit[0][-3, :].T
         df_orbit[f"{ERR}D2{plane}"] = np.sqrt(fit[1][-3, -3, :].T)
     df_orbit[f"D{plane}"] = fit[0][-2, :].T
     df_orbit[f"{ERR}D{plane}"] = np.sqrt(fit[1][-2, -2, :].T)
-    df_orbit[plane] = fit[0][-1, :].T * 1000
-    df_orbit[f"{ERR}{plane}"] = np.sqrt(fit[1][-1, -1, :].T) * 1000
+    df_orbit[plane] = fit[0][-1, :].T
+    df_orbit[f"{ERR}{plane}"] = np.sqrt(fit[1][-1, -1, :].T)
     # since we get variances from the fit, maybe we can include the variances of fitted points
     df_orbit = df_orbit.loc[np.abs(df_orbit.loc[:, plane]) < meas_input.max_closed_orbit, :]
     df_orbit[f"DP{plane}"] = _calculate_dp(model,
@@ -106,7 +106,7 @@ def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
     unscaled_amps = (df_orbit.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].values *
                      df_orbit.loc[:, input_files.get_columns(df_orbit, f"AMP{plane}")].values)
     mask = accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
-    global_factors = np.array([0.001 / df.headers["DPPAMP"] for df in input_files[plane]])
+    global_factors = np.array([1 / df.headers["DPPAMP"] for df in input_files[plane]])
     # scaling to the model, and getting the synchrotron phase in the arcs
     df_orbit[f"D{plane}"], df_orbit[f"{ERR}D{plane}"] = _get_signed_dispersion(
             input_files, df_orbit, unscaled_amps * global_factors, mask)
@@ -134,13 +134,13 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
     if np.max(dpps) - np.min(dpps) == 0.0:
         return  # temporary solution
         # raise ValueError('Cannot calculate dispersion, only a single dpoverp')
-    fit = np.polyfit(dpps, 0.001 * input_files.get_data(df_orbit, 'CO').T, order, cov=True)
+    fit = np.polyfit(dpps, input_files.get_data(df_orbit, 'CO').T, order, cov=True)
     if order > 1:
         df_orbit['ND2X_unscaled'] = fit[0][-3, :].T / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
         df_orbit['STDND2X_unscaled'] = np.sqrt(fit[1][-3, -3, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
     df_orbit['NDX_unscaled'] = fit[0][-2, :].T / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)  # TODO there is no error from AMPX
     df_orbit['STDNDX_unscaled'] = np.sqrt(fit[1][-2, -2, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
-    df_orbit = df_orbit.loc[np.abs(fit[0][-1, :].T) < meas_input.max_closed_orbit * 0.001, :]
+    df_orbit = df_orbit.loc[np.abs(fit[0][-1, :].T) < meas_input.max_closed_orbit, :]
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     global_factor = np.sum(df_orbit.loc[mask, f"ND{plane}{MDL}"].values) / np.sum(df_orbit.loc[mask, 'NDX_unscaled'].values)
     if order > 1:
