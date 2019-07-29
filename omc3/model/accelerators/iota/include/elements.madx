@@ -1,0 +1,345 @@
+! Definition of IOTA components
+! Date: 9/16/2014
+! A.Valishev, A. Romanov
+
+
+
+!****************** Instrumentation ***********************************
+! all BPMs, except ibpmA1, are 9 cm long drifts with a marker in the middle
+obpm:    DRIFT,      L=    0.045 ;
+obpmM:    DRIFT,      L=    0.035 ;
+obpmS:    DRIFT,      L=    0.02 ;
+ibpm:    MONITOR ;
+
+ibpmA1: ibpm;
+ibpmA2R: ibpm;
+ibpmA3R: ibpm;
+ibpmA2L: ibpm;
+ibpmA3L: ibpm;
+ibpmB1R: ibpm;
+ibpmB2R: ibpm;
+ibpmB1L: ibpm;
+ibpmB2L: ibpm;
+ibpmC1R: ibpm;
+ibpmC2R: ibpm;
+ibpmC1L: ibpm;
+ibpmC2L: ibpm;
+ibpmD1R: ibpm;
+ibpmD2R: ibpm;
+ibpmD1L: ibpm;
+ibpmD2L: ibpm;
+ibpmE1R: ibpm;
+ibpmE2R: ibpm;
+ibpmE1L: ibpm;
+ibpmE2L: ibpm;
+
+bpmA1:  LINE=(obpmS, ibpmA1, obpm);
+bpmA2R:  LINE=(obpm, ibpmA2R, obpmM);
+bpmA3R:  LINE=(obpm, ibpmA3R, obpm);
+bpmA2L:  LINE=(obpmM, ibpmA2L, obpm);
+bpmA3L:  LINE=(obpm, ibpmA3L, obpm);
+bpmB1R:  LINE=(obpm, ibpmB1R, obpm);
+bpmB2R:  LINE=(obpm, ibpmB2R, obpm);
+bpmB1L:  LINE=(obpm, ibpmB1L, obpm); 
+bpmB2L:  LINE=(obpm, ibpmB2L, obpm); 
+bpmC1R:  LINE=(obpm, ibpmC1R, obpm); 
+bpmC2R:  LINE=(obpm, ibpmC2R, obpm); 
+bpmC1L:  LINE=(obpm, ibpmC1L, obpm); 
+bpmC2L:  LINE=(obpm, ibpmC2L, obpm); 
+bpmD1R:  LINE=(obpm, ibpmD1R, obpm); 
+bpmD2R:  LINE=(obpm, ibpmD2R, obpm); 
+bpmD1L:  LINE=(obpm, ibpmD1L, obpm); 
+bpmD2L:  LINE=(obpm, ibpmD2L, obpm); 
+bpmE1R:  LINE=(obpm, ibpmE1R, obpm); 
+bpmE2R:  LINE=(obpm, ibpmE2R, obpm); 
+bpmE1L:  LINE=(obpm, ibpmE1L, obpm); 
+bpmE2L:  LINE=(obpm, ibpmE2L, obpm); 
+
+!****************** Dipole magnets ************************************
+M1R:     SBEND,   L=0.3665191429,  ANGLE=0.5235987756;
+M4R:     SBEND,   L=0.3665191429,  ANGLE=0.5235987756;
+M1L:     SBEND,   L=0.3665191429,  ANGLE=0.5235987756;
+M4L:     SBEND,   L=0.3665191429,  ANGLE=0.5235987756;
+
+M2R:     SBEND,   L=0.7330382858,  ANGLE=1.047197551;
+M3R:     SBEND,   L=0.7330382858,  ANGLE=1.047197551;
+M2L:     SBEND,   L=0.7330382858,  ANGLE=1.047197551;
+M3L:     SBEND,   L=0.7330382858,  ANGLE=1.047197551;
+
+m60:     SBEND,   L=0.7330382858,  ANGLE=1.047197551;
+m30:     SBEND,   L=0.3665191429,  ANGLE=0.5235987756;
+dedge:   dipedge, h=1.4285714283,e1=0,hgap=dipAp,fint=0.5;
+obcoil:  DRIFT,   L=      0.0895;  ! Width of coil
+
+phM1R:   LINE=(obcoil, dedge, M1R, dedge, obcoil);
+phM2R:   LINE=(obcoil, dedge, M2R, dedge, obcoil);
+phM3R:   LINE=(obcoil, dedge, M3R, dedge, obcoil);
+phM4R:   LINE=(obcoil, dedge, M4R, dedge, obcoil);
+phM4L:   LINE=(obcoil, dedge, M4L, dedge, obcoil);
+phM3L:   LINE=(obcoil, dedge, M3L, dedge, obcoil);
+phM2L:   LINE=(obcoil, dedge, M2L, dedge, obcoil);
+phM1L:   LINE=(obcoil, dedge, M1L, dedge, obcoil);
+
+!***************** Injection bump correctors ************************** !not in lattice
+bumpcoil: DRIFT, L=0.02; 
+BUMPL: VKICKER, L=0.1, KICK = 0;
+BUMPR: VKICKER, L=0.1, KICK = 0;
+
+phBUMPL: LINE=(bumpcoil, BUMPL, bumpcoil);
+phBUMPR: LINE=(bumpcoil, BUMPR, bumpcoil);
+
+!***************** Quadrupole magnets *********************************
+QA1R: QUADRUPOLE,  L=      0.21,  K1:=kqA1R;
+QA2R: QUADRUPOLE,  L=      0.21,  K1:=kqA2R;
+QA3R: QUADRUPOLE,  L=      0.21,  K1:=kqA3R;
+QA4R: QUADRUPOLE,  L=      0.21,  K1:=kqA4R;
+QA1L: QUADRUPOLE,  L=      0.21,  K1:=kqA1L;
+QA2L: QUADRUPOLE,  L=      0.21,  K1:=kqA2L;
+QA3L: QUADRUPOLE,  L=      0.21,  K1:=kqA3L;
+QA4L: QUADRUPOLE,  L=      0.21,  K1:=kqA4L;
+QB1R: QUADRUPOLE,  L=      0.21,  K1:=kqB1R;
+QB2R: QUADRUPOLE,  L=      0.21,  K1:=kqB2R;
+QB3R: QUADRUPOLE,  L=      0.21,  K1:=kqB3R;
+QB4R: QUADRUPOLE,  L=      0.21,  K1:=kqB4R;
+QB5R: QUADRUPOLE,  L=      0.21,  K1:=kqB5R;
+QB6R: QUADRUPOLE,  L=      0.21,  K1:=kqB6R;
+QB1L: QUADRUPOLE,  L=      0.21,  K1:=kqB1L;
+QB2L: QUADRUPOLE,  L=      0.21,  K1:=kqB2L;
+QB3L: QUADRUPOLE,  L=      0.21,  K1:=kqB3L;
+QB4L: QUADRUPOLE,  L=      0.21,  K1:=kqB4L;
+QB5L: QUADRUPOLE,  L=      0.21,  K1:=kqB5L;
+QB6L: QUADRUPOLE,  L=      0.21,  K1:=kqB6L;
+QC1R: QUADRUPOLE,  L=      0.21,  K1:=kqC1R;
+QC2R: QUADRUPOLE,  L=      0.21,  K1:=kqC2R;
+QC3R: QUADRUPOLE,  L=      0.21,  K1:=kqC3R;
+QC1L: QUADRUPOLE,  L=      0.21,  K1:=kqC1L;
+QC2L: QUADRUPOLE,  L=      0.21,  K1:=kqC2L;
+QC3L: QUADRUPOLE,  L=      0.21,  K1:=kqC3L;
+QD1R: QUADRUPOLE,  L=      0.21,  K1:=kqD1R;
+QD2R: QUADRUPOLE,  L=      0.21,  K1:=kqD2R;
+QD3R: QUADRUPOLE,  L=      0.21,  K1:=kqD3R;
+QD4R: QUADRUPOLE,  L=      0.21,  K1:=kqD4R;
+QD1L: QUADRUPOLE,  L=      0.21,  K1:=kqD1L;
+QD2L: QUADRUPOLE,  L=      0.21,  K1:=kqD2L;
+QD3L: QUADRUPOLE,  L=      0.21,  K1:=kqD3L;
+QD4L: QUADRUPOLE,  L=      0.21,  K1:=kqD4L;
+QE1R: QUADRUPOLE,  L=      0.21,  K1:=kqE1R;
+QE2R: QUADRUPOLE,  L=      0.21,  K1:=kqE2R;
+QE3:  QUADRUPOLE,  L=      0.21,  K1:=kqE3;
+QE1L: QUADRUPOLE,  L=      0.21,  K1:=kqE1L;
+QE2L: QUADRUPOLE,  L=      0.21,  K1:=kqE2L;
+oqcoil:     DRIFT,  L=      0.0625 ; ! quadrupole "coil-to-iron"
+
+phQA1R: LINE=(oqcoil, QA1R, oqcoil);
+phQA2R: LINE=(oqcoil, QA2R, oqcoil);
+phQA3R: LINE=(oqcoil, QA3R, oqcoil);
+phQA4R: LINE=(oqcoil, QA4R, oqcoil);
+phQA1L: LINE=(oqcoil, QA1L, oqcoil);
+phQA2L: LINE=(oqcoil, QA2L, oqcoil);
+phQA3L: LINE=(oqcoil, QA3L, oqcoil);
+phQA4L: LINE=(oqcoil, QA4L, oqcoil);
+
+phQB1R: LINE=(oqcoil, QB1R, oqcoil);
+phQB2R: LINE=(oqcoil, QB2R, oqcoil);
+phQB3R: LINE=(oqcoil, QB3R, oqcoil);
+phQB4R: LINE=(oqcoil, QB4R, oqcoil);
+phQB5R: LINE=(oqcoil, QB5R, oqcoil);
+phQB6R: LINE=(oqcoil, QB6R, oqcoil);
+phQB1L: LINE=(oqcoil, QB1L, oqcoil);
+phQB2L: LINE=(oqcoil, QB2L, oqcoil);
+phQB3L: LINE=(oqcoil, QB3L, oqcoil);
+phQB4L: LINE=(oqcoil, QB4L, oqcoil);
+phQB5L: LINE=(oqcoil, QB5L, oqcoil);
+phQB6L: LINE=(oqcoil, QB6L, oqcoil);
+
+phQC1R: LINE=(oqcoil, QC1R, oqcoil);
+phQC2R: LINE=(oqcoil, QC2R, oqcoil);
+phQC3R: LINE=(oqcoil, QC3R, oqcoil);
+phQC1L: LINE=(oqcoil, QC1L, oqcoil);
+phQC2L: LINE=(oqcoil, QC2L, oqcoil);
+phQC3L: LINE=(oqcoil, QC3L, oqcoil);
+
+phQD1R: LINE=(oqcoil, QD1R, oqcoil);
+phQD2R: LINE=(oqcoil, QD2R, oqcoil);
+phQD3R: LINE=(oqcoil, QD3R, oqcoil);
+phQD4R: LINE=(oqcoil, QD4R, oqcoil);
+phQD1L: LINE=(oqcoil, QD1L, oqcoil);
+phQD2L: LINE=(oqcoil, QD2L, oqcoil);
+phQD3L: LINE=(oqcoil, QD3L, oqcoil);
+phQD4L: LINE=(oqcoil, QD4L, oqcoil);
+
+phQE1R: LINE=(oqcoil, QE1R, oqcoil);
+phQE2R: LINE=(oqcoil, QE2R, oqcoil);
+phQE3:  LINE=(oqcoil, QE3, oqcoil);
+phQE1L: LINE=(oqcoil, QE1L, oqcoil);
+phQE2L: LINE=(oqcoil, QE2L, oqcoil);
+
+!****** Combined correctors skew-quads, vertical and horizontal ******* !Correctors are not implemented
+SQA1R: QUADRUPOLE,  L=0.1,  K1S:=0.;
+SQA2R: QUADRUPOLE,  L=0.1,  K1S:=0.;
+SQA1L: QUADRUPOLE,  L=0.1,  K1S:=0.;
+SQA2L: QUADRUPOLE,  L=0.1,  K1S:=0.;
+
+SQB1R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQB2R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQB1L: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQB2L: QUADRUPOLE,  L=0.1,  K1S:=0;
+
+SQC1R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQC2R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQC1L: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQC2L: QUADRUPOLE,  L=0.1,  K1S:=0;
+
+SQD1R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQD2R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQD1L: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQD2L: QUADRUPOLE,  L=0.1,  K1S:=0;
+
+SQE1R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQE2R: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQE1L: QUADRUPOLE,  L=0.1,  K1S:=0;
+SQE2L: QUADRUPOLE,  L=0.1,  K1S:=0;
+
+osqcoil: DRIFT, L=0.01; !corrector's "coil-to-iron"
+
+!****placeholders for correctors with adjusent gaps for coils
+phSQA1R: LINE=(osqcoil, SQA1R, osqcoil);
+phSQA2R: LINE=(osqcoil, SQA2R, osqcoil);
+phSQA1L: LINE=(osqcoil, SQA1L, osqcoil);
+phSQA2L: LINE=(osqcoil, SQA2L, osqcoil);
+
+phSQB1R: LINE=(osqcoil, SQB1R, osqcoil);
+phSQB2R: LINE=(osqcoil, SQB2R, osqcoil);
+phSQB1L: LINE=(osqcoil, SQB1L, osqcoil);
+phSQB2L: LINE=(osqcoil, SQB2L, osqcoil);
+
+phSQC1R: LINE=(osqcoil, SQC1R, osqcoil);
+phSQC2R: LINE=(osqcoil, SQC2R, osqcoil);
+phSQC1L: LINE=(osqcoil, SQC1L, osqcoil);
+phSQC2L: LINE=(osqcoil, SQC2L, osqcoil);
+
+phSQD1R: LINE=(osqcoil, SQD1R, osqcoil);
+phSQD2R: LINE=(osqcoil, SQD2R, osqcoil);
+phSQD1L: LINE=(osqcoil, SQD1L, osqcoil);
+phSQD2L: LINE=(osqcoil, SQD2L, osqcoil);
+ 
+phSQE1R: LINE=(osqcoil, SQE1R, osqcoil);
+phSQE2R: LINE=(osqcoil, SQE2R, osqcoil);
+phSQE1L: LINE=(osqcoil, SQE1L, osqcoil);
+phSQE2L: LINE=(osqcoil, SQE2L, osqcoil);
+
+
+!************************* Electron Lens solenoid *********************
+cEL:   SOLENOID, L=   0.7, KS:=ksEL;
+oDs:   DRIFT,    L=   0.4;
+
+!************************ RF Cavity ***********************************
+rfc:   RFCAVITY, L=0.05, VOLT=Vrf, lag=0.5, harmon=4;
+oDrf:  DRIFT, L=0.725;
+
+!******************** Drifts and Markers ******************************
+oAL:   DRIFT, L=      0.85 ;   ! Left half of injection drift
+oAR:   DRIFT, L=      0.785 ;  ! Right half of injection drift, shortened for bpmA1(L=0.065)
+oA1:   DRIFT, L=      0.01 ;   ! gap between QA1 & QA2
+oA2:   DRIFT, L=      0.26 ;   ! drift between QA2 & QA3, shortened to allow bpm, combined corrector and bump corrector
+oA2s:  DRIFT, L=      0.10 ;   ! drift between QA2 & QA3, shortened to allow sextupole, bpm, combined corrector and bump corrector
+oA3:   DRIFT, L=      0.02 ;   ! gap between QA3 & QA4
+
+ioR:   marker;                 ! middle of Nonlinear Magnet straight #1
+ioL:   marker;                 ! middle of Nonlinear Magnet straight #2
+nlR1:  marker;                 ! beginning of Nonlinear Magnet #1
+nlR2:  marker;                 ! end of Nonlinear Magnet #1
+nlL1:  marker;                 ! beginning of Nonlinear Magnet #2
+nlL2:  marker;                 ! end of Nonlinear Magnet #2
+
+lNL = 1.8 ;                    ! Length of Nonlinear Magnet (m)
+
+
+oB1:   DRIFT, L=     0.0705;   ! gap between phM2 and phSQB1
+oB2:   DRIFT, L=     0.01  ;   ! gap between phSQB1 & phQB1 
+oB3:   DRIFT, L=     0.015 ;   ! gap between phQB1 & phQB2 
+oB4:   DRIFT, L=     0.015 ;   ! gap between phQB2 & phQB3 
+oB5:   DRIFT, L=     0.015 ;   ! gap between phQB4 & phQB5 
+oB6:   DRIFT, L=     0.015 ;   ! gap between phQB5 & phQB6 
+oB7:   DRIFT, L=     0.01  ;   ! gap between phQB6 & phSQB2 
+oB8:   DRIFT, L=     0.0705;   ! gap between phSQB2 & phM3 
+
+oC2:   DRIFT, L=      0.23  ;  ! drift between QC2 & QC3
+oC1s:  DRIFT, L=      0.055 ;  ! drift between QC1 & QC2 w/sextupole
+oC2s:  DRIFT, L=      0.055 ;  ! drift between QC2 & QC3 w/sextupole
+
+obm:   DRIFT, L=      0.2205 ; ! drift on both sides of dipole magnet
+obmp:  DRIFT, L=      0.1305 ; ! drift on both sides of dipole magnet, shortened for pickup bpm
+obmc:  DRIFT, L=      0.1005 ; ! drift on both sides of dipole magnet in presense of corrector
+obms:  DRIFT, L=      0.1005 ; ! drift on both sides of dipole magnet in presense of sextupole
+obmpc: DRIFT, L=      0.0105 ; ! drift on both sides of dipole magnet, shortened for pickup bpm and corrector
+
+el1:   marker;                 ! beginning of EL solenoid
+el2:   marker;                 ! end of EL solenoid
+
+oD:    DRIFT, L=      0.75 ;   ! Half of long drift in "D" straight
+oD1:   DRIFT, L=       0.2 ;   ! drift between dipole and QD1 (QD4)
+oD1c:  DRIFT, L=       0.08;   ! same with corrector
+oD2:   DRIFT, L=     0.295 ;   ! drift between QD1 & QD2 (QD3 & QD4)
+oD2c:  DRIFT, L=     0.0875;   ! half oD2 with corrector
+oD2s:  DRIFT, L=     0.0875;   ! half oD2 with sextupole
+
+oE1:   DRIFT, L=     0.1  ;
+oE2:   DRIFT, L=     0.02 ;
+oE3:   DRIFT, L=     0.88 ;
+oE4:   DRIFT, L=     0.01 ; 
+oE5:   DRIFT, L=     0.01 ; 
+oE6:   DRIFT, L=     0.2525 ; 
+oE7:   DRIFT, L=     0.01 ; 
+!oE4:   DRIFT, L=     0.3225 ; 
+
+!******************** Sextupoles **************************************
+if( sext == 0 ) { sk1=0; sk2=0; sk3=0; sk4=0; sk5=0; };
+SA1R:   SEXTUPOLE, L=0.1,  K2:=sk6r;
+SA1L:   SEXTUPOLE, L=0.1,  K2:=sk6l;
+SC1R:   SEXTUPOLE, L=0.1,  K2:=sk1r;
+SC1L:   SEXTUPOLE, L=0.1,  K2:=sk1l;
+SC2R:   SEXTUPOLE, L=0.1,  K2:=sk2r;
+SC2L:   SEXTUPOLE, L=0.1,  K2:=sk2l;
+SD1R:   SEXTUPOLE, L=0.1,  K2:=sk3r;
+SD1L:   SEXTUPOLE, L=0.1,  K2:=sk3l;
+SE1R:   SEXTUPOLE, L=0.1,  K2:=sk4r;
+SE1L:   SEXTUPOLE, L=0.1,  K2:=sk4l;
+SE2R:   SEXTUPOLE, L=0.1,  K2:=sk5r;
+SE2L:   SEXTUPOLE, L=0.1,  K2:=sk5l;
+!*******Placeholders for sextupoles ***********************************
+osxcoilS: DRIFT, L=0.01; !sextupole's coil thickness
+osxcoil: DRIFT, L=0.02; !sextupole's coil thickness
+osxcoilL: DRIFT, L=0.03; !sextupole's coil thickness
+phlSA1R:  LINE=(osxcoilL, SA1R, osxcoilL);
+phlSA1L:  LINE=(osxcoilL, SA1L, osxcoilL);
+phSC1R:  LINE=(osxcoilS, SC1R, osxcoilS);
+phSC1L:  LINE=(osxcoilS, SC1L, osxcoilS);
+phSC2R:  LINE=(osxcoilS, SC2R, osxcoilS);
+phSC2L:  LINE=(osxcoilS, SC2L, osxcoilS);
+phSD1R:  LINE=(osxcoilS, SD1R, osxcoilS);
+phSD1L:  LINE=(osxcoilS, SD1L, osxcoilS);
+phSE1R:  LINE=(osxcoil, SE1R, osxcoil);
+phSE1L:  LINE=(osxcoil, SE1L, osxcoil);
+phSE2R:  LINE=(osxcoil, SE2R, osxcoil);
+phSE2L:  LINE=(osxcoil, SE2L, osxcoil);
+
+!*******Nonlinear magnet aperture***********************************
+
+oN:    DRIFT, L=0.1;
+mN01:  marker, APERTYPE=ellipse,APERTURE={3.9446881E-3,5.25958413E-3};
+mN02:  marker, APERTYPE=ellipse,APERTURE={4.0521202E-3,5.40282702E-3};
+mN03:  marker, APERTYPE=ellipse,APERTURE={4.2600509E-3,5.68006786E-3};
+mN04:  marker, APERTYPE=ellipse,APERTURE={4.5566354E-3,6.07551398E-3};
+mN05:  marker, APERTYPE=ellipse,APERTURE={4.9279501E-3,6.57060016E-3};
+mN06:  marker, APERTYPE=ellipse,APERTURE={5.3603421E-3,7.1471228E-3};
+mN07:  marker, APERTYPE=ellipse,APERTURE={5.8417668E-3,7.78902251E-3};
+mN08:  marker, APERTYPE=ellipse,APERTURE={6.3622465E-3,8.48299541E-3};
+mN09:  marker, APERTYPE=ellipse,APERTURE={6.9138074E-3,9.21840994E-3};
+
+oNu: LINE=(mN09,oN,mN09,mN08,oN,mN08,mN07,oN,mN07,mN06,oN,mN06,mN05,oN,mN05,
+           mN04,oN,mN04,mN03,oN,mN03,mN02,oN,mN02,mN01,oN,mN01);
+oNd: LINE=(-oNu);
+
+
+

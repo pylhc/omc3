@@ -1,0 +1,204 @@
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +     MAD-X 5.05.02  (64 bit, Linux)       +
+  + Support: mad@cern.ch, http://cern.ch/mad +
+  + Release   date: 2019.07.25               +
+  + Execution date: 2019.07.29 17:02:45      +
+  ++++++++++++++++++++++++++++++++++++++++++++
+! IOTA Lattice
+
+! Version: 8.3
+
+! Date:    09/23/2015
+
+! Author: A.Romanov, A.Valishev, G.Kafka
+
+! Comments: This file produces bare lattice without special integrable optics features
+
+! Changelog:
+
+! 06/18/2014: rearranged the logic of input files and structure (AV)
+
+! 06/18/2014: added chromaticity correction sextupoles (AV)
+
+! 06/19/2014: changed rf harmonic to 4 (30 MHz) (AV)
+
+! 09/16/2014: added macros for inclusion of octupoles or nonlinear elements (AV)
+
+!----
+
+! 04/07/2015: rearranged include file (AR) 
+
+! 04/07/2015: added McMillan version (AR)
+
+! 04/07/2015: Added combined correctors (AR)
+
+! 04/07/2015: Sextupoles wrapped with coil spacer gaps (AR)
+
+! 04/07/2015: Dipoles renamed D->M, to avoid mixing with quads (ABCDE) (AR)
+
+! 04/07/2015: Refit lattice for the correct main dipoles' aperture 5.8cm (AR)
+
+! 04/07/2015: Added block for detuning calculation (AR)
+
+! 04/07/2015: Rearranged order and naming of "kq" constants for quad gradients in lattice specific files (kq1->kq01 and now kq01 is for A1R and index rises clockwise)
+
+! 04/07/2015: Added script seq1234.bat for sequential execution of selected lattices (win)
+
+!----
+
+! 05/19/2015: AV(6.6+) and AR (7.2) versions merged, resulted in 7.3
+
+! 05/19/2015: IMPORTANT: OCS uses wrong gap for main dipoles (this alters vertical focusing)
+
+!----
+
+! 06/25/2015: Add section for output needed for Import tool of OptimX (AR)
+
+! 09/23/2015: OSC updated to the latest version. DA is about 6 sigmas basing on FMA results. (AR)
+
+!-- v8.3
+
+! 03/22/2016: Elements (mostly quads) shifted to avoid mechanical constraints (AR)
+
+! 03/22/2016: OSC is now with 2mm delay and 7 periods in ondulator
+
+
+
+OPTION, -ECHO;
+
+++++++ info: sk1r redefined
+++++++ info: sk1l redefined
+++++++ info: sk2r redefined
+++++++ info: sk2l redefined
+++++++ info: sk3r redefined
+++++++ info: sk3l redefined
+++++++ info: sk4r redefined
+++++++ info: sk4l redefined
+++++++ info: sk5r redefined
+++++++ info: sk5l redefined
+++++++ info: sk6r redefined
+++++++ info: sk6l redefined
+  
+iteration:   1 error:   1.340990E-21 deltap:   0.000000E+00
+orbit:  -1.690048E-29  1.613921E-36  0.000000E+00  0.000000E+00 -1.947549E-16  8.147463E-29
+
+ GXPLOT-X11  1.50 initialized
+
+ plot number =            1
+++++++ warning: SAVE makes all previous USE invalid !  
+  
+iteration:   1 error:   5.637429E-07 deltap:   0.000000E+00
+orbit:  -1.527373E-07  2.674685E-07  0.000000E+00  0.000000E+00  1.031363E-01 -4.175277E-08
+++++++ warning: TWCPGO:  TWISS uses the RF system or synchrotron radiation only to find the closed orbit, for optical calculations it ignores both.
+ 
+ Global parameters for electrons, radiate = T:
+
+ C                39.96822971 m          f0                7.50072576 MHz
+ T0              0.1333204322 musecs     alfa           0.07198525777 
+ eta            0.07197373111            gamma(tr)        3.727161556 
+ Bcurrent                   0 A/bunch    Kbunch             1 
+ Npart                      0 /bunch     Energy           0.150511006 GeV 
+ gamma            294.5426936            beta            0.9999942367
+ dtbyds                     0
+     U0              0.000065 [MeV/turn]
+ 
+                                                  M o d e   1         M o d e   2         M o d e   3
+ Fractional tunes            undamped              0.29999925          0.30000412          0.00055118
+                             damped                0.29999925          0.30000412          0.00055118
+ 
+ beta* [m]                   x                 0.68743427E+00      0.40170284E-42      0.62597306E-01
+                             y                 0.33163208E-25      0.12972167E+01      0.29653408E-26
+                             t                 0.51805445E-04      0.93757137E-30      0.83066636E+03
+ 
+ gamma* [1/m]                px                0.14546842E+01      0.22585191E-41      0.37873535E-11
+                             py                0.70210189E-25      0.77088125E+00      0.17800675E-31
+                             pt                0.29049632E-09      0.52017650E-29      0.12038526E-02
+ 
+ beta(max) [m]               x                 0.68850010E+01      0.12078405E-40      0.37673584E+01
+                             y                 0.33231195E-24      0.41126477E+01      0.18174860E-24
+                             t                 0.72275364E-02      0.27874734E-28      0.83067097E+03
+ 
+ gamma(max) [1/m]            px                0.26182534E+02      0.34037686E-40      0.37873535E-11
+                             py                0.12637295E-23      0.12701677E+02      0.17965022E-31
+                             pt                0.14074992E-01      0.78354214E-28      0.12038526E-02
+ 
+ Damping partition numbers                         0.34563663          1.00071322          2.65647986
+ Damping constants [1/s]                           0.55815593E+00      0.16160151E+01      0.42898520E+01
+ Damping times [s]                                 0.17916140E+01      0.61880608E+00      0.23310827E+00
+ Emittances [pi micro m]                       0.13876819E+00      0.23105930E-26      0.14860801E+02
+
+ EMIT: beam parameters have been updated.
+
+ RF system: 
+ Cavity                      length[m]        voltage[MV]                lag          freq[MHz]             harmon
+ rfc                              0.05              0.001                0.5        30.00290304                  4
+  
+iteration:   1 error:   5.580198E-07 deltap:   0.000000E+00
+orbit:  -1.511869E-07  2.647535E-07  0.000000E+00  0.000000E+00  1.017427E-01 -4.132903E-08
+++++++ warning: TWCPGO:  TWISS uses the RF system or synchrotron radiation only to find the closed orbit, for optical calculations it ignores both.
+ 
+ Global parameters for electrons, radiate = T:
+
+ C                39.96822971 m          f0               7.500725465 MHz
+ T0              0.1333204374 musecs     alfa           0.07198525706 
+ eta            0.07197365173            gamma(tr)        3.727161574 
+ Bcurrent                   0 A/bunch    Kbunch             1 
+ Npart                      0 /bunch     Energy                  0.15 GeV 
+ gamma            293.5426798            beta            0.9999941973
+ dtbyds                     0
+     U0              0.000064 [MeV/turn]
+ 
+                                                  M o d e   1         M o d e   2         M o d e   3
+ Fractional tunes            undamped              0.29999925          0.30000411          0.00055213
+                             damped                0.29999925          0.30000411          0.00055213
+ 
+ beta* [m]                   x                 0.68743426E+00      0.74046516E-45      0.62597263E-01
+                             y                 0.46951594E-23      0.12972166E+01      0.42633199E-24
+                             t                 0.51895078E-04      0.27724500E-30      0.82923115E+03
+ 
+ gamma* [1/m]                px                0.14546842E+01      0.52708544E-46      0.38136365E-11
+                             py                0.99359406E-23      0.77088128E+00      0.58557786E-31
+                             pt                0.29200008E-09      0.19735136E-31      0.12059362E-02
+ 
+ beta(max) [m]               x                 0.68850006E+01      0.20176779E-44      0.37673583E+01
+                             y                 0.47027036E-22      0.41126476E+01      0.25727472E-22
+                             t                 0.72400445E-02      0.75545907E-30      0.82923578E+03
+ 
+ gamma(max) [1/m]            px                0.26182532E+02      0.80452234E-44      0.38136365E-11
+                             py                0.17883591E-21      0.12701677E+02      0.61816009E-31
+                             pt                0.14099350E-01      0.30122929E-29      0.12059362E-02
+ 
+ Damping partition numbers                         0.34563021          1.00069446          2.65642984
+ Damping constants [1/s]                           0.55249028E+00      0.15996112E+01      0.42463061E+01
+ Damping times [s]                                 0.18099866E+01      0.62515190E+00      0.23549880E+00
+ Emittances [pi micro m]                       0.13782747E+00      0.32504544E-24      0.14734562E+02
+
+ EMIT: beam parameters have been updated.
+
+ RF system: 
+ Cavity                      length[m]        voltage[MV]                lag          freq[MHz]             harmon
+ rfc                              0.05              0.001                0.5        30.00290186                  4
+  
+iteration:   1 error:   6.171977E-07 deltap:   1.000000E-06
+orbit:  -3.585669E-07  2.647395E-07  0.000000E+00  0.000000E+00  1.017423E-01 -4.143269E-08
+++++++ warning: TWCPGO:  TWISS uses the RF system or synchrotron radiation only to find the closed orbit, for optical calculations it ignores both.
+  
+iteration:   1 error:   5.580198E-07 deltap:   0.000000E+00
+orbit:  -1.511869E-07  2.647535E-07  0.000000E+00  0.000000E+00  1.017427E-01 -4.132903E-08
+++++++ warning: TWCPGO:  TWISS uses the RF system or synchrotron radiation only to find the closed orbit, for optical calculations it ignores both.
+  
+iteration:   1 error:   6.171977E-07 deltap:   1.000000E-06
+orbit:  -3.585669E-07  2.647395E-07  0.000000E+00  0.000000E+00  1.017423E-01 -4.143269E-08
+++++++ warning: TWCPGO:  TWISS uses the RF system or synchrotron radiation only to find the closed orbit, for optical calculations it ignores both.
+  
+iteration:   1 error:   5.580198E-07 deltap:   0.000000E+00
+orbit:  -1.511869E-07  2.647535E-07  0.000000E+00  0.000000E+00  1.017427E-01 -4.132903E-08
+++++++ warning: TWCPGO:  TWISS uses the RF system or synchrotron radiation only to find the closed orbit, for optical calculations it ignores both.
+
+  Number of warnings: 7
+1 in C and 6 in Fortran
+
+  ++++++++++++++++++++++++++++++++++++++++++++
+  +          MAD-X finished normally         +
+  ++++++++++++++++++++++++++++++++++++++++++++

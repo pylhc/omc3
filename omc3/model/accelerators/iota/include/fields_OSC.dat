@@ -1,0 +1,133 @@
+! Values of quadrupole magnet gradients for 2 Nonlinear Magnets option
+dipAp = 0.029; ! main dipole half gap (iron)
+
+kqX1 = -2.23704115;
+kqX2 = 0;
+kqX3 = 22.69925652;
+kqX4 = -15.32793749;
+
+kq01 = -8.74423592;
+kq02 = 12.34247186;
+kq03 = -13.76672139;
+kq04 = 18.61268941;
+kq05 = -11.03696448;
+kq06 = 13.45857643;
+kq07 = -5.41557834;
+kq08 = -7.3191214;
+kq09 = 13.1650468;
+kq10 = -8.16666172;
+kq11 = -1.98649254;
+kq12 = 9.84626204;
+kq13 = -6.45460939;
+kq14 = -5.22981445;
+kq15 = 7.33299105;
+kq16 = -3.88031192;
+kq17 = 2.24229074;
+kq18 = -1.53368558;
+
+
+kqA1R:=kq01;
+kqA2R:=kq02;
+kqA3R:=kq03;
+kqA4R:=kq04;
+ kqB1R:=kq05;
+ kqB2R:=kq06;
+ kqB3R:=kq07;
+ kqB4R:=kq08;
+ kqB5R:=kq09;
+ kqB6R:=kq10;
+kqC1R:=kq11;
+kqC2R:=kq12;
+kqC3R:=kq13;
+ kqD1R:=kq14;
+ kqD2R:=kq15;
+ kqD3R:=kq16;
+ kqD4R:=kq17;
+kqE1R:=kq18;
+
+ kqX4R:=kqX4;
+ kqX3R:=kqX3;
+ kqX2R:=kqX2;
+kqX1C:=kqX1;
+ kqX2L:=kqX2;
+ kqX3L:=kqX3;
+ kqX4L:=kqX4;
+
+kqA1L:=kq01;
+kqA2L:=kq02;
+kqA3L:=kq03;
+kqA4L:=kq04;
+ kqB1L:=kq05;
+ kqB2L:=kq06;
+ kqB3L:=kq07;
+ kqB4L:=kq08;
+ kqB5L:=kq09;
+ kqB6L:=kq10;
+kqC1L:=kq11;
+kqC2L:=kq12;
+kqC3L:=kq13;
+ kqD1L:=kq14;
+ kqD2L:=kq15;
+ kqD3L:=kq16;
+ kqD4L:=kq17;
+kqE1L:=kq18;
+
+
+! EL solenoid
+ksEL=0.0;
+
+! RF voltage
+Vrf = 0.00003;
+
+
+! sextupoles
+
+/*
+sk1 = -1000;
+sk2 = -000;
+sk3 = 0;
+sk4 = 0;
+sk5 = -750;
+sk6 = 0;
+*/
+
+/**/
+sk1 = 0;
+sk2 = -4000;
+sk3 = 0;
+sk4 = 0;
+sk5 = 0;
+sk6 = 0;
+
+
+
+/* symmetrical case*/
+sk1r := sk1;     !SC1R
+sk1l := sk1;
+sk2r := sk2;     !SC2R 
+sk2l := sk2;
+sk3r := sk3;     !SD1R
+sk3l := sk3;
+sk4r := sk4;     !SE1R
+sk4l := sk4;
+sk5r := sk5;     !SE2R
+sk5l := sk5;
+sk6r := sk6;     !SA1
+sk6l := sk6;
+
+/**/
+sk1r =              -1000 ;
+sk1l =              -1000 ;
+sk2r =              -1000 ;
+sk2l =              -1000 ;
+sk3r =        350.8814894 ;
+sk3l =        350.8814894 ;
+sk4r =        987.2370743 ;
+sk4l =        987.2370743 ;
+sk5r =               -950 ;
+sk5l =               -950 ;
+sk6r =               1000 ;
+sk6l =               1000 ;
+
+
+
