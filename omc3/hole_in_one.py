@@ -15,20 +15,27 @@ Generally, analysis flows as follows:
    Turn-by-Turn BPM data   --->    frequency spectra   --->    various lattice optics parameters
 
 Stages represented by different files:
-    Sdds file:  .sdds      --->   Tfs files: .lin[xy]  --->    Tfs files: .out
+    Sdds file:  .sdds      --->   Tfs files: .lin[xy]  --->    Tfs files: .tfs
 
 To run either of the two or both steps, use options:
                           --harpy                     --optics
 """
+import os
+from collections import OrderedDict
+from datetime import datetime
 from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 from utils import logging_tools, iotools
-from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, add_to_arguments
 from tbt import lhc_handler, iota_handler
 
+from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
+                                       add_to_arguments, save_options_to_config)
 from utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
+
+DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
+TIME_FORMAT = "%y_%m_%d@%H_%M_%S"  # CERN default
 
 
 def hole_in_one_params():
@@ -73,16 +80,20 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--turns**
         Default: ``[0, 50000]``
-      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'mm'.
+      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'm'.
 
         Flags: **--unit**
         Choices: ``('m', 'cm', 'mm', 'um')``
+<<<<<<< HEAD
         Default: ``mm``
       - **accelerator** *(str)*: Choose the datatype from which to import.
 
         Flags: **--accelerator**
         Default: ``LHC``
 
+=======
+        Default: ``m``
+>>>>>>> 99d7eab89f43a443b896fc5dc052874bc3ace002
 
       *--Cleaning--*
 
@@ -104,7 +115,7 @@ def hole_in_one_entrypoint(opt, rest):
       - **max_peak** *(float)*: Removes BPMs where the maximum orbit > limit.
 
         Flags: **--max_peak**
-        Default: ``20.0``
+        Default: ``0.02``
       - **model**: Model for BPM locations
 
         Flags: **--model**
@@ -117,7 +128,7 @@ def hole_in_one_entrypoint(opt, rest):
         where abs(max(turn values) - min(turn values)) <= threshold.
 
         Flags: **--peak_to_peak**
-        Default: ``1e-05``
+        Default: ``1e-08``
       - **sing_val** *(int)*: Keep this amount of largest singular values.
 
         Flags: **--sing_val**
@@ -177,8 +188,8 @@ def hole_in_one_entrypoint(opt, rest):
       - **window** *(str)*: Windowing function to be used for frequency analysis.
 
         Flags: **--window**
-        Choices: ``('rectangle', 'hamming', 'nuttal3', 'nuttal4')``
-        Default: ``hamming``
+        Choices: ``('rectangle', , 'hann', 'hamming', 'nuttal3', 'nuttal4')``
+        Default: ``hann``
 
 
     Optics Kwargs:
@@ -202,11 +213,11 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--max_beta_beating**
         Default: ``0.15``
-      - **max_closed_orbit** *(float)*: Maximal closed orbit in 'mm'
+      - **max_closed_orbit** *(float)*: Maximal closed orbit in 'm'
         allowed for dispersion measurement
 
         Flags: **--max_closed_orbit**
-        Default: ``4.0``
+        Default: ``0.004``
       - **nonlinear**: Calculate higher order RDTs
 
         Flags: **--nonlinear**
@@ -238,7 +249,8 @@ def hole_in_one_entrypoint(opt, rest):
         raise SystemError("No module has been chosen.")
     if not rest:
         raise SystemError("No input has been set.")
-    harpy_opt, optics_opt = _get_suboptions(opt, rest)
+    harpy_opt, optics_opt, accel_opt = _get_suboptions(opt, rest)
+    _write_config_file(harpy_opt, optics_opt, accel_opt)
     lins = []
     if harpy_opt is not None:
         lins = _run_harpy(harpy_opt)
@@ -258,16 +270,40 @@ def _get_suboptions(opt, rest):
                                     model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
+
     if opt.optics:
         optics_opt, rest = _optics_entrypoint(rest)
         from model import manager
+        accel_opt = manager.get_parsed_opt(rest)
         optics_opt.accelerator = manager.get_accel_instance(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
             raise AttributeError("Compensation requested and no driven model was provided.")
-
     else:
         optics_opt = None
-    return harpy_opt, optics_opt
+        accel_opt = None
+    return harpy_opt, optics_opt, accel_opt
+
+
+def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
+    """ Write the parsed options into a config file for later use. """
+    all_opt = OrderedDict()
+    if harpy_opt is not None:
+        all_opt["harpy"] = True
+        all_opt.update(OrderedDict(sorted(harpy_opt.items())))
+
+    if optics_opt is not None:
+        optics_opt = OrderedDict(sorted(optics_opt.items()))
+        optics_opt.pop('accelerator')
+
+        all_opt["optics"] = True
+        all_opt.update(optics_opt)
+        all_opt.update(sorted(accelerator_opt.items()))
+
+    out_dir = all_opt["outputdir"]
+    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(TIME_FORMAT))
+    iotools.create_dirs(out_dir)
+
+    save_options_to_config(os.path.join(out_dir, file_name), all_opt)
 
 
 def _run_harpy(harpy_options):
@@ -344,7 +380,7 @@ def harpy_params():
     params.add_parameter(flags="--model", name="model", help="Model for BPM locations")
     params.add_parameter(flags="--unit", name="unit", type=str, choices=("m", "cm", "mm", "um"),
                          default=HARPY_DEFAULTS["unit"],
-                         help=f"A unit of TbT BPM orbit data. All cuts and output are in 'mm'.")
+                         help=f"A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
     params.add_parameter(flags="--turns", name="turns", type=int, nargs=2,
                          default=HARPY_DEFAULTS["turns"],
                          help="Turn index to start and first turn index to be ignored.")
@@ -475,10 +511,10 @@ def optics_params():
 
 HARPY_DEFAULTS = {
     "turns": [0, 50000],
-    "unit": "mm",
+    "unit": "m",
     "sing_val": 12,
-    "peak_to_peak": 1e-5,
-    "max_peak": 20.0,
+    "peak_to_peak": 1e-8,
+    "max_peak": 0.02,
     "svd_dominance_limit": 0.925,
     "tolerance": 0.01,
     "tune_clean_limit": 1e-5,
@@ -490,7 +526,7 @@ HARPY_DEFAULTS = {
 }
 
 OPTICS_DEFAULTS = {
-        "max_closed_orbit": 4.0,
+        "max_closed_orbit": 0.004,
         "coupling_method": 2,
         "range_of_bpms": 11,
         "max_beta_beating": 0.15,

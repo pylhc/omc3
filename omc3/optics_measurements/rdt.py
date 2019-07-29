@@ -183,11 +183,11 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
 def get_linearized_problem(invs, plane, rdt):
     """
     2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
-    we use sqrt(2J): unit is sqrt(um) ... divide by 1000
+    we use sqrt(2J): unit is sqrt(m)
     """
     j, k, l, m = rdt
-    act_x = invs["X"].T[0] / 1000
-    act_y = invs["Y"].T[0] / 1000
+    act_x = invs["X"].T[0]
+    act_y = invs["Y"].T[0]
     if plane == "X":
         return 2 * j * act_x ** (j + k - 2) * act_y ** (l + m)
     return 2 * l * act_x ** (j + k) * act_y ** (l + m - 2)
