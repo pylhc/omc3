@@ -1,7 +1,9 @@
 import os
 import pytest
 import numpy as np
+import pandas as pd
 from . import context
+from datetime import datetime
 import tbt
 from tbt import lhc_handler
 from tbt import numpy_handler
@@ -17,6 +19,29 @@ def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):
     tbt.data_class.write_tbt_data(_test_file, origin, 'LHCSDDS')
     new = lhc_handler.read_tbt(f'{_test_file}.sdds')
     _compare_tbt(origin, new, False)
+
+
+def test_tbt_read_hdf5(_hdf5_file):
+
+    origin = data_class.TbtData(
+        matrices=[
+                  {'X': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.sin),
+                    dtype=float),
+                   'Y': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.cos),
+                    dtype=float)}],
+        date=datetime.now(),
+        bunch_ids=[1],
+        nturns=2000)
+    new = iota_handler.read_tbt(_hdf5_file)
+    _compare_tbt(origin, new, False)
+
+
+def _create_data(nturns, nbpm, function):
+    return np.ones((nbpm, len(nturns))) * function(nturns)
 
 
 def test_tbt_write_read_npz(_sdds_file, _test_file):
@@ -52,6 +77,11 @@ def _compare_tbt(origin, new, no_binary):
 @pytest.fixture()
 def _sdds_file():
     return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.sdds")
+
+
+@pytest.fixture()
+def _hdf5_file():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.hdf5")
 
 
 @pytest.fixture()
