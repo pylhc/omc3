@@ -20,8 +20,20 @@ NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": "0", "Y": "1"}
 POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}
 PRINT_PRECISION = 6
-FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
-_ACQ_DATE_PREFIX = "#Acquisition date: "
+FORMAT_STRING = f" {{:.{PRINT_PRECISION:d}f}}"
+
+# ASCII IDs
+_ASCII_COMMENT = "#"
+_ACQ_DATE_PREFIX = "Acquisition date:"
+_ACQ_DATE_FORMAT = "%Y-%m-%d at %H:%M:%S"
+
+# BINARY IDs
+N_BUNCHES = "nbOfCapBunches"
+BUNCH_ID = "BunchId"
+HOR_BUNCH_ID = "horBunchId"
+N_TURNS = "nbOfCapTurns"
+ACQ_STAMP = "acqStamp"
+BPM_NAMES = "bpmNames"
 
 
 def read_tbt(file_path):
@@ -36,20 +48,20 @@ def read_tbt(file_path):
     if _is_ascii_file(file_path):
         matrices, date = _read_ascii(file_path)
         return data_class.TbtData(matrices, date, [0], matrices[0]["X"].shape[1])
+
     sdds_file = sdds.read(file_path)
-    nbunches = sdds_file.values["nbOfCapBunches"]
-    bunch_ids = sdds_file.values["BunchId" if "BunchId" in sdds_file.values else "horBunchId"]
+    nbunches = sdds_file.values[N_BUNCHES]
+    bunch_ids = sdds_file.values[BUNCH_ID if BUNCH_ID in sdds_file.values else HOR_BUNCH_ID]
     if len(bunch_ids) > nbunches:
         bunch_ids = bunch_ids[:nbunches]
-    nturns = sdds_file.values["nbOfCapTurns"]
-    date = datetime.fromtimestamp(sdds_file.values["acqStamp"] / 1e9)
-    bpm_names = sdds_file.values["bpmNames"]
+    nturns = sdds_file.values[N_TURNS]
+    date = datetime.fromtimestamp(sdds_file.values[ACQ_STAMP] / 1e9)
+    bpm_names = sdds_file.values[BPM_NAMES]
     nbpms = len(bpm_names)
     data = {k: sdds_file.values[POSITIONS[k]].reshape((nbpms, nbunches, nturns)) for k in PLANES}
     matrices = [{k: pd.DataFrame(index=bpm_names,
                                  data=data[k][:, idx, :],
                                  dtype=float) for k in data} for idx in range(nbunches)]
-
     return data_class.TbtData(matrices, date, bunch_ids, nturns)
 
 
@@ -62,45 +74,61 @@ def _is_ascii_file(file_path):
             for line in file_data:
                 if line.strip() == "":
                     continue
-                return line.startswith("#")
+                return line.startswith(_ASCII_COMMENT)
         except UnicodeDecodeError:
             return False
     return False
 
 
 def _read_ascii(file_path):
+    """ Read the ascii file. """
     bpm_names = {"X": [], "Y": []}
     matrix = {"X": [], "Y": []}
     date = None
+
     with open(file_path, "r") as file_data:
-        for line in file_data:
-            line = line.strip()
-            # Empty lines and comments:
-            if line == "" or "#" in line:
-                continue
-            if _ACQ_DATE_PREFIX in line:
-                date = _parse_date(line)
-                continue
-            # Samples:
-            parts = line.split()
-            plane_num = parts.pop(0)
-            bpm_name = parts.pop(0)
-            parts.pop(0)
-            bpm_samples = np.array([float(part) for part in parts])
-            try:
-                bpm_names[NUM_TO_PLANE[plane_num]].append(bpm_name)
-                matrix[NUM_TO_PLANE[plane_num]].append(bpm_samples)
-            except KeyError:
-                raise ValueError(f"Wrong plane found in: {file_path}")
-    matrices = {}
-    for plane in PLANES:
-        matrices[plane] = pd.DataFrame(index=bpm_names[plane], data=np.array(matrix[plane]))
-    return [matrices], date
+        data_lines = file_data.readlines()
+
+    for line in data_lines:
+        line = line.strip()
+
+        # acquisition date
+        if _ACQ_DATE_PREFIX in line:
+            date = _parse_date(line)
+            continue
+
+        # empty line or comments
+        if line == "" or line.startswith(_ASCII_COMMENT):
+            continue
+
+        # samples:
+        plane_num, bpm_name, bpm_samples = _parse_samples(line)
+        try:
+            bpm_names[NUM_TO_PLANE[plane_num]].append(bpm_name)
+            matrix[NUM_TO_PLANE[plane_num]].append(bpm_samples)
+        except KeyError:
+            raise ValueError(f"Plane number {plane_num} found in file '{file_path}'.\n"
+                             "Only '0' and '1' are allowed.")
+
+    matrices = [{p: pd.DataFrame(index=bpm_names[p], data=np.array(matrix[p])) for p in PLANES}]
+    return matrices, date
+
+
+# ASCII-File Helper ------------------------------------------------------------
+
+
+def _parse_samples(line):
+    parts = line.split()
+    plane_num = parts[0]
+    bpm_name = parts[1]
+    # index = part[2]  # not used, comment for clarification
+    bpm_samples = np.array([float(part) for part in parts[3:]])
+    return plane_num, bpm_name, bpm_samples
 
 
 def _parse_date(line):
-    date_str = line.replace(_ACQ_DATE_PREFIX, "")
+    date_str = line.replace(_ACQ_DATE_PREFIX, "").replace(_ASCII_COMMENT, "").strip()
     try:
-        return datetime.strptime(date_str, "%Y-%m-%d at %H:%M:%S")
+        return datetime.strptime(date_str, _ACQ_DATE_FORMAT)
     except ValueError:
         return datetime.today()

@@ -1,4 +1,6 @@
 import os
+import tempfile
+
 import pytest
 import numpy as np
 import pandas as pd
@@ -86,9 +88,5 @@ def _hdf5_file():
 
 @pytest.fixture()
 def _test_file():
-    test_file = os.path.join(CURRENT_DIR, "test_file")
-    try:
-        yield test_file
-    finally:
-        if os.path.isfile(test_file):
-            os.remove(test_file)
+    with tempfile.TemporaryDirectory() as cwd:
+        yield os.path.join(cwd, "test_file")
