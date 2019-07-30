@@ -82,12 +82,12 @@ def _is_ascii_file(file_path):
 
 def _read_ascii(file_path):
     """ Read the ascii file. """
-    bpm_names = {"X": [], "Y": []}
-    matrix = {"X": [], "Y": []}
-    date = None
-
     with open(file_path, "r") as file_data:
         data_lines = file_data.readlines()
+
+    bpm_names = {"X": [], "Y": []}
+    bpm_data = {"X": [], "Y": []}
+    date = None
 
     for line in data_lines:
         line = line.strip()
@@ -105,17 +105,16 @@ def _read_ascii(file_path):
         plane_num, bpm_name, bpm_samples = _parse_samples(line)
         try:
             bpm_names[NUM_TO_PLANE[plane_num]].append(bpm_name)
-            matrix[NUM_TO_PLANE[plane_num]].append(bpm_samples)
+            bpm_data[NUM_TO_PLANE[plane_num]].append(bpm_samples)
         except KeyError:
-            raise ValueError(f"Plane number {plane_num} found in file '{file_path}'.\n"
+            raise ValueError(f"Plane number '{plane_num}' found in file '{file_path}'.\n"
                              "Only '0' and '1' are allowed.")
 
-    matrices = [{p: pd.DataFrame(index=bpm_names[p], data=np.array(matrix[p])) for p in PLANES}]
+    matrices = [{p: pd.DataFrame(index=bpm_names[p], data=np.array(bpm_data[p])) for p in PLANES}]
     return matrices, date
 
 
 # ASCII-File Helper ------------------------------------------------------------
-
 
 def _parse_samples(line):
     parts = line.split()
