@@ -152,4 +152,7 @@ TWISS, CHROM, FILE = 'twiss_elements.dat', RANGE = '#S/#E';
 SELECT, FLAG = TWISS, PATTERN = "IBPM", COLUMN= name,s,betx,bety,x,y,px,py;
 TWISS, CHROM, FILE = 'twiss.dat', RANGE = '#S/#E';
 
+SYSTEM, 'python rename_bpms.py --file twiss.elements.dat'; // script rename bpms in the model twiss to name in measurement files
+SYSTEM, 'python rename_bpms.py --file twiss.dat';
+
 STOP;
