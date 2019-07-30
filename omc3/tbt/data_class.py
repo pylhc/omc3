@@ -1,5 +1,4 @@
 from datetime import datetime
-import time
 import numpy as np
 import pandas as pd
 import sdds
@@ -53,17 +52,17 @@ def write_npz(output_path, tbt_data):
     data = _matrices_to_array(tbt_data)
     np.savez(
         file=f'{output_path}.npz',
-        DATE= tbt_data.date.strftime("%Y-%m-%d %H:%M:%S"),
-        NBUNCHES= tbt_data.nbunches,
-        NTURNS= tbt_data.nturns,
-        BUNCH_IDS= tbt_data.bunch_ids,
-        NBPM= tbt_data.matrices[0]["X"].index,
-        X= data['X'],
-        Y= data['Y']
+        DATE=tbt_data.date.strftime("%Y-%m-%d %H:%M:%S"),
+        NBUNCHES=tbt_data.nbunches,
+        NTURNS=tbt_data.nturns,
+        BUNCH_IDS=tbt_data.bunch_ids,
+        NBPM=tbt_data.matrices[0]["X"].index,
+        X=data['X'],
+        Y=data['Y']
      )
 
 
-def write_lhc_sdds(output_path, tbt_data):        
+def write_lhc_sdds(output_path, tbt_data):
     LOGGER.info('TbTdata is written in binary SDDS (LHC) format')
     data = _matrices_to_array(tbt_data)
     definitions = [
@@ -87,14 +86,14 @@ def write_lhc_sdds(output_path, tbt_data):
     sdds.write(sdds.SddsFile("SDDS1", None, definitions, values), f'{output_path}.sdds')
 
 
-def write_lhc_ascii(output_path, tbt_data):        
+def write_lhc_ascii(output_path, tbt_data):
     LOGGER.info('TbTdata is written in ascii SDDS (LHC) format')
 
     for index in range(tbt_data.nbunches):
         suffix = f"_{tbt_data.bunch_ids[index]}" if tbt_data.nbunches > 1 else ""
         with open(output_path + suffix, "w") as output_file:
             _write_header(tbt_data, index, output_file)
-            _write_tbt_data(tbt_data, index, output_file)   
+            _write_tbt_data(tbt_data, index, output_file)
 
 
 def _write_header(tbt_data, index, output_file):

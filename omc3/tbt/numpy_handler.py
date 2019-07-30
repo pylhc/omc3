@@ -38,11 +38,9 @@ def read_tbt(file_path):
     date = np_file['DATE']
     bpm_names = np_file['NBPM']
     nbpms = len(bpm_names)
-    data_x = np_file['X'].reshape((nbpms, nbunches, nturns))
-    data_y = np_file['Y'].reshape((nbpms, nbunches, nturns))
-    matrices = []
-    for index in range(nbunches):
-        matrices.append({
-            'X': pd.DataFrame(index=bpm_names, data=data_x[:, index, :], dtype=float),
-            'Y': pd.DataFrame(index=bpm_names, data=data_y[:, index, :], dtype=float)})
+    data = {k: np_file[k].reshape((nbpms, nbunches, nturns)) for k in PLANES}
+    matrices = [{k: pd.DataFrame(index=bpm_names,
+                                 data=data[k][:, idx, :],
+                                 dtype=float) for k in data} for idx in range(nbunches)]
+
     return data_class.TbtData(matrices, date, bunch_ids, nturns)

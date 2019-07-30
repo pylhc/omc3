@@ -7,7 +7,6 @@ Basic tbt io-functionality.
 
 """
 from datetime import datetime
-import time
 import numpy as np
 import pandas as pd
 import sdds
@@ -46,13 +45,11 @@ def read_tbt(file_path):
     date = datetime.fromtimestamp(sdds_file.values["acqStamp"] / 1e9)
     bpm_names = sdds_file.values["bpmNames"]
     nbpms = len(bpm_names)
-    data_x = sdds_file.values[POSITIONS['X']].reshape((nbpms, nbunches, nturns))
-    data_y = sdds_file.values[POSITIONS['Y']].reshape((nbpms, nbunches, nturns))
-    matrices = []
-    for index in range(nbunches):
-        matrices.append({
-            'X': pd.DataFrame(index=bpm_names, data=data_x[:, index, :], dtype=float),
-            'Y': pd.DataFrame(index=bpm_names, data=data_y[:, index, :], dtype=float)})
+    data = {k: sdds_file.values[POSITIONS[k]].reshape((nbpms, nbunches, nturns)) for k in PLANES}
+    matrices = [{k: pd.DataFrame(index=bpm_names,
+                                 data=data[k][:, idx, :],
+                                 dtype=float) for k in data} for idx in range(nbunches)]
+
     return data_class.TbtData(matrices, date, bunch_ids, nturns)
 
 
@@ -98,7 +95,7 @@ def _read_ascii(file_path):
     matrices = {}
     for plane in PLANES:
         matrices[plane] = pd.DataFrame(index=bpm_names[plane], data=np.array(matrix[plane]))
-    return [matrices], date 
+    return [matrices], date
 
 
 def _parse_date(line):
