@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 import shutil
 from model.model_creators import model_creator
 from model.accelerators.accelerator import AccExcitationMode

@@ -1,5 +1,5 @@
 """
-IOA
+IOTA
 -------------------
 """
 import os
@@ -9,28 +9,37 @@ from generic_parser.entrypoint import EntryPointParameters
 import logging
 
 LOGGER = logging.getLogger(__name__)
-
 CURRENT_DIR = os.path.dirname(__file__)
-IOTA_DIR = os.path.join(CURRENT_DIR, "iota")
 
 
 def get_iota_modes():
     return {
-        "iota_runI": IotaRunI        
+        "iota_runI": IotaRunI
     }
 
 
 class Iota(Accelerator):
     NAME = "iota"
-    RE_DICT = {"bpm": r"BPM", "magnet": r".*"               
-               }
+    RE_DICT = {"bpm": r"IBPM", "magnet": r"Q"}
 
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(flags=["--particle"], help="Particle type.", name="particle", type=str, choices=['p', 'e'])
-        params.add_parameter(flags=["--run"], help=("Specify IOTA run. Should be one of: " + str(get_iota_modes().keys())), name="iota_run", type=str, choices=list(get_iota_modes().keys()))
+        params.add_parameter(flags=["--particle"],
+                             help="Particle type.",
+                             name="particle",
+                             type=str,
+                             choices=['p', 'e'])
+        params.add_parameter(flags=["--run"],
+                             help=("Specify IOTA run. Should be one of: " + str(get_iota_modes().keys())),
+                             name="iota_run",
+                             type=str,
+                             choices=list(get_iota_modes().keys()))
         return params
+
+    @staticmethod
+    def get_iota_dir():
+        return os.path.join(CURRENT_DIR, "iota")
 
 
 # Specific accelerator definitions ###########################################

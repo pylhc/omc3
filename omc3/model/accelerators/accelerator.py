@@ -140,7 +140,7 @@ class Accelerator(object):
             self._model = tfs.read(os.path.join(model_dir, self.TWISS_DAT), index="NAME")
         except IOError:
             self._model = tfs.read(os.path.join(model_dir, self.TWISS_ELEMENTS_DAT), index="NAME")
-            bpm_index = [idx for idx in self._model.index.values if idx.startswith("B")]
+            bpm_index = [idx for idx in self._model.index.values if idx.startswith("B")]  # <-- shouldnt startswith have an option which is the initial letter of BPM
             self._model = self._model.loc[bpm_index, :]
         self.nat_tune_x = float(self._model.headers["Q1"])
         self.nat_tune_y = float(self._model.headers["Q2"])
@@ -295,7 +295,7 @@ class Accelerator(object):
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     # For GetLLM #############################################################
-    
+
     def get_exciter_bpm(self, plane, distance):
         """
         Returns the BPM next to the exciter.
@@ -303,10 +303,10 @@ class Accelerator(object):
         distance: 1=nearest bpm 2=next to nearest bpm
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
-        
+
     def get_important_phase_advances(self):
         return []
-    
+
     def get_model_tfs(self):
         return self._model
 
@@ -420,5 +420,3 @@ class AcceleratorDefinitionError(Exception):
     example by calling a method that should have been overwritten.
     """
     pass
-
-
