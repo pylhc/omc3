@@ -42,7 +42,7 @@ def get_filter_mask(data, x_data=None, limit=0.0, niter=20, nsig=None, mask=None
             y, y_orig = _get_data_without_slope(mask, x_data, data)
         avg, std = _get_moments(y)
 
-        mask = np.logical_and(mask,np.abs(y_orig - avg) < np.max(np.append(nsig * std, limit)))
+        mask = np.logical_and(mask,np.abs(y_orig - avg) < np.max([limit, nsig * std]))
     return mask
 
 
@@ -62,4 +62,4 @@ def _get_data(mask, data):
 # Set the sigma cut, that expects 1 value to be cut
 # if it is sample of normal distribution
 def _get_significance_cut_from_length(length):
-    return t.ppf([1 - 0.5 / float(length)], length)
+    return t.ppf(1 - 0.5 / float(length), length)
