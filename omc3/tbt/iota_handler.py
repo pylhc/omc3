@@ -56,12 +56,12 @@ def _get_turn_by_turn_data(hd5, plane):
 
 
 def _get_list_of_bpmnames(hd5):
-    bpms = [f'IBPM{key[4:-1]}' for key in list(hd5.keys())]
+    bpms = [f'IBPM{key[4:-1]}' for key in list(hd5.keys()) if not ('state' in key)]
     return np.unique(bpms)
 
 
 def _get_number_of_turns(hd5):
-    lengths = [len(hd5[key]) for key in list(hd5.keys())]
+    lengths = [len(hd5[key]) for key in list(hd5.keys()) if not ('state' in key)]
     return np.min(lengths)
 
 
