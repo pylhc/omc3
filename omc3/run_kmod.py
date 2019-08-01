@@ -33,20 +33,28 @@ def analyse_kmod():
     magnet2_df = kmod_cleaning.clean_data(kmod_input_params, magnet2_df)
 
     LOG.info('Run simplex')
-    magnet1_df, magnet2_df, results_df = kmod_analysis.analyse(magnet1_df, magnet2_df, kmod_input_params)
+    magnet1_df, magnet2_df, results_df = kmod_analysis.analyse(magnet1_df,
+                                                               magnet2_df,
+                                                               kmod_input_params)
 
     LOG.info('Plot tunes and fit')
     kmod_utils.plot_cleaned_data(magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False)
 
     LOG.info('Calculate betastar')
     if kmod_input_params.betastar_required:
-        results_df = kmod_analysis.calc_betastar(kmod_input_params, results_df, magnet1_df, magnet2_df)
+        results_df = kmod_analysis.calc_betastar(kmod_input_params,
+                                                 results_df,
+                                                 magnet1_df,
+                                                 magnet2_df)
 
     results_df.loc[:, 'TIME'] = ('{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
 
     LOG.info('Calculate beta at instruments')
     if kmod_input_params.instruments_found != []:
-        instrument_beta_df = kmod_analysis.calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_df)
+        instrument_beta_df = kmod_analysis.calc_beta_at_instruments(kmod_input_params,
+                                                                    results_df,
+                                                                    magnet1_df,
+                                                                    magnet2_df)
 
     LOG.info('Write magnet dataframes and results')
 

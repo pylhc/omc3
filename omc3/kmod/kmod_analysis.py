@@ -128,7 +128,7 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
 def fit_prec(x, beta_av):
 
     dQ = (1/(2.*np.pi)) * np.arccos(np.cos(2 * np.pi * np.modf(x[1])[0]) -
-    0.5 * beta_av * x[0] * np.sin(2 * np.pi * np.modf(x[1])[0])) - np.modf(x[1])[0]
+          0.5 * beta_av * x[0] * np.sin(2 * np.pi * np.modf(x[1])[0])) - np.modf(x[1])[0]
     return dQ
 
 
