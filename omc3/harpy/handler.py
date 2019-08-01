@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 
 import tfs
+from definitions import formats
 from utils.contexts import timeit
 from utils import logging_tools
 from harpy import frequency, clean
@@ -71,7 +72,7 @@ def run_per_bunch(tbt_data, harpy_input):
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
         lins[plane] = lins[plane].sort_values('S', axis=0, ascending=True)
-        lins[plane] = tfs.TfsDataFrame(lins[plane], headers=_compute_headers(lins[plane]))
+        lins[plane] = tfs.TfsDataFrame(lins[plane], headers=_compute_headers(lins[plane], tbt_data.date))
         if "lin" in harpy_input.to_write:
             _write_lin_tfs(output_file_path, plane, lins[plane])
     return lins
@@ -141,7 +142,7 @@ def _sync_phase(lin_frame, plane):
     return lin_frame
 
 
-def _compute_headers(panda):
+def _compute_headers(panda, date):
     headers = OrderedDict()
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
@@ -152,6 +153,8 @@ def _compute_headers(panda):
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
+    if date is not None:
+        headers["TIME"] = date.strftime(formats.TIME)
     return headers
 
 

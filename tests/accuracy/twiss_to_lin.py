@@ -11,11 +11,15 @@ for free motion and for driven motion. The twisses should contain the chromatic 
 
 """
 from collections import OrderedDict
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 from os.path import join
 from . import context
 import tfs
+from definitions import formats
+
 PLANES = ('X', 'Y')
 DRIVEN = "_d"
 FREE = "_f"
@@ -101,4 +105,5 @@ def _get_header(tunes, nattunes, plane):
     header[f"Q{PLANE_TO_NUM[plane]}RMS"] = 1e-7
     header[f"NATQ{PLANE_TO_NUM[plane]}"] = nattunes[plane]
     header[f"NATQ{PLANE_TO_NUM[plane]}RMS"] = 1e-6
+    header["TIME"] = datetime.utcnow().strftime(formats.TIME)
     return header

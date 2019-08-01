@@ -27,6 +27,7 @@ from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 import tbt
 from utils import logging_tools, iotools
+from definitions import formats
 from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
                                        add_to_arguments, save_options_to_config)
 from utils.contexts import timeit
@@ -34,7 +35,6 @@ from utils.contexts import timeit
 LOGGER = logging_tools.get_logger(__name__)
 
 DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
-TIME_FORMAT = "%y_%m_%d@%H_%M_%S"  # CERN default
 
 
 def hole_in_one_params():
@@ -290,7 +290,7 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
         all_opt.update(sorted(accelerator_opt.items()))
 
     out_dir = all_opt["outputdir"]
-    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(TIME_FORMAT))
+    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
     iotools.create_dirs(out_dir)
 
     save_options_to_config(os.path.join(out_dir, file_name), all_opt)
