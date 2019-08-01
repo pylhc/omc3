@@ -9,10 +9,13 @@ Computes betatron tunes and provides structures to store them.
 """
 import numpy as np
 from utils import stats
+from utils import logging_tools
 from optics_measurements.constants import PLANES, PLANE_TO_NUM
 
+LOG = logging_tools.get_logger(__name__)
 
 def calculate(measure_input, input_files):
+    LOG.debug("calculating tune")
     tune_d = TuneDict()
     accelerator = measure_input.accelerator
     for plane in PLANES:
@@ -23,6 +26,7 @@ def calculate(measure_input, input_files):
         tune_d[plane]["Q"], tune_d[plane]["QF"] = measured_tune, measured_tune
         tune_d[plane]["QFM"] = accelerator.nat_tune_x if plane is "X" else accelerator.nat_tune_y
         if accelerator.excitation:
+            LOG.debug("compensating excited tune")
             tune_d[plane]["QM"] = accelerator.drv_tune_x if plane is "X" else accelerator.drv_tune_y
             tune_d[plane]["QF"] = tune_d[plane]["Q"] - tune_d[plane]["QM"] + tune_d[plane]["QFM"]
             tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
@@ -70,11 +74,10 @@ class TuneDict(dict):
         """
         model = accelerator.get_elements_tfs()
         r = self.get_lambda(plane)
-        print("lambda (plane {}) = {}".format(plane, r))
+        LOG.debug("lambda (plane {}) = {}".format(plane, r))
         [k, bpmac1], exciter = accelerator.get_exciter_bpm(plane, df_idx_by_bpms.index)
         psi = model.loc[bpmac1, f"MU{plane}"] - model.loc[exciter, f"MU{plane}"]
         psi = np.arctan((1 + r) / (1 - r) * np.tan(
             2 * np.pi * psi + np.pi * self[plane]["QF"])) % np.pi - np.pi * self[plane]["Q"]
         psi = psi / (2 * np.pi)
-        print("--f {} {} {} {} --g".format(bpmac1, psi, k, exciter))
         return bpmac1, psi, k, exciter
