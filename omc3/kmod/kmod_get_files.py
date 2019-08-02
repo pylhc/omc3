@@ -27,7 +27,7 @@ def return_filename(kmod_input_params):
             for side in SIDES:
                 path_tunex = os.path.join(kmod_input_params.working_directory, '{:s}{:s}{:s}X.tfs'.format(kmod_input_params.ip.lower(), kmod_input_params.beam.lower(), side) )
                 path_tuney = os.path.join(kmod_input_params.working_directory, '{:s}{:s}{:s}Y.tfs'.format(kmod_input_params.ip.lower(), kmod_input_params.beam.lower(), side) )
-                path_k = os.path.join(kmod_input_params.working_directory, '{:s}{:s}K.tfs'.format(kmod_input_params.ip.lower(), side) )
+                path_k = os.path.join(kmod_input_params.working_directory, '{:s}{:s}K.tfs'.format(kmod_input_params.ip.lower(), side))
 
                 yield path_tunex, path_tuney, path_k
         elif kmod_input_params.circuits is not None:
@@ -65,10 +65,10 @@ def headers_for_df(magnet, k_df):
                        np.min(k_df['CURRENT'].rolling(5).mean()))/2.
     head['START_TIME'] = (
                          datetime.datetime.fromtimestamp(k_df['TIME'].iloc[0] / 1000.0)
-                         ).strftime('%Y-%m-%d %H:%M:%S')
+                         ).strftime('%Y-%m-%d_%H:%M:%S')
     head['END_TIME'] = (
                        datetime.datetime.fromtimestamp(k_df['TIME'].iloc[-1] / 1000.0)
-                       ).strftime('%Y-%m-%d %H:%M:%S')
+                       ).strftime('%Y-%m-%d_%H:%M:%S')
 
     # add starting tunes/tunesplit, number of cycles, ... to header
 
@@ -83,17 +83,17 @@ def bin_tunes_and_k(tunex_df, tuney_df, k_df, magnet):
     tunex, tunex_err = return_mean_of_binned_data(bins, tunex_df)
     tuney, tuney_err = return_mean_of_binned_data(bins, tuney_df)
 
-    magnet_df = tfs.TfsDataFrame(   headers=headers_for_df(magnet, k_df),
-                                    columns = [ kmod_constants.get_k_col(),
-                                                kmod_constants.get_tune_col('X'),
-                                                kmod_constants.get_tune_err_col('X'),
-                                                kmod_constants.get_tune_col('Y'),
-                                                kmod_constants.get_tune_err_col('Y')],
-                                    data= np.column_stack( (np.absolute(k_df['K']),
-                                                            tunex,
-                                                            tunex_err,
-                                                            tuney,
-                                                            tuney_err)))
+    magnet_df = tfs.TfsDataFrame(headers=headers_for_df(magnet, k_df),
+                                 columns=[kmod_constants.get_k_col(),
+                                          kmod_constants.get_tune_col('X'),
+                                          kmod_constants.get_tune_err_col('X'),
+                                          kmod_constants.get_tune_col('Y'),
+                                          kmod_constants.get_tune_err_col('Y')],
+                                 data=np.column_stack((np.absolute(k_df['K']),
+                                                       tunex,
+                                                       tunex_err,
+                                                       tuney,
+                                                       tuney_err)))
 
     return magnet_df
 
