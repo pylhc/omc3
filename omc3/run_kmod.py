@@ -123,7 +123,7 @@ def analyse_kmod(opt):
                                                  magnet1_df,
                                                  magnet2_df)
 
-    results_df.loc[:, 'TIME'] = ('{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+    results_df.loc[:, 'TIME'] = ('{0:%Y-%m-%d_%H:%M:%S}'.format(datetime.datetime.now()))
 
     LOG.info('Calculate beta at instruments')
     if kmod_input_params.instruments_found != []:

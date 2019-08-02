@@ -41,7 +41,10 @@ def calc_betastar(kmod_input_params, results_df, magnet1_df, magnet2_df):
 
         betastar_err = get_err(betastar[1::2]-betastar[0])
 
-        results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = tfstools.significant_numbers(betastar[0], betastar_err)
+        if betastar_err > 0.0:
+            results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = tfstools.significant_numbers(betastar[0], betastar_err)
+        else:
+            results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = (betastar[0], betastar_err)
 
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
@@ -97,8 +100,10 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df):
 
         beta_err = get_err(beta[1::2]-beta[0])
 
-        betas[i, 0], betas[i, 1] = tfstools.significant_numbers(
-            beta[0], beta_err)
+        if beta_err > 0.0:
+            betas[i, 0], betas[i, 1] = tfstools.significant_numbers(beta[0], beta_err)    
+        else:
+            betas[i, 0], betas[i, 1] = beta[0], beta_err
 
     return name, betas[0, 0], betas[0, 1], betas[1, 0], betas[1, 1]
 
@@ -218,14 +223,21 @@ def do_fit(magnet_df, plane, use_approx=False):
     elif use_approx:
         fun = fit_approx
 
+    if not np.any( magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_tune_err_col(plane)].dropna()):
+        sigma = None
+        absolute_sigma=False
+    else:
+        sigma = magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
+            kmod_constants.get_tune_err_col(plane)].dropna()
+        absolute_sigma=True
+
     av_beta, av_beta_err = scipy.optimize.curve_fit(
         fun,
         xdata=return_fit_input(magnet_df, plane),
         ydata=magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
             kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[kmod_constants.get_tune_col(plane)],
-        sigma=magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
-            kmod_constants.get_tune_err_col(plane)].dropna(),
-        absolute_sigma=True,
+        sigma=sigma,
+        absolute_sigma=absolute_sigma,
         p0=1
     )
 
