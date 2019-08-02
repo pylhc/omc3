@@ -14,7 +14,7 @@ def kmod_params():
     parser = EntryPointParameters()
     parser.add_parameter(flags='--betastar_and_waist',
                          help='Estimated beta star of measurements and waist shift',
-                         type=str,
+                         type=float,
                          name='betastar',
                          required=True,
                          nargs=2)
@@ -87,7 +87,7 @@ def kmod_params():
 @entrypoint(kmod_params(), strict=True)
 def analyse_kmod(opt):
     """
-    Run Kmod analysis 
+    Run Kmod analysis
     """
     LOG.info('Getting input parameter')
     kmod_input_params = kmod_input.get_input(opt)

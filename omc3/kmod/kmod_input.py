@@ -123,13 +123,13 @@ class KmodInput():
             return [self.betastar_y, self.waist_y]
 
     def set_error(self, options, error):
-        if error not in options:
+        if options[error] is None:
 
             if options.ip is not None:
-                setattr(self, error, DEFAULTS_IP[error])  
+                setattr(self, error, DEFAULTS_IP[error])
 
             elif options.circuits is not None:
-                setattr(self, error, DEFAULTS_CIRCUITS[error])  
+                setattr(self, error, DEFAULTS_CIRCUITS[error])
         else:
             setattr(self, error, getattr(options, error))
 
