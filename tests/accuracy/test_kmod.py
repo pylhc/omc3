@@ -9,10 +9,10 @@ from kmod import kmod_constants
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
-LIMITS = {'Precision': 0.03, 'Num Precision': 1E-4}
+LIMITS = {'Precision': 0.01, 'Num Precision': 1E-4}
 
 
-def test_kmod(_workdir_path):
+def test_kmod_simulation_ip1b1(_workdir_path):
 
     analyse_kmod(betastar=[0.25, 0.0],
                  work_dir=_workdir_path,
@@ -35,6 +35,73 @@ def test_kmod(_workdir_path):
         assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
 
+def test_kmod_simulation_ip1b2(_workdir_path):
+
+    analyse_kmod(betastar=[0.25, 0.0],
+                 work_dir=_workdir_path,
+                 beam='b2',
+                 simulation=True,
+                 ip='ip1',
+                 cminus=0.0,
+                 misalignment=0.0,
+                 errorK=0.0,
+                 errorL=0.0,
+                 tunemeasuncertainty=0.0E-5)
+    results = tfs.read(os.path.join(_workdir_path, "ip1B2", "results.tfs"))
+    original_twiss = tfs.read(os.path.join(_workdir_path, "twiss.tfs"), index='NAME')
+
+    for plane in PLANES:
+        beta_sim = float(original_twiss.loc['IP1', f"BET{plane}"])
+        beta_meas = float(results[kmod_constants.get_betastar_col(plane)].loc[0])
+        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Precision']
+        beta_err_meas = float(results[kmod_constants.get_betastar_err_col(plane)].loc[0])
+        assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+
+
+def test_kmod_meas_ip1b1(_workdir_path):
+
+    analyse_kmod(betastar=[0.44, 0.0],
+                 work_dir=_workdir_path,
+                 beam='b1',
+                 simulation=False,
+                 ip='ip1',
+                 cminus=0.0,
+                 misalignment=0.0,
+                 errorK=0.0,
+                 errorL=0.0,
+                 tunemeasuncertainty=0.0E-5)
+    results = tfs.read(os.path.join(_workdir_path, "ip1B1", "results.tfs"))
+
+    for plane in PLANES:
+        beta_sim = 0.40
+        beta_meas = float(results[kmod_constants.get_betastar_col(plane)].loc[0])
+        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Precision']
+        beta_err_meas = float(results[kmod_constants.get_betastar_err_col(plane)].loc[0])
+        assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+
+
+def test_kmod_meas_ip1b2(_workdir_path):
+
+    analyse_kmod(betastar=[0.44, 0.0],
+                 work_dir=_workdir_path,
+                 beam='b2',
+                 simulation=False,
+                 ip='ip1',
+                 cminus=0.0,
+                 misalignment=0.0,
+                 errorK=0.0,
+                 errorL=0.0,
+                 tunemeasuncertainty=0.0E-5)
+    results = tfs.read(os.path.join(_workdir_path, "ip1B2", "results.tfs"))
+
+    for plane in PLANES:
+        beta_sim = 0.40
+        beta_meas = float(results[kmod_constants.get_betastar_col(plane)].loc[0])
+        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Precision']
+        beta_err_meas = float(results[kmod_constants.get_betastar_err_col(plane)].loc[0])
+        assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+
+
 @pytest.fixture()
 def _workdir_path():
     try:
@@ -42,5 +109,8 @@ def _workdir_path():
         yield workdir
     finally:
         if os.path.isdir(os.path.join(workdir, 'ip1B1')):
-            shutil.rmtree(os.path.join(workdir, 'ip1B1'))
+            # shutil.rmtree(os.path.join(workdir, 'ip1B1'))
+            pass
+        if os.path.isdir(os.path.join(workdir, 'ip1B2')):
+            # shutil.rmtree(os.path.join(workdir, 'ip1B2'))
             pass

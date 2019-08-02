@@ -70,7 +70,7 @@ def add_tuneuncertainty(magnet_df,  kmod_input_params):
 
 def ax_errorbar_plot(ax, magnet_df, plane, clean, plot_settings):
 
-    ax.errorbar( 
+    ax.errorbar(
         (magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == clean)[kmod_constants.get_k_col()].dropna() - magnet_df.headers[kmod_constants.get_k_col()])*1E3,
         magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == clean)[kmod_constants.get_tune_col(plane)].dropna(),
         yerr=magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == clean)[kmod_constants.get_tune_err_col(plane)].dropna(),
@@ -87,17 +87,25 @@ def ax_plot(ax, magnet_df, plane):
 
     ax.set_title(magnet_df.headers['QUADRUPOLE'], fontsize=15)
 
-    ax_errorbar_plot(ax, magnet_df, plane, True, {"color": "blue",
-                                                  "marker": "o",
-                                                  "label": "Data",
-                                                  "zorder": 1
-                                                  })
+    ax_errorbar_plot(ax=ax,
+                     magnet_df=magnet_df,
+                     plane=plane,
+                     clean=True,
+                     plot_settings={"color": "blue",
+                                    "marker": "o",
+                                    "label": "Data",
+                                    "zorder": 1
+                                    })
 
-    ax_errorbar_plot(ax, magnet_df, plane, False, {"color": "orange",
-                                                   "marker": "o",
-                                                   "label": "Cleaned",
-                                                   "zorder": 2
-                                                    })
+    ax_errorbar_plot(ax=ax,
+                     magnet_df=magnet_df,
+                     plane=plane,
+                     clean=False,
+                     plot_settings={"color": "orange",
+                                    "marker": "o",
+                                    "label": "Cleaned",
+                                    "zorder": 2
+                                     })
 
     ax.plot( 
         (magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_k_col()].dropna() - magnet_df.headers[kmod_constants.get_k_col()])*1E3,
@@ -115,7 +123,7 @@ def ax_plot(ax, magnet_df, plane):
 
 def plot_cleaned_data(magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False):
 
-    fig, ax = plt.subplots( nrows=2, ncols=2, figsize=(10, 10) )
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 10) )
 
     ax_plot(ax[0, 0], magnet1_df, 'X')
     ax_plot(ax[1, 0], magnet1_df, 'Y')
@@ -130,4 +138,3 @@ def plot_cleaned_data(magnet1_df, magnet2_df, kmod_input_params, interactive_plo
         plt.show()
 
     return
-

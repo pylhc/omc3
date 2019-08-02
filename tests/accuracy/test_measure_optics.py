@@ -84,7 +84,7 @@ def test_3_pseudo_onmom_files_eq():
 def test_offmom_files():
     lins, optics_opt = INPUT_CREATED
     optics_opt["compensation"] = "model"
-    #optics_opt["chromatic_beating"] = True
+    # optics_opt["chromatic_beating"] = True
     optics_opt["outputdir"] = join(BASE_PATH, "offmom")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)
     _run_evaluate_and_clean_up(inputs, optics_opt)
@@ -92,7 +92,7 @@ def test_offmom_files():
 
 def test_offmom_files_eq():
     lins, optics_opt = INPUT_CREATED
-    #optics_opt["chromatic_beating"] = True
+    # optics_opt["chromatic_beating"] = True
     optics_opt["compensation"] = "equation"
     optics_opt["outputdir"] = join(BASE_PATH, "offmom_eq")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)

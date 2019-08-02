@@ -225,11 +225,11 @@ def do_fit(magnet_df, plane, use_approx=False):
 
     if not np.any( magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_tune_err_col(plane)].dropna()):
         sigma = None
-        absolute_sigma=False
+        absolute_sigma = False
     else:
         sigma = magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
             kmod_constants.get_tune_err_col(plane)].dropna()
-        absolute_sigma=True
+        absolute_sigma = True
 
     av_beta, av_beta_err = scipy.optimize.curve_fit(
         fun,
@@ -241,7 +241,7 @@ def do_fit(magnet_df, plane, use_approx=False):
         p0=1
     )
 
-    return av_beta[0], np.sqrt(np.diag(av_beta_err))[0]
+    return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
 
 
 def get_av_beta(magnet_df):
@@ -257,18 +257,21 @@ def check_polarity(magnet1_df, magnet2_df, left, right):
     return (magnet1_df.headers['POLARITY'] == left and magnet2_df.headers['POLARITY'] == right)
 
 
-def return_df(magnet1_df, magnet2_df, plane):
+def return_df(magnet1_df, magnet2_df, plane, beam):
 
+    sign = 1
+    if beam == 'B2':
+        sign = -1
     if plane == 'X':
-        if check_polarity(magnet1_df, magnet2_df, 1, -1):
+        if check_polarity(magnet1_df, magnet2_df, sign*1, sign*-1):
             return magnet1_df, magnet2_df
-        elif check_polarity(magnet1_df, magnet2_df, -1, 1):
+        elif check_polarity(magnet1_df, magnet2_df, sign*-1, sign*1):
             return magnet2_df, magnet1_df
 
     elif plane == 'Y':
-        if check_polarity(magnet1_df, magnet2_df, -1, 1):
+        if check_polarity(magnet1_df, magnet2_df, sign*-1, sign*1):
             return magnet1_df, magnet2_df
-        elif check_polarity(magnet1_df, magnet2_df, 1, -1):
+        elif check_polarity(magnet1_df, magnet2_df, sign*1, sign*-1):
             return magnet2_df, magnet1_df
 
 
@@ -301,14 +304,16 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
 
     sign = return_sign_for_err(n)
 
-    foc_magnet_df, def_magnet_df = return_df(magnet1_df, magnet2_df, plane)
+    foc_magnet_df, def_magnet_df = return_df(magnet1_df, magnet2_df, plane, kmod_input_params.beam)
 
     results = np.zeros((2*n+1, 2))
     for i, s in enumerate(sign):
 
         def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s)
-        fitresults = scipy.optimize.minimize(
-            fun, kmod_input_params.return_guess(plane), method='nelder-mead', tol=1E-9)
+        fitresults = scipy.optimize.minimize(fun=fun,
+                                             x0=kmod_input_params.return_guess(plane),
+                                             method='nelder-mead',
+                                             tol=1E-9)
         results[i, :] = fitresults.x[0], fitresults.x[1]
 
     beta_waist_err = get_err(results[1::2, 0]-results[0, 0])
