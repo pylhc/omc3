@@ -11,6 +11,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
 LIMITS = {'Precision': 0.03, 'Num Precision': 1E-4}
 
+
 def test_kmod(_workdir_path):
 
     analyse_kmod(betastar=[0.25, 0.0],
@@ -41,5 +42,5 @@ def _workdir_path():
         yield workdir
     finally:
         if os.path.isdir(os.path.join(workdir, 'ip1B1')):
-            # shutil.rmtree(os.path.join(workdir, 'ip1B1'))
+            shutil.rmtree(os.path.join(workdir, 'ip1B1'))
             pass
