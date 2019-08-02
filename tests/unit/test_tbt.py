@@ -51,4 +51,3 @@ def _test_file():
     finally:
         if os.path.isfile(test_file):
             os.remove(test_file)
-
