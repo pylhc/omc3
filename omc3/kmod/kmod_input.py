@@ -1,6 +1,6 @@
-import argparse
 from utils import logging_tools
 from kmod import kmod_utils
+
 
 LOG = logging_tools.get_logger(__name__)
 DEFAULTS_IP = {
@@ -23,63 +23,6 @@ MAGNETS_IP = {
     "IP5": ['MQXA.1L5', 'MQXA.1R5'],
     "IP8": ['MQXA.1L8', 'MQXA.1R8']
 }
-
-
-def _parse_args():
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--betastar_and_waist',
-                        help='Estimated beta star of measurements and waist shift',
-                        action='store', type=str, dest='betastar', required=True)
-    parser.add_argument('--working_directory',
-                        help='path to working directory with stored KMOD measurement files',
-                        action='store', type=str, dest='work_dir', required=True)
-    parser.add_argument('--beam',
-                        help='define beam used: b1 or b2',
-                        action='store', type=str, dest='beam', choices=['b1', 'b2', 'B1', 'B2'],
-                        required=True)
-
-    parser.add_argument('--cminus',
-                        help='C Minus',
-                        action='store', type=float, dest='cminus', default=argparse.SUPPRESS)
-    parser.add_argument('--misalignment',
-                        help='misalignment of the modulated quadrupoles in m',
-                        action='store', type=float, dest='misalignment', default=argparse.SUPPRESS)
-    parser.add_argument('--errorK',
-                        help='error in K of the modulated quadrupoles, relative to gradient',
-                        action='store', type=float, dest='errorK', default=argparse.SUPPRESS)
-    parser.add_argument('--errorL',
-                        help='error in length of the modulated quadrupoles, unit m',
-                        action='store', type=float, dest='errorL', default=argparse.SUPPRESS)
-
-    parser.add_argument('--tune_uncertainty',
-                        help='tune measurement uncertainty',
-                        action='store', type=float, dest='tunemeasuncertainty', default=2.5e-5)
-    parser.add_argument('--instruments',
-                        help='define instruments (use keywords from twiss) at which beta should be calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER',
-                        action='store', type=str, dest='instruments', default='MONITOR,SBEND,TKICKER,INSTRUMENT')
-
-    parser.add_argument('--simulation',
-                        help='flag for enabling simulation mode',
-                        action='store_true', dest='simulation')    
-    parser.add_argument('--log',
-                        help='flag for creating a log file',
-                        action='store_true', dest='log')
-    parser.add_argument('--no_autoclean',
-                        help='flag for manually cleaning data',
-                        action='store_true', dest='a_clean')
-
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--circuit',
-                       help='circuit names of the modulated quadrupoles',
-                       action='store', type=str, dest='circuits')
-    group.add_argument('--interaction_point',
-                       help='define interaction point',
-                       action='store', type=str, dest='ip', choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'])
-
-    options = parser.parse_args()
-
-    return options
 
 
 class KmodInput():
@@ -148,7 +91,7 @@ class KmodInput():
 
     def set_betastar_and_waist(self, options):
 
-        bs = options.betastar.split(",")
+        bs = options.betastar
         if len(bs) == 2:
             self.betastar_x, self.betastar_y, self.waist_x, self.waist_y = map(float, (bs[0], bs[0], bs[1], bs[1]))
         elif len(bs) == 3:
@@ -158,15 +101,19 @@ class KmodInput():
 
     def set_magnets(self, options):
 
-        if options.ip is not None:
+        if options.ip is not None and options.circuits is None:
             LOG.info('IP trim analysis')
             self.magnet1, self.magnet2 = MAGNETS_IP[options.ip.upper()]
 
-        else:
+        elif options.ip is None and options.circuits is not None:
             LOG.info('Individual magnets analysis')
-            self.circuit1, self.circuit2 = options.circuits.split(',')
+            self.circuit1, self.circuit2 = options.circuits
             self.magnet1 = kmod_utils.find_magnet(self.beam, self.circuit1)
             self.magnet2 = kmod_utils.find_magnet(self.beam, self.circuit2)
+        elif options.ip is None and options.circuits is None:
+            raise SystemError('No IP or circuits specfied, stopping analysis')
+        else:
+            raise SystemError('Both IP and circuits specfied, choose only one, stopping analysis')
 
     def return_guess(self, plane):
 
@@ -187,11 +134,10 @@ class KmodInput():
             setattr(self, error, getattr(options, error))
 
 
-def get_input():
+def get_input(opt):
 
     arguments = KmodInput()
-    options = _parse_args()
 
-    arguments.set_params_from_parser(options)     
+    arguments.set_params_from_parser(opt)
 
     return arguments
