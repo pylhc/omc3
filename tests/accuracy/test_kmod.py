@@ -9,7 +9,10 @@ from kmod import kmod_constants
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
-LIMITS = {'Precision': 0.01, 'Num Precision': 1E-4}
+LIMITS = {'Accuracy': 0.01,
+          'Meas Accuracy': 0.02,
+          'Num Precision': 1E-4,
+          'Meas Precision': 0.01}
 
 
 def test_kmod_simulation_ip1b1(_workdir_path):
@@ -30,7 +33,7 @@ def test_kmod_simulation_ip1b1(_workdir_path):
     for plane in PLANES:
         beta_sim = float(original_twiss.loc['IP1', f"BET{plane}"])
         beta_meas = float(results[kmod_constants.get_betastar_col(plane)].loc[0])
-        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Precision']
+        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Accuracy']
         beta_err_meas = float(results[kmod_constants.get_betastar_err_col(plane)].loc[0])
         assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
@@ -53,7 +56,7 @@ def test_kmod_simulation_ip1b2(_workdir_path):
     for plane in PLANES:
         beta_sim = float(original_twiss.loc['IP1', f"BET{plane}"])
         beta_meas = float(results[kmod_constants.get_betastar_col(plane)].loc[0])
-        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Precision']
+        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Accuracy']
         beta_err_meas = float(results[kmod_constants.get_betastar_err_col(plane)].loc[0])
         assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
@@ -73,11 +76,11 @@ def test_kmod_meas_ip1b1(_workdir_path):
     results = tfs.read(os.path.join(_workdir_path, "ip1B1", "results.tfs"))
 
     for plane in PLANES:
-        beta_sim = 0.40
+        beta_sim = 0.45
         beta_meas = float(results[kmod_constants.get_betastar_col(plane)].loc[0])
-        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Precision']
+        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Meas Accuracy']
         beta_err_meas = float(results[kmod_constants.get_betastar_err_col(plane)].loc[0])
-        assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+        assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
 
 def test_kmod_meas_ip1b2(_workdir_path):
@@ -95,11 +98,11 @@ def test_kmod_meas_ip1b2(_workdir_path):
     results = tfs.read(os.path.join(_workdir_path, "ip1B2", "results.tfs"))
 
     for plane in PLANES:
-        beta_sim = 0.40
+        beta_sim = 0.44
         beta_meas = float(results[kmod_constants.get_betastar_col(plane)].loc[0])
-        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Precision']
+        assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Meas Accuracy']
         beta_err_meas = float(results[kmod_constants.get_betastar_err_col(plane)].loc[0])
-        assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+        assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
 
 @pytest.fixture()
