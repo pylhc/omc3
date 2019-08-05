@@ -11,8 +11,8 @@ SIDES = ('L', 'R')
 
 def get_simulation_files(kmod_input_params):
 
-    magnet1_df = tfs.read(os.path.join(kmod_input_params.working_directory, '{:s}.tfs'.format(kmod_input_params.magnet1)))
-    magnet2_df = tfs.read(os.path.join(kmod_input_params.working_directory, '{:s}.tfs'.format(kmod_input_params.magnet2)))
+    magnet1_df = tfs.read(os.path.join(kmod_input_params.working_directory, f'{kmod_input_params.magnet1}.{kmod_input_params.beam}.tfs'))
+    magnet2_df = tfs.read(os.path.join(kmod_input_params.working_directory, f'{kmod_input_params.magnet2}.{kmod_input_params.beam}.tfs'))
 
     magnet1_df.headers['QUADRUPOLE'] = magnet1_df.headers['NAME']
     magnet2_df.headers['QUADRUPOLE'] = magnet2_df.headers['NAME']

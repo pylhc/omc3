@@ -54,6 +54,7 @@ class KmodInput():
         self.log = None
         self.simulation = None
         self.no_autoclean = None
+        self.no_sigdigit = None
         self.betastar_required = False
         self.instruments_found = []
 
@@ -71,6 +72,7 @@ class KmodInput():
         self.log = options.log
         self.simulation = options.simulation
         self.no_autoclean = options.a_clean
+        self.no_sigdigit = options.no_sig_dig
 
         self.set_error(options, "cminus")
         self.set_error(options, "errorK")

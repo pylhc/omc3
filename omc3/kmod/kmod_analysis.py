@@ -41,10 +41,12 @@ def calc_betastar(kmod_input_params, results_df, magnet1_df, magnet2_df):
 
         betastar_err = get_err(betastar[1::2]-betastar[0])
 
-        if betastar_err > 0.0:
-            results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = tfstools.significant_numbers(betastar[0], betastar_err)
-        else:
+        if kmod_input_params.no_sigdigit:
             results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = (betastar[0], betastar_err)
+        else:
+            results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = tfstools.significant_numbers(betastar[0], betastar_err)
+        
+            
 
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
@@ -75,7 +77,7 @@ def _phase_adv_from_kmod_err(lstar, betastar, ebetastar, waist, ewaist):
     return np.sqrt(numer / denom) / (2 * np.pi)
 
 
-def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df):
+def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df, kmod_input_params):
 
     betas = np.zeros((2, 2))
 
@@ -100,10 +102,10 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df):
 
         beta_err = get_err(beta[1::2]-beta[0])
 
-        if beta_err > 0.0:
-            betas[i, 0], betas[i, 1] = tfstools.significant_numbers(beta[0], beta_err)    
-        else:
+        if kmod_input_params.no_sigdigit:
             betas[i, 0], betas[i, 1] = beta[0], beta_err
+        else:
+            betas[i, 0], betas[i, 1] = tfstools.significant_numbers(beta[0], beta_err)
 
     return name, betas[0, 0], betas[0, 1], betas[1, 0], betas[1, 1]
 
@@ -117,7 +119,7 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
 
         for name, position in positions.items():
             beta_instr.append(calc_beta_inst(
-                name, position, results_df, magnet1_df, magnet2_df))
+                name, position, results_df, magnet1_df, magnet2_df, kmod_input_params))
 
     instrument_beta_df = tfs.TfsDataFrame(
         columns=['INSTRUMENT',
@@ -223,7 +225,7 @@ def do_fit(magnet_df, plane, use_approx=False):
     elif use_approx:
         fun = fit_approx
 
-    if not np.any( magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_tune_err_col(plane)].dropna()):
+    if not np.any(magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_tune_err_col(plane)].dropna()):
         sigma = None
         absolute_sigma = False
     else:
@@ -240,7 +242,6 @@ def do_fit(magnet_df, plane, use_approx=False):
         absolute_sigma=absolute_sigma,
         p0=1
     )
-
     return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
 
 
@@ -260,8 +261,7 @@ def check_polarity(magnet1_df, magnet2_df, left, right):
 def return_df(magnet1_df, magnet2_df, plane, beam):
 
     sign = 1
-    if beam == 'B2':
-        sign = -1
+
     if plane == 'X':
         if check_polarity(magnet1_df, magnet2_df, sign*1, sign*-1):
             return magnet1_df, magnet2_df

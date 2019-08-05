@@ -61,7 +61,7 @@ def kmod_params():
     parser.add_parameter(flags='--simulation',
                          help='flag for enabling simulation mode',
                          action='store_true',
-                         name='simulation')    
+                         name='simulation')
     parser.add_parameter(flags='--log',
                          help='flag for creating a log file',
                          action='store_true',
@@ -70,6 +70,10 @@ def kmod_params():
                          help='flag for manually cleaning data',
                          action='store_true',
                          name='a_clean')
+    parser.add_parameter(flags='--no_sig_digits',
+                         help='flag to not use significant digits',
+                         action='store_true',
+                         name='no_sig_dig')
     parser.add_parameter(flags='--circuit',
                          help='circuit names of the modulated quadrupoles',
                          type=str,

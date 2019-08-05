@@ -1,0 +1,96 @@
+set, format="22.14e";
+
+
+call,file="lhc_as-built.seq"; 
+seqedit,sequence=lhcb1;flatten;cycle,start=IP3;endedit;
+
+
+call, file="optics.str"; 
+
+NRJ=6500.0;
+
+beam, sequence=lhcb1, bv= 1, energy=NRJ, particle=proton, npart=1.0e10, kbunch=1, ex=7.29767146889e-09,ey=7.29767146889e-09;
+   		  
+Use, sequence=lhcb1;
+select,flag=twiss,clear;
+ 
+// twiss, chrom, sequence=lhcb1, table, file='twiss.tfs';
+twiss, chrom, sequence=lhcb1, table;
+
+match;
+     global, q1=62.31, q2=60.32;
+     global, dq1=2., dq2=2.;
+     vary,   name=dQx.b1, step=1.0E-7 ;
+     vary,   name=dQy.b1, step=1.0E-7 ;
+     vary,   name=dQpx.b1, step=1.0E-7 ;
+     vary,   name=dQpy.b1, step=1.0E-7 ;
+     lmdif,  calls=100, tolerance=1.0E-21;
+endmatch;
+
+
+//---------------------------------------------
+Steps = 100;
+Stepsize = 3E-8;
+
+KTQX1.R1_old = KTQX1.R1;
+KTQX1.R1    = KTQX1.R1 - Steps/2. * Stepsize ;
+
+
+CREATE, TABLE=MQXA.1R1, COLUMN = K, TUNEX, TUNEX_ERR, TUNEY, TUNEY_ERR;
+
+n=0;
+
+WHILE(n<=Steps){
+
+VALUE, n;
+select,flag=twiss,clear;
+
+
+TWISS, table=nominal;
+
+K=abs(TABLE(nominal, MQXA.1R1, k1l))/6.37;
+TUNEX=TABLE(summ, q1);
+TUNEX_ERR=0;
+TUNEY=TABLE(summ, q2);
+TUNEY_ERR=0;
+
+
+FILL, TABLE=MQXA.1R1, ROW=0;
+
+n = n+1;
+KTQX1.R1    = KTQX1.R1 + Stepsize ;
+};
+
+WRITE, TABLE = MQXA.1R1, FILE="MQXA.1R1.B1.tfs";
+KTQX1.R1 = KTQX1.R1_old;
+
+
+//---------------------------------------------
+KTQX1.L1_old = KTQX1.L1;
+KTQX1.L1    = KTQX1.L1 - Steps/2. * Stepsize ;
+
+CREATE, TABLE=MQXA.1L1, COLUMN = K, TUNEX, TUNEX_ERR, TUNEY, TUNEY_ERR;
+
+n=0;
+
+WHILE(n<=Steps){
+
+VALUE, n;
+
+
+TWISS, table=nominal;
+
+K=abs(TABLE(nominal, mqxa.1l1, k1l))/6.37;
+TUNEX=TABLE(summ, q1);
+TUNEX_ERR=0;
+TUNEY=TABLE(summ, q2);
+TUNEY_ERR=0;
+
+FILL, TABLE=MQXA.1L1, ROW=0;
+
+n = n+1;
+KTQX1.L1    = KTQX1.L1 + Stepsize ;
+};
+
+WRITE, TABLE = MQXA.1L1, FILE="MQXA.1L1.B1.tfs";
+KTQX1.L1 = KTQX1.L1_old;
