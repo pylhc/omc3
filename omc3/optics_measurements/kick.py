@@ -39,14 +39,14 @@ def calculate(measure_input, input_files, scale, header_dict, plane):
     except IndexError:  # occurs if either no x or no y files exist
         return pd.DataFrame
     kick_frame = _rescale_actions(kick_frame, scale, plane)
-    header = _get_header(header_dict, scale)
+    header = _get_header(header_dict, plane, scale)
     tfs.write(join(measure_input.outputdir, f"{KICK_NAME}{plane.lower()}{EXT}"), kick_frame, header)
     return kick_frame.loc[:, [f"{SQRT_ACTION}{plane}", f"{ERR}{SQRT_ACTION}{plane}"]].values
 
 
-def _get_header(header_dict, beta_d):
+def _get_header(header_dict, plane, scale):
     header = header_dict.copy()
-    header[RESCALE_FACTOR] = beta_d
+    header[f"{RESCALE_FACTOR}{plane}"] = scale
     return header
 
 
