@@ -74,6 +74,10 @@ def kmod_params():
                          help='flag to not use significant digits',
                          action='store_true',
                          name='no_sig_dig')
+    parser.add_parameter(flags='--no_plots',
+                         help='flag to not create any plots',
+                         action='store_false',
+                         name='no_plots')
     parser.add_parameter(flags='--circuit',
                          help='circuit names of the modulated quadrupoles',
                          type=str,
@@ -118,7 +122,8 @@ def analyse_kmod(opt):
                                                                kmod_input_params)
 
     LOG.info('Plot tunes and fit')
-    kmod_utils.plot_cleaned_data(magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False)
+    if kmod_input_params.no_plots:
+        kmod_utils.plot_cleaned_data(magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False)
 
     LOG.info('Calculate betastar')
     if kmod_input_params.betastar_required:

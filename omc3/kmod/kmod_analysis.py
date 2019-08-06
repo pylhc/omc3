@@ -254,25 +254,19 @@ def get_av_beta(magnet_df):
     return magnet_df
 
 
-def check_polarity(magnet1_df, magnet2_df, left, right):
+def check_polarity(magnet1_df, magnet2_df, sign):
+    left, right = sign
     return (magnet1_df.headers['POLARITY'] == left and magnet2_df.headers['POLARITY'] == right)
 
 
 def return_df(magnet1_df, magnet2_df, plane, beam):
 
-    sign = 1
+    sign = {'X': np.array([1, -1]), 'Y': np.array([-1, 1])}
 
-    if plane == 'X':
-        if check_polarity(magnet1_df, magnet2_df, sign*1, sign*-1):
-            return magnet1_df, magnet2_df
-        elif check_polarity(magnet1_df, magnet2_df, sign*-1, sign*1):
-            return magnet2_df, magnet1_df
-
-    elif plane == 'Y':
-        if check_polarity(magnet1_df, magnet2_df, sign*-1, sign*1):
-            return magnet1_df, magnet2_df
-        elif check_polarity(magnet1_df, magnet2_df, sign*1, sign*-1):
-            return magnet2_df, magnet1_df
+    if check_polarity(magnet1_df, magnet2_df, sign[plane]):
+        return magnet1_df, magnet2_df
+    elif check_polarity(magnet1_df, magnet2_df, -sign[plane]):
+        return magnet2_df, magnet1_df
 
 
 def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
