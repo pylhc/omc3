@@ -61,4 +61,4 @@ def _get_data(mask, data):
 # Set the sigma cut, that expects 1 value to be cut
 # if it is sample of normal distribution
 def _get_significance_cut_from_length(length):
-    return t.ppf([1 - 0.5 / float(length)], length)
+    return t.ppf(1 - 0.5 / length, length)
