@@ -19,11 +19,21 @@ class AccExcitationMode(object):
     FREE, ACD, ADT = range(3)
 
 
+class AccElementTypes(object):
+    """ Defines the strings for the element types BPMS, MAGNETS and ARC_BPMS. """
+    BPMS = "bpm"
+    MAGNETS = "magnet"
+    ARC_BPMS = "arc_bpm"
+
+
 class Accelerator(object):
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
-    RE_DICT = {"bpm": r".*", "magnet": r".*", "arc_bpm": r".*"}
+    RE_DICT = {AccElementTypes.BPMS: r".*",
+               AccElementTypes.MAGNETS: r".*",
+               AccElementTypes.ARC_BPMS: r".*"
+               }
     MODIFIERS_MADX = "modifiers.madx"
     ELEMENTS_CENTRE_DAT = "twiss_elements_centre.dat"
     TWISS_BEST_KNOWLEDGE_DAT = "twiss_best_knowledge.dat"
@@ -250,7 +260,7 @@ class Accelerator(object):
         """
         Return boolean mask for elements in list_of_elements that belong
         to any of the specified types.
-        Needs to handle: "bpm", "magnet", "arc_bpm"
+        Needs to handle: "bpm", "magnet", "arc_bpm" (see :class:`AccElementTypes`)
 
         Args:
             list_of_elements: List of elements

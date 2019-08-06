@@ -26,7 +26,8 @@ from datetime import datetime
 from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 from utils import logging_tools, iotools
-from tbt import lhc_handler, iota_handler
+from definitions import formats
+from tbt import lhc_handler, iota_handler, TbtData
 
 from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
                                        add_to_arguments, save_options_to_config)
@@ -35,7 +36,6 @@ from utils.contexts import timeit
 LOGGER = logging_tools.get_logger(__name__)
 
 DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
-TIME_FORMAT = "%y_%m_%d@%H_%M_%S"  # CERN default
 
 
 def hole_in_one_params():
@@ -85,9 +85,9 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--unit**
         Choices: ``('m', 'cm', 'mm', 'um')``
         Default: ``m``
-      - **accelerator** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS, numpy npz).
+      - **tbt_datatype** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS, numpy npz).
 
-        Flags: **--accelerator**
+        Flags: **--tbt_datatype**
         Default: ``LHC``
 
       *--Cleaning--*
@@ -295,7 +295,7 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
         all_opt.update(sorted(accelerator_opt.items()))
 
     out_dir = all_opt["outputdir"]
-    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(TIME_FORMAT))
+    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
     iotools.create_dirs(out_dir)
 
     save_options_to_config(os.path.join(out_dir, file_name), all_opt)
@@ -303,7 +303,7 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
 
 def _run_harpy(harpy_options):
     from harpy import handler
-    tbt_reader = DATA_HANDLERS[harpy_options.accelerator]
+    tbt_reader = DATA_HANDLERS[harpy_options.tbt_datatype]
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
@@ -311,7 +311,7 @@ def _run_harpy(harpy_options):
         tbt_datas = [(tbt_reader.read_tbt(option.files), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
-                         for bunch_options, bunch_data in _multibunch(option, tbt_data)])
+                         for bunch_data, bunch_options in _multibunch(tbt_data, option)])
     return lins
 
 
@@ -324,16 +324,16 @@ def _replicate_harpy_options_per_file(options):
     return list_of_options
 
 
-def _multibunch(options, tbt_datas):
+def _multibunch(tbt_datas, options):
     if tbt_datas.nbunches == 1:
-        yield options, tbt_datas
+        yield tbt_datas, options
         return
     for index in range(tbt_datas.nbunches):
         new_options = deepcopy(options)
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
-        yield new_options, tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
-                                       [tbt_datas.bunch_ids[index]], tbt_datas.nturns)
+        yield TbtData([tbt_datas.matrices[index]], tbt_datas.date,
+                      [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
 
 
 def _measure_optics(lins, optics_opt):
@@ -383,8 +383,8 @@ def harpy_params():
                          default=HARPY_DEFAULTS["to_write"],
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output. ")
-    params.add_parameter(flags="--accelerator", name="accelerator",
-                         default=HARPY_DEFAULTS["accelerator"],
+    params.add_parameter(flags="--tbt_datatype", name="tbt_datatype",
+                         default=HARPY_DEFAULTS["tbt_datatype"],
                          help="Choose the datatype from which to import. ")
 
     # Cleaning parameters
@@ -517,7 +517,7 @@ HARPY_DEFAULTS = {
     "turn_bits": 20,
     "output_bits": 12,
     "to_write": ["lin", "bpm_summary"],
-    "accelerator": "LHC"
+    "tbt_datatype": "lhc"
 }
 
 OPTICS_DEFAULTS = {
@@ -530,8 +530,8 @@ OPTICS_DEFAULTS = {
 
 
 DATA_HANDLERS = {
-      "LHC": lhc_handler,
-      "IOTA": iota_handler,
+      "lhc": lhc_handler,
+      "iota": iota_handler,
       # TODO add handlers for mad-x/ptc tracking (use methods from tbt.trackone), make accel indepent defaults
 }
 
