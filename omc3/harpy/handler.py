@@ -155,7 +155,6 @@ def _compute_headers(panda, date):
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
     headers["TIME"] = date.strftime(formats.TIME)
-    headers["DPP"] = 0.0  # HACK4GUI (To be done properly)
     return headers
 
 

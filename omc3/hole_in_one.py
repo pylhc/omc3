@@ -506,7 +506,7 @@ def optics_params():
 
 HARPY_DEFAULTS = {
     "turns": [0, 50000],
-    "unit": "mm",  # HACK4GUI, should be "m" ??
+    "unit": "m",
     "sing_val": 12,
     "peak_to_peak": 1e-8,
     "max_peak": 0.02,
@@ -514,10 +514,10 @@ HARPY_DEFAULTS = {
     "tolerance": 0.01,
     "tune_clean_limit": 1e-5,
     "window": "hann",
-    "turn_bits": 18,  #HACK4GUI, should be 20
+    "turn_bits": 20,
     "output_bits": 12,
-    "to_write": ["lin", "bpm_summary", "spectra"],  #HACK4GUI, should be w/o sprectra
-    "tbt_datatype": "LHC"
+    "to_write": ["lin", "bpm_summary"],
+    "tbt_datatype": "lhc"
 }
 
 OPTICS_DEFAULTS = {
@@ -530,8 +530,8 @@ OPTICS_DEFAULTS = {
 
 
 DATA_HANDLERS = {
-      "LHC": lhc_handler,
-      "IOTA": iota_handler,
+      "lhc": lhc_handler,
+      "iota": iota_handler,
       # TODO add handlers for mad-x/ptc tracking (use methods from tbt.trackone), make accel indepent defaults
 }
 
