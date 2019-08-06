@@ -10,7 +10,6 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 from utils import outliers, logging_tools
-from harpy import kicker
 LOGGER = logging_tools.getLogger(__name__)
 PI2I = 2 * np.pi * complex(0, 1)
 
@@ -83,8 +82,6 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     bpm_matrix = bpm_matrix.loc[panda.index]
     spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
 
-    if harpy_input.is_free_kick:
-        panda = kicker.phase_correction(bpm_matrix, panda, plane)
     if _get_natural_tunes(harpy_input, tunes) is not None:
         panda = panda.join(_calculate_natural_tunes(spectra, _get_natural_tunes(harpy_input, tunes),
                                                     harpy_input.tolerance, plane))

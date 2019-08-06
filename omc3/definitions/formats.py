@@ -1,1 +1,1 @@
-TIME = "%y_%m_%d@%H_%M_%S"  # CERN default
+TIME = "%Y_%m_%d@%H_%M_%S_%f"  # CERN default

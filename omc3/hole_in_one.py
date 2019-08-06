@@ -85,9 +85,9 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--unit**
         Choices: ``('m', 'cm', 'mm', 'um')``
         Default: ``m``
-      - **accelerator** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS, numpy npz).
+      - **tbt_datatype** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS, numpy npz).
 
-        Flags: **--accelerator**
+        Flags: **--tbt_datatype**
         Default: ``LHC``
 
       *--Cleaning--*
@@ -303,7 +303,7 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
 
 def _run_harpy(harpy_options):
     from harpy import handler
-    tbt_reader = DATA_HANDLERS[harpy_options.accelerator]
+    tbt_reader = DATA_HANDLERS[harpy_options.tbt_datatype]
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
@@ -383,8 +383,8 @@ def harpy_params():
                          default=HARPY_DEFAULTS["to_write"],
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output. ")
-    params.add_parameter(flags="--accelerator", name="accelerator",
-                         default=HARPY_DEFAULTS["accelerator"],
+    params.add_parameter(flags="--tbt_datatype", name="tbt_datatype",
+                         default=HARPY_DEFAULTS["tbt_datatype"],
                          help="Choose the datatype from which to import. ")
 
     # Cleaning parameters
@@ -516,8 +516,8 @@ HARPY_DEFAULTS = {
     "window": "hann",
     "turn_bits": 18,  #HACK4GUI, should be 20
     "output_bits": 12,
-    "to_write": ["lin", "bpm_summary", "spectra"],  #HACK4GUI, should be w/o sprectra
-    "accelerator": "LHC"
+    "to_write": ["lin", "bpm_summary"],
+    "tbt_datatype": "lhc"
 }
 
 OPTICS_DEFAULTS = {
@@ -530,9 +530,9 @@ OPTICS_DEFAULTS = {
 
 
 DATA_HANDLERS = {
-      "LHC": lhc_handler,
-      "IOTA": iota_handler,
-      "PTC": ptc_handler,
+      "lhc": lhc_handler,
+      "iota": iota_handler,
+      "ptc": ptc_handler,
 }
 
 

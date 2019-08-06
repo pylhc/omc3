@@ -156,6 +156,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     beta_df[f"ALF{plane}"] = betas_alfas[:, 2]
     beta_df[f"{ERR}ALF{plane}"] = betas_alfas[:, 3]
     beta_df["NCOMB"] = n_comb
+    LOGGER.debug(f"No valid combinations for BPMs: {list(beta_df.index[beta_df['NCOMB'] == 0])}.")
     beta_df = beta_df.loc[beta_df["NCOMB"] > 0]
     beta_df = _get_delta_columns(beta_df, plane)
     return beta_df, error_method
