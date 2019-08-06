@@ -72,7 +72,7 @@ class KmodInput():
 
         self.log = options.log
         self.simulation = options.simulation
-        self.no_autoclean = options.a_clean
+        self.no_autoclean = options.no_a_clean
         self.no_sigdigit = options.no_sig_dig
         self.no_plots = options.no_plots
 
