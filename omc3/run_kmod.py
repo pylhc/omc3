@@ -69,7 +69,7 @@ def kmod_params():
     parser.add_parameter(flags='--no_autoclean',
                          help='flag for manually cleaning data',
                          action='store_true',
-                         name='a_clean')
+                         name='no_a_clean')
     parser.add_parameter(flags='--no_sig_digits',
                          help='flag to not use significant digits',
                          action='store_true',

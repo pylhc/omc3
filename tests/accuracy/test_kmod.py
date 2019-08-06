@@ -48,6 +48,7 @@ def test_kmod_simulation_ip1b2(_workdir_path):
                  simulation=True,
                  no_sig_dig=True,
                  no_plots=False,
+                 no_a_clean=True,
                  ip='ip1',
                  cminus=0.0,
                  misalignment=0.0,
