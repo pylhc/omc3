@@ -13,11 +13,13 @@ HEADER = "@"
 NAMES = "*"
 TYPES = "$"
 SEGMENTS = "#segment"
-Segment = namedtuple("Segment", ["number", "turns", "particles", "element", "name"])
+SEGMENT_MARKER = ('start', 'end')
 COLX = "X"
 COLY = "Y"
 COLTURN = "TURN"
 COLPARTICLE = "NUMBER"
+
+Segment = namedtuple("Segment", ["number", "turns", "particles", "element", "name"])
 
 LOGGER = get_logger(__name__)
 
@@ -27,9 +29,7 @@ def read_tbt(file_path):
     Reads TbtData object from PTC trackone output.
 
     """
-
     LOGGER.debug(f"Reading path: {file_path}")
-    lines = []
 
     with open(file_path, "r") as tfs_data:
         lines = tfs_data.readlines()
@@ -54,7 +54,10 @@ def _read(lines):
     data = []
     particles = []
     column_indices = None
-    segment = None
+    first_segment = True
+    n_turns = 0
+    n_particles = 0
+
     for line in lines:
         parts = line.split()
         if len(parts) == 0 or parts[0] == HEADER or parts[0] == TYPES:
@@ -63,33 +66,39 @@ def _read(lines):
         if parts[0] == NAMES:  # read column names
             if column_indices is not None:
                 raise KeyError(f"{NAMES} are defined twice in tbt file!")
-            column_indices = _read_names(parts[1:])
+            column_indices = _read_column_names(parts[1:])
             continue
 
         if parts[0] == SEGMENTS:  # read segments, append to index
             segment = Segment(*parts[1:])
             data.append(segment)
-            if segment.name == "start":
-                continue
-            if segment.name == "end":
-                break
-            bpms.append(segment.name)
+
+            if first_segment and segment.name not in SEGMENT_MARKER:
+                bpms.append(segment.name)
+
+            if first_segment and segment.name == SEGMENT_MARKER[1]:  # end of first segment
+                n_turns = int(segment.turns) - 1
+                n_particles = int(segment.particles)
+                first_segment = False
         else:
             if column_indices is None:
-                raise IOError("Columns not defined before data.")
+                raise IOError("Columns not defined in Tbt file!")
+
             new_data = {col: parts[col_idx] for col, col_idx in column_indices.items()}
             data.append(new_data)
-            if new_data[COLPARTICLE] not in particles:
-                particles.append(new_data[COLPARTICLE])
+            particle = int(new_data[COLPARTICLE])
+            if first_segment and particle not in particles:
+                particles.append(particle)
 
-    if segment is None or len(data) == 0:
+    if first_segment:
+        raise IOError("First segment in Tbt file never ended.")
+
+    if len(data) == 0:
         raise IOError("No data found in TbT file!")
-    n_turns = int(segment.turns) - 1
-    n_particles = int(segment.particles)
     return data, bpms, particles, n_turns, n_particles
 
 
-def _read_names(parts):
+def _read_column_names(parts):
     col_idx = {k: None for k in [COLX, COLY, COLTURN, COLPARTICLE]}
     LOGGER.debug("Setting column names.")
     for idx, column_name in enumerate(parts):
@@ -119,7 +128,12 @@ def _create_matrices(data, bpms, n_turns, n_particles):
         if current_segment is None:
             raise IOError("Data defined before Segment defintion!")
 
+        if current_segment.name in SEGMENT_MARKER:
+            continue
+
         part_id = int(d[COLPARTICLE]) - 1
         turn_nr = int(d[COLTURN]) - 1
         matrix_listx[part_id][current_segment.name][turn_nr] = float(d[COLX])
         matrix_listy[part_id][current_segment.name][turn_nr] = float(d[COLY])
+
+    return matrix_listx, matrix_listy
