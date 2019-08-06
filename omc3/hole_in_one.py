@@ -27,7 +27,7 @@ from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 from utils import logging_tools, iotools
 from definitions import formats
-from tbt import lhc_handler, iota_handler, TbtData
+from tbt import lhc_handler, iota_handler, ptc_handler, TbtData
 
 from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
                                        add_to_arguments, save_options_to_config)
@@ -532,7 +532,7 @@ OPTICS_DEFAULTS = {
 DATA_HANDLERS = {
       "LHC": lhc_handler,
       "IOTA": iota_handler,
-      # TODO add handlers for mad-x/ptc tracking (use methods from tbt.trackone), make accel indepent defaults
+      "PTC": ptc_handler,
 }
 
 
