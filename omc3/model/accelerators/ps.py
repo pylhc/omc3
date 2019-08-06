@@ -32,11 +32,11 @@ class Ps(Accelerator):
     @classmethod
     def get_segment_tmpl(cls):
         return cls.get_file("segment.madx")
-    
+
     @classmethod
     def get_file(cls, filename):
         return os.path.join(CURRENT_DIR, "ps", filename)
-    
+
     # Private Methods ##########################################################
 
 

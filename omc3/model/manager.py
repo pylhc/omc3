@@ -81,6 +81,23 @@ def get_accel_class_from_args(args=None):
     return accel_cls, rest_args
 
 
+@entrypoint(_get_params())
+def get_parsed_opt(opt, other_opt):
+    """ Get all accelerator related options as a nice dict, by means of
+    a horrible way to do things (jdilly).
+    """
+    accel = _get_parent_class(opt.accel)
+
+    parser = EntryPoint(accel.get_class_parameters(), strict=False)
+    accel_opt, unknown_opt = parser.parse(other_opt)
+    accel_cls = accel._get_class(accel_opt)
+
+    parser = EntryPoint(accel_cls.get_instance_parameters(), strict=True)
+    inst_opt = parser.parse(unknown_opt)
+
+    return {**opt, **accel_opt, **inst_opt}
+
+
 def _get_parent_class(name):
     try:
         return ACCELS[name]
