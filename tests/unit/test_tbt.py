@@ -3,6 +3,7 @@ import tempfile
 
 import pytest
 import numpy as np
+from numpy import sin, cos
 import pandas as pd
 from . import context
 from datetime import datetime
@@ -10,7 +11,9 @@ import tbt
 from tbt import lhc_handler
 from tbt import numpy_handler
 from tbt import iota_handler
+from tbt import ptc_handler
 from tbt import data_class
+
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
@@ -42,8 +45,76 @@ def test_tbt_read_hdf5(_hdf5_file):
     _compare_tbt(origin, new, False)
 
 
+def test_tbt_read_ptc(_ptc_file):
+    BPMS = ['C1.BPM1']
+    NTURNS = 1000
+    origin = data_class.TbtData(
+        matrices=[
+            {'X': pd.DataFrame(
+                index=BPMS,
+                columns=range(NTURNS),
+                data=[
+                    _create_x(0.001, 0, NTURNS, 2.067,
+                              21.7172216, -3.11587987),
+                    #_create_x(0.0002679129997, 0, NTURNS, 2.067,
+                    #          8.814519469, 1.917380654),
+                ],
+                dtype=float),
+             'Y': pd.DataFrame(
+                index=BPMS,
+                columns=range(NTURNS),
+                data=[
+                    _create_x(0.001, 0, NTURNS, 2.155,
+                              2.442183557, 0.1734995035),
+                    #_create_x(0.001732087, 0, NTURNS, 2.155,
+                    #           8.460497676, -1.865668818),
+                ],
+                dtype=float),
+             },
+            {'X': pd.DataFrame(
+                index=BPMS,
+                columns=range(NTURNS),
+                data=[
+                    _create_x(0.0011, 0, NTURNS, 2.067,
+                              21.7172216, -3.11587987),
+                    #_create_x(0.0002947042997, 0, NTURNS, 2.155,
+                    #          8.814519469, 1.917380654),
+                ],
+                dtype=float),
+             'Y': pd.DataFrame(
+                index=BPMS,
+                columns=range(NTURNS),
+                data=[
+                    _create_x(0.0011, 0, NTURNS, 2.155,
+                              2.442183557, 0.1734995035),
+                    #_create_x(0.0019052957, 0, NTURNS, 2.155,
+                    #           8.460497676, -1.865668818),
+                ],
+                dtype=float),
+             },
+        ],
+        date=datetime.now(),
+        bunch_ids=[1, 2],
+        nturns=NTURNS)
+    new = ptc_handler.read_tbt(_ptc_file)
+    _compare_tbt(origin, new, True)
+
+
 def _create_data(nturns, nbpm, function):
     return np.ones((nbpm, len(nturns))) * function(nturns)
+
+
+def _create_x(x0, px0, turns, Qx, beta, alfa):
+    GAMMA = (1 + alfa**2) / beta
+    MU = Qx * np.pi * 2.
+
+    ONETURN = np.array([[cos(MU) + alfa*sin(MU), beta * sin(MU)],
+                        [-GAMMA*sin(MU), cos(MU) - alfa*sin(MU)]])
+    x_px = [np.array([x0, px0])]
+
+    for nturn in range(turns-1):
+        x_px.append(np.matmul(ONETURN, x_px[-1]))
+    return [x[0] for x in x_px]
 
 
 def test_tbt_write_read_npz(_sdds_file, _test_file):
@@ -90,3 +161,8 @@ def _hdf5_file():
 def _test_file():
     with tempfile.TemporaryDirectory() as cwd:
         yield os.path.join(cwd, "test_file")
+
+
+@pytest.fixture()
+def _ptc_file():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone")
