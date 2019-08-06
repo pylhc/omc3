@@ -1,6 +1,6 @@
 """
-Iota data handler
----------------------
+Iota Turn-by-Turn Data Handler
+--------------------------------
 
 Takes Hdf5 file path containing the TbT data and returns a TbtData class to be read and processed by harpy
 

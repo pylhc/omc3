@@ -1,6 +1,6 @@
 """
-handler
----------------------
+LHC Turn-by-Turn Data Handler
+--------------------------------
 
 
 Basic tbt io-functionality.

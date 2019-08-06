@@ -1,5 +1,9 @@
-# this file is in great parts a copy of tbt.handler because the ptc_trackone files do have a very
-# similar format
+"""
+PTC Turn-by-Turn Data Handler
+---------------------
+
+
+"""
 from collections import namedtuple
 
 import pandas as pd

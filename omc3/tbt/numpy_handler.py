@@ -1,6 +1,6 @@
 """
-handler
----------------------
+Numpy Turn-by-Turn Data Handler
+--------------------------------
 
 
 Basic tbt io-functionality.
