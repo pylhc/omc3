@@ -23,6 +23,8 @@ COLY = "Y"
 COLTURN = "TURN"
 COLPARTICLE = "NUMBER"
 
+PLANES = ("X", "Y")
+
 Segment = namedtuple("Segment", ["number", "turns", "particles", "element", "name"])
 
 LOGGER = get_logger(__name__)
@@ -38,14 +40,12 @@ def read_tbt(file_path):
     with open(file_path, "r") as tfs_data:
         lines = tfs_data.readlines()
 
-    data, bpms, particles, n_turns, n_particles = _read(lines)
-    matrix_listx, matrix_listy = _create_matrices(data, bpms, n_turns, n_particles)
+    bpms, particles, column_indices, n_turns, n_particles = _read_from_first_turn(lines)
+    matrix_dict = {p: [{bpm: np.zeros(n_turns) for bpm in bpms} for bid in range(n_particles)] for p in PLANES}
+    matrix_dict = _read(lines, matrix_dict, column_indices)
 
     matrices = [
-        {
-            "X": pd.DataFrame(data=matrix_listx[bid]).transpose(),
-            "Y": pd.DataFrame(data=matrix_listy[bid]).transpose(),
-        }
+        {p: pd.DataFrame(data=matrix_dict[p][bid]).transpose() for p in ("X", "Y")}
         for bid in range(n_particles)
     ]
 
@@ -53,14 +53,13 @@ def read_tbt(file_path):
     return TbtData(matrices, datetime.now(), particles, n_turns)
 
 
-def _read(lines):
+def _read_from_first_turn(lines):
     bpms = []
-    data = []
     particles = []
     column_indices = None
-    first_segment = True
     n_turns = 0
     n_particles = 0
+    first_segment = True
 
     for line in lines:
         parts = line.split()
@@ -75,31 +74,60 @@ def _read(lines):
 
         if parts[0] == SEGMENTS:  # read segments, append to index
             segment = Segment(*parts[1:])
-            data.append(segment)
 
-            if first_segment and segment.name not in SEGMENT_MARKER:
+            if segment.name not in SEGMENT_MARKER:
+                first_segment = False
                 bpms.append(segment.name)
 
-            if first_segment and segment.name == SEGMENT_MARKER[1]:  # end of first segment
+            if segment.name == SEGMENT_MARKER[1]:  # end of first segment
                 n_turns = int(segment.turns) - 1
                 n_particles = int(segment.particles)
-                first_segment = False
-        else:
+                break
+
+        elif first_segment:
             if column_indices is None:
                 raise IOError("Columns not defined in Tbt file!")
 
-            new_data = {col: parts[col_idx] for col, col_idx in column_indices.items()}
-            data.append(new_data)
+            new_data = _get_data(column_indices, parts)
             particle = int(new_data[COLPARTICLE])
-            if first_segment and particle not in particles:
-                particles.append(particle)
+            particles.append(particle)
 
-    if first_segment:
-        raise IOError("First segment in Tbt file never ended.")
-
-    if len(data) == 0:
+    if len(particles) == 0:
         raise IOError("No data found in TbT file!")
-    return data, bpms, particles, n_turns, n_particles
+    return bpms, particles, column_indices, n_turns, n_particles
+
+
+def _get_data(column_indices, parts):
+    return {col: parts[col_idx] for col, col_idx in column_indices.items()}
+
+
+def _read(lines, matrix_dict, column_indices):
+
+    segment = None
+    column_map = {"X": COLX, "Y": COLY}
+
+    for line in lines:
+        parts = line.split()
+        if len(parts) == 0 or parts[0] == HEADER or parts[0] == TYPES or parts[0] == NAMES:
+            continue
+
+        if parts[0] == SEGMENTS:  # read segments, append to index
+            segment = Segment(*parts[1:])
+            continue
+
+        if segment is None:
+            raise IOError("Data defined before Segment definition!")
+
+        if segment.name in SEGMENT_MARKER:
+            continue
+
+        data = _get_data(column_indices, parts)
+        part_id = int(data[COLPARTICLE]) - 1
+        turn_nr = int(data[COLTURN]) - 1
+
+        for p in PLANES:
+            matrix_dict[p][part_id][segment.name][turn_nr] = float(data[column_map[p]])
+    return matrix_dict
 
 
 def _read_column_names(parts):
@@ -117,27 +145,3 @@ def _read_column_names(parts):
         raise ValueError(f"The following columns are missing in ptc file: '{str(missing)}'")
     return col_idx
 
-
-def _create_matrices(data, bpms, n_turns, n_particles):
-    # prepare matrices:
-    matrix_listx = [{bpm: np.zeros(n_turns) for bpm in bpms} for bid in range(n_particles)]
-    matrix_listy = [{bpm: np.zeros(n_turns) for bpm in bpms} for bid in range(n_particles)]
-
-    current_segment = None
-    for d in data:
-        if isinstance(d, Segment):
-            current_segment = d
-            continue
-
-        if current_segment is None:
-            raise IOError("Data defined before Segment defintion!")
-
-        if current_segment.name in SEGMENT_MARKER:
-            continue
-
-        part_id = int(d[COLPARTICLE]) - 1
-        turn_nr = int(d[COLTURN]) - 1
-        matrix_listx[part_id][current_segment.name][turn_nr] = float(d[COLX])
-        matrix_listy[part_id][current_segment.name][turn_nr] = float(d[COLY])
-
-    return matrix_listx, matrix_listy
