@@ -8,7 +8,7 @@ Tbt data handling from PTC trackone.
 from collections import OrderedDict
 import numpy as np
 import pandas as pd
-from tbt.handler import write_tbt, TbtData
+from tbt.data_class import write_tbt_data, TbtData
 
 # Introduce a system for lists(dicts) of TbT files, trackones ... ,
 
@@ -19,7 +19,7 @@ def trackone_to_sdds(infile, outfile, nturns=None, npart=None):
     names, matrix = get_structure_from_trackone(nturns, npart, infile)
     # matrix[0, 2] contains just (x, y) samples.
     tbt_data = numpy_to_tbts(names, matrix[[0, 2]])
-    write_tbt(outfile, tbt_data)
+    write_tbt_data(outfile, tbt_data, "LHCSDDS")
 
 
 def save_dict(file_name, di):
@@ -72,9 +72,8 @@ def get_trackone_stats(infile):
                 nparticles = int(parts[3])
                 first_seg = False
             stats_string = stats_string + l
-    stats_file = open('stats.txt', "w")
-    stats_file.write(stats_string)
-    stats_file.close()
+    with open('stats.txt', "w") as stats_file:
+        stats_file.write(stats_string)
     return nturns, nparticles
 
 
