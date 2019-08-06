@@ -42,7 +42,7 @@ def test_kmod_simulation_ip1b1(_workdir_path):
 
 def test_kmod_simulation_ip1b2(_workdir_path):
 
-    analyse_kmod(betastar=[0.25, 0.0],
+    analyse_kmod(betastar=[0.25, 0.25, 0.0],
                  work_dir=_workdir_path,
                  beam='b2',
                  simulation=True,
@@ -67,7 +67,7 @@ def test_kmod_simulation_ip1b2(_workdir_path):
 
 def test_kmod_meas_ip1b1(_workdir_path):
 
-    analyse_kmod(betastar=[0.44, 0.0],
+    analyse_kmod(betastar=[0.44, 0.44, 0.0, 0.0],
                  work_dir=_workdir_path,
                  beam='b1',
                  simulation=False,

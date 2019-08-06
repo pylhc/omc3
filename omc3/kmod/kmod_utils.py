@@ -105,7 +105,7 @@ def ax_plot(ax, magnet_df, plane):
                                     "marker": "o",
                                     "label": "Cleaned",
                                     "zorder": 2
-                                     })
+                                    })
 
     ax.plot( 
         (magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_k_col()].dropna() - magnet_df.headers[kmod_constants.get_k_col()])*1E3,
@@ -123,7 +123,7 @@ def ax_plot(ax, magnet_df, plane):
 
 def plot_cleaned_data(magnet1_df, magnet2_df, kmod_input_params, interactive_plot=False):
 
-    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 10) )
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
 
     ax_plot(ax[0, 0], magnet1_df, 'X')
     ax_plot(ax[1, 0], magnet1_df, 'Y')

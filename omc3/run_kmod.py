@@ -17,7 +17,7 @@ def kmod_params():
                          type=float,
                          name='betastar',
                          required=True,
-                         nargs=2)
+                         nargs='+')
     parser.add_parameter(flags='--working_directory',
                          help='path to working directory with stored KMOD measurement files',
                          type=str,
