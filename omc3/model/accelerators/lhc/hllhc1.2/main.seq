@@ -1,0 +1,1585 @@
+! S. Fartoukh: 06/06/2009: Version compatible with beam1, beam2 or beam4;
+! Revised version for SLHCV2: S. Fartoukh 30.09.2009
+! Based on SLHCV3.0/removeinstall.madx
+! 2011/11 R. De Maria
+! To be called once at the beginning of the script
+! Use removeinstall.madx to place and displace elements
+! - New name conventions and element classes
+! - Additional orbit correctors for closed crossing scheme
+! - Movable D2,Q4,Q5,Q6
+! - MQYL in Q5 IR6
+! - Addition MS in Q10
+! - Default reference radius
+! - Additional corrector package
+! 2012/03/19 new MCBX lengths and position, new BPMS position
+!            bug in a5/b5 kmax corrected
+! 2012/03/20 new name for BPM in the triplet from BPMSD to BPMSQ
+!            xywab(d)e already taken
+! 2012/03/20 a5/b5 bug in the definition of the strengths
+! 2012/07/13 Crab cavity elements as tkickers
+
+
+
+!-------------------------------------------------------------------
+! Remove install old and new elements
+! Triplets, interconnection lenghts and MS postions are defined
+! by the calling program
+! -----------------------------------------------------------
+if (mylhcbeam>2){
+  bv_aux=-1;
+} else {
+  bv_aux=1;
+};
+
+
+if (on_layout_custom==0){
+l.MQXL      =          8.4000000000 ;
+l.MQX       =          7.1500000000 ;
+dq1q2a      =          3.6280000000 ;
+dq1aq1b     =          0.6460000000 ;
+dq2aq2b     =          2.1080000000 ;
+dq2bq3      =          3.6280000000 ;
+deltaposD2  =        -15.3862000000 ;!max. field D2 35 Tm -> move D2 as close as possible to D1
+deltaposQ4  =          8.0470000000 ;!new value (excel file): 11.1690400000
+deltaposQ5  =         11.0000000000 ;
+deltaposQ6  =          0.0000000000 ;
+on_cutMS.10 =          0            ;
+on_cutMS.14 =          0            ;
+on_cutMS.10 =          0            ;
+on_cutMS.14 =          0            ;
+l.MBXF      =          6.27         ;
+l.MCBXFB    =          1.2          ;
+l.MCBXFA    =          2.2          ;
+l.MBRD      =          7.78         ;
+l.MCBRD     =          1.8          ;
+l.MQYY      =          3.83         ;
+l.MCBYY     =          1.80         ;
+};
+
+!value, l.MQXL,l.MQX,dq1q2a,dq2aq2b,dq2bq3;
+!value, deltaposD2;
+!value, deltaposQ4;
+!value, deltaposQ5;
+!value, deltaposQ6;
+
+        !===============================================
+! REMOVE CURRENT INSERTION (from TAS to Q6)
+        !===============================================
+        if(bv_aux ==1){
+                seqedit,sequence=lhcb1;flatten;endedit;
+        };
+seqedit,sequence=lhcb2;flatten;endedit;
+scale = 23348.89927;
+
+removemarker: marker;
+marks.l1: removemarker; marke.l1: removemarker;
+marks.l5: removemarker; marke.l5: removemarker;
+marks.r1: removemarker; marke.r1: removemarker;
+marks.r5: removemarker; marke.r5: removemarker;
+
+posmarke=15.0;
+!posmarks=163.0; ! include D2
+!posmarks=184;   ! include Q4
+!posmarks=240;    ! include Q6
+posmarks=259;    ! include Q6 DFBAJ DFBAI
+
+if(bv_aux == 1){
+        seqedit, sequence=lhcb1;
+        install,element=marks.l1,class=removemarker,at=-posmarks,from=IP1.L1;
+        install,element=marke.l1,class=removemarker,at=-posmarke,from=IP1.L1;
+        install,element=marke.r1,class=removemarker,at= posmarke,from=IP1;
+        install,element=marks.r1,class=removemarker,at= posmarks,from=IP1;
+        install,element=marks.l5,class=removemarker,at=-posmarks,from=IP5;
+        install,element=marke.l5,class=removemarker,at=-posmarke,from=IP5;
+        install,element=marke.r5,class=removemarker,at= posmarke,from=IP5;
+        install,element=marks.r5,class=removemarker,at= posmarks,from=IP5;
+        endedit;
+        seqedit, sequence=lhcb1;
+        select, flag=seqedit, clear;
+        select, flag=seqedit, range=marks.l1/marke.l1;
+        select, flag=seqedit, range=marke.r1/marks.r1;
+        select, flag=seqedit, range=marks.l5/marke.l5;
+        select, flag=seqedit, range=marke.r5/marks.r5;
+        remove, element=selected;
+        endedit;
+        seqedit, sequence=lhcb1;
+        select, flag=seqedit, clear;
+        select, flag=seqedit, class=BRANA;
+        select, flag=seqedit, class=X1FCL;
+        select, flag=seqedit, class=X1FCR;
+        select, flag=seqedit, class=X1ZDC001;
+        select, flag=seqedit, class=X5ZDC001;
+        select, flag=seqedit, class=X5ZDC002;
+        remove, element=selected;
+        endedit;
+        seqedit,sequence=lhcb1;
+        remove, element=MCBCH.10L1.B1;
+        remove, element=MCBCV.10R1.B1;
+        remove, element=MCBCH.10L5.B1;
+        remove, element=MCBCV.10R5.B1;
+        remove, element=MS.10L1.B1;
+        remove, element=MS.10R1.B1;
+        remove, element=MS.10L5.B1;
+        remove, element=MS.10R5.B1;
+        remove, element=MCBH.10L1.B1;
+        remove, element=MCBV.10R1.B1;
+        remove, element=MCBH.10L5.B1;
+        remove, element=MCBV.10R5.B1;
+        endedit;
+        seqedit,sequence=lhcb1;
+        remove,element=MQY.5L6.B1;
+        remove,element=MQY.5R6.B1;
+        remove,element=BPMYA.5L6.B1;
+        remove,element=MQYL.5L6.B1 ;
+        remove,element=MQYL.5R6.B1 ;
+        remove,element=MCBYV.5R6.B1;
+        endedit;
+};
+
+seqedit, sequence=lhcb2;
+install,element=marks.l1,class=removemarker,at=-posmarks*bv_aux,from=IP1.L1;
+install,element=marke.l1,class=removemarker,at=-posmarke*bv_aux,from=IP1.L1;
+install,element=marke.r1,class=removemarker,at= posmarke*bv_aux,from=IP1;
+install,element=marks.r1,class=removemarker,at= posmarks*bv_aux,from=IP1;
+install,element=marks.l5,class=removemarker,at=-posmarks*bv_aux,from=IP5;
+install,element=marke.l5,class=removemarker,at=-posmarke*bv_aux,from=IP5;
+install,element=marke.r5,class=removemarker,at= posmarke*bv_aux,from=IP5;
+install,element=marks.r5,class=removemarker,at= posmarks*bv_aux,from=IP5;
+endedit;
+
+
+if(bv_aux == 1){
+        seqedit, sequence=lhcb2;
+        select, flag=seqedit, clear;
+        select, flag=seqedit, range=marks.l1/marke.l1;
+        select, flag=seqedit, range=marke.r1/marks.r1;
+        select, flag=seqedit, range=marks.l5/marke.l5;
+        select, flag=seqedit, range=marke.r5/marks.r5;
+        remove, element=selected;
+        endedit;
+} else {
+        seqedit, sequence=lhcb2;
+        select, flag=seqedit, clear;
+        select, flag=seqedit, range=marke.l1/marks.l1;
+        select, flag=seqedit, range=marks.r1/marke.r1;
+        select, flag=seqedit, range=marke.l5/marks.l5;
+        select, flag=seqedit, range=marks.r5/marke.r5;
+        remove, element=selected;
+        endedit;
+};
+
+
+
+seqedit, sequence=lhcb2;
+select, flag=seqedit, clear;
+select, flag=seqedit, class=BRANA;
+select, flag=seqedit, class=X1FCL;
+select, flag=seqedit, class=X1FCR;
+select, flag=seqedit, class=X1ZDC001;
+select, flag=seqedit, class=X5ZDC001;
+select, flag=seqedit, class=X5ZDC002;
+remove, element=selected;
+endedit;
+
+! remove old Q10 corrector package
+
+
+
+seqedit,sequence=lhcb2;
+remove, element=MCBCV.10L1.B2;
+remove, element=MCBCH.10R1.B2;
+remove, element=MCBCV.10L5.B2;
+remove, element=MCBCH.10R5.B2;
+remove, element=MS.10L1.B2;
+remove, element=MS.10R1.B2;
+remove, element=MS.10L5.B2;
+remove, element=MS.10R5.B2;
+remove, element=MCBV.10L1.B2;
+remove, element=MCBH.10R1.B2;
+remove, element=MCBV.10L5.B2;
+remove, element=MCBH.10R5.B2;
+endedit;
+
+
+! remove old Q5 in IR6
+
+
+seqedit,sequence=lhcb2;
+remove,element=MQY.5L6.B2;
+remove,element=MQY.5R6.B2;
+remove,element=BPMYB.5L6.B2;
+remove,element=MQYL.5L6.B2 ;
+remove,element=MQYL.5R6.B2 ;
+remove,element=MCBYH.5R6.B2;
+endedit;
+
+
+! ===============================================
+! macros for installation
+! ===============================================
+
+install_ir15_cmn(ENAME,SPOS): macro={
+        value,SPOS;
+        if(bv_aux == 1){
+                seqedit,sequence=lhcb1;
+                install, element=ENAMEL1,at=-SPOS,from=IP1.L1;
+                install, element=ENAMER1,at= SPOS,from=IP1;
+                install, element=ENAMEL5,at=-SPOS,from=IP5;
+                install, element=ENAMER5,at= SPOS,from=IP5;
+                endedit;
+        };
+        seqedit,sequence=lhcb2;
+        install, element=ENAMEL1,at=-SPOS *bv_aux,from=IP1.L1;
+        install, element=ENAMER1,at= SPOS *bv_aux,from=IP1;
+        install, element=ENAMEL5,at=-SPOS *bv_aux,from=IP5;
+        install, element=ENAMER5,at= SPOS *bv_aux,from=IP5;
+        endedit;
+};
+
+install_ir15_b12(ENAME,SPOS): macro={
+        value,SPOS;
+        if(bv_aux == 1){
+                seqedit,sequence=lhcb1;
+                install, element=ENAMEL1.B1,at=-SPOS,from=IP1.L1;
+                install, element=ENAMER1.B1,at= SPOS,from=IP1;
+                install, element=ENAMEL5.B1,at=-SPOS,from=IP5;
+                install, element=ENAMER5.B1,at= SPOS,from=IP5;
+                endedit;
+        };
+        seqedit,sequence=lhcb2;
+        install, element=ENAMEL1.B2,at=-SPOS*bv_aux,from=IP1.L1;
+        install, element=ENAMER1.B2,at= SPOS*bv_aux,from=IP1;
+        install, element=ENAMEL5.B2,at=-SPOS*bv_aux,from=IP5;
+        install, element=ENAMER5.B2,at= SPOS*bv_aux,from=IP5;
+        endedit;
+};
+
+install_ir15_b1_b2(ENAME,SPOS1,SPOS2): macro={
+! orientation:b1 spos1 - IP - spos1
+! orientation:b2 spos2 - IP - spos2
+! -> orientation:
+! b1: h v - IP - v h
+! b2: v h - IP - h v
+        value,SPOS1,SPOS2;
+        if(bv_aux == 1){
+                seqedit,sequence=lhcb1;
+                install, element=ENAMEL1.B1,at=-SPOS1,from=IP1.L1;
+                install, element=ENAMER1.B1,at= SPOS1,from=IP1;
+                install, element=ENAMEL5.B1,at=-SPOS1,from=IP5;
+                install, element=ENAMER5.B1,at= SPOS1,from=IP5;
+                endedit;
+        };
+        seqedit,sequence=lhcb2;
+        install, element=ENAMEL1.B2,at=-SPOS2*bv_aux,from=IP1.L1;
+        install, element=ENAMER1.B2,at= SPOS2*bv_aux,from=IP1;
+        install, element=ENAMEL5.B2,at=-SPOS2*bv_aux,from=IP5;
+        install, element=ENAMER5.B2,at= SPOS2*bv_aux,from=IP5;
+        endedit;
+};
+install_ir15_b1_b2_inv(ENAME,SPOS1,SPOS2): macro={
+        value,SPOS1,SPOS2;
+        if(bv_aux == 1){
+                seqedit,sequence=lhcb1;
+                install, element=ENAMEL1.B1,at=-SPOS2,from=IP1.L1;
+                install, element=ENAMER1.B1,at= SPOS1,from=IP1;
+                install, element=ENAMEL5.B1,at=-SPOS1,from=IP5;
+                install, element=ENAMER5.B1,at= SPOS2,from=IP5;
+                endedit;
+        };
+        seqedit,sequence=lhcb2;
+        install, element=ENAMEL1.B2,at=-SPOS2*bv_aux,from=IP1.L1;
+        install, element=ENAMER1.B2,at= SPOS1*bv_aux,from=IP1;
+        install, element=ENAMEL5.B2,at=-SPOS1*bv_aux,from=IP5;
+        install, element=ENAMER5.B2,at= SPOS2*bv_aux,from=IP5;
+        endedit;
+};
+
+install_ir15_b1_b2_alt(ENAME,SPOS1,SPOS2): macro={
+! orientation:b1 spos1 - IP - spos2
+! orientation:b2 spos2 - IP - spos1
+! -> orientation:
+! b1: h v - IP - h v
+! b2: v h - IP - v h
+        value,SPOS1,SPOS2;
+        if(bv_aux == 1){
+                seqedit,sequence=lhcb1;
+                install, element=ENAMEL1.B1,at=-SPOS1,from=IP1.L1;
+                install, element=ENAMER1.B1,at= SPOS2,from=IP1;
+                install, element=ENAMEL5.B1,at=-SPOS1,from=IP5;
+                install, element=ENAMER5.B1,at= SPOS2,from=IP5;
+                endedit;
+        };
+        seqedit,sequence=lhcb2;
+        install, element=ENAMEL1.B2,at=-SPOS2*bv_aux,from=IP1.L1;
+        install, element=ENAMER1.B2,at= SPOS1*bv_aux,from=IP1;
+        install, element=ENAMEL5.B2,at=-SPOS2*bv_aux,from=IP5;
+        install, element=ENAMER5.B2,at= SPOS1*bv_aux,from=IP5;
+        endedit;
+};
+
+newel_ir15_b12(ENAME,PARE): macro={
+        ENAMEL1.B1: PARE; ENAMEL1.B2: PARE;
+        ENAMER1.B1: PARE; ENAMER1.B2: PARE;
+        ENAMEL5.B1: PARE; ENAMEL5.B2: PARE;
+        ENAMER5.B1: PARE; ENAMER5.B2: PARE;
+};
+
+
+
+
+!===============================================
+! TAS
+!===============================================
+posTAS  =19.950;
+l.TAXS  =1.8;
+
+TAXS: RCOLLIMATOR,  L := l.TAXS; ! new TAS
+
+TAXS.1R1: TAXS; TAXS.1L1: TAXS;
+TAXS.1R5: TAXS; TAXS.1L5: TAXS;
+
+! TAS
+exec,install_ir15_cmn(TAXS.1,      posTAS  );
+
+
+!===============================================
+! Triplet region
+!===============================================
+
+! Lstar {.46 |Q1|}
+Lstar   =23.00;  !22.965 m in V6.503
+l.Q13=l.MQXL/2.;
+
+posQ1a:=Lstar +l.Q13/2.;
+posQ1b:=posQ1a+l.Q13+dq1aq1b;
+posQ2a:=posQ1b+(l.Q13+l.MQX)/2.+dq1q2a;
+posQ2b:=posQ2a+l.MQX+dq2aq2b;
+posQ3a:=posQ2b+(l.Q13+l.MQX)/2.+dq2bq3;
+posQ3b:=posQ3a+l.Q13+dq1aq1b;
+value, posQ1a,posQ1b,posQ2a,posQ2b,posQ3a,posQ3b;
+       
+! new element types
+MQXFA:   QUADRUPOLE, L := l.Q13;   ! Q1 Q3
+MQXFB:   QUADRUPOLE, L := l.MQX;    ! Q2a Q2b
+
+! triplet quad strengths in IR1 & IR5
+
+MQXFA.A1L1 : MQXFA,k1:= kqx1.l1 *bv_aux;
+MQXFA.A1R1 : MQXFA,k1:= kqx1.r1 *bv_aux;
+MQXFA.B1L1 : MQXFA,k1:= kqx1.l1 *bv_aux;
+MQXFA.B1R1 : MQXFA,k1:= kqx1.r1 *bv_aux;
+MQXFB.A2L1 : MQXFB,k1:=-kqx2a.l1 *bv_aux;
+MQXFB.B2L1 : MQXFB,k1:=-kqx2b.l1 *bv_aux;
+MQXFB.A2R1 : MQXFB,k1:=-kqx2a.r1 *bv_aux;
+MQXFB.B2R1 : MQXFB,k1:=-kqx2b.r1 *bv_aux;
+MQXFA.A3L1 : MQXFA,k1:= kqx3.l1 *bv_aux;
+MQXFA.A3R1 : MQXFA,k1:= kqx3.r1 *bv_aux;
+MQXFA.B3L1 : MQXFA,k1:= kqx3.l1 *bv_aux;
+MQXFA.B3R1 : MQXFA,k1:= kqx3.r1 *bv_aux;
+
+MQXFA.A1L5 : MQXFA,k1:= kqx1.l5 *bv_aux;
+MQXFA.A1R5 : MQXFA,k1:= kqx1.r5 *bv_aux;
+MQXFA.B1L5 : MQXFA,k1:= kqx1.l5 *bv_aux;
+MQXFA.B1R5 : MQXFA,k1:= kqx1.r5 *bv_aux;
+MQXFB.A2L5 : MQXFB,k1:=-kqx2a.l5 *bv_aux;
+MQXFB.B2L5 : MQXFB,k1:=-kqx2b.l5 *bv_aux;
+MQXFB.A2R5 : MQXFB,k1:=-kqx2a.r5 *bv_aux;
+MQXFB.B2R5 : MQXFB,k1:=-kqx2b.r5 *bv_aux;
+MQXFA.A3L5 : MQXFA,k1:= kqx3.l5 *bv_aux;
+MQXFA.A3R5 : MQXFA,k1:= kqx3.r5 *bv_aux;
+MQXFA.B3L5 : MQXFA,k1:= kqx3.l5 *bv_aux;
+MQXFA.B3R5 : MQXFA,k1:= kqx3.r5 *bv_aux;
+
+! Triplet
+exec,install_ir15_cmn(MQXFA.A1,    posQ1a  );
+exec,install_ir15_cmn(MQXFA.B1,    posQ1b  );
+exec,install_ir15_cmn(MQXFB.A2,    posQ2A  );
+exec,install_ir15_cmn(MQXFB.B2,    posQ2B  );
+exec,install_ir15_cmn(MQXFA.A3,    posQ3a  );
+exec,install_ir15_cmn(MQXFA.B3,    posQ3b  );
+
+!===============================================
+! MCBX in Q2 (small orbit corrector)
+!===============================================
+
+! MCBX
+! Q1  |.5 } 1 {.5 | MCBXFBa | .488 | Q2a
+! Q2a |.5 } 1 {.5 | Q2b | .489| MCBXFBb |.5 }
+! Q2b |.489 | MCBXFBb |.1 } .1 {.5 | Q3 | .5}
+
+posMCBXFBa  := posQ2a     -(l.MQX + l.MCBXFB   )/2. -0.4885;
+posMCBXFBb  := posQ2b     +(l.MQX + l.MCBXFB   )/2. +0.4885;
+!value,l.MCBXFB, posMCBXFBa,posMCBXFBb;
+
+! Cabling orbit corrector inside Q2a and Q2b cold masses
+
+MCBXFBH: HKICKER,    Lrad := l.MCBXFB;  ! nested corrector
+MCBXFBV: VKICKER,    Lrad := l.MCBXFB;  ! nested corrector
+
+Kmax_MCBXFB := 2.5000 / l.MCBXFB; ! 1.8Tm integrated strength
+Kmin_MCBXFB := -Kmax_MCBXFB ;
+value, Kmax_MCBXFB;
+
+MCBXFBH,  Kmax:=Kmax_MCBXFB, Kmin:=Kmin_MCBXFB;
+MCBXFBV,  Kmax:=Kmax_MCBXFB, Kmin:=Kmin_MCBXFB;
+
+
+MCBXFBH.a2L1: MCBXFBH, KICK := acbxh1.l1;
+MCBXFBH.a2R1: MCBXFBH, KICK := acbxh1.r1;
+MCBXFBH.a2L5: MCBXFBH, KICK := acbxh1.l5;
+MCBXFBH.a2R5: MCBXFBH, KICK := acbxh1.r5;
+MCBXFBV.a2L1: MCBXFBV, KICK := acbxv1.l1*bv_aux;
+MCBXFBV.a2R1: MCBXFBV, KICK := acbxv1.r1*bv_aux;
+MCBXFBV.a2L5: MCBXFBV, KICK := acbxv1.l5*bv_aux;
+MCBXFBV.a2R5: MCBXFBV, KICK := acbxv1.r5*bv_aux;
+MCBXFBH.b2L1: MCBXFBH, KICK := acbxh2.l1;
+MCBXFBH.b2R1: MCBXFBH, KICK := acbxh2.r1;
+MCBXFBH.b2L5: MCBXFBH, KICK := acbxh2.l5;
+MCBXFBH.b2R5: MCBXFBH, KICK := acbxh2.r5;
+MCBXFBV.b2L1: MCBXFBV, KICK := acbxv2.l1*bv_aux;
+MCBXFBV.b2R1: MCBXFBV, KICK := acbxv2.r1*bv_aux;
+MCBXFBV.b2L5: MCBXFBV, KICK := acbxv2.l5*bv_aux;
+MCBXFBV.b2R5: MCBXFBV, KICK := acbxv2.r5*bv_aux;
+
+! Orbit correctors
+exec,install_ir15_cmn(MCBXFBH.A2,  posMCBXFBa );
+exec,install_ir15_cmn(MCBXFBV.A2,  posMCBXFBa );
+exec,install_ir15_cmn(MCBXFBH.B2,  posMCBXFBb );
+exec,install_ir15_cmn(MCBXFBV.B2,  posMCBXFBb );
+
+
+
+!===============================================
+!Corrector package
+!===============================================
+
+! layout
+
+l.MQSXF   = 0.807    ;   !0.716 a2 corrector
+l.MCTXF   = 0.430    ;   !0.339 b6 corrector
+l.MCTSXF  = 0.089    ;   !0.087 a6 corrector
+l.MCDXF   = 0.095    ;   !0.079 b5 corrector
+l.MCDSXF  = 0.095    ;   !0.079 a5 corrector
+l.MCOXF   = 0.087    ;   !0.137 b4 corrector
+l.MCOSXF  = 0.087    ;   !0.137 a4 corrector
+l.MCSXF   = 0.111    ;   !0.121 b3 corrector
+l.MCSSXF  = 0.111    ;   !0.121 a3 corrector
+
+
+! Q3|.5} 1.00 {.5  | MCBXFA  | .5
+!              .08 | MQSXF  | .08
+!              .08 | MCTXF   | .08
+!              .08 | MCTSXF  | .08
+!              .08 | MCDXF   | .08
+!              .08 | MCDSXF  | .08
+!              .08 | MCOXF   | .08
+!              .08 | MCOSXF  | .08
+!              .08 | MCSXF   | .08
+!              .08 | MCSSXF  | .08 }
+
+posMCBXFA  := posQ3b     + (l.Q13     + l.MCBXFA )/2.+2.747;
+posMQSXF   := posMCBXFA  + (l.MCBXFA  + l.MQSXF  )/2.+0.296;
+posMCTXF   := posMQSXF   + (l.MQSXF   + l.MCTXF  )/2.+0.14138;
+posMCTSXF  := posMCTXF   + (l.MCTXF   + l.MCTSXF )/2.+0.13788;
+posMCDXF   := posMCTSXF  + (l.MCTSXF  + l.MCDXF  )/2.+0.13438;
+posMCDSXF  := posMCDXF   + (l.MCDXF   + l.MCDSXF )/2.+0.13438;
+posMCOXF   := posMCDSXF  + (l.MCDSXF  + l.MCOXF  )/2.+0.13238;
+posMCOSXF  := posMCOXF   + (l.MCOXF   + l.MCOSXF )/2.+0.13038;
+posMCSXF   := posMCOSXF  + (l.MCOSXF  + l.MCSXF  )/2.+0.13038;
+posMCSSXF  := posMCSXF   + (l.MCSXF   + l.MCSSXF )/2.+0.13038;
+
+value,posMCBXFA,posMQSXF,posMCTXF,posMCTSXF,posMCDXF,posMCDSXF,posMCOXF,posMCOSXF,posMCSXF,posMCSSXF;
+
+! orbit corrector elements
+MCBXFAH : HKICKER   , Lrad := l.MCBXFA  ; ! H in corrector package (long for crabs)
+MCBXFAV : VKICKER   , Lrad := l.MCBXFA  ; ! V in corrector package (long for crabs)
+MQSXF   : QUADRUPOLE, L    := l.MQSXF   ; ! (a2)
+MCTXF   : MULTIPOLE , Lrad := l.MCTXF   ; ! (b6)
+MCTSXF  : MULTIPOLE , Lrad := l.MCTSXF  ; ! (a6)
+MCDXF   : MULTIPOLE , Lrad := l.MCDXF   ; ! (b5)
+MCDSXF  : MULTIPOLE , Lrad := l.MCDSXF  ; ! (a5)
+MCOXF   : MULTIPOLE , Lrad := l.MCOXF   ; ! (b4)
+MCOSXF  : MULTIPOLE , Lrad := l.MCOSXF  ; ! (a4)
+MCSXF   : MULTIPOLE , Lrad := l.MCSXF   ; ! (b3)
+MCSSXF  : MULTIPOLE , Lrad := l.MCSSXF  ; ! (a3)
+
+
+Kmax_MCBXFA:= 4.5000 / l.MCBXFA                     ;!4.5000Tm@50mm
+Rref_mpcorr = 0.05; !50mm reference radius for multipole correctors
+Kmax_MQSXF := 1.0000 / l.MQSXF/Rref_mpcorr          ;!1.0000Tm@50mm
+Kmax_MCTXF := 0.0860 / l.MCTXF /Rref_mpcorr^5 * 120.;!0.0860Tm@50mm
+Kmax_MCTSXF:= 0.0170 / l.MCTSXF/Rref_mpcorr^5 * 120.;!0.0170Tm@50mm
+Kmax_MCDXF := 0.0250 / l.MCDXF /Rref_mpcorr^4 *  24.;!0.0250Tm@50mm
+Kmax_MCDSXF:= 0.0250 / l.MCDSXF/Rref_mpcorr^4 *  24.;!0.0250Tm@50mm
+Kmax_MCOXF := 0.0460 / l.MCOXF /Rref_mpcorr^3 *   6.;!0.0460Tm@50mm
+Kmax_MCOSXF:= 0.0460 / l.MCOSXF/Rref_mpcorr^3 *   6.;!0.0460Tm@50mm
+Kmax_MCSXF := 0.0630 / l.MCSXF /Rref_mpcorr^2 *   2.;!0.0630Tm@50mm
+Kmax_MCSSXF:= 0.0630 / l.MCSSXF/Rref_mpcorr^2 *   2.;!0.0630Tm@50mm
+
+
+Kmin_MCBXFA:= -Kmax_MCBXFA ;
+Kmin_MQSXF := -Kmax_MQSXF ;
+Kmin_MCSXF := -Kmax_MCSXF ;
+Kmin_MCSSXF:= -Kmax_MCSSXF;
+Kmin_MCOXF := -Kmax_MCOXF ;
+Kmin_MCOSXF:= -Kmax_MCOSXF;
+Kmin_MCTXF := -Kmax_MCTXF ;
+Kmin_MCDXF := -Kmax_MCDXF ;
+Kmin_MCDSXF:= -Kmax_MCDSXF;
+Kmin_MCTSXF:= -Kmax_MCTSXF;
+
+Imax_MCTXF = 167;
+Imax_MCBXFA=2500;
+Imax_MCBXFB=2500;
+Imax_MQSXF = 182;
+Imax_MCDSXF= 139;
+Imax_MCDXF = 139;
+Imax_MCOSXF= 132;
+Imax_MCOXF = 132;
+Imax_MCSSXF= 132;
+Imax_MCSXF = 132;
+
+! cabling
+MCBXFAH, Kmax:=Kmax_MCBXFA, Kmin:=Kmin_MCBXFA;
+MCBXFAV, Kmax:=Kmax_MCBXFA, Kmin:=Kmin_MCBXFA;
+MCBXFAH.3L1: MCBXFAH, KICK := acbxh3.l1;
+MCBXFAH.3R1: MCBXFAH, KICK := acbxh3.r1;
+MCBXFAH.3L5: MCBXFAH, KICK := acbxh3.l5;
+MCBXFAH.3R5: MCBXFAH, KICK := acbxh3.r5;
+MCBXFAV.3L1: MCBXFAV, KICK := acbxv3.l1*bv_aux;
+MCBXFAV.3R1: MCBXFAV, KICK := acbxv3.r1*bv_aux;
+MCBXFAV.3L5: MCBXFAV, KICK := acbxv3.l5*bv_aux;
+MCBXFAV.3R5: MCBXFAV, KICK := acbxv3.r5*bv_aux;
+
+
+!A2 CORRECTOR
+MQSXF, Kmax:=Kmax_MQSXF , Kmin:=Kmin_MQSXF;
+MQSXF.3L1: MQSXF, K1S:=kqsx3.l1;
+MQSXF.3R1: MQSXF, K1S:=kqsx3.r1;
+MQSXF.3L5: MQSXF, K1S:=kqsx3.l5;
+MQSXF.3R5: MQSXF, K1S:=kqsx3.r5;
+
+
+!B3 CORRECTOR
+MCSXF, Kmax:=Kmax_MCSXF , Kmin:=Kmin_MCSXF;
+MCSXF.3L1: MCSXF, KNL := {0, 0, kcsx3.l1*l.MCSXF};
+MCSXF.3R1: MCSXF, KNL := {0, 0, kcsx3.r1*l.MCSXF};
+MCSXF.3L5: MCSXF, KNL := {0, 0, kcsx3.l5*l.MCSXF};
+MCSXF.3R5: MCSXF, KNL := {0, 0, kcsx3.r5*l.MCSXF};
+
+!B6 CORRECTOR
+MCTXF, Kmax:=Kmax_MCTXF , Kmin:=Kmin_MCTXF;
+MCTXF.3L1: MCTXF, KNL := {0, 0, 0, 0, 0, kctx3.l1 *bv_aux*l.MCTXF};
+MCTXF.3R1: MCTXF, KNL := {0, 0, 0, 0, 0, kctx3.r1 *bv_aux*l.MCTXF};
+MCTXF.3L5: MCTXF, KNL := {0, 0, 0, 0, 0, kctx3.l5 *bv_aux*l.MCTXF};
+MCTXF.3R5: MCTXF, KNL := {0, 0, 0, 0, 0, kctx3.r5 *bv_aux*l.MCTXF};
+
+!A6 CORRECTOR
+MCTSXF, Kmax:=Kmax_MCTSXF , Kmin:=Kmin_MCTSXF;
+MCTSXF.3L1: MCTSXF, KSL := {0, 0, 0, 0, 0, kctsx3.l1 *l.MCTSXF};
+MCTSXF.3R1: MCTSXF, KSL := {0, 0, 0, 0, 0, kctsx3.r1 *l.MCTSXF};
+MCTSXF.3L5: MCTSXF, KSL := {0, 0, 0, 0, 0, kctsx3.l5 *l.MCTSXF};
+MCTSXF.3R5: MCTSXF, KSL := {0, 0, 0, 0, 0, kctsx3.r5 *l.MCTSXF};
+
+!A3 CORRECTOR
+MCSSXF, Kmax:=Kmax_MCSSXF, Kmin:=Kmin_MCSSXF;
+MCSSXF.3L1: MCSSXF, KSL := {0, 0, kcssx3.l1 *bv_aux*l.MCSSXF};
+MCSSXF.3R1: MCSSXF, KSL := {0, 0, kcssx3.r1 *bv_aux*l.MCSSXF};
+MCSSXF.3L5: MCSSXF, KSL := {0, 0, kcssx3.l5 *bv_aux*l.MCSSXF};
+MCSSXF.3R5: MCSSXF, KSL := {0, 0, kcssx3.r5 *bv_aux*l.MCSSXF};
+
+!A4 CORRECTOR
+MCOSXF, Kmax:=Kmax_MCOSXF, Kmin:=Kmin_MCOSXF;
+MCOSXF.3L1: MCOSXF, KSL := {0, 0, 0, kcosx3.l1*l.MCOSXF};
+MCOSXF.3R1: MCOSXF, KSL := {0, 0, 0, kcosx3.r1*l.MCOSXF};
+MCOSXF.3L5: MCOSXF, KSL := {0, 0, 0, kcosx3.l5*l.MCOSXF};
+MCOSXF.3R5: MCOSXF, KSL := {0, 0, 0, kcosx3.r5*l.MCOSXF};
+
+!B4 CORRECTOR
+MCOXF, Kmax:=Kmax_MCOXF , Kmin:=Kmin_MCOXF;
+MCOXF.3L1: MCOXF, KNL := {0, 0, 0, kcox3.l1 *bv_aux*l.MCOXF};
+MCOXF.3R1: MCOXF, KNL := {0, 0, 0, kcox3.r1 *bv_aux*l.MCOXF};
+MCOXF.3L5: MCOXF, KNL := {0, 0, 0, kcox3.l5 *bv_aux*l.MCOXF};
+MCOXF.3R5: MCOXF, KNL := {0, 0, 0, kcox3.r5 *bv_aux*l.MCOXF};
+
+!A5 CORRECTOR
+MCDSXF, Kmax:=Kmax_MCDSXF, Kmin:=Kmin_MCDSXF;
+MCDSXF.3L1: MCDSXF, KSL := {0, 0, 0, 0, kcdsX3.l1 *bv_aux*l.MCDSXF};
+MCDSXF.3R1: MCDSXF, KSL := {0, 0, 0, 0, kcdsX3.r1 *bv_aux*l.MCDSXF};
+MCDSXF.3L5: MCDSXF, KSL := {0, 0, 0, 0, kcdsX3.l5 *bv_aux*l.MCDSXF};
+MCDSXF.3R5: MCDSXF, KSL := {0, 0, 0, 0, kcdsX3.r5 *bv_aux*l.MCDSXF};
+
+!B5 CORRECTOR
+MCDXF, Kmax:=Kmax_MCDXF , Kmin:=Kmin_MCDXF;
+MCDXF.3L1: MCDXF, KNL := {0, 0, 0, 0, kcdx3.l1*l.MCDXF};
+MCDXF.3R1: MCDXF, KNL := {0, 0, 0, 0, kcdx3.r1*l.MCDXF};
+MCDXF.3L5: MCDXF, KNL := {0, 0, 0, 0, kcdx3.l5*l.MCDXF};
+MCDXF.3R5: MCDXF, KNL := {0, 0, 0, 0, kcdx3.r5*l.MCDXF};
+
+
+
+! Installl non linear correctors
+exec,install_ir15_cmn(MCBXFAH.3,posMCBXFA); !b1
+exec,install_ir15_cmn(MCBXFAV.3,posMCBXFA); !a1
+exec,install_ir15_cmn(MQSXF.3,  posMQSXF); !a2
+exec,install_ir15_cmn(MCTXF.3,   posMCTXF  ); !b6
+exec,install_ir15_cmn(MCTSXF.3,  posMCTSXF ); !a6
+exec,install_ir15_cmn(MCDXF.3,   posMCDXF ); !b5
+exec,install_ir15_cmn(MCDSXF.3,  posMCDSXF  ); !a5
+exec,install_ir15_cmn(MCOXF.3,   posMCOXF ); !b4
+exec,install_ir15_cmn(MCOSXF.3,  posMCOSXF  ); !a4
+exec,install_ir15_cmn(MCSXF.3,   posMCSXF  ); !b3
+exec,install_ir15_cmn(MCSSXF.3,  posMCSSXF ); !a3
+
+
+
+!===============================================
+! D1 area
+!===============================================
+
+! separation recombination dipoles
+!if (l.MBXF==0) {l.MBXF= 6.27;};
+!l.MBXF= 6.69;
+!l.MBXF= 6.36;
+!l.MBXF= 6.27;
+MBXF : RBEND,   L := l.MBXF ;  ! D1
+!BPMWC: MONITOR, L := l.BPMWC;  ! bpm in D1
+
+! service module for current distribution in the non-IP side of D1
+l.DFXJ = 3.028;    ! not finalized
+DFXJ : PLACEHOLDER, L:= l.DFXJ;
+
+! Layout
+! MCSSXF | .5} .1 {.5 D1 .5} 1 DFXJ
+
+!posD1 := posMCSSXF+(l.MBXF+l.MCSSXF)/2.+2;
+posD1 = posQ3b+(l.Q13+l.MBXF)/2+9.91304;
+
+posDFXJ := 82.61904+l.DFXJ/2;
+!posBPMWC := posD1 + l.MBXF/2 + 0.90; ! to be checked with long range
+
+! Separation recombination dipoles
+
+MBXF.4L1: MBXF,angle:= ad1.lr1, K0 := kd1.lr1, polarity=+1 *bv_aux;
+MBXF.4R1: MBXF,angle:=-ad1.lr1, K0 :=-kd1.lr1, polarity=-1 *bv_aux;;
+MBXF.4L5: MBXF,angle:= ad1.lr5, K0 := kd1.lr5, polarity=+1 *bv_aux;;
+MBXF.4R5: MBXF,angle:=-ad1.lr5, K0 :=-kd1.lr5, polarity=-1 *bv_aux;;
+
+!BPMWC.4L1.B1: BPMWC;
+!BPMWC.4R1.B1: BPMWC;
+!BPMWC.4L5.B1: BPMWC;
+!BPMWC.4R5.B1: BPMWC;
+!BPMWC.4L1.B2: BPMWC;
+!BPMWC.4R1.B2: BPMWC;
+!BPMWC.4L5.B2: BPMWC;
+!BPMWC.4R5.B2: BPMWC;
+
+DFXJ.4L1: DFXJ;
+DFXJ.4R1: DFXJ;
+DFXJ.4L5: DFXJ;
+DFXJ.4R5: DFXJ;
+
+
+! D1
+!exec,install_ir15_b12(BPMWC.4, posBPMWC  );
+exec,install_ir15_cmn(MBXF.4,  posD1);
+exec,install_ir15_cmn(DFXJ.4,   posDFXJ);
+
+!===============================================
+!BPM triplet D1
+!===============================================
+! to be changed
+!           Q1  | .5 } .526  BPM .172 {.5 | MCBXFBa
+! MCBXFBa | Q2a | .5 } .054  BPM .812 {.5 | Q2b
+!       MCBXFBb | .0}  .392  BPM .805 {.5 | Q3
+!           Q3  | .5 } .047  BPM ...
+
+! BMPSQW is between TAS and Q1
+l.BPMSQ  = 0.242;
+l.BPMSQW = 0.242;
+BPMSQ :  MONITOR,    L := l.BPMSQ;  ! bpm in the triplets
+BPMSQT:  MONITOR,    L := l.BPMSQ;  ! bpm in the triplets with W insert
+BPMSQW:  MONITOR,    L := l.BPMSQW; ! bpm in the triplets warm
+
+!posBPMW  := 21.475;  !from V6.503
+posBPMW  := posQ1a - l.Q13/2  - l.BPMSQW/2 - 0.826+0.021;!BPMSQW.1R5.B1
+posBPM1  := posQ1b + l.Q13/2. + l.BPMSQ/2  + 1.047+0.021;!BPMSQ.1R5.B1
+posBPM2a := posQ2a + l.MQX/2. + l.BPMSQ/2  + 1.054+0.021;!BPMSQT.A2R5.B1
+posBPM2b := posMCBXFBb + l.MCBXFB/2. + l.BPMSQ/2 + 0.8925+0.021;!BPMSQT.B2R5.B1
+posBPM3a := posQ3b     + (l.Q13     + l.BPMSQ )/2. + 1.047+0.021;!BPMSQT.A3R5.B1
+posBPM3b := posMCSSXF + l.MCSSXF/2 + l.BPMSQ/2 + 0.6365+0.021;!BPMSQ.B3R5.B1
+! place BPM at best position = between parasitic beam-beam encounter
+posBPM4  := posD1 + l.MBXF/2 + l.BPMSQ/2 + 1.05+0.021;!BPMSQ.4R5.B1
+
+value, posBPMW,posBPM1,posBPM2a,posBPM2b,posBPM3a,posBPM3b;
+
+
+BPMSQW.1L1.B1 : BPMSQW;BPMSQW.1R1.B1 : BPMSQW;
+BPMSQW.1L5.B1 : BPMSQW;BPMSQW.1R5.B1 : BPMSQW;
+BPMSQW.1L1.B2 : BPMSQW;BPMSQW.1R1.B2 : BPMSQW;
+BPMSQW.1L5.B2 : BPMSQW;BPMSQW.1R5.B2 : BPMSQW;
+BPMSQ.1L1.B1  : BPMSQ;BPMSQ.1R1.B1  : BPMSQ;
+BPMSQ.1L5.B1  : BPMSQ;BPMSQ.1R5.B1  : BPMSQ;
+BPMSQ.1L1.B2  : BPMSQ;BPMSQ.1R1.B2  : BPMSQ;
+BPMSQ.1L5.B2  : BPMSQ;BPMSQ.1R5.B2  : BPMSQ;
+BPMSQT.A2L1.B1 : BPMSQT;BPMSQT.A2R1.B1 : BPMSQT;
+BPMSQT.A2L5.B1 : BPMSQT;BPMSQT.A2R5.B1 : BPMSQT;
+BPMSQT.A2L1.B2 : BPMSQT;BPMSQT.A2R1.B2 : BPMSQT;
+BPMSQT.A2L5.B2 : BPMSQT;BPMSQT.A2R5.B2 : BPMSQT;
+BPMSQT.B2L1.B1 : BPMSQT;BPMSQT.B2R1.B1 : BPMSQT;
+BPMSQT.B2L5.B1 : BPMSQT;BPMSQT.B2R5.B1 : BPMSQT;
+BPMSQT.B2L1.B2 : BPMSQT;BPMSQT.B2R1.B2 : BPMSQT;
+BPMSQT.B2L5.B2 : BPMSQT;BPMSQT.B2R5.B2 : BPMSQT;
+BPMSQT.A3L1.B1 : BPMSQT;BPMSQT.A3R1.B1 : BPMSQT;
+BPMSQT.A3L5.B1 : BPMSQT;BPMSQT.A3R5.B1 : BPMSQT;
+BPMSQT.A3L1.B2 : BPMSQT;BPMSQT.A3R1.B2 : BPMSQT;
+BPMSQT.A3L5.B2 : BPMSQT;BPMSQT.A3R5.B2 : BPMSQT;
+BPMSQ.B3L1.B1 : BPMSQ;BPMSQ.B3R1.B1 : BPMSQ;
+BPMSQ.B3L5.B1 : BPMSQ;BPMSQ.B3R5.B1 : BPMSQ;
+BPMSQ.B3L1.B2 : BPMSQ;BPMSQ.B3R1.B2 : BPMSQ;
+BPMSQ.B3L5.B2 : BPMSQ;BPMSQ.B3R5.B2 : BPMSQ;
+BPMSQ.4L1.B1  : BPMSQ;BPMSQ.4R1.B1  : BPMSQ;
+BPMSQ.4L5.B1  : BPMSQ;BPMSQ.4R5.B1  : BPMSQ;
+BPMSQ.4L1.B2  : BPMSQ;BPMSQ.4R1.B2  : BPMSQ;
+BPMSQ.4L5.B2  : BPMSQ;BPMSQ.4R5.B2  : BPMSQ;
+
+! BPMS
+exec,install_ir15_b12(BPMSQW.1 ,  posBPMW   );
+exec,install_ir15_b12(BPMSQ.1  ,  posBPM1   );
+exec,install_ir15_b12(BPMSQT.A2,  posBPM2a  );
+exec,install_ir15_b12(BPMSQT.B2,  posBPM2b  );
+exec,install_ir15_b12(BPMSQT.A3,  posBPM3a  );
+exec,install_ir15_b12(BPMSQ.B3 ,  posBPM3b  );
+exec,install_ir15_b12(BPMSQ.4  ,  posBPM4   );
+
+!===============================================
+! D2 area
+!===============================================
+
+!  TAN TCTV TCTH TCL BPMWQ 1.835 (left)
+!  TAN TCL           BPMWQ 1.835 (right)
+!  {.4 D2 .4 MCBRDH .4 MCBRDV .4}
+!  B1-> 0.5 { 1.3 1.3  CRAB 2.6  CRAB 2.6  CRAB 1.3 } 2.69 | MCBYY
+!  B2<- 0.5 { 1.3 CRAB 2.6  CRAB 2.6  CRAB 1.3  1.3 } 2.69 | MCBYY
+
+
+
+! D2
+!l.MBRD=10;
+!if (l.MBRD==0) {l.MBRD=7.8;};
+!if (l.MCBRD==0) {l.MCBRD=1.5;};
+l.BPMWQ=0.285;
+MBRD  : RBEND  ,   L := l.MBRD ;  ! D2
+MCBRDH: HKICKER,   L := l.MCBRD; ! long for crabs in D2 cryostats
+MCBRDV: VKICKER,   L := l.MCBRD; ! long for crabs in D2 cryostats
+BPMWQ : MONITOR,   L := l.BPMWQ;  ! bpm in D2
+
+posD2  := 157.9+deltaposD2; ! minimize distance D1-D2, maximum field 35 Tm
+!posD2  = 157.9-8-7;     ! from V6.503
+! 8 to fit two cavitities with 1.5 meter at 163
+!11 to fit three cavitities with 1.5 meter
+
+
+posBPMWQ  := posD2 - l.MBRD/2 - L.BPMWQ/2 - 1.638;!BPMWQ.4R5.B1
+posMCBRDA  := posD2 + l.MBRD/2 + l.MCBRD/2 + 0.385;
+posMCBRDB  := posMCBRDA + l.MCBRD          + 0.385;
+
+
+
+MBRD.4L1.B1: MBRD, angle:=-ad2.l1, K0:=-kd2.l1, polarity=-1;
+MBRD.4R1.B1: MBRD, angle:= ad2.r1, K0:= kd2.r1, polarity=+1;
+MBRD.4L5.B1: MBRD, angle:=-ad2.l5, K0:=-kd2.l5, polarity=-1;
+MBRD.4R5.B1: MBRD, angle:= ad2.r5, K0:= kd2.r5, polarity=+1;
+
+MBRD.4L1.B2: MBRD, angle:=-ad2.l1, K0:=-kd2.l1, polarity=+1*bv_aux;
+MBRD.4R1.B2: MBRD, angle:= ad2.r1, K0:= kd2.r1, polarity=-1*bv_aux;
+MBRD.4L5.B2: MBRD, angle:=-ad2.l5, K0:=-kd2.l5, polarity=+1*bv_aux;
+MBRD.4R5.B2: MBRD, angle:= ad2.r5, K0:= kd2.r5, polarity=-1*bv_aux;
+
+MCBRDH.4L1.B1: MCBRDH, kick:= acbrdh4.l1b1;
+MCBRDH.4R1.B1: MCBRDH, kick:= acbrdh4.r1b1;
+MCBRDH.4L5.B1: MCBRDH, kick:= acbrdh4.l5b1;
+MCBRDH.4R5.B1: MCBRDH, kick:= acbrdh4.r5b1;
+MCBRDH.4L1.B2: MCBRDH, kick:=-acbrdh4.l1b2;
+MCBRDH.4R1.B2: MCBRDH, kick:=-acbrdh4.r1b2;
+MCBRDH.4L5.B2: MCBRDH, kick:=-acbrdh4.l5b2;
+MCBRDH.4R5.B2: MCBRDH, kick:=-acbrdh4.r5b2;
+MCBRDV.4L1.B1: MCBRDV, kick:= acbrdv4.l1b1*bv_aux;
+MCBRDV.4R1.B1: MCBRDV, kick:= acbrdv4.r1b1*bv_aux;
+MCBRDV.4L5.B1: MCBRDV, kick:= acbrdv4.l5b1*bv_aux;
+MCBRDV.4R5.B1: MCBRDV, kick:= acbrdv4.r5b1*bv_aux;
+MCBRDV.4L1.B2: MCBRDV, kick:=-acbrdv4.l1b2*bv_aux;
+MCBRDV.4R1.B2: MCBRDV, kick:=-acbrdv4.r1b2*bv_aux;
+MCBRDV.4L5.B2: MCBRDV, kick:=-acbrdv4.l5b2*bv_aux;
+MCBRDV.4R5.B2: MCBRDV, kick:=-acbrdv4.r5b2*bv_aux;
+
+
+
+
+BPMWQ.4L1.B1: BPMWQ;
+BPMWQ.4R1.B1: BPMWQ;
+BPMWQ.4L5.B1: BPMWQ;
+BPMWQ.4R5.B1: BPMWQ;
+BPMWQ.4L1.B2: BPMWQ;
+BPMWQ.4R1.B2: BPMWQ;
+BPMWQ.4L5.B2: BPMWQ;
+BPMWQ.4R5.B2: BPMWQ;
+
+
+! separation recombination powering, 0.194 m separation between apertures
+ad1.lr1:=atan(0.194/2./(posD2-posD1))*(1-R0);
+kd1.lr1:=ad1.lr1/l.MBXF;
+ad1.lr5:=atan(0.194/2./(posD2-posD1))*(1-R0);
+kd1.lr5:=ad1.lr5/l.MBXF;
+ad2.l1 :=atan(0.194/2./(posD2-posD1))*(1-R0);
+ad2.r1 :=atan(0.194/2./(posD2-posD1))*(1-R0);
+kd2.l1 :=ad2.l1/l.MBRD;
+kd2.r1 :=ad2.r1/l.MBRD;
+ad2.l5 :=atan(0.194/2./(posD2-posD1))*(1-R0);
+ad2.r5 :=atan(0.194/2./(posD2-posD1))*(1-R0);
+kd2.l5 :=ad2.l5/l.MBRD;
+kd2.r5 :=ad2.r5/l.MBRD;
+
+value, posD1,posD2,posD2-posD1,posMCBRDA,posMCBRDB;
+value, ad1.lr1,l.MBXF,ad1.lr1/l.MBXF*scale,ad1.lr1*scale;
+value, ad2.l1,l.MBRD,ad2.l1/l.MBRD*scale,ad2.l1*scale;
+
+! D2
+exec,install_ir15_b12(MBRD.4   , posD2    );
+exec,install_ir15_b12(BPMWQ.4, posBPMWQ);
+
+!IP - D2 posMCBRDA posMCBRDB
+! orientation:
+! b1: h v - IP - v h
+! b2: v h - IP - h v
+!exec,install_ir15_b1_b2(MCBRDV.4,posMCBRDA,posMCBRDB);
+!exec,install_ir15_b1_b2(MCBRDH.4,posMCBRDB,posMCBRDA);
+! orientation:
+! b1: h v - IP - h v
+! b2: v h - IP - v h
+exec,install_ir15_b1_b2_alt(MCBRDV.4,posMCBRDA,posMCBRDB);
+exec,install_ir15_b1_b2_alt(MCBRDH.4,posMCBRDB,posMCBRDA);
+
+!===============================================
+! Q4
+!===============================================
+
+!l.MQYY =3.4+0.1;
+!l.MQYY =3.5 3.675
+!if (l.MQYY==0) { l.MQYY=3.826; };
+!if (l.MCBYY==0 ) {l.MCBYY=1.50;};
+
+
+l.BPMQA= 0.285;! l.BPMQA = 0.100
+
+posQ4       :=169.553+deltaPosQ4;  !new layout (excel file) 182.644 m
+
+! IP ... MCBYY.A4 0.385 MCBYY.B4 0.372 Q4 1.052 BPMQA.4 
+posBPMQA.4  :=posQ4 + (l.MQYY + l.BPMQA)/2 + 3.082 ;!BPMQA.4R5.B1
+posMCBYY.B4 :=posQ4 - l.MQYY/2 - l.MCBYY/2   - 0.372;
+posMCBYY.A4 :=posMCBYY.B4 - l.MCBYY - 0.385;
+
+MQYY   : QUADRUPOLE,L := l.MQYY  ; ! very large aperture 2-in-1 (MQYY)
+MCBYYH : HKICKER,   L := l.MCBYY ; ! for orbit correction separate
+MCBYYV : VKICKER,   L := l.MCBYY ; ! for orbit correction separate
+BPMQA  : MONITOR,   L := l.BPMQA ; ! bpm in Q4
+
+Kmax_MCBYYH=4.5; ! MCBY in LHC is 2.5T at 4.5K
+Kmax_MCBYYV=4.5;
+
+
+
+MQYY.4L1.B1: MQYY, k1:= kq4.l1b1;
+MQYY.4R1.B1: MQYY, k1:= kq4.r1b1;
+MQYY.4L5.B1: MQYY, k1:= kq4.l5b1;
+MQYY.4R5.B1: MQYY, k1:= kq4.r5b1;
+MQYY.4L1.B2: MQYY, k1:=-kq4.l1b2*bv_aux;
+MQYY.4R1.B2: MQYY, k1:=-kq4.r1b2*bv_aux;
+MQYY.4L5.B2: MQYY, k1:=-kq4.l5b2*bv_aux;
+MQYY.4R5.B2: MQYY, k1:=-kq4.r5b2*bv_aux;
+
+MCBYYV.4R1.B1:MCBYYV, KICK:=  acbyvs4.r1b1, polarity=+1;
+MCBYYH.4R1.B1:MCBYYH, KICK:=  acbyhs4.r1b1, polarity=+1;
+!MCBYYV.B4R1.B1:MCBYYV, KICK:= acbyv4.r1b1*bv_aux, polarity=+1;
+!MCBYYH.B4L5.B1:MCBYYH, KICK:= acbyh4.l5b1, polarity=+1;
+MCBYYV.4L5.B1:MCBYYV, KICK:=  acbyvs4.l5b1, polarity=+1;
+MCBYYH.4L5.B1:MCBYYH, KICK:=  acbyhs4.l5b1, polarity=+1;
+MCBYYV.4R5.B1:MCBYYV, KICK:=  acbyvs4.r5b1, polarity=+1;
+MCBYYH.4R5.B1:MCBYYH, KICK:=  acbyhs4.r5b1, polarity=+1;
+!MCBYYV.B4R5.B1:MCBYYV, KICK:= acbyv4.r5b1*bv_aux, polarity=+1;
+!MCBYYH.B4L1.B1:MCBYYH, KICK:= acbyh4.l1b1, polarity=+1;
+MCBYYV.4L1.B1:MCBYYV, KICK:=  acbyvs4.l1b1, polarity=+1;
+MCBYYH.4L1.B1:MCBYYH, KICK:=  acbyhs4.l1b1, polarity=+1;
+MCBYYH.4R1.B2:MCBYYH, KICK:= -acbyhs4.r1b2, polarity=+1;
+MCBYYV.4R1.B2:MCBYYV, KICK:= -acbyvs4.r1b2*bv_aux, polarity=+1;
+!MCBYYH.B4R1.B2:MCBYYH, KICK:= -acbyh4.r1b2, polarity=+1;
+!MCBYYV.B4L5.B2:MCBYYV, KICK:= -acbyv4.l5b2*bv_aux, polarity=+1;
+MCBYYH.4L5.B2:MCBYYH, KICK:= -acbyhs4.l5b2, polarity=+1;
+MCBYYV.4L5.B2:MCBYYV, KICK:= -acbyvs4.l5b2*bv_aux, polarity=+1;
+MCBYYH.4R5.B2:MCBYYH, KICK:= -acbyhs4.r5b2, polarity=+1;
+MCBYYV.4R5.B2:MCBYYV, KICK:= -acbyvs4.r5b2*bv_aux, polarity=+1;
+!MCBYYH.B4R5.B2:MCBYYH, KICK:= -acbyh4.r5b2, polarity=+1;
+!MCBYYV.B4L1.B2:MCBYYV, KICK:= -acbyv4.l1b2*bv_aux, polarity=+1;
+MCBYYH.4L1.B2:MCBYYH, KICK:= -acbyhs4.l1b2, polarity=+1;
+MCBYYV.4L1.B2:MCBYYV, KICK:= -acbyvs4.l1b2*bv_aux, polarity=+1;
+
+exec,newel_ir15_b12(BPMQA.4,BPMQA);
+
+exec,install_ir15_b12(BPMQA.4, posBPMQA.4  );
+exec,install_ir15_b12(MQYY.4 , posQ4       );
+!IP - posMCBYY.A4 posMCBYY.B4 Q4
+! orientation:
+! b1: h v - IP - v h
+! b2: v h - IP - h v
+!exec,install_ir15_b1_b2(MCBYYV.4,posMCBYY.A4,posMCBYY.B4);
+!exec,install_ir15_b1_b2(MCBYYH.4,posMCBYY.B4,posMCBYY.A4);
+! orientation:
+! b1: h v - IP - h v
+! b2: v h - IP - v h
+exec,install_ir15_b1_b2_alt(MCBYYV.4,posMCBYY.A4,posMCBYY.B4);
+exec,install_ir15_b1_b2_alt(MCBYYH.4,posMCBYY.B4,posMCBYY.A4);
+
+value,posQ4,posMCBYY.B4,posMCBYY.A4;
+
+
+!===============================================
+! Q5
+!===============================================
+!if (l.MQYL==0){l.MQYL=3.40;};
+
+!MQYL:  QUADRUPOLE, L := l.MQYL   ; ! long MQY type
+
+l.BPMQB= 0.0;! l.BPMQB = 0
+BPMQB: MONITOR,    L := l.BPMQB  ; ! large ap. for Q5 maybe from old q4 ones
+
+
+
+
+MQY.5R1.B1:MQY,K1 :=  kq5.r1b1, polarity=+1;
+MQY.5L5.B1:MQY,K1 :=  kq5.l5b1, polarity=-1;
+MQY.5R5.B1:MQY,K1 :=  kq5.r5b1, polarity=+1;
+MQY.5L1.B1:MQY,K1 :=  kq5.l1b1, polarity=-1;
+MQY.5R1.B2:MQY,K1 := -kq5.r1b2*bv_aux, polarity=-1;
+MQY.5L5.B2:MQY,K1 := -kq5.l5b2*bv_aux, polarity=+1;
+MQY.5R5.B2:MQY,K1 := -kq5.r5b2*bv_aux, polarity=-1;
+MQY.5L1.B2:MQY,K1 := -kq5.l1b2*bv_aux, polarity=+1;
+
+!MCBYH.5R1.B1: MCBYH, KICK :=  acbch5.r1b1, polarity=+1;
+!MCBYV.5L5.B1: MCBYV, KICK :=  acbcv5.l5b1*bv_aux, polarity=+1;
+!MCBYH.5R5.B1: MCBYH, KICK :=  acbch5.r5b1, polarity=+1;
+!MCBYV.5L1.B1: MCBYV, KICK :=  acbcv5.l1b1*bv_aux, polarity=+1;
+!MCBYV.5R1.B2: MCBYV, KICK := -acbcv5.r1b2*bv_aux, polarity=+1;
+!MCBYH.5L5.B2: MCBYH, KICK := -acbch5.l5b2, polarity=+1;
+!MCBYV.5R5.B2: MCBYV, KICK := -acbcv5.r5b2*bv_aux, polarity=+1;
+!MCBYH.5L1.B2: MCBYH, KICK := -acbch5.l1b2, polarity=+1;
+
+! MQY B - A for all MQY the B corrector is closest to the MQY
+MCBYV.A5R1.B2:MCBYV, KICK:= acbyvs5.r1b2*bv_aux, polarity=+1;
+MCBYH.5R1.B2 :MCBYH, KICK:= acbyhs5.r1b2, polarity=+1;
+MCBYV.B5R1.B2:MCBYV, KICK:= acbyv5.r1b2*bv_aux, polarity=+1;
+MCBYH.B5L5.B2:MCBYH, KICK:= acbyh5.l5b2, polarity=+1;
+MCBYV.5L5.B2 :MCBYV, KICK:= acbyvs5.l5b2*bv_aux, polarity=+1;
+MCBYH.A5L5.B2:MCBYH, KICK:= acbyhs5.l5b2, polarity=+1;
+MCBYV.A5R5.B2:MCBYV, KICK:= acbyvs5.r5b2*bv_aux, polarity=+1;
+MCBYH.5R5.B2 :MCBYH, KICK:= acbyhs5.r5b2, polarity=+1;
+MCBYV.B5R5.B2:MCBYV, KICK:= acbyv5.r5b2*bv_aux, polarity=+1;
+MCBYH.B5L1.B2:MCBYH, KICK:= acbyh5.l1b2, polarity=+1;
+MCBYV.5L1.B2 :MCBYV, KICK:= acbyvs5.l1b2*bv_aux, polarity=+1;
+MCBYH.A5L1.B2:MCBYH, KICK:= acbyhs5.l1b2, polarity=+1;
+
+MCBYH.A5R1.B1:MCBYH, KICK:= -acbyhs5.r1b1, polarity=+1;
+MCBYV.5R1.B1 :MCBYV, KICK:= -acbyvs5.r1b1*bv_aux, polarity=+1;
+MCBYH.B5R1.B1:MCBYH, KICK:= -acbyh5.r1b1, polarity=+1;
+MCBYV.B5L5.B1:MCBYV, KICK:= -acbyv5.l5b1*bv_aux, polarity=+1;
+MCBYH.5L5.B1 :MCBYH, KICK:= -acbyhs5.l5b1, polarity=+1;
+MCBYV.A5L5.B1:MCBYV, KICK:= -acbyvs5.l5b1*bv_aux, polarity=+1;
+MCBYH.A5R5.B1:MCBYH, KICK:= -acbyhs5.r5b1, polarity=+1;
+MCBYV.5R5.B1 :MCBYV, KICK:= -acbyvs5.r5b1*bv_aux, polarity=+1;
+MCBYH.B5R5.B1:MCBYH, KICK:= -acbyh5.r5b1, polarity=+1;
+MCBYV.B5L1.B1:MCBYV, KICK:= -acbyv5.l1b1*bv_aux, polarity=+1;
+MCBYH.5L1.B1 :MCBYH, KICK:= -acbyhs5.l1b1, polarity=+1;
+MCBYV.A5L1.B1:MCBYV, KICK:= -acbyvs5.l1b1*bv_aux, polarity=+1;
+
+
+posQ5  := 196.490 + deltaPosQ5; !new layout (excel file): 207.49
+
+!position set for IR5 right
+dposBPMY.5  := l.MQY/2 + 0.974; !BPMYA.4L5.B1:BPMYA BPMYA.4L5.B2:BPMYA
+dposMCBY.B5 := (l.MQY + l.MCBYV)/2 + 0.3725; !same as nominal note that in IR2-8-6 distance can
+dposMCBY.5  := dposMCBY.B5 + (l.MCBYH + l.MCBYV)/2 + 0.3965; !be better
+dposMCBY.A5 := dposMCBY.5  + (l.MCBYV + l.MCBYH)/2 + 0.3965;
+
+BPMYA.5R1.B1:BPMYA;
+BPMYA.5L5.B1:BPMYA;
+BPMYA.5R5.B1:BPMYA;
+BPMYA.5L1.B1:BPMYA;
+BPMYA.5R1.B2:BPMYA;
+BPMYA.5L5.B2:BPMYA;
+BPMYA.5R5.B2:BPMYA;
+BPMYA.5L1.B2:BPMYA;
+
+
+!exec,newel_ir15_b12(BPMQB.5,BPMQB);
+!exec,newel_ir15_b12(BPMYA.5,BPMYA);
+
+exec,install_ir15_b12(MQY.5,   posQ5 );
+
+value,posQ5,dposBPMY.5,dposMCBY.B5,dposMCBY.5,dposMCBY.A5;
+
+if(bv_aux == 1){
+seqedit,sequence=lhcb1;
+! .... BPMYA.5
+install,element=BPMYA.5L1.B1, at=-(posQ5-dposBPMY.5), from= IP1.L1;!IP side
+install,element=BPMYA.5R1.B1, at= (posQ5+dposBPMY.5), from= IP1;   !non-IP side
+install,element=BPMYA.5L5.B1, at=-(posQ5+dposBPMY.5), from= IP5;   !non-IP side
+install,element=BPMYA.5R5.B1, at= (posQ5-dposBPMY.5), from= IP5;   !IP side
+!
+! .... MCBY.B5
+install,element=MCBYV.B5L1.B1, at=-(posQ5+dposMCBY.B5), from= IP1.L1;!non-IP side
+install,element=MCBYH.B5R1.B1, at= (posQ5-dposMCBY.B5), from= IP1;   !IP side
+install,element=MCBYV.B5L5.B1, at=-(posQ5-dposMCBY.B5), from= IP5;   !IP side
+install,element=MCBYH.B5R5.B1, at= (posQ5+dposMCBY.B5), from= IP5;   !non-IP side
+!
+! .... MCBY.5
+install,element=MCBYH.5L1.B1, at=-(posQ5+dposMCBY.5), from= IP1.L1;!non-IP side
+install,element=MCBYV.5R1.B1, at= (posQ5-dposMCBY.5), from= IP1;   !IP side
+install,element=MCBYH.5L5.B1, at=-(posQ5-dposMCBY.5), from= IP5;   !IP side
+install,element=MCBYV.5R5.B1, at= (posQ5+dposMCBY.5), from= IP5;   !non-IP side
+!
+! .... MCBY.A5
+install,element=MCBYV.A5L1.B1, at=-(posQ5+dposMCBY.A5), from= IP1.L1;!non-IP side
+install,element=MCBYH.A5R1.B1, at= (posQ5-dposMCBY.A5), from= IP1;   !IP side
+install,element=MCBYV.A5L5.B1, at=-(posQ5-dposMCBY.A5), from= IP5;   !IP side
+install,element=MCBYH.A5R5.B1, at= (posQ5+dposMCBY.A5), from= IP5;   !non-IP side
+endedit;
+};
+
+seqedit,sequence=lhcb2;
+! .... BPMYA.5
+install,element=BPMYA.5L1.B2, at=-(posQ5-dposBPMY.5)*bv_aux, from= IP1.L1;!IP side
+install,element=BPMYA.5R1.B2, at= (posQ5+dposBPMY.5)*bv_aux, from= IP1;   !non-IP side
+install,element=BPMYA.5L5.B2, at=-(posQ5+dposBPMY.5)*bv_aux, from= IP5;   !non-IP side
+install,element=BPMYA.5R5.B2, at= (posQ5-dposBPMY.5)*bv_aux, from= IP5;   !IP side
+!
+! .... MCBY.B5
+install,element=MCBYH.B5L1.B2, at=-(posQ5+dposMCBY.B5)*bv_aux, from= IP1.L1;
+install,element=MCBYV.B5R1.B2, at= (posQ5-dposMCBY.B5)*bv_aux, from= IP1;
+install,element=MCBYH.B5L5.B2, at=-(posQ5-dposMCBY.B5)*bv_aux, from= IP5;
+install,element=MCBYV.B5R5.B2, at= (posQ5+dposMCBY.B5)*bv_aux, from= IP5;
+!
+! .... MCBY.5
+install,element=MCBYV.5L1.B2, at=-(posQ5+dposMCBY.5)*bv_aux, from= IP1.L1;
+install,element=MCBYH.5R1.B2, at= (posQ5-dposMCBY.5)*bv_aux, from= IP1;
+install,element=MCBYV.5L5.B2, at=-(posQ5-dposMCBY.5)*bv_aux, from= IP5;
+install,element=MCBYH.5R5.B2, at= (posQ5+dposMCBY.5)*bv_aux, from= IP5;
+!
+! .... MCBY.A5
+install,element=MCBYH.A5L1.B2, at=-(posQ5+dposMCBY.A5)*bv_aux, from= IP1.L1;
+install,element=MCBYV.A5R1.B2, at= (posQ5-dposMCBY.A5)*bv_aux, from= IP1;
+install,element=MCBYH.A5L5.B2, at=-(posQ5-dposMCBY.A5)*bv_aux, from= IP5;
+install,element=MCBYV.A5R5.B2, at= (posQ5+dposMCBY.A5)*bv_aux, from= IP5;
+endedit;
+
+
+! ===============================================
+! Q6
+! ===============================================
+l.BPMQC= 0.0;!l.BPMQC= 0.100
+BPMQC: MONITOR,    L := l.BPMQC  ; ! same as BPMR.6R[15] and BPM.6L[15]
+
+posQ6     := 228.390 + deltaPosQ6;
+dposMCBCH := (l.MQML + l.MCBCH)/2 + 0.192;
+dposMCBCV := (l.MQML + l.MCBCV)/2 + 0.19;
+dposBPM   := l.MQML/2 + 0.745; !3.145
+
+value, posQ6,dposMCBCH,dposMCBCV,dposBPM;
+
+!exec,newel_ir15_b12(BPMQC.6,BPMQC);
+
+exec,install_ir15_b12(MQML.6,    posQ6 );
+
+
+! change with respect to the nominal LHC
+! Nominal: IR1 Right: MCBC Q6 BPM ; IR5 Right BPM Q6 MCBC
+! Upgrade: IR1 Right: BPM Q6 MCBC ; IR5 Right MCBC Q6 BPM
+if(bv_aux == 1){
+seqedit,sequence=lhcb1;
+! .... BPM.6
+install,element=BPM.6L1.B1, at=-(posQ6+dposBPM), from= IP1.L1;!non-IP side
+install,element=BPMR.6R1.B1,at= (posQ6-dposBPM), from= IP1;   !IP side
+install,element=BPM.6L5.B1, at=-(posQ6-dposBPM), from= IP5;   !IP side
+install,element=BPMR.6R5.B1,at= (posQ6+dposBPM), from= IP5;   !non-IP side
+
+! .... MCBC.6
+install,element=MCBCH.6L1.B1, at=-(posQ6-dposMCBCH), from= IP1.L1;!IP side
+install,element=MCBCV.6R1.B1, at= (posQ6+dposMCBCV), from= IP1;   !non-IP side
+install,element=MCBCH.6L5.B1, at=-(posQ6+dposMCBCH), from= IP5;   !non-IP side
+install,element=MCBCV.6R5.B1, at= (posQ6-dposMCBCV), from= IP5;   !IP side
+endedit;
+};
+
+seqedit,sequence=lhcb2;
+! .... BPM.6
+install,element=BPMR.6L1.B2,at=-(posQ6+dposBPM)*bv_aux, from= IP1.L1;!non-IP side
+install,element=BPM.6R1.B2, at= (posQ6-dposBPM)*bv_aux, from= IP1;   !IP side
+install,element=BPMR.6L5.B2,at=-(posQ6-dposBPM)*bv_aux, from= IP5;   !IP side
+install,element=BPM.6R5.B2, at= (posQ6+dposBPM)*bv_aux, from= IP5;   !non-IP side
+
+! .... MCBC.6
+install,element=MCBCV.6L1.B2, at=-(posQ6-dposMCBCV)*bv_aux, from= IP1.L1;!IP side
+install,element=MCBCH.6R1.B2, at= (posQ6+dposMCBCH)*bv_aux, from= IP1;   !non-IP side
+install,element=MCBCV.6L5.B2, at=-(posQ6+dposMCBCV)*bv_aux, from= IP5;   !non-IP side
+install,element=MCBCH.6R5.B2, at= (posQ6-dposMCBCH)*bv_aux, from= IP5;   !IP side
+endedit;
+
+
+
+! ===============================================
+! MS in Q10
+! ===============================================
+posMSQ10    := l.MQML/2 +0.1605+l.MS/2;
+posMCBQ10   := posMSQ10+l.MS/2 +0.085+l.MCBV/2;
+
+MCBH.10L1.B1: MCBH, KICK := acbh10.l1b1, polarity=+1;
+MCBH.10L5.B1: MCBH, KICK := acbh10.l5b1, polarity=+1;
+MCBV.10R1.B1: MCBV, KICK := acbv10.r1b1*bv_aux, polarity=+1;
+MCBV.10R5.B1: MCBV, KICK := acbv10.r5b1*bv_aux, polarity=+1;
+MCBV.10L1.B2: MCBV, KICK := acbv10.l1b2*bv_aux, polarity=+1;
+MCBV.10L5.B2: MCBV, KICK := acbv10.l5b2*bv_aux, polarity=+1;
+MCBH.10R1.B2: MCBH, KICK := acbh10.r1b2, polarity=+1;
+MCBH.10R5.B2: MCBH, KICK := acbh10.r5b2, polarity=+1;
+
+
+DISABLE_SEXT(MS.10):macro={
+MS.10L1.B1: MS,K2:=0;
+MS.10R1.B1: MS,K2:=0;
+MS.10L5.B1: MS,K2:=0;
+MS.10R5.B1: MS,K2:=0;
+MS.10L1.B2: MS,K2:=0, polarity=-1*bv_aux;
+MS.10R1.B2: MS,K2:=0, polarity=+1*bv_aux;
+MS.10L5.B2: MS,K2:=0, polarity=-1*bv_aux;
+MS.10R5.B2: MS,K2:=0, polarity=+1*bv_aux;
+on_cutMS.10=1;
+};
+
+DISABLE_SEXT_F(MS.10):macro={
+MS.10L1.B1: MS,K2:=0;
+MS.10L5.B1: MS,K2:=0;
+MS.10R1.B2: MS,K2:=0, polarity=+1*bv_aux;
+MS.10R5.B2: MS,K2:=0, polarity=+1*bv_aux;
+on_cutMS.10=1;
+};
+
+
+ENABLE_SEXT(MS.10,ksf1,ksd2,ksd1,ksf2):macro={
+MS.10L1.B1: MS,K2:=ksf1.a81b1;
+MS.10R1.B1: MS,K2:=ksd2.a12b1;
+MS.10L5.B1: MS,K2:=ksf1.a45b1;
+MS.10R5.B1: MS,K2:=ksd2.a56b1;
+MS.10L1.B2: MS,K2:=- ksd1.a81b2, polarity=-1*bv_aux;
+MS.10R1.B2: MS,K2:=- ksf2.a12b2, polarity=+1*bv_aux;
+MS.10L5.B2: MS,K2:=- ksd1.a45b2, polarity=-1*bv_aux;
+MS.10R5.B2: MS,K2:=- ksf2.a56b2, polarity=+1*bv_aux;
+on_cutMS.10=0;
+};
+
+exec,ENABLE_SEXT(MS.10);
+
+value,posMSQ10,posMCBQ10;
+value,on_cutMS.10,on_cutMS.14;
+if (on_cutMS.10==1){exec, DISABLE_SEXT(MS.10);};
+if (on_cutMS.14==1){exec, DISABLE_SEXT(MS.14);};
+
+! Q10
+if(bv_aux == 1){
+seqedit,sequence=lhcb1;
+install,element=MS.10L1.B1,  at=+posMSQ10, from=MQML.10L1.B1;
+install,element=MS.10R1.B1,  at=+posMSQ10, from=MQML.10R1.B1;
+install,element=MS.10L5.B1,  at=+posMSQ10, from=MQML.10L5.B1;
+install,element=MS.10R5.B1,  at=+posMSQ10, from=MQML.10R5.B1;
+install,element=MCBH.10L1.B1,at=posMCBQ10, from=MQML.10L1.B1;
+install,element=MCBV.10R1.B1,at=posMCBQ10, from=MQML.10R1.B1;
+install,element=MCBH.10L5.B1,at=posMCBQ10, from=MQML.10L5.B1;
+install,element=MCBV.10R5.B1,at=posMCBQ10, from=MQML.10R5.B1;
+endedit;
+};
+
+seqedit,sequence=lhcb2;
+install,element=MS.10L1.B2,  at=+posMSQ10*bv_aux, from=MQML.10L1.B2;
+install,element=MS.10R1.B2,  at=+posMSQ10*bv_aux, from=MQML.10R1.B2;
+install,element=MS.10L5.B2,  at=+posMSQ10*bv_aux, from=MQML.10L5.B2;
+install,element=MS.10R5.B2,  at=+posMSQ10*bv_aux, from=MQML.10R5.B2;
+install,element=MCBV.10L1.B2,at=posMCBQ10*bv_aux, from=MQML.10L1.B2;
+install,element=MCBH.10R1.B2,at=posMCBQ10*bv_aux, from=MQML.10R1.B2;
+install,element=MCBV.10L5.B2,at=posMCBQ10*bv_aux, from=MQML.10L5.B2;
+install,element=MCBH.10R5.B2,at=posMCBQ10*bv_aux, from=MQML.10R5.B2;
+endedit;
+
+!=================================================
+!           IR6 MODIFICATION (doubling Q5)
+!=================================================
+
+MQY.B5L6.B1: MQY, K1 :=  kq5.l6b1, polarity=1;
+MQY.B5R6.B1: MQY, K1 :=  kq5.r6b1, polarity=1;
+MQY.B5L6.B2: MQY, K1 := -kq5.l6b2*bv_aux,polarity=-1;
+MQY.B5R6.B2: MQY, K1 := -kq5.r6b2*bv_aux,polarity=-1;
+posQ5IR6=208.2;
+posQ5BIR6=posQ5IR6+3.781;
+!posBPMQ5IR6=posQ5BIR6+2.718;
+!posMCBYQ5IR6=posQ5BIR6+2.257;
+
+! Proposal from Herve 21/8/2014
+! BPMY.5R6 = about 205.482 from=IP6;
+! MQY.A5R6 = 208.142 from IP6;
+! MQY.B5R6 = 211.928 from IP6;
+! MCBY.5R6 = 214.291 from IP6;
+! BPMY.5L6 = about -214.588 from=IP6;
+! MQY.B5L6 = -208.142 from IP6;
+! MQY.A5L6 = -211.928 from IP6;
+! MCBY.5L6 = -205.579 from IP6;
+
+!posQ5IR6=208.142;
+!posQ5BIR6=posQ5IR6+3.786;
+dposBPMQ5IR6=2.660;
+dposMCBYQ5IR6=2.363;
+
+value,posQ5IR6,posQ5BIR6,dposBPMQ5IR6,dposMCBYQ5IR6;
+
+if(bv_aux == 1){
+seqedit,sequence=lhcb1;
+remove,element=BPMYA.5L6.B1; remove,element=MCBYV.5R6.B1;
+remove,element=BPMYB.5R6.B1; remove,element=MCBYH.5L6.B1;
+remove,element=MQY.5L6.B1; remove,element=MQY.5R6.B1;
+remove,element=MQY.B5R6.B1; remove,element=MQY.B5L6.B1;
+install,element=BPMYA.5L6.B1, at=-posQ5BIR6-dposBPMQ5IR6, from=IP6;
+install,element=MQY.B5L6.B1 , at=-posQ5BIR6, from=IP6;
+install,element=MQY.5L6.B1  , at=-posQ5IR6 , from=IP6;
+install,element=MCBYH.5L6.B1, at=-posQ5IR6+dposMCBYQ5IR6, from=IP6;
+install,element=BPMYB.5R6.B1, at= posQ5IR6-dposBPMQ5IR6, from=IP6;
+install,element=MQY.5R6.B1  , at=+posQ5IR6    ,from=IP6;
+install,element=MQY.B5R6.B1 , at=+posQ5BIR6   ,from=IP6;
+install,element=MCBYV.5R6.B1, at=+posQ5BIR6+dposMCBYQ5IR6,from=IP6;
+endedit;
+};
+
+seqedit,sequence=lhcb2;
+remove,element=BPMYB.5L6.B2; remove,element=MCBYH.5R6.B2;
+remove,element=BPMYA.5R6.B2; remove,element=MCBYV.5L6.B2;
+remove,element=BPMYA.5R6.B2; remove,element=MCBYV.5L6.B2;
+remove,element=BPMYB.5L6.B2; remove,element=MCBYH.5R6.B2;
+remove,element=MQY.5L6.B2; remove,element=MQY.5R6.B2;
+remove,element=MQY.B5R6.B2; remove,element=MQY.B5L6.B2;
+install,element=BPMYB.5L6.B2, at=bv_aux*(-posQ5BIR6-dposBPMQ5IR6), from=IP6;
+install,element=MQY.B5L6.B2 , at=bv_aux*(-posQ5BIR6), from=IP6;
+install,element=MQY.5L6.B2  , at=bv_aux*(-posQ5IR6) , from=IP6;
+install,element=MCBYV.5L6.B2, at=bv_aux*(-posQ5IR6+dposMCBYQ5IR6), from=IP6;
+install,element=BPMYA.5R6.B2, at=bv_aux*( posQ5IR6-dposBPMQ5IR6), from=IP6;
+install,element=MQY.5R6.B2  , at=bv_aux*(+posQ5IR6)    ,from=IP6;
+install,element=MQY.B5R6.B2 , at=bv_aux*(+posQ5BIR6)   ,from=IP6;
+install,element=MCBYH.5R6.B2, at=bv_aux*(+posQ5BIR6+dposMCBYQ5IR6),from=IP6;
+endedit;
+
+
+! ===============================================
+! Crab cavities
+! ===============================================
+
+crab_make_tkicker(NNN,FFF): macro {
+omega_crabsc:=twopi*HRF400/LHCLENGTH;
+z_crab:=0; ! positive means head of the bunch i.e. z=-cT and z==t(madx)
+
+phi_crab_l1b1 := 0;
+phi_crab_r1b1 := 0;
+phi_crab_l1b2 := 0;
+phi_crab_r1b2 := 0;
+phi_crab_l5b1 := 0;
+phi_crab_r5b1 := 0;
+phi_crab_l5b2 := 0;
+phi_crab_r5b2 := 0;
+
+sin_crab_l1b1:=sin(-omega_crabsc*z_crab+phi_crab_l1b1);
+sin_crab_r1b1:=sin(-omega_crabsc*z_crab+phi_crab_r1b1);
+sin_crab_l1b2:=sin(-omega_crabsc*z_crab+phi_crab_l1b2);
+sin_crab_r1b2:=sin(-omega_crabsc*z_crab+phi_crab_r1b2);
+sin_crab_l5b1:=sin(-omega_crabsc*z_crab+phi_crab_l5b1);
+sin_crab_r5b1:=sin(-omega_crabsc*z_crab+phi_crab_r5b1);
+sin_crab_l5b2:=sin(-omega_crabsc*z_crab+phi_crab_l5b2);
+sin_crab_r5b2:=sin(-omega_crabsc*z_crab+phi_crab_r5b2);
+
+cosi1:=cos(twopi*phi_IR1/360.);sinu1:=sin(twopi*phi_IR1/360.);
+cosi5:=cos(twopi*phi_IR5/360.);sinu5:=sin(twopi*phi_IR5/360.);
+on_crab1=0;on_crab5=0;
+acfca.NNNl1.b1: tkicker, l=0, HKICK:=on_crab1*ahcrab_l1b1/FFF*sin_crab_l1b1*cosi1,VKICK:=on_crab1*avcrab_l1b1/FFF*sin_crab_l1b1*sinu1*bv_aux;
+acfca.NNNl1.b2: tkicker, l=0, HKICK:=on_crab1*ahcrab_l1b2/FFF*sin_crab_l1b2*cosi1,VKICK:=on_crab1*avcrab_l1b2/FFF*sin_crab_l1b2*sinu1*bv_aux;
+acfca.NNNr1.b1: tkicker, l=0, HKICK:=on_crab1*ahcrab_r1b1/FFF*sin_crab_r1b1*cosi1,VKICK:=on_crab1*avcrab_r1b1/FFF*sin_crab_r1b1*sinu1*bv_aux;
+acfca.NNNr1.b2: tkicker, l=0, HKICK:=on_crab1*ahcrab_r1b2/FFF*sin_crab_r1b2*cosi1,VKICK:=on_crab1*avcrab_r1b2/FFF*sin_crab_r1b2*sinu1*bv_aux;
+acfca.NNNl5.b1: tkicker, l=0, HKICK:=on_crab5*ahcrab_l5b1/FFF*sin_crab_l5b1*cosi5,VKICK:=on_crab5*avcrab_l5b1/FFF*sin_crab_l5b1*sinu5*bv_aux;
+acfca.NNNl5.b2: tkicker, l=0, HKICK:=on_crab5*ahcrab_l5b2/FFF*sin_crab_l5b2*cosi5,VKICK:=on_crab5*avcrab_l5b2/FFF*sin_crab_l5b2*sinu5*bv_aux;
+acfca.NNNr5.b1: tkicker, l=0, HKICK:=on_crab5*ahcrab_r5b1/FFF*sin_crab_r5b1*cosi5,VKICK:=on_crab5*avcrab_r5b1/FFF*sin_crab_r5b1*sinu5*bv_aux;
+acfca.NNNr5.b2: tkicker, l=0, HKICK:=on_crab5*ahcrab_r5b2/FFF*sin_crab_r5b2*cosi5,VKICK:=on_crab5*avcrab_r5b2/FFF*sin_crab_r5b2*sinu5*bv_aux;
+};
+
+crab_install(NNN,PFFF,PBBB): macro ={
+value,PFFF,PBBB;
+if(bv_aux == 1){
+seqedit, sequence=lhcb1;
+install,element=acfca.NNNl5.b1,at=-PBBB,from=IP5;
+install,element=acfca.NNNr5.b1,at= PFFF,from=IP5;
+install,element=acfca.NNNl1.b1,at=-PBBB,from=IP1.L1;
+install,element=acfca.NNNr1.b1,at= PFFF,from=IP1;
+endedit;
+};
+seqedit, sequence=lhcb2;
+install,element=acfca.NNNl5.b2,at=-PFFF*bv_aux,from=IP5;
+install,element=acfca.NNNr5.b2,at= PBBB*bv_aux,from=IP5;
+install,element=acfca.NNNl1.b2,at=-PFFF*bv_aux,from=IP1.L1;
+install,element=acfca.NNNr1.b2,at= PBBB*bv_aux,from=IP1;
+endedit;
+};
+
+crab_remove(NNN): macro ={
+if(bv_aux == 1){
+seqedit, sequence=lhcb1;
+remove,element=acfca.NNNl5.b1;
+remove,element=acfca.NNNr5.b1;
+remove,element=acfca.NNNl1.b1;
+remove,element=acfca.NNNr1.b1;
+endedit;
+};
+seqedit, sequence=lhcb2;
+remove,element=acfca.NNNl5.b2;
+remove,element=acfca.NNNr5.b2;
+remove,element=acfca.NNNl1.b2;
+remove,element=acfca.NNNr1.b2;
+endedit;
+};
+
+
+exec,crab_make_tkicker(A,4);
+exec,crab_make_tkicker(B,4);
+exec,crab_make_tkicker(C,4);
+exec,crab_make_tkicker(D,4);
+
+exec,crab_remove(A);
+exec,crab_remove(B);
+exec,crab_remove(C);
+exec,crab_remove(D);
+
+
+!  B1-> { 4.4 C 1.3 C 5.3 C 1.3 C 1   }
+!  B2<- { 1.0 C 1.3 C 5.3 C 1.3 C 4.4 }
+
+!position crab cavities as close as possible after D2
+!posCRAB   = posMCBRDB + l.MCBRD/2 + 3.222;
+!posCRABA1 = posCRAB+0    ;posCRABA2=posCRAB+ 3.400;
+!posCRABB1 = posCRAB+1.050;posCRABB2=posCRAB+ 4.450;
+!posCRABC1 = posCRAB+6.600;posCRABC2=posCRAB+10.00;
+!posCRABD1 = posCRAB+7.650;posCRABD2=posCRAB+11.05;
+
+posCRAB   = 153.94280; ! mechanical start
+posCRABA1 = posCRAB+0.8751;posCRABA2=posCRAB + 4.6951;
+posCRABB1 = posCRAB+1.9251 ;posCRABB2=posCRAB+ 5.7451;
+posCRABC1 = posCRAB+8.3151 ;posCRABC2=posCRAB+12.1351;
+posCRABD1 = posCRAB+9.3651 ;posCRABD2=posCRAB+13.1851;
+
+
+value, posCRABA1,posCRABB1,posCRABC1,posCRABD1;
+value, posCRABA2,posCRABB2,posCRABC2,posCRABD2;
+
+!staggered
+exec,crab_install(A,posCRABA1,posCRABA2);
+exec,crab_install(B,posCRABB1,posCRABB2);
+exec,crab_install(C,posCRABC1,posCRABC2);
+exec,crab_install(D,posCRABD1,posCRABD2);
+
+!! consecutive good v
+!exec,crab_install(A,posCRABA1,posCRABB2);
+!exec,crab_install(B,posCRABA2,posCRABC1);
+!exec,crab_install(C,posCRABB1,posCRABC2);
+!
+!! consecutive good h
+!exec,crab_install(A,posCRABB2,posCRABA1);
+!exec,crab_install(B,posCRABC1,posCRABA2);
+!exec,crab_install(C,posCRABC2,posCRABB1);
+
+
+!===============================================
+! Masks
+!===============================================
+!compared to HLLHCV1.1:
+!- mask in front of D2 removed
+!- mask in front of Q4 removed
+
+l.TCLMB=1.0;
+l.TCLMC=1.0;
+
+!posTCLMB.5  := posQ5 - dposMCBY.A5 - l.MCBY/2 - l.TCLMB/2 - 1.835;!930+655+500/2
+!posTCLMC.6C := posQ6 - dposMCBCH - l.TCLMC/2 - 1.831;!926+655+500/2
+!posTCLMC.6Q := posQ6 - dposMCBCH - l.TCLMC/2 - 1.831;
+!value,posTCLMB.5,posTCLMC.6C,posTCLMC.6Q;
+
+posTCLMB.5C := posQ5 - 7.899;
+posTCLMB.5Q := posQ5 - 4.540;
+posTCLMC.6C := posQ6 - 5.823;
+posTCLMC.6Q := posQ6 - 5.216;
+
+TCLMB : RCOLLIMATOR, L := l.TCLMB;
+TCLMC : RCOLLIMATOR, L := l.TCLMC;
+
+
+exec,newel_ir15_b12(TCLMB.5,TCLMB);
+exec,newel_ir15_b12(TCLMC.6,TCLMC);
+
+!mask Q5
+exec,install_ir15_b1_b2_inv(TCLMB.5, posTCLMB.5C, posTCLMB.5Q );
+exec,install_ir15_b1_b2_inv(TCLMC.6, posTCLMC.6Q, posTCLMC.6C );
+
+!!mask Q6
+!if(bv_aux == 1){
+!seqedit,sequence=lhcb1;
+!! ... TCLMC
+!install,element=TCLMC.6L1.B1,at=-posTCLMC.6C, from= IP1.L1;
+!install,element=TCLMC.6R1.B1,at= posTCLMC.6Q, from= IP1;
+!install,element=TCLMC.6L5.B1,at=-posTCLMC.6Q, from= IP5;
+!install,element=TCLMC.6R5.B1,at= posTCLMC.6C, from= IP5;
+!endedit;
+!};
+!
+!seqedit,sequence=lhcb2;
+!! ... TCLMC
+!install,element=TCLMC.6L1.B2, at=(-posTCLMC.6C)*bv_aux, from= IP1.L1;
+!install,element=TCLMC.6R1.B2, at=( posTCLMC.6Q)*bv_aux, from= IP1;
+!install,element=TCLMC.6L5.B2, at=(-posTCLMC.6Q)*bv_aux, from= IP5;
+!install,element=TCLMC.6R5.B2, at=( posTCLMC.6C)*bv_aux, from= IP5;
+!endedit;
+
+!===============================================
+! TAN, TCTs, TCLs
+!===============================================
+
+
+if (L.TAXN==0) {L.TAXN=3.332;};
+
+! shielding collimation
+! v6.503  10.425 ,   7.335 ,   5.655 ,   3.445 ,   2.0805
+! slhc 1.275 closer to D2
+!D2 region, posBPMWQ = BPM right in front of D2
+posTCLX.4  := posBPMWQ  - l.BPMWQ/2 - l.TCL/2 - 0.460;
+posTCTH   := posTCLX.4  - l.TCL/2   - l.TCT/2 - 0.940;
+posTCTV   := posTCTH   - l.TCT - 1.000;
+posTAN    := posTCTV   - l.TCT/2   - l.TAXN/2 - 0.580;
+
+
+posTAN    := 128.80080;
+posTCTV   := 131.80080;
+posTCTH   := 133.80080;
+posTCLX.4 := 135.74080;
+
+!Q5/Q6 region
+!IP side
+posTCL.5C := posQ5 -  9.659 ;
+posTCL.5Q := posQ5 -  6.300 ;
+posTCL.6C := posQ6 -  7.583 ;
+posTCL.6Q := posQ6 -  6.976 ;
+
+posTCTV.6Q := posQ5 +  8.765 - 4.235; !left
+posTCTH.6Q := posQ5 + 10.765 - 4.235; !left
+posTCTV.6C := posQ5 +  8.158 ; !right
+posTCTH.6C := posQ5 + 10.158 ; !right
+
+
+value,posTCLMB.5,posTCLMC.6C,posTCLMC.6Q,posTAN,posTCTH,posTCTV,posTCLX.4,posTCL.5,posTCTV.6,posTCTH.6,posTCL.6C,posTCL.6Q;
+
+
+
+
+TCLX.4R1.B1: TCL; TCLX.4R5.B1: TCL;
+TCLX.4L1.B2: TCL; TCLX.4L5.B2: TCL;
+TCL.5R1.B1: TCL; TCL.5R5.B1: TCL;
+TCL.5L1.B2: TCL; TCL.5L5.B2: TCL;
+TCL.6R1.B1: TCL; TCL.6R5.B1: TCL;
+TCL.6L1.B2: TCL; TCL.6L5.B2: TCL;
+
+TAXN: RCOLLIMATOR, l:=l.TAXN;
+
+TAXN.4R1: TAXN;
+TAXN.4R5: TAXN;
+TAXN.4L1: TAXN;
+TAXN.4L5: TAXN;
+
+TCTV: RCOLLIMATOR, l:=l.TCT;
+TCTH: RCOLLIMATOR, l:=l.TCT;
+TCTPH.4L1.B1: TCTH; TCTPH.4L5.B1: TCTH;
+TCTPV.4L1.B1: TCTV; TCTPV.4L5.B1: TCTV;
+TCTPH.4R1.B2: TCTH; TCTPH.4R5.B2: TCTH;
+TCTPV.4R1.B2: TCTV; TCTPV.4R5.B2: TCTV;
+
+TCTH.6L1.B1: TCTH; TCTH.6L5.B1: TCTH;
+TCTV.6L1.B1: TCTV; TCTV.6L5.B1: TCTV;
+TCTH.6R1.B2: TCTH; TCTH.6R5.B2: TCTH;
+TCTV.6R1.B2: TCTV; TCTV.6R5.B2: TCTV;
+
+l.BPTXaux=0.285;
+posBPTX=195.1445;!1463+655+1195=3313
+
+
+APWL.5R5.B1: APWL; APWL.5R5.B2: APWL;
+APWL.5L5.B1: APWL; APWL.5L5.B2: APWL;
+APWL.5R1.B1: APWL; APWL.5R1.B2: APWL;
+APWL.5L1.B1: APWL; APWL.5L1.B2: APWL;
+
+L.APWLaux=0.6;
+posAPWL1=posQ4 + l.MQYY/2 + L.APWLaux/2   + 4.750 ;!1463+655+1195+285+1152=4750
+posAPWL2=posQ4 + l.MQYY/2 + 3*L.APWLaux/2 + 4.750 ;
+
+exec,install_ir15_b1_b2(APWL.5,  posAPWL1, posAPWL2);
+exec, install_ir15_cmn(TAXN.4,posTAN);
+
+if(bv_aux == 1){
+seqedit,sequence=lhcb1;
+!! ... TCTH
+install,element=TCTPH.4L1.B1, at= -posTCTH,   from= IP1.L1;
+install,element=TCTPH.4L5.B1, at= -posTCTH,   from= IP5;
+install,element=TCTH.6L1.B1, at= -posTCTH.6C,   from= IP1.L1;
+install,element=TCTH.6L5.B1, at= -posTCTH.6Q,   from= IP5;
+!! ... TCTV
+install,element=TCTPV.4L1.B1, at= -posTCTV, from=IP1.L1;
+install,element=TCTPV.4L5.B1, at= -posTCTV, from=IP5;
+install,element=TCTV.6L1.B1, at= -posTCTV.6C,   from= IP1.L1;
+install,element=TCTV.6L5.B1, at= -posTCTV.6Q,   from= IP5;
+! ... TCL
+install,element=TCLX.4R1.B1,  at= posTCLX.4, from=IP1;
+install,element=TCLX.4R5.B1,  at= posTCLX.4, from=IP5;
+install,element=TCL.5R1.B1,  at= posTCL.5C, from=IP1;
+install,element=TCL.5R5.B1,  at= posTCL.5Q, from=IP5;
+install,element=TCL.6R1.B1,  at= posTCL.6Q, from=IP1;
+install,element=TCL.6R5.B1,  at= posTCL.6C, from=IP5;
+! ... BPTX
+install,element=BPTX.5L1.B1, at= -posBPTX, from=IP1.L1;
+install,element=BPTX.5L5.B1, at= -posBPTX, from=IP5;
+endedit;
+};
+
+seqedit,sequence=lhcb2;
+! ... TCTH
+install,element=TCTPH.4R1.B2, at=  posTCTH*bv_aux,   from= IP1;
+install,element=TCTPH.4R5.B2, at=  posTCTH*bv_aux,   from= IP5;
+install,element=TCTH.6R1.B2, at=  posTCTH.6Q*bv_aux,   from= IP1;
+install,element=TCTH.6R5.B2, at=  posTCTH.6C*bv_aux,   from= IP5;
+! ... TCTV
+install,element=TCTPV.4R1.B2, at= posTCTV*bv_aux, from=IP1;
+install,element=TCTPV.4R5.B2, at= posTCTV*bv_aux, from=IP5;
+install,element=TCTV.6R1.B2, at= posTCTV.6Q*bv_aux, from=IP1;
+install,element=TCTV.6R5.B2, at= posTCTV.6C*bv_aux, from=IP5;
+! ... TCL
+install,element=TCLX.4L1.B2,  at= -posTCLX.4*bv_aux, from=IP1.L1;
+install,element=TCLX.4L5.B2,  at= -posTCLX.4*bv_aux, from=IP5;
+install,element=TCL.5L1.B2,  at= -posTCL.5C*bv_aux, from=IP1.L1;
+install,element=TCL.5L5.B2,  at= -posTCL.5Q*bv_aux, from=IP5;
+install,element=TCL.6L1.B2,  at= -posTCL.6Q*bv_aux, from=IP1.L1;
+install,element=TCL.6L5.B2,  at= -posTCL.6C*bv_aux, from=IP5;
+! ... BPTX
+install,element=BPTX.5R1.B2, at= posBPTX*bv_aux, from=IP1;
+install,element=BPTX.5R5.B2, at= posBPTX*bv_aux, from=IP5;
+
+endedit;

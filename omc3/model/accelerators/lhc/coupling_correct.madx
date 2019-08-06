@@ -1,0 +1,26 @@
+title, "Model creator for java";
+
+!@require %(LIB)s.macros.madx
+
+option, -echo;
+
+%(MAIN_SEQ)s
+exec, define_nominal_beams();
+call, file = "%(OPTICS_PATH)s";
+exec, cycle_sequences();
+
+
+use, period = LHCB%(NUM_BEAM)i;
+
+option, echo;
+
+exec, match_tunes(%(QMX)s, %(QMY)s, %(NUM_BEAM)i);
+
+exec, do_twiss_monitors(LHCB%(NUM_BEAM)i, "%(PATH)s/twiss_no.dat");
+
+exec, coupling_knob(%(NUM_BEAM)i);
+call, file = "%(PATH)s/changeparameters_couple.madx";
+exec, do_twiss_monitors(LHCB%(NUM_BEAM)i, "%(PATH)s/twiss_cor.dat");
+
+
+
