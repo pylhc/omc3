@@ -5,7 +5,7 @@ LHC
 import json
 import os
 from collections import OrderedDict
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
+from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode, AccElementTypes
 from utils import logging_tools
 import tfs
 from generic_parser.entrypoint import EntryPointParameters
@@ -34,8 +34,9 @@ class Lhc(Accelerator):
     """
     NAME = "lhc"
     MACROS_NAME = "lhc"
-    RE_DICT = {"bpm": r"BPM", "magnet": r"M",
-               "arc_bpm": r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]"}  # bpms > 14 L or R of IP
+    RE_DICT = {AccElementTypes.BPMS: r"BPM",
+               AccElementTypes.MAGNETS: r"M",
+               AccElementTypes.ARC_BPMS: r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]"}  # bpms > 14 L or R of IP
 
     @staticmethod
     def get_class_parameters():
@@ -422,7 +423,7 @@ class _LhcSegmentMixin(object):
                 "The accelerator definition is incomplete, beam "
                 "has to be specified (--beam option missing?)."
             )
-        if self.optics_file is None:
+        if self.modifiers_file is None:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete, optics "
                 "file has not been specified."

@@ -18,15 +18,22 @@ NOISE = 3.2e-5
 COUPLING = 0.01
 NTURNS = 1024
 NBPMS = 100
-BASEAMP=0.001
+BASEAMP = 0.001
 
 
 def test_harpy(_test_file, _model_file):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
     _write_tbt_file(model, os.path.dirname(_test_file))
-    hole_in_one_entrypoint(harpy=True, clean=True, autotunes="transverse", outputdir=os.path.dirname(_test_file),
-                           files=[_test_file], model=_model_file, to_write=["lin"], turn_bits=18)
+    hole_in_one_entrypoint(harpy=True,
+                           clean=True,
+                           autotunes="transverse",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           model=_model_file,
+                           to_write=["lin"],
+                           turn_bits=18,
+                           unit="m")
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
     for plane in PLANES:
@@ -35,7 +42,7 @@ def test_harpy(_test_file, _model_file):
                           model.loc[:, f"TUNE{plane}"].values)) < LIMITS["F1"]
         assert _rms(_diff(lin[plane].loc[:, f"FREQ{_couple(plane)}"].values,
                           model.loc[:, f"TUNE{_other(plane)}"].values)) < LIMITS["F2"]
-        #main and secondary amplitudes
+        # main and secondary amplitudes
         # TODO remove factor 2 - only for backwards compatibility with Drive
         assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values * 2,
                               model.loc[:, f"AMP{plane}"].values)) < LIMITS["A1"]
@@ -49,10 +56,42 @@ def test_harpy(_test_file, _model_file):
                                 model.loc[:, f"MU{_other(plane)}"].values)) < LIMITS["P2"]
 
 
+def test_freekick_harpy(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                           clean=True,
+                           autotunes="transverse",
+                           is_free_kick=True,
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           model=_model_file,
+                           to_write=["lin"],
+                           unit='m',
+                           turn_bits=18)
+    lin = dict(X=tfs.read(f"{_test_file}.linx"),
+               Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    for plane in PLANES:
+        # main and secondary frequencies
+        assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].values,
+                          model.loc[:, f"TUNE{plane}"].values)) < LIMITS["F1"]
+        # main and secondary amplitudes
+        # TODO remove factor 2 - only for backwards compatibility with Drive
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values * 2,
+                              model.loc[:, f"AMP{plane}"].values)) < LIMITS["A1"]
+        # main and secondary phases
+        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].values,
+                                model.loc[:, f"MU{plane}"].values)) < LIMITS["P1"]
+
+
 def _get_model_dataframe():
     return pd.DataFrame(data=dict(S=np.arange(NBPMS, dtype=float),
-                                  AMPX=(np.random.rand(NBPMS) + 1) * BASEAMP, AMPY=(np.random.rand(NBPMS) + 1) * BASEAMP,
-                                  MUX=np.random.rand(NBPMS) - 0.5, MUY=np.random.rand(NBPMS) - 0.5,
+                                  AMPX=(np.random.rand(NBPMS) + 1) * BASEAMP,
+                                  AMPY=(np.random.rand(NBPMS) + 1) * BASEAMP,
+                                  MUX=np.random.rand(NBPMS) - 0.5,
+                                  MUY=np.random.rand(NBPMS) - 0.5,
                                   TUNEX=0.25 + np.random.rand(1)[0] / 40,
                                   TUNEY=0.3 + np.random.rand(1)[0] / 40),
                         index=np.array([''.join(random.choices(string.ascii_uppercase, k=7))
