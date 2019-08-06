@@ -13,7 +13,7 @@ HEADER = "@"
 NAMES = "*"
 TYPES = "$"
 SEGMENTS = "#segment"
-Segment = namedtuple("Segment", ["number", "nturns", "particle", "element", "name"])
+Segment = namedtuple("Segment", ["number", "turns", "particles", "element", "name"])
 COLX = "X"
 COLY = "Y"
 COLTURN = "TURN"
@@ -68,13 +68,12 @@ def _read(lines):
 
         if parts[0] == SEGMENTS:  # read segments, append to index
             segment = Segment(*parts[1:])
+            data.append(segment)
             if segment.name == "start":
                 continue
             if segment.name == "end":
                 break
-
             bpms.append(segment.name)
-            data.append(segment)
         else:
             if column_indices is None:
                 raise IOError("Columns not defined before data.")
@@ -85,8 +84,8 @@ def _read(lines):
 
     if segment is None or len(data) == 0:
         raise IOError("No data found in TbT file!")
-    n_turns = int(segment.nturns) - 1
-    n_particles = int(segment.particle)
+    n_turns = int(segment.turns) - 1
+    n_particles = int(segment.particles)
     return data, bpms, particles, n_turns, n_particles
 
 
@@ -95,13 +94,15 @@ def _read_names(parts):
     LOGGER.debug("Setting column names.")
     for idx, column_name in enumerate(parts):
         if column_name not in col_idx:
-            raise KeyError(f"'{column_name}' is not a valid identifier.")
-        if col_idx[column_name] is None:
+            LOGGER.debug(f"Column '{column_name}' will be ignored.")
+            continue
+        if col_idx[column_name] is not None:
             raise KeyError(f"'{column_name}' is defined twice.")
         col_idx[column_name] = idx
     missing = [c for c in col_idx.values() if c is None]
     if any(missing):
         raise ValueError(f"The following columns are missing in ptc file: '{str(missing)}'")
+    return col_idx
 
 
 def _create_matrices(data, bpms, n_turns, n_particles):
