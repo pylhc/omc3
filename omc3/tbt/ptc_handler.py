@@ -110,15 +110,16 @@ def _read_from_first_turn(lines):
 
         if parts[0] == SEGMENTS:  # read segments, append to index
             segment = Segment(*parts[1:])
-
-            if segment.name not in SEGMENT_MARKER:
-                first_segment = False
-                bpms.append(segment.name)
-
-            if segment.name == SEGMENT_MARKER[1]:  # end of first segment
+            if segment.name == SEGMENT_MARKER[0]:  # start of first segment
                 n_turns = int(segment.turns) - 1
                 n_particles = int(segment.particles)
+
+            elif segment.name == SEGMENT_MARKER[1]:  # end of first segment
                 break
+
+            else:
+                first_segment = False
+                bpms.append(segment.name)
 
         elif first_segment:
             if column_indices is None:

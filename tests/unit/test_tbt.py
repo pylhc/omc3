@@ -100,6 +100,14 @@ def test_tbt_read_ptc(_ptc_file):
     _compare_tbt(origin, new, True)
 
 
+def test_tbt_read_ptc_looseparticles(_ptc_file_losses):
+    new = ptc_handler.read_tbt(_ptc_file_losses)
+    assert len(new.matrices) == 3
+    assert len(new.matrices[0]["X"].columns) == 1024
+    assert all(new.matrices[0]["X"].index == np.array([f"BPM{i+1}" for i in range(3)]))
+    assert not new.matrices[0]["X"].isna().any().any()
+
+
 def _create_data(nturns, nbpm, function):
     return np.ones((nbpm, len(nturns))) * function(nturns)
 
@@ -166,3 +174,8 @@ def _test_file():
 @pytest.fixture()
 def _ptc_file():
     return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone")
+
+
+@pytest.fixture()
+def _ptc_file_losses():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_losses")
