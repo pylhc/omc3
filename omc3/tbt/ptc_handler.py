@@ -50,11 +50,12 @@ def read_tbt(file_path):
     # parameters
     bpms, particles, column_indices, n_turns, n_particles = _read_from_first_turn(lines)
 
-    # data
-    matrix_dict = {p: [{bpm: np.zeros(n_turns) for bpm in bpms} for bid in range(n_particles)] for p in PLANES}
-    matrix_dict = _read(lines, matrix_dict, column_indices)
-    matrices = [{p: pd.DataFrame(data=matrix_dict[p][bid]).transpose()
-                 for p in ("X", "Y")} for bid in range(n_particles)]
+    # data (read into dict first for speed, then convert to DF)
+    matrices = [{p: {bpm: np.zeros(n_turns) for bpm in bpms} for p in PLANES} for _ in range(n_particles)]
+    matrices = _read(lines, matrices, column_indices)
+    for bunch in range(n_particles):
+        for plane in PLANES:
+            matrices[bunch][plane] = pd.DataFrame(matrices[bunch][plane]).transpose()
 
     LOGGER.debug(f"Read Tbt data from : {file_path}")
     return TbtData(matrices, date, particles, n_turns)
@@ -130,7 +131,7 @@ def _get_data(column_indices, parts):
     return {col: parts[col_idx] for col, col_idx in column_indices.items()}
 
 
-def _read(lines, matrix_dict, column_indices):
+def _read(lines, matrices, column_indices):
     LOGGER.debug("Reading data.")
     segment = None
     column_map = {"X": COLX, "Y": COLY}
@@ -153,9 +154,9 @@ def _read(lines, matrix_dict, column_indices):
         data = _get_data(column_indices, parts)
         part_id = int(data[COLPARTICLE]) - 1
         turn_nr = int(data[COLTURN]) - 1
-        for p in PLANES:
-            matrix_dict[p][part_id][segment.name][turn_nr] = float(data[column_map[p]])
-    return matrix_dict
+        for plane in PLANES:
+            matrices[part_id][plane][segment.name][turn_nr] = float(data[column_map[plane]])
+    return matrices
 
 
 def _read_column_names(parts):
