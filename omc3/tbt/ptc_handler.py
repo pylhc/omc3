@@ -22,6 +22,9 @@ COLX = "X"
 COLY = "Y"
 COLTURN = "TURN"
 COLPARTICLE = "NUMBER"
+DATE = "DATE"
+TIME = "TIME"
+TIME_FORMAT = "%d/%m/%y %H.%M.%S"
 
 PLANES = ("X", "Y")
 
@@ -40,20 +43,46 @@ def read_tbt(file_path):
     with open(file_path, "r") as tfs_data:
         lines = tfs_data.readlines()
 
+    # header
+    date, header_length = _read_header(lines)
+    lines = lines[header_length:]
+
+    # parameters
     bpms, particles, column_indices, n_turns, n_particles = _read_from_first_turn(lines)
+
+    # data
     matrix_dict = {p: [{bpm: np.zeros(n_turns) for bpm in bpms} for bid in range(n_particles)] for p in PLANES}
     matrix_dict = _read(lines, matrix_dict, column_indices)
+    matrices = [{p: pd.DataFrame(data=matrix_dict[p][bid]).transpose()
+                 for p in ("X", "Y")} for bid in range(n_particles)]
 
-    matrices = [
-        {p: pd.DataFrame(data=matrix_dict[p][bid]).transpose() for p in ("X", "Y")}
-        for bid in range(n_particles)
-    ]
+    LOGGER.debug(f"Read Tbt data from : {file_path}")
+    return TbtData(matrices, date, particles, n_turns)
 
-    # TODO: read date from file
-    return TbtData(matrices, datetime.now(), particles, n_turns)
+
+def _read_header(lines):
+    idx_line = 0
+    date_str = {k: None for k in [DATE, TIME]}
+    for idx_line, line in enumerate(lines):
+        parts = line.strip().split()
+        if len(parts) == 0:
+            continue
+
+        if parts[0] != HEADER:
+            break
+
+        if parts[1] in date_str.keys():
+            date_str[parts[1]] = parts[-1].strip("\'\" ")
+
+    if any(ds is None for ds in date_str.keys()):
+        LOGGER.warning("Date and Time could not be read from Tbt File! Using now()!")
+        return datetime.utcnow(), idx_line
+
+    return datetime.strptime(f"{date_str[DATE]} {date_str[TIME]}", TIME_FORMAT), idx_line
 
 
 def _read_from_first_turn(lines):
+    LOGGER.debug("Reading first turn to define boundary parameters.")
     bpms = []
     particles = []
     column_indices = None
@@ -62,8 +91,8 @@ def _read_from_first_turn(lines):
     first_segment = True
 
     for line in lines:
-        parts = line.split()
-        if len(parts) == 0 or parts[0] == HEADER or parts[0] == TYPES:
+        parts = line.strip().split()
+        if len(parts) == 0 or parts[0] in [HEADER, TYPES]:
             continue
 
         if parts[0] == NAMES:  # read column names
@@ -102,16 +131,16 @@ def _get_data(column_indices, parts):
 
 
 def _read(lines, matrix_dict, column_indices):
-
+    LOGGER.debug("Reading data.")
     segment = None
     column_map = {"X": COLX, "Y": COLY}
 
     for line in lines:
-        parts = line.split()
-        if len(parts) == 0 or parts[0] == HEADER or parts[0] == TYPES or parts[0] == NAMES:
+        parts = line.strip().split()
+        if len(parts) == 0 or parts[0] in (HEADER, TYPES, NAMES):
             continue
 
-        if parts[0] == SEGMENTS:  # read segments, append to index
+        if parts[0] == SEGMENTS:  # start of a new segment
             segment = Segment(*parts[1:])
             continue
 
@@ -124,7 +153,6 @@ def _read(lines, matrix_dict, column_indices):
         data = _get_data(column_indices, parts)
         part_id = int(data[COLPARTICLE]) - 1
         turn_nr = int(data[COLTURN]) - 1
-
         for p in PLANES:
             matrix_dict[p][part_id][segment.name][turn_nr] = float(data[column_map[p]])
     return matrix_dict
