@@ -21,7 +21,7 @@ def return_sign_for_err(n):
     [ 0.  1.  0.]
     [-0. -1. -0.]
     [ 0.  0.  1.]
-    [-0. -0. -1.]] for err calculation
+    [-0. -0. -1.]] for error calculation
     columns corresponds to error i.e. first column for dQ etc.
     """
     sign = np.zeros((2*n+1, n))
@@ -39,8 +39,8 @@ def propagate_beta_in_drift(beta_waist, drift):
 def calc_betastar(kmod_input_params, results_df, l_star):
     sign = return_sign_for_err(2)
     for plane in PLANES:
-        betastar = propagate_beta_in_drift((float(results_df.loc[:, f"{BETA}{WAIST}{plane}"].values) + sign[:, 0] * float(results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values)),
-                                           (float(results_df.loc[:, f"{WAIST}{plane}"].values) + sign[:, 1] * float(results_df.loc[:, f"{ERR}{WAIST}{plane}"].values)))
+        betastar = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].values + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values),
+                                           (results_df.loc[:, f"{WAIST}{plane}"].values + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
         betastar_err = get_err(betastar[1::2]-betastar[0])
 
         if kmod_input_params.no_sig_digits:
@@ -56,8 +56,8 @@ def calc_betastar(kmod_input_params, results_df, l_star):
     for plane in PLANES:
         results_df[f"{PHASEADV}{plane}"], results_df[f"{ERR}{PHASEADV}{plane}"] = phase_adv_from_kmod(
             l_star, betastar[0], betastar_err,
-            float(results_df.loc[:, f"{WAIST}{plane}"].values),
-            float(results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
+            results_df.loc[:, f"{WAIST}{plane}"].values,
+            results_df.loc[:, f"{ERR}{WAIST}{plane}"].values)
 
     return results_df
 
@@ -84,14 +84,14 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df, kmod_inpu
     betas = np.zeros((2, 2))
     sign = np.array([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]])
     for i, plane in enumerate(PLANES):
-        waist = float(results_df.loc[:, f"{WAIST}{plane}"].values)
+        waist = results_df.loc[:, f"{WAIST}{plane}"].values
         if magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
             waist = -waist
         if plane == 'Y':
             waist = -waist
 
-        beta = propagate_beta_in_drift((float(results_df.loc[:, f"{BETA}{WAIST}{plane}"].values) + sign[:, 0] * float(results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values)),
-                                       ((waist - position) + sign[:, 1] * float(results_df.loc[:, f"{ERR}{WAIST}{plane}"].values)))
+        beta = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].values + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values),
+                                       ((waist - position) + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
         beta_err = get_err(beta[1::2]-beta[0])
         if kmod_input_params.no_sig_digits:
             betas[i, 0], betas[i, 1] = beta[0], beta_err
@@ -134,7 +134,6 @@ np.vectorize(fit_prec)
 
 
 def fit_approx(x, beta_av):
-
     dQ = beta_av*x[0]/(4*np.pi)
     return dQ
 
@@ -300,14 +299,11 @@ def get_err(diff_array):
 def analyse(magnet1_df, magnet2_df, opt, betastar_required):
 
     for magnet_df in (magnet1_df, magnet2_df):
+        LOG.info(f'Analysing magnet {magnet_df.headers["QUADRUPOLE"]}')
         magnet_df = helper.add_tune_uncertainty(magnet_df, opt.tune_uncertainty)
-        LOG.info('Clean data')
         magnet_df = helper.clean_data(magnet_df, opt.no_autoclean)
-        LOG.info('Get tune')
         magnet_df = calc_tune(magnet_df)
-        LOG.info('Get k')
         magnet_df = calc_k(magnet_df)
-        LOG.info('Fit average beta')
         magnet_df = get_av_beta(magnet_df)
 
     LOG.info('Simplex to determine beta waist')
