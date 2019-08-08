@@ -12,11 +12,14 @@ LOG = logging_tools.get_logger(__name__)
 def return_sign_for_err(n):
     """
     creates an array of form
-    [ 0, 0]
-    [ 1, 0]
-    [ 0, -1]
-    [ 1, 0]
-    [ 0, -1] ...
+    [[ 0.  0.  0.]
+    [ 1.  0.  0.]
+    [-1. -0. -0.]
+    [ 0.  1.  0.]
+    [-0. -1. -0.]
+    [ 0.  0.  1.]
+    [-0. -0. -1.]] for err calculation
+    columns corresponds to error i.e. first column for dQ etc. 
     """
     sign = np.zeros((2*n+1, n))
 
@@ -41,7 +44,7 @@ def calc_betastar(kmod_input_params, results_df, magnet1_df):
             results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = (betastar[0], betastar_err)
         else:
             results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_numbers(betastar[0], betastar_err)
-        
+
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
     cols = [cols[0]]+cols[-4:]+cols[1:-4]

@@ -6,6 +6,8 @@ import tfs
 from utils import logging_tools, outliers
 from kmod import analysis
 from kmod.constants import SIDES, ERR, TUNE, EXT, PLANES, CLEANED, K, AVERAGE, BETA
+from definitions import formats
+
 plt.rc('text', usetex=True)
 LOG = logging_tools.get_logger(__name__)
 
@@ -106,8 +108,8 @@ def headers_for_df(magnet, k_df):
     head = {}
     head['QUADRUPOLE'] = magnet
     head['DELTA_I'] = np.max(k_df['CURRENT'].rolling(5).mean()) - np.min(k_df['CURRENT'].rolling(5).mean()) / 2
-    head['START_TIME'] = datetime.datetime.fromtimestamp(k_df['TIME'].iloc[0] / 1000).strftime('%Y-%m-%d_%H:%M:%S')
-    head['END_TIME'] = datetime.datetime.fromtimestamp(k_df['TIME'].iloc[-1] / 1000).strftime('%Y-%m-%d_%H:%M:%S')
+    head['START_TIME'] = datetime.datetime.fromtimestamp(k_df['TIME'].iloc[0] / 1000).strftime(formats.TIME)
+    head['END_TIME'] = datetime.datetime.fromtimestamp(k_df['TIME'].iloc[-1] / 1000).strftime(formats.TIME)
     # add starting tunes/tunesplit, number of cycles, ... to header
     return head
 

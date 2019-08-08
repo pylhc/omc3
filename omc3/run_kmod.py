@@ -6,6 +6,7 @@ import tfs
 from kmod import analysis, helper
 from kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH
 from generic_parser.entrypoint import entrypoint, EntryPointParameters
+from definitions import formats
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -87,7 +88,7 @@ def analyse_kmod(opt):
     if betastar_required:
         results_df = analysis.calc_betastar(opt, results_df, magnet1_df)
 
-    results_df.loc[:, 'TIME'] = ('{0:%Y-%m-%d_%H:%M:%S}'.format(datetime.datetime.now()))
+    results_df.loc[:, 'TIME'] = ('{0:formats.TIME}'.format(datetime.datetime.now()))
 
     LOG.info('Calculate beta at instruments')
     if opt.instruments_found:
