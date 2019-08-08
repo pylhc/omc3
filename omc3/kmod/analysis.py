@@ -1,10 +1,13 @@
 import scipy.optimize
+from os.path import join
 import numpy as np
 import tfs
+import datetime
 from tfs import tools as tfstools
 from utils import logging_tools
 from kmod import helper
 from kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from definitions import formats
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -19,7 +22,7 @@ def return_sign_for_err(n):
     [-0. -1. -0.]
     [ 0.  0.  1.]
     [-0. -0. -1.]] for err calculation
-    columns corresponds to error i.e. first column for dQ etc. 
+    columns corresponds to error i.e. first column for dQ etc.
     """
     sign = np.zeros((2*n+1, n))
 
@@ -33,7 +36,7 @@ def propagate_beta_in_drift(beta_waist, drift):
     return beta
 
 
-def calc_betastar(kmod_input_params, results_df, magnet1_df):
+def calc_betastar(kmod_input_params, results_df, l_star):
     sign = return_sign_for_err(2)
     for plane in PLANES:
         betastar = propagate_beta_in_drift((float(results_df.loc[:, f"{BETA}{WAIST}{plane}"].values) + sign[:, 0] * float(results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values)),
@@ -52,7 +55,7 @@ def calc_betastar(kmod_input_params, results_df, magnet1_df):
 
     for plane in PLANES:
         results_df[f"{PHASEADV}{plane}"], results_df[f"{ERR}{PHASEADV}{plane}"] = phase_adv_from_kmod(
-            magnet1_df.headers['LSTAR'], betastar[0], betastar_err,
+            l_star, betastar[0], betastar_err,
             float(results_df.loc[:, f"{WAIST}{plane}"].values),
             float(results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
 
@@ -121,9 +124,9 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
 
 
 def fit_prec(x, beta_av):
-
-    dQ = (1/(2.*np.pi)) * np.arccos(np.cos(2 * np.pi * np.modf(x[1])[0]) -
-          0.5 * beta_av * x[0] * np.sin(2 * np.pi * np.modf(x[1])[0])) - np.modf(x[1])[0]
+    twopiQ = 2 * np.pi * np.modf(x[1])[0]
+    dQ = (1/(2.*np.pi)) * np.arccos(np.cos(twopiQ) -
+                                    0.5 * beta_av * x[0] * np.sin(twopiQ)) - np.modf(x[1])[0]
     return dQ
 
 
@@ -291,52 +294,43 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
 
 
 def get_err(diff_array):
-    return np.sqrt(np.sum(np.maximum(np.absolute(diff_array), np.absolute(diff_array))**2))
+    return np.sqrt(np.sum(np.square(diff_array)))
 
 
-def analyse(magnet1_df, magnet2_df, opt):
+def analyse(magnet1_df, magnet2_df, opt, betastar_required):
 
-    magnet1_df = helper.add_tune_uncertainty(magnet1_df, opt.tune_uncertainty)
-    magnet2_df = helper.add_tune_uncertainty(magnet2_df, opt.tune_uncertainty)
-
-    LOG.info('Clean data')
-    magnet1_df = helper.clean_data(magnet1_df, opt.no_autoclean)
-    magnet2_df = helper.clean_data(magnet2_df, opt.no_autoclean)
-
-    LOG.info('Get tune')
-    magnet1_df = calc_tune(magnet1_df)
-    magnet2_df = calc_tune(magnet2_df)
-
-    LOG.info('Get k')
-    magnet1_df = calc_k(magnet1_df)
-    magnet2_df = calc_k(magnet2_df)
-
-    LOG.info('Fit average beta')
-    magnet1_df = get_av_beta(magnet1_df)
-    magnet2_df = get_av_beta(magnet2_df)
+    for magnet_df in (magnet1_df, magnet2_df):
+        magnet_df = helper.add_tune_uncertainty(magnet_df, opt.tune_uncertainty)
+        LOG.info('Clean data')
+        magnet_df = helper.clean_data(magnet_df, opt.no_autoclean)
+        LOG.info('Get tune')
+        magnet_df = calc_tune(magnet_df)
+        LOG.info('Get k')
+        magnet_df = calc_k(magnet_df)
+        LOG.info('Fit average beta')
+        magnet_df = get_av_beta(magnet_df)
 
     LOG.info('Simplex to determine beta waist')
-    results_x = get_beta_waist(magnet1_df, magnet2_df, opt, 'X')
-    results_y = get_beta_waist(magnet1_df, magnet2_df, opt, 'Y')
+    results = {plane: get_beta_waist(magnet1_df, magnet2_df, opt, plane) for plane in PLANES}
 
     results_df = tfs.TfsDataFrame(
         columns=['LABEL',
-                 f"{BETA}{WAIST}{'X'}",
-                 f"{ERR}{BETA}{WAIST}{'X'}",
-                 f"{WAIST}{'X'}",
-                 f"{ERR}{WAIST}{'X'}",
-                 f"{BETA}{WAIST}{'Y'}",
-                 f"{ERR}{BETA}{WAIST}{'Y'}",
-                 f"{WAIST}{'Y'}",
-                 f"{ERR}{WAIST}{'Y'}"],
+                 "TIME"],
         data=[np.hstack((opt.label,
-                         results_x[0],
-                         results_x[1],
-                         results_x[2],
-                         results_x[3],
-                         results_y[0],
-                         results_y[1],
-                         results_y[2],
-                         results_y[3]))])
+                         datetime.datetime.now().strftime(formats.TIME)))])
 
-    return magnet1_df, magnet2_df, results_df
+    for plane in PLANES:
+        results_df[f"{BETA}{WAIST}{plane}"] = results[plane][0]
+        results_df[f"{ERR}{BETA}{WAIST}{plane}"] = results[plane][1]
+        results_df[f"{WAIST}{plane}"] = results[plane][2]
+        results_df[f"{ERR}{WAIST}{plane}"] = results[plane][3]
+
+    LOG.info('Calculate betastar')
+    if betastar_required:
+        results_df = calc_betastar(opt, results_df, magnet1_df.headers['LSTAR'])
+
+    LOG.info('Calculate beta at instruments')
+    if opt.instruments_found:
+        instrument_beta_df = calc_beta_at_instruments(opt, results_df, magnet1_df, magnet2_df)    
+
+    return magnet1_df, magnet2_df, results_df, instrument_beta_df

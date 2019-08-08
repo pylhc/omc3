@@ -1,7 +1,6 @@
 from os.path import join
 from utils import logging_tools, iotools
 import numpy as np
-import datetime
 import tfs
 from kmod import analysis, helper
 from kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH
@@ -13,37 +12,54 @@ LOG = logging_tools.get_logger(__name__)
 
 def kmod_params():
     parser = EntryPointParameters()
-    parser.add_parameter(flags='--betastar_and_waist', type=float, name='betastar_and_waist', required=True,
-                         nargs='+', help='Estimated beta star of measurements and waist shift',)
-    parser.add_parameter(flags='--working_directory', type=str, name='working_directory', required=True,
+    parser.add_parameter(flags='--betastar_and_waist', type=float,
+                         name='betastar_and_waist', required=True, nargs='+',
+                         help='Estimated beta star of measurements and waist shift',)
+    parser.add_parameter(flags='--working_directory', type=str,
+                         name='working_directory', required=True,
                          help='path to working directory with stored KMOD measurement files',)
-    parser.add_parameter(flags='--beam', type=str, name='beam', choices=['B1', 'B2'],
-                         required=True, help='define beam used: B1 or B2',)
-    parser.add_parameter(flags='--cminus', type=float, name='cminus', help='C Minus',)
-    parser.add_parameter(flags='--misalignment', type=float, name='misalignment',
+    parser.add_parameter(flags='--beam', type=str,
+                         name='beam', choices=['B1', 'B2'], required=True,
+                         help='define beam used: B1 or B2',)
+    parser.add_parameter(flags='--cminus', type=float,
+                         name='cminus',
+                         help='C Minus',)
+    parser.add_parameter(flags='--misalignment', type=float,
+                         name='misalignment',
                          help='misalignment of the modulated quadrupoles in m',)
-    parser.add_parameter(flags='--errorK', type=float, name='errorK',
+    parser.add_parameter(flags='--errorK', type=float,
+                         name='errorK',
                          help='error in K of the modulated quadrupoles, relative to gradient',)
-    parser.add_parameter(flags='--errorL', type=float, name='errorL',
+    parser.add_parameter(flags='--errorL', type=float,
+                         name='errorL',
                          help='error in length of the modulated quadrupoles, unit m',)
-    parser.add_parameter(flags='--tune_uncertainty', type=float, name='tune_uncertainty', default=2.5e-5,
+    parser.add_parameter(flags='--tune_uncertainty', type=float,
+                         name='tune_uncertainty', default=2.5e-5,
                          help='tune measurement uncertainty')
-    parser.add_parameter(flags='--instruments', type=str, name='instruments', default='MONITOR,SBEND,TKICKER,INSTRUMENT',
+    parser.add_parameter(flags='--instruments', type=str,
+                         name='instruments', default='MONITOR,SBEND,TKICKER,INSTRUMENT',
                          help='define instruments (use keywords from twiss) at which beta should '
                               'be calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER',)
-    parser.add_parameter(flags='--simulation', action='store_true', name='simulation',
+    parser.add_parameter(flags='--simulation', action='store_true',
+                         name='simulation',
                          help='flag for enabling simulation mode',)
-    parser.add_parameter(flags='--log', action='store_true', name='log',
+    parser.add_parameter(flags='--log', action='store_true',
+                         name='log',
                          help='flag for creating a log file')
-    parser.add_parameter(flags='--no_autoclean', action='store_true', name='no_autoclean',
+    parser.add_parameter(flags='--no_autoclean', action='store_true',
+                         name='no_autoclean',
                          help='flag for manually cleaning data')
-    parser.add_parameter(flags='--no_sig_digits', action='store_true', name='no_sig_digits',
+    parser.add_parameter(flags='--no_sig_digits', action='store_true',
+                         name='no_sig_digits',
                          help='flag to not use significant digits')
-    parser.add_parameter(flags='--no_plots', action='store_true', name='no_plots',
+    parser.add_parameter(flags='--no_plots', action='store_true',
+                         name='no_plots',
                          help='flag to not create any plots')
-    parser.add_parameter(flags='--circuit', type=str, name='circuits', nargs=2,
+    parser.add_parameter(flags='--circuits', type=str,
+                         name='circuits', nargs=2,
                          help='circuit names of the modulated quadrupoles')
-    parser.add_parameter(flags='--interaction_point', type=str, name='ip', choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'],
+    parser.add_parameter(flags='--interaction_point', type=str,
+                         name='ip', choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'],
                          help='define interaction point')
     return parser
 
@@ -78,27 +94,19 @@ def analyse_kmod(opt):
     opt, magnet1_df, magnet2_df, betastar_required = define_params(opt, magnet1_df, magnet2_df)
 
     LOG.info('Run simplex')
-    magnet1_df, magnet2_df, results_df = analysis.analyse(magnet1_df, magnet2_df, opt)
+    magnet1_df, magnet2_df, results_df, instrument_beta_df = analysis.analyse(magnet1_df, magnet2_df, opt, betastar_required)
 
     LOG.info('Plot tunes and fit')
     if opt.no_plots:
         helper.plot_cleaned_data([magnet1_df, magnet2_df], join(output_dir, FIT_PLOTS_NAME), interactive_plot=False)
 
-    LOG.info('Calculate betastar')
-    if betastar_required:
-        results_df = analysis.calc_betastar(opt, results_df, magnet1_df)
-
-    results_df.loc[:, 'TIME'] = ('{0:formats.TIME}'.format(datetime.datetime.now()))
-
-    LOG.info('Calculate beta at instruments')
-    if opt.instruments_found:
-        instrument_beta_df = analysis.calc_beta_at_instruments(opt, results_df, magnet1_df, magnet2_df)
-        tfs.write(join(output_dir, 'beta_instrument.tfs'), instrument_beta_df)
-
     LOG.info('Write magnet dataframes and results')
     for magnet_df in [magnet1_df, magnet2_df]:
         tfs.write(join(output_dir, f"{magnet_df.headers['QUADRUPOLE']}{EXT}"), magnet_df)
     tfs.write(join(output_dir, 'results.tfs'), results_df)
+
+    if opt.instruments_found:
+        tfs.write(join(output_dir, 'beta_instrument.tfs'), instrument_beta_df)
 
 
 def convert_betastar_and_waist(bs):
