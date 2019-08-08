@@ -1,60 +1,57 @@
 import scipy.optimize
 import numpy as np
-import math
-from utils import logging_tools
-from kmod import kmod_constants
 import tfs
 from tfs import tools as tfstools
+from utils import logging_tools
+from kmod import helper
+from kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
 
 LOG = logging_tools.get_logger(__name__)
 
-PLANES = ['X', 'Y']
-
 
 def return_sign_for_err(n):
-
+    """
+    creates an array of form
+    [ 0, 0]
+    [ 1, 0]
+    [ 0, -1]
+    [ 1, 0]
+    [ 0, -1] ...
+    """
     sign = np.zeros((2*n+1, n))
+
     sign[1::2] = np.eye(n)
     sign[2::2] = -np.eye(n)
-
     return sign
 
 
 def propagate_beta_in_drift(beta_waist, drift):
-
     beta = beta_waist + drift**2/beta_waist
-
     return beta
 
 
-def calc_betastar(kmod_input_params, results_df, magnet1_df, magnet2_df):
-
+def calc_betastar(kmod_input_params, results_df, magnet1_df):
     sign = return_sign_for_err(2)
-
     for plane in PLANES:
-
-        betastar = propagate_beta_in_drift(
-                                           (float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) + 
-                                           sign[:, 0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values)),
-                                           (float(results_df.loc[:, kmod_constants.get_waist_col(plane)].values) +
-                                           sign[:, 1] * float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values)))
-
+        betastar = propagate_beta_in_drift((float(results_df.loc[:, f"{BETA}{WAIST}{plane}"].values) + sign[:, 0] * float(results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values)),
+                                           (float(results_df.loc[:, f"{WAIST}{plane}"].values) + sign[:, 1] * float(results_df.loc[:, f"{ERR}{WAIST}{plane}"].values)))
         betastar_err = get_err(betastar[1::2]-betastar[0])
 
-        if kmod_input_params.no_sigdigit:
-            results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = (betastar[0], betastar_err)
+        if kmod_input_params.no_sig_digits:
+            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = (betastar[0], betastar_err)
         else:
-            results_df[kmod_constants.get_betastar_col(plane)], results_df[kmod_constants.get_betastar_err_col(plane)] = tfstools.significant_numbers(betastar[0], betastar_err)
+            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_numbers(betastar[0], betastar_err)
         
-            
-
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
     cols = [cols[0]]+cols[-4:]+cols[1:-4]
     results_df = results_df.reindex(columns=cols)
 
     for plane in PLANES:
-        results_df[kmod_constants.get_phase_adv_col(plane)], results_df[kmod_constants.get_phase_adv_err_col(plane)] = phase_adv_from_kmod(magnet1_df.headers['LSTAR'], betastar[0], betastar_err, float(results_df.loc[:, kmod_constants.get_waist_col(plane)].values), float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values))
+        results_df[f"{PHASEADV}{plane}"], results_df[f"{ERR}{PHASEADV}{plane}"] = phase_adv_from_kmod(
+            magnet1_df.headers['LSTAR'], betastar[0], betastar_err,
+            float(results_df.loc[:, f"{WAIST}{plane}"].values),
+            float(results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
 
     return results_df
 
@@ -78,35 +75,22 @@ def _phase_adv_from_kmod_err(lstar, betastar, ebetastar, waist, ewaist):
 
 
 def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df, kmod_input_params):
-
     betas = np.zeros((2, 2))
-
     sign = np.array([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]])
-
     for i, plane in enumerate(PLANES):
-
-        waist = float(
-            results_df.loc[:, kmod_constants.get_waist_col(plane)].values)
-
+        waist = float(results_df.loc[:, f"{WAIST}{plane}"].values)
         if magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
             waist = -waist
-
         if plane == 'Y':
             waist = -waist
 
-        beta = propagate_beta_in_drift( 
-            (float(results_df.loc[:, kmod_constants.get_betawaist_col(plane)].values) +
-            sign[:, 0] * float(results_df.loc[:, kmod_constants.get_betawaist_err_col(plane)].values)),
-            ((waist - position) +
-            sign[:, 1] * float(results_df.loc[:, kmod_constants.get_waist_err_col(plane)].values)))
-
+        beta = propagate_beta_in_drift((float(results_df.loc[:, f"{BETA}{WAIST}{plane}"].values) + sign[:, 0] * float(results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values)),
+                                       ((waist - position) + sign[:, 1] * float(results_df.loc[:, f"{ERR}{WAIST}{plane}"].values)))
         beta_err = get_err(beta[1::2]-beta[0])
-
-        if kmod_input_params.no_sigdigit:
+        if kmod_input_params.no_sig_digits:
             betas[i, 0], betas[i, 1] = beta[0], beta_err
         else:
             betas[i, 0], betas[i, 1] = tfstools.significant_numbers(beta[0], beta_err)
-
     return name, betas[0, 0], betas[0, 1], betas[1, 0], betas[1, 1]
 
 
@@ -123,10 +107,11 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
 
     instrument_beta_df = tfs.TfsDataFrame(
         columns=['INSTRUMENT',
-                 kmod_constants.get_beta_col('X'),
-                 kmod_constants.get_beta_err_col('X'),
-                 kmod_constants.get_beta_col('Y'),
-                 kmod_constants.get_beta_err_col('Y')],
+                 f"{BETA}{'X'}",
+                 f"{ERR}{BETA}{'X'}",
+                 f"{BETA}{'Y'}",
+                 f"{ERR}{BETA}{'Y'}",
+                 ],
         data=beta_instr)
 
     return instrument_beta_df
@@ -154,19 +139,19 @@ np.vectorize(fit_approx)
 def average_beta_from_Tune(Q, TdQ, l, Dk):
     """Calculates average beta function in quadrupole from Tunechange TdQ and delta K """
 
-    beta_av = 2 * (1 / math.tan(2 * math.pi * Q) *
-              (1 - math.cos(2 * math.pi * TdQ)) + math.sin(2 * math.pi * TdQ)) / (l * Dk)
+    beta_av = 2 * (1 / np.tan(2 * np.pi * Q) *
+              (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (l * Dk)
     return abs(beta_av)
 
 
 def average_beta_focussing_quadrupole(b, w, L, K, Lstar):
 
-    beta0 = b + ((Lstar - w) ** 2 / (b))
+    beta0 = b + ((Lstar - w) ** 2 / b)
     alpha0 = -(Lstar - w) / b
     average_beta = (beta0/2.) * (1 + ((np.sin(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L))) \
-        - alpha0 * ((np.sin(np.sqrt(abs(K)) * L)**2) / (abs(K) * L)) \
-        + (1/(2*abs(K))) * ((1 + alpha0**2)/(beta0)) * \
-        (1 - ((np.sin(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L)))
+                   - alpha0 * ((np.sin(np.sqrt(abs(K)) * L)**2) / (abs(K) * L)) \
+                   + (1/(2*abs(K))) * ((1 + alpha0**2) / beta0) * \
+                   (1 - ((np.sin(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L)))
 
     return average_beta
 
@@ -175,12 +160,12 @@ np.vectorize(average_beta_focussing_quadrupole)
 
 
 def average_beta_defocussing_quadrupole(b, w, L, K, Lstar):
-    beta0 = b + ((Lstar - w) ** 2 / (b))
+    beta0 = b + ((Lstar - w) ** 2 / b)
     alpha0 = -(Lstar - w) / b
     average_beta = (beta0/2.) * (1 + ((np.sinh(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L))) \
-        - alpha0 * ((np.sinh(np.sqrt(abs(K)) * L)**2) / (abs(K) * L)) \
-        + (1/(2*abs(K))) * ((1 + alpha0**2)/(beta0)) * \
-        (((np.sinh(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L)) - 1)
+                   - alpha0 * ((np.sinh(np.sqrt(abs(K)) * L)**2) / (abs(K) * L)) \
+                   + (1/(2*abs(K))) * ((1 + alpha0**2) / beta0) * \
+                   (((np.sinh(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L)) - 1)
 
     return average_beta
 
@@ -189,32 +174,26 @@ np.vectorize(average_beta_defocussing_quadrupole)
 
 
 def calc_tune(magnet_df):
-
     for plane in PLANES:
-        magnet_df.headers[kmod_constants.get_tune_col(plane)] = np.average(magnet_df.where(
-            magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_tune_col(plane)].dropna())
-
+        magnet_df.headers[f"{TUNE}{plane}"] = np.average(magnet_df.where(
+            magnet_df[f"{CLEANED}{plane}"])[f"{TUNE}{plane}"].dropna())
     return magnet_df
 
 
 def calc_k(magnet_df):
-
-    magnet_df.headers[kmod_constants.get_k_col()] = np.average(magnet_df.where(
-        magnet_df[kmod_constants.get_cleaned_col('X')] == True)[kmod_constants.get_k_col()].dropna())
-
+    magnet_df.headers[K] = np.average(magnet_df.where(magnet_df[f"{CLEANED}X"])[K].dropna())
     return magnet_df
 
 
 def return_fit_input(magnet_df, plane):
 
-    x = np.zeros((2, len(magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(
-        plane)] == True)[kmod_constants.get_k_col()].dropna())))
+    x = np.zeros((2, len(magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[K].dropna())))
 
     sign = magnet_df.headers['POLARITY'] if plane == 'X' else -1 * magnet_df.headers['POLARITY']
     x[0, :] = sign*(
-            magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_k_col()].dropna() -
-            magnet_df.headers[kmod_constants.get_k_col()]) * magnet_df.headers['LENGTH']
-    x[1, :] = magnet_df.headers[kmod_constants.get_tune_col(plane)]
+            magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[K].dropna() -
+            magnet_df.headers[K]) * magnet_df.headers['LENGTH']
+    x[1, :] = magnet_df.headers[f"{TUNE}{plane}"]
 
     return x
 
@@ -225,19 +204,19 @@ def do_fit(magnet_df, plane, use_approx=False):
     elif use_approx:
         fun = fit_approx
 
-    if not np.any(magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[kmod_constants.get_tune_err_col(plane)].dropna()):
+    if not np.any(magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()):
         sigma = None
         absolute_sigma = False
     else:
-        sigma = magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
-            kmod_constants.get_tune_err_col(plane)].dropna()
+        sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
+            f"{ERR}{TUNE}{plane}"].dropna()
         absolute_sigma = True
 
     av_beta, av_beta_err = scipy.optimize.curve_fit(
         fun,
         xdata=return_fit_input(magnet_df, plane),
-        ydata=magnet_df.where(magnet_df[kmod_constants.get_cleaned_col(plane)] == True)[
-            kmod_constants.get_tune_col(plane)].dropna() - magnet_df.headers[kmod_constants.get_tune_col(plane)],
+        ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
+            f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
         sigma=sigma,
         absolute_sigma=absolute_sigma,
         p0=1
@@ -246,20 +225,17 @@ def do_fit(magnet_df, plane, use_approx=False):
 
 
 def get_av_beta(magnet_df):
-
     for plane in PLANES:
-        magnet_df.headers[kmod_constants.get_av_beta_col(
-            plane)], magnet_df.headers[kmod_constants.get_av_beta_err_col(plane)] = do_fit(magnet_df, plane)
-
+        magnet_df.headers[f"{AVERAGE}{BETA}{plane}"], magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"] = do_fit(magnet_df, plane)
     return magnet_df
 
 
 def check_polarity(magnet1_df, magnet2_df, sign):
     left, right = sign
-    return (magnet1_df.headers['POLARITY'] == left and magnet2_df.headers['POLARITY'] == right)
+    return magnet1_df.headers['POLARITY'] == left and magnet2_df.headers['POLARITY'] == right
 
 
-def return_df(magnet1_df, magnet2_df, plane, beam):
+def return_df(magnet1_df, magnet2_df, plane):
 
     sign = {'X': np.array([1, -1]), 'Y': np.array([-1, 1])}
 
@@ -275,37 +251,32 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     w = x[1]
 
     c2 = ((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
-           sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[kmod_constants.get_k_col()] +
-           sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[kmod_constants.get_k_col()],
+           sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
+           sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[K],
            foc_magnet_df.headers['LSTAR'] +
            sign[2] * kmod_input_params.misalignment) -
-           foc_magnet_df.headers[kmod_constants.get_av_beta_col(plane)] +
-           sign[3] * foc_magnet_df.headers[kmod_constants.get_av_beta_err_col(plane)]) ** 2 +
+           foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
+           sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2 +
           (average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
-           sign[4] * kmod_input_params.errorL, def_magnet_df.headers[kmod_constants.get_k_col()] +
-           sign[5] * kmod_input_params.errorK * def_magnet_df.headers[kmod_constants.get_k_col()],
+           sign[4] * kmod_input_params.errorL, def_magnet_df.headers[K] +
+           sign[5] * kmod_input_params.errorK * def_magnet_df.headers[K],
            def_magnet_df.headers['LSTAR'] +
            sign[6] * kmod_input_params.misalignment) -
-           def_magnet_df.headers[kmod_constants.get_av_beta_col(plane)] +
-           sign[7] * foc_magnet_df.headers[kmod_constants.get_av_beta_err_col(plane)]) ** 2)
+           def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
+           sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2)
 
     return c2
 
 
 def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
-
     n = 8
-
     sign = return_sign_for_err(n)
-
-    foc_magnet_df, def_magnet_df = return_df(magnet1_df, magnet2_df, plane, kmod_input_params.beam)
-
+    foc_magnet_df, def_magnet_df = return_df(magnet1_df, magnet2_df, plane)
     results = np.zeros((2*n+1, 2))
     for i, s in enumerate(sign):
-
         def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s)
         fitresults = scipy.optimize.minimize(fun=fun,
-                                             x0=kmod_input_params.return_guess(plane),
+                                             x0=kmod_input_params.betastar_and_waist[plane],
                                              method='nelder-mead',
                                              tol=1E-9)
         results[i, :] = fitresults.x[0], fitresults.x[1]
@@ -320,39 +291,42 @@ def get_err(diff_array):
     return np.sqrt(np.sum(np.maximum(np.absolute(diff_array), np.absolute(diff_array))**2))
 
 
-def analyse(magnet1_df, magnet2_df, kmod_input_params):
+def analyse(magnet1_df, magnet2_df, opt):
+
+    magnet1_df = helper.add_tune_uncertainty(magnet1_df, opt.tune_uncertainty)
+    magnet2_df = helper.add_tune_uncertainty(magnet2_df, opt.tune_uncertainty)
+
+    LOG.info('Clean data')
+    magnet1_df = helper.clean_data(magnet1_df, opt.no_autoclean)
+    magnet2_df = helper.clean_data(magnet2_df, opt.no_autoclean)
 
     LOG.info('Get tune')
-
     magnet1_df = calc_tune(magnet1_df)
     magnet2_df = calc_tune(magnet2_df)
 
     LOG.info('Get k')
-
     magnet1_df = calc_k(magnet1_df)
     magnet2_df = calc_k(magnet2_df)
 
     LOG.info('Fit average beta')
-
     magnet1_df = get_av_beta(magnet1_df)
     magnet2_df = get_av_beta(magnet2_df)
 
     LOG.info('Simplex to determine beta waist')
-
-    results_x = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'X')
-    results_y = get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, 'Y')
+    results_x = get_beta_waist(magnet1_df, magnet2_df, opt, 'X')
+    results_y = get_beta_waist(magnet1_df, magnet2_df, opt, 'Y')
 
     results_df = tfs.TfsDataFrame(
         columns=['LABEL',
-                 kmod_constants.get_betawaist_col('X'),
-                 kmod_constants.get_betawaist_err_col('X'),
-                 kmod_constants.get_waist_col('X'),
-                 kmod_constants.get_waist_err_col('X'),
-                 kmod_constants.get_betawaist_col('Y'),
-                 kmod_constants.get_betawaist_err_col('Y'),
-                 kmod_constants.get_waist_col('Y'),
-                 kmod_constants.get_waist_err_col('Y')],
-        data=[np.hstack((kmod_constants.get_label(kmod_input_params),
+                 f"{BETA}{WAIST}{'X'}",
+                 f"{ERR}{BETA}{WAIST}{'X'}",
+                 f"{WAIST}{'X'}",
+                 f"{ERR}{WAIST}{'X'}",
+                 f"{BETA}{WAIST}{'Y'}",
+                 f"{ERR}{BETA}{WAIST}{'Y'}",
+                 f"{WAIST}{'Y'}",
+                 f"{ERR}{WAIST}{'Y'}"],
+        data=[np.hstack((opt.label,
                          results_x[0],
                          results_x[1],
                          results_x[2],
