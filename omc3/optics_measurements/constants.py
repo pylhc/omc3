@@ -1,9 +1,13 @@
 import numpy as np
-
 PI = np.pi
 PI2 = 2 * np.pi
 PI2I = 2j * np.pi
 
+PLANES = ("X", "Y")
+PLANE_TO_NUM = dict(X=1, Y=2)
+
+# File Names -------------------------------------------------------------------
+EXT = ".tfs"
 AMP_BETA_NAME = "beta_amplitude_"
 BETA_NAME = "beta_phase_"
 CHROM_BETA_NAME = "chrom_beta_"
@@ -13,11 +17,33 @@ DISPERSION_NAME = "dispersion_"
 NORM_DISP_NAME = "normalised_dispersion_"
 ORBIT_NAME = "orbit_"
 KICK_NAME = "kick_"
-EXT = ".tfs"
 IP_NAME = "interaction_point_"
-ERR = "ERR"
-DELTA = "DELTA"
-MDL = "MDL"
-PLANES = ("X", "Y")
-PLANE_TO_NUM = dict(X=1, Y=2)
-RES = "RES"
+
+# Column Names -----------------------------------------------------------------
+# Pre- and Suffixe
+ERR = "ERR"      # Error of the measurement
+RMS = 'RMS'      # Root-Mean-Square
+RES = "RES"      # Rescaled measurement
+DELTA = "DELTA"  # Delta between measurement and model (sometimes beating)
+MDL = "MDL"      # Model
+
+# Names
+S = 'S'
+TUNE = 'Q'
+NAT_TUNE = 'NATQ'
+PEAK2PEAK = 'PK2PK'
+BETA = 'BET'
+DPP = 'DPP'
+DPPAMP = 'DPPAMP'
+AMPLITUDE = 'AMP'
+
+TIME = 'TIME'
+ACTION = '2J'
+SQRT_ACTION = 'sqrt2J'
+
+
+# Headers ----------------------------------------------------------------------
+RESCALE_FACTOR = 'RescalingFactor'
+
+
+

@@ -12,9 +12,10 @@ import numpy as np
 import pandas as pd
 
 import tfs
+from definitions import formats
 from utils.contexts import timeit
 from utils import logging_tools
-from harpy import frequency, clean
+from harpy import frequency, clean, kicker
 
 LOGGER = logging_tools.get_logger(__name__)
 PLANES = ("X", "Y")
@@ -39,7 +40,7 @@ def run_per_bunch(tbt_data, harpy_input):
     output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
-        bpm_data = _scale_to_mm(bpm_data, harpy_input.unit)
+        bpm_data = _scale_to_meters(bpm_data, harpy_input.unit)
         bpm_data, usvs[plane], bad_bpms[plane], bpm_res = clean.clean(harpy_input, bpm_data, model)
         lins[plane], bpm_datas[plane] = _closed_orbit_analysis(bpm_data, model, bpm_res)
 
@@ -59,19 +60,20 @@ def run_per_bunch(tbt_data, harpy_input):
         if "spectra" in harpy_input.to_write or "full_spectra" in harpy_input.to_write:
             _write_spectrum(output_file_path, plane, spectra[plane])
         lins[plane] = lins[plane].loc[harpy_results.index].join(harpy_results)
+        if harpy_input.is_free_kick:
+            lins[plane] = kicker.phase_correction(bpm_datas[plane], lins[plane], plane)
 
     measured_tunes = [lins["X"]["TUNEX"].mean(), lins["Y"]["TUNEY"].mean(),
                       lins["X"]["TUNEZ"].mean() if tune_estimates[2] > 0 else 0]
-    nturns = bpm_datas["X"].shape[1]
 
     for plane in PLANES:
         lins[plane] = lins[plane].join(frequency.find_resonances(
-            measured_tunes, nturns, plane, spectra[plane]))
+            measured_tunes, bpm_datas[plane].shape[1], plane, spectra[plane]))
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
         lins[plane] = lins[plane].sort_values('S', axis=0, ascending=True)
-        lins[plane] = tfs.TfsDataFrame(lins[plane], headers=_compute_headers(lins[plane]))
+        lins[plane] = tfs.TfsDataFrame(lins[plane], headers=_compute_headers(lins[plane], tbt_data.date))
         if "lin" in harpy_input.to_write:
             _write_lin_tfs(output_file_path, plane, lins[plane])
     return lins
@@ -83,9 +85,9 @@ def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
     return tbt_data.matrices[0][plane].iloc[:, start:end].T.reset_index(drop=True).T
 
 
-def _scale_to_mm(bpm_data, unit):
-    scales_to_mm = {'um': 0.001, 'mm': 1, 'cm': 10, 'm': 1000}
-    return bpm_data * scales_to_mm[unit]
+def _scale_to_meters(bpm_data, unit):
+    scales_to_meters = {'um': 1e-6, 'mm': 0.001, 'cm': 0.01, 'm': 1}
+    return bpm_data * scales_to_meters[unit]
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
@@ -141,7 +143,7 @@ def _sync_phase(lin_frame, plane):
     return lin_frame
 
 
-def _compute_headers(panda):
+def _compute_headers(panda, date):
     headers = OrderedDict()
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
@@ -152,6 +154,7 @@ def _compute_headers(panda):
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
+    headers["TIME"] = date.strftime(formats.TIME)
     return headers
 
 
