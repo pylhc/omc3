@@ -5,7 +5,7 @@ Manager
 Contains entrypoint wrappers to get accelerator classes or their instances
 """
 from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, split_arguments
-from model.accelerators import lhc, ps, esrf, psbooster, skekb
+from model.accelerators import lhc, ps, esrf, psbooster, skekb, iota
 
 
 ACCELS = {
@@ -14,14 +14,15 @@ ACCELS = {
     esrf.Esrf.NAME: esrf.Esrf,
     psbooster.Psbooster.NAME: psbooster.Psbooster,
     skekb.SKekB.NAME: skekb.SKekB,
-    "JPARC": skekb.SKekB
+    "JPARC": skekb.SKekB,
+    iota.Iota.NAME: iota.Iota
 }
 
 
 def _get_params():
     params = EntryPointParameters()
     params.add_parameter(flags=["--accel"], name="accel", required=True, choices=list(ACCELS.keys()),
-                         help="Choose the accelerator to use.Can be the class already.")
+                         help="Choose the accelerator to use. Can be the class already.")
     return params
 
 

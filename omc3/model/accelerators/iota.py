@@ -4,7 +4,7 @@ IOTA
 """
 import os
 import re
-from model.accelerators.accelerator import Accelerator
+from model.accelerators.accelerator import Accelerator, AccElementTypes
 from generic_parser.entrypoint import EntryPointParameters
 import logging
 
@@ -20,7 +20,13 @@ def get_iota_modes():
 
 class Iota(Accelerator):
     NAME = "iota"
-    RE_DICT = {"bpm": r"IBPM", "magnet": r"Q"}
+    RE_DICT = {AccElementTypes.BPMS: r"IBPM*",
+               AccElementTypes.MAGNETS: r"Q*",
+               AccElementTypes.ARC_BPMS: r"IBPM*"}
+    TWISS_ELEMENTS_DAT = "twiss_elements.dat"
+    TWISS_DAT = "twiss.dat"
+    ERROR_DEFFS_TXT = "error_deffs.txt"
+    BPM_INITIAL = 'I'
 
     @staticmethod
     def get_class_parameters():
@@ -41,6 +47,17 @@ class Iota(Accelerator):
     def get_iota_dir():
         return os.path.join(CURRENT_DIR, "iota")
 
+    @classmethod
+    def verify_object(self):
+        pass
+
+    @classmethod
+    def get_beam_direction(self):
+        return 1
+
+    # @classmethod
+    # def get_errordefspath(self):
+    #     return None
 
 # Specific accelerator definitions ###########################################
 
