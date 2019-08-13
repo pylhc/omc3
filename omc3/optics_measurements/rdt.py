@@ -61,6 +61,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
         for rdt in SINGLE_PLANE_RDTS[plane]:
             df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+            header['FREQ'] = _get_freq_of_rdt(header, rdt, plane)
             write(df, header, meas_input, plane, rdt)
     for plane in PLANES:
         bpm_names = input_files.bpms(dpp_value=0)
@@ -68,6 +69,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
         for rdt in DOUBLE_PLANE_RDTS[plane]:
             df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+            header['FREQ'] = _get_freq_of_rdt(header, rdt, plane)
             write(df, header, meas_input, plane, rdt)
 
 
@@ -81,6 +83,16 @@ def write(df, header, meas_input, plane, rdt):
 def _rdt_to_str(rdt):
     j, k, l, m = rdt
     return f"{j}{k}{l}{m}"
+
+
+def _get_freq_of_rdt(header, rdt, plane):
+    j, k, l, m = rdt
+    Qx, Qy = header['Q1'], header['Q2']
+    line = {'X': np.mod((1-j+k)*Qx+(m-l)*Qy, 1),
+            'Y': np.mod((k-j)*Qx+(1-l+m)*Qy, 1)}
+    if line[plane] > 0.5:
+        return 1-line[plane]
+    return line[plane]
 
 
 def _rdt_to_order_and_type(rdt):
