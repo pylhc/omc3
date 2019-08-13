@@ -26,12 +26,12 @@ SINGLE_PLANE_RDTS = {"X": ((3, 0, 0, 0), (1, 2, 0, 0),      # Normal Sextupolar
                      "Y": ((0, 0, 3, 0), (0, 0, 1, 2),   # Skew Sextupolar
                            (0, 0, 4, 0), (0, 0, 1, 3)    # Normal Octupolar
                            )}
-DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Quadrupole
+DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Skew Quadrupole
                            (1, 0, 2, 0), (1, 0, 0, 2),  # Normal Sextupole
                            (1, 1, 0, 1), (2, 0, 1, 0), (1, 1, 1, 0), (2, 0, 0, 1),  # Skew Sextupole
                            (2, 0, 0, 2), (1, 1, 2, 0), (1, 1, 0, 2), (2, 0, 2, 0)  # Normal Octupole
                            ),
-                     "Y": ((0, 1, 1, 0), (1, 0, 1, 0),  # Quadrupole
+                     "Y": ((0, 1, 1, 0), (1, 0, 1, 0),  # Skew Quadrupole
                            (0, 1, 1, 1), (1, 0, 2, 0), (0, 1, 2, 0), (1, 0, 1, 1),  # Normal Sextupole
                            (0, 2, 1, 0), (2, 0, 1, 0),  # Skew Sextupole
                            (2, 0, 2, 0), (2, 0, 1, 1), (0, 2, 2, 0), (0, 2, 1, 1)  # Normal Octupole
