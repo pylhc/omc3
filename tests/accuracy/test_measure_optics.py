@@ -17,7 +17,6 @@ LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 5e-3}
 DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
 
-
 def _create_input():
     dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
     print(f"\nInput creation: {dpps}")
@@ -84,7 +83,7 @@ def test_3_pseudo_onmom_files_eq():
 def test_offmom_files():
     lins, optics_opt = INPUT_CREATED
     optics_opt["compensation"] = "model"
-    # optics_opt["chromatic_beating"] = True
+    #optics_opt["chromatic_beating"] = True
     optics_opt["outputdir"] = join(BASE_PATH, "offmom")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)
     _run_evaluate_and_clean_up(inputs, optics_opt)
@@ -92,7 +91,7 @@ def test_offmom_files():
 
 def test_offmom_files_eq():
     lins, optics_opt = INPUT_CREATED
-    # optics_opt["chromatic_beating"] = True
+    #optics_opt["chromatic_beating"] = True
     optics_opt["compensation"] = "equation"
     optics_opt["outputdir"] = join(BASE_PATH, "offmom_eq")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)

@@ -98,7 +98,7 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
 
 
 def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
-    """It computes dispersion from 3D kicks"""
+    """It computes  dispersion from 3 D kicks"""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.get_model_tfs()
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['AMPZ', 'MUZ', f"AMP{plane}"])
