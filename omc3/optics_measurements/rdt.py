@@ -61,7 +61,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
         for rdt in SINGLE_PLANE_RDTS[plane]:
             df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-            header['FREQ'] = _get_freq_of_rdt(header, rdt, plane)
+            _, header['FREQ'] = _determine_line(rdt, plane, header)
             write(df, header, meas_input, plane, rdt)
     for plane in PLANES:
         bpm_names = input_files.bpms(dpp_value=0)
@@ -69,7 +69,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
         for rdt in DOUBLE_PLANE_RDTS[plane]:
             df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-            header['FREQ'] = _get_freq_of_rdt(header, rdt, plane)
+            _, header['FREQ'] = _determine_line(rdt, plane, header)
             write(df, header, meas_input, plane, rdt)
 
 
@@ -83,16 +83,6 @@ def write(df, header, meas_input, plane, rdt):
 def _rdt_to_str(rdt):
     j, k, l, m = rdt
     return f"{j}{k}{l}{m}"
-
-
-def _get_freq_of_rdt(header, rdt, plane):
-    j, k, l, m = rdt
-    Qx, Qy = header['Q1'], header['Q2']
-    line = {'X': np.mod((1-j+k)*Qx+(m-l)*Qy, 1),
-            'Y': np.mod((k-j)*Qx+(1-l+m)*Qy, 1)}
-    if line[plane] > 0.5:
-        return 1-line[plane]
-    return line[plane]
 
 
 def _rdt_to_order_and_type(rdt):
@@ -122,10 +112,17 @@ def _get_n_upper_diagonals(n, shape):
     return diags(np.ones((n, shape[0])), np.arange(n)+1, shape=shape).toarray()
 
 
-def _determine_line(rdt, plane):
+def _determine_line(rdt, plane, header=None):
     j, k, l, m = rdt
-    lines = dict(X=(1 - j + k, m - l, 0), Y=(k - j, 1 - l + m, 0))
-    return lines[plane]
+    lines = dict(X=np.array([1 - j + k, m - l, 0]),
+                 Y=np.array([k - j, 1 - l + m, 0]))
+    if header is None:
+        return lines[plane]
+    tunes = [header['Q1'], header['Q2'], 0]
+    freq = np.mod(lines[plane]@tunes, 1)
+    if freq > 0.5:
+        return lines[plane], 1.-freq
+    return lines[plane], freq
 
 
 def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
