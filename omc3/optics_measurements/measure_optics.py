@@ -60,7 +60,6 @@ def measure_optics(input_files, measure_input):
         dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
         if plane == "X":
             dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
-
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
     if measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))

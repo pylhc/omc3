@@ -9,7 +9,8 @@ from datetime import datetime
 import tbt
 from tbt import lhc_handler
 from tbt import numpy_handler
-from tbt import iota_handler
+from tbt import iota_handler_v1
+from tbt import iota_handler_v2
 from tbt import data_class
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -38,7 +39,26 @@ def test_tbt_read_hdf5(_hdf5_file):
         date=datetime.now(),
         bunch_ids=[1],
         nturns=2000)
-    new = iota_handler.read_tbt(_hdf5_file)
+    new = iota_handler_v1.read_tbt(_hdf5_file)
+    _compare_tbt(origin, new, False)
+
+
+def test_tbt_read_hdf5_v2(_hdf5_file_v2):
+
+    origin = data_class.TbtData(
+        matrices=[
+                  {'X': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.sin),
+                    dtype=float),
+                   'Y': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.cos),
+                    dtype=float)}],
+        date=datetime.now(),
+        bunch_ids=[1],
+        nturns=2000)
+    new = iota_handler_v2.read_tbt(_hdf5_file_v2)
     _compare_tbt(origin, new, False)
 
 
@@ -84,6 +104,11 @@ def _sdds_file():
 @pytest.fixture()
 def _hdf5_file():
     return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.hdf5")
+
+
+@pytest.fixture()
+def _hdf5_file_v2():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file_v2.hdf5")
 
 
 @pytest.fixture()
