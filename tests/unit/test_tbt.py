@@ -3,16 +3,10 @@ import tempfile
 
 import pytest
 import numpy as np
-from numpy import sin, cos
 import pandas as pd
 from . import context
 from datetime import datetime
-import tbt
-from tbt import lhc_handler
-from tbt import numpy_handler
-from tbt import iota_handler
-from tbt import ptc_handler
-from tbt import data_class
+from tbt import handler, iota_handler, ptc_handler
 
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -20,15 +14,15 @@ PLANES = ('X', 'Y')
 
 
 def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):
-    origin = lhc_handler.read_tbt(_sdds_file)
-    tbt.data_class.write_tbt_data(_test_file, origin, 'LHCSDDS')
-    new = lhc_handler.read_tbt(f'{_test_file}.sdds')
+    origin = handler.read_tbt(_sdds_file)
+    handler.write_tbt(_test_file, origin)
+    new = handler.read_tbt(f'{_test_file}.sdds')
     _compare_tbt(origin, new, False)
 
 
 def test_tbt_read_hdf5(_hdf5_file):
 
-    origin = data_class.TbtData(
+    origin = handler.TbtData(
         matrices=[
                   {'X': pd.DataFrame(
                     index=['IBPMA1C', 'IBPME2R'],
@@ -48,7 +42,7 @@ def test_tbt_read_hdf5(_hdf5_file):
 def test_tbt_read_ptc(_ptc_file):
     BPMS = ['C1.BPM1']
     NTURNS = 1000
-    origin = data_class.TbtData(
+    origin = handler.TbtData(
         matrices=[
             {'X': pd.DataFrame(
                 index=BPMS,
@@ -116,8 +110,8 @@ def _create_x(x0, px0, turns, Qx, beta, alfa):
     GAMMA = (1 + alfa**2) / beta
     MU = Qx * np.pi * 2.
 
-    ONETURN = np.array([[cos(MU) + alfa*sin(MU), beta * sin(MU)],
-                        [-GAMMA*sin(MU), cos(MU) - alfa*sin(MU)]])
+    ONETURN = np.array([[np.cos(MU) + alfa*np.sin(MU), beta * np.sin(MU)],
+                        [-GAMMA*np.sin(MU), np.cos(MU) - alfa*np.sin(MU)]])
     x_px = [np.array([x0, px0])]
 
     for nturn in range(turns-1):
@@ -125,17 +119,10 @@ def _create_x(x0, px0, turns, Qx, beta, alfa):
     return [x[0] for x in x_px]
 
 
-def test_tbt_write_read_npz(_sdds_file, _test_file):
-    origin = lhc_handler.read_tbt(_sdds_file)
-    tbt.data_class.write_tbt_data(_test_file, origin, 'NUMPY')
-    new = numpy_handler.read_tbt(f'{_test_file}.npz')
-    _compare_tbt(origin, new, False)
-
-
 def test_tbt_write_read_ascii(_sdds_file, _test_file):
-    origin = lhc_handler.read_tbt(_sdds_file)
-    tbt.data_class.write_tbt_data(_test_file, origin, 'LHCSDDS_ASCII')
-    new = lhc_handler.read_tbt(_test_file)
+    origin = handler.read_tbt(_sdds_file)
+    handler.write_lhc_ascii(_test_file, origin)
+    new = handler.read_tbt(_test_file)
     _compare_tbt(origin, new, True)
 
 
@@ -149,7 +136,7 @@ def _compare_tbt(origin, new, no_binary):
             origin_mat = origin.matrices[index][plane].values
             new_mat = new.matrices[index][plane].values
             if no_binary:
-                ascii_precision = 0.5 / np.power(10, data_class.PRINT_PRECISION)
+                ascii_precision = 0.5 / np.power(10, handler.PRINT_PRECISION)
                 assert np.max(np.abs(origin_mat - new_mat)) < ascii_precision
             else:
                 assert np.all(origin_mat == new_mat)

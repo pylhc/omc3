@@ -9,6 +9,12 @@ from os.path import abspath, join, dirname
 import json
 from scipy.io import loadmat
 import numpy as np
+from tbt import handler
+
+
+def read_tbt(filepath):
+    names, matrix = load_esrf_mat_file(filepath)
+    return handler.numpy_to_tbts(names, matrix)
 
 
 def load_esrf_mat_file(infile):

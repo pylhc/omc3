@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-from tbt import TbtData
+from tbt import handler
 from utils.logging_tools import get_logger
 
 HEADER = "@"
@@ -58,7 +58,7 @@ def read_tbt(file_path):
             matrices[bunch][plane] = pd.DataFrame(matrices[bunch][plane]).transpose()
 
     LOGGER.debug(f"Read Tbt data from : {file_path}")
-    return TbtData(matrices, date, particles, n_turns)
+    return handler.TbtData(matrices, date, particles, n_turns)
 
 
 # Read all lines ---------------------------------------------------------------

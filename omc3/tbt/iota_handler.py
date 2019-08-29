@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import h5py
 
-from tbt import data_class
+from tbt import handler
 from utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
@@ -40,7 +40,7 @@ def read_tbt(file_path):
                                  data=_get_turn_by_turn_data(hdf_file, k),
                                  dtype=float) for k in PLANES}]
 
-    return data_class.TbtData(matrices, date, bunch_ids, nturns)
+    return handler.TbtData(matrices, date, bunch_ids, nturns)
 
 
 def _get_turn_by_turn_data(hd5, plane):
