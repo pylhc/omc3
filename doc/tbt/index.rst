@@ -2,7 +2,7 @@ Turn-by-Turn
 **************************
 
 
-.. automodule:: tbt.data_class
+.. automodule:: tbt.handler
     :members:
 
 
@@ -15,10 +15,6 @@ Turn-by-Turn
 
 
 .. automodule:: tbt.lhc_handler
-    :members:
-
-
-.. automodule:: tbt.numpy_handler
     :members:
 
 
