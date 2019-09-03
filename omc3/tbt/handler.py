@@ -121,4 +121,4 @@ def numpy_to_tbts(names, matrix):
         matrices.append({"X": pd.DataFrame(index=names, data=matrix[0, :, index, :]),
                          "Y": pd.DataFrame(index=names, data=matrix[1, :, index, :])})
         indices.append(index)
-    return TbtData(matrices, None, np.array(indices), nturns)
+    return TbtData(matrices, None, indices, nturns)

@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from . import context
 from datetime import datetime
-from tbt import handler, iota_handler, ptc_handler
+from tbt import handler, iota_handler, trackone, ptc_handler
 
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -40,83 +40,31 @@ def test_tbt_read_hdf5(_hdf5_file):
 
 
 def test_tbt_read_ptc(_ptc_file):
-    BPMS = ['C1.BPM1']
-    NTURNS = 1000
-    origin = handler.TbtData(
-        matrices=[
-            {'X': pd.DataFrame(
-                index=BPMS,
-                columns=range(NTURNS),
-                data=[
-                    _create_x(0.001, 0, NTURNS, 2.067,
-                              21.7172216, -3.11587987),
-                    #_create_x(0.0002679129997, 0, NTURNS, 2.067,
-                    #          8.814519469, 1.917380654),
-                ],
-                dtype=float),
-             'Y': pd.DataFrame(
-                index=BPMS,
-                columns=range(NTURNS),
-                data=[
-                    _create_x(0.001, 0, NTURNS, 2.155,
-                              2.442183557, 0.1734995035),
-                    #_create_x(0.001732087, 0, NTURNS, 2.155,
-                    #           8.460497676, -1.865668818),
-                ],
-                dtype=float),
-             },
-            {'X': pd.DataFrame(
-                index=BPMS,
-                columns=range(NTURNS),
-                data=[
-                    _create_x(0.0011, 0, NTURNS, 2.067,
-                              21.7172216, -3.11587987),
-                    #_create_x(0.0002947042997, 0, NTURNS, 2.155,
-                    #          8.814519469, 1.917380654),
-                ],
-                dtype=float),
-             'Y': pd.DataFrame(
-                index=BPMS,
-                columns=range(NTURNS),
-                data=[
-                    _create_x(0.0011, 0, NTURNS, 2.155,
-                              2.442183557, 0.1734995035),
-                    #_create_x(0.0019052957, 0, NTURNS, 2.155,
-                    #           8.460497676, -1.865668818),
-                ],
-                dtype=float),
-             },
-        ],
-        date=datetime.now(),
-        bunch_ids=[1, 2],
-        nturns=NTURNS)
     new = ptc_handler.read_tbt(_ptc_file)
+    origin = _original_trackone()
+    _compare_tbt(origin, new, True)
+
+
+def test_tbt_read_trackone(_ptc_file):
+    new = trackone.read_tbt(_ptc_file)
+    origin = _original_trackone(True)
     _compare_tbt(origin, new, True)
 
 
 def test_tbt_read_ptc_looseparticles(_ptc_file_losses):
     new = ptc_handler.read_tbt(_ptc_file_losses)
     assert len(new.matrices) == 3
-    assert len(new.matrices[0]["X"].columns) == 1024
+    assert len(new.matrices[0]["X"].columns) == 9
     assert all(new.matrices[0]["X"].index == np.array([f"BPM{i+1}" for i in range(3)]))
     assert not new.matrices[0]["X"].isna().any().any()
 
 
-def _create_data(nturns, nbpm, function):
-    return np.ones((nbpm, len(nturns))) * function(nturns)
-
-
-def _create_x(x0, px0, turns, Qx, beta, alfa):
-    GAMMA = (1 + alfa**2) / beta
-    MU = Qx * np.pi * 2.
-
-    ONETURN = np.array([[np.cos(MU) + alfa*np.sin(MU), beta * np.sin(MU)],
-                        [-GAMMA*np.sin(MU), np.cos(MU) - alfa*np.sin(MU)]])
-    x_px = [np.array([x0, px0])]
-
-    for nturn in range(turns-1):
-        x_px.append(np.matmul(ONETURN, x_px[-1]))
-    return [x[0] for x in x_px]
+def test_tbt_read_trackone_looseparticles(_ptc_file_losses):
+    new = trackone.read_tbt(_ptc_file_losses)
+    assert len(new.matrices) == 3
+    assert len(new.matrices[0]["X"].columns) == 9
+    assert all(new.matrices[0]["X"].index == np.array([f"BPM{i+1}" for i in range(3)]))
+    assert not new.matrices[0]["X"].isna().any().any()
 
 
 def test_tbt_write_read_ascii(_sdds_file, _test_file):
@@ -140,6 +88,23 @@ def _compare_tbt(origin, new, no_binary):
                 assert np.max(np.abs(origin_mat - new_mat)) < ascii_precision
             else:
                 assert np.all(origin_mat == new_mat)
+
+
+def _original_trackone(track=False):
+    names = np.array(["C1.BPM1"])
+    matrix = [
+        dict(X=pd.DataFrame(index=names, data=[[0.001, -0.0003606, -0.00165823, -0.00266631]]),
+             Y=pd.DataFrame(index=names, data=[[0.001, 0.00070558, -0.00020681, -0.00093807]])),
+        dict(
+            X=pd.DataFrame(index=names, data=[[0.0011, -0.00039666, -0.00182406, -0.00293294]]),
+            Y=pd.DataFrame(index=names,
+                           data=[[0.0011, 0.00077614, -0.00022749, -0.00103188]]))]
+    origin = handler.TbtData(matrix, None, [0, 1] if track else [1, 2], 4)
+    return origin
+
+
+def _create_data(nturns, nbpm, function):
+    return np.ones((nbpm, len(nturns))) * function(nturns)
 
 
 @pytest.fixture()

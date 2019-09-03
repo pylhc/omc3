@@ -43,7 +43,7 @@ def get_trackone_stats(infile):
             stats_string = stats_string + l
     with open('stats.txt', "w") as stats_file:
         stats_file.write(stats_string)
-    return nturns, nparticles
+    return nturns - 1, nparticles
 
 
 def get_structure_from_trackone(nturns=0, npart=0, infile='trackone'):
