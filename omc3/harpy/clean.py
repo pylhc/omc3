@@ -44,6 +44,8 @@ def clean(harpy_input, bpm_data, model):
 
 
 def _get_only_model_bpms(bpm_data, model):
+    if model is None:
+        return bpm_data, []
     bpm_data_in_model = bpm_data.loc[model.index.intersection(bpm_data.index)]
     not_in_model = bpm_data.index.difference(model.index)
     return bpm_data_in_model, [f"{bpm} not found in model" for bpm in not_in_model]
@@ -58,13 +60,13 @@ def _cut_cleaning(harpy_input, bpm_data, model):
     all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros)
     original_bpms = bpm_data.index
 
-    bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms)]
+    bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms, sort=False)]
     bad_bpms_with_reasons = _get_bad_bpms_summary(
         harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros
     )
     _report_clean_stats(original_bpms.size, bpm_data.index.size)
     bpm_data = _fix_polarity(harpy_input.wrong_polarity_bpms, bpm_data)
-    if harpy_input.first_bpm is not None:
+    if model is not None and harpy_input.first_bpm is not None:
         bpm_data = _resync_bpms(harpy_input, bpm_data, model)
     return bpm_data, bad_bpms_with_reasons
 
@@ -207,6 +209,6 @@ def _clean_dominant_bpms(u_mat, svd_dominance_limit):
     dominant_bpms = u_mat[np.max(u_mat.abs(), axis=1) > svd_dominance_limit].index
     if dominant_bpms.size > 0:
         LOGGER.debug(f"Bad BPMs from SVD detected. Number of BPMs removed: {dominant_bpms.size}")
-    clean_u = u_mat.loc[u_mat.index.difference(dominant_bpms)]
+    clean_u = u_mat.loc[u_mat.index.difference(dominant_bpms, sort=False)]
     return clean_u, [f"{bpm_name} Dominant BPM in SVD, peak value > {svd_dominance_limit}"
                      for bpm_name in dominant_bpms]
