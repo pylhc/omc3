@@ -235,6 +235,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
     if name == "__main__":
         # set up root logger
         root_logger = logging.getLogger("")
+        root_logger.handlers = []  # remove handlers in case someone already created them
         root_logger.setLevel(level_root)
 
         # print logs to the console
