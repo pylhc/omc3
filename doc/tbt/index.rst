@@ -6,23 +6,23 @@ Turn-by-Turn
     :members:
 
 
-.. automodule:: tbt.esrf_handler
+.. automodule:: tbt.reader_esrf
     :members:
 
 
-.. automodule:: tbt.iota_handler
+.. automodule:: tbt.reader_iota
     :members:
 
 
-.. automodule:: tbt.lhc_handler
+.. automodule:: tbt.reader_lhc
     :members:
 
 
-.. automodule:: tbt.ptc_handler
+.. automodule:: tbt.reader_ptc
     :members:
 
 
-.. automodule:: tbt.trackone
+.. automodule:: tbt.reader_trackone
     :members:
 
 

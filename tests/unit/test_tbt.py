@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from . import context
 from datetime import datetime
-from tbt import handler, iota_handler, trackone, ptc_handler
+from tbt import handler, reader_iota, reader_trackone, reader_ptc
 from tbt_converter import converter_entrypoint
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -51,24 +51,24 @@ def test_tbt_read_hdf5(_hdf5_file):
         date=datetime.now(),
         bunch_ids=[1],
         nturns=2000)
-    new = iota_handler.read_tbt(_hdf5_file)
+    new = reader_iota.read_tbt(_hdf5_file)
     _compare_tbt(origin, new, False)
 
 
 def test_tbt_read_ptc(_ptc_file):
-    new = ptc_handler.read_tbt(_ptc_file)
+    new = reader_ptc.read_tbt(_ptc_file)
     origin = _original_trackone()
     _compare_tbt(origin, new, True)
 
 
 def test_tbt_read_trackone(_ptc_file):
-    new = trackone.read_tbt(_ptc_file)
+    new = reader_trackone.read_tbt(_ptc_file)
     origin = _original_trackone(True)
     _compare_tbt(origin, new, True)
 
 
 def test_tbt_read_ptc_looseparticles(_ptc_file_losses):
-    new = ptc_handler.read_tbt(_ptc_file_losses)
+    new = reader_ptc.read_tbt(_ptc_file_losses)
     assert len(new.matrices) == 3
     assert len(new.matrices[0]["X"].columns) == 9
     assert all(new.matrices[0]["X"].index == np.array([f"BPM{i+1}" for i in range(3)]))
@@ -76,7 +76,7 @@ def test_tbt_read_ptc_looseparticles(_ptc_file_losses):
 
 
 def test_tbt_read_trackone_looseparticles(_ptc_file_losses):
-    new = trackone.read_tbt(_ptc_file_losses)
+    new = reader_trackone.read_tbt(_ptc_file_losses)
     assert len(new.matrices) == 3
     assert len(new.matrices[0]["X"].columns) == 9
     assert all(new.matrices[0]["X"].index == np.array([f"BPM{i+1}" for i in range(3)]))
