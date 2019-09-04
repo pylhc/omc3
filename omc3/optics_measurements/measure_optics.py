@@ -48,7 +48,7 @@ def measure_optics(input_files, measure_input):
         phase.write(out_dfs, [common_header, common_header], measure_input.outputdir, plane)
         phase.write_special(measure_input, phase_dict, tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
-            break
+            continue
         beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict, common_header, plane)
         beta_from_phase.write(beta_df, beta_header, measure_input.outputdir, plane)
 

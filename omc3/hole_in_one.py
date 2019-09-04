@@ -261,8 +261,9 @@ def _get_suboptions(opt, rest):
                                     files=harpy_opt.files,
                                     outputdir=harpy_opt.outputdir)
             harpy_opt.outputdir = join(harpy_opt.outputdir, 'lin_files')
-            rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
-                                    model_dir=dirname(abspath(harpy_opt.model)))
+            if harpy_opt.model is not None:
+                rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
+                                        model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
 

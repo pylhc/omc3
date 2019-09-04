@@ -36,6 +36,27 @@ def test_harpy(_test_file, _model_file):
                            unit="m")
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
+    assert_spectra(lin, model)
+
+
+def test_harpy_without_model(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                           clean=True,
+                           autotunes="transverse",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           to_write=["lin"],
+                           turn_bits=18,
+                           unit="m")
+    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    assert_spectra(lin, model)
+
+
+def assert_spectra(lin, model):
     for plane in PLANES:
         # main and secondary frequencies
         assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].values,

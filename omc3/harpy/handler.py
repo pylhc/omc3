@@ -35,7 +35,7 @@ def run_per_bunch(tbt_data, harpy_input):
     Returns:
         Dictionary of TfsDataFrames per plane
     """
-    model = tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
+    model = None if harpy_input.model is None else tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
     output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
@@ -91,9 +91,10 @@ def _scale_to_meters(bpm_data, unit):
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
-    lin_frame = pd.DataFrame(index=bpm_data.index,
-                             data=OrderedDict([("NAME", bpm_data.index),
-                                               ("S", model.loc[bpm_data.index])]))
+    lin_frame = pd.DataFrame(index=bpm_data.index.values,
+                             data=OrderedDict([("NAME", bpm_data.index.values),
+                                               ("S", np.arange(bpm_data.index.size) if model is None
+                                               else model.loc[bpm_data.index])]))
     lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
     with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
         lin_frame = _get_orbit_data(lin_frame, bpm_data)

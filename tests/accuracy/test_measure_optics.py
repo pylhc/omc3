@@ -17,6 +17,7 @@ LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 5e-3}
 DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
 
+
 def _create_input():
     dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
     print(f"\nInput creation: {dpps}")
