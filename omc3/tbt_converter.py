@@ -49,7 +49,7 @@ def converter_entrypoint(opt):
     Converts turn-by-turn files from various formats to LHC binary SDDS files.
     Optionally can replicate files files with added noise.
 
-    Convertor Kwargs:
+    Converter Kwargs:
       - **files**: TbT files to convert
 
         Flags: **--files**
@@ -78,15 +78,12 @@ def converter_entrypoint(opt):
     save_options_to_config(join(opt.outputdir, DEFAULT_CONFIG_FILENAME.format(
         time=datetime.utcnow().strftime(formats.TIME))), OrderedDict(sorted(opt.items())))
 
-    with timeit(lambda spanned: LOGGER.info(f"Total time for Converter: {spanned}")):
-        for input_file in opt.files:
-            tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
-            if opt.replication == 1:
-                tbt.write(join(opt.outputdir, _file_name(input_file)), tbt_data, noise=opt.noise)
-            else:
-                for i in range(opt.replication):
-                    tbt.write(join(opt.outputdir, f"{_file_name(input_file)}_{i}"), tbt_data,
-                              noise=opt.noise)
+    for input_file in opt.files:
+        tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
+        for i in range(opt.replication):
+            suffix = f"_{i}" if opt.replication > 1 else ""
+            tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{suffix}"), tbt_data,
+                      noise=opt.noise_to_add)
 
 
 def _file_name(filename: str):

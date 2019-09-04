@@ -7,10 +7,26 @@ import pandas as pd
 from . import context
 from datetime import datetime
 from tbt import handler, iota_handler, trackone, ptc_handler
-
+from tbt_converter import converter_entrypoint
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
+
+
+def test_converter_one_file(_sdds_file, _test_file):
+    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file))
+    origin = handler.read_tbt(_sdds_file)
+    new = handler.read_tbt(f'{_test_file}.sdds')
+    _compare_tbt(origin, new, False)
+
+
+def test_converter_more_files(_sdds_file, _test_file):
+    rep = 2
+    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), replication=rep)
+    origin = handler.read_tbt(_sdds_file)
+    for i in range(rep):
+        new = handler.read_tbt(f'{_test_file}_{i}.sdds')
+        _compare_tbt(origin, new, False)
 
 
 def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):

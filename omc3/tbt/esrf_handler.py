@@ -13,33 +13,40 @@ from tbt import handler
 
 
 def read_tbt(filepath):
+    """
+    Reads ESRF matlab file.
+
+    Args:
+        filepath: path to a file
+
+    Returns:
+        tbt.TbTData object
+    """
     names, matrix = load_esrf_mat_file(filepath)
     return handler.numpy_to_tbts(names, matrix)
 
 
 def load_esrf_mat_file(infile):
     """
-        Reads the ESRF TbT Matlab file, checks for nans and data duplicities from consecutive kicks
+    Reads the ESRF TbT Matlab file, checks for nans and data duplicities from consecutive kicks
 
-        Attributes:
-            infile: path to file to be read
-        Returns:
-            Numpy array of BPM names
-            4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
-            quantities in order [x, y]
+    Attributes:
+        infile: path to file to be read
+    Returns:
+        Numpy array of BPM names
+        4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
+        quantities in order [x, y]
         """
     esrf_data = loadmat(infile)
     hor, ver = esrf_data["allx"], esrf_data["allz"]
-    if hor.shape[0] != ver.shape[0]:
-        raise ValueError("Number of turns in x and y do not match")
-    if hor.shape[2] != ver.shape[2]:
-        raise ValueError("Number of measurements in x and y do not match")
+    if hor.shape != ver.shape:
+        raise ValueError("Number of turns, BPMs or measurements in X and Y do not match")
     # TODO change for tfs file got from accelerator class
     bpm_names = json.load(open(abspath(join(dirname(__file__), "bpm_names.json")), "r"))
-    if hor.shape[1] == len(bpm_names) == ver.shape[1]:
-        tbt_data = _check_esrf_tbt_data(np.transpose(np.array([hor, ver]), axes=[0, 2, 3, 1]))
-        return np.array(bpm_names), tbt_data
-    raise ValueError("Number of bpms does not match with accelerator class")
+    if hor.shape[1] != len(bpm_names):
+        raise ValueError("Number of bpms does not match with accelerator class")
+    tbt_data = _check_esrf_tbt_data(np.transpose(np.array([hor, ver]), axes=[0, 2, 3, 1]))
+    return np.array(bpm_names), tbt_data
 
 
 def _check_esrf_tbt_data(tbt_data):
