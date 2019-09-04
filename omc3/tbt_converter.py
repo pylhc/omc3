@@ -1,5 +1,5 @@
 """
-Entrypoint tbt_convertor
+Entrypoint tbt_converter
 ------------------------
 
 Created on 29/08/19
@@ -77,7 +77,10 @@ def converter_entrypoint(opt):
     iotools.create_dirs(opt.outputdir)
     save_options_to_config(join(opt.outputdir, DEFAULT_CONFIG_FILENAME.format(
         time=datetime.utcnow().strftime(formats.TIME))), OrderedDict(sorted(opt.items())))
+    _read_and_write_files(opt)
 
+
+def _read_and_write_files(opt):
     for input_file in opt.files:
         tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
         for i in range(opt.replication):
