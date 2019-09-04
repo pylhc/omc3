@@ -1,6 +1,6 @@
 """
-handler
----------------------
+LHC Turn-by-Turn Data Handler
+--------------------------------
 
 
 Basic tbt io-functionality.
@@ -10,7 +10,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import sdds
-from tbt import data_class
+from tbt import handler
 from utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
@@ -47,7 +47,7 @@ def read_tbt(file_path):
     """
     if _is_ascii_file(file_path):
         matrices, date = _read_ascii(file_path)
-        return data_class.TbtData(matrices, date, [0], matrices[0]["X"].shape[1])
+        return handler.TbtData(matrices, date, [0], matrices[0]["X"].shape[1])
 
     sdds_file = sdds.read(file_path)
     nbunches = sdds_file.values[N_BUNCHES]
@@ -62,7 +62,7 @@ def read_tbt(file_path):
     matrices = [{k: pd.DataFrame(index=bpm_names,
                                  data=data[k][:, idx, :],
                                  dtype=float) for k in data} for idx in range(nbunches)]
-    return data_class.TbtData(matrices, date, bunch_ids, nturns)
+    return handler.TbtData(matrices, date, bunch_ids, nturns)
 
 
 def _is_ascii_file(file_path):
