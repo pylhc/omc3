@@ -255,7 +255,15 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     b = x[0]
     w = x[1]
 
-    c2 = ((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
+    betawaist_model = kmod_input_params.betastar_and_waist[plane][0]
+    waist_model = kmod_input_params.betastar_and_waist[plane][1]
+    phase_adv_model = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],betawaist_model,0.0,waist_model,0.0)[0]
+    phase_adv_AC = 0.26
+    phase_adv = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],b,0.0,w,0.0)[0]
+    weight = 0.1
+    scale = 1000.0
+
+    c2 = weight*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
            sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
            sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[K],
            foc_magnet_df.headers['LSTAR'] +
@@ -268,7 +276,8 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
            def_magnet_df.headers['LSTAR'] +
            sign[6] * kmod_input_params.misalignment) -
            def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-           sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2)
+           sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*(1-weight)*((phase_adv - phase_adv_AC)**2)
+           #sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*(1-weight)*((phase_adv - phase_adv_model)**2)
 
     return c2
 
