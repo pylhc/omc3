@@ -65,7 +65,7 @@ def df_prod_with_err(df, a_col, b_col, a_err_col, b_err_col):
 
 
 def df_ang_diff(df, a_col, b_col):
-    """ Returns a column containing the angular difference between angles a and b """
+    """ Returns a column containing the angular difference between angles a and b in [-0.5 , 0.5] """
     return _ang_diff(df.loc[:, a_col].values, df.loc[:, b_col].values)
 
 
@@ -74,7 +74,7 @@ def _ang_diff(a, b):
 
 
 def ang_sum(a, b):
-    """ Returns a column containing the angular sum between angles a and b """
+    """ Returns a column containing the angular sum between angles a and b in [-0.5 , 0.5] """
     return _interval_check(_interval_check(a) + _interval_check(b))
 
 
