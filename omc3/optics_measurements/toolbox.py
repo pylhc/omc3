@@ -49,6 +49,12 @@ def df_diff_with_err(df, a_col, b_col, a_err_col, b_err_col):
     return df_diff(df, a_col, b_col), df_err_sum(df, a_err_col, b_err_col)
 
 
+def df_rel_diff_with_err(df, a_col, b_col, a_err_col, b_err_col):
+    """ Returns two columns containing the relative difference and the total errors of the given columns."""
+    return (df_rel_diff(df, a_col, b_col),
+            np.abs(df_ratio(df, a_col, b_col)) * df_rel_err_sum(df, a_col, b_col, a_err_col, b_err_col))
+
+
 def df_ratio_with_err(df, a_col, b_col, a_err_col, b_err_col):
     """ Returns two columns containing the ratio and the total errors of the given columns."""
     ratio = df_ratio(df, a_col, b_col)

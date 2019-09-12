@@ -75,10 +75,11 @@ def test_df_other():
     df_and_cols = _df(a, b, aerr, berr)
     sum = tb.df_sum_with_err(*df_and_cols)
     diff = tb.df_diff_with_err(*df_and_cols)
+    rel_diff = tb.df_rel_diff_with_err(*df_and_cols)
     ratio = tb.df_ratio_with_err(*df_and_cols)
     prod = tb.df_prod_with_err(*df_and_cols)
 
-    for res in (sum, diff, ratio, prod):
+    for res in (sum, diff, rel_diff, ratio, prod):
         assert len(res) == 2
         assert len(res[0]) == len(res[1])
         assert len(res[0]) == len(a)
