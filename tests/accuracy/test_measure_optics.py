@@ -13,7 +13,7 @@ from utils.contexts import timeit
 from model import manager
 from hole_in_one import _optics_entrypoint
 
-LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 5e-3}
+LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
 DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
 
