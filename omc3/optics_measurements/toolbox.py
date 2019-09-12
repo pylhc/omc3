@@ -29,7 +29,7 @@ def df_rel_diff(df, a_col, b_col):
 # with Errors ---
 
 
-def df_error_sum(df, a_err_col, b_err_col):
+def df_err_sum(df, a_err_col, b_err_col):
     """ Returns a column containing the root of the sum-of-squares of a_err_col and b_err_col """
     return np.sqrt(np.square(df.loc[:, a_err_col].values) + np.square(df.loc[:, b_err_col].values))
 
@@ -41,12 +41,12 @@ def df_rel_err_sum(df, a_col, b_col, a_err_col, b_err_col):
 
 def df_sum_with_err(df, a_col, b_col, a_err_col, b_err_col):
     """ Returns two columns containing the sum and the total errors of the given columns."""
-    return df_sum(df, a_col, b_col), df_error_sum(df, a_err_col, b_err_col)
+    return df_sum(df, a_col, b_col), df_err_sum(df, a_err_col, b_err_col)
 
 
 def df_diff_with_err(df, a_col, b_col, a_err_col, b_err_col):
     """ Returns two columns containing the difference and the total errors of the given columns."""
-    return df_diff(df, a_col, b_col), df_error_sum(df, a_err_col, b_err_col)
+    return df_diff(df, a_col, b_col), df_err_sum(df, a_err_col, b_err_col)
 
 
 def df_ratio_with_err(df, a_col, b_col, a_err_col, b_err_col):
