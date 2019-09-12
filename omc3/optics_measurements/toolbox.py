@@ -40,23 +40,23 @@ def df_rel_err_sum(df, a_col, b_col, a_err_col, b_err_col):
 
 
 def df_sum_with_err(df, a_col, b_col, a_err_col, b_err_col):
-    """ Returns two coulmns containing the sum and the total errors of the given columns."""
+    """ Returns two columns containing the sum and the total errors of the given columns."""
     return df_sum(df, a_col, b_col), df_error_sum(df, a_err_col, b_err_col)
 
 
 def df_diff_with_err(df, a_col, b_col, a_err_col, b_err_col):
-    """ Returns two coulmns containing the difference and the total errors of the given columns."""
+    """ Returns two columns containing the difference and the total errors of the given columns."""
     return df_diff(df, a_col, b_col), df_error_sum(df, a_err_col, b_err_col)
 
 
 def df_ratio_with_err(df, a_col, b_col, a_err_col, b_err_col):
-    """ Returns two coulmns containing the ratio and the total errors of the given columns."""
+    """ Returns two columns containing the ratio and the total errors of the given columns."""
     ratio = df_ratio(df, a_col, b_col)
     return ratio, np.abs(ratio) * df_rel_err_sum(df, a_col, b_col, a_err_col, b_err_col)
 
 
 def df_prod_with_err(df, a_col, b_col, a_err_col, b_err_col):
-    """ Returns two coulmns containing the product and the total errors of the given columns."""
+    """ Returns two columns containing the product and the total errors of the given columns."""
     prod = df_prod(df, a_col, b_col)
     return prod, np.abs(prod) * df_rel_err_sum(df, a_col, b_col, a_err_col, b_err_col)
 
