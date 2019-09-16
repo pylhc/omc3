@@ -31,25 +31,29 @@ MADX_PATH = abspath(join(_LOCAL_PATH, _MADX_BIN))
 warnings.simplefilter('always', DeprecationWarning)
 
 
+class MadxError(Exception):
+    pass
+
+
 def madx_wrapper_params():
     params = EntryPointParameters()
     params.add_parameter(flags="--file", name="file",
                          help="The file with the annotated MADX input to run.")
     params.add_parameter(flags="--output", name="output",
-                      help="Path to a file where to write the processed MADX script.")
+                         help="Path to a file where to write the processed MADX script.")
     params.add_parameter(flags="--log", name="log",
-                      help="Path to a file where to write the MADX log output.")
+                         help="Path to a file where to write the MADX log output.")
     params.add_parameter(flags="--madx_path", name="madx_path",
-                      help="Path to the MAD-X executable to use", default=MADX_PATH)
+                         help="Path to the MAD-X executable to use", default=MADX_PATH)
     params.add_parameter(flags="--cwd", name="cwd",
-                      help="Set current working directory")
+                         help="Set current working directory")
     return params
 
 
 @entrypoint(madx_wrapper_params(), strict=False)
 def main(opt, rest):
     if len(rest) > 1 or ((opt.file is None) == (len(rest) == 0)):
-        raise IOError("No input found: either pass the file as first parameter or use --file")
+        raise IOError("No input found: use --file option")
     if len(rest) == 1:
         warnings.warn("Calling madx_wrapper with an argument will be removed by the end of 2019\n"
                       "Consider a call like: python madx_wrapper.py --file your_madx_script.madx",
@@ -216,9 +220,6 @@ def _raise_madx_error(log=None, file=None):
     raise MadxError(message)
 
 
-class MadxError(Exception):
-    pass
-
-
 if __name__ == "__main__":
     main()
+
