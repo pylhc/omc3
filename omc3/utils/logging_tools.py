@@ -214,6 +214,23 @@ class TempStringLogger:
         """ Get the log as string. """
         return self.stream.getvalue()
 
+
+def odr_pprint(printer, odr_out):
+    """ Logs the odr output results.
+    Adapted from odr_output pretty print.
+    """
+    printer('ODR-Summary:')
+    printer(f'  Beta: {odr_out.beta}')
+    printer(f'  Beta Std Error: {odr_out.sd_beta}')
+    printer(f'  Beta Covariance: {odr_out.cov_beta}')
+    if hasattr(odr_out, 'info'):
+        printer(f'  Residual Variance: {odr_out.res_var}')
+        printer(f'  Inverse Condition #: {odr_out.inv_condnum}')
+        printer(f'  Reason(s) for Halting:')
+        for r in odr_out.stopreason:
+            printer(f'    {r}')
+
+
 # Public Methods ###############################################################
 
 

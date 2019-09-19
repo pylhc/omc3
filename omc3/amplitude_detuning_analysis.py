@@ -11,8 +11,6 @@ subtracting it from the measurement data.
 Furthermore, the orthogonal distance regression is utilized to get a
 linear fit from the measurements.
 
-Also, plotting functionality is integrated, for the amplitude detuning as well as for the bbq data.
-
 
 :author: Joschua Dilly
 """
@@ -47,6 +45,7 @@ TIMEZONE = ta_const.get_experiment_timezone()
 DTIME = 60  # extra seconds to add to kickac times when extracting from timber
 
 LOG = logging_tools.get_logger(__name__)
+
 
 # Get Parameters #############################################################
 
@@ -171,68 +170,6 @@ def _get_params():
         type=float,
     )
 
-    # Plotting
-    params.add_parameter(
-        flags="--bbqplot",
-        help="Save the bbq plot here.",
-        name="bbq_plot_out",
-        type=str,
-    )
-    params.add_parameter(
-        flags="--bbqplotshow",
-        help="Show the bbq plot.",
-        name="bbq_plot_show",
-        action="store_true",
-    )
-    params.add_parameter(
-        flags="--bbqplottwo",
-        help="Two plots for the bbq plot.",
-        name="bbq_plot_two",
-        action="store_true",
-    )
-    params.add_parameter(
-        flags="--bbqplotfull",
-        help="Plot the full bqq data with interval as lines.",
-        name="bbq_plot_full",
-        action="store_true",
-    )
-    params.add_parameter(
-        flags="--ampdetplot",
-        help="Save the amplitude detuning plot here.",
-        name="ampdet_plot_out",
-        type=str,
-    )
-    params.add_parameter(
-        flags="--ampdetplotshow",
-        help="Show the amplitude detuning plot.",
-        name="ampdet_plot_show",
-        action="store_true",
-    )
-    params.add_parameter(
-        flags="--ampdetplotymin",
-        help="Minimum tune (y-axis) in amplitude detuning plot.",
-        name="ampdet_plot_ymin",
-        type=float,
-    )
-    params.add_parameter(
-        flags="--ampdetplotymax",
-        help="Maximum tune (y-axis) in amplitude detuning plot.",
-        name="ampdet_plot_ymax",
-        type=float,
-    )
-    params.add_parameter(
-        flags="--ampdetplotxmin",
-        help="Minimum action (x-axis) in amplitude detuning plot.",
-        name="ampdet_plot_xmin",
-        type=float,
-    )
-    params.add_parameter(
-        flags="--ampdetplotxmax",
-        help="Maximum action (x-axis) in amplitude detuning plot.",
-        name="ampdet_plot_xmax",
-        type=float,
-    )
-
     # Debug
     params.add_parameter(
         flags="--debug",
@@ -247,66 +184,6 @@ def _get_params():
         type=str,
     )
 
-    return params
-
-
-def _get_plot_params():
-    params = EntryPointParameters()
-    params.add_parameter(
-        flags="--in",
-        help="BBQ data as data frame or tfs file.",
-        name="input",
-        required=True,
-    )
-    params.add_parameter(
-        flags="--out",
-        help="Save figure to this location.",
-        name="output",
-        type=str,
-    )
-    params.add_parameter(
-        flags="--show",
-        help="Show plot.",
-        name="show",
-        action="store_true"
-    )
-    params.add_parameter(
-        flags="--xmin",
-        help="Lower x-axis limit. (yyyy-mm-dd HH:mm:ss.mmm)",
-        name="xmin",
-        type=str,
-    )
-    params.add_parameter(
-        flags="--ymin",
-        help="Lower y-axis limit.",
-        name="ymin",
-        type=float,
-    )
-    params.add_parameter(
-        flags="--xmax",
-        help="Upper x-axis limit. (yyyy-mm-dd HH:mm:ss.mmm)",
-        name="xmax",
-        type=str,
-    )
-    params.add_parameter(
-        flags="--ymax",
-        help="Upper y-axis limit.",
-        name="ymax",
-        type=float,
-    )
-    params.add_parameter(
-        flags="--interval",
-        help="x_axis interval that was used in calculations.",
-        name="interval",
-        type=str,
-        nargs=2,
-    )
-    params.add_parameter(
-        flags="--two",
-        help="Plot two axis into the figure.",
-        name="two_plots",
-        action="store_true",
-    )
     return params
 
 
@@ -396,7 +273,7 @@ def analyse_with_bbq_corrections(opt):
         # get data
         kickac_df = tfs.read_tfs(opt.kickac_path, index=COL_TIME())
         bbq_df = _get_timber_data(opt.beam, opt.timber_in, opt.timber_out, kickac_df)
-        x_interval = _get_approx_bbq_interval(bbq_df, kickac_df.index, opt.window_length)
+        x_interval = get_approx_bbq_interval(bbq_df, kickac_df.index, opt.window_length)
 
         # add moving average to kickac
         kickac_df, bbq_df = kickac_modifiers.add_moving_average(kickac_df, bbq_df,
@@ -412,30 +289,9 @@ def analyse_with_bbq_corrections(opt):
         kickac_df = kickac_modifiers.add_corrected_natural_tunes(kickac_df)
         kickac_df = kickac_modifiers.add_total_natq_std(kickac_df)
 
-        # BBQ plots
-        if opt.bbq_plot_out or opt.bbq_plot_show:
-            if opt.bbq_plot_full:
-                figs["bbq"] = bbq_tools.plot_bbq_data(
-                    bbq_df,
-                    output=opt.bbq_plot_out,
-                    show=opt.bbq_plot_show,
-                    two_plots=opt.bbq_plot_two,
-                    interval=[str(datetime.datetime.fromtimestamp(xint, tz=TIMEZONE))
-                              for xint in x_interval],
-                )
-            else:
-                figs["bbq"] = bbq_tools.plot_bbq_data(
-                    bbq_df.loc[x_interval[0]:x_interval[1]],
-                    output=opt.bbq_plot_out,
-                    show=opt.bbq_plot_show,
-                    two_plots=opt.bbq_plot_two,
-                )
-
         # amplitude detuning odr and plotting
         for tune_plane in PLANES:
             for corr in [False, True]:
-                corr_label = "_corrected" if corr else ""
-
                 # get the proper data
                 data = kickac_modifiers.get_ampdet_data(kickac_df, opt.plane, tune_plane,
                                                         corrected=corr)
@@ -445,84 +301,27 @@ def analyse_with_bbq_corrections(opt):
                 kickac_df = kickac_modifiers.add_odr(kickac_df, odr_fit, opt.plane, tune_plane,
                                                      corrected=corr)
 
-                # plotting
-                labels = ta_const.get_paired_lables(opt.plane, tune_plane)
-                id_str = "J{:s}_Q{:s}{:s}".format(opt.plane.upper(), tune_plane.upper(), corr_label)
-
-                try:
-                    output = os.path.splitext(opt.ampdet_plot_out)
-                except AttributeError:
-                    output = None
-                else:
-                    output = "{:s}_{:s}{:s}".format(output[0], id_str, output[1])
-
-                figs[id_str] = detuning_tools.plot_detuning(
-                    odr_fit=odr_fit,
-                    odr_plot=detuning_tools.plot_linear_odr,
-                    labels={"x": labels[0], "y": labels[1], "line": opt.label},
-                    output=output,
-                    show=opt.ampdet_plot_show,
-                    xmin=opt.ampdet_plot_xmin,
-                    xmax=opt.ampdet_plot_xmax,
-                    ymin=opt.ampdet_plot_ymin,
-                    ymax=opt.ampdet_plot_ymax,
-                    **data
-                )
-
-    # show plots if needed
-    if opt.bbq_plot_show or opt.ampdet_plot_show:
-        plt.show()
-
     # output kickac and bbq data
-    if opt.kickac_out:
-        tfs.write_tfs(opt.kickac_out, kickac_df, save_index=COL_TIME())
-
-    if opt.bbq_out:
-        tfs.write_tfs(opt.bbq_out, bbq_df.loc[x_interval[0]:x_interval[1]],
-                      save_index=COL_TIME())
+    tfs.write_tfs(opt.kickac_out, kickac_df, save_index=COL_TIME())
+    tfs.write_tfs(opt.bbq_out, bbq_df.loc[x_interval[0]:x_interval[1]],
+                  save_index=COL_TIME())
 
     return figs
 
 
-@entrypoint(_get_plot_params(), strict=True)
-def plot_bbq_data(opt):
-    """ Plot BBQ wrapper.
+def get_approx_bbq_interval(bbq_df, time_array, window_length):
+    """ Get data in approximate time interval,
+    for averaging based on window length and kickac interval """
+    bbq_tmp = bbq_df.dropna()
 
-    Keyword Args:
-        Required
-        input: BBQ data as data frame or tfs file.
-               **Flags**: --in
-        Optional
-        interval (str): x_axis interval that was used in calculations.
-                        **Flags**: --interval
-        output (str): Save figure to this location.
-                      **Flags**: --out
-        show: Show plot.
-              **Flags**: --show
-              **Action**: ``store_true``
-        two_plots: Plot two axis into the figure.
-                   **Flags**: --two
-                   **Action**: ``store_true``
-        xmax (str): Upper x-axis limit. (yyyy-mm-dd HH:mm:ss.mmm)
-                    **Flags**: --xmax
-        xmin (str): Lower x-axis limit. (yyyy-mm-dd HH:mm:ss.mmm)
-                    **Flags**: --xmin
-        ymax (float): Upper y-axis limit.
-                      **Flags**: --ymax
-        ymin (float): Lower y-axis limit.
-                      **Flags**: --ymin
-    """
-    LOG.info("Plotting BBQ.")
-    if isinstance(opt.input, str):
-        bbq_df = tfs.read_tfs(opt.input, index=COL_TIME())
-    else:
-        bbq_df = opt.input
-    opt.pop("input")
+    i_start = max(bbq_tmp.index.get_loc(time_array[0], method='nearest') - int(window_length/2.),
+                  0
+                  )
+    i_end = min(bbq_tmp.index.get_loc(time_array[-1], method='nearest') + int(window_length/2.),
+                len(bbq_tmp.index)-1
+                )
 
-    bbq_tools.plot_bbq_data(bbq_df, **opt)
-
-    if opt.show:
-        plt.show()
+    return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
 
 # Private Functions ############################################################
@@ -555,21 +354,6 @@ def _check_analyse_opt(opt):
         raise KeyError("To activate fine cleaning, both fine cut and fine window need"
                              "to be specified")
     return opt
-
-
-def _get_approx_bbq_interval(bbq_df, time_array, window_length):
-    """ Get data in approximate time interval,
-    for averaging based on window length and kickac interval """
-    bbq_tmp = bbq_df.dropna()
-
-    i_start = max(bbq_tmp.index.get_loc(time_array[0], method='nearest') - int(window_length/2.),
-                  0
-                  )
-    i_end = min(bbq_tmp.index.get_loc(time_array[-1], method='nearest') + int(window_length/2.),
-                len(bbq_tmp.index)-1
-                )
-
-    return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
 
 def _get_timber_data(beam, input, output, kickac_df):

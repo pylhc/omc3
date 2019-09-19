@@ -8,7 +8,7 @@ import numpy as np
 
 from tune_analysis import constants as const, bbq_tools
 from utils import logging_tools
-
+from generic_parser.dict_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -168,7 +168,7 @@ def add_total_natq_std(kickac_df):
 # Data Extraction ##############################################################
 
 
-def get_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
+def get_linear_odr_data_for_plot(kickac_df, action_plane, tune_plane, corrected=False):
     """ Extract the data from odr.
 
     Args:
@@ -180,10 +180,8 @@ def get_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
         Dictionary containing x,y, ylower, yupper, offset and label
 
     """
-    header_slope, header_slope_std, header_offset = _get_odr_headers(corrected)
-
-    slope = kickac_df.headers[header_slope(action_plane, tune_plane)]
-    slope_std = kickac_df.headers[header_slope_std(action_plane, tune_plane)]
+    odr_fit = get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected)
+    offset, slope, slope_std = odr_fit.beta + [odr_fit.sd_beta[1]]
     x = [0, max(kickac_df[COL_ACTION(action_plane)])*1.05]
     y = [0, x[1] * slope]
     y_low = [0, x[1] * (slope - slope_std)]
@@ -192,10 +190,31 @@ def get_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
         "x": np.array(x),
         "y": np.array(y),
         "label": _get_slope_label(slope, slope_std),
-        "offset": kickac_df.headers[header_offset(action_plane, tune_plane)],
+        "offset": offset,
         "ylower": np.array(y_low),
         "yupper": np.array(y_upp),
     }
+
+
+def get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
+    """ Extract the data from kickac.
+
+    Args:
+        kickac_df: Dataframe containing the data
+        action_plane: Plane of the action
+        tune_plane: Plane of the tune
+
+    Returns:
+        Dictionary containing
+
+    """
+    header_slope, header_slope_std, header_offset = _get_odr_headers(corrected)
+
+    odr_data = DotDict(beta=[0, 0], sd_beta=[0, 0])
+    odr_data.beta[0] = kickac_df.headers[header_offset(action_plane, tune_plane)],
+    odr_data.beta[1] = kickac_df.headers[header_slope(action_plane, tune_plane)]
+    odr_data.sd_beta[1] = kickac_df.headers[header_slope_std(action_plane, tune_plane)]
+    return odr_data
 
 
 def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
