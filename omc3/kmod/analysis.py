@@ -1,5 +1,6 @@
 import scipy.optimize
 from os.path import join
+import os
 import numpy as np
 import tfs
 import datetime
@@ -255,15 +256,50 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     b = x[0]
     w = x[1]
 
-    betawaist_model = kmod_input_params.betastar_and_waist[plane][0]
-    waist_model = kmod_input_params.betastar_and_waist[plane][1]
-    phase_adv_model = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],betawaist_model,0.0,waist_model,0.0)[0]
-    phase_adv_AC = 0.26
+    # phase from kmod using beta and waist guess
     phase_adv = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],b,0.0,w,0.0)[0]
-    weight = 0.1
-    scale = 1000.0
 
-    c2 = weight*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
+    if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane}')):
+        # get measured phase advance between BPMS
+        #BPML = 'BPMSW.1L1.B1'
+        #BPMR = 'BPMSW.1R1.B1'
+        #tfs read 	
+        #BPM_phase_df = tfs.TfsDataFrame(
+        #columns=['INSTRUMENT',
+        #         f"{BETA}{'X'}",
+        #         f"{ERR}{BETA}{'X'}",
+        #         f"{BETA}{'Y'}",
+        #         f"{ERR}{BETA}{'Y'}",
+        #         ],
+        #data=beta_instr)
+        #find bpms from kmod_input_params.ip 
+        #get phase{plane}
+        pass
+        
+    elif os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat')):
+        twiss_df = tfs.read('twiss.dat', index='NAME')
+        phase_1L = twiss_df.loc['BPMSW.1L1.B1','MUX']
+        phase_1R = twiss_df.loc['BPMSW.1R1.B1','MUX']
+        phase_adv_model = abs(phase_1R - phase_1L)
+
+    else:
+        betawaist_model = kmod_input_params.betastar_and_waist[plane][0]
+        waist_model = kmod_input_params.betastar_and_waist[plane][1]
+
+        # phase advance from k-mod using beta and waist guess (usually nominal)
+        phase_adv_model = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],betawaist_model,0.0,waist_model,0.0)[0]
+
+        # Hard coded phase advance
+        # phase_adv_model = 0.26
+    
+    #Replace Lstar with bpm distance
+    
+    #bpm_lstar = 
+
+    weight = kmod_input_params.phase_weight
+    scale = kmod_input_params.phase_scale
+
+    c2 = (1-weight)*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
            sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
            sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[K],
            foc_magnet_df.headers['LSTAR'] +
@@ -276,8 +312,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
            def_magnet_df.headers['LSTAR'] +
            sign[6] * kmod_input_params.misalignment) -
            def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-           sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*(1-weight)*((phase_adv - phase_adv_AC)**2)
-           #sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*(1-weight)*((phase_adv - phase_adv_model)**2)
+           sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - phase_adv_model)**2)
 
     return c2
 
