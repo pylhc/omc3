@@ -259,42 +259,27 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     # phase from kmod using beta and waist guess
     phase_adv = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],b,0.0,w,0.0)[0]
 
-    if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane}')):
-        # get measured phase advance between BPMS
-        #BPML = 'BPMSW.1L1.B1'
-        #BPMR = 'BPMSW.1R1.B1'
-        #tfs read 	
-        #BPM_phase_df = tfs.TfsDataFrame(
-        #columns=['INSTRUMENT',
-        #         f"{BETA}{'X'}",
-        #         f"{ERR}{BETA}{'X'}",
-        #         f"{BETA}{'Y'}",
-        #         f"{ERR}{BETA}{'Y'}",
-        #         ],
-        #data=beta_instr)
-        #find bpms from kmod_input_params.ip 
-        #get phase{plane}
-        pass
+    # Last BPMs left and right
+    BPML = 'BPMSW.1L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+    BPMR = 'BPMSW.1R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+
+    if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out')):
+        # get measured phase from getphase[x/y].out
+        phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out'), index='NAME')
+        phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
         
     elif os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat')):
-        twiss_df = tfs.read('twiss.dat', index='NAME')
-        phase_1L = twiss_df.loc['BPMSW.1L1.B1','MUX']
-        phase_1R = twiss_df.loc['BPMSW.1R1.B1','MUX']
+        # get phase from twiss model
+        twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
+        phase_1L = twiss_df.loc[BPML,'MU'+plane]
+        phase_1R = twiss_df.loc[BPMR,'MU'+plane]
         phase_adv_model = abs(phase_1R - phase_1L)
 
     else:
+        # get phase from kmod formula using guessed values
         betawaist_model = kmod_input_params.betastar_and_waist[plane][0]
         waist_model = kmod_input_params.betastar_and_waist[plane][1]
-
-        # phase advance from k-mod using beta and waist guess (usually nominal)
         phase_adv_model = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],betawaist_model,0.0,waist_model,0.0)[0]
-
-        # Hard coded phase advance
-        # phase_adv_model = 0.26
-    
-    #Replace Lstar with bpm distance
-    
-    #bpm_lstar = 
 
     weight = kmod_input_params.phase_weight
     scale = kmod_input_params.phase_scale
