@@ -7,7 +7,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from . import context
-from tbt import data_class
+import tbt
 import tfs
 
 from hole_in_one import hole_in_one_entrypoint
@@ -36,6 +36,27 @@ def test_harpy(_test_file, _model_file):
                            unit="m")
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
+    assert_spectra(lin, model)
+
+
+def test_harpy_without_model(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                           clean=True,
+                           autotunes="transverse",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           to_write=["lin"],
+                           turn_bits=18,
+                           unit="m")
+    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    assert_spectra(lin, model)
+
+
+def assert_spectra(lin, model):
     for plane in PLANES:
         # main and secondary frequencies
         assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].values,
@@ -110,7 +131,7 @@ def _write_tbt_file(model, dir_path):
                                + COUPLING * data_y, index=model.index),
                 Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
                                + COUPLING * data_x, index=model.index))
-    data_class.write_tbt_data(os.path.join(dir_path, "test_file"), data_class.TbtData([mats], None, [0], NTURNS), 'LHCSDDS')
+    tbt.write(os.path.join(dir_path, "test_file"), tbt.TbtData([mats], None, [0], NTURNS))
 
 
 def _other(plane):

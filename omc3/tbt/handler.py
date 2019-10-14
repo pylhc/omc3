@@ -3,15 +3,20 @@ import numpy as np
 import pandas as pd
 import sdds
 from utils import logging_tools
-
+from tbt import reader_esrf, reader_iota, reader_lhc, reader_ptc, reader_trackone
 LOGGER = logging_tools.getLogger(__name__)
 
 PLANES = ('X', 'Y')
 POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
-PLANE_TO_NUM = {"X": "0", "Y": "1"}
+PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
 FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
+DATA_READERS = dict(lhc=reader_lhc,
+                    iota=reader_iota,
+                    esrf=reader_esrf,
+                    ptc=reader_ptc,
+                    trackone=reader_trackone)
 
 
 class TbtData(object):
@@ -27,44 +32,15 @@ class TbtData(object):
         self.bunch_ids = bunch_ids
 
 
-def write_tbt_data(output_path, tbtdata, fileformat):
-    if fileformat in TBTFORMATS.keys():
-        write_function = TBTFORMATS[fileformat]
-        write_function(output_path, tbtdata)
-    else:
-        raise AttributeError(f'No write functions found for specified fileformat {fileformat}')
+def read_tbt(file_path, datatype="lhc"):
+    return DATA_READERS[datatype].read_tbt(file_path)
 
 
-def _matrices_to_array(tbt_data):
-
-    nbpms = tbt_data.matrices[0]["X"].index.size
-    data = {'X': np.empty((nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float),
-            'Y': np.empty((nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float)}
-    for index in range(tbt_data.nbunches):
-        for plane in PLANES:
-            data[plane][:, index, :] = tbt_data.matrices[index][plane].values
-
-    return data
-
-
-def write_npz(output_path, tbt_data):
-    LOGGER.info('TbTdata is written in .npz format')
-    data = _matrices_to_array(tbt_data)
-    np.savez(
-        file=f'{output_path}.npz',
-        DATE=tbt_data.date.strftime("%Y-%m-%d %H:%M:%S"),
-        NBUNCHES=tbt_data.nbunches,
-        NTURNS=tbt_data.nturns,
-        BUNCH_IDS=tbt_data.bunch_ids,
-        NBPM=tbt_data.matrices[0]["X"].index,
-        X=data['X'],
-        Y=data['Y']
-     )
-
-
-def write_lhc_sdds(output_path, tbt_data):
+def write_tbt(output_path, tbt_data, noise=None):
     LOGGER.info('TbTdata is written in binary SDDS (LHC) format')
     data = _matrices_to_array(tbt_data)
+    if noise is not None:
+        data = _add_noise(data, noise)
     definitions = [
         sdds.classes.Parameter("acqStamp", "long"),
         sdds.classes.Parameter("nbOfCapBunches", "long"),
@@ -80,10 +56,25 @@ def write_lhc_sdds(output_path, tbt_data):
         tbt_data.nturns,
         tbt_data.bunch_ids,
         tbt_data.matrices[0]["X"].index,
-        np.ravel(data['X']),
-        np.ravel(data['Y'])
+        np.ravel(data[PLANE_TO_NUM['X']]),
+        np.ravel(data[PLANE_TO_NUM['Y']])
     ]
     sdds.write(sdds.SddsFile("SDDS1", None, definitions, values), f'{output_path}.sdds')
+
+
+def _matrices_to_array(tbt_data):
+    nbpms = tbt_data.matrices[0]["X"].index.size
+    data = np.empty((2, nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float)
+    for index in range(tbt_data.nbunches):
+        for plane in PLANES:
+            data[PLANE_TO_NUM[plane], :, index, :] = tbt_data.matrices[index][plane].values
+    return data
+
+
+def _add_noise(data, noise):
+    if noise <= 0.0:
+        return data
+    return data + noise * np.random.randn(data.shape)
 
 
 def write_lhc_ascii(output_path, tbt_data):
@@ -115,9 +106,20 @@ def _write_tbt_data(tbt_data, bunch_id, output_file):
             output_file.write(row_format.format(PLANE_TO_NUM[plane], bpm_name, bpm_index, *samples))
 
 
-TBTFORMATS = {
-    'LHCSDDS': write_lhc_sdds,
-    'NUMPY': write_npz,
-    'LHCSDDS_ASCII': write_lhc_ascii,
-    # 'PICKLE': write_pickle, not yet implement
-}
+def numpy_to_tbts(names, matrix):
+    """Converts turn by turn data and names into TbTData.
+
+    Arguments:
+        names: Numpy array of BPM names
+        matrix: 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
+            quantities in order [x, y]
+    """
+    # get list of TbTFile from 4D matrix ...
+    _, nbpms, nbunches, nturns = matrix.shape
+    matrices = []
+    indices = []
+    for index in range(nbunches):
+        matrices.append({"X": pd.DataFrame(index=names, data=matrix[0, :, index, :]),
+                         "Y": pd.DataFrame(index=names, data=matrix[1, :, index, :])})
+        indices.append(index)
+    return TbtData(matrices, None, indices, nturns)
