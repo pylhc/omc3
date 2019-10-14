@@ -5,7 +5,6 @@ Super KEK-B
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
 from utils import logging_tools
 from generic_parser.entrypoint import EntryPointParameters
-import sys
 
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -27,7 +26,7 @@ class SKekB(Accelerator):
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(flags=["--ring"], help="HER or LER ring.", name="ring", type=str)
+        params.add_parameter(flags=["--ring"], help="HER or LER ring.", name="ring", choices=("ler", "her"), type=str)
         return params
 
 
@@ -41,7 +40,7 @@ class SKekB(Accelerator):
 
     @classmethod
     def _get_beamed_class(cls, new_class, ring):
-        ringSKEKB = _Her if ring.upper() == 'HER' else _Ler
+        ringSKEKB = _Her if ring == 'her' else _Ler
         beamed_class = type(new_class.__name__ + str(ring),
                             (new_class, ringSKEKB),
                             {})
