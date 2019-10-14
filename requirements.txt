@@ -1,6 +1,6 @@
 numpy>=1.14.1
 scipy>=1.0.0
-pandas>=0.22.0
+pandas>=0.24.0
 GitPython>=2.1.8
 pytest>=3.6
 pytest-cov>=2.6
