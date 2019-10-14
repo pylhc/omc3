@@ -27,7 +27,7 @@ from os.path import join, dirname, basename, abspath
 from copy import deepcopy
 from utils import logging_tools, iotools
 from definitions import formats
-from tbt import lhc_handler, iota_handler, TbtData
+import tbt
 
 from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
                                        add_to_arguments, save_options_to_config)
@@ -261,8 +261,9 @@ def _get_suboptions(opt, rest):
                                     files=harpy_opt.files,
                                     outputdir=harpy_opt.outputdir)
             harpy_opt.outputdir = join(harpy_opt.outputdir, 'lin_files')
-            rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
-                                    model_dir=dirname(abspath(harpy_opt.model)))
+            if harpy_opt.model is not None:
+                rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
+                                        model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
 
@@ -303,12 +304,11 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
 
 def _run_harpy(harpy_options):
     from harpy import handler
-    tbt_reader = DATA_HANDLERS[harpy_options.tbt_datatype]
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
         all_options = _replicate_harpy_options_per_file(harpy_options)
-        tbt_datas = [(tbt_reader.read_tbt(option.files), option) for option in all_options]
+        tbt_datas = [(tbt.read_tbt(option.files, datatype=option.tbt_datatype), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
                          for bunch_data, bunch_options in _multibunch(tbt_data, option)])
@@ -332,7 +332,7 @@ def _multibunch(tbt_datas, options):
         new_options = deepcopy(options)
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
-        yield TbtData([tbt_datas.matrices[index]], tbt_datas.date,
+        yield tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
                       [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
 
 
@@ -384,7 +384,7 @@ def harpy_params():
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output. ")
     params.add_parameter(flags="--tbt_datatype", name="tbt_datatype",
-                         default=HARPY_DEFAULTS["tbt_datatype"],
+                         default=HARPY_DEFAULTS["tbt_datatype"], choices=list(tbt.handler.DATA_READERS.keys()),
                          help="Choose the datatype from which to import. ")
 
     # Cleaning parameters
@@ -526,13 +526,6 @@ OPTICS_DEFAULTS = {
         "range_of_bpms": 11,
         "max_beta_beating": 0.15,
         "compensation": "model",
-}
-
-
-DATA_HANDLERS = {
-      "lhc": lhc_handler,
-      "iota": iota_handler,
-      # TODO add handlers for mad-x/ptc tracking (use methods from tbt.trackone), make accel indepent defaults
 }
 
 

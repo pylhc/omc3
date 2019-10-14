@@ -26,12 +26,12 @@ SINGLE_PLANE_RDTS = {"X": ((3, 0, 0, 0), (1, 2, 0, 0),      # Normal Sextupolar
                      "Y": ((0, 0, 3, 0), (0, 0, 1, 2),   # Skew Sextupolar
                            (0, 0, 4, 0), (0, 0, 1, 3)    # Normal Octupolar
                            )}
-DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Quadrupole
+DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Skew Quadrupole
                            (1, 0, 2, 0), (1, 0, 0, 2),  # Normal Sextupole
                            (1, 1, 0, 1), (2, 0, 1, 0), (1, 1, 1, 0), (2, 0, 0, 1),  # Skew Sextupole
                            (2, 0, 0, 2), (1, 1, 2, 0), (1, 1, 0, 2), (2, 0, 2, 0)  # Normal Octupole
                            ),
-                     "Y": ((0, 1, 1, 0), (1, 0, 1, 0),  # Quadrupole
+                     "Y": ((0, 1, 1, 0), (1, 0, 1, 0),  # Skew Quadrupole
                            (0, 1, 1, 1), (1, 0, 2, 0), (0, 1, 2, 0), (1, 0, 1, 1),  # Normal Sextupole
                            (0, 2, 1, 0), (2, 0, 1, 0),  # Skew Sextupole
                            (2, 0, 2, 0), (2, 0, 1, 1), (0, 2, 2, 0), (0, 2, 1, 1)  # Normal Octupole
@@ -61,14 +61,14 @@ def calculate(measure_input, input_files, tunes, invariants, header):
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
         for rdt in SINGLE_PLANE_RDTS[plane]:
             df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-            write(df, header, meas_input, plane, rdt)
+            write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
     for plane in PLANES:
         bpm_names = input_files.bpms(dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
         for rdt in DOUBLE_PLANE_RDTS[plane]:
             df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-            write(df, header, meas_input, plane, rdt)
+            write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
 
 def write(df, header, meas_input, plane, rdt):
@@ -112,8 +112,16 @@ def _get_n_upper_diagonals(n, shape):
 
 def _determine_line(rdt, plane):
     j, k, l, m = rdt
-    lines = dict(X=(1 - j + k, m - l, 0), Y=(k - j, 1 - l + m, 0))
+    lines = dict(X=(1 - j + k, m - l, 0),
+                 Y=(k - j, 1 - l + m, 0))
     return lines[plane]
+
+
+def add_freq_to_header(header, plane, rdt):
+    line = _determine_line(rdt, plane)
+    freq = np.mod(line@np.array([header['Q1'], header['Q2'], 0]), 1)
+    header["FREQ"] = freq if freq <= 0.5 else 1 - freq
+    return header
 
 
 def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
