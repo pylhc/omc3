@@ -126,30 +126,30 @@ def add_freq_to_header(header, plane, rdt):
 
 def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
     df = pd.DataFrame(phase_data)
-    second_bpms = df.loc[:, "NAME2"].values
-    df["S2"] = df.loc[second_bpms, "S"].values
+    second_bpms = df.loc[:, "NAME2"].to_numpy()
+    df["S2"] = df.loc[second_bpms, "S"].to_numpy()
     df["COUNT"] = len(input_files.dpp_frames(plane, 0))
     line = _determine_line(rdt, plane)
     phase_sign, suffix = get_line_sign_and_suffix(line, input_files, plane)
     comp_coeffs1 = to_complex(
-        input_files.joined_frame(plane, [f"AMP{suffix}"], dpp_value=0).loc[df.index, :].values,
-        phase_sign * input_files.joined_frame(plane, [f"PHASE{suffix}"], dpp_value=0).loc[df.index, :].values)
+        input_files.joined_frame(plane, [f"AMP{suffix}"], dpp_value=0).loc[df.index, :].to_numpy(),
+        phase_sign * input_files.joined_frame(plane, [f"PHASE{suffix}"], dpp_value=0).loc[df.index, :].to_numpy())
     # Multiples of tunes needs to be added to phase at second BPM if that is in second turn
-    phase2 = phase_sign * input_files.joined_frame(plane, [f"PHASE{suffix}"], dpp_value=0).loc[second_bpms, :].values
+    phase2 = phase_sign * input_files.joined_frame(plane, [f"PHASE{suffix}"], dpp_value=0).loc[second_bpms, :].to_numpy()
     comp_coeffs2 = to_complex(
-        input_files.joined_frame(plane, [f"AMP{suffix}"], dpp_value=0).loc[second_bpms, :].values,
+        input_files.joined_frame(plane, [f"AMP{suffix}"], dpp_value=0).loc[second_bpms, :].to_numpy(),
         _add_tunes_if_in_second_turn(df, input_files, line, phase2))
     # Get amplitude and phase of the line from linx/liny file
     line_amp, line_phase, line_amp_e, line_phase_e = complex_secondary_lines(  # TODO use the errors
-        df.loc[:, "MEAS"].values[:, np.newaxis] * meas_input.accelerator.get_beam_direction(),
-        df.loc[:, "ERRMEAS"].values[:, np.newaxis], comp_coeffs1, comp_coeffs2)
+        df.loc[:, "MEAS"].to_numpy()[:, np.newaxis] * meas_input.accelerator.get_beam_direction(),
+        df.loc[:, "ERRMEAS"].to_numpy()[:, np.newaxis], comp_coeffs1, comp_coeffs2)
     rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase)
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
     df[f"PHASE"] = rdt_angles
     df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
     df["AMP"], df[f"{ERR}AMP"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].values
-    df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].values
+    df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].to_numpy()
+    df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].to_numpy()
     # in old files there was "EAMP" and "PHASE_STD"
     return df.loc[:, ["S", "COUNT", "AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 
@@ -167,7 +167,7 @@ def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase):
     phases = np.zeros((2, df.index.size, len(input_files.dpp_frames("X", 0))))
     for i, plane in enumerate(PLANES):
         if line[i] != 0:
-            phases[i] = input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0).loc[df.index, :].values % 1
+            phases[i] = input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0).loc[df.index, :].to_numpy() % 1
     return line_phase - line[0] * phases[0] - line[1] * phases[1] + 0.25
 
 
