@@ -1,0 +1,25 @@
+@ Info          %s      Created on 22.9.2016. Preliminary guesses for the errors. Has to be verified!
+@ RELATIVE      %s      MAINFIELD
+@ RADIUS        %le     0.017
+
+*       PATTERN         dK1             dX              dS              MAINFIELD
+$       %s                      %le             %le             %le             %s
+
+        ^BR\.QFO	0.0002		0	0.01367	      QUAD
+        ^BR\.QDE	0.0001    	0       -0.002	      QUAD
+        BR1.BPM1L3          0           0        0.0051       BPM
+        BR1.BPM2L3          0           0        0.00603      BPM
+        BR1.BPM3L3          0           0        0.0104       BPM
+        BR1.BPM4L3          0           0        0.00741      BPM
+        BR1.BPM5L3          0           0        0.0067       BPM
+        BR1.BPM6L3          0           0        0.01024      BPM
+        BR1.BPM7L3          0           0        0.00856      BPM
+        BR1.BPM8L3          0           0        0.00586      BPM
+        BR1.BPM9L3          0           0        0.0062       BPM
+        BR1.BPM10L3         0           0        0.006695     BPM
+        BR1.BPM11L3         0           0        0.005        BPM
+        BR1.BPM12L3         0           0        0.00582      BPM
+        BR1.BPM13L3         0           0        0.00546      BPM
+        BR1.BPM14L3         0           0        0.00524      BPM
+        BR1.BPM15L3         0           0        0.00671      BPM
+        BR1.BPM16L3         0           0        0.00467      BPM

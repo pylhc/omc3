@@ -1,0 +1,316 @@
+/*******************************************************************************
+**                        Low-energy quadrupoles                              **
+*******************************************************************************/
+!focussing
+
+   PR.QFN05      , KNL  :=  {0, KQFN05};
+   PR.QFN09      , KNL  :=  {0, KQFN09};
+   PR.QFW17      , KNL  :=  {0, KQFW17};
+   PR.QFN21      , KNL  :=  {0, KQFN21};
+   PR.QFW27      , KNL  :=  {0, KQFW27};
+   PR.QFW31      , KNL  :=  {0, KQFW31};
+   PR.QFN35      , KNL  :=  {0, KQFN35};
+   PR.QFN39      , KNL  :=  {0, KQFN39};
+   PR.QFN45      , KNL  :=  {0, KQFN45};
+   PR.QFN49      , KNL  :=  {0, KQFN49};
+   PR.QFN55      , KNL  :=  {0, KQFN55};
+   PR.QFW59      , KNL  :=  {0, KQFW59};
+   PR.QFN67      , KNL  :=  {0, KQFN67};
+   PR.QFN71      , KNL  :=  {0, KQFN71};
+   PR.QFN77      , KNL  :=  {0, KQFN77};
+   PR.QFN81      , KNL  :=  {0, KQFN81};
+   PR.QFN85      , KNL  :=  {0, KQFN85};
+   PR.QFN89      , KNL  :=  {0, KQFN89};
+   PR.QFN95      , KNL  :=  {0, KQFN95};
+   PR.QFN99      , KNL  :=  {0, KQFN99};
+
+
+   KQFN05 : = kf;
+   KQFN09 : = kf;
+   KQFW17 : = kf;
+   KQFN21 : = kf;
+   KQFW27 : = kf;
+   KQFW31 : = kf;
+   KQFN35 : = kf;
+   KQFN39 : = kf;
+   KQFN45 : = kf;
+   KQFN49 : = kf;
+   KQFN55 : = kf;
+   KQFW59 : = kf;
+   KQFN67 : = kf;
+   KQFN71 : = kf;
+   KQFN77 : = kf;
+   KQFN81 : = kf;
+   KQFN85 : = kf;
+   KQFN89 : = kf;
+   KQFN95 : = kf;
+   KQFN99 : = kf;
+
+!defocussing
+
+   PR.QDW06      , KNL  :=  {0, KQDW06};
+   PR.QDN10      , KNL  :=  {0, KQDN10};
+   PR.QDW18      , KNL  :=  {0, KQDW18};
+   PR.QDW22      , KNL  :=  {0, KQDW22};
+   PR.QDW28      , KNL  :=  {0, KQDW28};
+   PR.QDW32      , KNL  :=  {0, KQDW32};
+   PR.QDN36      , KNL  :=  {0, KQDN36};
+   PR.QDN40      , KNL  :=  {0, KQDN40};
+   PR.QDN46      , KNL  :=  {0, KQDN46};
+   PR.QDN50      , KNL  :=  {0, KQDN50};
+   PR.QDW56      , KNL  :=  {0, KQDW56};
+   PR.QDW60      , KNL  :=  {0, KQDW60};
+   PR.QDN68      , KNL  :=  {0, KQDN68};
+   PR.QDN72      , KNL  :=  {0, KQDN72};
+   PR.QDN78      , KNL  :=  {0, KQDN78};
+   PR.QDN82      , KNL  :=  {0, KQDN82};
+   PR.QDN86      , KNL  :=  {0, KQDN86};
+   PR.QDN90      , KNL  :=  {0, KQDN90};
+   PR.QDN96      , KNL  :=  {0, KQDN96};
+   PR.QDN00      , KNL  :=  {0, KQDN00};
+
+
+   KQDW06 : = kd;
+   KQDN10 : = kd;
+   KQDW18 : = kd;
+   KQDW22 : = kd;
+   KQDW28 : = kd;
+   KQDW32 : = kd;
+   KQDN36 : = kd;
+   KQDN40 : = kd;
+   KQDN46 : = kd;
+   KQDN50 : = kd;
+   KQDW56 : = kd;
+   KQDW60 : = kd;
+   KQDN68 : = kd;
+   KQDN72 : = kd;
+   KQDN78 : = kd;
+   KQDN82 : = kd;
+   KQDN86 : = kd;
+   KQDN90 : = kd;
+   KQDN96 : = kd;
+   KQDN00 : = kd;
+
+
+/*******************************************************************************
+**                        Skew quadrupoles                                    **
+*******************************************************************************/
+!focussing
+   
+   PR.QSK03      , KSL  :=  {0, KQSK03};
+   PR.QSK07      , KSL  :=  {0, KQSK07};
+   PR.QSK19      , KSL  :=  {0, KQSK19};
+   PR.QSK23      , KSL  :=  {0, KQSK23};
+   PR.QSK29      , KSL  :=  {0, KQSK29};
+   PR.QSK33      , KSL  :=  {0, KQSK33};
+   PR.QSK37      , KSL  :=  {0, KQSK37};
+   PR.QSK41      , KSL  :=  {0, KQSK41};
+   PR.QSK43      , KSL  :=  {0, KQSK43};
+   PR.QSK47      , KSL  :=  {0, KQSK47};
+   PR.QSK53      , KSL  :=  {0, KQSK53};
+   PR.QSK57      , KSL  :=  {0, KQSK57};
+   PR.QSK69      , KSL  :=  {0, KQSK69};
+   PR.QSK73      , KSL  :=  {0, KQSK73};
+   PR.QSK79      , KSL  :=  {0, KQSK79};
+   PR.QSK83      , KSL  :=  {0, KQSK83};
+   PR.QSK87      , KSL  :=  {0, KQSK87};
+   PR.QSK91      , KSL  :=  {0, KQSK91};
+   PR.QSK93      , KSL  :=  {0, KQSK93};
+   PR.QSK97      , KSL  :=  {0, KQSK97};
+
+
+!defocussing
+
+   PR.QSK04      , KSL  :=  {0, KQSK04};
+   PR.QSK08      , KSL  :=  {0, KQSK08};
+   PR.QSK20      , KSL  :=  {0, KQSK20};
+   PR.QSK24      , KSL  :=  {0, KQSK24};
+   PR.QSK30      , KSL  :=  {0, KQSK30};
+   PR.QSK34      , KSL  :=  {0, KQSK34};
+   PR.QSK38      , KSL  :=  {0, KQSK38};
+   PR.QSK42      , KSL  :=  {0, KQSK42};
+   PR.QSK44      , KSL  :=  {0, KQSK44};
+   PR.QSK48      , KSL  :=  {0, KQSK48};
+   PR.QSK54      , KSL  :=  {0, KQSK54};
+   PR.QSK58      , KSL  :=  {0, KQSK58};
+   PR.QSK70      , KSL  :=  {0, KQSK70};
+   PR.QSK74      , KSL  :=  {0, KQSK74};
+   PR.QSK80      , KSL  :=  {0, KQSK80};
+   PR.QSK84      , KSL  :=  {0, KQSK84};
+   PR.QSK88      , KSL  :=  {0, KQSK88};
+   PR.QSK92      , KSL  :=  {0, KQSK92};
+   PR.QSK94      , KSL  :=  {0, KQSK94};
+   PR.QSK98      , KSL  :=  {0, KQSK98};
+
+/*******************************************************************************
+**                        Vertical correctors                                 **
+*******************************************************************************/
+
+   PR.DVT04      , KICK :=  kDVT04;
+   PR.DVT08      , KICK :=  kDVT08;
+   PR.DVT12      , KICK :=  kDVT12;
+   PR.DVT20      , KICK :=  kDVT20;
+   PR.DVT22      , KICK :=  kDVT22;
+   PR.DVT24      , KICK :=  kDVT22;
+   PR.DVT30      , KICK :=  kDVT22;
+   PR.DVT34      , KICK :=  kDVT34;
+   PR.DVT38      , KICK :=  kDVT38;
+   PR.DVT44      , KICK :=  kDVT44;
+   PR.DVT54      , KICK :=  kDVT54;
+   PR.DVT64      , KICK :=  kDVT64;
+   PR.DVT70      , KICK :=  kDVT70;
+   PR.DVT74      , KICK :=  kDVT74;
+   PR.DVT76      , KICK :=  kDVT76;
+   PR.DVT80      , KICK :=  kDVT80;
+   PR.DVT88      , KICK :=  kDVT88;
+   PR.DVT94      , KICK :=  kDVT94;
+   PR.DVT98      , KICK :=  kDVT98;
+
+/*******************************************************************************
+**                        Transition quadrupoles                              **
+*******************************************************************************/
+!Triplets
+
+   PR.QTRTB07    , K1   := +ITRIPB*CC409;
+   PR.QTRTA41    , K1   := -ITRIPA*CC407;
+   PR.QTRTA49    , K1   := +ITRIPA*CC409;
+   PR.QTRTA73    , K1   := -ITRIPA*CC407;
+   PR.QTRTB99.A  , K1   := -ITRIPB*CC407;
+   PR.QTRTB99.B  , K1   := -ITRIPB*CC407;
+   PR.QTRTB07    , K1   := +ITRIPB*CC409;
+   PR.QTRTA41    , K1   := -ITRIPA*CC407;
+   PR.QTRTA49    , K1   := +ITRIPA*CC409;
+   PR.QTRTA73    , K1   := -ITRIPA*CC407;
+   PR.QTRTB99.A  , K1   := -ITRIPB*CC407;
+   PR.QTRTB99.B  , K1   := -ITRIPB*CC407;
+
+!Doublets
+
+   PR.QTRDA19    , K1   := +IDOUBA*CC406;
+   PR.QTRDA27    , K1   := -IDOUBA*CC406;
+   PR.QTRDB29    , K1   := -IDOUBB*CC406;
+   PR.QTRDB37    , K1   := +IDOUBB*CC408;
+   PR.QTRDB61    , K1   := +IDOUBB*CC406;
+   PR.QTRDB69    , K1   := -IDOUBB*CC408;
+   PR.QTRDA87    , K1   := -IDOUBA*CC408;
+   PR.QTRDA95    , K1   := +IDOUBA*CC408;
+   PR.QTRDA19    , K1   := +IDOUBA*CC406;
+   PR.QTRDA27    , K1   := -IDOUBA*CC406;
+   PR.QTRDB29    , K1   := -IDOUBB*CC406;
+   PR.QTRDB37    , K1   := +IDOUBB*CC408;
+   PR.QTRDB61    , K1   := +IDOUBB*CC406;
+   PR.QTRDB69    , K1   := -IDOUBB*CC408;
+   PR.QTRDA87    , K1   := -IDOUBA*CC408;
+   PR.QTRDA95    , K1   := +IDOUBA*CC408;
+
+
+/*******************************************************************************
+**                        Injection dipoles                                  **
+*******************************************************************************/
+
+   PI.BSW26.22   , KICK := +BSW26  * CC206;
+   PI.BSW26.30   , KICK := +BSW26 * CC206;
+   PI.BSW40      , KICK := +BSW40;
+   PI.BSW42      , KICK := +BSW42;
+   PI.BSW43      , KICK := +BSW43;
+   PI.BSW44      , KICK := +BSW44;
+
+/*******************************************************************************
+**                        Extraction dipoles                                  **
+*******************************************************************************/
+
+   PE.BSW16.12   , KICK := +BSW16.12;
+   PE.BSW16.14   , KICK := +BSW16.14;
+   PE.BSW23.19   , KICK := -BSW23* CC205;
+   PE.BSW16.20   , KICK := +BSW16.20;
+   PE.BSW16.22   , KICK := +BSW16.22;
+   PE.BSW31.27   , KICK := +BSW31a*CC205;
+   PE.BSW23.27   , KICK := -BSW23*CC205;
+   PE.BSW31.35   , KICK := +BSW31b*CC210;
+   PE.BSW57.53   , KICK := -BSW57*CC206/2.0; ! Half kick due to modif on magnet. why?
+   PE.BSW57.59   , KICK := +BSW57*CC205/2; ! Half kick due to modif on magnet. Ray doesnt know what.
+   PE.BSW57.61   , KICK := -BSW57 * CC213;
+   PE.BSW57.67   , KICK := +BSW57*CC206/2; ! Half kick due to modif on magnet. Ray doesnt know what.
+
+/*******************************************************************************
+**                        High-energy corrector dipole                        **
+*******************************************************************************/
+
+   PR.DHZOC05    , KICK := +BSW16f * CC210;
+   PR.DHZOC18    , KICK := +BSW16e*CC205;
+   PR.DHZOC60    , KICK := +DHZ60 * CC206;
+
+/*******************************************************************************
+**                               MTE elements                                 **
+*******************************************************************************/
+!sextupoles
+
+   PR.XNO39.A    , knl  :=  {0,0,-IXNO39*CC608};
+   PR.XNO39.B    , knl  :=  {0,0,-IXNO39*CC608};
+   PR.XNO55.A    , knl  :=  {0,0,-IXNO55*CC608};
+   PR.XNO55.B    , knl  :=  {0,0,-IXNO55*CC608};
+
+!octupoles
+
+   PR.ONO39      , knl  :=  {0,0,0,K3OCT39};
+   !PR.ONO55      , knl  :=  {0,0,0,K3OCT55};
+   PR.ONO55      , knl  :=  {0,0,0,ONO55*CCMTE};
+   PR.ODN40      , knl  :=  {0,0,0,-ODE*CC802};
+   PR.ODN50      , knl  :=  {0,0,0,-ODE*CC802};
+   PR.ODN52.A    , knl  :=  {0,0,0,-ODE*CC802};
+   PR.ODN52.B    , knl  :=  {0,0,0,-ODE*CC802};
+   PR.ODN70.A    , knl  :=  {0,0,0,-ODE*CC802};
+   PR.ODN70.B    , knl  :=  {0,0,0,-ODE*CC802};
+   PR.ODN90      , knl  :=  {0,0,0,-ODE*CC802};
+   PR.ODN00      , knl  :=  {0,0,0,-ODE*CC802};
+
+/*******************************************************************************
+**                        Extraction kickers                                  **
+*******************************************************************************/
+
+   PE.KFA04      , KICK :=  KKFA04;
+   PE.KFA13      , KICK :=  KKFA13;
+   PE.KFA21      , KICK :=  KKFA21;
+
+
+/*******************************************************************************
+**                        Slow extraction elements                            **
+*******************************************************************************/
+! quadrupoles
+
+   PR.QSE29      , K1   := +QSE*CC409;
+   PR.QSE87      , K1   := +QSE*CC409;
+
+!sextupoles
+
+   PR.XSE01.A    , knl  :=  {0,0,XSE*CC608};
+   PR.XSE01.B    , knl  :=  {0,0,XSE*CC608};
+   PR.XSE07      , knl  :=  {0,0,XSE*CC610};
+
+/*******************************************************************************
+**                                    QKEs                                    **
+*******************************************************************************/
+
+   PE.QKE16.05   , K1   := -KQKE16;
+   PE.QKE16.25   , K1   :=  KQKE16;
+   PE.QKE25      , K1   := +QKE162*CC414;
+   PE.QKE73      , K1   := -QKE162*CC414;
+
+
+/*******************************************************************************
+**                          Vertical sextupoles                               **
+*******************************************************************************/
+      
+   PR.XNO60      , knl  :=  {0,0,IXNO*CC608};  ! SG 2014 -WARNING - check current name
+   PR.XNO94      , knl  :=  {0,0,IXNO*CC608};  ! SG 2014 -WARNING - check current name
+
+/*******************************************************************************
+**  Resonance compensation sextupoles (magnet with normal and skew circuits)  **
+*******************************************************************************/
+   
+   PR.XSK10      ,  KNL:= {0.0, 0.0 ,0.108*IXcomp3/(BRHO)} , KSL:= {0.0, 0.0, 0.09*IXcomp4/(2*BRHO)};
+   PR.XSK14      ,  KNL:= {0.0, 0.0 ,0.108*IXcomp3/(BRHO)} , KSL:= {0.0, 0.0, 0.09*IXcomp4/(2*BRHO)};
+   PR.XSK52      ,  KNL:= {0.0, 0.0 ,0.108*IXcomp3/(BRHO)} , KSL:= {0.0, 0.0, 0.09*IXcomp4/(2*BRHO)};
+   PR.XSK58      ,  KNL:= {0.0, 0.0 ,0.108*IXcomp3/(BRHO)} , KSL:= {0.0, 0.0, 0.09*IXcomp4/(2*BRHO)};
+
+RETURN;
