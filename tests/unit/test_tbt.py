@@ -22,7 +22,7 @@ def test_converter_one_file(_sdds_file, _test_file):
 
 def test_converter_more_files(_sdds_file, _test_file):
     rep = 2
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), replication=rep)
+    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), replications=rep)
     origin = handler.read_tbt(_sdds_file)
     for i in range(rep):
         new = handler.read_tbt(f'{_test_file}_{i}.sdds')

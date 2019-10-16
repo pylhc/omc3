@@ -13,7 +13,7 @@ import subprocess
 import contextlib
 import warnings
 from tempfile import mkstemp
-from generic_parser.entrypoint import entrypoint, EntryPointParameters
+from generic_parser import entrypoint, EntryPointParameters
 from utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
@@ -37,16 +37,13 @@ class MadxError(Exception):
 
 def madx_wrapper_params():
     params = EntryPointParameters()
-    params.add_parameter(flags="--file", name="file",
-                         help="The file with the annotated MADX input to run.")
-    params.add_parameter(flags="--output", name="output",
+    params.add_parameter(name="file", help="The file with the annotated MADX input to run.")
+    params.add_parameter(name="output",
                          help="Path to a file where to write the processed MADX script.")
-    params.add_parameter(flags="--log", name="log",
-                         help="Path to a file where to write the MADX log output.")
-    params.add_parameter(flags="--madx_path", name="madx_path",
-                         help="Path to the MAD-X executable to use", default=MADX_PATH)
-    params.add_parameter(flags="--cwd", name="cwd",
-                         help="Set current working directory")
+    params.add_parameter(name="log", help="Path to a file where to write the MADX log output.")
+    params.add_parameter(name="madx_path", default=MADX_PATH,
+                         help="Path to the MAD-X executable to use")
+    params.add_parameter(name="cwd", help="Set current working directory")
     return params
 
 

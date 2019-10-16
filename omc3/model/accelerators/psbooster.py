@@ -5,7 +5,7 @@ PS BOOSTER
 import os
 import re
 from model.accelerators.accelerator import Accelerator
-from generic_parser.entrypoint import EntryPointParameters
+from generic_parser import EntryPointParameters
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class Psbooster(Accelerator):
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(flags=["--ring"], help="Ring to use.", name="ring", type=int, choices=[1, 2, 3, 4])
+        params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
         return params
 
     # Entry-Point Wrappers #####################################################

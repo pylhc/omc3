@@ -88,7 +88,6 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
     df_orbit[plane] = fit[0][-1, :].T
     df_orbit[f"{ERR}{plane}"] = np.sqrt(fit[1][-1, -1, :].T)
     # since we get variances from the fit, maybe we can include the variances of fitted points
-    df_orbit = df_orbit.loc[np.abs(df_orbit.loc[:, plane]) < meas_input.max_closed_orbit, :]
     df_orbit[f"DP{plane}"] = _calculate_dp(model,
                                            df_orbit.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], plane)
     df_orbit = _get_delta_columns(df_orbit, plane)
@@ -140,7 +139,6 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
         df_orbit['STDND2X_unscaled'] = np.sqrt(fit[1][-3, -3, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
     df_orbit['NDX_unscaled'] = fit[0][-2, :].T / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)  # TODO there is no error from AMPX
     df_orbit['STDNDX_unscaled'] = np.sqrt(fit[1][-2, -2, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
-    df_orbit = df_orbit.loc[np.abs(fit[0][-1, :].T) < meas_input.max_closed_orbit, :]
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     global_factor = np.sum(df_orbit.loc[mask, f"ND{plane}{MDL}"].values) / np.sum(df_orbit.loc[mask, 'NDX_unscaled'].values)
     if order > 1:

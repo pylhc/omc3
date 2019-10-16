@@ -4,7 +4,7 @@ Super KEK-B
 """
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
 from utils import logging_tools
-from generic_parser.entrypoint import EntryPointParameters
+from generic_parser import EntryPointParameters
 
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -26,7 +26,7 @@ class SKekB(Accelerator):
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(flags=["--ring"], help="HER or LER ring.", name="ring", choices=("ler", "her"), type=str)
+        params.add_parameter(name="ring", type=str, choices=("ler", "her"), help="HER or LER ring.")
         return params
 
 

@@ -5,7 +5,7 @@ Accelerator
 Contains parent accelerator class and other support classes
 """
 
-from generic_parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, split_arguments
 import os
 import pandas as pd
 import tfs
