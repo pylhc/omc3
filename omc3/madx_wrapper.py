@@ -13,7 +13,7 @@ import subprocess
 import contextlib
 import warnings
 from tempfile import mkstemp
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
+from generic_parser import entrypoint, EntryPointParameters
 from utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 

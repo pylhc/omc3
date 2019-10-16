@@ -4,7 +4,7 @@ Super KEK-B
 """
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
 from utils import logging_tools
-from generic_parser.entrypoint_parser import EntryPointParameters
+from generic_parser import EntryPointParameters
 
 
 LOGGER = logging_tools.get_logger(__name__)

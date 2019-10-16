@@ -8,7 +8,7 @@ from collections import OrderedDict
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode, AccElementTypes
 from utils import logging_tools
 import tfs
-from generic_parser.entrypoint_parser import EntryPointParameters
+from generic_parser import EntryPointParameters
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
