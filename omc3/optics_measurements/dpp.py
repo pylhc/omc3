@@ -74,7 +74,7 @@ def calculate_dpoverp(input_files, meas_input):
                         left_index=True, right_index=True)
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     df_filtered = df_orbit.loc[mask, :]
-    dispersions = df_filtered.loc[:, "DX"].values
+    dispersions = df_filtered.loc[:, "DX"].to_numpy()
     denom = np.sum(dispersions ** 2)
     if denom == 0.:
         raise ValueError("Cannot compute dpp probably no arc BPMs.")

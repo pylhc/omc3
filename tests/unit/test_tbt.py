@@ -97,8 +97,8 @@ def _compare_tbt(origin, new, no_binary):
     for index in range(origin.nbunches):
         for plane in PLANES:
             assert np.all(new.matrices[index][plane].index == origin.matrices[index][plane].index)
-            origin_mat = origin.matrices[index][plane].values
-            new_mat = new.matrices[index][plane].values
+            origin_mat = origin.matrices[index][plane].to_numpy()
+            new_mat = new.matrices[index][plane].to_numpy()
             if no_binary:
                 ascii_precision = 0.5 / np.power(10, handler.PRINT_PRECISION)
                 assert np.max(np.abs(origin_mat - new_mat)) < ascii_precision

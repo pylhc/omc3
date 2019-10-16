@@ -109,11 +109,11 @@ def _run_evaluate_and_clean_up(inputs, optics_opt):
 def evaluate_accuracy(meas_path):
     for f in [f for f in listdir(meas_path) if (isfile(join(meas_path, f)) and (".tfs" in f))]:
         a = tfs.read(join(meas_path, f))
-        cols = [column for column in a.columns.values if column.startswith('DELTA')]
+        cols = [column for column in a.columns.to_numpy() if column.startswith('DELTA')]
         if f == "normalised_dispersion_x.tfs":
             cols.remove("DELTADX")
         for col in cols:
-            rms = stats.weighted_rms(a.loc[:, col].values, errors=a.loc[:, f"ERR{col}"].values)
+            rms = stats.weighted_rms(a.loc[:, col].to_numpy(), errors=a.loc[:, f"ERR{col}"].to_numpy())
             if col[5] in LIMITS.keys():
                 assert rms < LIMITS[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
             else:

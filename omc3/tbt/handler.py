@@ -67,7 +67,7 @@ def _matrices_to_array(tbt_data):
     data = np.empty((2, nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float)
     for index in range(tbt_data.nbunches):
         for plane in PLANES:
-            data[PLANE_TO_NUM[plane], :, index, :] = tbt_data.matrices[index][plane].values
+            data[PLANE_TO_NUM[plane], :, index, :] = tbt_data.matrices[index][plane].to_numpy()
     return data
 
 
@@ -102,7 +102,7 @@ def _write_tbt_data(tbt_data, bunch_id, output_file):
     row_format = "{} {} {}  " + FORMAT_STRING * tbt_data.nturns + "\n"
     for plane in PLANES:
         for bpm_index, bpm_name in enumerate(tbt_data.matrices[bunch_id][plane].index):
-            samples = tbt_data.matrices[bunch_id][plane].loc[bpm_name, :].values
+            samples = tbt_data.matrices[bunch_id][plane].loc[bpm_name, :].to_numpy()
             output_file.write(row_format.format(PLANE_TO_NUM[plane], bpm_name, bpm_index, *samples))
 
 

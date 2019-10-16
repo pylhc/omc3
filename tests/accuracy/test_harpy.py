@@ -59,19 +59,19 @@ def test_harpy_without_model(_test_file, _model_file):
 def assert_spectra(lin, model):
     for plane in PLANES:
         # main and secondary frequencies
-        assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].values,
-                          model.loc[:, f"TUNE{plane}"].values)) < LIMITS["F1"]
-        assert _rms(_diff(lin[plane].loc[:, f"FREQ{_couple(plane)}"].values,
-                          model.loc[:, f"TUNE{_other(plane)}"].values)) < LIMITS["F2"]
+        assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].to_numpy(),
+                          model.loc[:, f"TUNE{plane}"].to_numpy())) < LIMITS["F1"]
+        assert _rms(_diff(lin[plane].loc[:, f"FREQ{_couple(plane)}"].to_numpy(),
+                          model.loc[:, f"TUNE{_other(plane)}"].to_numpy())) < LIMITS["F2"]
         # main and secondary amplitudes
         # TODO remove factor 2 - only for backwards compatibility with Drive
-        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values * 2,
-                              model.loc[:, f"AMP{plane}"].values)) < LIMITS["A1"]
-        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{_couple(plane)}"].values *
-                              lin[plane].loc[:, f"AMP{plane}"].values * 2,
-                              COUPLING * model.loc[:, f"AMP{_other(plane)}"].values)) < LIMITS["A2"]
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
+                              model.loc[:, f"AMP{plane}"].to_numpy())) < LIMITS["A1"]
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{_couple(plane)}"].to_numpy() *
+                              lin[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
+                              COUPLING * model.loc[:, f"AMP{_other(plane)}"].to_numpy())) < LIMITS["A2"]
         # main and secondary phases
-        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].values,
+        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].to_numpy(),
                                 model.loc[:, f"MU{plane}"].values)) < LIMITS["P1"]
         assert _rms(_angle_diff(lin[plane].loc[:, f"PHASE{_couple(plane)}"].values,
                                 model.loc[:, f"MU{_other(plane)}"].values)) < LIMITS["P2"]
