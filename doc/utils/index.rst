@@ -10,10 +10,6 @@ Package Content
     :members:
 
 
-.. automodule:: utils.dict_tools
-    :members:
-
-
 .. automodule:: utils.iotools
     :members:
 

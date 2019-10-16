@@ -4,7 +4,7 @@ Manager
 
 Contains entrypoint wrappers to get accelerator classes or their instances
 """
-from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, split_arguments
+from generic_parser.entrypoint_parser import entrypoint, EntryPoint, EntryPointParameters, split_arguments
 from model.accelerators import lhc, ps, esrf, psbooster, skekb
 
 
@@ -20,7 +20,7 @@ ACCELS = {
 
 def _get_params():
     params = EntryPointParameters()
-    params.add_parameter(flags=["--accel"], name="accel", required=True, choices=list(ACCELS.keys()),
+    params.add_parameter(name="accel", required=True, choices=list(ACCELS.keys()),
                          help="Choose the accelerator to use.Can be the class already.")
     return params
 
