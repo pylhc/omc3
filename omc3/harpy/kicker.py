@@ -27,8 +27,8 @@ def phase_correction(bpm_data_orig, lin_frame, plane):
     damp, dstd = _get_damping(bpm_data)
     LOGGER.debug(f"Damping factor X: {damp:2.2e} +- {dstd:2.2e}")
     int_range = np.arange(0.0, bpm_data.shape[1])
-    amp = lin_frame.loc[:, 'PK2PK'].values / 2
-    tune = lin_frame.loc[:, f"TUNE{plane}"].values * 2 * np.pi
+    amp = lin_frame.loc[:, 'PK2PK'].to_numpy() / 2
+    tune = lin_frame.loc[:, f"TUNE{plane}"].to_numpy() * 2 * np.pi
     phase = lin_frame.loc[:, f"MU{plane}"].values * 2 * np.pi
     damp_range = damp * int_range
     phase_range = np.outer(tune, int_range - bpm_data.shape[1] / 2) + np.outer(phase, np.ones(bpm_data.shape[1]))

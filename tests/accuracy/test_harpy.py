@@ -7,7 +7,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from . import context
-from tbt import data_class
+import tbt
 import tfs
 
 from hole_in_one import hole_in_one_entrypoint
@@ -36,21 +36,42 @@ def test_harpy(_test_file, _model_file):
                            unit="m")
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
+    assert_spectra(lin, model)
+
+
+def test_harpy_without_model(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                           clean=True,
+                           autotunes="transverse",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           to_write=["lin"],
+                           turn_bits=18,
+                           unit="m")
+    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    assert_spectra(lin, model)
+
+
+def assert_spectra(lin, model):
     for plane in PLANES:
         # main and secondary frequencies
-        assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].values,
-                          model.loc[:, f"TUNE{plane}"].values)) < LIMITS["F1"]
-        assert _rms(_diff(lin[plane].loc[:, f"FREQ{_couple(plane)}"].values,
-                          model.loc[:, f"TUNE{_other(plane)}"].values)) < LIMITS["F2"]
+        assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].to_numpy(),
+                          model.loc[:, f"TUNE{plane}"].to_numpy())) < LIMITS["F1"]
+        assert _rms(_diff(lin[plane].loc[:, f"FREQ{_couple(plane)}"].to_numpy(),
+                          model.loc[:, f"TUNE{_other(plane)}"].to_numpy())) < LIMITS["F2"]
         # main and secondary amplitudes
         # TODO remove factor 2 - only for backwards compatibility with Drive
-        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].values * 2,
-                              model.loc[:, f"AMP{plane}"].values)) < LIMITS["A1"]
-        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{_couple(plane)}"].values *
-                              lin[plane].loc[:, f"AMP{plane}"].values * 2,
-                              COUPLING * model.loc[:, f"AMP{_other(plane)}"].values)) < LIMITS["A2"]
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
+                              model.loc[:, f"AMP{plane}"].to_numpy())) < LIMITS["A1"]
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{_couple(plane)}"].to_numpy() *
+                              lin[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
+                              COUPLING * model.loc[:, f"AMP{_other(plane)}"].to_numpy())) < LIMITS["A2"]
         # main and secondary phases
-        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].values,
+        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].to_numpy(),
                                 model.loc[:, f"MU{plane}"].values)) < LIMITS["P1"]
         assert _rms(_angle_diff(lin[plane].loc[:, f"PHASE{_couple(plane)}"].values,
                                 model.loc[:, f"MU{_other(plane)}"].values)) < LIMITS["P2"]
@@ -110,7 +131,7 @@ def _write_tbt_file(model, dir_path):
                                + COUPLING * data_y, index=model.index),
                 Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
                                + COUPLING * data_x, index=model.index))
-    data_class.write_tbt_data(os.path.join(dir_path, "test_file"), data_class.TbtData([mats], None, [0], NTURNS), 'LHCSDDS')
+    tbt.write(os.path.join(dir_path, "test_file"), tbt.TbtData([mats], None, [0], NTURNS))
 
 
 def _other(plane):

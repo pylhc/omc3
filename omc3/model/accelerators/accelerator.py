@@ -5,7 +5,7 @@ Accelerator
 Contains parent accelerator class and other support classes
 """
 
-from generic_parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, split_arguments
 import os
 import pandas as pd
 import tfs
@@ -278,7 +278,7 @@ class Accelerator(object):
         mask = series.str.match(cls.RE_DICT[types[0]], case=False)
         for ty in types[1:]:
             mask = mask | series.str.match(cls.RE_DICT[ty], case=False)
-        return mask.values
+        return mask.to_numpy()
 
     @classmethod
     def get_variables(cls, frm=None, to=None, classes=None):

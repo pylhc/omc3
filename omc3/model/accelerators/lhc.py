@@ -8,7 +8,7 @@ from collections import OrderedDict
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode, AccElementTypes
 from utils import logging_tools
 import tfs
-from generic_parser.entrypoint import EntryPointParameters
+from generic_parser import EntryPointParameters
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
@@ -41,8 +41,9 @@ class Lhc(Accelerator):
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(flags=["--lhcmode"], help=("LHC mode to use. Should be one of: " + str(get_lhc_modes().keys())), name="lhc_mode", type=str, choices=list(get_lhc_modes().keys()))
-        params.add_parameter(flags=["--beam"], help="Beam to use.", name="beam", type=int,)
+        params.add_parameter(name="lhc_mode", type=str, choices=list(get_lhc_modes().keys()),
+                             help=f"LHC mode to use. Should be one of: {str(get_lhc_modes().keys())}")
+        params.add_parameter(name="beam", type=int, help="Beam to use.")
         return params
 
     # Entry-Point Wrappers #####################################################
@@ -399,7 +400,7 @@ class Lhc(Accelerator):
                     ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
 
     def get_synch_BPMs(self, index):
-        # expect passing index.values
+        # expect passing index.to_numpy()
         if self.get_beam() == 1:
             return [i in index for i in self.model_tfs.loc["BPMSW.33L2.B1":].index]
         elif self.get_beam() == 2:

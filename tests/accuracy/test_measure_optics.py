@@ -13,9 +13,10 @@ from utils.contexts import timeit
 from model import manager
 from hole_in_one import _optics_entrypoint
 
-LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 5e-3}
+LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
 DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
+
 
 def _create_input():
     dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
@@ -108,11 +109,11 @@ def _run_evaluate_and_clean_up(inputs, optics_opt):
 def evaluate_accuracy(meas_path):
     for f in [f for f in listdir(meas_path) if (isfile(join(meas_path, f)) and (".tfs" in f))]:
         a = tfs.read(join(meas_path, f))
-        cols = [column for column in a.columns.values if column.startswith('DELTA')]
+        cols = [column for column in a.columns.to_numpy() if column.startswith('DELTA')]
         if f == "normalised_dispersion_x.tfs":
             cols.remove("DELTADX")
         for col in cols:
-            rms = stats.weighted_rms(a.loc[:, col].values, errors=a.loc[:, f"ERR{col}"].values)
+            rms = stats.weighted_rms(a.loc[:, col].to_numpy(), errors=a.loc[:, f"ERR{col}"].to_numpy())
             if col[5] in LIMITS.keys():
                 assert rms < LIMITS[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
             else:

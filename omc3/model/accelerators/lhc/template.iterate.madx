@@ -1,0 +1,32 @@
+title, "Model creator for java";
+
+!@require %(LIB)s.macros.madx
+
+option, -echo;
+
+%(MAIN_SEQ)s
+exec, define_nominal_beams();
+call, file = "%(OPTICS_PATH)s";
+exec, cycle_sequences();
+if(%(CROSSING_ON)s==1){
+exec, set_crossing_scheme_ON();
+}else{
+exec, set_default_crossing_scheme();
+}
+use, period = LHCB%(NUM_BEAM)i;
+
+option, echo;
+
+exec, match_tunes(%(QMX)s, %(QMY)s, %(NUM_BEAM)i);
+
+!!! for ATS MD
+! exec, full_response_ats();
+
+select, flag=twiss, clear;
+select, flag=twiss, pattern="BPM.*\.B%(NUM_BEAM)i", column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;
+
+exec, coupling_knob(%(NUM_BEAM)i);
+
+call, file="%(PATH)s/iter.madx";
+
+stop;

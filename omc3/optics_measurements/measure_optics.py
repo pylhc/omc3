@@ -48,7 +48,7 @@ def measure_optics(input_files, measure_input):
         phase.write(out_dfs, [common_header, common_header], measure_input.outputdir, plane)
         phase.write_special(measure_input, phase_dict, tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
-            break  # should it be continue as in this way phase only for X?
+            continue
         beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict, common_header, plane)
         beta_from_phase.write(beta_df, beta_header, measure_input.outputdir, plane)
 
@@ -142,9 +142,9 @@ class InputFiles(dict):
         Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones
         This is for backwards compatibility with Drive
         """
-        df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].values * 2
+        df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].to_numpy() * 2
         if f"NATAMP{plane}" in df.columns:
-            df[f"NATAMP{plane}"] = df.loc[:, f"NATAMP{plane}"].values * 2
+            df[f"NATAMP{plane}"] = df.loc[:, f"NATAMP{plane}"].to_numpy() * 2
         return df
 
     def dpps(self, plane):
@@ -226,7 +226,7 @@ class InputFiles(dict):
         Returns:
             list of columns
         """
-        str_list = list(frame.columns[frame.columns.str.startswith(column + '__')].values)
+        str_list = list(frame.columns[frame.columns.str.startswith(column + '__')].to_numpy())
         new_list = list(map(lambda s: s[len(f"{column}__"):], str_list))
         new_list.sort(key=int)
         return [f"{column}__{x}" for x in new_list]
@@ -241,7 +241,7 @@ class InputFiles(dict):
             data in numpy array corresponding to column in original files
         """
         columns = self.get_columns(frame, column)
-        return frame.loc[:, columns].values
+        return frame.loc[:, columns].to_numpy()
 
 
 def copy_calibration_files(outputdir, calibrationdir):

@@ -35,7 +35,7 @@ def run_per_bunch(tbt_data, harpy_input):
     Returns:
         Dictionary of TfsDataFrames per plane
     """
-    model = tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
+    model = None if harpy_input.model is None else tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
     output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
@@ -91,9 +91,10 @@ def _scale_to_meters(bpm_data, unit):
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
-    lin_frame = pd.DataFrame(index=bpm_data.index,
-                             data=OrderedDict([("NAME", bpm_data.index),
-                                               ("S", model.loc[bpm_data.index])]))
+    lin_frame = pd.DataFrame(index=bpm_data.index.to_numpy(),
+                             data=OrderedDict([("NAME", bpm_data.index.to_numpy()),
+                                               ("S", np.arange(bpm_data.index.size) if model is None
+                                               else model.loc[bpm_data.index])]))
     lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
     with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
         lin_frame = _get_orbit_data(lin_frame, bpm_data)
@@ -110,11 +111,11 @@ def _get_orbit_data(lin_frame, bpm_data):
 
 
 def _add_calculated_phase_errors(lin_frame):
-    noise = lin_frame.loc[:, 'NOISE'].values
+    noise = lin_frame.loc[:, 'NOISE'].to_numpy()
     if np.max(noise) == 0.0:
         return lin_frame   # Do not calculated errors when no noise was calculated
     for name_root in ('MU', 'PHASE'):
-        cols = [col for col in lin_frame.columns.values if name_root in col]
+        cols = [col for col in lin_frame.columns.to_numpy() if name_root in col]
         for col in cols:
             lin_frame[f"{ERR}{col}"] = _get_spectral_phase_error(
                 lin_frame.loc[:, f"{col.replace(name_root, 'AMP')}"], noise)
@@ -137,7 +138,7 @@ def _sync_phase(lin_frame, plane):
      is always 0. It allows to compare phases of consecutive measurements and if some measurements
      stick out remove them from the data set. author: skowron
     """
-    phase = lin_frame.loc[:, f"MU{plane}"].values
+    phase = lin_frame.loc[:, f"MU{plane}"].to_numpy()
     phase = phase - phase[0]
     lin_frame[f"MU{plane}SYNC"] = np.where(np.abs(phase) > 0.5, phase - np.sign(phase), phase)
     return lin_frame
@@ -182,17 +183,17 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
-    cols = [col for col in panda.columns.values if col.startswith('AMP')]
+    cols = [col for col in panda.columns.to_numpy() if col.startswith('AMP')]
     cols.remove(f"AMP{plane}")
     panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"AMP{plane}"], axis="index")
-    amps = panda.loc[:, f"AMP{plane}"].values
+    amps = panda.loc[:, f"AMP{plane}"].to_numpy()
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
     # TODO  later remove
-    panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].values / 2
+    panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].to_numpy() / 2
     if f"NATAMP{plane}" in panda.columns:
-        panda[f"NATAMP{plane}"] = panda.loc[:, f"NATAMP{plane}"].values / 2
+        panda[f"NATAMP{plane}"] = panda.loc[:, f"NATAMP{plane}"].to_numpy() / 2
 
-    if np.max(panda.loc[:, 'NOISE'].values) == 0.0:
+    if np.max(panda.loc[:, 'NOISE'].to_numpy()) == 0.0:
         return panda  # Do not calculated errors when no noise was calculated
     noise_scaled = panda.loc[:, 'NOISE'] / amps
     panda.loc[:, "NOISE_SCALED"] = noise_scaled
