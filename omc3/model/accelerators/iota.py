@@ -5,7 +5,7 @@ IOTA
 import os
 import re
 from model.accelerators.accelerator import Accelerator, AccElementTypes
-from generic_parser.entrypoint import EntryPointParameters
+from generic_parser import EntryPointParameters
 import logging
 
 LOGGER = logging.getLogger(__name__)

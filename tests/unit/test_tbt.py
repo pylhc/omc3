@@ -6,17 +6,9 @@ import numpy as np
 import pandas as pd
 from . import context
 from datetime import datetime
-<<<<<<< HEAD
 import tbt
-from tbt import lhc_handler
-from tbt import numpy_handler
-from tbt import iota_handler_v1
-from tbt import iota_handler_v2
-from tbt import data_class
-=======
-from tbt import handler, reader_iota, reader_trackone, reader_ptc
+from tbt import handler, reader_iota_v1, reader_iota_v2, reader_trackone, reader_ptc
 from tbt_converter import converter_entrypoint
->>>>>>> origin/master
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
@@ -60,13 +52,13 @@ def test_tbt_read_hdf5(_hdf5_file):
         date=datetime.now(),
         bunch_ids=[1],
         nturns=2000)
-    new = iota_handler_v1.read_tbt(_hdf5_file)
+    new = reader_iota_v1.read_tbt(_hdf5_file)
     _compare_tbt(origin, new, False)
 
 
 def test_tbt_read_hdf5_v2(_hdf5_file_v2):
 
-    origin = data_class.TbtData(
+    origin = handler.TbtData(
         matrices=[
                   {'X': pd.DataFrame(
                     index=['IBPMA1C', 'IBPME2R'],
@@ -79,7 +71,7 @@ def test_tbt_read_hdf5_v2(_hdf5_file_v2):
         date=datetime.now(),
         bunch_ids=[1],
         nturns=2000)
-    new = iota_handler_v2.read_tbt(_hdf5_file_v2)
+    new = reader_iota_v2.read_tbt(_hdf5_file_v2)
     _compare_tbt(origin, new, False)
 
 
