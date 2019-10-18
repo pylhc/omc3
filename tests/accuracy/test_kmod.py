@@ -28,10 +28,10 @@ def test_kmod_simulation_ip1b1(_workdir_path):
                  errorL=0.0,
                  tune_uncertainty=0.0E-5)
     results = tfs.read(join(_workdir_path, "ip1B1", "results.tfs"))
-    original_twiss = tfs.read(join(_workdir_path, "twiss.tfs"), index='NAME')
+    beta_twiss = {'X': 0.25, 'Y': 0.25}
 
     for plane in PLANES:
-        beta_sim = original_twiss.loc['IP1', f"BET{plane}"]
+        beta_sim = beta_twiss[plane]
         beta_meas = results[f"{BETA}{STAR}{plane}"].loc[0]
         assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
@@ -54,10 +54,10 @@ def test_kmod_simulation_ip1b2(_workdir_path):
                  errorL=0.0,
                  tune_uncertainty=0.0E-5)
     results = tfs.read(join(_workdir_path, "ip1B2", "results.tfs"))
-    original_twiss = tfs.read(join(_workdir_path, "twiss.tfs"), index='NAME')
+    beta_twiss = {'X': 0.25, 'Y': 0.25}
 
     for plane in PLANES:
-        beta_sim = original_twiss.loc['IP1', f"BET{plane}"]
+        beta_sim = beta_twiss[plane]
         beta_meas = results[f"{BETA}{STAR}{plane}"].loc[0]
         assert (np.abs(beta_meas-beta_sim))/beta_sim < LIMITS['Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
@@ -79,11 +79,11 @@ def test_kmod_meas_ip1b1(_workdir_path):
                  errorL=0.0,
                  tune_uncertainty=2.5E-5)
     results = tfs.read(join(_workdir_path, "ip1B1", "results.tfs"))
-    beta_sim = {'X': 0.45, 'Y': 0.43}
+    beta_prev = {'X': 0.45, 'Y': 0.43}
     for plane in PLANES:
 
         beta_meas = results[f"{BETA}{STAR}{plane}"].loc[0]
-        assert (np.abs(beta_meas-beta_sim[plane]))/beta_sim[plane] < LIMITS['Meas Accuracy']
+        assert (np.abs(beta_meas-beta_prev[plane]))/beta_prev[plane] < LIMITS['Meas Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
@@ -103,11 +103,11 @@ def test_kmod_meas_ip1b2(_workdir_path):
                  errorL=0.0,
                  tune_uncertainty=2.5E-5)
     results = tfs.read(join(_workdir_path, "ip1B2", "results.tfs"))
-    beta_sim = {'X': 0.387, 'Y': 0.410}
+    beta_prev = {'X': 0.387, 'Y': 0.410}
     for plane in PLANES:
 
         beta_meas = results[f"{BETA}{STAR}{plane}"].loc[0]
-        assert (np.abs(beta_meas-beta_sim[plane]))/beta_sim[plane] < LIMITS['Meas Accuracy']
+        assert (np.abs(beta_meas-beta_prev[plane]))/beta_prev[plane] < LIMITS['Meas Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
