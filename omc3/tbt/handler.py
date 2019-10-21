@@ -74,7 +74,7 @@ def _matrices_to_array(tbt_data):
 def _add_noise(data, noise):
     if noise <= 0.0:
         return data
-    return data + noise * np.random.randn(data.shape)
+    return data + noise * np.random.standard_normal(data.shape)
 
 
 def write_lhc_ascii(output_path, tbt_data):
