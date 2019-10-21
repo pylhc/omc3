@@ -34,7 +34,7 @@ def converter_params():
                          help="Choose the datatype from which to import. ")
     params.add_parameter(name="replications", type=int, default=1,
                          help="Number of copies with added noise")
-    params.add_parameter(name="noise_to_add", type=float, default=0.0,
+    params.add_parameter(name="noise_to_add", nargs='*', default=[0.0],
                          help="Sigma of added Gaussian noise")
     return params
 
@@ -79,10 +79,13 @@ def converter_entrypoint(opt):
 def _read_and_write_files(opt):
     for input_file in opt.files:
         tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
-        for i in range(opt.replications):
-            suffix = f"_{i}" if opt.replications > 1 else ""
-            tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{suffix}"), tbt_data,
-                      noise=opt.noise_to_add)
+        for n in opt.noise_to_add:
+          noise_suffix = f"_n{n}" if len(opt.noise_to_add) > 1 else ""
+          for i in range(opt.replications):
+              suffix = f"_r{i}" if opt.replications > 1 else ""
+              tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{noise_suffix}{suffix}"),
+                        tbt_data=tbt_data,
+                        noise=n)
 
 
 def _file_name(filename: str):
