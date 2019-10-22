@@ -7,7 +7,7 @@ import pandas as pd
 from . import context
 from datetime import datetime
 import tbt
-from tbt import handler, reader_iota_v1, reader_iota_v2, reader_trackone, reader_ptc
+from tbt import handler, reader_iota, reader_trackone, reader_ptc
 from tbt_converter import converter_entrypoint
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -52,7 +52,7 @@ def test_tbt_read_hdf5(_hdf5_file):
         date=datetime.now(),
         bunch_ids=[1],
         nturns=2000)
-    new = reader_iota_v1.read_tbt(_hdf5_file)
+    new = reader_iota.read_tbt(_hdf5_file)
     _compare_tbt(origin, new, False)
 
 
@@ -71,7 +71,7 @@ def test_tbt_read_hdf5_v2(_hdf5_file_v2):
         date=datetime.now(),
         bunch_ids=[1],
         nturns=2000)
-    new = reader_iota_v2.read_tbt(_hdf5_file_v2)
+    new = reader_iota.read_tbt(_hdf5_file_v2)
     _compare_tbt(origin, new, False)
 
 

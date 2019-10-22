@@ -26,7 +26,7 @@ class Ps(Accelerator):
         pass
 
     @classmethod
-    def get_ps_dir(cls):
+    def get_dir(cls):
         return os.path.join(PS_DIR, str(cls.YEAR))
 
     @classmethod
