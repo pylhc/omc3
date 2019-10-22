@@ -60,7 +60,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
-    phases_mdl = df.loc[:, f"MU{plane}"].values
+    phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
     phase_advances = {"MODEL": _get_square_data_frame(
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
     if meas_input.compensation == "model":
@@ -133,19 +133,19 @@ def _create_output_df(phase_advances, model, plane, tot=False):
         output_data = model.loc[:, ["S", f"MU{plane}"]].iloc[:, :]
         output_data["NAME"] = output_data.index
         output_data = output_data.assign(S2=model.at[model.index[0], "S"], NAME2=model.index[0])
-        output_data[f"PHASE{plane}"] = meas.values[0, :]
-        output_data[f"{ERR}PHASE{plane}"] = err.values[0, :]
-        output_data[f"PHASE{plane}{MDL}"] = mod.values[0, :]
+        output_data[f"PHASE{plane}"] = meas.to_numpy()[0, :]
+        output_data[f"{ERR}PHASE{plane}"] = err.to_numpy()[0, :]
+        output_data[f"PHASE{plane}{MDL}"] = mod.to_numpy()[0, :]
     else:
         output_data = model.loc[:, ["S", f"MU{plane}"]].iloc[:-1, :]
         output_data["NAME"] = output_data.index
-        output_data = output_data.assign(S2=model.loc[:, "S"].values[1:], NAME2=model.index[1:].values)
-        output_data[f"PHASE{plane}"] = np.diag(meas.values, k=1)
-        output_data[f"{ERR}PHASE{plane}"] = np.diag(err.values, k=1)
-        output_data[f"PHASE{plane}{MDL}"] = np.diag(mod.values, k=1)
+        output_data = output_data.assign(S2=model.loc[:, "S"].to_numpy()[1:], NAME2=model.index[1:].to_numpy())
+        output_data[f"PHASE{plane}"] = np.diag(meas.to_numpy(), k=1)
+        output_data[f"{ERR}PHASE{plane}"] = np.diag(err.to_numpy(), k=1)
+        output_data[f"PHASE{plane}{MDL}"] = np.diag(mod.to_numpy(), k=1)
     output_data.rename(columns={f"MU{plane}": f"MU{plane}{MDL}"}, inplace=True)
     output_data[f"{DELTA}PHASE{plane}"] = df_ang_diff(output_data, f"PHASE{plane}", f"PHASE{plane}{MDL}")
-    output_data[f"{ERR}{DELTA}PHASE{plane}"] = output_data.loc[:, f"{ERR}PHASE{plane}"].values
+    output_data[f"{ERR}{DELTA}PHASE{plane}"] = output_data.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
     return output_data
 
 

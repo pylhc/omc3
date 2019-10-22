@@ -2,8 +2,10 @@
 Super KEK-B
 -------------------
 """
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
+from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
 from utils import logging_tools
+from generic_parser import EntryPointParameters
+
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -21,5 +23,37 @@ class SKekB(Accelerator):
             raise AcceleratorDefinitionError("SuperKEKB doesn't have a model creation, calling it this "
                                              "way is most probably wrong.")
 
-    def get_beam_direction(self):
+    @staticmethod
+    def get_class_parameters():
+        params = EntryPointParameters()
+        params.add_parameter(name="ring", type=str, choices=("ler", "her"), help="HER or LER ring.")
+        return params
+
+
+    @classmethod
+    def _get_class(cls, opt):
+        """ Actual get_class function """
+        new_class = cls
+        new_class = cls._get_beamed_class(new_class, opt.ring)
+        return new_class
+
+
+    @classmethod
+    def _get_beamed_class(cls, new_class, ring):
+        ringSKEKB = _Her if ring == 'her' else _Ler
+        beamed_class = type(new_class.__name__ + str(ring),
+                            (new_class, ringSKEKB),
+                            {})
+        return beamed_class
+
+
+class _Ler(object):
+    @classmethod
+    def get_beam_direction(cls):
+        return 1
+
+
+class _Her(object):
+    @classmethod
+    def get_beam_direction(cls):
         return -1

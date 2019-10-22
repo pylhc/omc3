@@ -22,7 +22,7 @@ def test_converter_one_file(_sdds_file, _test_file):
 
 def test_converter_more_files(_sdds_file, _test_file):
     rep = 2
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), replication=rep)
+    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), replications=rep)
     origin = handler.read_tbt(_sdds_file)
     for i in range(rep):
         new = handler.read_tbt(f'{_test_file}_{i}.sdds')
@@ -97,8 +97,8 @@ def _compare_tbt(origin, new, no_binary):
     for index in range(origin.nbunches):
         for plane in PLANES:
             assert np.all(new.matrices[index][plane].index == origin.matrices[index][plane].index)
-            origin_mat = origin.matrices[index][plane].values
-            new_mat = new.matrices[index][plane].values
+            origin_mat = origin.matrices[index][plane].to_numpy()
+            new_mat = new.matrices[index][plane].to_numpy()
             if no_binary:
                 ascii_precision = 0.5 / np.power(10, handler.PRINT_PRECISION)
                 assert np.max(np.abs(origin_mat - new_mat)) < ascii_precision

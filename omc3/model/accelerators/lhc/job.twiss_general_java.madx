@@ -1,0 +1,26 @@
+title, "Model creator for java";
+
+!@require lhc_run%RUN.macros.madx
+
+option, -echo;
+exec, full_lhc_def("%OPT/modifiers.madx", %NUM_BEAM);
+option, echo;
+
+%MATCHER exec, high_beta_matcher();
+
+exec, match_tunes(%QMX, %QMY, %NUM_BEAM);
+
+
+exec, coupling_knob(%NUM_BEAM);
+select, flag=twiss, clear;
+select, flag=twiss, pattern='^BPM.*\.B%NUM_BEAM$', column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;
+select, flag=twiss, pattern='^IP[1-8]$', column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;
+
+!!!!! nominal
+twiss, file= "%PATH/twiss_no.dat";
+
+%COR
+
+twiss, file= "%PATH/twiss_cor.dat";
+%CHROMtwiss, chrom,sequence=LHCB%NUM_BEAM, deltap=%DELTAPM, file="%PATH/twiss_cor_dpm.dat";
+%CHROMtwiss, chrom,sequence=LHCB%NUM_BEAM, deltap=%DELTAPP, file="%PATH/twiss_cor_dpp.dat";

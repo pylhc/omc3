@@ -5,7 +5,7 @@ Accelerator
 Contains parent accelerator class and other support classes
 """
 
-from generic_parser.entrypoint import EntryPoint, EntryPointParameters, split_arguments
+from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, split_arguments
 import os
 import pandas as pd
 import tfs
@@ -150,7 +150,7 @@ class Accelerator(object):
             self._model = tfs.read(os.path.join(model_dir, self.TWISS_DAT), index="NAME")
         except IOError:
             self._model = tfs.read(os.path.join(model_dir, self.TWISS_ELEMENTS_DAT), index="NAME")
-            bpm_index = [idx for idx in self._model.index.values if idx.startswith("B")]
+            bpm_index = [idx for idx in self._model.index.to_numpy() if idx.startswith("B")]
             self._model = self._model.loc[bpm_index, :]
         self.nat_tune_x = float(self._model.headers["Q1"])
         self.nat_tune_y = float(self._model.headers["Q2"])
@@ -277,7 +277,7 @@ class Accelerator(object):
         mask = series.str.match(cls.RE_DICT[types[0]], case=False)
         for ty in types[1:]:
             mask = mask | series.str.match(cls.RE_DICT[ty], case=False)
-        return mask.values
+        return mask.to_numpy()
 
     @classmethod
     def get_variables(cls, frm=None, to=None, classes=None):

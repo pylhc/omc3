@@ -31,10 +31,10 @@ def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):
                                    axis=0), 1, cov=True)
         joined[f"D{col}{plane}"] = fit[0][-2, :].T
         joined[f"{ERR}D{col}{plane}"] = np.sqrt(fit[1][-2, -2, :].T)
-    a = joined.loc[:, f"DBET{plane}"].values
-    aerr = joined.loc[:, f"{ERR}DBET{plane}"].values
-    b = joined.loc[:, f"DALF{plane}"].values - joined.loc[:, f"ALF{plane}"].values * joined.loc[:,
-                                                                                     f"DBET{plane}"].values
+    a = joined.loc[:, f"DBET{plane}"].to_numpy()
+    aerr = joined.loc[:, f"{ERR}DBET{plane}"].to_numpy()
+    b = joined.loc[:, f"DALF{plane}"].to_numpy() - joined.loc[:, f"ALF{plane}"].to_numpy() * joined.loc[:,
+                                                                                     f"DBET{plane}"].to_numpy()
     berr = np.sqrt(df_prod(joined, f"{ERR}DALF{plane}", f"{ERR}DALF{plane}") +
                    np.square(df_prod(joined, f"{ERR}ALF{plane}", f"DBET{plane}")) +
                    np.square(df_prod(joined, f"ALF{plane}", f"{ERR}DBET{plane}")))
@@ -72,9 +72,9 @@ def calculate_chromatic_coupling(couplings, dpps, input_files, measure_input):
                                        axis=0), 1, cov=True)
             joined[f"D{col}{part}"] = fit[0][-2, :].T
             joined[f"{ERR}D{col}{part}"] = np.sqrt(fit[1][-2, -2, :].T)
-        joined[f"D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].values) + np.square(joined.loc[:, f"D{col}IM"].values))
-        joined[f"{ERR}D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].values * df_ratio(joined, f"{ERR}D{col}RE", f"D{col}")) +
-                                         np.square(joined.loc[:, f"D{col}IM"].values * df_ratio(joined, f"{ERR}D{col}IM", f"D{col}")))
+        joined[f"D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].to_numpy()) + np.square(joined.loc[:, f"D{col}IM"].to_numpy()))
+        joined[f"{ERR}D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].to_numpy() * df_ratio(joined, f"{ERR}D{col}RE", f"D{col}")) +
+                                         np.square(joined.loc[:, f"D{col}IM"].to_numpy() * df_ratio(joined, f"{ERR}D{col}IM", f"D{col}")))
     output_df = pd.merge(measure_input.accelerator.get_model_tfs().loc[:, ["S"]], joined.loc[:,
                          [f"{pref}{col}{part}" for pref in ("", ERR) for col in ("F1001", "F1010") for part in ("", "RE", "IM")]],
                          how="inner", left_index=True,

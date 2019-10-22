@@ -180,7 +180,7 @@ def svd_decomposition(bpm_data, num_singular_values):
     Returns:
         An indexed DataFrame of U matrix, product of S and V^T martices, and mean of original matrix
     """
-    bpm_data_mean = bpm_data.values.mean()
+    bpm_data_mean = bpm_data.to_numpy().mean()
     u_mat, svt_mat = _get_decomposition(bpm_data - bpm_data_mean, num_singular_values)
     return pd.DataFrame(index=bpm_data.index, data=u_mat), svt_mat, bpm_data_mean
 
