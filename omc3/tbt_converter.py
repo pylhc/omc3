@@ -68,10 +68,9 @@ def converter_entrypoint(opt):
         Default: None
 
     """
-    if opt.noise_levels is None: 
-        raise ValueError("No noise level specified.")
     if opt.realizations < 1:
         raise ValueError("Number of realizations lower than 1.")
+    opt.noise_levels = [None] if opt.noise_levels is None else opt.noise_levels
     iotools.create_dirs(opt.outputdir)
     save_options_to_config(join(opt.outputdir, DEFAULT_CONFIG_FILENAME.format(
         time=datetime.utcnow().strftime(formats.TIME))), OrderedDict(sorted(opt.items())))
@@ -82,12 +81,12 @@ def _read_and_write_files(opt):
     for input_file in opt.files:
         tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
         for i in range(opt.realizations):
-           suffix = f"_r{i}" if opt.realizations > 1 else ""
-           for n in opt.noise_levels:
-             noise_suffix = f"_n{n}" if not n == 0 else ""
-             tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{noise_suffix}{suffix}"),
-                         tbt_data=tbt_data,
-                         noise=n) 
+            suffix = f"_r{i}" if opt.realizations > 1 else ""
+            for n in opt.noise_levels:
+                noise_suffix = f"_n{n}" if n is not None else ""
+                tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{noise_suffix}{suffix}"),
+                          tbt_data=tbt_data,
+                          noise=n)
 
 
 def _file_name(filename: str):
