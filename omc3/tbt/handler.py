@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import sdds
 from utils import logging_tools
-from tbt import reader_esrf, reader_iota_v1, reader_iota_v2, reader_lhc, reader_ptc, reader_trackone
+from tbt import reader_esrf, reader_iota, reader_lhc, reader_ptc, reader_trackone
 LOGGER = logging_tools.getLogger(__name__)
 
 PLANES = ('X', 'Y')
@@ -13,8 +13,7 @@ PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
 FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
 DATA_READERS = dict(lhc=reader_lhc,
-                    iota_v1=reader_iota_v1,
-                    iota_v2=reader_iota_v2,
+                    iota=reader_iota,
                     esrf=reader_esrf,
                     ptc=reader_ptc,
                     trackone=reader_trackone)
