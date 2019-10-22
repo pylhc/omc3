@@ -72,8 +72,6 @@ def _matrices_to_array(tbt_data):
 
 
 def _add_noise(data, noise):
-    if noise <= 0.0:
-        return data
     return data + noise * np.random.standard_normal(data.shape)
 
 
