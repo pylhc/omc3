@@ -34,7 +34,7 @@ def converter_params():
                          help="Choose the datatype from which to import. ")
     params.add_parameter(name="realizations", type=int, default=1,
                          help="Number of copies with added noise")
-    params.add_parameter(name="noise_levels", nargs='+', type=float,
+    params.add_parameter(name="noise_levels", nargs='+', type=float, default=[None],
                          help="Sigma of added Gaussian noise")
     return params
 
@@ -70,7 +70,6 @@ def converter_entrypoint(opt):
     """
     if opt.realizations < 1:
         raise ValueError("Number of realizations lower than 1.")
-    opt.noise_levels = [None] if opt.noise_levels is None else opt.noise_levels
     iotools.create_dirs(opt.outputdir)
     save_options_to_config(join(opt.outputdir, DEFAULT_CONFIG_FILENAME.format(
         time=datetime.utcnow().strftime(formats.TIME))), OrderedDict(sorted(opt.items())))
