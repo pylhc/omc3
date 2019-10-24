@@ -16,6 +16,11 @@ LOGGER = logging_tools.getLogger(__name__)
 
 PLANES = ('X', 'Y')
 
+VERSIONS = (1, 2)
+
+PLANES_CONV = {1: {'X': 'H', 'Y': 'V'},
+               2: {'X': 'Horizontal', 'Y': 'Vertical'}}
+
 
 def read_tbt(file_path):
     """
@@ -31,46 +36,79 @@ def read_tbt(file_path):
     bunch_ids = [1]
     date = datetime.now()
 
-    if np.any([key.startswith('N:') for key in hdf_file.keys()]):
-        version = 1
-        planes_conv = {'X': 'H', 'Y': 'V'}
-    else:
-        version = 2
-        planes_conv = {'X': 'Horizontal', 'Y': 'Vertical'}
+    for vers in VERSIONS[::-1]:
+        try:
+            bpm_names = FUNCTIONS[vers]['get_bpm_names'](hdf_file)
+            nturns = FUNCTIONS[vers]['get_nturns'](hdf_file, vers)
+            matrices = [{k: pd.DataFrame(index=bpm_names,
+                                         data=FUNCTIONS[vers]['get_tbtdata'](hdf_file, k, vers),
+                                         dtype=float) for k in PLANES}]
 
-    bpm_names = _get_list_of_bpmnames(hdf_file, version, planes_conv)
-    nturns = _get_number_of_turns(hdf_file, version, planes_conv)
+            return handler.TbtData(matrices, date, bunch_ids, nturns)
 
-    matrices = [{k: pd.DataFrame(index=bpm_names,
-                                 data=_get_turn_by_turn_data(hdf_file, k, version, planes_conv),
-                                 dtype=float) for k in PLANES}]
-
-    return handler.TbtData(matrices, date, bunch_ids, nturns)
+        except TypeError:
+            pass
 
 
-def _get_turn_by_turn_data(hd5, plane, version, planes_conv):
+def _get_turn_by_turn_data_v1(hd5, plane, version):
 
-    keys = [key for key in hd5.keys() if (key.endswith(planes_conv[plane]))] if version ==1 else [key for key in hd5.keys()]
+    keys = [key for key in hd5.keys() if (key.endswith(PLANES_CONV[version][plane]))]
     nbpm = len(keys)
-    nturn = _get_number_of_turns(hd5, version, planes_conv)
+    nturn = FUNCTIONS[version]['get_nturns'](hd5, version)
     data = np.zeros((nbpm, nturn))
     for i, key in enumerate(keys):
-        data[i, :] = hd5[key][:nturn] if version == 1 else hd5[key][planes_conv[plane]][:nturn]
+        data[i, :] = hd5[key][: nturn]
 
     return data
 
 
-def _get_list_of_bpmnames(hd5, version, planes_conv):
-    if version == 1:
-        bpms = [f'IBPM{key[4:-1]}' for key in list(hd5.keys()) if not ('state' in key)]
-    elif version == 2:
-        bpms = [f'IBPM{key}' for key in list(hd5.keys()) if not ('NL' in key)]
+def _get_list_of_bpmnames_v1(hd5):
+    bpms = [f'IBPM{key[4:-1]}' for key in list(hd5.keys()) if check_key_v1(key)]
     return np.unique(bpms)
 
 
-def _get_number_of_turns(hd5, version, planes_conv):
-    if version == 1:
-        lengths = [len(hd5[key]) for key in list(hd5.keys()) if not ('state' in key)]
-    elif version == 2:
-        lengths = np.array([(len(hd5[key][planes_conv['X']]), len(hd5[key][planes_conv['Y']])) for key in list(hd5.keys()) if not ('NL' in key)])
+def _get_number_of_turns_v1(hd5, version):
+    lengths = [len(hd5[key]) for key in list(hd5.keys()) if check_key_v1(key)]
     return np.min(lengths)
+
+
+def _get_turn_by_turn_data_v2(hd5, plane, version):
+
+    keys = [key for key in hd5.keys() if not key.startswith('N:')]
+    if keys == []:
+        raise TypeError('Wrong version of converter was used.')
+    nbpm = len(keys)
+    nturn = FUNCTIONS[version]['get_nturns'](hd5, version)
+    data = np.zeros((nbpm, nturn))
+    for i, key in enumerate(keys):
+        data[i, :] = hd5[key][PLANES_CONV[version][plane]][:nturn]
+
+    return data
+
+
+def _get_list_of_bpmnames_v2(hd5):
+    bpms = [f'IBPM{key}' for key in list(hd5.keys()) if check_key_v2(key)]
+    if bpms == []:
+        raise TypeError('Wrong version of converter was used.')
+    return np.unique(bpms)
+
+
+def _get_number_of_turns_v2(hd5, version):
+    lengths = np.array([(len(hd5[key][PLANES_CONV[version]['X']]), len(hd5[key][PLANES_CONV[version]['Y']])) for key in list(hd5.keys()) if check_key_v2(key)])
+    return np.min(lengths)
+
+
+def check_key_v2(key):
+    return not (('NL' in key) or key.startswith('N:'))
+
+
+def check_key_v1(key):
+    return (('state' not in key) or key.startswith('N:'))
+
+
+FUNCTIONS = {1: {'get_bpm_names': _get_list_of_bpmnames_v1,
+                 'get_nturns': _get_number_of_turns_v1,
+                 'get_tbtdata': _get_turn_by_turn_data_v1},
+             2: {'get_bpm_names': _get_list_of_bpmnames_v2,
+                 'get_nturns': _get_number_of_turns_v2,
+                 'get_tbtdata': _get_turn_by_turn_data_v2}}
