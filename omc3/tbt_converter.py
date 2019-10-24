@@ -32,9 +32,9 @@ def converter_params():
     params.add_parameter(name="tbt_datatype", type=str, default="lhc",
                          choices=list(tbt.handler.DATA_READERS.keys()),
                          help="Choose the datatype from which to import. ")
-    params.add_parameter(name="replications", type=int, default=1,
+    params.add_parameter(name="realizations", type=int, default=1,
                          help="Number of copies with added noise")
-    params.add_parameter(name="noise_to_add", type=float, default=0.0,
+    params.add_parameter(name="noise_levels", nargs='+', type=float, default=[None],
                          help="Sigma of added Gaussian noise")
     return params
 
@@ -58,18 +58,18 @@ def converter_entrypoint(opt):
 
         Flags: **--tbt_datatype**
         Default: ``lhc``
-      - **replications** *(int)*: Number of copies with added noise.
+      - **realizations** *(int)*: Number of copies with added noise.
 
-        Flags: **--replications**
+        Flags: **--realizations**
         Default: ``1``
-      - **noise_to_add** *(float)*: Sigma of added Gaussian noise.
+      - **noise_levels** *(float)*: Sigma of added Gaussian noise.
 
-        Flags: **--noise_to_add**
-        Default: ``0.0``
+        Flags: **--noise_levels**
+        Default: None
 
     """
-    if opt.replications < 1:
-        raise ValueError("Number of replications lower than 1.")
+    if opt.realizations < 1:
+        raise ValueError("Number of realizations lower than 1.")
     iotools.create_dirs(opt.outputdir)
     save_options_to_config(join(opt.outputdir, DEFAULT_CONFIG_FILENAME.format(
         time=datetime.utcnow().strftime(formats.TIME))), OrderedDict(sorted(opt.items())))
@@ -79,10 +79,13 @@ def converter_entrypoint(opt):
 def _read_and_write_files(opt):
     for input_file in opt.files:
         tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
-        for i in range(opt.replications):
-            suffix = f"_{i}" if opt.replications > 1 else ""
-            tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{suffix}"), tbt_data,
-                      noise=opt.noise_to_add)
+        for i in range(opt.realizations):
+            suffix = f"_r{i}" if opt.realizations > 1 else ""
+            for n in opt.noise_levels:
+                noise_suffix = f"_n{n}" if n is not None else ""
+                tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{noise_suffix}{suffix}"),
+                          tbt_data=tbt_data,
+                          noise=n)
 
 
 def _file_name(filename: str):
