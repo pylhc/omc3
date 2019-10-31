@@ -15,6 +15,7 @@ from utils.contexts import timeit
 
 LOGGER = logging_tools.getLogger(__name__)
 NTS_LIMIT = 8.  # Noise to signal limit
+N_SVD_ITER = 3
 
 
 def clean(harpy_input, bpm_data, model):
@@ -201,10 +202,7 @@ def _get_decomposition(matrix, num, dominance_limit=None):
     """
     u_mat, s_mat, vt_mat = np.linalg.svd(matrix / np.sqrt(matrix.shape[1]), full_matrices=False)
 
-    if dominance_limit is not None:
-        u_mat, s_mat, u_mat_mask = _remove_dominant_elements(dominance_limit, u_mat, s_mat)
-    else:
-        u_mat_mask = np.zeros(u_mat.shape, dtype=bool)
+    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit)
 
     available = np.sum(s_mat > 0.)
     if num > available:
@@ -217,28 +215,30 @@ def _get_decomposition(matrix, num, dominance_limit=None):
             u_mat_mask[:, indices])
 
 
-def _remove_dominant_elements(dominance_limit, u_mat, s_mat):
+def _remove_dominant_elements(u_mat, s_mat, dominance_limit):
+    u_mat_mask = np.ones(u_mat.shape, dtype=bool)
+    if dominance_limit is None:
+        return u_mat, s_mat, u_mat_mask
     abs_dominance_limit = np.abs(dominance_limit)
     if abs_dominance_limit < 1 / np.sqrt(2):
         LOGGER.warning(f"The svd_dominance_limit looks too low: {abs_dominance_limit}")
 
-    u_mat_mask = np.zeros(u_mat.shape, dtype=bool)
-    for i in range(3):
+    for i in range(N_SVD_ITER):
         if np.all(np.abs(u_mat) <= abs_dominance_limit):
             break
-        u_mat_mask[np.abs(u_mat) > abs_dominance_limit] = True
+        u_mat_mask[np.abs(u_mat) > abs_dominance_limit] = False
         u_mat[np.abs(u_mat) > abs_dominance_limit] = 0.0
         norms = np.sqrt(np.sum(np.square(u_mat), axis=0))
         u_mat = u_mat / norms
         s_mat = s_mat * norms
-
+    # do not remove any BPMs
     if dominance_limit < 0.0:
-        u_mat_mask = np.zeros(u_mat.shape, dtype=bool)
+        u_mat_mask = np.ones(u_mat.shape, dtype=bool)
     return u_mat, s_mat, u_mat_mask
 
 
 def _clean_dominant_bpms(u_mat, u_mat_mask, svd_dominance_limit):
-    dominant_bpms = u_mat[np.any(u_mat_mask, axis=1)].index
+    dominant_bpms = u_mat[np.any(~u_mat_mask, axis=1)].index
     if dominant_bpms.size > 0:
         LOGGER.debug(f"Bad BPMs from SVD detected. Number of BPMs removed: {dominant_bpms.size}")
     clean_u = u_mat.loc[u_mat.index.difference(dominant_bpms, sort=False)]
