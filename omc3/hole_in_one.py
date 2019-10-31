@@ -103,7 +103,7 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--first_bpm**
       - **keep_dominant_bpms**: If present, will not remove BPMs dominating an SVD mode.
 
-        Flags: **--keep_exact_zeros**
+        Flags: **--keep_dominant_bpms**
         Action: ``store_true``
       - **keep_exact_zeros**: If present, will not remove BPMs with exact zeros in TbT data.
 
