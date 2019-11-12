@@ -32,6 +32,28 @@ class TbtData(object):
         self.bunch_ids = bunch_ids
 
 
+def generate_average_tbtdata(tbtdata):
+    '''Takes a TbtData object and returns TbtData object containing the average
+    over all bunches/particles at all used BPMs '''
+    data = tbtdata.matrices
+    bpm_names = data[0]['X'].index
+
+    matrices = [{plane: pd.DataFrame(index=bpm_names,
+                                     data=get_averaged_data(bpm_names, data, plane, tbtdata.nturns),
+                                     dtype=float) for plane in PLANES}]
+    return TbtData(matrices, tbtdata.date, [1], tbtdata.nturns)
+
+
+def get_averaged_data(bpm_names, data, plane, turns):
+
+    bpm_data = np.zeros((len(bpm_names), len(data), turns))
+    for idx, bpm in enumerate(bpm_names):
+        for i in range(len(data)):
+            bpm_data[idx, i, :] = data[i][plane].loc[bpm]
+
+    return np.mean(bpm_data, axis=1)
+
+
 def read_tbt(file_path, datatype="lhc"):
     return DATA_READERS[datatype].read_tbt(file_path)
 
