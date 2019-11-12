@@ -24,10 +24,10 @@ def test_converter_one_file(_sdds_file, _test_file):
 
 def test_converter_more_files(_sdds_file, _test_file):
     rep = 2
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), replications=rep)
+    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep)
     origin = handler.read_tbt(_sdds_file)
     for i in range(rep):
-        new = handler.read_tbt(f'{_test_file}_{i}.sdds')
+        new = handler.read_tbt(f'{_test_file}_r{i}.sdds')
         _compare_tbt(origin, new, False)
 
 
@@ -186,7 +186,7 @@ def _hdf5_file_v2():
 def _test_file():
     with tempfile.TemporaryDirectory() as cwd:
         yield os.path.join(cwd, "test_file")
-
+        
 
 @pytest.fixture()
 def _ptc_file():

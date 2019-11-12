@@ -101,6 +101,11 @@ def hole_in_one_entrypoint(opt, rest):
         Used to resynchronise the TbT data with model.
 
         Flags: **--first_bpm**
+      - **keep_dominant_bpms**: If present, will not remove BPMs dominating an SVD mode,
+        removes just its contribution to the mode.
+
+        Flags: **--keep_dominant_bpms**
+        Action: ``store_true``
       - **keep_exact_zeros**: If present, will not remove BPMs with exact zeros in TbT data.
 
         Flags: **--keep_exact_zeros**
@@ -346,6 +351,8 @@ def _harpy_entrypoint(params):
         raise AttributeError("Colliding options found: --tunes and --autotunes. Choose only one")
     if options.tunes is None and options.autotunes is None:
         raise AttributeError("One of the options --tunes and --autotunes has to be used.")
+    if options.svd_dominance_limit <= 0.0:
+        raise AttributeError("SVD dominance limit should be positive")
     if options.bad_bpms is None:
         options.bad_bpms = []
     if options.wrong_polarity_bpms is None:
@@ -385,6 +392,9 @@ def harpy_params():
     params.add_parameter(name="svd_dominance_limit", type=float,
                          default=HARPY_DEFAULTS["svd_dominance_limit"],
                          help="Limit for single BPM dominating a mode.")
+    params.add_parameter(name="keep_dominant_bpms", action="store_true",
+                         help="If present, will not remove BPMs dominating an SVD mode," 
+                              "removes just its contribution to the mode.")
     params.add_parameter(name="bad_bpms", nargs='*', help="Bad BPMs to clean.")
     params.add_parameter(name="wrong_polarity_bpms", nargs='*',
                          help="BPMs with swapped polarity in both planes.")

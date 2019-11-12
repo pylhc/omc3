@@ -41,7 +41,7 @@ class Lhc(Accelerator):
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(name="lhc_mode", type=str, choices=list(get_lhc_modes().keys()),
+        params.add_parameter(flags="--lhcmode", name="lhc_mode", type=str, choices=list(get_lhc_modes().keys()),
                              help=f"LHC mode to use. Should be one of: {str(get_lhc_modes().keys())}")
         params.add_parameter(name="beam", type=int, help="Beam to use.")
         return params
