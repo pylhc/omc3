@@ -11,7 +11,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
         use_acd = "1" if (instance.excitation ==
                           AccExcitationMode.ACD) else "0"
         replace_dict = {
-            "FILES_DIR": instance.get_psb_dir(),
+            "FILES_DIR": instance.get_dir(),
             "RING": instance.get_ring(),
             "USE_ACD": use_acd,
             "NAT_TUNE_X": instance.nat_tune_x,
@@ -37,7 +37,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             iterate_template = textfile.read()
 
         replace_dict = {
-            "FILES_DIR": instance.get_psb_dir(),
+            "FILES_DIR": instance.get_dir(),
             "RING": instance.get_ring(),
             "LIB": instance.NAME,  # "psbooster"
             "OPTICS_PATH": instance.modifiers_file,
@@ -58,16 +58,16 @@ class PsboosterModelCreator(model_creator.ModelCreator):
     @classmethod
     def _prepare_corrtest(cls, instance, output_path):
         """ Partially fills mask file for tests of corrections
-            Reads correction_test.madx (defined in psbooster.get_corrtest_tmpl()) 
+            Reads correction_test.madx (defined in psbooster.get_corrtest_tmpl())
             and produces correction_test.mask2.madx.
-            Java GUI fills the remaining fields 
+            Java GUI fills the remaining fields
            """
         with open(instance.get_corrtest_tmpl()) as textfile:
             template = textfile.read()
 
         replace_dict = {
             "KINETICENERGY": instance.energy,
-            "FILES_DIR": instance.get_psb_dir(),
+            "FILES_DIR": instance.get_dir(),
             "RING": instance.get_ring(),
             "NAT_TUNE_X": instance.nat_tune_x,
             "NAT_TUNE_Y": instance.nat_tune_y,
@@ -87,7 +87,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             cls._prepare_corrtest(instance, output_path)
 
         file_name = "error_deff_ring" + str(instance.get_ring()) + ".txt"
-        file_path = instance.get_psb_dir()
+        file_path = instance.get_dir()
         src_path = os.path.join(file_path, file_name)
         dest_path = os.path.join(output_path, "error_deffs.txt")
 
@@ -102,7 +102,7 @@ class PsboosterSegmentCreator(model_creator.ModelCreator):
         with open(instance.get_segment_tmpl()) as textfile:
             madx_template = textfile.read()
         replace_dict = {
-            "FILES_DIR": instance.get_psb_dir(),
+            "FILES_DIR": instance.get_dir(),
             "RING": instance.ring,
             "NAT_TUNE_X": instance.nat_tune_x,
             "NAT_TUNE_Y": instance.nat_tune_y,
