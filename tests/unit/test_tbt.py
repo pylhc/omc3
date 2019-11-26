@@ -56,7 +56,7 @@ def test_tbt_read_hdf5(_hdf5_file):
 
 
 def test_compare_average_Tbtdata():
-    npart=10
+    npart = 10
     data = {plane: np.concatenate(
                                   [[_create_data(np.linspace(1, 10, 10, endpoint=False, dtype=int), 2, (lambda x: np.random.randn(len(x))))]
                                    for _ in range(npart)
@@ -104,6 +104,18 @@ def test_tbt_read_ptc(_ptc_file):
 
 def test_tbt_read_trackone(_ptc_file):
     new = reader_trackone.read_tbt(_ptc_file)
+    origin = _original_trackone(True)
+    _compare_tbt(origin, new, True)
+
+
+def test_tbt_read_ptc_sci(_ptc_file_sci):
+    new = reader_ptc.read_tbt(_ptc_file_sci)
+    origin = _original_trackone()
+    _compare_tbt(origin, new, True)
+
+
+def test_tbt_read_trackone_sci(_ptc_file_sci):
+    new = reader_trackone.read_tbt(_ptc_file_sci)
     origin = _original_trackone(True)
     _compare_tbt(origin, new, True)
 
@@ -188,3 +200,8 @@ def _ptc_file():
 @pytest.fixture()
 def _ptc_file_losses():
     return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_losses")
+
+
+@pytest.fixture()
+def _ptc_file_sci():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_sci")
