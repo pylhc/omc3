@@ -46,12 +46,13 @@ def generate_average_tbtdata(tbtdata):
 
 def get_averaged_data(bpm_names, data, plane, turns):
 
-    bpm_data = np.zeros((len(bpm_names), len(data), turns))
+    bpm_data = np.empty((len(bpm_names), len(data), turns))
+    bpm_data.fill(np.nan)
     for idx, bpm in enumerate(bpm_names):
         for i in range(len(data)):
-            bpm_data[idx, i, :] = data[i][plane].loc[bpm]
+            bpm_data[idx, i, :len(data[i][plane].loc[bpm])] = data[i][plane].loc[bpm]
 
-    return np.mean(bpm_data, axis=1)
+    return np.nanmean(bpm_data, axis=1)
 
 
 def read_tbt(file_path, datatype="lhc"):
