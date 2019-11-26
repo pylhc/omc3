@@ -84,12 +84,14 @@ def converter_entrypoint(opt):
 def _read_and_write_files(opt):
     for input_file in opt.files:
         tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
+        if opt.use_average:
+            tbt_data = tbt.handler.generate_average_tbtdata(tbt_data)
         for i in range(opt.realizations):
             suffix = f"_r{i}" if opt.realizations > 1 else ""
             for n in opt.noise_levels:
                 noise_suffix = f"_n{n}" if n is not None else ""
                 tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{noise_suffix}{suffix}"),
-                          tbt_data=tbt.handler.generate_average_tbtdata(tbt_data) if opt.use_average else tbt_data,
+                          tbt_data=tbt_data,
                           noise=n)
 
 
