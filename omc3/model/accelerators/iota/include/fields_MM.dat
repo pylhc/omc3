@@ -1,0 +1,120 @@
+! Values of quadrupole magnet gradients for 2 Nonlinear Magnets option
+dipAp = 0.029; ! main dipole half gap (iron)
+
+kq01 = -5.01629544;
+kq02 = 4.0433004;
+kq03 = 8.52217688;
+kq04 = -5.7793503;
+kq05 = -6.2526917;
+kq06 = 13.66822093;
+kq07 = -7.64532807;
+kq08 = -6.16507056;
+kq09 = 5.45790679;
+kq10 = -3.60981577;
+kq11 = -8.0826968;
+kq12 = 10.75712351;
+kq13 = -6.80385438;
+kq14 = -3.9388482;
+kq15 = 1.3942896;
+kq16 = -2.99780231;
+kq17 = 1.70678973;
+kq18 = -5.12720122;
+kq19 = 4.66668728;
+kq20 = -6.52810373;
+
+kqA1R:=kq01;
+kqA2R:=kq02;
+kqA3R:=kq03;
+kqA4R:=kq04;
+ kqB1R:=kq05;
+ kqB2R:=kq06;
+ kqB3R:=kq07;
+ kqB4R:=kq08;
+ kqB5R:=kq09;
+ kqB6R:=kq10;
+kqC1R:=kq11;
+kqC2R:=kq12;
+kqC3R:=kq13;
+ kqD1R:=kq14;
+ kqD2R:=kq15;
+ kqD3R:=kq16;
+ kqD4R:=kq17;
+kqE1R:=kq18;
+kqE2R:=kq19;
+
+ kqE3:=kq20;
+
+kqA1L:=kq01;
+kqA2L:=kq02;
+kqA3L:=kq03;
+kqA4L:=kq04;
+ kqB1L:=kq05;
+ kqB2L:=kq06;
+ kqB3L:=kq07;
+ kqB4L:=kq08;
+ kqB5L:=kq09;
+ kqB6L:=kq10;
+kqC1L:=kq11;
+kqC2L:=kq12;
+kqC3L:=kq13;
+ kqD1L:=kq14;
+ kqD2L:=kq15;
+ kqD3L:=kq16;
+ kqD4L:=kq17;
+kqE1L:=kq18;
+kqE2L:=kq19;
+
+
+! EL solenoid
+ksEL=0.5;
+
+! RF voltage
+Vrf = 0.001;
+
+! sextupoles,  4-5, 1-4 and 2-4 pairs works well for tunes chromaticity correction
+/*
+sk1 =                  0 ;
+sk2 =                  0 ;
+sk3 =                  0 ;
+sk4 =        125.6722419 ;
+sk5 =       -76.39532084 ;
+sk6 =   0;
+*/
+/**/
+sk1 = 2;
+sk2 = 0;
+sk3 = -120;
+sk4 = 0;
+sk5 = 0;
+sk6 = -2.5;
+
+/* symmetrical case*/
+sk1r := sk1;     !SC1R
+sk1l := sk1;
+sk2r := sk2;     !SC2R 
+sk2l := sk2;
+sk3r := sk3;     !SD1R
+sk3l := sk3;
+sk4r := sk4;     !SE1R
+sk4l := sk4;
+sk5r := sk5;     !SE2R
+sk5l := sk5;
+sk6r := sk6;     !SA1
+sk6l := sk6;
+
+/* good DA, symmetric*/
+sk1r =                  2 ;
+sk1l =                  2 ;
+sk2r =                  0 ;
+sk2l =                  0 ;
+sk3r =               -120 ;
+sk3l =               -120 ;
+sk4r =        182.2322011 ;
+sk4l =        182.2322011 ;
+sk5r =       -143.8344352 ;
+sk5l =       -143.8344352 ;
+sk6r =               -2.5 ;
+sk6l =               -2.5 ;
+
+
+

@@ -1,0 +1,155 @@
+! IOTA Lattice
+! Version: 8.3
+! Date:    09/23/2015
+! Author: A.Romanov, A.Valishev, G.Kafka
+! Comments: This file produces bare lattice without special integrable optics features
+! Changelog:
+! 06/18/2014: rearranged the logic of input files and structure (AV)
+! 06/18/2014: added chromaticity correction sextupoles (AV)
+! 06/19/2014: changed rf harmonic to 4 (30 MHz) (AV)
+! 09/16/2014: added macros for inclusion of octupoles or nonlinear elements (AV)
+!----
+! 04/07/2015: rearranged include file (AR) 
+! 04/07/2015: added McMillan version (AR)
+! 04/07/2015: Added combined correctors (AR)
+! 04/07/2015: Sextupoles wrapped with coil spacer gaps (AR)
+! 04/07/2015: Dipoles renamed D->M, to avoid mixing with quads (ABCDE) (AR)
+! 04/07/2015: Refit lattice for the correct main dipoles' aperture 5.8cm (AR)
+! 04/07/2015: Added block for detuning calculation (AR)
+! 04/07/2015: Rearranged order and naming of "kq" constants for quad gradients in lattice specific files (kq1->kq01 and now kq01 is for A1R and index rises clockwise)
+! 04/07/2015: Added script seq1234.bat for sequential execution of selected lattices (win)
+!----
+! 05/19/2015: AV(6.6+) and AR (7.2) versions merged, resulted in 7.3
+! 05/19/2015: IMPORTANT: OCS uses wrong gap for main dipoles (this alters vertical focusing)
+!----
+! 06/25/2015: Add section for output needed for Import tool of OptimX (AR)
+! 09/23/2015: OSC updated to the latest version. DA is about 6 sigmas basing on FMA results. (AR)
+!-- v8.3
+! 03/22/2016: Elements (mostly quads) shifted to avoid mechanical constraints (AR)
+! 03/22/2016: OSC is now with 2mm delay and 7 periods in ondulator
+
+OPTION, -ECHO;
+ASSIGN, ECHO="out/echo";
+system,'mkdir seq';
+system,'mkdir out';
+
+! Lattice option switch:
+! 0: OSC (2mm delay, 7 periods)
+! 1: One IO Magnet
+! 1.1: One IO Magnet in "p" mode with 3*PI X&Y phase advance between centers of sd1r and sd1l
+! 2: Two IO Magnets
+! 3: Electron Lens
+! 4: McMillan Lens
+loption=1;
+!call, file='latOpt.dat';      !*****this is for script that evaluates all options one by one
+
+
+! switch sextupoles on (1) or off (0)
+sext=1;
+
+if ( loption == 0 ){TITLE,"IOTA V8.3 OSC";};
+if ( loption == 1 ){TITLE,"IOTA V8.3 IO 1-magnet";};
+if ( loption == 1.1 ){TITLE,"IOTA V8.3 IO 1-magnet + PI";};
+if ( loption == 2 ){TITLE,"IOTA V8.3 IO 2-magnets";};
+if ( loption == 3 ){TITLE,"IOTA V8.3 Electron Lens";};
+if ( loption == 4 ){TITLE,"IOTA V8.3 McMillan Lens";};
+
+!***************** Read parameters for OSC ****************************
+if ( loption == 0 ){ call,file='include/fields_OSC.dat'; };
+
+!**************** Read parameters for 1 IO Magnet *********************
+if ( loption == 1 ){ call,file='include/fields_1NL.dat'; };
+if ( loption == 1.1 ){ call,file='include/fields_1NL_PI.dat'; };
+
+!**************** Read parameters for 2 IO Magents ********************
+if ( loption == 2 ){ call,file='include/fields_2NL.dat'; };
+
+!**************** Read parameters for Electron Lens *******************
+if ( loption == 3 ){ call,file='include/fields_EL.dat'; };
+
+!**************** Read parameters for McMillan Lens *******************
+if ( loption == 4 ){ call,file='include/fields_MM.dat'; };
+
+
+call,file='include/elements.madx';
+call,file='include/lines.madx';
+
+if ( loption == 0 ) {
+call,file="include/OSC.madx"; 
+rfc->lag=0;
+beam, particle=electron,energy=0.1005110034,npart=1.0E9, sige=0.00065;
+use,period=iota;
+};
+
+if ( loption >= 1 ){
+    beam, particle=electron,energy=0.150511006,npart=1.0E9;
+    use,period=iota;
+};
+
+twiss;
+setplot, post=2;
+
+if( loption == 0 )
+{
+  plot,table=twiss,haxis=s,vaxis1=betx,bety,vaxis2=dx,hmin=0,hmax=40,vmin=0,-4,vmax=20,4,
+  colour=100,interpolate=true,file="out/plot_OSC",noversion;
+  save,sequence=iota,beam,file="seq/lattice_OSC.seq";
+  use,period=iota;
+  beam,radiate;
+  twiss;
+  emit, DELTAP=0;
+};
+
+if( loption == 1 )
+{
+  plot,table=twiss,haxis=s,vaxis1=betx,bety,vaxis2=dx,hmin=0,hmax=20,vmin=0,-3,vmax=10,3,
+  colour=100,interpolate=true,file="out/plot_1IO",noversion;
+  save,sequence=iota,beam,file="seq/lattice_1IO.seq";
+  use,period=iota;beam,radiate;twiss;emit;
+};
+
+if( loption == 1.1 )
+{
+  plot,table=twiss,haxis=s,vaxis1=betx,bety,vaxis2=dx,hmin=0,hmax=20,vmin=0,-3,vmax=10,3,
+  colour=100,interpolate=true,file="out/plot_1IO_PI",noversion;
+  save,sequence=iota,beam,file="seq/lattice_1IO_PI.seq";
+  use,period=iota;beam,radiate;twiss;emit;
+};
+
+if( loption == 2 )
+{
+  plot,table=twiss,haxis=s,vaxis1=betx,bety,vaxis2=dx,hmin=0,hmax=40,vmin=0,-3,vmax=10,3,
+  colour=100,interpolate=true,file="out/plot_2IO",noversion;
+  save,sequence=iota,beam,file="seq/lattice_2IO.seq";
+  use,period=iota;beam,radiate;twiss;emit;
+};
+
+if( loption == 3)
+{
+  plot,table=twiss,haxis=s,vaxis1=betx,bety,vaxis2=dx,hmin=0,hmax=40,vmin=0,-0.5,vmax=10,2,
+  colour=100,interpolate=true,file="out/plot_EL",noversion;
+  save,sequence=iota,beam,file="seq/lattice_EL.seq";
+  use,period=iota;beam,radiate;twiss;emit;
+};
+
+if( loption == 4)
+{
+  plot,table=twiss,haxis=s,vaxis1=betx,bety,vaxis2=dx,hmin=0,hmax=40,vmin=0,-0.5,vmax=12,2,
+  colour=100,interpolate=true,file="out/plot_MM",noversion;
+  save,sequence=iota,beam,file="seq/lattice_MM.seq";
+  use,period=iota;beam,radiate;twiss;emit;
+};
+
+
+USE, PERIOD=iota;
+BEAM, RADIATE, PARTICLE= ELECTRON, ENERGY=0.150;
+TWISS;
+EMIT;
+
+
+SELECT, FLAG = TWISS, CLEAR;
+TWISS, CHROM, FILE = 'twiss_elements.dat', RANGE = '#S/#E';
+SELECT, FLAG = TWISS, PATTERN = "IBPM", COLUMN= name,s,betx,bety,x,y,px,py;
+TWISS, CHROM, FILE = 'twiss.dat', RANGE = '#S/#E';
+
+STOP;
