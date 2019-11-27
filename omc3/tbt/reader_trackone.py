@@ -40,6 +40,8 @@ def get_trackone_stats(infile):
                 nturns = int(parts[2])
                 nparticles = int(parts[3])
                 first_seg = False
+            if parts[0] == '-1':
+                nparticles = 1
             stats_string = stats_string + l
     with open('stats.txt', "w") as stats_file:
         stats_file.write(stats_string)
@@ -69,12 +71,8 @@ def get_structure_from_trackone(nturns=0, npart=0, infile='trackone'):
             parts = l.split()
             if parts[0] == '#segment':
                 bpm_name = parts[-1].upper()
-                if ('BPM' in bpm_name) and (bpm_name not in bpms.keys()):
+                if (np.all([k not in bpm_name.lower() for k in ['start', 'end']])) and (bpm_name not in bpms.keys()):
                     bpms[bpm_name] = np.empty([npart, nturns, 8], dtype=float)
-            elif 'BPM' in bpm_name:
-                bpms[bpm_name][int(parts[0]) - 1, int(parts[1]) - 1, :] = np.array(parts[2:])
+            elif (np.all([k not in bpm_name.lower() for k in ['start', 'end']])):
+                bpms[bpm_name][np.abs(int(float(parts[0]))) - 1, int(float(parts[1])) - 1, :] = np.array(parts[2:])
     return np.array(list(bpms.keys())), np.transpose(np.array(list(bpms.values())), axes=[3, 0, 1, 2])
-
-
-
-

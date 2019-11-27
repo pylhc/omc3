@@ -76,6 +76,47 @@ def test_tbt_read_hdf5_v2(_hdf5_file_v2):
     _compare_tbt(origin, new, False)
 
 
+def test_compare_average_Tbtdata():
+    npart = 10
+    data = {plane: np.concatenate(
+                                  [[_create_data(np.linspace(1, 10, 10, endpoint=False, dtype=int), 2, (lambda x: np.random.randn(len(x))))]
+                                   for _ in range(npart)
+                                   ],
+                                  axis=0)
+            for plane in PLANES}
+
+    origin = handler.TbtData(
+        matrices=[
+                  {'X': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=data['X'][i],
+                    dtype=float),
+                   'Y': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=data['Y'][i],
+                    dtype=float)}
+                  for i in range(npart)],
+        date=datetime.now(),
+        bunch_ids=range(npart),
+        nturns=10)
+
+    new = handler.TbtData(
+        matrices=[
+                  {'X': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=np.mean(data['X'], axis=0),
+                    dtype=float),
+                   'Y': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=np.mean(data['Y'], axis=0),
+                    dtype=float)}],
+        date=datetime.now(),
+        bunch_ids=[1],
+        nturns=10)
+
+    _compare_tbt(handler.generate_average_tbtdata(origin), new, False)
+
+
 def test_tbt_read_ptc(_ptc_file):
     new = reader_ptc.read_tbt(_ptc_file)
     origin = _original_trackone()
@@ -84,6 +125,18 @@ def test_tbt_read_ptc(_ptc_file):
 
 def test_tbt_read_trackone(_ptc_file):
     new = reader_trackone.read_tbt(_ptc_file)
+    origin = _original_trackone(True)
+    _compare_tbt(origin, new, True)
+
+
+def test_tbt_read_ptc_sci(_ptc_file_sci):
+    new = reader_ptc.read_tbt(_ptc_file_sci)
+    origin = _original_trackone()
+    _compare_tbt(origin, new, True)
+
+
+def test_tbt_read_trackone_sci(_ptc_file_sci):
+    new = reader_trackone.read_tbt(_ptc_file_sci)
     origin = _original_trackone(True)
     _compare_tbt(origin, new, True)
 
@@ -186,7 +239,7 @@ def _hdf5_file_v2():
 def _test_file():
     with tempfile.TemporaryDirectory() as cwd:
         yield os.path.join(cwd, "test_file")
-        
+
 
 @pytest.fixture()
 def _ptc_file():
@@ -196,3 +249,8 @@ def _ptc_file():
 @pytest.fixture()
 def _ptc_file_losses():
     return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_losses")
+
+
+@pytest.fixture()
+def _ptc_file_sci():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_sci")

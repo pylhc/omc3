@@ -36,6 +36,8 @@ def converter_params():
                          help="Number of copies with added noise")
     params.add_parameter(name="noise_levels", nargs='+', type=float, default=[None],
                          help="Sigma of added Gaussian noise")
+    params.add_parameter(name="use_average", action="store_true",
+                         help="If set, returned sdds only contains the average over all particle/bunches.")
     return params
 
 
@@ -66,7 +68,10 @@ def converter_entrypoint(opt):
 
         Flags: **--noise_levels**
         Default: None
+      - **use_average** *(bool)*: If set, returned sdds only contains the average over all particle/bunches.
 
+        Flags: **--use_average**
+        Default: False
     """
     if opt.realizations < 1:
         raise ValueError("Number of realizations lower than 1.")
@@ -79,6 +84,8 @@ def converter_entrypoint(opt):
 def _read_and_write_files(opt):
     for input_file in opt.files:
         tbt_data = tbt.read_tbt(input_file, datatype=opt.tbt_datatype)
+        if opt.use_average:
+            tbt_data = tbt.handler.generate_average_tbtdata(tbt_data)
         for i in range(opt.realizations):
             suffix = f"_r{i}" if opt.realizations > 1 else ""
             for n in opt.noise_levels:
