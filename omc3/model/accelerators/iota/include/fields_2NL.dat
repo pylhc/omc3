@@ -1,0 +1,111 @@
+! Values of quadrupole magnet gradients for 2 Nonlinear Magnets option
+dipAp = 0.029; ! main dipole half gap (iron)
+
+kq01 = -8.61186954;
+kq02 = 12.74826865;
+kq03 = -13.01270563;
+kq04 = 20.20104533;
+kq05 = -10.22856825;
+kq06 = 15.71643235;
+kq07 = -7.98258681;
+kq08 = -7.36905955;
+kq09 = 13.44489557;
+kq10 = -12.22961284;
+kq11 = -13.01292474;
+kq12 = 11.96039544;
+kq13 = -13.11851229;
+kq14 = -6.26346757;
+kq15 = 4.75215724;
+kq16 = -5.22093732;
+kq17 = 4.555662;
+kq18 = -4.6094019;
+kq19 = 5.32437369;
+kq20 = -6.1198159;
+
+kqA1R:=kq01;
+kqA2R:=kq02;
+kqA3R:=kq03;
+kqA4R:=kq04;
+ kqB1R:=kq05;
+ kqB2R:=kq06;
+ kqB3R:=kq07;
+ kqB4R:=kq08;
+ kqB5R:=kq09;
+ kqB6R:=kq10;
+kqC1R:=kq11;
+kqC2R:=kq12;
+kqC3R:=kq13;
+ kqD1R:=kq14;
+ kqD2R:=kq15;
+ kqD3R:=kq16;
+ kqD4R:=kq17;
+kqE1R:=kq18;
+kqE2R:=kq19;
+
+ kqE3:=kq20;
+
+kqA1L:=kq01;
+kqA2L:=kq02;
+kqA3L:=kq03;
+kqA4L:=kq04;
+ kqB1L:=kq05;
+ kqB2L:=kq06;
+ kqB3L:=kq07;
+ kqB4L:=kq08;
+ kqB5L:=kq09;
+ kqB6L:=kq10;
+kqC1L:=kq11;
+kqC2L:=kq12;
+kqC3L:=kq13;
+ kqD1L:=kq14;
+ kqD2L:=kq15;
+ kqD3L:=kq16;
+ kqD4L:=kq17;
+kqE1L:=kq18;
+kqE2L:=kq19;
+
+
+! EL solenoid
+ksEL=0;
+
+! RF voltage
+Vrf = 0.001;
+
+! sextupoles
+/**/
+sk1 = 0;
+sk2 = 0;
+sk3 = 0;
+sk4 = 0;
+sk5 = 0;
+sk6 = 0;
+
+
+
+/* symmetrical case*/
+sk1r := sk1;     !SC1R
+sk1l := sk1;
+sk2r := sk2;     !SC2R 
+sk2l := sk2;
+sk3r := sk3;     !SD1R
+sk3l := sk3;
+sk4r := sk4;     !SE1R
+sk4l := sk4;
+sk5r := sk5;     !SE2R
+sk5l := sk5;
+sk6r := sk6;     !SA1
+sk6l := sk6;
+
+/* good DA, symmetric*/
+sk1r =       -363.2283843 ;
+sk1l =       -363.2283843 ;
+sk2r =        612.0033253 ;
+sk2l =        612.0033253 ;
+sk3r =                 48 ;
+sk3l =                 48 ;
+sk4r =                -25 ;
+sk4l =                -25 ;
+sk5r =                 26 ;
+sk5l =                 26 ;
+sk6r =                -96 ;
+sk6l =                -96 ;
