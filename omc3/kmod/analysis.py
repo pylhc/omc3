@@ -255,23 +255,21 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     b = x[0]
     w = x[1]
 
-    # Selecting Left and Right IP BPMs according to IP
-    if (kmod_input_params.ip == 'IP1' or kmod_input_params.ip == 'IP5'):
-        BPML = 'BPMSW.1L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-        BPMR = 'BPMSW.1R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-    if (kmod_input_params.ip == 'IP2' or kmod_input_params.ip == 'IP8'):
-        BPML = 'BPMSW.1L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-        BPMR = 'BPMSW.1R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-    if (kmod_input_params.ip == 'IP4'):
-        BPML = 'BPMWA.A5L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-        BPMR = 'BPMWA.A5R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-    if (kmod_input_params.ip == 'IP3' or kmod_input_params.ip == 'IP7'):
-        BPML = 'BPMW.4L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-        BPMR = 'BPMW.4R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-    if (kmod_input_params.ip == 'IP6'):
-        BPML = 'BPMSE.4L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-        BPMR = 'BPMSA.4R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-    
+    BPM_dict = {
+        "IP1" : ["BPMSW.1L1", "BPMSW.1R1"], 
+        "IP2" : ["BPMSW.1L2", "BPMSW.1R2"], 
+        "IP3" : ["BPMW.4L3", "BPMW.4R3"], 
+        "IP4" : ["BPMWA.A5L4", "BPMWA.A5R4"], 
+        "IP5" : ["BPMSW.1L5", "BPMSW.1R5"],
+        "IP6" : ["BPMSE.4L6", "BPMSA.4R6"], 
+        "IP7" : ["BPMW.4L7", "BPMW.4R7"], 
+        "IP8" : ["BPMSW.1L8", "BPMSW.1R8"], 
+    }
+
+    # Selecting BPMs
+    BPML = BPM_dict[kmod_input_params.ip][0] + '.' + kmod_input_params.beam
+    BPMR = BPM_dict[kmod_input_params.ip][1] + '.' + kmod_input_params.beam
+
     # Position s of BPML
     twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
     pos_1L = twiss_df.loc[BPML,'S']
