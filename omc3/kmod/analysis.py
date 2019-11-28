@@ -255,13 +255,22 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     b = x[0]
     w = x[1]
 
-     # Replace LSTAR by BPM distance
-    #delta_s = def_magnet_df.headers['LSTAR']
-    #phase_adv = phase_adv_from_kmod(delta_s,b,0.0,w,0.0)[0]
-
-    # Last BPMs left and right
-    BPML = 'BPMSW.1L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
-    BPMR = 'BPMSW.1R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+    # Selecting Left and Right IP BPMs according to IP
+    if (kmod_input_params.ip == 'IP1' or kmod_input_params.ip == 'IP5'):
+        BPML = 'BPMSW.1L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+        BPMR = 'BPMSW.1R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+    if (kmod_input_params.ip == 'IP2' or kmod_input_params.ip == 'IP8'):
+        BPML = 'BPMSW.1L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+        BPMR = 'BPMSW.1R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+    if (kmod_input_params.ip == 'IP4'):
+        BPML = 'BPMWA.A5L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+        BPMR = 'BPMWA.A5R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+    if (kmod_input_params.ip == 'IP3' or kmod_input_params.ip == 'IP7'):
+        BPML = 'BPMW.4L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+        BPMR = 'BPMW.4R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+    if (kmod_input_params.ip == 'IP6'):
+        BPML = 'BPMSE.4L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+        BPMR = 'BPMSA.4R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
     
     # Position s of BPML
     twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
@@ -286,6 +295,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     scale = kmod_input_params.phase_scale
 
     if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out')):
+    #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
         # get measured phase from getphase[x/y].out
         phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out'), index='NAME')
         phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
@@ -295,7 +305,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
 
     elif (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat')) and weight!=0):
         # get phase from twiss model
-        twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
+        #twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
         phase_1L = twiss_df.loc[BPML,'MU'+plane]
         phase_1R = twiss_df.loc[BPMR,'MU'+plane]
         phase_adv_model = abs(phase_1R - phase_1L)
