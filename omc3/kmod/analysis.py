@@ -120,7 +120,6 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
                  f"{ERR}{BETA}{'Y'}",
                  ],
         data=beta_instr)
-
     return instrument_beta_df
 
 
@@ -256,57 +255,79 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     b = x[0]
     w = x[1]
 
-    # phase from kmod using beta and waist guess
-    phase_adv = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],b,0.0,w,0.0)[0]
+     # Replace LSTAR by BPM distance
+    #delta_s = def_magnet_df.headers['LSTAR']
+    #phase_adv = phase_adv_from_kmod(delta_s,b,0.0,w,0.0)[0]
 
     # Last BPMs left and right
     BPML = 'BPMSW.1L' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
     BPMR = 'BPMSW.1R' + kmod_input_params.ip[-1] + '.' + kmod_input_params.beam
+    
+    # Position s of BPML
+    twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
+    pos_1L = twiss_df.loc[BPML,'S']
+    pos_1R = twiss_df.loc[BPMR,'S']
+    BPM_distance = np.abs(pos_1R - pos_1L)/2.0
+
+    # phase from kmod using beta and waist guess
+
+    # Using LSTAR from headers
+    # phase_adv = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],b,0.0,w,0.0)[0]
+
+    # Using real distance between BPMs
+    phase_adv = phase_adv_from_kmod(BPM_distance,b,0.0,w,0.0)[0]
+
+    # Make it more general for any BPM
+
+    phase_adv_model = 0.0
+    phase_adv_err = 0.0
+
+    weight = kmod_input_params.phase_weight
+    scale = kmod_input_params.phase_scale
 
     if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out')):
         # get measured phase from getphase[x/y].out
         phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out'), index='NAME')
         phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
-        
-    elif os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat')):
+        phase_adv_err = phase_df.lco[BPML,'STDPH'+plane]
+        # getphase is python2, python3 is phase_x/y
+
+
+    elif (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat')) and weight!=0):
         # get phase from twiss model
         twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
         phase_1L = twiss_df.loc[BPML,'MU'+plane]
         phase_1R = twiss_df.loc[BPMR,'MU'+plane]
         phase_adv_model = abs(phase_1R - phase_1L)
+        phase_adv_err = 0.5e-3 # this number is given by Andrea's estimations 
 
-    else:
-        # get phase from kmod formula using guessed values
-        betawaist_model = kmod_input_params.betastar_and_waist[plane][0]
-        waist_model = kmod_input_params.betastar_and_waist[plane][1]
-        phase_adv_model = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],betawaist_model,0.0,waist_model,0.0)[0]
-
-    weight = kmod_input_params.phase_weight
-    scale = kmod_input_params.phase_scale
+    #weight = kmod_input_params.phase_weight
+    #scale = kmod_input_params.phase_scale
 
     c2 = (1-weight)*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
-           sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
-           sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[K],
-           foc_magnet_df.headers['LSTAR'] +
-           sign[2] * kmod_input_params.misalignment) -
-           foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-           sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2 +
-          (average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
-           sign[4] * kmod_input_params.errorL, def_magnet_df.headers[K] +
-           sign[5] * kmod_input_params.errorK * def_magnet_df.headers[K],
-           def_magnet_df.headers['LSTAR'] +
-           sign[6] * kmod_input_params.misalignment) -
-           def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-           sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - phase_adv_model)**2)
+        sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
+        sign[1] * kmod_input_params.errorK * foc_magnet_df.headers[K],
+        foc_magnet_df.headers['LSTAR'] +
+        sign[2] * kmod_input_params.misalignment) -
+        foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
+        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2 +
+        (average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
+        sign[4] * kmod_input_params.errorL, def_magnet_df.headers[K] +
+        sign[5] * kmod_input_params.errorK * def_magnet_df.headers[K],
+        def_magnet_df.headers['LSTAR'] +
+        sign[6] * kmod_input_params.misalignment) -
+        def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
+        sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - (phase_adv_model+sign[8]*phase_adv_err))**2)
 
     return c2
 
 
 def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
-    n = 8
+    n = 9
     sign = return_sign_for_err(n)
     foc_magnet_df, def_magnet_df = return_df(magnet1_df, magnet2_df, plane)
     results = np.zeros((2*n+1, 2))
+    
     for i, s in enumerate(sign):
         def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s)
         fitresults = scipy.optimize.minimize(fun=fun,
