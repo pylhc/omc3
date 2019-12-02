@@ -249,7 +249,7 @@ def return_df(magnet1_df, magnet2_df, plane):
     elif check_polarity(magnet1_df, magnet2_df, -sign[plane]):
         return magnet2_df, magnet1_df
 
-def get_BPM_distance(kmod_input_params):
+def get_BPM(kmod_input_params):
 
     # listing the BPMs of the last quadrupole BPMs
     BPM_dict = {
@@ -267,30 +267,32 @@ def get_BPM_distance(kmod_input_params):
     BPML = BPM_dict[kmod_input_params.ip][0] + '.' + kmod_input_params.beam
     BPMR = BPM_dict[kmod_input_params.ip][1] + '.' + kmod_input_params.beam
 
+    return BPML, BPMR
+
+def get_BPM_distance(kmod_input_params,BPML,BPMR):
+
     model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
 
     # Position s of BPML
     if (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'))): # distance between actual BPMs if model is provided (more precise)
         twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'), index='NAME')
- 
         pos_1L = twiss_df.loc[BPML,'S']
         pos_1R = twiss_df.loc[BPMR,'S']
         BPM_distance = np.abs(pos_1R - pos_1L)/2.0
     else:
         BPM_distance = 22.965 # Distance between last quadrupole and IP (LSTAR) (less precise)
 
-    return BPM_distance, BPML, BPMR
+    return BPM_distance
 
 def get_phase_from_model(kmod_input_params,plane):        # get phase from twiss model
     model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
     twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'), index='NAME')
-    # Selecting BPMs
-    BPML, BPMR = get_BPM_distance(kmod_input_params)[1], get_BPM_distance(kmod_input_params)[2]
+    BPML, BPMR = get_BPM(kmod_input_params)[0], get_BPM(kmod_input_params)[1]
     phase_1L = twiss_df.loc[BPML,'MU'+plane]
     phase_1R = twiss_df.loc[BPMR,'MU'+plane]
     phase_adv_model = abs(phase_1R - phase_1L)
-
     phase_adv_err = 0.5e-3 # this number is given by Andrea's estimations 
+
     return phase_adv_model, phase_adv_err
 
 def get_phase_from_measurement(kmod_input_params,plane):
@@ -298,7 +300,7 @@ def get_phase_from_measurement(kmod_input_params,plane):
     phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out'), index='NAME')
     ## get measured phase from phase_{x/y}.out
     # phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out'), index='NAME')
-    BPML,BPMR = get_BPM_distance(kmod_input_params)[1], get_BPM_distance(kmod_input_params)[2]
+    BPML,BPMR = get_BPM(kmod_input_params)[0], get_BPM(kmod_input_params)[1]
     phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
     phase_adv_err = phase_df.loc[BPML,'STDPH'+plane]
     # getphase is python2, python3 is phase_x/y
@@ -321,23 +323,33 @@ def phase_constraint(kmod_input_params,plane):
     if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out')):
         #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
         phase_adv_model, phase_adv_err = get_phase_from_measurement(kmod_input_params,plane)
-
+        LOG.info('Phase from measurement')
     # model is taken (if exists) in case no measurement data is provided
     elif (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}')) and weight!=0):
         phase_adv_model, phase_adv_err = get_phase_from_model(kmod_input_params,plane)
+        LOG.info('Phase from model')
 
     else:
+        LOG.info('Phase is not used as a constraint')
         weight = 0
+        scale = 0
+        phase_adv_model = 0.0
+        phase_adv_err = 0.0
 
-    return phase_adv_model, phase_adv_err, weight, scale
+    phase_adv_constraint = [phase_adv_model, phase_adv_err, weight, scale]
+
+    return phase_adv_constraint
     
 
-def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_distance, phase_adv_model, phase_adv_err, weight, scale):
+def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_distance, phase_adv_constraint):
 
     b = x[0]
     w = x[1]
 
     phase_adv = phase_adv_from_kmod(BPM_distance,b,0.0,w,0.0)[0]
+
+    weight = phase_adv_constraint[2]
+    scale = phase_adv_constraint[3]
 
     c2 = (1-weight)*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
         sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
@@ -352,7 +364,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
         def_magnet_df.headers['LSTAR'] +
         sign[6] * kmod_input_params.misalignment) -
         def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - (phase_adv_model+sign[8]*phase_adv_err))**2)
+         sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - (phase_adv_constraint[0]+sign[8]*phase_adv_constraint[1]))**2)
 
     return c2
 
@@ -364,11 +376,12 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
     results = np.zeros((2*n+1, 2))
     # phase advance constraint
 
-    phase_adv_model, phase_adv_err, weight, scale = phase_constraint(kmod_input_params,plane)
-    BPM_distance = get_BPM_distance(kmod_input_params)[0]
+    phase_adv_constraint = phase_constraint(kmod_input_params,plane)
+    BPML,BPMR = get_BPM(kmod_input_params)
+    BPM_distance = get_BPM_distance(kmod_input_params,BPML,BPMR)
     
     for i, s in enumerate(sign):
-        def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s, BPM_distance, phase_adv_model, phase_adv_err, weight, scale)
+        def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s, BPM_distance, phase_adv_constraint)
         fitresults = scipy.optimize.minimize(fun=fun,
                                              x0=kmod_input_params.betastar_and_waist[plane],
                                              method='nelder-mead',
