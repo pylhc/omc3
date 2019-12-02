@@ -249,16 +249,9 @@ def return_df(magnet1_df, magnet2_df, plane):
     elif check_polarity(magnet1_df, magnet2_df, -sign[plane]):
         return magnet2_df, magnet1_df
 
+def get_BPM_distance(kmod_input_params):
 
-def phase_constraint(x,plane,kmod_input_params):
-
-    b = x[0]
-    w = x[1]
-
-    weight = kmod_input_params.phase_weight
-    scale = kmod_input_params.phase_scale
-
-    # calculates phase advance for chi2 weighting
+    # listing the BPMs of the last quadrupole BPMs
     BPM_dict = {
         "IP1" : ["BPMSW.1L1", "BPMSW.1R1"], 
         "IP2" : ["BPMSW.1L2", "BPMSW.1R2"], 
@@ -274,54 +267,77 @@ def phase_constraint(x,plane,kmod_input_params):
     BPML = BPM_dict[kmod_input_params.ip][0] + '.' + kmod_input_params.beam
     BPMR = BPM_dict[kmod_input_params.ip][1] + '.' + kmod_input_params.beam
 
+    model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
+
     # Position s of BPML
-    twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
-    pos_1L = twiss_df.loc[BPML,'S']
-    pos_1R = twiss_df.loc[BPMR,'S']
-    BPM_distance = np.abs(pos_1R - pos_1L)/2.0
+    if (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'))): # distance between actual BPMs if model is provided (more precise)
+        twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'), index='NAME')
+ 
+        pos_1L = twiss_df.loc[BPML,'S']
+        pos_1R = twiss_df.loc[BPMR,'S']
+        BPM_distance = np.abs(pos_1R - pos_1L)/2.0
+    else:
+        BPM_distance = 22.965 # Distance between last quadrupole and IP (LSTAR) (less precise)
 
-    # phase from kmod using beta and waist guess
+    return BPM_distance, BPML, BPMR
 
-    # Using LSTAR from headers
-    # phase_adv = phase_adv_from_kmod(def_magnet_df.headers['LSTAR'],b,0.0,w,0.0)[0]
+def get_phase_from_model(kmod_input_params,plane):        # get phase from twiss model
+    model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
+    twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'), index='NAME')
+    # Selecting BPMs
+    BPML, BPMR = get_BPM_distance(kmod_input_params)[1], get_BPM_distance(kmod_input_params)[2]
+    phase_1L = twiss_df.loc[BPML,'MU'+plane]
+    phase_1R = twiss_df.loc[BPMR,'MU'+plane]
+    phase_adv_model = abs(phase_1R - phase_1L)
 
-    # Using real distance between BPMs
-    phase_adv = phase_adv_from_kmod(BPM_distance,b,0.0,w,0.0)[0]
+    phase_adv_err = 0.5e-3 # this number is given by Andrea's estimations 
+    return phase_adv_model, phase_adv_err
 
-    # Make it more general for any BPM
+def get_phase_from_measurement(kmod_input_params,plane):
+    # get measured phase from getphase[x/y].out
+    phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out'), index='NAME')
+    ## get measured phase from phase_{x/y}.out
+    # phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out'), index='NAME')
+    BPML,BPMR = get_BPM_distance(kmod_input_params)[1], get_BPM_distance(kmod_input_params)[2]
+    phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
+    phase_adv_err = phase_df.loc[BPML,'STDPH'+plane]
+    # getphase is python2, python3 is phase_x/y
+    return phase_adv_model, phase_adv_err
 
+def phase_constraint(kmod_input_params,plane):
+
+    # weight given to phase
+    weight = kmod_input_params.phase_weight
+    scale = kmod_input_params.phase_scale
+
+    model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
+
+    # Reset phase advance
     phase_adv_model = 0.0
     phase_adv_err = 0.0
 
+    # if measured data exists
+
     if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out')):
-    #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
-        # get measured phase from getphase[x/y].out
-        phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out'), index='NAME')
-        phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
-        phase_adv_err = phase_df.lco[BPML,'STDPH'+plane]
-        # getphase is python2, python3 is phase_x/y
+        #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
+        phase_adv_model, phase_adv_err = get_phase_from_measurement(kmod_input_params,plane)
 
+    # model is taken (if exists) in case no measurement data is provided
+    elif (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}')) and weight!=0):
+        phase_adv_model, phase_adv_err = get_phase_from_model(kmod_input_params,plane)
 
-    elif (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat')) and weight!=0):
-        # get phase from twiss model
-        #twiss_df = tfs.read(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'twiss.dat'), index='NAME')
-        phase_1L = twiss_df.loc[BPML,'MU'+plane]
-        phase_1R = twiss_df.loc[BPMR,'MU'+plane]
-        phase_adv_model = abs(phase_1R - phase_1L)
-        phase_adv_err = 0.5e-3 # this number is given by Andrea's estimations 
+    else:
+        weight = 0
 
-    #weight = kmod_input_params.phase_weight
-    #scale = kmod_input_params.phase_scale
-    return phase_adv, phase_adv_model, phase_adv_err
+    return phase_adv_model, phase_adv_err, weight, scale
     
 
-def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
+def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_distance, phase_adv_model, phase_adv_err, weight, scale):
 
     b = x[0]
     w = x[1]
 
-    weight = kmod_input_params.phase_weight
-    scale = kmod_input_params.phase_scale
+    phase_adv = phase_adv_from_kmod(BPM_distance,b,0.0,w,0.0)[0]
 
     c2 = (1-weight)*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
         sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
@@ -336,8 +352,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
         def_magnet_df.headers['LSTAR'] +
         sign[6] * kmod_input_params.misalignment) -
         def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_constraint(x,plane,kmod_input_params)[0] - (phase_constraint(x,plane,kmod_input_params)[1]+sign[8]*phase_constraint(x,plane,kmod_input_params)[2]))**2)
-
+        sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - (phase_adv_model+sign[8]*phase_adv_err))**2)
 
     return c2
 
@@ -347,9 +362,13 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
     sign = return_sign_for_err(n)
     foc_magnet_df, def_magnet_df = return_df(magnet1_df, magnet2_df, plane)
     results = np.zeros((2*n+1, 2))
+    # phase advance constraint
+
+    phase_adv_model, phase_adv_err, weight, scale = phase_constraint(kmod_input_params,plane)
+    BPM_distance = get_BPM_distance(kmod_input_params)[0]
     
     for i, s in enumerate(sign):
-        def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s)
+        def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s, BPM_distance, phase_adv_model, phase_adv_err, weight, scale)
         fitresults = scipy.optimize.minimize(fun=fun,
                                              x0=kmod_input_params.betastar_and_waist[plane],
                                              method='nelder-mead',
