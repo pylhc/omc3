@@ -38,7 +38,7 @@ def propagate_beta_in_drift(beta_waist, drift):
 
 
 def calc_betastar(kmod_input_params, results_df, l_star):
-    sign = return_sign_for_err(2)
+    sign = return_sign_for_err(2)      
     for plane in PLANES:
         betastar = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].values + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values),
                                            (results_df.loc[:, f"{WAIST}{plane}"].values + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
@@ -250,11 +250,15 @@ def return_df(magnet1_df, magnet2_df, plane):
         return magnet2_df, magnet1_df
 
 
-def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
+def phase_constraint(x,plane,kmod_input_params):
 
     b = x[0]
     w = x[1]
 
+    weight = kmod_input_params.phase_weight
+    scale = kmod_input_params.phase_scale
+
+    # calculates phase advance for chi2 weighting
     BPM_dict = {
         "IP1" : ["BPMSW.1L1", "BPMSW.1R1"], 
         "IP2" : ["BPMSW.1L2", "BPMSW.1R2"], 
@@ -289,9 +293,6 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
     phase_adv_model = 0.0
     phase_adv_err = 0.0
 
-    weight = kmod_input_params.phase_weight
-    scale = kmod_input_params.phase_scale
-
     if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out')):
     #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
         # get measured phase from getphase[x/y].out
@@ -311,6 +312,16 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
 
     #weight = kmod_input_params.phase_weight
     #scale = kmod_input_params.phase_scale
+    return phase_adv, phase_adv_model, phase_adv_err
+    
+
+def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
+
+    b = x[0]
+    w = x[1]
+
+    weight = kmod_input_params.phase_weight
+    scale = kmod_input_params.phase_scale
 
     c2 = (1-weight)*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
         sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
@@ -325,7 +336,8 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign):
         def_magnet_df.headers['LSTAR'] +
         sign[6] * kmod_input_params.misalignment) -
         def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - (phase_adv_model+sign[8]*phase_adv_err))**2)
+        sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_constraint(x,plane,kmod_input_params)[0] - (phase_constraint(x,plane,kmod_input_params)[1]+sign[8]*phase_constraint(x,plane,kmod_input_params)[2]))**2)
+
 
     return c2
 
