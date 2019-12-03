@@ -74,7 +74,7 @@ def write_tbt(output_path, tbt_data, noise=None):
         sdds.classes.Array(POSITIONS['Y'], "float")
     ]
     values = [
-        tbt_data.date.timestamp()*1000,
+        tbt_data.date.timestamp()*1e9,
         tbt_data.nbunches,
         tbt_data.nturns,
         tbt_data.bunch_ids,
