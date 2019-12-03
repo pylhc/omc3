@@ -7,7 +7,6 @@ from tbt import reader_esrf, reader_iota, reader_lhc, reader_ptc, reader_trackon
 LOGGER = logging_tools.getLogger(__name__)
 
 PLANES = ('X', 'Y')
-POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
@@ -61,17 +60,18 @@ def read_tbt(file_path, datatype="lhc"):
 
 def write_tbt(output_path, tbt_data, noise=None):
     LOGGER.info('TbTdata is written in binary SDDS (LHC) format')
+    defs = reader_lhc
     data = _matrices_to_array(tbt_data)
     if noise is not None:
         data = _add_noise(data, noise)
     definitions = [
-        sdds.classes.Parameter("acqStamp", "long"),
-        sdds.classes.Parameter("nbOfCapBunches", "long"),
-        sdds.classes.Parameter("nbOfCapTurns", "long"),
-        sdds.classes.Array("BunchId", "long"),
-        sdds.classes.Array("bpmNames", "string"),
-        sdds.classes.Array(POSITIONS['X'], "float"),
-        sdds.classes.Array(POSITIONS['Y'], "float")
+        sdds.classes.Parameter(defs.ACQ_STAMP, "llong"),
+        sdds.classes.Parameter(defs.N_BUNCHES, "long"),
+        sdds.classes.Parameter(defs.N_TURNS, "long"),
+        sdds.classes.Array(defs.BUNCH_ID, "long"),
+        sdds.classes.Array(defs.BPM_NAMES, "string"),
+        sdds.classes.Array(defs.POSITIONS['X'], "float"),
+        sdds.classes.Array(defs.POSITIONS['Y'], "float")
     ]
     values = [
         tbt_data.date.timestamp()*1e9,
