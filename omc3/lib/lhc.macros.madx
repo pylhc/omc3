@@ -489,12 +489,12 @@ full_lhc_twiss_ac(m_p, b_num, qx, qy, q_nx, q_ny, q_dx, q_dy, dpp, m_f, e_f, a_f
 * @param error_num: The number of the error table to load, has to be a 4 digits number (e.g. 0004).
 */
 load_error_table_number(energy, beam_number, error_num): macro = {
-    call, file = "/afs/cern.ch/work/o/omcsyst/public/error_tables/Beambeam_number/error_tables_energyTeV/MBx-error_num.errors";
-    readmytable, file = "/afs/cern.ch/work/o/omcsyst/public/error_tables/Beambeam_number/error_tables_energyTeV/MBx-error_num.errors",
+    call, file = "/afs/cern.ch/eng/sl/lintrack/error_tables/Beambeam_number/error_tables_energyTeV/MBx-error_num.errors";
+    readmytable, file = "/afs/cern.ch/eng/sl/lintrack/error_tables/Beambeam_number/error_tables_energyTeV/MBx-error_num.errors",
                  table=errtab;
     seterr, table = errtab;
 
-    call, file = "/afs/cern.ch/work/o/omcsyst/public/error_tables/Beambeam_number/MB_corr_setting_Bbeam_number_energyTeV.mad";
+    call, file = "/afs/cern.ch/eng/sl/lintrack/error_tables/Beambeam_number/MB_corr_setting_Bbeam_number_energyTeV.mad";
 };
 
 
@@ -504,9 +504,9 @@ load_error_table_number(energy, beam_number, error_num): macro = {
 * @param beam_number: The beam to use either 1 or 2.
 */
 load_average_error_table(energy, beam_number): macro = {
-    readmytable, file = "/afs/cern.ch/work/o/omc/error_tables/Beambeam_number/MB_Bbeam_number_energyTeV.errors", table=errtab;
+    readmytable, file = "/afs/cern.ch/eng/sl/lintrack/error_tables/Beambeam_number/MB_Bbeam_number_energyTeV.errors", table=errtab;
     seterr, table=errtab;
-    call, file = "/afs/cern.ch/work/o/omc/error_tables/Beambeam_number/MB_corr_setting_Bbeam_number_energyTeV.mad";
+    call, file = "/afs/cern.ch/eng/sl/lintrack/error_tables/Beambeam_number/MB_corr_setting_Bbeam_number_energyTeV.mad";
 }
 
 
