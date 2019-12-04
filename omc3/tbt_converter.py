@@ -34,7 +34,7 @@ def converter_params():
                          help="Choose the datatype from which to import. ")
     params.add_parameter(name="realizations", type=int, default=1,
                          help="Number of copies with added noise")
-    params.add_parameter(name="noise_levels", nargs='+', type=float, default=[None],
+    params.add_parameter(name="noise_levels", nargs='+',
                          help="Sigma of added Gaussian noise")
     params.add_parameter(name="use_average", action="store_true",
                          help="If set, returned sdds only contains the average over all particle/bunches.")
@@ -88,11 +88,10 @@ def _read_and_write_files(opt):
             tbt_data = tbt.handler.generate_average_tbtdata(tbt_data)
         for i in range(opt.realizations):
             suffix = f"_r{i}" if opt.realizations > 1 else ""
-            for n in opt.noise_levels:
-                noise_suffix = f"_n{n}" if n is not None else ""
-                tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{noise_suffix}{suffix}"),
-                          tbt_data=tbt_data,
-                          noise=n)
+            if opt.noise_levels is None:
+                tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{suffix}"), tbt_data=tbt_data)
+            else:
+                [tbt.write(join(opt.outputdir, f"{_file_name(input_file)}_n{n}{suffix}"), tbt_data=tbt_data, noise=n) for n in opt.noise_levels]
 
 
 def _file_name(filename: str):
