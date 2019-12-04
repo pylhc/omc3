@@ -120,7 +120,7 @@ class InputFiles(dict):
         read_files = isinstance(files_to_analyse[0], str)
         for file_in in files_to_analyse:
             for plane in PLANES:
-                df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME")
+                df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME", drop=False)
                               if read_files else file_in[plane])
                 self[plane].append(self._repair_backwards_compatible_frame(df_to_load, plane))
 

@@ -7,6 +7,7 @@ Basic tbt io-functionality.
 
 """
 from datetime import datetime
+import pytz
 import numpy as np
 import pandas as pd
 import sdds
@@ -55,7 +56,7 @@ def read_tbt(file_path):
     if len(bunch_ids) > nbunches:
         bunch_ids = bunch_ids[:nbunches]
     nturns = sdds_file.values[N_TURNS]
-    date = datetime.fromtimestamp(sdds_file.values[ACQ_STAMP] / 1e9)
+    date = pytz.utc.localize(datetime.utcfromtimestamp(sdds_file.values[ACQ_STAMP] / 1e9))
     bpm_names = sdds_file.values[BPM_NAMES]
     nbpms = len(bpm_names)
     data = {k: sdds_file.values[POSITIONS[k]].reshape((nbpms, nbunches, nturns)) for k in PLANES}
