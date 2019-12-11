@@ -69,7 +69,6 @@ one contains the stem plot(s - subdict with bpms as keys) and the second one con
 
 
 """
-import logging
 import os
 from collections import OrderedDict
 from contextlib import suppress
@@ -84,7 +83,11 @@ from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
 from matplotlib import cm, colors, transforms, lines as mlines
 
-LOG = logging.getLogger(__name__)  # TODO replace with logging_tools
+from definitions import formats
+from utils import logging_tools
+from harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+
+LOG = logging_tools.getLogger(__name__)
 
 PLANES = ('x', 'y')
 
@@ -100,9 +103,9 @@ WATERFALL_FILENAME = "waterfall_spectrum"
 SPECTRUM_FILENAME = "spectrum"
 CONFIG_FILENAME = "plot_spectrum_{time:s}.ini"
 
-AMPS = 'amps'
-FREQS = 'freqs'
-LIN = 'lin'
+AMPS = FILE_AMPS_EXT.format(plane='')
+FREQS = FILE_FREQS_EXT.format(plane='')
+LIN = FILE_LIN_EXT.format(plane='')
 
 COL_NAME = 'NAME'
 
@@ -582,20 +585,23 @@ def _load_spectrum_data(file_path, bpms):
 
 
 def _get_amplitude_files(file_path):
-    return _get_planed_files(file_path, id=AMPS)
+    return _get_planed_files(file_path, id=FILE_AMPS_EXT)
 
 
 def _get_frequency_files(file_path):
-    return _get_planed_files(file_path, id=FREQS)
+    return _get_planed_files(file_path, id=FILE_FREQS_EXT)
 
 
 def _get_lin_files(file_path):
-    return _get_planed_files(file_path, id=LIN, index=COL_NAME)
+    return _get_planed_files(file_path, id=FILE_LIN_EXT, index=COL_NAME)
 
 
 def _get_planed_files(file_path, id, index=None):
     directory, filename = _get_dir_and_name(file_path)
-    return {plane: tfs.read(os.path.join(directory, f'{filename}.{id}{plane}'), index=index) for plane in PLANES}
+    return {
+        plane: tfs.read(os.path.join(directory, f'{filename}.{id.format(plane=plane.lower())}'), index=index)
+        for plane in PLANES
+    }
 
 
 def _get_old_data(file_path, bpms):
@@ -680,7 +686,7 @@ def _make_output_dir(out_dir, filename):
 
 
 def _get_ini_filename():
-    return CONFIG_FILENAME.format(time=datetime.utcnow().strftime("%Y_%m_%d@%H_%M_%S_%f"))  # TODO: use formats.TIME
+    return CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
 
 
 def _output_plot(fig, out, fname):
