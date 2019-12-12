@@ -226,7 +226,7 @@ def get_params():
 
 
 @entrypoint(get_params(), strict=True)
-def spectrum_plots(opt):
+def main(opt):
     LOG.info("Starting spectrum plots.")
     if opt.output_dir is not None:
         _save_options_to_config(opt)
@@ -727,4 +727,4 @@ def _rename_dict_keys(d, to_remove):
 
 
 if __name__ == "__main__":
-    spectrum_plots()
+    main()
