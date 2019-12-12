@@ -160,6 +160,11 @@ def get_params():
     params.add_parameter(name="bpms",
                          nargs='+',
                          help='List of BPMs for which spectra will be plotted. If not given all BPMs are used.')
+    params.add_parameter(name="amp_limit",
+                         type=float,
+                         default=0.,
+                         help='All amplitudes <= limit are filtered. '
+                              'This value needs to be at least 0 to filter non-found frequencies.')
     params.add_parameter(name="rescale",
                          action="store_true",
                          help='Flag to rescale plots amplitude to max-line = 1')
@@ -232,7 +237,7 @@ def main(opt):
         _save_options_to_config(opt)
 
     # Input
-    _check_opt(opt)
+    opt = _check_opt(opt)
 
     matplotlib.rcParams.update(opt.manual_style)
     out, limits, lines, stem_opt, waterfall_opt = _sort_opt(opt)
@@ -249,7 +254,9 @@ def main(opt):
             out.dir = _make_output_dir(opt.output_dir, filename)
 
         files = _load_spectrum_data(file_path, opt.bpms)
+        files = _filter_amps(files, opt.amp_limit)
         bpms = _get_bpms(files[LIN], opt.bpms)
+
 
         # Plotting
         if stem_opt.plot:
@@ -540,10 +547,15 @@ def _check_opt(opt):
     if opt.waterfall_cmap and not opt.waterfall_plot:
         LOG.warning("'waterfall_cmap' option has no effect, when waterfall plots are deactivated!")
 
+    if opt.amp_limit < 0:
+        raise ValueError("The amplitude limit needs to be at least '0' to filter for non-found frequencies.")
+
     style_dict = DEFAULTS['manual_style']
     if opt.manual_style is not None:
         style_dict.update(opt.manual_style)
     opt.manual_style = style_dict
+
+    return opt
 
 
 def _sort_opt(opt):
@@ -662,13 +674,21 @@ def _get_bpms(lin_files, given_bpms):
 
 
 def _get_valid_indices(files, plane, bpm):
-    idx = index_filter(files[AMPS][plane][bpm])
-    idx.intersection(index_filter(files[FREQS][plane][bpm]))
-    return idx
+    """ Intersection of filtered AMPS and FREQS indices. """
+    return index_filter(files[AMPS][plane][bpm]).intersection(index_filter(files[FREQS][plane][bpm]))
 
 
 def index_filter(data):
+    """ Only non-NaN and non-Zero data allowed. (Should not be zero due to _filter_amps() anyway.)"""
     return data[~(data.isna() | data == 0)].index
+
+
+def _filter_amps(files, limit):
+    for plane in PLANES:
+        filter_idx = files[AMPS][plane] <= limit
+        files[AMPS][plane][filter_idx] = np.NaN
+        files[FREQS][plane][filter_idx] = np.NaN
+    return files
 
 
 # Output -----------------------------------------------------------------------
