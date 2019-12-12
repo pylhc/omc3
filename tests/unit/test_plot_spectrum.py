@@ -14,17 +14,14 @@ def test_basic_functionality(file_path):
         plot_spectrum(
             files=[file_path],
             output_dir=out_dir,
-            bpms=['BPM.10L1.B1', 'BPM.10L2.B1'],
-            # lines_tune=[],
-            # lines_nattune=[],
-            # lines_manual=[dict(x=0.32, label='mytune', color='k', loc="line top")],
+            bpms=['BPM.10L1.B1', 'BPM.10L2.B1', 'unknown_bpm'],
+            lines_manual=[dict(x=0.3, label="myline")],
+            lines_nattune=None,
             stem_plot=True,
-            # rescale=True,
             stem_single_fig=False,
             waterfall_plot=True,
-            # waterfall_line_width=1,
-            # hide_bpm_labels=True,
             show_plots=False,
+            manual_style={},  # just to call the update line
         )
         assert len(os.listdir(_get_output_dir(out_dir, file_path))) == 3
 
@@ -34,7 +31,7 @@ def test_single_stem_plot(file_path):
         plot_spectrum(
             files=[file_path],
             output_dir=out_dir,
-            bpms=['BPM.10L1.B1', 'BPM.10L2.B1'],
+            bpms=['BPM.10L1.B1', 'BPM.10L2.B1', 'unknown_bpm'],
             stem_plot=True,
             stem_single_fig=True,
         )
@@ -58,6 +55,16 @@ def test_crash_too_low_amplimit():
                 output_dir=out_dir,
                 stem_plot=True,
                 amp_limit=-1.,
+            )
+
+
+def test_crash_file_not_found_amplimit():
+    with pytest.raises(FileNotFoundError):
+        with tempfile.TemporaryDirectory() as out_dir:
+            plot_spectrum(
+                files=['test'],
+                output_dir=out_dir,
+                stem_plot=True,
             )
 
 
