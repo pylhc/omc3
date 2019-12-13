@@ -13,9 +13,12 @@ one contains the stem plot(s - subdict with bpms as keys) and the second one con
 
 - **files**: List with basenames of Tbt files, ie. tracking.sdds
 
-
 *--Optional--*
 
+- **amp_limit** *(float)*: All amplitudes <= limit are filtered.
+  This value needs to be at least 0 to filter non-found frequencies.
+
+  Default: ``0.0``
 - **bpms**: List of BPMs for which spectra will be plotted. If not given all BPMs are used.
 
 - **filetype** *(str)*: Filetype to save plots as (i.e. extension without ".")
@@ -66,7 +69,6 @@ one contains the stem plot(s - subdict with bpms as keys) and the second one con
 - **ylim** *(float)*: Limits on the y axis (Tupel)
 
   Default: ``[1e-09, 1.0]``
-
 
 """
 import os
@@ -256,7 +258,6 @@ def main(opt):
         files = _load_spectrum_data(file_path, opt.bpms)
         files = _filter_amps(files, opt.amp_limit)
         bpms = _get_bpms(files[LIN], opt.bpms)
-
 
         # Plotting
         if stem_opt.plot:
@@ -597,21 +598,21 @@ def _load_spectrum_data(file_path, bpms):
 
 
 def _get_amplitude_files(file_path):
-    return _get_planed_files(file_path, id=FILE_AMPS_EXT)
+    return _get_planed_files(file_path, ext=FILE_AMPS_EXT)
 
 
 def _get_frequency_files(file_path):
-    return _get_planed_files(file_path, id=FILE_FREQS_EXT)
+    return _get_planed_files(file_path, ext=FILE_FREQS_EXT)
 
 
 def _get_lin_files(file_path):
-    return _get_planed_files(file_path, id=FILE_LIN_EXT, index=COL_NAME)
+    return _get_planed_files(file_path, ext=FILE_LIN_EXT, index=COL_NAME)
 
 
-def _get_planed_files(file_path, id, index=None):
+def _get_planed_files(file_path, ext, index=None):
     directory, filename = _get_dir_and_name(file_path)
     return {
-        plane: tfs.read(os.path.join(directory, f'{filename}.{id.format(plane=plane.lower())}'), index=index)
+        plane: tfs.read(os.path.join(directory, f'{filename}{ext.format(plane=plane.lower())}'), index=index)
         for plane in PLANES
     }
 

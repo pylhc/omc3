@@ -167,12 +167,12 @@ def _write_bad_bpms(output_path_without_suffix, plane, bad_bpms_with_reasons):
 
 
 def _write_spectrum(output_path_without_suffix, plane, spectra):
-    tfs.write(f"{output_path_without_suffix}.{FILE_AMPS_EXT.format(plane=plane.lower())}", spectra["COEFFS"].abs().T)
-    tfs.write(f"{output_path_without_suffix}.{FILE_FREQS_EXT.format(plane=plane.lower())}", spectra["FREQS"].T)
+    tfs.write(f"{output_path_without_suffix}{FILE_AMPS_EXT.format(plane=plane.lower())}", spectra["COEFFS"].abs().T)
+    tfs.write(f"{output_path_without_suffix}{FILE_FREQS_EXT.format(plane=plane.lower())}", spectra["FREQS"].T)
 
 
 def _write_lin_tfs(output_path_without_suffix, plane, lin_frame):
-    tfs.write(f"{output_path_without_suffix}.{FILE_LIN_EXT.format(plane=plane.lower())}", lin_frame)
+    tfs.write(f"{output_path_without_suffix}{FILE_LIN_EXT.format(plane=plane.lower())}", lin_frame)
 
 
 def _get_output_path_without_suffix(output_dir, file_path):

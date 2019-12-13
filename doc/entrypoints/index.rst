@@ -23,3 +23,9 @@ Converter
     :members:
 
 
+Plotting
+=======================
+
+.. automodule:: plot_spectrum
+    :members:
+
