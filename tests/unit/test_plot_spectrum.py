@@ -1,17 +1,35 @@
-import os
+from os.path import join, abspath, basename, dirname, splitext
+from os import listdir
 import pytest
-import numpy as np
-import pandas as pd
+from matplotlib.figure import Figure
+
 from . import context
-from plot_spectrum import main as plot_spectrum
+from plot_spectrum import main as plot_spectrum, _get_unique_filenames
 
 
 import tempfile
 
 
+def test_unique_filenames():
+    def _test_list(list_of_paths):
+        paths, names = zip(*_get_unique_filenames(list_of_paths))
+        for item in zip(list_of_paths, paths):
+            assert item[0] == item[1]
+        assert len(set(names)) == len(names)
+        assert len(names) == len(list_of_paths)
+        return names
+    names = _test_list([join('mozart', 'wolfgang'), join('petri', 'wolfgang'), join('frisch', 'max')])
+    assert "mozart_wolfgang" in names
+    assert "frisch_max" in names
+
+    names = _test_list([join('mozart', 'wolfgang'), join('petri', 'heil'), join('frisch', 'max')])
+    assert "wolfgang" in names
+    assert "max" in names
+
+
 def test_basic_functionality(file_path):
     with tempfile.TemporaryDirectory() as out_dir:
-        plot_spectrum(
+        stem, waterfall = plot_spectrum(
             files=[file_path],
             output_dir=out_dir,
             bpms=['BPM.10L1.B1', 'BPM.10L2.B1', 'unknown_bpm'],
@@ -23,19 +41,28 @@ def test_basic_functionality(file_path):
             show_plots=False,
             manual_style={},  # just to call the update line
         )
-        assert len(os.listdir(_get_output_dir(out_dir, file_path))) == 3
+        _, filename = list(_get_unique_filenames([file_path]))[0]
+        assert len(listdir(_get_output_dir(out_dir, file_path))) == 3
+        assert len(waterfall) == 1
+        assert (filename in waterfall) and (waterfall[filename] is not None)
+        assert len(stem) == 1
+        assert (filename in stem) and (len(stem[filename]) == 2)
 
 
 def test_single_stem_plot(file_path):
     with tempfile.TemporaryDirectory() as out_dir:
-        plot_spectrum(
+        stem, waterfall = plot_spectrum(
             files=[file_path],
             output_dir=out_dir,
             bpms=['BPM.10L1.B1', 'BPM.10L2.B1', 'unknown_bpm'],
             stem_plot=True,
             stem_single_fig=True,
         )
-        assert len(os.listdir(_get_output_dir(out_dir, file_path))) == 1
+        _, filename = list(_get_unique_filenames([file_path]))[0]
+        assert len(listdir(_get_output_dir(out_dir, file_path))) == 1
+        assert len(waterfall) == 0
+        assert len(stem) == 1
+        assert (filename in stem) and isinstance(stem[filename], Figure)
 
 
 def test_crash_no_plot_selected():
@@ -69,10 +96,10 @@ def test_crash_file_not_found_amplimit():
 
 
 def _get_output_dir(out_dir, file_path):
-    return os.path.join(out_dir, os.path.splitext(os.path.basename(file_path))[0])
+    return join(out_dir, splitext(basename(file_path))[0])
 
 
 @pytest.fixture
 def file_path():
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "inputs", 'spec_test.sdds'))
+    return abspath(join(dirname(__file__), "..", "inputs", 'spec_test.sdds'))
 

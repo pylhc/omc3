@@ -247,8 +247,7 @@ def main(opt):
     spectrum_figs = {}
     waterfall_figs = {}
 
-    for file_path in opt.files:
-        filename = os.path.basename(file_path)
+    for file_path, filename in _get_unique_filenames(opt.files):
         LOG.info(f"Creating plots for file '{filename}'.")
 
         # Loading Data
@@ -583,6 +582,26 @@ def _sort_opt(opt):
     waterfall = _rename_dict_keys(waterfall, to_remove="waterfall_")
 
     return out, limits, lines, stem, waterfall
+
+
+def _get_unique_filenames(files):
+    """ Way too complicated method to assure unique dictionary names."""
+    def _get_filename(path, nparts):
+        return "_".join(os.path.split(path)[nparts:])
+
+    paths = [None] * len(files)
+    names = [None] * len(files)
+    parts = -1
+    for idx, fpath in enumerate(files):
+        fname = _get_filename(fpath, parts)
+        while fname in names:
+            parts -= 1
+            for idx_old in range(idx):
+                names[idx_old] = _get_filename(paths[idx_old], parts)
+            fname = _get_filename(fpath, parts)
+        names[idx] = fname
+        paths[idx] = fpath
+    return zip(paths, names)
 
 
 def _load_spectrum_data(file_path, bpms):
