@@ -407,7 +407,7 @@ def _create_waterfall_plot(out, bpms, files, lines, limits, opts):
 
 def _plot_waterfall(ax, freqs, amps, opts):
     nbpms, nfreqs = len(freqs.columns), len(freqs.index)
-    norm = colors.LogNorm(amps.min().min(), amps.max().max())
+    norm = colors.LogNorm(amps.min(skipna=True).min(skipna=True), amps.max(skipna=True).max(skipna=True))
     if opts.line_width == "auto":
         for idx, bpm in enumerate(freqs.columns):
             f_bpm = freqs[bpm].to_numpy().T
