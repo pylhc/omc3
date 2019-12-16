@@ -82,7 +82,7 @@ import numpy as np
 import tfs
 from cycler import cycler
 from generic_parser.entry_datatypes import DictAsString
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
+from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config, DotDict
 from matplotlib import cm, colors, transforms, lines as mlines
 
 from definitions import formats
@@ -97,7 +97,7 @@ STEM_LINES_ALPHA = 0.5
 RESONANCE_LINES_ALPHA = 0.5
 
 LABEL_Y_SPECTRUM = 'Amplitude in {plane:s} [a.u]'
-LABEL_Y_WATERFALL = 'Items in {plane:s}'
+LABEL_Y_WATERFALL = 'Plane {plane:s}'
 LABEL_X = 'Frequency [tune units]'
 
 NCOL_LEGEND = 5  # number of columns in the legend
@@ -131,7 +131,7 @@ def get_reshuffled_tab20c():
     return cycler(color=out)
 
 
-DEFAULTS = dict(
+DEFAULTS = DotDict(
     waterfall_cmap='inferno',
     ylim=[1e-9, 1 ** .2],
     xlim=[0, .5],
@@ -180,11 +180,11 @@ def get_params():
                          action="store_true",
                          help='Flag to create waterfall plot.')
     params.add_parameter(name="waterfall_line_width",
-                         default=DEFAULTS['waterfall_line_width'],
+                         default=DEFAULTS.waterfall_line_width,
                          help='Line width of the waterfall frequency lines. "auto" fills them up until the next one.')
     params.add_parameter(name="waterfall_cmap",
                          type=str,
-                         default=DEFAULTS['waterfall_cmap'],
+                         default=DEFAULTS.waterfall_cmap,
                          help="Colormap to use for waterfall plot.")
     params.add_parameter(name="show_plots",
                          action="store_true",
@@ -209,19 +209,19 @@ def get_params():
     params.add_parameter(name="xlim",
                          nargs=2,
                          type=float,
-                         default=DEFAULTS['xlim'],
+                         default=DEFAULTS.xlim,
                          help='Limits on the x axis (Tupel)')
     params.add_parameter(name="ylim",
                          nargs=2,
                          type=float,
-                         default=DEFAULTS['ylim'],
+                         default=DEFAULTS.ylim,
                          help='Limits on the y axis (Tupel)')
     params.add_parameter(name="hide_bpm_labels",
                          action="store_true",
                          help='Hide the bpm labels in the plots.')
     params.add_parameter(name="filetype",
                          type=str,
-                         default=DEFAULTS['filetype'],
+                         default=DEFAULTS.filetype,
                          help='Filetype to save plots as (i.e. extension without ".")')
     params.add_parameter(name="manual_style",
                          type=DictAsString,
@@ -379,7 +379,7 @@ def _create_legend(axs, bpms, lines, hide_labels):
 
         # move above line-labels
         nlines = sum([l is not None for l in lines.values()]) + 0.05
-        y_shift = get_textsize_in_axes_coordinates(leg.axes, label_size=matplotlib.rcParams['axes.labelsize']) * nlines
+        y_shift = get_approx_size_in_axes_coordinates(leg.axes, label_size=matplotlib.rcParams['axes.labelsize']) * nlines
         leg.axes.legend(handles=handles, bbox_to_anchor=(1. + x_shift, 1. + y_shift), **legend_params)
 
 
@@ -445,7 +445,7 @@ def _plot_lines(ax, tunes, lines, zorder=None):
     trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
     label_size = matplotlib.rcParams['axes.labelsize'] * 0.7
     bottom_qlabel = 1.01
-    bottom_natqlabel = bottom_qlabel + (get_textsize_in_axes_coordinates(ax, label_size) * 1.1)
+    bottom_natqlabel = bottom_qlabel + 2 * get_approx_size_in_axes_coordinates(ax, label_size)
 
     # Tune Lines ---
     for line_params in (("", lines.tune, "--", bottom_qlabel), ("NAT", lines.nattune, ":", bottom_natqlabel)):
@@ -465,11 +465,13 @@ def _plot_tune_line(ax, tunes, transform, zorder, label_size, q_string, resonanc
     freqs = _get_resonance_frequencies(resonances, q)
     for res, freq in zip(resonances, freqs):
         if not np.isnan(freq):
-            label, order = f'{pref}({res[0]}, {res[1]})', sum(res) + 1
+            label, order = f'{pref}({res[0]}, {res[1]})', sum(np.abs(res)) + 1
             ax.axvline(x=freq, label=label,
-                       linestyle=linestyle, color=f"C{order - 2}", marker='None',
+                       linestyle=linestyle, color=get_cycled_color(order-2), marker='None',
                        zorder=zorder, alpha=RESONANCE_LINES_ALPHA)
-            ax.text(x=freq, y=label_y, s=label, transform=transform, color=f"C{order - 2}", va='bottom', ha='center',
+            ax.text(x=freq, y=label_y, s=label, transform=transform,
+                    color=get_cycled_color(order-2),
+                    va='bottom', ha='center',
                     fontdict={'size': label_size})
 
 
@@ -525,7 +527,7 @@ def get_cycled_color(idx):
     return cycle[idx % len(cycle)]
 
 
-def get_textsize_in_axes_coordinates(ax, label_size):
+def get_approx_size_in_axes_coordinates(ax, label_size):
     transform = ax.transAxes.inverted().transform
     _, label_size_ax = transform((0, label_size)) - transform((0, 0))
     return label_size_ax
@@ -541,11 +543,13 @@ def _check_opt(opt):
     if opt.stem_single_fig and not opt.stem_plot:
         LOG.warning("'stem_single_fig' option has no effect, when stem plots are deactivated!")
 
-    if opt.waterfall_line_width and not opt.waterfall_plot:
-        LOG.warning("'waterfall_line_width' option has no effect, when waterfall plots are deactivated!")
+    if (opt.waterfall_line_width is not None and opt.waterfall_line_width != DEFAULTS.waterfall_line_width
+            and not opt.waterfall_plot):
+        LOG.warning("Setting 'waterfall_line_width' option has no effect, when waterfall plots are deactivated!")
 
-    if opt.waterfall_cmap and not opt.waterfall_plot:
-        LOG.warning("'waterfall_cmap' option has no effect, when waterfall plots are deactivated!")
+    if (opt.waterfall_cmap is not None and opt.waterfall_cmap != DEFAULTS.waterfall_cmap
+            and not opt.waterfall_plot):
+        LOG.warning("Setting 'waterfall_cmap' option has no effect, when waterfall plots are deactivated!")
 
     if opt.amp_limit < 0:
         raise ValueError("The amplitude limit needs to be at least '0' to filter for non-found frequencies.")
