@@ -24,7 +24,7 @@ from tune_analysis import bbq_tools, timber_extract, detuning_tools, kickac_modi
 import tune_analysis.constants as ta_const
 from utils import logging_tools
 import tfs
-from generic_parser.entrypoint import entrypoint, EntryPointParameters
+from generic_parser import entrypoint, EntryPointParameters
 
 # Globals ####################################################################
 
@@ -42,7 +42,7 @@ TIMBER_KEY = ta_const.get_timber_bbq_key
 
 TIMEZONE = ta_const.get_experiment_timezone()
 
-DTIME = 60  # extra seconds to add to kickac times when extracting from timber
+DTIME = 60  # extra seconds to add to kick times when extracting from timber
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -91,16 +91,16 @@ def _get_params():
         type=str,
     )
     params.add_parameter(
-        flags="--kickac",
-        help="Location of the kickac file",
-        name="kickac_path",
+        flags="--kick",
+        help="Location of the kick file",
+        name="kick",
         type=str,
         required=True,
     )
     params.add_parameter(
-        flags="--kickacout",
-        help="If given, writes out the modified kickac file",
-        name="kickac_out",
+        flags="--kickout",
+        help="If given, writes out the modified kick file",
+        name="kick_out",
         type=str,
     )
     params.add_parameter(
@@ -198,8 +198,8 @@ def analyse_with_bbq_corrections(opt):
         Required
         beam (int): Which beam to use.
                     **Flags**: --beam
-        kickac_path (str): Location of the kickac file
-                           **Flags**: --kickac
+        kick (str): Location of the kick file
+                           **Flags**: --kick
         plane (str): Plane of the kicks. 'X' or 'Y'.
                            **Flags**: --plane
                            **Choices**: XY
@@ -237,8 +237,8 @@ def analyse_with_bbq_corrections(opt):
                           **Flags**: --finecut
         fine_window (int): Length of the moving average window. (# data points)
                            **Flags**: --finewindow
-        kickac_out (str): If given, writes out the modified kickac file
-                          **Flags**: --kickacout
+        kick_out (str): If given, writes out the modified kick file
+                          **Flags**: --kickout
         label (str): Label to identify this run.
                      **Flags**: --label
         logfile (str): Logfile if debug mode is active.
@@ -271,38 +271,38 @@ def analyse_with_bbq_corrections(opt):
         figs = {}
 
         # get data
-        kickac_df = tfs.read_tfs(opt.kickac_path, index=COL_TIME())
-        bbq_df = _get_timber_data(opt.beam, opt.timber_in, opt.timber_out, kickac_df)
-        x_interval = get_approx_bbq_interval(bbq_df, kickac_df.index, opt.window_length)
+        kick_df = tfs.read_tfs(opt.kick, index=COL_TIME())
+        bbq_df = _get_timber_data(opt.beam, opt.timber_in, opt.timber_out, kick_df)
+        x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
 
-        # add moving average to kickac
-        kickac_df, bbq_df = kickac_modifiers.add_moving_average(kickac_df, bbq_df,
-                                                                **opt.get_subdict([
-                                                                    "window_length",
-                                                                    "tune_x_min", "tune_x_max",
-                                                                    "tune_y_min", "tune_y_max",
-                                                                    "fine_cut", "fine_window"]
-                                                                )
-                                                                )
+        # add moving average to kick
+        kick_df, bbq_df = kickac_modifiers.add_moving_average(kick_df, bbq_df,
+                                                              **opt.get_subdict([
+                                                                  "window_length",
+                                                                  "tune_x_min", "tune_x_max",
+                                                                  "tune_y_min", "tune_y_max",
+                                                                  "fine_cut", "fine_window"]
+                                                              )
+                                                              )
 
-        # add corrected values to kickac
-        kickac_df = kickac_modifiers.add_corrected_natural_tunes(kickac_df)
-        kickac_df = kickac_modifiers.add_total_natq_std(kickac_df)
+        # add corrected values to kick
+        kick_df = kickac_modifiers.add_corrected_natural_tunes(kick_df)
+        kick_df = kickac_modifiers.add_total_natq_std(kick_df)
 
         # amplitude detuning odr and plotting
         for tune_plane in PLANES:
             for corr in [False, True]:
                 # get the proper data
-                data = kickac_modifiers.get_ampdet_data(kickac_df, opt.plane, tune_plane,
+                data = kickac_modifiers.get_ampdet_data(kick_df, opt.plane, tune_plane,
                                                         corrected=corr)
 
                 # make the odr
                 odr_fit = detuning_tools.do_linear_odr(**data)
-                kickac_df = kickac_modifiers.add_odr(kickac_df, odr_fit, opt.plane, tune_plane,
+                kick_df = kickac_modifiers.add_odr(kick_df, odr_fit, opt.plane, tune_plane,
                                                      corrected=corr)
 
-    # output kickac and bbq data
-    tfs.write_tfs(opt.kickac_out, kickac_df, save_index=COL_TIME())
+    # output kick and bbq data
+    tfs.write_tfs(opt.kick_out, kick_df, save_index=COL_TIME())
     tfs.write_tfs(opt.bbq_out, bbq_df.loc[x_interval[0]:x_interval[1]],
                   save_index=COL_TIME())
 
@@ -311,7 +311,7 @@ def analyse_with_bbq_corrections(opt):
 
 def get_approx_bbq_interval(bbq_df, time_array, window_length):
     """ Get data in approximate time interval,
-    for averaging based on window length and kickac interval """
+    for averaging based on window length and kick interval """
     bbq_tmp = bbq_df.dropna()
 
     i_start = max(bbq_tmp.index.get_loc(time_array[0], method='nearest') - int(window_length/2.),
@@ -356,7 +356,7 @@ def _check_analyse_opt(opt):
     return opt
 
 
-def _get_timber_data(beam, input, output, kickac_df):
+def _get_timber_data(beam, input, output, kick_df):
     """ Return Timber data from input """
 
     try:
@@ -369,10 +369,10 @@ def _get_timber_data(beam, input, output, kickac_df):
                   axis='columns')
     except TypeError:
         # input is None
-        LOG.debug("Getting timber data from kickac-times.")
+        LOG.debug("Getting timber data from kick-times.")
         timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
-        t_start = min(kickac_df.index.values)
-        t_end = max(kickac_df.index.values)
+        t_start = min(kick_df.index.values)
+        t_end = max(kick_df.index.values)
         data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME,
                                                     keys=timber_keys,
                                                     names=dict(zip(timber_keys, bbq_cols)))
