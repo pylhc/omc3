@@ -12,7 +12,6 @@ import numpy as np
 from tune_analysis import constants as const
 from utils import logging_tools
 
-TIMEZONE = const.get_experiment_timezone()
 
 PLANES = const.get_planes()
 
@@ -56,14 +55,14 @@ def get_moving_average(data_series, length=20,
     else:
         max_mask = np.zeros(data_series.size, dtype=bool)
 
-    cut_mask = min_mask | max_mask
+    cut_mask = min_mask | max_mask | data_series.isna()
     _is_almost_empty_mask(~cut_mask, length)
     data_mav, std_mav = _get_interpolated_moving_average(data_series, cut_mask, length)
 
     if fine_length is not None:
         min_mask = data_series <= (data_mav - fine_cut)
         max_mask = data_series >= (data_mav + fine_cut)
-        cut_mask = min_mask | max_mask
+        cut_mask = min_mask | max_mask | data_series.isna()
         _is_almost_empty_mask(~cut_mask, fine_length)
         data_mav, std_mav = _get_interpolated_moving_average(data_series, cut_mask, fine_length)
 

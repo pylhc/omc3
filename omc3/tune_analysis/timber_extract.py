@@ -14,6 +14,7 @@ import pytimber
 
 from tune_analysis import constants as const
 from utils import logging_tools
+from utils.time_tools import CERNDatetime
 import tfs
 
 TIME_COL = const.get_time_col()
@@ -68,8 +69,10 @@ def extract_between_times(t_start, t_end, keys=None, names=None):
         key_df = tfs.TfsDataFrame(data, columns=[TIME_COL, col]).set_index(TIME_COL)
 
         out_df = out_df.merge(key_df, how="outer", left_index=True, right_index=True)
-    out_df.headers[START_TIME] = t_start
-    out_df.headers[END_TIME] = t_end
+
+    out_df.index = [CERNDatetime.from_timestamp(i) for i in out_df.index]
+    out_df.headers[START_TIME] = CERNDatetime.from_timestamp(t_start).cern_utc_string()
+    out_df.headers[END_TIME] = CERNDatetime.from_timestamp(t_end).cern_utc_string()
     return out_df
 
 

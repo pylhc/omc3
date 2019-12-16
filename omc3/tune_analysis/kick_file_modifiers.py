@@ -4,10 +4,17 @@ Module tune_analysis.kickac_modifiers
 
 Functions to add data to or extract data from kick_ac files.
 """
+import os
+
 import numpy as np
+import tfs
+import pandas as pd
 
 from tune_analysis import constants as const, bbq_tools
+
 from utils import logging_tools
+from utils.time_tools import CERNDatetime, get_cern_time_format
+from optics_measurements.constants import KICK_NAME
 from generic_parser.dict_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
@@ -68,27 +75,25 @@ def _get_slope_label(slope, std):
 # Data Addition ################################################################
 
 
-def add_bbq_data(kickac_df, bbq_series, column):
+def add_bbq_data(kick_df, bbq_series, column):
     """ Add bbq values from series to kickac dataframe into column.
 
     Args:
-        kickac_df: kickac dataframe
-                  (needs to contain column "TIME_COL" or has time as index)
+        kick_df: kick dataframe (needs to have time as index, best load it with `read_timed_dataframe()`)
         bbq_series: series of bbq data with time as index
         column: column name to add the data into
 
-    Returns: modified kickac dataframe
+    Returns: modified kick dataframe
 
     """
-    time_indx = kickac_df.index
-    if COL_TIME in kickac_df:
-        time_indx = kickac_df[COL_TIME]
+    kick_indx = get_timestamp_index(kick_df.index)
+    bbq_indx = get_timestamp_index(bbq_series.index)
 
     values = []
-    for time in time_indx:
-        values.append(bbq_series.iloc[bbq_series.index.get_loc(time, method="nearest")])
-    kickac_df[column] = values
-    return kickac_df
+    for time in kick_indx:
+        values.append(bbq_series.iloc[bbq_indx.get_loc(time, method="nearest")])
+    kick_df[column] = values
+    return kick_df
 
 
 def add_moving_average(kickac_df, bbq_df, **kwargs):
@@ -218,7 +223,7 @@ def get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
 
 
 def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
-    """ Extract the data needed for plotting the (un)corrected amplitude detuning
+    """ Extract the data needed for the (un)corrected amplitude detuning
     from the kickac dataframe.
 
     Args:
@@ -239,7 +244,11 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
                "yerr": col_natq_std(tune_plane),
                }
 
-    data = kickac_df.loc[:, [columns[key] for key in columns.keys()]]
+    not_found = [cv for cv in columns.values() if cv not in kickac_df.columns]
+    if any(not_found):
+        raise KeyError(f"The following columns were not found in kick-file: '{str(not_found)}'")
+
+    data = kickac_df.loc[:, list(columns.values())]
     data.columns = columns.keys()
 
     if data.isna().any().any():
@@ -248,3 +257,37 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
         )
         data = data.dropna(axis=0)
     return data.to_dict('series')
+
+
+# Timed DataFrames -------------------------------------------------------------
+
+
+def get_timestamp_index(index):
+    return pd.Index([i.timestamp() for i in index])
+
+
+def read_timed_dataframe(path):
+    df = tfs.read(path, index=COL_TIME())
+    df.index = pd.Index([CERNDatetime.from_cern_utc_string(i) for i in df.index], dtype=object)
+    return df
+
+
+def write_timed_dataframe(path, df):
+    df = df.copy()
+    df.index = pd.Index([i.strftime(get_cern_time_format()) for i in df.index], dtype=str)
+    tfs.write(path, df, save_index=COL_TIME())
+
+
+def read_two_kick_files_from_folder(folder):
+    return merge_two_plane_kick_dfs(
+        *[read_timed_dataframe(os.path.join(folder, f'{KICK_NAME}{p.lower()}.tfs')) for p in PLANES]
+    )
+
+
+def merge_two_plane_kick_dfs(df_x, df_y):
+    df_xy = tfs.TfsDataFrame(pd.merge(df_x, df_y, how='inner', left_index=True, right_index=True))
+    if len(df_xy.index) != len(df_x.index) or len(df_xy.index) != len(df_y.index):
+        raise IndexError("Can't merge the two planed kick-files as their indices seem to be different!")
+    df_xy.headers = df_x.headers
+    df_xy.headers.update(df_y.headers)
+    return df_xy
