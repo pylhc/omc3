@@ -24,13 +24,13 @@ COL_ACTION = const.get_action_col
 COL_ACTION_ERR = const.get_action_err_col
 
 COL_MAV = const.get_mav_col
-COL_MAV_STD = const.get_mav_std_col
+COL_MAV_STD = const.get_mav_err_col
 COL_IN_MAV = const.get_used_in_mav_col
 
 COL_NATQ = const.get_natq_col
 COL_NATQ_STD = const.get_natq_err_col
 COL_NATQ_CORR = const.get_natq_corr_col
-COL_NATQ_TOTSTD = const.get_total_natq_std_col
+COL_NATQ_CORRSTD = const.get_corr_natq_err_col
 
 COL_TIME = const.get_time_col
 COL_BBQ = const.get_bbq_col
@@ -56,7 +56,7 @@ def _get_odr_headers(corrected):
 def _get_ampdet_columns(corrected):
     """ Get columns needed for amplitude detuning """
     if corrected:
-        return COL_NATQ_CORR, COL_NATQ_TOTSTD
+        return COL_NATQ_CORR, COL_NATQ_CORRSTD
     return COL_NATQ, COL_NATQ_STD
 
 
@@ -151,7 +151,7 @@ def add_total_natq_std(kickac_df):
         Modified kick_ac
     """
     for plane in PLANES:
-        kickac_df[COL_NATQ_TOTSTD(plane)] = np.sqrt(
+        kickac_df[COL_NATQ_CORRSTD(plane)] = np.sqrt(
             np.power(kickac_df[COL_NATQ_STD(plane)], 2) +
             np.power(kickac_df[COL_MAV_STD(plane)], 2)
         )
@@ -159,8 +159,6 @@ def add_total_natq_std(kickac_df):
 
 
 # Data Extraction ##############################################################
-
-
 
 
 def get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected=False):

@@ -34,7 +34,7 @@ from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, s
 COL_TIME = ta_const.get_time_col
 COL_BBQ = ta_const.get_bbq_col
 COL_MAV = ta_const.get_mav_col
-COL_MAV_STD = ta_const.get_mav_std_col
+COL_MAV_STD = ta_const.get_mav_err_col
 COL_IN_MAV = ta_const.get_used_in_mav_col
 COL_NATQ = ta_const.get_natq_col
 COL_CORRECTED = ta_const.get_natq_corr_col

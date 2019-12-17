@@ -105,14 +105,14 @@ def get_used_in_mav_col(plane):
     return f"{get_bbq_col(plane):s}IN{MOVING_AV}"
 
 
-def get_mav_std_col(plane):
+def get_mav_err_col(plane):
     """ Label for the standard deviation of the moving average data. """
     return f"{ERR}{get_bbq_col(plane):s}{MOVING_AV}"
 
 
-def get_total_natq_std_col(plane):
-    """ Return the total standard deviation for the natural tune. """
-    return f"{ERR}{get_natq_col(plane):s}TOT"
+def get_corr_natq_err_col(plane):
+    """ Return the standard deviation for the corrected natural tune. """
+    return f"{ERR}{get_natq_corr_col(plane):s}"
 
 
 def get_natq_col(plane):
