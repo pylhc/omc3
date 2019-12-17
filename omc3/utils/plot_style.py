@@ -9,6 +9,9 @@ Helper functions to make the most awesome* plots out there.
 import matplotlib
 
 
+REMOVE_ENTRY = "REMOVE ENTRY"  # id to remove entries in manual style
+
+
 _PRESENTATION_PARAMS = {
     # u'axes.autolimit_mode': u'data',
     u'backend': u'pdf',
@@ -198,6 +201,7 @@ _STANDARD_PARAMS = {
     u'ytick.right': False
 }
 
+STYLES = dict(standard=_STANDARD_PARAMS, presentation=_PRESENTATION_PARAMS)
 
 # Style ######################################################################
 
@@ -209,18 +213,16 @@ def set_style(style='standard', manual=None):
         style: Choose Style, either 'standard' or 'presentation'
         manual: Dict of manual parameters to update. Convention: "REMOVE_ENTRY" removes entry
     """
-    if style == 'standard':
-        params = _STANDARD_PARAMS.copy()
-    elif style == 'presentation':
-        params = _PRESENTATION_PARAMS.copy()
-    else:
+    try:
+        params = STYLES[style].copy()
+    except KeyError:
         raise ValueError(f"Style '{style}' not found.")
 
     if manual:
-        for key in manual.keys():
-            if manual[key] == "REMOVE_ENTRY":
+        for key, value in manual:
+            if value == REMOVE_ENTRY:
                 params.pop(key)
-            else:
-                params[key] = manual[key]
+                manual.pop(key)
+        params.update(manual)
 
     matplotlib.rcParams.update(params)
