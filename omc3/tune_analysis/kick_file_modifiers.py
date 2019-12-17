@@ -60,18 +60,6 @@ def _get_ampdet_columns(corrected):
     return COL_NATQ, COL_NATQ_STD
 
 
-def _um_to_m(f):
-    """ Convert from 1/um to 1/m and return result as rounded integer. """
-    return int(round(f*1e6))
-
-
-def _get_slope_label(slope, std):
-    """ Returns a well formatted slope label. """
-    str_slope = '{:> 7d}'.format(_um_to_m(slope))
-    str_std = '{:>6d}'.format(_um_to_m(std))
-    return f'{str_slope} $\pm$ {str_std} m$^{{-1}}$'
-
-
 # Data Addition ################################################################
 
 
@@ -173,32 +161,6 @@ def add_total_natq_std(kickac_df):
 # Data Extraction ##############################################################
 
 
-def get_linear_odr_data_for_plot(kickac_df, action_plane, tune_plane, corrected=False):
-    """ Extract the data from odr.
-
-    Args:
-        kickac_df: Dataframe containing the data
-        action_plane: Plane of the action
-        tune_plane: Plane of the tune
-
-    Returns:
-        Dictionary containing x,y, ylower, yupper, offset and label
-
-    """
-    odr_fit = get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected)
-    offset, slope, slope_std = odr_fit.beta + [odr_fit.sd_beta[1]]
-    x = [0, max(kickac_df[COL_ACTION(action_plane)])*1.05]
-    y = [0, x[1] * slope]
-    y_low = [0, x[1] * (slope - slope_std)]
-    y_upp = [0, x[1] * (slope + slope_std)]
-    return {
-        "x": np.array(x),
-        "y": np.array(y),
-        "label": _get_slope_label(slope, slope_std),
-        "offset": offset,
-        "ylower": np.array(y_low),
-        "yupper": np.array(y_upp),
-    }
 
 
 def get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
@@ -216,7 +178,7 @@ def get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
     header_slope, header_slope_std, header_offset = _get_odr_headers(corrected)
 
     odr_data = DotDict(beta=[0, 0], sd_beta=[0, 0])
-    odr_data.beta[0] = kickac_df.headers[header_offset(action_plane, tune_plane)],
+    odr_data.beta[0] = kickac_df.headers[header_offset(action_plane, tune_plane)]
     odr_data.beta[1] = kickac_df.headers[header_slope(action_plane, tune_plane)]
     odr_data.sd_beta[1] = kickac_df.headers[header_slope_std(action_plane, tune_plane)]
     return odr_data

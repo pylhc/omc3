@@ -219,7 +219,7 @@ def set_style(style='standard', manual=None):
         raise ValueError(f"Style '{style}' not found.")
 
     if manual:
-        for key, value in manual:
+        for key, value in manual.items():
             if value == REMOVE_ENTRY:
                 params.pop(key)
                 manual.pop(key)
