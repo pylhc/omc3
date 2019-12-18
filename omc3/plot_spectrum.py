@@ -609,15 +609,26 @@ def _get_unique_filenames(files):
 
 
 def _load_spectrum_data(file_path, bpms):
-    try:
-        return {
-            AMPS: _get_amplitude_files(file_path),
-            FREQS: _get_frequency_files(file_path),
-            LIN: _get_lin_files(file_path),
-        }
-    except FileNotFoundError:
-        LOG.info("Some files not present. Trying to load old data format")
-        return _get_old_data(file_path, bpms)
+    LOG.info("Loading HARPY data.")
+    with suppress(FileNotFoundError):
+        return _get_harpy_data(file_path)
+
+    LOG.info("Some files not present. Loading SUSSIX data format")
+    with suppress(FileNotFoundError):
+        return _get_sussix_data(file_path, bpms)
+
+    raise FileNotFoundError(f"Neither harpy nor sussix files found in '{os.path.dirname(file_path)}' "
+                            f"matching the name '{os.path.basename(file_path)}'.")
+
+# Harpy Loader ---
+
+
+def _get_harpy_data(file_path):
+    return {
+        AMPS: _get_amplitude_files(file_path),
+        FREQS: _get_frequency_files(file_path),
+        LIN: _get_lin_files(file_path),
+    }
 
 
 def _get_amplitude_files(file_path):
@@ -640,7 +651,10 @@ def _get_planed_files(file_path, ext, index=None):
     }
 
 
-def _get_old_data(file_path, bpms):
+# Sussix loader ---
+
+
+def _get_sussix_data(file_path, bpms):
     directory, filename = _get_dir_and_name(file_path)
     bpm_dir = os.path.join(directory, 'BPM')
     files = {LIN: {}, AMPS: {}, FREQS: {}}
@@ -656,6 +670,9 @@ def _get_old_data(file_path, bpms):
         for id in (FREQS, AMPS):
             files[id][plane] = files[id][plane].fillna(0)
     return files
+
+
+# Other ---
 
 
 def _get_tunes(lin, bpm=None):
