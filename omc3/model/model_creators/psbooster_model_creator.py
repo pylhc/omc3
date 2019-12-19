@@ -2,6 +2,7 @@ from model.model_creators import model_creator
 from model.accelerators.accelerator import AccExcitationMode
 import shutil
 import os
+from model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
 
 
 class PsboosterModelCreator(model_creator.ModelCreator):
@@ -12,7 +13,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
                           AccExcitationMode.ACD) else "0"
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
-            "RING": instance.get_ring(),
+            "RING": instance.ring,
             "USE_ACD": use_acd,
             "NAT_TUNE_X": instance.nat_tunes[0],
             "NAT_TUNE_Y": instance.nat_tunes[1],
@@ -26,20 +27,19 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             replace_dict["DRV_TUNE_X"] = instance.drv_tunes[0]
             replace_dict["DRV_TUNE_Y"] = instance.drv_tunes[1]
 
-        with open(instance.get_nominal_tmpl()) as textfile:
+        with open(instance.get_file("nominal.madx")) as textfile:
             madx_template = textfile.read()
 
         return madx_template % replace_dict
 
     @classmethod
     def _prepare_fullresponse(cls, instance, output_path):
-        with open(instance.get_iteration_tmpl()) as textfile:
+        with open(instance.get_file("template.iterate.madx")) as textfile:
             iterate_template = textfile.read()
 
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
-            "RING": instance.get_ring(),
-            "LIB": instance.NAME,  # "psbooster"
+            "RING": instance.ring,
             "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "KINETICENERGY": instance.energy,
@@ -51,8 +51,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             "OUTPUT": output_path,
         }
 
-        with open(os.path.join(output_path,
-                               "job.iterate.madx"), "w") as textfile:
+        with open(os.path.join(output_path, JOB_ITERATE_MADX), "w") as textfile:
             textfile.write(iterate_template % replace_dict)
 
     @classmethod
@@ -62,13 +61,13 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             and produces correction_test.mask2.madx.
             Java GUI fills the remaining fields
            """
-        with open(instance.get_corrtest_tmpl()) as textfile:
+        with open(instance.get_file("correction_test.madx")) as textfile:
             template = textfile.read()
 
         replace_dict = {
             "KINETICENERGY": instance.energy,
             "FILES_DIR": instance.get_dir(),
-            "RING": instance.get_ring(),
+            "RING": instance.ring,
             "NAT_TUNE_X": instance.nat_tunes[0],
             "NAT_TUNE_Y": instance.nat_tunes[1],
             "DPP": instance.dpp,
@@ -76,8 +75,7 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             "COR": "%COR"  # field filled later by Java GUI
         }
 
-        with open(os.path.join(output_path,
-                               "correction_test.mask2.madx"), "w") as textfile:
+        with open(os.path.join(output_path, "correction_test.mask2.madx"), "w") as textfile:
             textfile.write(template % replace_dict)
 
     @classmethod
@@ -85,28 +83,20 @@ class PsboosterModelCreator(model_creator.ModelCreator):
         if instance.fullresponse:
             cls._prepare_fullresponse(instance, output_path)
             cls._prepare_corrtest(instance, output_path)
-
-        file_name = "error_deff_ring" + str(instance.get_ring()) + ".txt"
-        file_path = instance.get_dir()
-        src_path = os.path.join(file_path, file_name)
-        dest_path = os.path.join(output_path, "error_deffs.txt")
-
-        shutil.copy(src_path, dest_path)
-
-        # os.link(src, dst) (file_path, link_path)
+        src_path = os.path.join(instance.get_dir(), f"error_deff_ring{instance.ring}.txt")
+        shutil.copy(src_path, os.path.join(output_path, ERROR_DEFFS_TXT))
 
 
 class PsboosterSegmentCreator(model_creator.ModelCreator):
     @classmethod
     def get_madx_script(cls, instance, output_path):
-        with open(instance.get_segment_tmpl()) as textfile:
+        with open(instance.get_file("segment.madx")) as textfile:
             madx_template = textfile.read()
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
             "RING": instance.ring,
             "NAT_TUNE_X": instance.nat_tunes[0],
             "NAT_TUNE_Y": instance.nat_tunes[1],
-            "LIB": instance.NAME,  # "psbooster"
             "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "OUTPUT": output_path,

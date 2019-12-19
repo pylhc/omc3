@@ -3,21 +3,16 @@ PS
 -------------------
 """
 import os
-import datetime as dt
 from model.accelerators.accelerator import Accelerator
 import logging
 
 LOGGER = logging.getLogger(__name__)
-
 CURRENT_DIR = os.path.dirname(__file__)
-CURRENT_YEAR = dt.datetime.now().year
-PS_DIR = os.path.join(CURRENT_DIR, "ps")
 
 
 class Ps(Accelerator):
     """ Parent Class for Ps-Types. """
     NAME = "ps"
-    MACROS_NAME = "ps"
     YEAR = 2018
 
     # Public Methods ##########################################################
@@ -27,17 +22,11 @@ class Ps(Accelerator):
 
     @classmethod
     def get_dir(cls):
-        return os.path.join(PS_DIR, str(cls.YEAR))
-
-    @classmethod
-    def get_segment_tmpl(cls):
-        return cls.get_file("segment.madx")
+        return os.path.join(CURRENT_DIR, cls.NAME, str(cls.YEAR))
 
     @classmethod
     def get_file(cls, filename):
-        return os.path.join(CURRENT_DIR, "ps", filename)
-
-    # Private Methods ##########################################################
+        return os.path.join(CURRENT_DIR, cls.NAME, filename)
 
 
 class _PsSegmentMixin(object):

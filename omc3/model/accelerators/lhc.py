@@ -25,12 +25,7 @@ LHC_MODE_TO_YEAR = {
         "lhc_runII_2018": "2018",
         "hllhc13": "hllhc1.3",
     }
-LHC_MODE_TO_MACROS = {
-        "lhc_runII_2016_ats": "lhc_runII_ats",
-        "lhc_runII_2017": "lhc_runII_ats",
-        "lhc_runII_2018": "lhc_runII_ats",
-        "hllhc13": "hllhc",
-}
+LHC_ATS_MODES = ["lhc_runII_2016_ats", "lhc_runII_2017", "lhc_runII_2018", "hllhc13"]
 
 
 class Lhc(Accelerator):
@@ -38,7 +33,6 @@ class Lhc(Accelerator):
     """
     YEAR = "2012"
     NAME = "lhc"
-    MACROS_NAME = "lhc"
     CORRECTORS_DIR = "2012"
     RE_DICT = {AccElementTypes.BPMS: r"BPM",
                AccElementTypes.MAGNETS: r"M",
@@ -78,8 +72,7 @@ class Lhc(Accelerator):
         new_class = cls
         if opt.lhc_mode is not None:
             new_class.YEAR = LHC_MODE_TO_YEAR[opt.lhc_mode]
-            if opt.lhc_mode in LHC_MODE_TO_MACROS.keys():
-                new_class.MACROS_NAME = LHC_MODE_TO_MACROS[opt.lhc_mode]
+            if opt.lhc_mode in LHC_ATS_MODES:
                 new_class.ats = True
             if opt.lhc_mode == "hllhc13":
                 new_class.CORRECTORS_DIR = "hllhc1.3"
@@ -122,10 +115,6 @@ class Lhc(Accelerator):
         LOGGER.debug(f"Class name       {self.__class__.__name__}")
         LOGGER.info(f"Beam             {self.beam}")
         LOGGER.info(f"Beam direction   {self.beam_direction}")
-
-    @classmethod
-    def get_segment_tmpl(cls):
-        return cls.get_file("segment.madx")
 
     @classmethod
     def get_file(cls, filename):
@@ -275,7 +264,6 @@ class Lhc(Accelerator):
             madx_template = template.read()
         try:
             replace_dict = {
-                "LIB": self.MACROS_NAME,
                 "MAIN_SEQ": self.load_main_seq_madx(),
                 "OPTICS_PATH": self.modifiers,
                 "CROSSING_ON": "1" if self.xing else "0",
@@ -299,7 +287,6 @@ class Lhc(Accelerator):
             madx_template = template.read()
         try:
             replace_dict = {
-                "LIB": self.MACROS_NAME,
                 "MAIN_SEQ": self.load_main_seq_madx(),
                 "OPTICS_PATH": self.modifiers,
                 "CROSSING_ON": "1" if self.xing else "0",
@@ -389,4 +376,3 @@ class _LhcSegmentMixin(object):
             raise AcceleratorDefinitionError("Segment start not set.")
         if self.end is None:
             raise AcceleratorDefinitionError("Segment end not set.")
-

@@ -77,6 +77,7 @@ class Accelerator(object):
         self.modifiers = None
         self._beam_direction = 1
         self._beam = None
+        self._ring = None
 
         parser = EntryPoint(self.get_instance_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
@@ -254,16 +255,12 @@ class Accelerator(object):
             raise AcceleratorDefinitionError("Beam direction has to be either 1 or -1")
         self._beam_direction = value
 
-    # Instance methods ########################################
-
     def verify_object(self):
         """
         Verifies that this instance of an accelerator is properly
         instantiated.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    # For GetLLM #############################################################
 
     def get_exciter_bpm(self, plane, distance):
         """
@@ -282,23 +279,9 @@ class Accelerator(object):
             raise AttributeError("No driven model given in this accelerator instance.")
         return self._model_driven
 
-    # Templates ##############################################################
-    @classmethod
-    def get_nominal_tmpl(cls):
-        """ Returns template for nominal model (Model Creator) """
-        return cls.get_file("nominal.madx")
-
     @classmethod
     def get_file(cls, filename):
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    @classmethod
-    def get_iteration_tmpl(cls):
-        """
-        Returns template to create fullresponse.
-        TODO: only in _prepare_fullresponse in creator! Needs to be replaced by get_basic_seq
-        """
-        return cls.get_file("template.iterate.madx")
 
     # Jobs ###################################################################
 

@@ -33,19 +33,18 @@ class PsModelCreator(model_creator.ModelCreator):
         else:
             LOGGER.debug("ACD is OFF")
 
-        with open(instance.get_nominal_tmpl()) as textfile:
+        with open(instance.get_file("nominal.madx")) as textfile:
             madx_template = textfile.read()
         out = madx_template % replace_dict
         return out
 
     @classmethod
     def _prepare_fullresponse(cls, instance, output_path):
-        with open(instance.get_iteration_tmpl()) as textfile:
+        with open(instance.get_file("template.iterate.madx")) as textfile:
             iterate_template = textfile.read()
 
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
-            "LIB": instance.MACROS_NAME,
             "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "KINETICENERGY": instance.energy,
@@ -76,7 +75,7 @@ class PsSegmentCreator(model_creator.ModelCreator):
         """ instance is Ps class"""
         LOGGER.info(f"instance.energy {instance.energy}")
 
-        with open(instance.get_segment_tmpl()) as textfile:
+        with open(instance.get_file("segment.madx")) as textfile:
             madx_template = textfile.read()
         replace_dict = {
             "KINETICENERGY": instance.energy,

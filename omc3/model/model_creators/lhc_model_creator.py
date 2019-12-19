@@ -27,8 +27,7 @@ def _b2_columns():
 
 
 class LhcModelCreator(model_creator.ModelCreator):
-    @classmethod
-    def get_base_madx_script(cls, accel, outdir, best_knowledge):
+    def get_base_madx_script(self, accel, outdir, best_knowledge):
         ATS_MD = False
         HIGH_BETA = False
         ats_suffix = '_ats' if accel.ats else ''
@@ -158,10 +157,9 @@ class LhcCouplingCreator(LhcModelCreator):
 class LhcSegmentCreator(model_creator.ModelCreator):
     @classmethod
     def get_madx_script(cls, lhc_instance, output_path):
-        with open(lhc_instance.get_segment_tmpl()) as textfile:
+        with open(lhc_instance.get_file("segment.madx")) as textfile:
             madx_template = textfile.read()
         replace_dict = {
-            "LIB": lhc_instance.MACROS_NAME,
             "MAIN_SEQ": lhc_instance.load_main_seq_madx(),
             "OPTICS_PATH": lhc_instance.modifiers,
             "NUM_BEAM": lhc_instance.beam,
