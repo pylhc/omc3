@@ -14,8 +14,8 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             "FILES_DIR": instance.get_dir(),
             "RING": instance.get_ring(),
             "USE_ACD": use_acd,
-            "NAT_TUNE_X": instance.nat_tune_x,
-            "NAT_TUNE_Y": instance.nat_tune_y,
+            "NAT_TUNE_X": instance.nat_tunes[0],
+            "NAT_TUNE_Y": instance.nat_tunes[1],
             "KINETICENERGY": instance.energy,
             "DPP": instance.dpp,
             "OUTPUT": output_path,
@@ -23,8 +23,8 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             "DRV_TUNE_Y": "",
         }
         if use_acd:
-            replace_dict["DRV_TUNE_X"] = instance.drv_tune_x
-            replace_dict["DRV_TUNE_Y"] = instance.drv_tune_y
+            replace_dict["DRV_TUNE_X"] = instance.drv_tunes[0]
+            replace_dict["DRV_TUNE_Y"] = instance.drv_tunes[1]
 
         with open(instance.get_nominal_tmpl()) as textfile:
             madx_template = textfile.read()
@@ -40,11 +40,11 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             "FILES_DIR": instance.get_dir(),
             "RING": instance.get_ring(),
             "LIB": instance.NAME,  # "psbooster"
-            "OPTICS_PATH": instance.modifiers_file,
+            "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "KINETICENERGY": instance.energy,
-            "NAT_TUNE_X": instance.nat_tune_x,
-            "NAT_TUNE_Y": instance.nat_tune_y,
+            "NAT_TUNE_X": instance.nat_tunes[0],
+            "NAT_TUNE_Y": instance.nat_tunes[1],
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
             "DPP": instance.dpp,
@@ -69,8 +69,8 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             "KINETICENERGY": instance.energy,
             "FILES_DIR": instance.get_dir(),
             "RING": instance.get_ring(),
-            "NAT_TUNE_X": instance.nat_tune_x,
-            "NAT_TUNE_Y": instance.nat_tune_y,
+            "NAT_TUNE_X": instance.nat_tunes[0],
+            "NAT_TUNE_Y": instance.nat_tunes[1],
             "DPP": instance.dpp,
             "PATH": "%TESTPATH",  # field filled later by Java GUI
             "COR": "%COR"  # field filled later by Java GUI
@@ -104,10 +104,10 @@ class PsboosterSegmentCreator(model_creator.ModelCreator):
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
             "RING": instance.ring,
-            "NAT_TUNE_X": instance.nat_tune_x,
-            "NAT_TUNE_Y": instance.nat_tune_y,
+            "NAT_TUNE_X": instance.nat_tunes[0],
+            "NAT_TUNE_Y": instance.nat_tunes[1],
             "LIB": instance.NAME,  # "psbooster"
-            "OPTICS_PATH": instance.modifiers_file,
+            "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "OUTPUT": output_path,
             "LABEL": instance.label,

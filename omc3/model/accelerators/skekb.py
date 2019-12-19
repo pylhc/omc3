@@ -16,7 +16,6 @@ class SKekB(Accelerator):
     Beam direction inverted for now for using with HER.
     """
     NAME = "skekb"
-    MACROS_NAME = "skekb"
 
     def verify_object(self):  # TODO: Maybe more checks?
         if self.model_dir is None:  # is the class is used to create full response?
@@ -40,20 +39,19 @@ class SKekB(Accelerator):
 
     @classmethod
     def _get_beamed_class(cls, new_class, ring):
+        if ring =='her':
+            new_class.beam_direction = -1
         ringSKEKB = _Her if ring == 'her' else _Ler
         beamed_class = type(new_class.__name__ + str(ring),
                             (new_class, ringSKEKB),
                             {})
+
         return beamed_class
 
 
 class _Ler(object):
-    @classmethod
-    def get_beam_direction(cls):
-        return 1
+    pass
 
 
 class _Her(object):
-    @classmethod
-    def get_beam_direction(cls):
-        return -1
+    pass

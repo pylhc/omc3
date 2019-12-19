@@ -88,7 +88,7 @@ def _gen_kick_calc(meas_input, lin, plane):
 
 def _get_model_arc_betas(measure_input, plane):
     accel = measure_input.accelerator
-    model = (accel.get_driven_tfs() if accel.excitation else accel.get_model_tfs())
+    model = (accel.model_driven if accel.excitation else accel.model)
     return model.loc[:, [S, f"{BETA}{plane}"]].loc[
            accel.get_element_types_mask(model.index, [AccElementTypes.ARC_BPMS]), :]
 

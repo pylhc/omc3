@@ -59,9 +59,6 @@ class Psbooster(Accelerator):
     def get_file(cls, filename):
         return os.path.join(CURRENT_DIR, "psbooster", filename)
 
-    def get_beam_direction(self):
-        return 1
-
 
 class _PsboosterSegmentMixin(object):
 

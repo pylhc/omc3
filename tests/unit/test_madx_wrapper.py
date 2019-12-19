@@ -11,12 +11,12 @@ def test_with_macro():
          - Macros resolve correctly.
     """
     content = (
-        "!@require lhc_runII\n"
-        "!@require lhc_runII_ats.macros.madx\n"
+        "!@require lhc\n"
+        "!@require general.macros.madx\n"
     )
     resolved_lines = [
-        'call,file="{}";'.format(join(madx_wrapper.LIB, "lhc_runII.macros.madx")),
-        'call,file="{}";'.format(join(madx_wrapper.LIB, "lhc_runII_ats.macros.madx"))
+        'call,file="{}";'.format(join(madx_wrapper.LIB, "lhc.macros.madx")),
+        'call,file="{}";'.format(join(madx_wrapper.LIB, "general.macros.madx"))
     ]
 
     with temporary_dir() as tmpdir:

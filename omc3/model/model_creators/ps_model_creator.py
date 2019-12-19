@@ -16,19 +16,19 @@ class PsModelCreator(model_creator.ModelCreator):
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
             "USE_ACD": use_acd,
-            "NAT_TUNE_X": instance.nat_tune_x,
-            "NAT_TUNE_Y": instance.nat_tune_y,
+            "NAT_TUNE_X": instance.nat_tunes[0],
+            "NAT_TUNE_Y": instance.nat_tunes[1],
             "KINETICENERGY": instance.energy,
             "DPP": instance.dpp,
             "OUTPUT": output_path,
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
-            "OPTICS_PATH": instance.modifiers_file,
+            "OPTICS_PATH": instance.modifiers,
         }
         LOGGER.info(f"instance name {instance.NAME}")
         if use_acd:
-            replace_dict["DRV_TUNE_X"] = instance.drv_tune_x
-            replace_dict["DRV_TUNE_Y"] = instance.drv_tune_y
+            replace_dict["DRV_TUNE_X"] = instance.drv_tunes[0]
+            replace_dict["DRV_TUNE_Y"] = instance.drv_tunes[1]
             LOGGER.debug(f"ACD is ON. Driven tunes {replace_dict['DRV_TUNE_X']}, {replace_dict['DRV_TUNE_Y']}")
         else:
             LOGGER.debug("ACD is OFF")
@@ -46,11 +46,11 @@ class PsModelCreator(model_creator.ModelCreator):
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
             "LIB": instance.MACROS_NAME,
-            "OPTICS_PATH": instance.modifiers_file,
+            "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "KINETICENERGY": instance.energy,
-            "NAT_TUNE_X": instance.nat_tune_x,
-            "NAT_TUNE_Y": instance.nat_tune_y,
+            "NAT_TUNE_X": instance.nat_tunes[0],
+            "NAT_TUNE_Y": instance.nat_tunes[1],
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
         }
@@ -80,10 +80,10 @@ class PsSegmentCreator(model_creator.ModelCreator):
             madx_template = textfile.read()
         replace_dict = {
             "KINETICENERGY": instance.energy,
-            "NAT_TUNE_X": instance.nat_tune_x,
-            "NAT_TUNE_Y": instance.nat_tune_y,
+            "NAT_TUNE_X": instance.nat_tunes[0],
+            "NAT_TUNE_Y": instance.nat_tunes[1],
             "FILES_DIR": instance.get_dir(),
-            "OPTICS_PATH": instance.modifiers_file,
+            "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "LABEL": instance.label,
             "BETAKIND": instance.kind,
