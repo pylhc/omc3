@@ -18,22 +18,9 @@ CURRENT_DIR = os.path.dirname(__file__)
 LHC_DIR = os.path.join(CURRENT_DIR, "lhc")
 
 
-LHC_MODE_TO_YEAR = {
-        "lhc_runI": "2012",
-        "lhc_runII": "2015",
-        "lhc_runII_2016": "2016",
-        "lhc_runII_2016_ats": "2016",
-        "lhc_runII_2017": "2017",
-        "lhc_runII_2018": "2018",
-        "hllhc13": "hllhc1.3",
-    }
-LHC_ATS_MODES = ["lhc_runII_2016_ats", "lhc_runII_2017", "lhc_runII_2018", "hllhc13"]
-
-
 class Lhc(Accelerator):
     """ Parent Class for Lhc-Types.
     """
-    YEAR = "2012"
     NAME = "lhc"
     CORRECTORS_DIR = "2012"
     RE_DICT = {AccElementTypes.BPMS: r"BPM",
@@ -43,6 +30,8 @@ class Lhc(Accelerator):
     LHC_IPS = ("1", "2", "5", "8")
     NORMAL_IP_BPMS = "BPMSW.1{side}{ip}.B{beam}"
     DOROS_IP_BPMS = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
+
+    year = "2012"
     ats = False
 
     @property
@@ -61,9 +50,14 @@ class Lhc(Accelerator):
     @staticmethod
     def get_class_parameters():
         params = EntryPointParameters()
-        params.add_parameter(name="lhc_mode", type=str, choices=list(LHC_MODE_TO_YEAR.keys()),
-                             help=f"LHC mode to use. Should be one of: {str(LHC_MODE_TO_YEAR.keys())}")
-        params.add_parameter(name="beam", type=int, choices=(1, 2), help="Beam to use.")
+        params.add_parameter(name="beam", type=int, choices=(1, 2), required=True,
+                             help="Beam to use.")
+        params.add_parameter(name="year", type=str, required=True,
+                             choices=("2012", "2015", "2016", "2017", "2018", "hllhc1.3"),
+                             help="Year of the optics (or hllhc1.3).")
+        params.add_parameter(name="ats", action="store_true",
+                             help="Marks ATS optics")
+
         return params
 
     # Entry-Point Wrappers #####################################################
@@ -72,18 +66,18 @@ class Lhc(Accelerator):
     def _get_class(cls, opt):
         """ Actual get_class function """
         new_class = cls
-        if opt.lhc_mode is not None:
-            new_class.YEAR = LHC_MODE_TO_YEAR[opt.lhc_mode]
-            if opt.lhc_mode in LHC_ATS_MODES:
-                new_class.ats = True
-            if opt.lhc_mode == "hllhc13":
-                new_class.CORRECTORS_DIR = "hllhc1.3"
-        if opt.beam is not None:
-            new_class.beam = opt.beam
-            if new_class.beam == 1:
-                new_class.beam_direction = 1
-            elif new_class.beam == 2:
-                new_class.beam_direction = -1
+        if opt.year is None or opt.ats is None or opt.beam is None:
+            raise AcceleratorDefinitionError("The accelerator definition is incomplete, year,"
+                                             " beam and ats need to be specified")
+        new_class.year = opt.year
+        new_class.ats = opt.ats
+        if new_class.year == "hllhc1.3":
+            new_class.CORRECTORS_DIR = "hllhc1.3"
+        new_class.beam = opt.beam
+        if new_class.beam == 1:
+            new_class.beam_direction = 1
+        elif new_class.beam == 2:
+            new_class.beam_direction = -1
         return new_class
 
     # Public Methods ##########################################################
@@ -193,7 +187,7 @@ class Lhc(Accelerator):
     @classmethod
     def load_main_seq_madx(cls):
         try:
-            return _get_call_main_for_year(cls.YEAR)
+            return _get_call_main_for_year(cls.year)
         except AttributeError:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete, mode " +

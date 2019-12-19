@@ -47,9 +47,9 @@ class LhcModelCreator(model_creator.ModelCreator):
                 f"use_acd={use_acd};\nuse_adt={use_adt};\n"
                 f"exec, do_twiss_monitors(LHCB{accel.beam}, '{join(outdir, TWISS_DAT)}', {accel.dpp});\n"
                 f"exec, do_twiss_elements(LHCB{accel.beam}, '{join(outdir, TWISS_ELEMENTS_DAT)}', {accel.dpp});\n"
-                f"if(use_acd == 1){{"
+                f"if(use_acd == 1){{\n"
                 f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{join(outdir, TWISS_AC_DAT)}', {accel.dpp});\n"
-                f"}}else if(use_adt == 1){{"
+                f"}}else if(use_adt == 1){{\n"
                 f"exec, twiss_adt({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{join(outdir, TWISS_ADT_DAT)}', {accel.dpp});\n"
                 f"}}\n")
         return madx_script

@@ -57,10 +57,7 @@ class Accelerator(object):
         params.add_parameter(name="fullresponse", action="store_true",
                              help="If True, outputs also fullresponse madx file.",)
         params.add_parameter(name="xing", action="store_true",
-                             help="If True, x-ing  angles will be applied to model")
-        params.add_parameter(
-                             help="Year of the optics. Default is the current year.",
-                             name="year_opt", type=int, )
+                             help="If True, x-ing angles will be applied to model")
 
         return params
 
@@ -171,23 +168,23 @@ class Accelerator(object):
         params = EntryPointParameters()
         return params
 
-    @classmethod
-    def init_and_get_unknowns(cls, args=None):
-        """ Initializes but also returns unknowns.
-         For the desired philosophy of returning parameters all the time,
-         try to avoid this function, e.g. parse outside parameters first.
-         """
-        opt, rest_args = split_arguments(args, cls.get_instance_parameters())
-        return cls(opt), rest_args
+    # @classmethod
+    # def init_and_get_unknowns(cls, args=None):
+    #     """ Initializes but also returns unknowns.
+    #      For the desired philosophy of returning parameters all the time,
+    #      try to avoid this function, e.g. parse outside parameters first.
+    #      """
+    #     opt, rest_args = split_arguments(args, cls.get_instance_parameters())
+    #     return cls(opt), rest_args
 
-    @classmethod
-    def get_class(cls, *args, **kwargs):
-        """
-        This method should return the accelerator class defined in the arguments.
-        """
-        parser = EntryPoint(cls.get_class_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
-        return cls._get_class(opt)
+    # @classmethod
+    # def get_class(cls, *args, **kwargs):
+    #     """
+    #     This method should return the accelerator class defined in the arguments.
+    #     """
+    #     parser = EntryPoint(cls.get_class_parameters(), strict=True)
+    #     opt = parser.parse(*args, **kwargs)
+    #     return cls._get_class(opt)
 
     @classmethod
     def get_class_and_unknown(cls, *args, **kwargs):
