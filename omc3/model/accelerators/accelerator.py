@@ -285,14 +285,14 @@ class Accelerator(object):
 
     # Jobs ###################################################################
 
-    def get_update_correction_job(self, tiwss_out_path, corrections_file_path):
+    def update_correction_script(self, tiwss_out_path, corrections_file_path):
         """
         Returns job (string) to create an updated model from changeparameters input
         (used in iterative correction).
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    def get_basic_seq_job(self):
+    def base_madx_script(self, model_directory, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.
         """

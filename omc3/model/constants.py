@@ -12,3 +12,6 @@ JOB_ITERATE_MADX = "job.iterate.madx"
 
 GENERAL_MACROS = "general.macros.madx"
 LHC_MACROS = "lhc.macros.madx"
+
+B2_SETTINGS_MADX = "b2_settings.madx"
+B2_ERRORS_TFS = "b2_errors.tfs"

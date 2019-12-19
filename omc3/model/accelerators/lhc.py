@@ -7,9 +7,11 @@ import os
 from collections import OrderedDict
 from model.accelerators.accelerator import (Accelerator, AcceleratorDefinitionError,
                                             AccExcitationMode, AccElementTypes)
+from model.constants import GENERAL_MACROS, LHC_MACROS, B2_SETTINGS_MADX, B2_ERRORS_TFS, MACROS_DIR
 from utils import logging_tools
 import tfs
 from generic_parser import EntryPointParameters
+
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
@@ -113,12 +115,12 @@ class Lhc(Accelerator):
         # TODO: write more output prints
         LOGGER.debug("... verification passed. \nSome information about the accelerator:")
         LOGGER.debug(f"Class name       {self.__class__.__name__}")
-        LOGGER.info(f"Beam             {self.beam}")
-        LOGGER.info(f"Beam direction   {self.beam_direction}")
+        LOGGER.debug(f"Beam             {self.beam}")
+        LOGGER.debug(f"Beam direction   {self.beam_direction}")
 
     @classmethod
     def get_file(cls, filename):
-        return os.path.join(CURRENT_DIR, "lhc", filename)
+        return os.path.join(CURRENT_DIR, cls.NAME, filename)
 
     @classmethod
     def get_lhc_error_dir(cls):
@@ -128,10 +130,8 @@ class Lhc(Accelerator):
     def get_variables(cls, frm=None, to=None, classes=None):
         correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")
         all_corrs = _merge_jsons(
-            os.path.join(correctors_dir, "correctors_b" + str(cls.beam),
-                         "beta_correctors.json"),
-            os.path.join(correctors_dir, "correctors_b" + str(cls.beam),
-                         "coupling_correctors.json"),
+            os.path.join(correctors_dir, f"correctors_b{cls.beam}", "beta_correctors.json"),
+            os.path.join(correctors_dir, f"correctors_b{cls.beam}", "coupling_correctors.json"),
             cls._get_triplet_correctors_file(),
         )
         my_classes = classes
@@ -142,9 +142,7 @@ class Lhc(Accelerator):
         )
         if frm is None and to is None:
             return list(vars_by_class)
-        elems_matrix = tfs.read(
-            cls._get_corrector_elems()
-        ).sort_values("S")
+        elems_matrix = tfs.read(cls._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
                 elems_matrix = elems_matrix[(elems_matrix.S >= frm) | (elems_matrix.S <= to)]
@@ -168,25 +166,20 @@ class Lhc(Accelerator):
             An iterator returning tuples with:
                 ("ip name", "left BPM name", "right BPM name")
         """
-        beam = cls.beam
         for ip in Lhc.LHC_IPS:
             yield ("IP{}".format(ip),
-                   Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=beam),
-                   Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=beam))
+                   Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=cls.beam),
+                   Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=cls.beam))
             yield ("IP{}_DOROS".format(ip),
-                   Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=beam),
-                   Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=beam))
+                   Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=cls.beam),
+                   Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=cls.beam))
 
     def log_status(self):
         LOGGER.info("  model dir = " + self.model_dir)
         LOGGER.info("{:20s} [{:10.3f}]".format("Natural Tune X", self.nat_tunes[0]))
         LOGGER.info("{:20s} [{:10.3f}]".format("Natural Tune Y", self.nat_tunes[1]))
 
-        if self.model_best_knowledge is None:
-            LOGGER.info("{:20s} [{:>10s}]".format("Best Knowledge Model", "NO"))
-        else:
-            LOGGER.info("{:20s} [{:>10s}]".format("Best Knowledge Model", "OK"))
-
+        LOGGER.info("Best Knowledge Model     [{:>10s}]".format("NO" if self.model_best_knowledge is None else "OK"))
         if self.excitation == AccExcitationMode.FREE:
             LOGGER.info("{:20s} [{:>10s}]".format("Excitation", "NO"))
         else:
@@ -217,8 +210,7 @@ class Lhc(Accelerator):
     @classmethod
     def _get_corrector_elems(cls):
         correctors_dir = os.path.join(LHC_DIR, cls.CORRECTORS_DIR, "correctors")
-        return os.path.join(correctors_dir,
-                            "corrector_elems_b" + str(cls.beam) + ".tfs")
+        return os.path.join(correctors_dir, f"corrector_elems_b{cls.beam}.tfs")
 
     def get_exciter_bpm(self, plane, commonbpms):
         beam = self.beam
@@ -276,47 +268,67 @@ class Lhc(Accelerator):
             }
         except AttributeError:
             raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete. " +
+                "The accelerator definition is incomplete. " 
                 "Needs to be an accelator instance. Also: --lhcmode or --beam option missing?"
             )
         return madx_template % replace_dict
 
-    def get_basic_seq_job(self):
-        """ Return string for madx job of correting model """
-        with open(self.get_file("template.basic_seq.madx"), "r") as template:
-            madx_template = template.read()
-        try:
-            replace_dict = {
-                "MAIN_SEQ": self.load_main_seq_madx(),
-                "OPTICS_PATH": self.modifiers,
-                "CROSSING_ON": "1" if self.xing else "0",
-                "NUM_BEAM": self.beam,
-                "DPP": self.dpp,
-                "QMX": self.nat_tunes[0],
-                "QMY": self.nat_tunes[1],
-            }
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete. " +
-                "Needs to be an accelator instance. Also: --lhcmode or --beam option missing?"
-            )
-        return madx_template % replace_dict
+    def base_madx_script(self, outdir, best_knowledge=False):
+        ats_md = False
+        high_beta = False
+        ats_suffix = '_ats' if self.ats else ''
+        madx_script = (
+            f"option, -echo;\n"
+            f"{_call(os.path.join(outdir, MACROS_DIR, GENERAL_MACROS))}"
+            f"{_call(os.path.join(outdir, MACROS_DIR, LHC_MACROS))}"
+            f'title, "Model from Lukas :-)";\n'
+            f"{self.load_main_seq_madx()}\n"
+            f"exec, define_nominal_beams();\n"
+            f"{_call(self.modifiers)}"
+            f"exec, cycle_sequences();\n"
+            f"xing_angles = {'1' if self.xing else '0'};\n"
+            f"if(xing_angles==1){{\n"
+            f"    exec, set_crossing_scheme_ON();\n"
+            f"}}else{{\n"
+            f"    exec, set_default_crossing_scheme();\n"
+            f"}}\n"
+            f"use, sequence = LHCB{self.beam};\n"
+            f"option, echo;\n"
+        )
+        if best_knowledge:
+            # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
+            madx_script += (
+                    f"readmytable, file = '{os.path.join(outdir, B2_ERRORS_TFS)}', table=errtab;\n"
+                    f"seterr, table=errtab;\n"
+                    f"{_call(os.path.join(outdir, B2_SETTINGS_MADX))}")
+        if high_beta:
+            madx_script += "exec, high_beta_matcher();\n"
+        madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+        if ats_md:
+            madx_script += "exec, full_response_ats();\n"
+        madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
+        return madx_script
+
+    def update_correction_script(self, outpath, corr_file):
+        madx_script = self.base_madx_script(self.model_dir)
+        madx_script += (f"call, file = '{corr_file}';\n"
+                        f"exec, do_twiss_elements(LHCB{self.beam}, {outpath}, {self.dpp});\n")
+        return madx_script
 
 
 # General functions ##########################################################
 
 
 def _get_call_main_for_year(year):
-    call_main = _get_madx_call_command(_get_file_for_year(year, "main.seq"))
+    call_main = _call(_get_file_for_year(year, "main.seq"))
     if year == "2012":
-        call_main += _get_madx_call_command(os.path.join(LHC_DIR, "2012", "install_additional_elements.madx"))
+        call_main += _call(os.path.join(LHC_DIR, "2012", "install_additional_elements.madx"))
     if year == "hllhc1.3":
-        call_main += _get_madx_call_command(
-            os.path.join(LHC_DIR, "hllhc1.3", "main_update.seq"))
+        call_main += _call(os.path.join(LHC_DIR, "hllhc1.3", "main_update.seq"))
     return call_main
 
 
-def _get_madx_call_command(path_to_call):
+def _call(path_to_call):
     return f"call, file = '{path_to_call}';\n"
 
 

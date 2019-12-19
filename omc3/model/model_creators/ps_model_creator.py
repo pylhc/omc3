@@ -3,8 +3,8 @@ from model.accelerators.accelerator import AccExcitationMode
 import os
 import logging
 import shutil
-
-LOGGER = logging.getLogger("__name__")
+from model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
+LOGGER = logging.getLogger(__name__)
 
 
 class PsModelCreator(model_creator.ModelCreator):
@@ -54,8 +54,7 @@ class PsModelCreator(model_creator.ModelCreator):
             "DRV_TUNE_Y": "",
         }
 
-        with open(os.path.join(output_path,
-                               "job.iterate.madx"), "w") as textfile:
+        with open(os.path.join(output_path, JOB_ITERATE_MADX), "w") as textfile:
             textfile.write(iterate_template % replace_dict)
 
     @classmethod
@@ -65,7 +64,7 @@ class PsModelCreator(model_creator.ModelCreator):
 
         # get path of file from PS model directory (without year at the end)
         src_path = instance.get_file("error_deff.txt")
-        dest_path = os.path.join(output_path, "error_deffs.txt")
+        dest_path = os.path.join(output_path, ERROR_DEFFS_TXT)
         shutil.copy(src_path, dest_path)
 
 

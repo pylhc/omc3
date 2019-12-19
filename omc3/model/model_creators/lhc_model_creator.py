@@ -10,13 +10,9 @@ from model.model_creators import model_creator
 from model.constants import (MACROS_DIR, GENERAL_MACROS, LHC_MACROS, ERROR_DEFFS_TXT,
                              JOB_ITERATE_MADX, MODIFIERS_MADX, TWISS_BEST_KNOWLEDGE_DAT,
                              TWISS_ADT_DAT, TWISS_AC_DAT, TWISS_ELEMENTS_DAT, TWISS_DAT,
-                             TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT)
+                             TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT, B2_ERRORS_TFS, B2_SETTINGS_MADX )
 LOGGER = logging.getLogger(__name__)
 import tfs
-
-
-B2_SETTINGS_MADX = "b2_settings.madx"
-B2_ERRORS_TFS = "b2_errors.tfs"
 
 
 def _b2_columns():
@@ -27,45 +23,10 @@ def _b2_columns():
 
 
 class LhcModelCreator(model_creator.ModelCreator):
-    def get_base_madx_script(self, accel, outdir, best_knowledge):
-        ATS_MD = False
-        HIGH_BETA = False
-        ats_suffix = '_ats' if accel.ats else ''
-        madx_script = (
-            f"call, file = '{join(outdir, MACROS_DIR, GENERAL_MACROS)}';\n"
-            f"call, file = '{join(outdir, MACROS_DIR, LHC_MACROS)}';\n"
-            f'title, "Model from Lukas :-)";\n'
-            f"option, -echo;\n"
-            f"{accel.load_main_seq_madx()}\n"
-            f"exec, define_nominal_beams();\n"
-            f"call, file = '{accel.modifiers}';\n"
-            f"exec, cycle_sequences();\n"
-            f"xing_angles = {'1' if accel.xing else '0'};\n"
-            f"if(xing_angles==1){{\n"
-            f"    exec, set_crossing_scheme_ON();\n"
-            f"}}else{{\n"
-            f"    exec, set_default_crossing_scheme();\n"
-            f"}}\n"
-            f"use, sequence = LHCB{accel.beam};\n"
-            f"option, echo;\n"
-        )
-        if best_knowledge:
-            # madx_script += f"exec, load_average_error_table({accel.energy}, {accel.beam});\n"
-            madx_script +=(
-                    f"readmytable, file = '{join(outdir, B2_ERRORS_TFS)}', table=errtab;\n"
-                    f"seterr, table=errtab;\n"
-                    f"call, file = '{join(outdir, B2_SETTINGS_MADX)}';\n")
-        if HIGH_BETA:
-            madx_script += "exec, high_beta_matcher();\n"
-        madx_script += f"exec, match_tunes{ats_suffix}({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.beam});\n"
-        if ATS_MD:
-            madx_script += "exec, full_response_ats();\n"
-        madx_script += f"exec, coupling_knob{ats_suffix}({accel.beam});\n"
-        return madx_script
 
     @classmethod
     def get_correction_check_script(cls, accel, outdir, corr_file="changeparameters_couple.madx", chrom=False):
-        madx_script = cls.get_base_madx_script(accel, accel.model_dir, False)
+        madx_script = accel.base_madx_script(accel.model_dir)
         madx_script += (
             f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{join(outdir, 'twiss_no.dat')}', 0.0);\n"
             f"call, file = '{corr_file}';\n"
@@ -78,17 +39,10 @@ class LhcModelCreator(model_creator.ModelCreator):
         return madx_script
 
     @classmethod
-    def update_correction_script(self, accel, outpath, corr_file):
-        madx_script = self.get_base_madx_script(accel, accel.model_dir, False)
-        madx_script += (f"call, file = '{corr_file}';\n"
-                        f"exec, do_twiss_elements(LHCB{accel.beam}, {outpath}, {accel.dpp});\n")
-        return madx_script
-
-    @classmethod
     def get_madx_script(cls, accel, outdir):  # nominal
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
-        madx_script = cls.get_base_madx_script(accel, outdir, False)
+        madx_script = accel.base_madx_script(outdir)
         madx_script +=(
                 f"use_acd={use_acd};\nuse_adt={use_adt};\n"
                 f"exec, do_twiss_monitors(LHCB{accel.beam}, '{join(outdir, TWISS_DAT)}', {accel.dpp});\n"
@@ -124,7 +78,7 @@ class LhcModelCreator(model_creator.ModelCreator):
 
     @classmethod
     def _prepare_fullresponse(cls, lhc_instance, output_path):
-        madx_script = cls.get_base_madx_script(lhc_instance, output_path, False)
+        madx_script = lhc_instance.base_madx_script(output_path)
         madx_script += f"exec, select_monitors();\ncall, file = '{join(output_path, 'iter.madx')}';\n"
         with open(os.path.join(output_path, JOB_ITERATE_MADX), "w") as textfile:
             textfile.write(madx_script)
@@ -138,7 +92,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
             raise model_creator.ModelCreationError("Don't set ACD or ADT for best knowledge model.")
         if accel.energy is None:
             raise model_creator.ModelCreationError("Best knowledge model requires energy.")
-        madx_script = cls.get_base_madx_script(accel, outdir, True)
+        madx_script = accel.base_madx_script(outdir, best_knowledge=True)
         madx_script += (
             f"call, file = '{join(outdir, 'corrections.madx')}';\n"
             f"call, file = '{join(outdir, 'extracted_mqts.str')}';\n"
