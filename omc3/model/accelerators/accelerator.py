@@ -5,7 +5,7 @@ Accelerator
 Contains parent accelerator class and other support classes
 """
 
-from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, entrypoint, split_arguments
+from generic_parser.entrypoint_parser import EntryPointParameters
 from os.path import join, isfile
 import pandas as pd
 import tfs
@@ -19,6 +19,9 @@ LOGGER = logging_tools.get_logger(__name__)
 class AccExcitationMode(object):
     # it is very important that FREE = 0
     FREE, ACD, ADT = range(3)
+
+
+DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
 
 
 class AccElementTypes(object):
@@ -37,7 +40,7 @@ class Accelerator(object):
                AccElementTypes.ARC_BPMS: r".*"
                }
     BPM_INITIAL = 'B'
-    DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
+
     @staticmethod
     def get_parameters():
         params = EntryPointParameters()
@@ -61,7 +64,6 @@ class Accelerator(object):
         return params
 
     def __init__(self, opt):
-        # for reasons of import-order and class creation, decoration was not possible
         self.model_dir = None
         self.drv_tunes = None
         self.excitation = AccExcitationMode.FREE
@@ -87,8 +89,6 @@ class Accelerator(object):
         else:
             self.init_from_options(opt)
 
-        #self.verify_object()
-
     def init_from_options(self, opt):
         if opt.nat_tunes is None:
             raise AcceleratorDefinitionError("Argument 'nat_tunes' is required.")
@@ -98,7 +98,7 @@ class Accelerator(object):
 
         if opt.driven_excitation is not None:
             self.drv_tunes = opt.drv_tunes
-            self.excitation = self.DRIVEN_EXCITATIONS[opt.driven_excitation]
+            self.excitation = DRIVEN_EXCITATIONS[opt.driven_excitation]
 
         # optional with default
         self.dpp = opt.dpp
@@ -134,7 +134,7 @@ class Accelerator(object):
         for key in driven_filenames.keys():
             if isfile(driven_filenames[key]):
                 self._model_driven = tfs.read(driven_filenames[key], index="NAME")
-                self.excitation = self.DRIVEN_EXCITATIONS[key]
+                self.excitation = DRIVEN_EXCITATIONS[key]
 
         if not self.excitation == AccExcitationMode.FREE:
             self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
@@ -236,14 +236,14 @@ class Accelerator(object):
 
     # Jobs ###################################################################
 
-    def update_correction_script(self, tiwss_out_path, corrections_file_path):
+    def get_update_correction_script(self, tiwss_out_path, corrections_file_path):
         """
         Returns job (string) to create an updated model from changeparameters input
         (used in iterative correction).
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    def base_madx_script(self, model_directory, best_knowledge=False):
+    def get_base_madx_script(self, model_directory, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.
         """

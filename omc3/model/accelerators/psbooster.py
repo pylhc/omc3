@@ -52,13 +52,6 @@ class Psbooster(Accelerator):
         return os.path.join(CURRENT_DIR, cls.NAME, filename)
 
 
-def _get_ring_from_seqname(seq):
-    if re.match("^PSB[1-4]$", seq.upper()):
-        return int(seq[3])
-    LOGGER.error("Sequence name is none of the expected ones (PSB1,PSB2,PSB3,PSB4)")
-    return None
-
-
 class _PsboosterSegmentMixin(object):
 
     def __init__(self):

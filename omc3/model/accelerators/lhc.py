@@ -47,9 +47,6 @@ class Lhc(Accelerator):
         opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
         self.correctors_dir = "2012"
-        if opt.year is None or opt.ats is None or opt.beam is None:
-            raise AcceleratorDefinitionError("The accelerator definition is incomplete, year,"
-                                             " beam and ats need to be specified")
         self.year = opt.year
         self.ats = opt.ats
         if self.year == "hllhc1.3":
@@ -111,12 +108,12 @@ class Lhc(Accelerator):
         return os.path.join(LHC_DIR, "systematic_errors")
 
     @classmethod
-    def get_variables(cls, frm=None, to=None, classes=None):
-        correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")
+    def get_variables(self, frm=None, to=None, classes=None):
+        correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")  # not a bug
         all_corrs = _merge_jsons(
-            os.path.join(correctors_dir, f"correctors_b{cls.beam}", "beta_correctors.json"),
-            os.path.join(correctors_dir, f"correctors_b{cls.beam}", "coupling_correctors.json"),
-            cls._get_triplet_correctors_file(),
+            os.path.join(correctors_dir, f"correctors_b{self.beam}", "beta_correctors.json"),
+            os.path.join(correctors_dir, f"correctors_b{self.beam}", "coupling_correctors.json"),
+            self._get_triplet_correctors_file(),
         )
         my_classes = classes
         if my_classes is None:
@@ -126,7 +123,7 @@ class Lhc(Accelerator):
         )
         if frm is None and to is None:
             return list(vars_by_class)
-        elems_matrix = tfs.read(cls._get_corrector_elems()).sort_values("S")
+        elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
                 elems_matrix = elems_matrix[(elems_matrix.S >= frm) | (elems_matrix.S <= to)]
@@ -173,10 +170,9 @@ class Lhc(Accelerator):
         LOGGER.info("> Driven Tune X     [{:10.3f}]".format(self.drv_tunes[0]))
         LOGGER.info("> Driven Tune Y     [{:10.3f}]".format(self.drv_tunes[1]))
 
-    @classmethod
-    def load_main_seq_madx(cls):
+    def load_main_seq_madx(self):
         try:
-            return _get_call_main_for_year(cls.year)
+            return _get_call_main_for_year(self.year)
         except AttributeError:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete, mode " +
@@ -185,15 +181,13 @@ class Lhc(Accelerator):
 
     # Private Methods ##########################################################
 
-    @classmethod
-    def _get_triplet_correctors_file(cls):
-        correctors_dir = os.path.join(LHC_DIR, cls.correctors_dir, "correctors")
+    def _get_triplet_correctors_file(self):
+        correctors_dir = os.path.join(LHC_DIR, self.correctors_dir, "correctors")
         return os.path.join(correctors_dir, "triplet_correctors.json")
 
-    @classmethod
-    def _get_corrector_elems(cls):
-        correctors_dir = os.path.join(LHC_DIR, cls.correctors_dir, "correctors")
-        return os.path.join(correctors_dir, f"corrector_elems_b{cls.beam}.tfs")
+    def _get_corrector_elems(self):
+        correctors_dir = os.path.join(LHC_DIR, self.correctors_dir, "correctors")
+        return os.path.join(correctors_dir, f"corrector_elems_b{self.beam}.tfs")
 
     def get_exciter_bpm(self, plane, commonbpms):
         beam = self.beam
@@ -231,7 +225,7 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
-    def base_madx_script(self, outdir, best_knowledge=False):
+    def get_base_madx_script(self, outdir, best_knowledge=False):
         ats_md = False
         high_beta = False
         ats_suffix = '_ats' if self.ats else ''
@@ -267,8 +261,8 @@ class Lhc(Accelerator):
         madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
         return madx_script
 
-    def update_correction_script(self, outpath, corr_file):
-        madx_script = self.base_madx_script(self.model_dir)
+    def get_update_correction_script(self, outpath, corr_file):
+        madx_script = self.get_base_madx_script(self.model_dir)
         madx_script += (f"call, file = '{corr_file}';\n"
                         f"exec, do_twiss_elements(LHCB{self.beam}, {outpath}, {self.dpp});\n")
         return madx_script

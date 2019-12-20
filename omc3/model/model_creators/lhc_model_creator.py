@@ -26,7 +26,7 @@ class LhcModelCreator(model_creator.ModelCreator):
 
     @classmethod
     def get_correction_check_script(cls, accel, outdir, corr_file="changeparameters_couple.madx", chrom=False):
-        madx_script = accel.base_madx_script(accel.model_dir)
+        madx_script = accel.get_base_madx_script(accel.model_dir)
         madx_script += (
             f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{join(outdir, 'twiss_no.dat')}', 0.0);\n"
             f"call, file = '{corr_file}';\n"
@@ -42,7 +42,7 @@ class LhcModelCreator(model_creator.ModelCreator):
     def get_madx_script(cls, accel, outdir):  # nominal
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
-        madx_script = accel.base_madx_script(outdir)
+        madx_script = accel.get_base_madx_script(outdir)
         madx_script +=(
                 f"use_acd={use_acd};\nuse_adt={use_adt};\n"
                 f"exec, do_twiss_monitors(LHCB{accel.beam}, '{join(outdir, TWISS_DAT)}', {accel.dpp});\n"
@@ -78,7 +78,7 @@ class LhcModelCreator(model_creator.ModelCreator):
 
     @classmethod
     def _prepare_fullresponse(cls, lhc_instance, output_path):
-        madx_script = lhc_instance.base_madx_script(output_path)
+        madx_script = lhc_instance.get_base_madx_script(output_path)
         madx_script += f"exec, select_monitors();\ncall, file = '{join(output_path, 'iter.madx')}';\n"
         with open(os.path.join(output_path, JOB_ITERATE_MADX), "w") as textfile:
             textfile.write(madx_script)
@@ -92,7 +92,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
             raise model_creator.ModelCreationError("Don't set ACD or ADT for best knowledge model.")
         if accel.energy is None:
             raise model_creator.ModelCreationError("Best knowledge model requires energy.")
-        madx_script = accel.base_madx_script(outdir, best_knowledge=True)
+        madx_script = accel.get_base_madx_script(outdir, best_knowledge=True)
         madx_script += (
             f"call, file = '{join(outdir, 'corrections.madx')}';\n"
             f"call, file = '{join(outdir, 'extracted_mqts.str')}';\n"
