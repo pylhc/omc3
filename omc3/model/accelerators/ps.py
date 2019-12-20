@@ -3,6 +3,9 @@ PS
 -------------------
 """
 import os
+
+from generic_parser import EntryPoint
+
 from model.accelerators.accelerator import Accelerator
 import logging
 
@@ -16,6 +19,11 @@ class Ps(Accelerator):
     YEAR = 2018
 
     # Public Methods ##########################################################
+
+    def __init__(self, *args, **kwargs):
+        parser = EntryPoint(self.get_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
+        super().__init__(opt)
 
     def verify_object(self):
         pass

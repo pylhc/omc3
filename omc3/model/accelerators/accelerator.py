@@ -60,7 +60,7 @@ class Accelerator(object):
 
         return params
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, opt):
         # for reasons of import-order and class creation, decoration was not possible
         self.model_dir = None
         self.drv_tunes = None
@@ -74,18 +74,15 @@ class Accelerator(object):
         self._beam_direction = 1
         self._beam = None
         self._ring = None
-
-        parser = EntryPoint(self.get_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
+        self.energy = None
+        self.dpp = 0.0
+        self.xing = None
 
         if opt.model_dir:
             if (opt.nat_tunes is not None) or (opt.drv_tunes is not None):
                 raise AcceleratorDefinitionError("Arguments 'nat_tunes' and 'driven_tunes' are "
                                                  "not allowed when loading from model directory.")
             self.init_from_model_dir(opt.model_dir)
-            self.energy = None
-            self.dpp = 0.0
-            self.xing = None
 
         else:
             self.init_from_options(opt)

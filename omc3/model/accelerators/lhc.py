@@ -43,9 +43,9 @@ class Lhc(Accelerator):
         return params
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
+        super().__init__(opt)
         self.correctors_dir = "2012"
         if opt.year is None or opt.ats is None or opt.beam is None:
             raise AcceleratorDefinitionError("The accelerator definition is incomplete, year,"

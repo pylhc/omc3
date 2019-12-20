@@ -22,9 +22,9 @@ class Psbooster(Accelerator):
         return params
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
+        super().__init__(opt)
         self.ring = opt.ring
 
     @property
