@@ -25,7 +25,7 @@ def _create_input():
                     model_dir=join(dirname(__file__), "..", "inputs", "models", "25cm_beam1"),
                     outputdir=BASE_PATH)
     optics_opt, rest = _optics_entrypoint(opt_dict)
-    optics_opt.accelerator = manager.get_accel_instance(rest)
+    optics_opt.accelerator = manager.get_accelerator(rest)
     lins = optics_measurement_test_files(opt_dict["model_dir"], dpps)
     return lins, optics_opt
 

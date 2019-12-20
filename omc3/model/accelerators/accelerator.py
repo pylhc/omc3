@@ -5,7 +5,7 @@ Accelerator
 Contains parent accelerator class and other support classes
 """
 
-from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, split_arguments
+from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, entrypoint, split_arguments
 from os.path import join, isfile
 import pandas as pd
 import tfs
@@ -38,9 +38,8 @@ class Accelerator(object):
                }
     BPM_INITIAL = 'B'
     DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
-
     @staticmethod
-    def get_instance_parameters():
+    def get_parameters():
         params = EntryPointParameters()
         params.add_parameter(name="model_dir", type=str,
                              help="Path to model directory; loads tunes and excitation from model!")
@@ -76,7 +75,7 @@ class Accelerator(object):
         self._beam = None
         self._ring = None
 
-        parser = EntryPoint(self.get_instance_parameters(), strict=True)
+        parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
 
         if opt.model_dir:
@@ -91,7 +90,7 @@ class Accelerator(object):
         else:
             self.init_from_options(opt)
 
-        self.verify_object()
+        #self.verify_object()
 
     def init_from_options(self, opt):
         if opt.nat_tunes is None:
@@ -159,48 +158,6 @@ class Accelerator(object):
             self.error_defs_file = errordefspath
 
     # Class methods ###########################################
-
-    @staticmethod
-    def get_class_parameters():
-        """
-        This method should return the parameter list of arguments needed to create the class.
-        """
-        params = EntryPointParameters()
-        return params
-
-    # @classmethod
-    # def init_and_get_unknowns(cls, args=None):
-    #     """ Initializes but also returns unknowns.
-    #      For the desired philosophy of returning parameters all the time,
-    #      try to avoid this function, e.g. parse outside parameters first.
-    #      """
-    #     opt, rest_args = split_arguments(args, cls.get_instance_parameters())
-    #     return cls(opt), rest_args
-
-    # @classmethod
-    # def get_class(cls, *args, **kwargs):
-    #     """
-    #     This method should return the accelerator class defined in the arguments.
-    #     """
-    #     parser = EntryPoint(cls.get_class_parameters(), strict=True)
-    #     opt = parser.parse(*args, **kwargs)
-    #     return cls._get_class(opt)
-
-    @classmethod
-    def get_class_and_unknown(cls, *args, **kwargs):
-        """ Returns subclass and unknown args.
-        For the desired philosophy of returning parameters all the time,
-        try to avoid this function, e.g. parse outside parameters first.
-        """
-        parser = EntryPoint(cls.get_class_parameters(), strict=False)
-        opt, unknown_opt = parser.parse(*args, **kwargs)
-        return cls._get_class(opt), unknown_opt
-
-    @classmethod
-    def _get_class(cls, opt):
-        """ Actual get_class function """
-        new_class = cls
-        return new_class
 
     @classmethod
     def get_element_types_mask(cls, list_of_elements, types):

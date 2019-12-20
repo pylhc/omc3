@@ -58,7 +58,7 @@ def create_instance_and_model(opt, accel_opt):
         logging.basicConfig(level=numeric_level) # warning level to stderr
 
     create_dirs(opt.outputdir)
-    accel_inst = manager.get_accel_instance(accel_opt)
+    accel_inst = manager.get_accelerator(accel_opt)
     create_model(accel_inst, opt.type, opt.outputdir, writeto=opt.writeto, logfile=opt.logfile)
 
 

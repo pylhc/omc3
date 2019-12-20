@@ -5,7 +5,7 @@ PS BOOSTER
 import os
 import re
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
-from generic_parser import EntryPointParameters
+from generic_parser import EntryPoint
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -15,6 +15,17 @@ CURRENT_DIR = os.path.dirname(__file__)
 class Psbooster(Accelerator):
     """ Parent Class for Psbooster-Types.    """
     NAME = "psbooster"
+
+    def get_parameters(self):
+        params = super().get_parameters()
+        params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
+        return params
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        parser = EntryPoint(self.get_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
+        self.ring = opt.ring
 
     @property
     def ring(self):
@@ -28,21 +39,6 @@ class Psbooster(Accelerator):
         if value not in (1, 2, 3, 4):
             raise AcceleratorDefinitionError("Ring parameter has to be one of (1, 2, 3, 4)")
         self._ring = value
-
-    @staticmethod
-    def get_class_parameters():
-        params = EntryPointParameters()
-        params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
-        return params
-
-    # Entry-Point Wrappers #####################################################
-
-    @classmethod
-    def _get_class(cls, opt):
-        new_class = cls
-        if opt.ring is not None:
-            new_class.ring = opt.ring
-        return new_class
 
     def verify_object(self):
         _ = self.ring

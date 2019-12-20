@@ -4,9 +4,10 @@ Super KEK-B
 """
 from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from utils import logging_tools
-from generic_parser import EntryPointParameters
+from generic_parser import EntryPoint
 
 LOGGER = logging_tools.get_logger(__name__)
+RINGS = ("ler", "her")
 
 
 class SKekB(Accelerator):
@@ -14,6 +15,22 @@ class SKekB(Accelerator):
     KEK's SuperKEKB accelerator.
     """
     NAME = "skekb"
+    RINGS = ("ler", "her")
+
+    def get_parameters(self):
+        params = super().get_parameters()
+        params.add_parameter(name="ring", type=str, choices=RINGS, required=True,
+                             help="HER or LER ring.")
+        return params
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        parser = EntryPoint(self.get_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
+        self.ring = opt.ring
+        ring_to_beam_direction = {"ler": 1, "her": -1}
+        self.beam_direction = ring_to_beam_direction[self.ring]
+
 
     @property
     def ring(self):
@@ -24,27 +41,9 @@ class SKekB(Accelerator):
 
     @ring.setter
     def ring(self, value):
-        if value not in ("ler", "her"):
+        if value not in RINGS:
             raise AcceleratorDefinitionError("Ring parameter has to be one of ('ler', 'her')")
         self._ring = value
-
-    @staticmethod
-    def get_class_parameters():
-        params = EntryPointParameters()
-        params.add_parameter(name="ring", type=str, choices=("ler", "her"), help="HER or LER ring.")
-        return params
-
-    @classmethod
-    def _get_class(cls, opt):
-        """ Actual get_class function """
-        new_class = cls
-        if opt.ring is not None:
-            new_class.ring = opt.ring
-        if new_class.ring == 'her':
-            new_class.beam_direction = -1
-        if new_class.ring == 'ler':
-            new_class.beam_direction = 1
-        return new_class
 
     def verify_object(self):
         if self.model_dir is None:  # is the class is used to create full response?
