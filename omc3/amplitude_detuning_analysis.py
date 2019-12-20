@@ -75,6 +75,11 @@ def _get_params():
         timber_in=dict(
             help="Fill number of desired data or path to presaved tfs-file",
         ),
+        detuning_order=dict(
+            help="Order of the detuning as int. Basically just the order of the applied fit.",
+            type=int,
+            default=1,
+        ),
         output=dict(
             help="Output directory for the modified kickfile and bbq data.",
             type=str,
@@ -163,15 +168,17 @@ def analyse_with_bbq_corrections(opt):
         kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
         kick_df = kick_file_modifiers.add_total_natq_std(kick_df)
 
+        kick_plane = opt.plane
+
         # amplitude detuning odr
         for tune_plane in PLANES:
             for corr in [False, True]:
                 # get the proper data
-                data = kick_file_modifiers.get_ampdet_data(kick_df, opt.plane, tune_plane, corrected=corr)
+                data = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corr)
 
                 # make the odr
-                odr_fit = detuning_tools.do_linear_odr(**data)
-                kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, opt.plane, tune_plane, corrected=corr)
+                odr_fit = detuning_tools.do_odr(**data, order=opt.detuning_order)
+                kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corr)
 
     # output kick and bbq data
     if opt.output:

@@ -20,35 +20,34 @@ from utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 
-# Linear ODR ###################################################################
+# ODR ###################################################################
 
 
-def linear_model(beta, x):
-    """ Return a linear model ``beta[0] + beta[1] * x``.
-
-    Args:
-        beta: beta[0] = y-offset
-              beta[1] = slope
-        x: x-value
-    """
-    return beta[0] + beta[1] * x
+def get_poly_fun(order):
+    """ Returns the function of polynomial order. (is this pythonic enough?)"""
+    def poly_func(beta, x):
+        return sum(beta[i] * np.power(x, i) for i in range(order+1))
+    return poly_func
 
 
-def do_linear_odr(x, y, xerr, yerr):
-    """ Returns linear odr fit.
+def do_odr(x, y, xerr, yerr, order):
+    """ Returns the odr fit.
 
     Args:
         x: Series of x data
         y: Series of y data
         xerr: Series of x data errors
         yerr: Series of y data errors
+        order: fit order; 1: linear, 2: quadratic
 
-    Returns: Linear odr fit. Betas see ``linear_model()``.
+    Returns: Odr fit. Betas order is index = coefficient of same order.
+             See :func:`omc3.tune_analysis.detuning_tools.linear_model`
+             and :func:`omc3.tune_analysis.detuning_tools.quadratic_model`.
     """
-    lin_model = Model(linear_model)
-    data = RealData(x, y, sx=xerr, sy=yerr)
-    odr_fit = ODR(data, lin_model, beta0=[0., 1.]).run()
-    logging_tools.odr_pprint(LOG.debug, odr_fit)
+    odr = ODR(data=RealData(x, y, xerr, yerr),
+              model=Model(get_poly_fun(order)),
+              beta0=[0.] + [1.] * order)
+    odr_fit = odr.run()
+    logging_tools.odr_pprint(LOG.info, odr_fit)
     return odr_fit
-
 

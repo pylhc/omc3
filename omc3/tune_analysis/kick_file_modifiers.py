@@ -35,13 +35,10 @@ COL_NATQ_CORRSTD = const.get_corr_natq_err_col
 COL_TIME = const.get_time_col
 COL_BBQ = const.get_bbq_col
 
-HEADER_CORR_OFFSET = const.get_odr_header_offset_corr
-HEADER_CORR_SLOPE = const.get_odr_header_slope_corr
-HEADER_CORR_SLOPE_STD = const.get_odr_header_slope_std_corr
-
-HEADER_OFFSET = const.get_odr_header_offset
-HEADER_SLOPE = const.get_odr_header_slope
-HEADER_SLOPE_STD = const.get_odr_header_slope_std
+HEADER_ODR_COEFF = const.get_odr_header_coeff
+HEADER_ODR_ERR_COEFF = const.get_odr_header_err_coeff
+HEADER_CORR_ODR_COEFF = const.get_odr_header_coeff_corrected
+HEADER_CORR_ODR_ERR_COEFF = const.get_odr_header_err_coeff_corrected
 
 PLANES = const.get_planes()
 
@@ -49,8 +46,8 @@ PLANES = const.get_planes()
 def _get_odr_headers(corrected):
     """ Return Headers needed for ODR. """
     if corrected:
-        return HEADER_CORR_SLOPE, HEADER_CORR_SLOPE_STD, HEADER_CORR_OFFSET
-    return HEADER_SLOPE, HEADER_SLOPE_STD, HEADER_OFFSET
+        return HEADER_CORR_ODR_COEFF, HEADER_CORR_ODR_ERR_COEFF
+    return HEADER_ODR_COEFF, HEADER_ODR_ERR_COEFF
 
 
 def _get_ampdet_columns(corrected):
@@ -127,15 +124,15 @@ def add_odr(kickac_df, odr_fit, action_plane, tune_plane, corrected=False):
         odr_fit: odr-fit data (definitions see ``detuning_tools.py``)
         action_plane: Plane of the action
         tune_plane: Plane of the tune
+        corrected: (BBQ) corrected data or uncorrected fit?
 
     Returns:
         Modified kick_ac
     """
-    header_slope, header_slope_std, header_offset = _get_odr_headers(corrected)
-
-    kickac_df.headers[header_offset(action_plane, tune_plane)] = odr_fit.beta[0]
-    kickac_df.headers[header_slope(action_plane, tune_plane)] = odr_fit.beta[1]
-    kickac_df.headers[header_slope_std(action_plane, tune_plane)] = odr_fit.sd_beta[1]
+    header_val, header_err = _get_odr_headers(corrected)
+    for idx in range(len(odr_fit.beta)):
+        kickac_df.headers[header_val(action_plane, tune_plane, idx)] = odr_fit.beta[idx]
+        kickac_df.headers[header_err(action_plane, tune_plane, idx)] = odr_fit.sd_beta[idx]
     return kickac_df
 
 
@@ -161,24 +158,26 @@ def add_total_natq_std(kickac_df):
 # Data Extraction ##############################################################
 
 
-def get_linear_odr_data(kickac_df, action_plane, tune_plane, corrected=False):
+def get_odr_data(kickac_df, action_plane, tune_plane, order, corrected=False):
     """ Extract the data from kickac.
 
     Args:
         kickac_df: Dataframe containing the data
         action_plane: Plane of the action
         tune_plane: Plane of the tune
+        order: Order of the odr fit
+        corrected: (BBQ) corrected data or uncorrected fit?
 
     Returns:
         Dictionary containing
 
     """
-    header_slope, header_slope_std, header_offset = _get_odr_headers(corrected)
 
-    odr_data = DotDict(beta=[0, 0], sd_beta=[0, 0])
-    odr_data.beta[0] = kickac_df.headers[header_offset(action_plane, tune_plane)]
-    odr_data.beta[1] = kickac_df.headers[header_slope(action_plane, tune_plane)]
-    odr_data.sd_beta[1] = kickac_df.headers[header_slope_std(action_plane, tune_plane)]
+    header_val, header_err = _get_odr_headers(corrected)
+    odr_data = DotDict(beta=[0] * (order+1), sd_beta=[0] * (order+1))
+    for idx in range(order+1):
+        odr_data.beta[idx] = kickac_df.headers[header_val(action_plane, tune_plane, idx)]
+        odr_data.sd_beta[idx] = kickac_df.headers[header_err(action_plane, tune_plane, idx)]
     return odr_data
 
 

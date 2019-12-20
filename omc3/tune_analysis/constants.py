@@ -12,8 +12,7 @@ ODR_PREF = "ODR_"
 MOVING_AV = "MAV"
 TOTAL = "TOT"
 CORRECTED = "CORR"
-OFFSET = "OFFSET"
-SLOPE = "SLOPE"
+COEFFICIENT = "COEFF{order:d}"
 BBQ = "BBQ"
 
 
@@ -48,34 +47,28 @@ def get_tend_head():
     return "END_TIME"
 
 
-def get_odr_header_offset(j_plane, q_plane):
-    """ Header key for odr offset (i.e. beta[0]) """
-    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}_{OFFSET}"
+def get_odr_header_default(j_plane, q_plane):
+    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}"
 
 
-def get_odr_header_slope(j_plane, q_plane):
-    """ Header key for odr slope (i.e. beta[1]) """
-    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}_{SLOPE}"
+def get_odr_header_coeff(j_plane, q_plane, order):
+    """ Header key for odr coefficient for term of given order (i.e. beta[order]) """
+    return f"{get_odr_header_default(j_plane, q_plane):s}_{COEFFICIENT.format(order=order)}"
 
 
-def get_odr_header_slope_std(j_plane, q_plane):
-    """ Header key for odr slope standard deviation (i.e. sd_beta[1]) """
-    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}_{ERR}{SLOPE}"
+def get_odr_header_err_coeff(j_plane, q_plane, order):
+    """ Header key for odr coefficient standard deviation for term of given order (i.e. sd_beta[order]) """
+    return f"{get_odr_header_default(j_plane, q_plane):s}_{ERR}{COEFFICIENT.format(order=order)}"
 
 
-def get_odr_header_offset_corr(j_plane, q_plane):
-    """ Header key for corrected odr offset (i.e. beta[0]) """
-    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}_{OFFSET}{CORRECTED}"
+def get_odr_header_coeff_corrected(j_plane, q_plane, order):
+    """ Header key for corrected odr coefficient for term of given order (i.e. beta[order]) """
+    return f"{get_odr_header_default(j_plane, q_plane)}_{CORRECTED}{COEFFICIENT.format(order=order)}"
 
 
-def get_odr_header_slope_corr(j_plane, q_plane):
-    """ Header key for corrected odr slope (i.e. beta[1]) """
-    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}_{SLOPE}{CORRECTED}"
-
-
-def get_odr_header_slope_std_corr(j_plane, q_plane):
-    """ Header key for corrected odr slope standard deviation (i.e. sd_beta[1]) """
-    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}_{ERR}{SLOPE}{CORRECTED}"
+def get_odr_header_err_coeff_corrected(j_plane, q_plane, order):
+    """ Header key for corrected odr coefficient standard deviation for term of given order (i.e. sd_beta[order]) """
+    return f"{get_odr_header_default(j_plane, q_plane)}_{ERR}{CORRECTED}{COEFFICIENT.format(order=order)}"
 
 
 def get_mav_window_header(plane):
