@@ -1,3 +1,4 @@
+import os
 import logging
 import madx_wrapper
 
@@ -7,18 +8,14 @@ LOGGER = logging.getLogger(__name__)
 class ModelCreator(object):
 
     @classmethod
-    def create_model(creator, instance, output_path, **kwargs):
-        LOGGER.info("instance name <%s>", instance.NAME)
-        
+    def create_model(cls, instance, output_path, **kwargs):
+        LOGGER.info(f"instance name {instance.NAME}")
         instance.verify_object()
-        madx_script = creator.get_madx_script(
-            instance,
-            output_path
-        )
-        creator.prepare_run(instance, output_path)
+        madx_script = cls.get_madx_script(instance, output_path)
+        cls.prepare_run(instance, output_path)
         writeto = kwargs.get("writeto", None)
         logfile = kwargs.get("logfile", None)
-        creator.run_madx(madx_script, logfile, writeto)
+        cls.run_madx(madx_script, logfile, writeto)
 
     @classmethod
     def prepare_run(cls, acc_instance, output_path):
@@ -27,11 +24,7 @@ class ModelCreator(object):
             
     @staticmethod
     def run_madx(madx_script, logfile=None, writeto=None):
-        madx_wrapper.resolve_and_run_string(
-            madx_script,
-            output_file=writeto,
-            log_file=logfile
-        )
+        madx_wrapper.resolve_and_run_string(madx_script, output_file=writeto, log_file=logfile)
 
 
 class ModelCreationError(Exception):

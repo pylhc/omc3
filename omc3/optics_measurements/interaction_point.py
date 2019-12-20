@@ -30,7 +30,7 @@ def betastar_from_phase(meas_input, phase_d):
         A nested dict with the same structure as the phase_d dict.
     """
     accel = meas_input.accelerator
-    model = accel.get_model_tfs()
+    model = accel.model
     try:
         ips = list(accel.get_ips())
     except AttributeError:

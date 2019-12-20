@@ -1,0 +1,114 @@
+ option,-echo;
+
+ !!! b2-correction for beam           2
+ kqtf.b2:=0;
+ kqtd.b2:=0;
+ dKQTF.a12B2 :=    -0.4931881242E-03 ;
+ dKQTF.a23B2 :=     0.3326128368E-03 ;
+ dKQTF.a34B2 :=     0.2851979984E-03 ;
+ dKQTF.a45B2 :=     0.2141450657E-03 ;
+ dKQTF.a56B2 :=    -0.2449959290E-03 ;
+ dKQTF.a67B2 :=    -0.3591789524E-03 ;
+ dKQTF.a78B2 :=    -0.1060619580E-03 ;
+ dKQTF.a81B2 :=     0.2163700442E-03 ;
+ dKQTD.a12B2 :=    -0.4931299384E-03 ;
+ dKQTD.a23B2 :=     0.3583131407E-03 ;
+ dKQTD.a34B2 :=     0.3116252003E-03 ;
+ dKQTD.a45B2 :=     0.2028776049E-03 ;
+ dKQTD.a56B2 :=    -0.2817116522E-03 ;
+ dKQTD.a67B2 :=    -0.3863018417E-03 ;
+ dKQTD.a78B2 :=    -0.1048512927E-03 ;
+ dKQTD.a81B2 :=     0.2559266810E-03 ;
+
+ KQTF.a12B2  :=    -0.1151956551E-03  + dKQTF.a12B2 - 1.0*kqtf.b2;
+ KQTF.a23B2  :=    -0.1151956551E-03  + dKQTF.a23B2 + 3.0*kqtf.b2;
+ KQTF.a34B2  :=    -0.1151956551E-03  + dKQTF.a34B2 + 3.0*kqtf.b2;
+ KQTF.a45B2  :=    -0.1151956551E-03  + dKQTF.a45B2 - 1.0*kqtf.b2;
+ KQTF.a56B2  :=    -0.1151956551E-03  + dKQTF.a56B2 - 1.0*kqtf.b2;
+ KQTF.a67B2  :=    -0.1151956551E-03  + dKQTF.a67B2 + 3.0*kqtf.b2;
+ KQTF.a78B2  :=    -0.1151956551E-03  + dKQTF.a78B2 + 3.0*kqtf.b2;
+ KQTF.a81B2  :=    -0.1151956551E-03  + dKQTF.a81B2 - 1.0*kqtf.b2;
+ KQTD.a12B2  :=     0.5633666613E-04  + dKQTD.a12B2 - 1.0*kqtd.b2;
+ KQTD.a23B2  :=     0.5633666613E-04  + dKQTD.a23B2 + 3.0*kqtd.b2;
+ KQTD.a34B2  :=     0.5633666613E-04  + dKQTD.a34B2 + 3.0*kqtd.b2;
+ KQTD.a45B2  :=     0.5633666613E-04  + dKQTD.a45B2 - 1.0*kqtd.b2;
+ KQTD.a56B2  :=     0.5633666613E-04  + dKQTD.a56B2 - 1.0*kqtd.b2;
+ KQTD.a67B2  :=     0.5633666613E-04  + dKQTD.a67B2 + 3.0*kqtd.b2;
+ KQTD.a78B2  :=     0.5633666613E-04  + dKQTD.a78B2 + 3.0*kqtd.b2;
+ KQTD.a81B2  :=     0.5633666613E-04  + dKQTD.a81B2 - 1.0*kqtd.b2;
+
+ !!! a2-correction for beam           2
+    CMRSKEW=0.;
+    CMISKEW=0.;
+ B11 :=         0.15559301E-01 ;
+ B12 :=         -.13215353E-01 ;
+ B21 :=         -.24097350E-01 ;
+ B22 :=         0.41741758E-02 ;
+ B31 :=         0.26817630E-03 ;
+ B32 :=         0.18948087E-01 ;
+ B41 :=         -.76703151E-02 ;
+ B42 :=         -.15050248E-01 ;
+ B51 :=         0.17214784E-01 ;
+ B52 :=         0.71621839E-02 ;
+ B61 :=         0.53520089E-02 ;
+ B62 :=         -.14418173E-01 ;
+ B71 :=         -.94447720E-02 ;
+ B72 :=         -.14820844E-01 ;
+ B81 :=         -.25377240E-01 ;
+ B82 :=         0.30752073E-02 ;
+
+   KQS.A12B2 := -.00000000E+00 + B11 * CMRSKEW + B12 * CMISKEW ;
+   KQS.R2B2  := -.00000000E+00 + B21 * CMRSKEW + B22 * CMISKEW ;
+   KQS.L3B2  := -.00000000E+00 + B21 * CMRSKEW + B22 * CMISKEW ;
+   KQS.A34B2 := -.00000000E+00 + B31 * CMRSKEW + B32 * CMISKEW ;
+   KQS.R4B2  := -.00000000E+00 + B41 * CMRSKEW + B42 * CMISKEW ;
+   KQS.L5B2  := -.00000000E+00 + B41 * CMRSKEW + B42 * CMISKEW ;
+   KQS.A56B2 := -.00000000E+00 + B51 * CMRSKEW + B52 * CMISKEW ;
+   KQS.R6B2  := -.00000000E+00 + B61 * CMRSKEW + B62 * CMISKEW ;
+   KQS.L7B2  := -.00000000E+00 + B61 * CMRSKEW + B62 * CMISKEW ;
+   KQS.A78B2 := -.00000000E+00 + B71 * CMRSKEW + B72 * CMISKEW ;
+   KQS.R8B2  := -.00000000E+00 + B81 * CMRSKEW + B82 * CMISKEW ;
+   KQS.L1B2  := -.00000000E+00 + B81 * CMRSKEW + B82 * CMISKEW ;
+
+ !!! b3-correction for beam           2
+  KCS.a12B2  :=            NaN    /l.MCS ;
+  KCS.a23B2  :=            NaN    /l.MCS ;
+  KCS.a34B2  :=            NaN    /l.MCS ;
+  KCS.a45B2  :=            NaN    /l.MCS ;
+  KCS.a56B2  :=            NaN    /l.MCS ;
+  KCS.a67B2  :=            NaN    /l.MCS ;
+  KCS.a78B2  :=            NaN    /l.MCS ;
+  KCS.a81B2  :=            NaN    /l.MCS ;
+
+ !!! a3-correction for beam           2
+  KSS.a12B2  := -.00000000E+00    /l.MSS ;
+  KSS.a23B2  := -.00000000E+00    /l.MSS ;
+  KSS.a34B2  := -.00000000E+00    /l.MSS ;
+  KSS.a45B2  := -.00000000E+00    /l.MSS ;
+  KSS.a56B2  := -.00000000E+00    /l.MSS ;
+  KSS.a67B2  := -.00000000E+00    /l.MSS ;
+  KSS.a78B2  := -.00000000E+00    /l.MSS ;
+  KSS.a81B2  := -.00000000E+00    /l.MSS ;
+
+
+ !!! b4-correction for beam           2
+  KCO.a12B2  :=            NaN    /l.MCO ;
+  KCO.a23B2  :=            NaN    /l.MCO ;
+  KCO.a34B2  :=            NaN    /l.MCO ;
+  KCO.a45B2  :=            NaN    /l.MCO ;
+  KCO.a56B2  :=            NaN    /l.MCO ;
+  KCO.a67B2  :=            NaN    /l.MCO ;
+  KCO.a78B2  :=            NaN    /l.MCO ;
+  KCO.a81B2  :=            NaN    /l.MCO ;
+
+ !!! b5-correction for beam           2
+  KCD.a12B2  :=            NaN    /l.MCD ;
+  KCD.a23B2  :=            NaN    /l.MCD ;
+  KCD.a34B2  :=            NaN    /l.MCD ;
+  KCD.a45B2  :=            NaN    /l.MCD ;
+  KCD.a56B2  :=            NaN    /l.MCD ;
+  KCD.a67B2  :=            NaN    /l.MCD ;
+  KCD.a78B2  :=            NaN    /l.MCD ;
+  KCD.a81B2  :=            NaN    /l.MCD ;
+
+ Return;

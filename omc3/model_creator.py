@@ -30,7 +30,7 @@ def _get_params():
     params = EntryPointParameters()
     params.add_parameter(name="type", choices=("nominal", "best_knowledge", "coupling_correction"),
                          help="Type of model to create, either nominal or best_knowledge")
-    params.add_parameter(name="output", required=True, type=str,
+    params.add_parameter(name="outputdir", required=True, type=str,
                          help="Output path for model, twiss files will be writen here.")
     params.add_parameter(name="writeto", type=str,
                          help="Path to the file where to write the resulting MAD-X script.")
@@ -57,9 +57,9 @@ def create_instance_and_model(opt, accel_opt):
         numeric_level = getattr(logging, "WARNING", None)
         logging.basicConfig(level=numeric_level) # warning level to stderr
 
-    create_dirs(opt.output)
-    accel_inst = manager.get_accel_instance(accel_opt)
-    create_model(accel_inst, opt.type, opt.output, writeto=opt.writeto, logfile=opt.logfile)
+    create_dirs(opt.outputdir)
+    accel_inst = manager.get_accelerator(accel_opt)
+    create_model(accel_inst, opt.type, opt.outputdir, writeto=opt.writeto, logfile=opt.logfile)
 
 
 def create_model(accel_inst, model_type, output_path, **kwargs):

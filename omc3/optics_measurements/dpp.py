@@ -69,7 +69,7 @@ def append_dpp(list_of_tfs, dpp_values):
 
 
 def calculate_dpoverp(input_files, meas_input): 
-    df_orbit = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ['S', 'DX']]
+    df_orbit = pd.DataFrame(meas_input.accelerator.model).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['CO', 'CORMS']), how='inner',
                         left_index=True, right_index=True)
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
@@ -87,7 +87,7 @@ def calculate_dpoverp(input_files, meas_input):
 
 
 def calculate_amp_dpoverp(input_files, meas_input):
-    df_orbit = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ['S', 'DX']]
+    df_orbit = pd.DataFrame(meas_input.accelerator.model).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['AMPX', 'AMPZ']), how='inner',
                         left_index=True, right_index=True)
     # TODO often missing AMPZ causes FutureWarning in future will be KeyError
