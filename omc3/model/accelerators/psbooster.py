@@ -16,8 +16,9 @@ class Psbooster(Accelerator):
     """ Parent Class for Psbooster-Types.    """
     NAME = "psbooster"
 
-    def get_parameters(self):
-        params = super().get_parameters()
+    @staticmethod
+    def get_parameters():
+        params = super(Psbooster, Psbooster).get_parameters()
         params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
         return params
 

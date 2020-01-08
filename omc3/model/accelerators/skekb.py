@@ -17,8 +17,9 @@ class SKekB(Accelerator):
     NAME = "skekb"
     RINGS = ("ler", "her")
 
-    def get_parameters(self):
-        params = super().get_parameters()
+    @staticmethod
+    def get_parameters():
+        params = super(SKekB, SKekB).get_parameters()
         params.add_parameter(name="ring", type=str, choices=RINGS, required=True,
                              help="HER or LER ring.")
         return params

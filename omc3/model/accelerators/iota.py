@@ -18,8 +18,9 @@ class Iota(Accelerator):
                AccElementTypes.ARC_BPMS: r"IBPM*"}
     BPM_INITIAL = 'I'
 
-    def get_parameters(self):
-        params = super().get_parameters()
+    @staticmethod
+    def get_parameters():
+        params = super(Iota, Iota).get_parameters()
         params.add_parameter(name="particle", type=str, choices=('p', 'e'), help="Particle type.")
         return params
 
