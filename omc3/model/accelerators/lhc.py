@@ -30,8 +30,9 @@ class Lhc(Accelerator):
     NORMAL_IP_BPMS = "BPMSW.1{side}{ip}.B{beam}"
     DOROS_IP_BPMS = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
 
-    def get_parameters(self):
-        params = super().get_parameters()
+    @staticmethod
+    def get_parameters():
+        params = super(Lhc, Lhc).get_parameters()
         params.add_parameter(name="beam", type=int, choices=(1, 2), required=True,
                              help="Beam to use.")
         params.add_parameter(name="year", type=str, required=True,
