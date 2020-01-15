@@ -10,15 +10,18 @@ Computes kick actions.
 from collections import OrderedDict
 from contextlib import suppress
 from os.path import join
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 import tfs
-from optics_measurements.constants import (ERR, RES, RMS,
-                                           EXT, KICK_NAME, PLANE_TO_NUM,
-                                           S, DPP, DPPAMP, BETA, AMPLITUDE, PEAK2PEAK,
-                                           TUNE, NAT_TUNE, SQRT_ACTION, ACTION, TIME,
-                                           RESCALE_FACTOR)
-from model.accelerators.accelerator import AccElementTypes
+
+from omc3.model.accelerators.accelerator import AccElementTypes
+from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
+                                                DPPAMP, ERR, EXT, KICK_NAME,
+                                                NAT_TUNE, PEAK2PEAK,
+                                                PLANE_TO_NUM, RES,
+                                                RESCALE_FACTOR, RMS,
+                                                SQRT_ACTION, TIME, TUNE, S)
 
 
 def calculate(measure_input, input_files, scale, header_dict, plane):

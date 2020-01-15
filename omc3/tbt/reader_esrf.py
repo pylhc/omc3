@@ -5,11 +5,13 @@ ESRF Turn-by-Turn Data Handler
 Data handling for tbt data from ESRF.
 
 """
-from os.path import abspath, join, dirname
 import json
-from scipy.io import loadmat
+from os.path import abspath, dirname, join
+
 import numpy as np
-from tbt import handler
+from scipy.io import loadmat
+
+from omc3.tbt import handler
 
 
 def read_tbt(filepath):

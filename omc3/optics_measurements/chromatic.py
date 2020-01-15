@@ -9,8 +9,9 @@ Computes various chromatic beam properties
 """
 import numpy as np
 import pandas as pd
-from optics_measurements.constants import ERR, DELTA, MDL
-from optics_measurements.toolbox import df_prod, df_ratio
+
+from omc3.optics_measurements.constants import DELTA, ERR, MDL
+from omc3.optics_measurements.toolbox import df_prod, df_ratio
 
 
 def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):

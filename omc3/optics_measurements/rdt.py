@@ -4,19 +4,19 @@ RDTs
 
 Computes global resonance driving terms f_jklm.
 """
-from os.path import join
-import numpy as np
 from copy import deepcopy
-from utils import logging_tools
-from scipy.optimize import curve_fit
-from optics_measurements import phase
-from optics_measurements.toolbox import df_diff
-from optics_measurements.constants import PLANES, ERR, EXT
-from scipy.sparse import diags
-from utils import iotools
+from os.path import join
+
+import numpy as np
 import pandas as pd
-from utils import stats
 import tfs
+from scipy.optimize import curve_fit
+from scipy.sparse import diags
+
+from omc3.optics_measurements import phase
+from omc3.optics_measurements.constants import ERR, EXT, PLANES
+from omc3.optics_measurements.toolbox import df_diff
+from omc3.utils import iotools, logging_tools, stats
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)

@@ -2,17 +2,23 @@ import logging
 import os
 import shutil
 from os.path import join
-from utils import iotools
-import pandas as pd
+
 import numpy as np
-from model.accelerators.accelerator import AccExcitationMode
-from model.model_creators import model_creator
-from model.constants import (MACROS_DIR, GENERAL_MACROS, LHC_MACROS, ERROR_DEFFS_TXT,
-                             JOB_ITERATE_MADX, MODIFIERS_MADX, TWISS_BEST_KNOWLEDGE_DAT,
-                             TWISS_ADT_DAT, TWISS_AC_DAT, TWISS_ELEMENTS_DAT, TWISS_DAT,
-                             TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT, B2_ERRORS_TFS, B2_SETTINGS_MADX )
-LOGGER = logging.getLogger(__name__)
+import pandas as pd
 import tfs
+
+from omc3.model.accelerators.accelerator import AccExcitationMode
+from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
+                                  ERROR_DEFFS_TXT, GENERAL_MACROS,
+                                  JOB_ITERATE_MADX, LHC_MACROS, MACROS_DIR,
+                                  TWISS_AC_DAT, TWISS_ADT_DAT,
+                                  TWISS_BEST_KNOWLEDGE_DAT, TWISS_DAT,
+                                  TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
+                                  TWISS_ELEMENTS_DAT)
+from omc3.model.model_creators import model_creator
+from omc3.utils import iotools
+
+LOGGER = logging.getLogger(__name__)
 
 
 def _b2_columns():
@@ -125,4 +131,3 @@ class LhcSegmentCreator(model_creator.ModelCreator):
         }
         madx_script = madx_template % replace_dict
         return madx_script
-

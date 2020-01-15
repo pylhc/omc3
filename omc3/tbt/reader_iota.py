@@ -6,11 +6,13 @@ Takes Hdf5 file path containing the TbT data and returns a TbtData class to be r
 
 """
 from datetime import datetime
+
+import h5py
 import numpy as np
 import pandas as pd
-import h5py
-from tbt import handler
-from utils import logging_tools
+
+from omc3.tbt import handler
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 

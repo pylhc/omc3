@@ -1,7 +1,9 @@
-import pytest
 import numpy as np
+import pytest
+
+from omc3.utils import stats
+
 from . import context
-from utils import stats
 
 
 def test_circular_zeros(zeros):

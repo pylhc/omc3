@@ -12,13 +12,15 @@ for free motion and for driven motion. The twisses should contain the chromatic 
 """
 from collections import OrderedDict
 from datetime import datetime
+from os.path import join
 
 import numpy as np
 import pandas as pd
-from os.path import join
-from . import context
 import tfs
-from definitions import formats
+
+from omc3.definitions import formats
+
+from . import context
 
 PLANES = ('X', 'Y')
 DRIVEN = "_d"

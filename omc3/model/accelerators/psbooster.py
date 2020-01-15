@@ -2,11 +2,13 @@
 PS BOOSTER
 -------------------
 """
-import os
-import re
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
-from generic_parser import EntryPoint
 import logging
+import os
+
+from generic_parser import EntryPoint
+
+from omc3.model.accelerators.accelerator import (Accelerator,
+                                                 AcceleratorDefinitionError)
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
@@ -58,6 +60,3 @@ class _PsboosterSegmentMixin(object):
     def __init__(self):
         self._start = None
         self._end = None
-
-
-

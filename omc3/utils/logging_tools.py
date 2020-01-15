@@ -10,12 +10,12 @@ Functions for easier use of logging, like automatic logger setup
 import datetime
 import inspect
 import logging
-from io import StringIO
 import os
 import sys
 import time
 import warnings
 from contextlib import contextmanager
+from io import StringIO
 
 import pandas as pd
 

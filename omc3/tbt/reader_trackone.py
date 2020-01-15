@@ -6,8 +6,10 @@ Tbt data handling from PTC trackone.
 
 """
 from collections import OrderedDict
+
 import numpy as np
-from tbt import handler
+
+from omc3.tbt import handler
 
 
 def read_tbt(infile):

@@ -8,12 +8,15 @@ Dispersion
 Computes orbit, dispersion and normalised dispersion.
 """
 from os.path import join
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 import tfs
-from utils import stats
-from optics_measurements.constants import EXT, ERR, DELTA, MDL, PI2I
-from optics_measurements.constants import ORBIT_NAME, NORM_DISP_NAME, DISPERSION_NAME
+
+from omc3.optics_measurements.constants import (DELTA, DISPERSION_NAME, ERR,
+                                                EXT, MDL, NORM_DISP_NAME,
+                                                ORBIT_NAME, PI2I)
+from omc3.utils import stats
 
 
 def calculate_orbit(meas_input, input_files, header, plane):

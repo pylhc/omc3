@@ -5,16 +5,19 @@ Entrypoint madx_wrapper
 Runs MADX with a file or a string as an input, it processes @required macros.
 If defined, writes the processed MADX script and logging output into files.
 """
-from os.path import abspath, join, dirname, pardir
+import contextlib
 import os
-import sys
 import re
 import subprocess
-import contextlib
+import sys
 import warnings
+from os.path import abspath, dirname, join, pardir
 from tempfile import mkstemp
-from generic_parser import entrypoint, EntryPointParameters
-from utils import logging_tools
+
+from generic_parser import EntryPointParameters, entrypoint
+
+from omc3.utils import logging_tools
+
 LOG = logging_tools.get_logger(__name__)
 
 LIB = abspath(join(dirname(__file__), "lib"))
@@ -219,4 +222,3 @@ def _raise_madx_error(log=None, file=None):
 
 if __name__ == "__main__":
     main()
-

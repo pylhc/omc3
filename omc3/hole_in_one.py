@@ -22,16 +22,18 @@ To run either of the two or both steps, use options:
 """
 import os
 from collections import OrderedDict
-from datetime import datetime
-from os.path import join, dirname, basename, abspath
 from copy import deepcopy
-from utils import logging_tools, iotools
-from definitions import formats
-import tbt
+from datetime import datetime
+from os.path import abspath, basename, dirname, join
 
-from generic_parser.entrypoint_parser import (entrypoint, EntryPoint, EntryPointParameters,
-                                       add_to_arguments, save_options_to_config)
-from utils.contexts import timeit
+from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters,
+                                              add_to_arguments, entrypoint,
+                                              save_options_to_config)
+
+from omc3 import tbt
+from omc3.definitions import formats
+from omc3.utils import iotools, logging_tools
+from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -327,7 +329,7 @@ def _multibunch(tbt_datas, options):
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
         yield tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
-                      [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
+                               [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
 
 
 def _measure_optics(lins, optics_opt):

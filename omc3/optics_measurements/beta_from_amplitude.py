@@ -8,11 +8,14 @@ Beta from amplitude
 Computes beta from amplitude.
 """
 from os.path import join
+
 import numpy as np
 import pandas as pd
 import tfs
-from optics_measurements.toolbox import df_rel_diff, df_ratio
-from optics_measurements.constants import AMP_BETA_NAME, EXT, ERR, DELTA, MDL, RES
+
+from omc3.optics_measurements.constants import (AMP_BETA_NAME, DELTA, ERR, EXT,
+                                                MDL, RES)
+from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
 
 def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane):

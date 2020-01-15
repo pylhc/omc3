@@ -2,9 +2,11 @@
 Super KEK-B
 -------------------
 """
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
-from utils import logging_tools
 from generic_parser import EntryPoint
+
+from omc3.model.accelerators.accelerator import (Accelerator,
+                                                 AcceleratorDefinitionError)
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 RINGS = ("ler", "her")

@@ -1,6 +1,6 @@
-import os
 import logging
-import madx_wrapper
+
+from omc3 import madx_wrapper
 
 LOGGER = logging.getLogger(__name__)
 

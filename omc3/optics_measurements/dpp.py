@@ -9,8 +9,10 @@ Computes and arranges dp over p
 """
 
 import logging
+
 import numpy as np
 import pandas as pd
+
 DPP_TOLERANCE = 1e-4
 AMP_DPP_TOLERANCE = 1e-5
 LOGGER = logging.getLogger(__name__)

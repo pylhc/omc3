@@ -8,8 +8,9 @@ Tune
 Computes betatron tunes and provides structures to store them.
 """
 import numpy as np
-from utils import stats
-from optics_measurements.constants import PLANES, PLANE_TO_NUM
+
+from omc3.optics_measurements.constants import PLANE_TO_NUM, PLANES
+from omc3.utils import stats
 
 
 def calculate(measure_input, input_files):
