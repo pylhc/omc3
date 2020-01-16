@@ -41,12 +41,13 @@ def do_odr(x, y, xerr, yerr, order):
         order: fit order; 1: linear, 2: quadratic
 
     Returns: Odr fit. Betas order is index = coefficient of same order.
-             See :func:`omc3.tune_analysis.detuning_tools.linear_model`
-             and :func:`omc3.tune_analysis.detuning_tools.quadratic_model`.
     """
-    odr = ODR(data=RealData(x, y, xerr, yerr),
+    LOG.debug("Starting ODR fit.")
+    fit_np = np.polyfit(x, y, order)[::-1]  # using polyfit as starting parameters
+    LOG.debug(f"ODR fit input (from polyfit): {fit_np}")
+    odr = ODR(data=RealData(x=x, y=y, sx=xerr, sy=yerr),
               model=Model(get_poly_fun(order)),
-              beta0=[0.] + [1.] * order)
+              beta0=fit_np)
     odr_fit = odr.run()
     logging_tools.odr_pprint(LOG.info, odr_fit)
     return odr_fit

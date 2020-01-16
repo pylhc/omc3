@@ -146,3 +146,8 @@ def get_paired_lables(action_plane, tune_plane, tune_scale=None):
             fr'$\Delta Q_{tune_plane.lower():s}{tune_unit}$')
 
 
+def get_detuning_exponent_for_order(order):
+    """ Returns the default exponent for detuning orders. Highly Empirical. """
+    return {1: 3, 2: 9, 3: 15}[order]
+
+
