@@ -98,7 +98,7 @@ class DebugMode(object):
     def __enter__(self):
         return None
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, value, traceback):
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
@@ -130,7 +130,7 @@ class TempFile(object):
         def __enter__(self):
             return self.path
 
-        def __exit__(self, type, value, traceback):
+        def __exit__(self, value, traceback):
             try:
                 with open(self.path, "r") as f:
                     content = f.read()

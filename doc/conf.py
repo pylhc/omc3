@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'omc3'
-copyright = u'2019, OMC-TEAM'
+copyright_ = u'2019, OMC-TEAM'
 author = u'OMC-TEAM'
 
 # The version info for the project you're documenting, acts as replacement for

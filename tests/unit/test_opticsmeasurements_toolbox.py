@@ -17,8 +17,8 @@ def test_df_sum_zero(random, zeros):
 
 def test_df_sum_diff():
     a, b = _arand(), _arand()
-    sum = toolbox.df_sum(*_df(a, b))
-    diff = toolbox.df_diff(*_df(sum, b))
+    sum_of_columns = toolbox.df_sum(*_df(a, b))
+    diff = toolbox.df_diff(*_df(sum_of_columns, b))
     assert _numerically_equal(a, diff)
 
 
@@ -58,9 +58,9 @@ def test_df_rel_diff(random, zeros, ones):
 def test_df_err_sum():
     a, b = _erand(), _erand()
     err_sum = toolbox.df_err_sum(*_df(a, b))
-    sum = toolbox.df_sum(*_df(a, b))
+    sum_of_columns = toolbox.df_sum(*_df(a, b))
     assert all(err_sum > 0)
-    assert all(sum >= err_sum)
+    assert all(sum_of_columns >= err_sum)
 
 
 def test_df_rel_err_sum():
@@ -73,13 +73,13 @@ def test_df_other():
     # basic functionality is tested, just check that these run
     a, b, aerr, berr = _arand(), _arand(), _erand(), _erand()
     df_and_cols = _df(a, b, aerr, berr)
-    sum = toolbox.df_sum_with_err(*df_and_cols)
+    tuple_sum_columns_and_sum_errors = toolbox.df_sum_with_err(*df_and_cols)
     diff = toolbox.df_diff_with_err(*df_and_cols)
     rel_diff = toolbox.df_rel_diff_with_err(*df_and_cols)
     ratio = toolbox.df_ratio_with_err(*df_and_cols)
     prod = toolbox.df_prod_with_err(*df_and_cols)
 
-    for res in (sum, diff, rel_diff, ratio, prod):
+    for res in (tuple_sum_columns_and_sum_errors, diff, rel_diff, ratio, prod):
         assert len(res) == 2
         assert len(res[0]) == len(res[1])
         assert len(res[0]) == len(a)
@@ -91,8 +91,8 @@ def test_df_other():
 def test_ang():
     a, b = _arand(), _arand()
     diff = toolbox.df_ang_diff(*_df(a, b))
-    sum = toolbox.ang_sum(a, b)
-    for res in (diff, sum):
+    sum_angles = toolbox.ang_sum(a, b)
+    for res in (diff, sum_angles):
         assert len(res) == len(a)
         assert all(-0.5 <= res)
         assert all(res <= 0.5)
