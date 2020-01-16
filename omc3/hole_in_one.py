@@ -32,6 +32,9 @@ from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters,
 
 from omc3 import tbt
 from omc3.definitions import formats
+from omc3.harpy import handler
+from omc3.model import manager
+from omc3.optics_measurements import measure_optics
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
 
@@ -265,7 +268,6 @@ def _get_suboptions(opt, rest):
 
     if opt.optics:
         optics_opt, rest = _optics_entrypoint(rest)
-        from model import manager
         accel_opt = manager.get_parsed_opt(rest)
         optics_opt.accelerator = manager.get_accelerator(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
@@ -299,7 +301,6 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
 
 
 def _run_harpy(harpy_options):
-    from harpy import handler
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
@@ -333,7 +334,6 @@ def _multibunch(tbt_datas, options):
 
 
 def _measure_optics(lins, optics_opt):
-    from optics_measurements import measure_optics
     if len(lins) == 0:
         lins = optics_opt.files
     inputs = measure_optics.InputFiles(lins, optics_opt)

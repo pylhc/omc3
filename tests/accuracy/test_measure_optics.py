@@ -2,7 +2,6 @@ from os import listdir
 from os.path import abspath, dirname, isdir, isfile, join
 from shutil import rmtree
 
-import pytest
 import tfs
 
 from omc3.hole_in_one import \
@@ -11,8 +10,6 @@ from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
-
-from . import context
 from .twiss_to_lin import optics_measurement_test_files
 
 LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}

@@ -20,8 +20,6 @@ import tfs
 
 from omc3.definitions import formats
 
-from . import context
-
 PLANES = ('X', 'Y')
 DRIVEN = "_d"
 FREE = "_f"
@@ -35,6 +33,7 @@ ERRTUNE = 3e-7
 NAT_OVER_DRV = 0.01
 MAGIC_NUMBER = 6   # SVD cleaning effect + main lobe size effect
 COUPLING = 0.1
+
 
 def optics_measurement_test_files(modeldir, dpps):
     """

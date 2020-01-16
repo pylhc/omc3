@@ -3,8 +3,6 @@ import pytest
 
 from omc3.utils import stats
 
-from . import context
-
 
 def test_circular_zeros(zeros):
     assert stats.circular_mean(zeros) == 0

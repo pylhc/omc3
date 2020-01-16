@@ -2,15 +2,13 @@ import os
 import tempfile
 from datetime import datetime
 
+import h5py
 import numpy as np
 import pandas as pd
 import pytest
 
-import h5py
 from omc3.tbt import handler, reader_iota, reader_ptc, reader_trackone
 from omc3.tbt_converter import converter_entrypoint
-
-from . import context
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')

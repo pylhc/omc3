@@ -5,8 +5,6 @@ import pytest
 from omc3 import madx_wrapper
 from omc3.utils.contexts import silence, temporary_dir
 
-from . import context
-
 
 def test_with_macro():
     """ Checks:
