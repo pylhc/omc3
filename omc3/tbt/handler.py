@@ -36,8 +36,10 @@ class TbtData(object):
 
 
 def generate_average_tbtdata(tbtdata):
-    '''Takes a TbtData object and returns TbtData object containing the average
-    over all bunches/particles at all used BPMs '''
+    """
+    Takes a TbtData object and returns TbtData object containing the average over all
+    bunches/particles at all used BPMs.
+    """
     data = tbtdata.matrices
     bpm_names = data[0]['X'].index
 

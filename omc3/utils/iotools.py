@@ -46,8 +46,6 @@ def delete_item(path_to_item):
             shutil.rmtree(path_to_item)
         elif os.path.islink(path_to_item):
             os.unlink(path_to_item)
-    except IOError:
-        LOG.error("Could not delete item because of IOError. Item: '{}'".format(path_to_item))
     except OSError:
         LOG.error("Could not delete item because of OSError. Item: '{}'".format(path_to_item))
 

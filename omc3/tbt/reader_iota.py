@@ -105,7 +105,7 @@ def check_key_v2(key):
 
 
 def check_key_v1(key):
-    return (('state' not in key) or key.startswith('N:'))
+    return ('state' not in key) or key.startswith('N:')
 
 
 FUNCTIONS = {1: {'get_bpm_names': _get_list_of_bpmnames_v1,
