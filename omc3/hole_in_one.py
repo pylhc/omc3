@@ -265,7 +265,7 @@ def _get_suboptions(opt, rest):
         optics_opt, rest = _optics_entrypoint(rest)
         from model import manager
         accel_opt = manager.get_parsed_opt(rest)
-        optics_opt.accelerator = manager.get_accel_instance(rest)
+        optics_opt.accelerator = manager.get_accelerator(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
             raise AttributeError("Compensation requested and no driven model was provided.")
     else:

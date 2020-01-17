@@ -2,58 +2,50 @@
 Super KEK-B
 -------------------
 """
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode
+from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from utils import logging_tools
-from generic_parser import EntryPointParameters
-
+from generic_parser import EntryPoint
 
 LOGGER = logging_tools.get_logger(__name__)
+RINGS = ("ler", "her")
 
 
 class SKekB(Accelerator):
     """
     KEK's SuperKEKB accelerator.
-    Beam direction inverted for now for using with HER.
     """
     NAME = "skekb"
-    MACROS_NAME = "skekb"
-
-    def verify_object(self):  # TODO: Maybe more checks?
-        if self.model_dir is None:  # is the class is used to create full response?
-            raise AcceleratorDefinitionError("SuperKEKB doesn't have a model creation, calling it this "
-                                             "way is most probably wrong.")
+    RINGS = ("ler", "her")
 
     @staticmethod
-    def get_class_parameters():
-        params = EntryPointParameters()
-        params.add_parameter(name="ring", type=str, choices=("ler", "her"), help="HER or LER ring.")
+    def get_parameters():
+        params = super(SKekB, SKekB).get_parameters()
+        params.add_parameter(name="ring", type=str, choices=RINGS, required=True,
+                             help="HER or LER ring.")
         return params
 
+    def __init__(self, *args, **kwargs):
+        parser = EntryPoint(self.get_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
+        super().__init__(opt)
+        self.ring = opt.ring
+        ring_to_beam_direction = {"ler": 1, "her": -1}
+        self.beam_direction = ring_to_beam_direction[self.ring]
 
-    @classmethod
-    def _get_class(cls, opt):
-        """ Actual get_class function """
-        new_class = cls
-        new_class = cls._get_beamed_class(new_class, opt.ring)
-        return new_class
+    @property
+    def ring(self):
+        if self._ring is None:
+            raise AcceleratorDefinitionError("The accelerator definition is incomplete, ring "
+                                             "has to be specified (--ring option missing?).")
+        return self._ring
 
+    @ring.setter
+    def ring(self, value):
+        if value not in RINGS:
+            raise AcceleratorDefinitionError("Ring parameter has to be one of ('ler', 'her')")
+        self._ring = value
 
-    @classmethod
-    def _get_beamed_class(cls, new_class, ring):
-        ringSKEKB = _Her if ring == 'her' else _Ler
-        beamed_class = type(new_class.__name__ + str(ring),
-                            (new_class, ringSKEKB),
-                            {})
-        return beamed_class
-
-
-class _Ler(object):
-    @classmethod
-    def get_beam_direction(cls):
-        return 1
-
-
-class _Her(object):
-    @classmethod
-    def get_beam_direction(cls):
-        return -1
+    def verify_object(self):
+        if self.model_dir is None:  # is the class is used to create full response?
+            raise AcceleratorDefinitionError("SuperKEKB doesn't have a model creation, "
+                                             "calling it this way is most probably wrong.")

@@ -54,7 +54,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     LOGGER.info("Calculating phase advances")
     LOGGER.info(f"Measured tune in plane {plane} = {tunes[plane]['Q']}")
 
-    df = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ["S", f"MU{plane}"]]
+    df = pd.DataFrame(meas_input.accelerator.model).loc[:, ["S", f"MU{plane}"]]
     how = 'outer' if meas_input.union else 'inner'
     dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
@@ -65,7 +65,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
     if meas_input.compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
-    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.get_beam_direction()
+    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
     if meas_input.compensation == "equation":
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
@@ -110,7 +110,7 @@ def _compensate_by_equation(phases_meas, plane, tunes):
 
 
 def _compensate_by_model(input_files, meas_input, df, plane):
-    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.get_driven_tfs().loc[:, [f"MU{plane}"]]),
+    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"MU{plane}"]]),
                   how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
     phase_compensation = df_diff(df, f"MU{plane}", f"MU{plane}comp")
     df[input_files.get_columns(df, f"MU{plane}")] = ang_sum(
@@ -157,10 +157,10 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
     # TODO REFACTOR AND SIMPLIFY
     accel = meas_input.accelerator
     meas = phase_advances["MEAS"]
-    bd = accel.get_beam_direction()
-    elements = accel.get_elements_tfs()
+    bd = accel.beam_direction
+    elements = accel.elements
     lines = []
-    for elem1, elem2 in accel.get_important_phase_advances():
+    for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
         mus2 = elements.loc[:, f"MU{plane}"] - elements.loc[elem2, f"MU{plane}"]

@@ -21,11 +21,11 @@ BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
 def _create_input():
     dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
     print(f"\nInput creation: {dpps}")
-    opt_dict = dict(accel="lhc", lhc_mode="lhc_runII_2018", beam=1, files=[""],
+    opt_dict = dict(accel="lhc", year="2018", ats=True, beam=1, files=[""],
                     model_dir=join(dirname(__file__), "..", "inputs", "models", "25cm_beam1"),
                     outputdir=BASE_PATH)
     optics_opt, rest = _optics_entrypoint(opt_dict)
-    optics_opt.accelerator = manager.get_accel_instance(rest)
+    optics_opt.accelerator = manager.get_accelerator(rest)
     lins = optics_measurement_test_files(opt_dict["model_dir"], dpps)
     return lins, optics_opt
 
