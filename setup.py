@@ -17,7 +17,7 @@ with README.open("r") as docs:
 # Dependencies for the package itself
 DEPENDENCIES = [
     "numpy>=1.14.1",
-    "pandas>=0.24.0",
+    "pandas>=0.24.0,<1.0",
     "scipy>=1.0.0",
     "scikit-learn>=0.20.3",
     "tfs-pandas>=1.0.3",
