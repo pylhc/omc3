@@ -24,7 +24,7 @@ class ModelCreator(object):
             
     @staticmethod
     def run_madx(madx_script, logfile=None, writeto=None):
-        madx_wrapper.resolve_and_run_string(madx_script, output_file=writeto, log_file=logfile)
+        madx_wrapper.run_string(madx_script, output_file=writeto, log_file=logfile)
 
 
 class ModelCreationError(Exception):
