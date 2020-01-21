@@ -51,7 +51,7 @@ one contains the stem plot(s - subdict with bpms as keys) and the second one con
 - **stem_plot**: Flag to create stem plot
 
   Action: ``store_true``
-- **stem_single_fig**: Flag to plot given bpms into one single stem-plot
+- **bpms_single_fig**: Flag to plot given bpms into one single stem-plot
 
   Action: ``store_true``
 - **waterfall_cmap** *(str)*: Colormap to use for waterfall plot.
@@ -74,6 +74,7 @@ one contains the stem plot(s - subdict with bpms as keys) and the second one con
 import os
 from collections import OrderedDict
 from contextlib import suppress
+from dataclasses import dataclass
 from datetime import datetime
 
 import matplotlib
@@ -84,6 +85,10 @@ from cycler import cycler
 from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config, DotDict
 from matplotlib import cm, colors, transforms, lines as mlines
+from matplotlib.patches import Rectangle
+from matplotlib.figure import Figure
+from matplotlib.axes import Axes
+import pandas as pd
 
 from definitions import formats
 from utils import logging_tools
@@ -95,6 +100,7 @@ PLANES = ('x', 'y')
 
 STEM_LINES_ALPHA = 0.5
 RESONANCE_LINES_ALPHA = 0.5
+PATCHES_ALPHA = 0.2
 
 LABEL_Y_SPECTRUM = 'Amplitude in {plane:s} [a.u]'
 LABEL_Y_WATERFALL = 'Plane {plane:s}'
@@ -170,15 +176,17 @@ def get_params():
     params.add_parameter(name="rescale",
                          action="store_true",
                          help='Flag to rescale plots amplitude to max-line = 1')
-    params.add_parameter(name="stem_plot",
-                         action="store_true",
-                         help='Flag to create stem plot')
-    params.add_parameter(name="stem_single_fig",
+    params.add_parameter(name="plot_type",
+                         nargs="+",
+                         choices=['stem', 'waterfall'],
+                         default=['stem'],
+                         help='Choose plot type (Multiple choices possible).')
+    params.add_parameter(name="bpms_single_fig",
                          action="store_true",
                          help='Flag to plot given bpms into one single stem-plot')
-    params.add_parameter(name="waterfall_plot",
+    params.add_parameter(name="files_single_fig",
                          action="store_true",
-                         help='Flag to create waterfall plot.')
+                         help='Flag to plot given files into the same plots (both stem and waterfall)')
     params.add_parameter(name="waterfall_line_width",
                          default=DEFAULTS.waterfall_line_width,
                          help='Line width of the waterfall frequency lines. "auto" fills them up until the next one.')
@@ -216,9 +224,10 @@ def get_params():
                          type=float,
                          default=DEFAULTS.ylim,
                          help='Limits on the y axis (Tupel)')
-    params.add_parameter(name="hide_bpm_labels",
-                         action="store_true",
-                         help='Hide the bpm labels in the plots.')
+    params.add_parameter(name="ncol_legend",
+                         type=int,
+                         default=NCOL_LEGEND,
+                         help='Number of bpm legend-columns. If < 1 no legend is shown.')
     params.add_parameter(name="filetype",
                          type=str,
                          default=DEFAULTS.filetype,
@@ -238,103 +247,248 @@ def main(opt):
     if opt.output_dir is not None:
         _save_options_to_config(opt)
 
-    # Input
     opt = _check_opt(opt)
-
     matplotlib.rcParams.update(opt.manual_style)
-    out, limits, lines, stem_opt, waterfall_opt = _sort_opt(opt)
+    stem_opt, waterfall_opt, sorting_opt = _sort_opt(opt)
+    stem, waterfall = _sort_input_data(sorting_opt)
 
-    spectrum_figs = {}
-    waterfall_figs = {}
+    if stem_opt.plot:
+        _create_stem_plots(stem.figs, stem.data, stem_opt)
 
+    if waterfall_opt.plot:
+        _create_waterfall_plot(waterfall.figs, waterfall.data, waterfall_opt)
+
+    return stem.fig_list, waterfall.fig_list
+
+
+# Data Sorting -----------------------------------------------------------------
+
+
+class FigureContainer(object):
+    """ Container for attaching additional information to one figure. """
+    def __init__(self, path: str) -> None:
+        self.fig, self.axes = plt.subplots(nrows=len(PLANES), ncols=1)
+        self.labels = []
+        self.tunes = {p: [] for p in PLANES}
+        self.nattunes = {p: [] for p in PLANES}
+        self.path = path
+        self.minmax = {p: (0, 1) for p in PLANES}
+
+
+class DataContainer(object):
+    """ Container to gather data per bpm. Includes the figure to plot this data to. """
+    def __init__(self, label: str, data: dict, fig_container: FigureContainer) -> None:
+        self.label = label
+        self.data = data
+        self.fig_container = fig_container
+        self._add_tunes_to_attached_figure_container()
+        self._update_min_max_in_attached_figure_container()
+
+    def _add_tunes_to_attached_figure_container(self):
+        """ Gets tunes from current data and adds it to attached figure. """
+        for plane in PLANES:
+            self.fig_container.tunes[plane].append(self.data[plane][LIN].loc[f'TUNE{plane.upper()}'])
+            with suppress(KeyError):
+                self.fig_container.nattunes[plane].append(self.data[plane][LIN].loc[f'NATTUNE{plane.upper()}'])
+
+    def _update_min_max_in_attached_figure_container(self):
+        for plane in PLANES:
+            mmin, mmax = self.fig_container.minmax[plane]
+            self.fig_container.minmax[plane] = (
+                    min(mmin, self.data[plane][AMPS].min(skipna=True)),
+                    max(mmax, self.data[plane][AMPS].max(skipna=True))
+            )
+
+
+@dataclass
+class IdData:
+    """ Container to keep track of the id-sorting output """
+    id: str     # id for the figure-container dictionary
+    label: str  # plot labels
+    path: str   # figure output path
+
+
+@dataclass
+class AllData:
+    """ Container to collect figure and data containers """
+    fig_list: dict  # dictionary of matplotlib figures
+    figs: dict      # dictionary of FigureContainers
+    data: list      # list of DataContainers
+
+
+def _sort_input_data(opt: DotDict) -> tuple:
+    """ Load and sort input data by file and bpm and assign correct figure-containers. """
+    LOG.debug("Sorting input data.")
+
+    stem_data = AllData({}, {}, [])
+    waterfall_data = AllData({}, {}, [])
+
+    # Data Sorting
     for file_path, filename in _get_unique_filenames(opt.files):
-        LOG.info(f"Creating plots for file '{filename}'.")
+        LOG.info(f"Loading data for file '{filename}'.")
 
-        # Loading Data
-        if opt.output_dir is not None:
-            out.dir = _make_output_dir(opt.output_dir, filename)
+        data = _load_spectrum_data(file_path, opt.bpms)
+        data = _filter_amps(data, opt.amp_limit)
+        bpms = _get_all_bpms(_get_bpms(data[LIN], opt.bpms, file_path))
 
-        files = _load_spectrum_data(file_path, opt.bpms)
-        files = _filter_amps(files, opt.amp_limit)
-        bpms = _get_bpms(files[LIN], opt.bpms)
+        for the_data, get_id_fun, active in ((stem_data, _get_stem_id, opt.plot_stem),
+                                             (waterfall_data, _get_waterfall_id, opt.plot_waterfall)):
+            if not active:
+                continue
 
-        # Plotting
-        if stem_opt.plot:
-            spectrum_figs[filename] = _create_stem_plots(out, bpms, files, lines, limits, stem_opt)
+            for bpm in bpms:
+                the_id = get_id_fun(filename, bpm,
+                                    opt.output_dir, opt.files_single_fig, opt.bpms_single_fig, opt.filetype)
 
-        if waterfall_opt.plot:
-            waterfall_figs[filename] = _create_waterfall_plot(out, bpms, files, lines, limits, waterfall_opt)
+                if the_id.id not in the_data.figs:
+                    the_data.figs[the_id.id] = FigureContainer(the_id.path)
+                    the_data.figs_list[the_id.id] = the_data.figs[the_id.id].fig
 
-    return spectrum_figs, waterfall_figs
+                the_data.figs[the_id].labels.append(the_id.label)
+                the_data.data.append(DataContainer(the_id.label,
+                                                   _get_data_for_bpm(data, bpm),
+                                                   the_data.figs[the_id.id])
+                                     )
+    return stem_data, waterfall_data
+
+
+def _get_data_for_bpm(data: dict, bpm: str) -> dict:
+    """ Loads data from files and returns a dictionary (over planes) of a dictionary over the files containing
+    the bpm data as pandas series. """
+    data_series = {p: {} for p in PLANES}
+    for plane in PLANES:
+        try:
+            data_series[plane][FREQS] = data[FREQS][plane].loc[:, bpm]
+            data_series[plane][AMPS] = data[AMPS][plane].loc[:, bpm]
+            data_series[plane][LIN] = data[LIN][plane].loc[bpm, :]
+        except KeyError:  # bpm not in this plane
+            data_series[plane] = None
+    return data_series
+
+
+def _get_stem_id(filename: str, bpm: str, output_dir: str,
+                 files_single_fig: bool, bpms_single_fig: bool, filetype: str) -> IdData:
+    """ Returns the stem-dictionary id and the path to which the output file should be written.
+    By using more or less unique identifiers, this controls the creation of figures in the dictionary."""
+    fun_map = {
+        (True, True): _get_id_single_fig_files_and_bpms,
+        (True, False): _get_id_single_fig_files,
+        (False, True): _get_id_single_fig_bpms,
+        (False, False): _get_id_multi_fig,
+    }
+    return fun_map[(files_single_fig, bpms_single_fig)](
+        output_dir, SPECTRUM_FILENAME, filename, bpm, filetype
+    )
+
+
+def _get_waterfall_id(filename: str, bpm: str, output_dir: str,
+                      files_single_fig: bool, bpms_single_fig: bool, filetype: str) -> IdData:
+    """ Returns the waterfall-dictionary id and the path to which the output file should be written.
+    By using more or less unique identifiers, this controls the creation of figures in the dictionary."""
+    fun_map = {
+        (True, True): _get_id_single_fig_files_and_bpms,
+        (True, False): _get_id_single_fig_files,
+        (False, True): _get_id_single_fig_bpms,
+        (False, False): _get_id_single_fig_bpms,  # single figure per file AND bpm does not make sense for waterfall
+    }
+    return fun_map[(files_single_fig, bpms_single_fig)](
+        output_dir, WATERFALL_FILENAME, filename, bpm, filetype
+    )
+
+
+# IdData Mapping ---
+
+def _get_id_single_fig_files_and_bpms(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
+    """ Same id for all plots. Creates single figure. The label of the lines is a combination of filename and bpm. """
+    return IdData(
+        id=default_name,
+        label=f"{filename} {bpm}",
+        path=_get_figure_path(output_dir, filename=None, figurename=f"{default_name}.{filetype}")
+    )
+
+
+def _get_id_single_fig_files(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
+    """ BPM as id for plots. Creates len(bpm) figures, with filenames as labels for lines. """
+    return IdData(
+        id=bpm,
+        label=filename,
+        path=_get_figure_path(output_dir, filename=None, figurename=f"{default_name}_{bpm}.{filetype}")
+    )
+
+
+def _get_id_single_fig_bpms(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
+    """ Filename as ID for plots. Creates len(files) figures, with bpms as lables for lines."""
+    return IdData(id=filename,
+                  label=bpm,
+                  path=_get_figure_path(output_dir, filename=filename, figurename=f"{default_name}.{filetype}")
+                  )
+
+
+def _get_id_multi_fig(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
+    """ Combination of Filename and BPM as ID. Creates len(files)*len(bpms) plots. BPM-name is printed as label."""
+    return IdData(id=f"{filename}_{bpm}",
+                  label=bpm,
+                  path=_get_figure_path(output_dir, filename=filename, figurename=f"{default_name}_{bpm}.{filetype}")
+                  )
 
 
 # Stem Plotting ----------------------------------------------------------------
 
 
-def _create_stem_plots(out, bpms, files, lines, limits, opts):
-    if opts.single_fig:
-        return _singlefigure_stems(out, bpms, files, lines, limits, opts)
-    return _multifigure_stems(out, bpms, files, lines, limits, opts)
+def _create_stem_plots(figures: dict, datas: list, opts: DotDict) -> None:
+    """ Main loop for stem-plot creation. """
+    LOG.debug(f"  ...creating Stem Plots")
+    for data_cont in datas:
+        _plot_stems(data_cont, opts.rescale)
+
+    for fig_id, fig_cont in figures.items():
+        LOG.debug(f'   Finalizing Stem: {fig_id}.')
+        fig_cont.fig.canvas.set_window_title(fig_id)
+        _plot_lines(fig_cont, opts.lines)
+        _finalize_stem_figures(fig_cont, opts.lines, opts.limits, opts.ncol_legend)
+
+    if opts.show:
+        plt.show()
 
 
-def _singlefigure_stems(out, bpms, files, lines, limits, opts):
-    LOG.debug(f"  ...creating single figure stem plots.")
-    fig, axs = plt.subplots(nrows=2, ncols=1)
-    tunes = _get_tunes(files[LIN])
-    all_bpms = _get_all_bpms(bpms)
-    for ax, plane in zip(axs, PLANES):
-        _plot_lines(ax, tunes, lines, zorder=-1)
-        for idx, bpm in enumerate(all_bpms):
-            if bpm not in bpms[plane]:
-                LOG.info(f"    {bpm} not found in plane {plane}")
-                continue
-            _plot_stems(ax, files, plane, bpm, idx, opts.rescale)
-    _format_stem_axes(axs, limits)
-    _create_legend(axs, all_bpms, lines, opts.hide_bpm_labels)
-    _output_plot(fig, out, SPECTRUM_FILENAME)
-    return fig
+def _plot_stems(data_cont: DataContainer, rescale: bool) -> None:
+    """ Plot the spectrum stems for this data container. """
+    for idx_plane, plane in enumerate(PLANES):
+        plot_data = _get_data_for_plot(data_cont, idx_plane, rescale)
+        if plot_data is None:
+            continue
+
+        ax, label, amps, freqs, idxs_data = plot_data
+
+        # plot
+        markers, stems, base = ax.stem(freqs, amps, use_line_collection=True, basefmt='none', label=label)
+
+        # Set appropriate colors
+        idx_color = data_cont.fig_container.labels.index(label)
+        color = get_cycled_color(idx_color)
+        markers.set_markeredgecolor(color)
+        stems.set_color(color)
+        stems.set_alpha(STEM_LINES_ALPHA)
+
+        LOG.debug(f"    {label} {plane}: color={color}, nstems={sum(idxs_data)}")
 
 
-def _multifigure_stems(out, bpms, files, lines, limits, opts):
-    LOG.debug(f"  ...creating multi figure stem plots.")
-    bpm_figs = {}
-    all_bpms = _get_all_bpms(bpms)
-    for bpm in all_bpms:
-        tunes = _get_tunes(files[LIN], bpm)
-        fig, axs = plt.subplots(nrows=2, ncols=1)
-        for idx, (ax, plane) in enumerate(zip(axs, PLANES)):
-            if bpm not in bpms[plane]:
-                LOG.info(f"    {bpm} not found in plane {plane}")
-                continue
-            _plot_lines(ax, tunes, lines, zorder=-1)
-            _plot_stems(ax, files, plane, bpm, idx, opts.rescale)
-        _format_stem_axes(axs, limits)
-        _create_legend(axs, bpm, lines, opts.hide_bpm_labels)
-        _output_plot(fig, out, f'{bpm}_{SPECTRUM_FILENAME}')
-        bpm_figs[bpm] = fig
-    return bpm_figs
+# Finalizing ---
 
 
-def _plot_stems(ax, files, plane, bpm, idx, rescale):
-    idxs = _get_valid_indices(files, plane, bpm)
-    freqs = files[FREQS][plane].loc[idxs, [bpm]]
-    amps = files[AMPS][plane].loc[idxs, [bpm]]
-    if rescale:
-        amps = _rescale_amp(amps)
+def _finalize_stem_figures(fig_cont, lines, limits, ncol_legend):
+    """ Format the axes and output. """
+    _format_stem_axes(fig_cont, limits)
 
-    markers, stems, base = ax.stem(freqs, amps, use_line_collection=True, basefmt='none', label=bpm)
-
-    # Set appropriate colors
-    color = get_cycled_color(idx)
-    markers.set_markeredgecolor(color)
-    stems.set_color(color)
-    stems.set_alpha(STEM_LINES_ALPHA)
-
-    LOG.debug(f"    {bpm}: color={color}, nstems={sum(idxs)}")
+    if ncol_legend > 0:
+        _create_legend(fig_cont.axes[0], fig_cont.labels, lines, ncol_legend)
+    _output_plot(fig_cont)
 
 
-def _format_stem_axes(axs, limits):
-    for ax, plane in zip(axs, PLANES):
+def _format_stem_axes(fig_cont, limits):
+    for idx_plane, plane in enumerate(PLANES):
+        ax = fig_cont.axes[idx_plane]
+
         ax.set_yscale('log')
         ax.set_xlim(limits.xlim)
         ax.set_ylim(limits.ylim)
@@ -343,8 +497,7 @@ def _format_stem_axes(axs, limits):
         ax.tick_params(axis='both', which='major')
 
 
-def _create_legend(axs, bpms, lines, hide_labels):
-    legends = []
+def _create_legend(ax, labels, lines, ncol):
     lines_params = dict(
         marker=matplotlib.rcParams[u'lines.marker'],
         markersize=matplotlib.rcParams[u'font.size'] * 0.5,
@@ -352,133 +505,152 @@ def _create_legend(axs, bpms, lines, hide_labels):
     )
     legend_params = dict(
         loc='lower right',
-        ncol=NCOL_LEGEND,
+        ncol=ncol,
         fancybox=False, shadow=False, frameon=False,
     )
-    if isinstance(bpms, str):
-        for idx, ax in enumerate(axs):
-            handles = [mlines.Line2D([], [], color=get_cycled_color(idx), label=bpms, **lines_params)]
-            leg = ax.legend(handles=handles, **legend_params)
-            legends.append((leg, handles))
+    handles = [mlines.Line2D([], [], color=get_cycled_color(idx), label=bpm, **lines_params)
+               for idx, bpm in enumerate(labels)]
+    leg = ax.legend(handles=handles, **legend_params)
 
-    else:
-        if not hide_labels:
-            handles = [mlines.Line2D([], [], color=get_cycled_color(idx), label=bpm, **lines_params)
-                       for idx, bpm in enumerate(bpms)]
-            leg = axs[0].legend(handles=handles, **legend_params)
-            legends.append((leg, handles))
+    leg.axes.figure.canvas.draw()  # to get the legend extend
 
-    for leg, handles in legends:
-        leg.axes.figure.canvas.draw()
+    # check if it is wider than the axes
+    legend_width = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).width
+    x_shift = 0
+    if legend_width > 1:
+        x_shift = (legend_width - 1) / 2.  # shift more into center
 
-        # check if it is wider than the axes
-        legend_width = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).width
-        x_shift = 0
-        if legend_width > 1:
-            x_shift = (legend_width - 1) / 2.  # shift more into center
-
-        # move above line-labels
-        nlines = sum([l is not None for l in lines.values()]) + 0.05
-        y_shift = get_approx_size_in_axes_coordinates(leg.axes, label_size=matplotlib.rcParams['axes.labelsize']) * nlines
-        leg.axes.legend(handles=handles, bbox_to_anchor=(1. + x_shift, 1. + y_shift), **legend_params)
+    # move above line-labels
+    nlines = sum([line is not None for line in lines.values()]) + 0.05
+    y_shift = get_approx_size_in_axes_coordinates(leg.axes, label_size=matplotlib.rcParams['axes.labelsize']) * nlines
+    leg.axes.legend(handles=handles, bbox_to_anchor=(1. + x_shift, 1. + y_shift), **legend_params)
 
 
 # Waterfall Plotting -----------------------------------------------------------
 
 
-def _create_waterfall_plot(out, bpms, files, lines, limits, opts):
+def _create_waterfall_plot(figures: dict, datas: list, opts: DotDict) -> None:
     LOG.debug(f"  ...creating Waterfall Plot")
-    tunes = _get_tunes({plane: files[LIN][plane].loc[bpms[plane], :] for plane in PLANES})
-    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(18, 9))
-    for ax, plane in zip(axs, PLANES):
-        if len(bpms[plane]) == 0:
+    for data_cont in datas:
+        _plot_waterfall(data_cont, opts.line_width, opts.rescale, opts.cmap)
+
+    for fig_id, fig_cont in figures.items():
+        LOG.debug(f'   Finalizing Waterfall: {fig_id}.')
+        fig_cont.fig.canvas.set_window_title(fig_id)
+        _plot_lines(fig_cont, opts.lines)
+        _finalize_waterfall_figures(fig_cont, opts.limits, opts.ncol_legend)
+
+    if opts.show:
+        plt.show()
+
+
+def _plot_waterfall(data_cont, line_width, rescale, cmap):
+
+    for idx_plane, plane in enumerate(PLANES):
+        plot_data = _get_data_for_plot(data_cont, idx_plane, rescale)
+        if plot_data is None:
             continue
 
-        freqs = files[FREQS][plane].loc[:, bpms[plane]]
-        amps = files[AMPS][plane].loc[:, bpms[plane]]
-        if opts.rescale:
-            amps = _rescale_amp(amps)
-        _plot_waterfall(ax, freqs, amps, opts)
-        _plot_lines(ax, tunes, lines)
-        _format_waterfall_axes(ax, freqs, plane, limits, opts.hide_bpm_labels)
-    _output_plot(fig, out, WATERFALL_FILENAME)
-    return fig
+        ax, label, amps, freqs, idxs_data = plot_data
 
 
-def _plot_waterfall(ax, freqs, amps, opts):
     nbpms, nfreqs = len(freqs.columns), len(freqs.index)
-    norm = colors.LogNorm(amps.min(skipna=True).min(skipna=True), amps.max(skipna=True).max(skipna=True))
-    if opts.line_width == "auto":
+    mmin, mmax = data_cont.fig_container.minmax
+    norm = colors.LogNorm(mmin, mmax)
+    if line_width == "auto":
         for idx, bpm in enumerate(freqs.columns):
             f_bpm = freqs[bpm].to_numpy().T
             freqs_mesh = np.tile(np.array([*f_bpm, .5]), [2, 1])
             y_mesh = np.tile([idx - 0.5, idx + 0.5], [nfreqs + 1, 1]).T
-            ax.pcolormesh(freqs_mesh, y_mesh, amps[[bpm]].T, cmap=opts.cmap, norm=norm)
+            ax.pcolormesh(freqs_mesh, y_mesh, amps[[bpm]].T, cmap=cmap, norm=norm, zorder=-3)
     else:
         for idx, bpm in enumerate(freqs.columns):
             lc = ax.vlines(x=freqs[bpm], ymin=idx - .5, ymax=idx + .5,
-                           linestyles='solid', cmap=opts.cmap, norm=norm,
-                           linewidths=opts.line_width,
+                           linestyles='solid', cmap=cmap, norm=norm,
+                           linewidths=line_width, zorder=-3,
                            )
             lc.set_array(amps[bpm])  # sets the colors of the segments
-    ax.figure.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=opts.cmap), ax=ax)
+    ax.figure.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax)
 
 
-def _format_waterfall_axes(ax, freqs, plane, limits, hide_labels):
-    if hide_labels:
-        ax.set_yticklabels([])
-        ax.set_yticks([])
-    else:
-        ax.set_yticklabels(freqs.columns, fontdict={'fontsize': matplotlib.rcParams[u'axes.labelsize'] * .5})
-        ax.set_yticks(range(len(freqs.columns)))
-    ax.set_xlabel(LABEL_X)
-    ax.set_ylabel(LABEL_Y_WATERFALL.format(plane=plane.upper()))
-    ax.set_xlim(limits.xlim)
-    ax.set_ylim([-.5, len(freqs.columns) - .5])
-    ax.tick_params(axis='x', which='both')
+# Finalize ---
+
+
+def _finalize_waterfall_figures(fig_cont, limits, ncol_legend):
+    """ Format the axes and output. """
+    _format_waterfall_axes(fig_cont, limits, ncol_legend)
+    _output_plot(fig_cont)
+
+
+def _format_waterfall_axes(fig_cont, limits, ncol):
+    ylabels = fig_cont.labels
+    for idx_plane, plane in enumerate(PLANES):
+        ax = fig_cont.axes[idx_plane]
+        if ncol < 1:
+            ax.set_yticklabels([])
+            ax.set_yticks([])
+        else:
+            ax.set_yticklabels(ylabels, fontdict={'fontsize': matplotlib.rcParams[u'axes.labelsize'] * .5})
+            ax.set_yticks(range(len(ylabels)))
+        ax.set_xlabel(LABEL_X)
+        ax.set_ylabel(LABEL_Y_WATERFALL.format(plane=plane.upper()))
+        ax.set_xlim(limits.xlim)
+        ax.set_ylim([-.5, len(ylabels) - .5])
+        ax.tick_params(axis='x', which='both')
 
 
 # Plot Lines -------------------------------------------------------------------
 
 
-def _plot_lines(ax, tunes, lines, zorder=None):
-    trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+def _plot_lines(fig_cont, lines):
     label_size = matplotlib.rcParams['axes.labelsize'] * 0.7
     bottom_qlabel = 1.01
-    bottom_natqlabel = bottom_qlabel + 2 * get_approx_size_in_axes_coordinates(ax, label_size)
 
-    # Tune Lines ---
-    for line_params in (("", lines.tune, "--", bottom_qlabel), ("NAT", lines.nattune, ":", bottom_natqlabel)):
-        _plot_tune_line(ax, tunes, trans, zorder, label_size, *line_params)
+    for idx_plane, plane in enumerate(PLANES):
+        ax = fig_cont.axes[idx_plane]
+        trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+        bottom_natqlabel = bottom_qlabel + 2 * get_approx_size_in_axes_coordinates(ax, label_size)
 
-    # Manual Lines ---
-    for mline in lines.manual:
-        _plot_manual_line(ax, mline, zorder, trans, label_size)
+        # Tune Lines ---
+        for line_params in (("", fig_cont.tunes, lines.tune, "--", bottom_qlabel),
+                            ("NAT", fig_cont.nattunes, lines.nattune, ":", bottom_natqlabel)):
+            _plot_tune_lines(ax, trans, label_size, *line_params)
+
+        # Manual Lines ---
+        for mline in lines.manual:
+            _plot_manual_line(ax, mline, trans, label_size)
 
 
-def _plot_tune_line(ax, tunes, transform, zorder, label_size, q_string, resonances, linestyle, label_y):
+def _plot_tune_lines(ax, transform, label_size, q_string, tunes, resonances, linestyle, label_y):
     if len(resonances) == 0:
         return
 
     pref = q_string[0] if len(q_string) else ""
-    q = np.array([tunes[f'{q_string}Q{p.upper()}'] for p in PLANES])
-    freqs = _get_resonance_frequencies(resonances, q)
-    for res, freq in zip(resonances, freqs):
-        if not np.isnan(freq):
+    q_mean = np.array([np.mean(tunes[p]) for p in PLANES])
+    q_min = np.array([np.min(tunes[p]) for p in PLANES])
+    q_max = np.array([np.max(tunes[p]) for p in PLANES])
+    freqs_mean = _get_resonance_frequencies(resonances, q_mean)
+    freqs_min = _get_resonance_frequencies(resonances, q_min)
+    freqs_max = _get_resonance_frequencies(resonances, q_max)
+    for res, f_mean, f_min, f_max in zip(resonances, freqs_mean, freqs_min, freqs_max):
+        if not np.isnan(f_mean):
             label, order = f'{pref}({res[0]}, {res[1]})', sum(np.abs(res)) + 1
-            ax.axvline(x=freq, label=label,
-                       linestyle=linestyle, color=get_cycled_color(order-2), marker='None',
-                       zorder=zorder, alpha=RESONANCE_LINES_ALPHA)
-            ax.text(x=freq, y=label_y, s=label, transform=transform,
-                    color=get_cycled_color(order-2),
+            color = get_cycled_color(order-2)
+            ax.axvline(x=f_mean, label=label,
+                       linestyle=linestyle, color=color, marker='None',
+                       zorder=-1, alpha=RESONANCE_LINES_ALPHA)
+            ax.text(x=f_mean, y=label_y, s=label, transform=transform,
+                    color=color,
                     va='bottom', ha='center',
                     fontdict={'size': label_size})
+            ax.add_patch(Rectangle(xy=(f_min, 0), width=f_max-f_min, height=1,
+                                   transform=transform, color=color, alpha=PATCHES_ALPHA, zorder=-2,))
 
 
-def _plot_manual_line(ax, mline, zorder, transform, label_size):
+def _plot_manual_line(ax, mline, transform, label_size):
     mline.setdefault('alpha', RESONANCE_LINES_ALPHA)
     mline.setdefault('marker', 'None')
-    mline.setdefault('zorder', zorder)
+    mline.setdefault('zorder', -1)
     if 'linestyle' not in mline and 'ls' not in mline:
         mline['linestyle'] = '--'
 
@@ -533,22 +705,35 @@ def get_approx_size_in_axes_coordinates(ax, label_size):
     return label_size_ax
 
 
+def _get_data_for_plot(data_cont, idx_plane, rescale):
+    """ Extract axes, label, amps and freqs form data container. """
+    plane = PLANES[idx_plane]
+    data = data_cont.data[plane]
+    if data is None:
+        return None
+    ax = data_cont.fig_container.axes[idx_plane]
+    label = data_cont.label
+
+    # get valid amplitudes and frequencies
+    idxs_data = _get_valid_indices(data)
+    amps = data[AMPS].loc[idxs_data]
+    freqs = data[FREQS].loc[idxs_data]
+    if rescale:
+        amps = _rescale_amp(amps)
+    return ax, label, amps, freqs, idxs_data
+
+
+
 # Input ------------------------------------------------------------------------
 
 
 def _check_opt(opt):
-    if not (opt.waterfall_plot or opt.stem_plot):
-        raise ValueError("Either spectrum or waterfall plots need to be activated!")
-
-    if opt.stem_single_fig and not opt.stem_plot:
-        LOG.warning("'stem_single_fig' option has no effect, when stem plots are deactivated!")
-
     if (opt.waterfall_line_width is not None and opt.waterfall_line_width != DEFAULTS.waterfall_line_width
-            and not opt.waterfall_plot):
+            and 'waterfall' not in opt.plot_type):
         LOG.warning("Setting 'waterfall_line_width' option has no effect, when waterfall plots are deactivated!")
 
     if (opt.waterfall_cmap is not None and opt.waterfall_cmap != DEFAULTS.waterfall_cmap
-            and not opt.waterfall_plot):
+            and 'waterfall' not in opt.plot_type):
         LOG.warning("Setting 'waterfall_cmap' option has no effect, when waterfall plots are deactivated!")
 
     if opt.amp_limit < 0:
@@ -573,19 +758,28 @@ def _sort_opt(opt):
     # limits structure
     limits = opt.get_subdict(("xlim", "ylim"))
 
-    # out structure
-    out = opt.get_subdict(('show_plots', 'filetype'))
-    out.dir = None  # set later if not None
-
     # stem-plot options
-    stem = opt.get_subdict(('stem_plot', 'stem_single_fig', 'hide_bpm_labels', 'rescale'))
-    stem = _rename_dict_keys(stem, to_remove="stem_")
+    stem = opt.get_subdict(('rescale', 'ncol_legend'))
+    stem['plot'] = 'stem' in opt.plot_type
 
     # waterfall-plot options
-    waterfall = opt.get_subdict(('waterfall_plot', 'waterfall_line_width', 'waterfall_cmap', 'hide_bpm_labels', 'rescale'))
+    waterfall = opt.get_subdict(('waterfall_line_width', 'waterfall_cmap', 'rescale',  'ncol_legend'))
     waterfall = _rename_dict_keys(waterfall, to_remove="waterfall_")
+    waterfall['plot'] = 'waterfall' in opt.plot_type
 
-    return out, limits, lines, stem, waterfall
+    # needed in both
+    for d in (stem, waterfall):
+        d['show'] = opt['show_plots']
+        d['limits'] = limits
+        d['lines'] = lines
+
+    # sorting options
+    sort = opt.get_subdict('files_single_fig', 'bpms_single_fig',
+                           'filetype', 'files', 'bpms', 'output_dir', 'amp_limit')
+    sort['plot_stem'] = stem.plot
+    sort['plot_waterfall'] = waterfall.plot
+
+    return stem, waterfall, sort
 
 
 def _get_unique_filenames(files):
@@ -675,27 +869,11 @@ def _get_sussix_data(file_path, bpms):
 # Other ---
 
 
-def _get_tunes(lin, bpm=None):
-    if bpm is None:
-        def get_value(x):
-            return x.mean()
-    else:
-        def get_value(x):
-            return x[bpm]
-
-    out = {f'{nat}Q{plane.upper()}': 0 for plane in PLANES for nat in ('', 'NAT')}
-    for nat in ('', 'NAT'):
-        for plane in PLANES:
-            with suppress(KeyError):
-                out[f'{nat}Q{plane.upper()}'] = get_value(lin[plane].loc[:, f'{nat}TUNE{plane.upper()}'])
-    return out
-
-
 def _get_dir_and_name(file_path):
     return os.path.dirname(file_path), os.path.basename(file_path)
 
 
-def _get_bpms(lin_files, given_bpms):
+def _get_bpms(lin_files, given_bpms, file_path):
     found_bpms = {}
     for plane in PLANES:
         found_bpms[plane] = list(lin_files[plane].index)
@@ -704,19 +882,19 @@ def _get_bpms(lin_files, given_bpms):
             bpms_not_found = [bpm for bpm in given_bpms if bpm not in found_bpms[plane]]
             if len(bpms_not_found):
                 LOG.warning(
-                    f"The following BPMs are not present or not present in plane {plane}: {list2str(bpms_not_found)}"
+                    f"({file_path}) The following BPMs are not present or not present in plane {plane}: {list2str(bpms_not_found)}"
                 )
         if len(found_bpms[plane]) == 0:
-            LOG.warning(f"No BPMs found for plane {plane} !")
+            LOG.warning(f"({file_path}) No BPMs found for plane {plane} !")
 
     if not any([len(bpms) for bpms in found_bpms.values()]):
-        raise IOError("No BPMs found in any plane!")
+        raise IOError(f"({file_path}) No BPMs found in any plane!")
     return found_bpms
 
 
-def _get_valid_indices(files, plane, bpm):
+def _get_valid_indices(data):
     """ Intersection of filtered AMPS and FREQS indices. """
-    return index_filter(files[AMPS][plane][bpm]).intersection(index_filter(files[FREQS][plane][bpm]))
+    return index_filter(data[AMPS]).intersection(index_filter(data[FREQS]))
 
 
 def index_filter(data):
@@ -740,8 +918,19 @@ def _save_options_to_config(opt):
     save_options_to_config(os.path.join(opt.output_dir, _get_ini_filename()), OrderedDict(sorted(opt.items())))
 
 
+def _get_figure_path(out_dir, filename, figurename):
+    path = _make_output_dir(out_dir, filename)
+    if path is not None and figurename is not None:
+        path = os.path.join(path, figurename)
+    return path
+
+
 def _make_output_dir(out_dir, filename):
-    out_dir = os.path.join(out_dir, os.path.splitext(filename)[0])
+    if out_dir is None:
+        return  None
+
+    if filename is not None:
+        out_dir = os.path.join(out_dir, os.path.splitext(filename)[0])
     os.makedirs(out_dir, exist_ok=True)
     return out_dir
 
@@ -750,20 +939,15 @@ def _get_ini_filename():
     return CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
 
 
-def _output_plot(fig, out, fname):
+def _output_plot(fig_cont):
+    fig = fig_cont.fig
+
     fig.tight_layout()
     fig.tight_layout()  # sometimes better to do twice
 
-    if out.show_plots:
-        # fig.show()  # does not work, as it does not wait for user
-        plt.show()  # waits for user to close plot
-
-    if out.dir is not None:
-        out_path = os.path.join(out.dir, f'{fname}.{out.filetype}')
-        LOG.info(f"Saving Plot '{out_path}'")
-        fig.savefig(out_path)
-
-    plt.close(fig)  # should free RAM
+    if fig_cont.path is not None:
+        LOG.info(f"Saving Plot '{fig_cont.path}'")
+        fig.savefig(fig_cont.path)
 
 
 # Helper -----------------------------------------------------------------------
@@ -774,10 +958,12 @@ def list2str(l):
 
 
 def _rescale_amp(amp_data):
-    return amp_data.divide(amp_data.max(axis=0), axis=1)  # dataframe
+    # return amp_data.divide(amp_data.max(axis=0), axis=1)  # dataframe
+    return amp_data.divide(amp_data.max())  # series
 
 
 def _get_all_bpms(bpms_dict):
+    """ Returns a union of all bpms for both planes """
     return set.union(*[set(v) for v in bpms_dict.values()])
 
 
