@@ -5,8 +5,7 @@ from os.path import join
 from utils import iotools
 import pandas as pd
 import numpy as np
-from model.accelerators.accelerator import AccExcitationMode
-from model.model_creators import model_creator
+from model.accelerators.accelerator import AccExcitationMode, AcceleratorDefinitionError
 from model.constants import (MACROS_DIR, GENERAL_MACROS, LHC_MACROS, ERROR_DEFFS_TXT,
                              JOB_ITERATE_MADX, MODIFIERS_MADX, TWISS_BEST_KNOWLEDGE_DAT,
                              TWISS_ADT_DAT, TWISS_AC_DAT, TWISS_ELEMENTS_DAT, TWISS_DAT,
@@ -22,7 +21,7 @@ def _b2_columns():
     return cols_outer[:42] + cols_middle + cols_outer[42:]
 
 
-class LhcModelCreator(model_creator.ModelCreator):
+class LhcModelCreator(object):
 
     @classmethod
     def get_correction_check_script(cls, accel, outdir, corr_file="changeparameters_couple.madx", chrom=False):
@@ -89,9 +88,9 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     @classmethod
     def get_madx_script(cls, accel, outdir):
         if accel.excitation is not AccExcitationMode.FREE:
-            raise model_creator.ModelCreationError("Don't set ACD or ADT for best knowledge model.")
+            raise AcceleratorDefinitionError("Don't set ACD or ADT for best knowledge model.")
         if accel.energy is None:
-            raise model_creator.ModelCreationError("Best knowledge model requires energy.")
+            raise AcceleratorDefinitionError("Best knowledge model requires energy.")
         madx_script = accel.get_base_madx_script(outdir, best_knowledge=True)
         madx_script += (
             f"call, file = '{join(outdir, 'corrections.madx')}';\n"
@@ -108,21 +107,4 @@ class LhcCouplingCreator(LhcModelCreator):
         return cls.get_correction_check_script(lhc_instance, output_path)
 
 
-class LhcSegmentCreator(model_creator.ModelCreator):
-    @classmethod
-    def get_madx_script(cls, lhc_instance, output_path):
-        with open(lhc_instance.get_file("segment.madx")) as textfile:
-            madx_template = textfile.read()
-        replace_dict = {
-            "MAIN_SEQ": lhc_instance.load_main_seq_madx(),
-            "OPTICS_PATH": lhc_instance.modifiers,
-            "NUM_BEAM": lhc_instance.beam,
-            "PATH": output_path,
-            "LABEL": lhc_instance.label,
-            "BETAKIND": lhc_instance.kind,
-            "STARTFROM": lhc_instance.start.name,
-            "ENDAT": lhc_instance.end.name,
-        }
-        madx_script = madx_template % replace_dict
-        return madx_script
 
