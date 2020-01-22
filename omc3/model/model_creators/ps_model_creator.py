@@ -1,4 +1,3 @@
-from model.model_creators import model_creator
 from model.accelerators.accelerator import AccExcitationMode
 import os
 import logging
@@ -7,7 +6,7 @@ from model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
 LOGGER = logging.getLogger(__name__)
 
 
-class PsModelCreator(model_creator.ModelCreator):
+class PsModelCreator(object):
 
     @classmethod
     def get_madx_script(cls, instance, output_path):
@@ -68,25 +67,4 @@ class PsModelCreator(model_creator.ModelCreator):
         shutil.copy(src_path, dest_path)
 
 
-class PsSegmentCreator(model_creator.ModelCreator):
-    @classmethod
-    def get_madx_script(cls, instance, output_path):
-        """ instance is Ps class"""
-        LOGGER.info(f"instance.energy {instance.energy}")
 
-        with open(instance.get_file("segment.madx")) as textfile:
-            madx_template = textfile.read()
-        replace_dict = {
-            "KINETICENERGY": instance.energy,
-            "NAT_TUNE_X": instance.nat_tunes[0],
-            "NAT_TUNE_Y": instance.nat_tunes[1],
-            "FILES_DIR": instance.get_dir(),
-            "OPTICS_PATH": instance.modifiers,
-            "PATH": output_path,
-            "LABEL": instance.label,
-            "BETAKIND": instance.kind,
-            "STARTFROM": instance.start.name,
-            "ENDAT": instance.end.name,
-        }
-        madx_script = madx_template % replace_dict
-        return madx_script
