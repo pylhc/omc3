@@ -331,7 +331,7 @@ def _sort_input_data(opt: DotDict) -> tuple:
         bpms = _get_all_bpms(_get_bpms(data[LIN], opt.bpms, file_path))
 
         for collector, get_id_fun, active in ((stem_figs, _get_stem_id, opt.plot_stem),
-                                             (waterfall_figs, _get_waterfall_id, opt.plot_waterfall)):
+                                              (waterfall_figs, _get_waterfall_id, opt.plot_waterfall)):
             if not active:
                 continue
 
@@ -517,57 +517,47 @@ def _create_legend(ax, labels, lines, ncol):
 # Waterfall Plotting -----------------------------------------------------------
 
 
-def _create_waterfall_plot(figures: dict, datas: list, opts: DotDict) -> None:
+def _create_waterfall_plot(figures: dict, opt: DotDict) -> None:
     LOG.debug(f"  ...creating Waterfall Plot")
-    for data_cont in datas:
-        _plot_waterfall(data_cont, opts.line_width, opts.rescale, opts.cmap)
 
     for fig_id, fig_cont in figures.items():
-        LOG.debug(f'   Finalizing Waterfall: {fig_id}.')
+        LOG.debug(f'   Plotting Figure: {fig_id}.')
         fig_cont.fig.canvas.set_window_title(fig_id)
-        _plot_lines(fig_cont, opts.lines)
-        _finalize_waterfall_figures(fig_cont, opts.limits, opts.ncol_legend)
 
-    if opts.show:
+        _plot_waterfall(fig_cont, opt.line_width, opt.cmap)
+        _plot_lines(fig_cont, opt.lines)
+        _format_waterfall_axes(fig_cont, opt.limits, opt.ncol_legend)
+        _output_plot(fig_cont)
+
+    if opt.show:
         plt.show()
 
 
-def _plot_waterfall(data_cont, line_width, rescale, cmap):
-
+def _plot_waterfall(fig_cont, line_width, cmap):
+    norm = colors.LogNorm(*fig_cont.minmax)
     for idx_plane, plane in enumerate(PLANES):
-        plot_data = _get_data_for_plot(data_cont, idx_plane, rescale)
-        if plot_data is None:
-            continue
+        ax = fig_cont.axes[idx_plane]
+        for idx_data, (label, data) in enumerate(fig_cont.data.items()):
+            if data[plane] is None:
+                continue
+            freqs = data[FREQS]
+            amps = data[AMPS]
 
-        ax, label, amps, freqs, idxs_data = plot_data
-
-
-    nbpms, nfreqs = len(freqs.columns), len(freqs.index)
-    mmin, mmax = data_cont.fig_container.minmax
-    norm = colors.LogNorm(mmin, mmax)
-    if line_width == "auto":
-        for idx, bpm in enumerate(freqs.columns):
-            f_bpm = freqs[bpm].to_numpy().T
-            freqs_mesh = np.tile(np.array([*f_bpm, .5]), [2, 1])
-            y_mesh = np.tile([idx - 0.5, idx + 0.5], [nfreqs + 1, 1]).T
-            ax.pcolormesh(freqs_mesh, y_mesh, amps[[bpm]].T, cmap=cmap, norm=norm, zorder=-3)
-    else:
-        for idx, bpm in enumerate(freqs.columns):
-            lc = ax.vlines(x=freqs[bpm], ymin=idx - .5, ymax=idx + .5,
-                           linestyles='solid', cmap=cmap, norm=norm,
-                           linewidths=line_width, zorder=-3,
-                           )
-            lc.set_array(amps[bpm])  # sets the colors of the segments
-    ax.figure.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax)
+            if line_width == "auto":
+                f_values = freqs.to_numpy().T
+                freqs_mesh = np.tile(np.array([*f_values, .5]), [2, 1])
+                y_mesh = np.tile([idx_data - 0.5, idx_data + 0.5], [len(freqs) + 1, 1]).T
+                ax.pcolormesh(freqs_mesh, y_mesh, amps.T, cmap=cmap, norm=norm, zorder=-3)
+            else:
+                lc = ax.vlines(x=freqs, ymin=idx_data - .5, ymax=idx_data + .5,
+                               linestyles='solid', cmap=cmap, norm=norm,
+                               linewidths=line_width, zorder=-3,
+                               )
+                lc.set_array(amps)  # sets the colors of the segments
+        ax.figure.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax)
 
 
 # Finalize ---
-
-
-def _finalize_waterfall_figures(fig_cont, limits, ncol_legend):
-    """ Format the axes and output. """
-    _format_waterfall_axes(fig_cont, limits, ncol_legend)
-    _output_plot(fig_cont)
 
 
 def _format_waterfall_axes(fig_cont, limits, ncol):
@@ -823,15 +813,15 @@ def _get_sussix_data(file_path, bpms):
     files = {LIN: {}, AMPS: {}, FREQS: {}}
     for plane in PLANES:
         files[LIN][plane] = tfs.read(os.path.join(directory, f'{filename}_lin{plane}'), index=COL_NAME)
-        for id in (FREQS, AMPS):
-            files[id][plane] = tfs.TfsDataFrame(columns=bpms)
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = tfs.TfsDataFrame(columns=bpms)
         for bpm in bpms:
             with suppress(FileNotFoundError):
                 df = tfs.read(os.path.join(bpm_dir, f'{bpm}.{plane}'))
                 files[FREQS][plane][bpm] = df["FREQ"]
                 files[AMPS][plane][bpm] = df["AMP"]
-        for id in (FREQS, AMPS):
-            files[id][plane] = files[id][plane].fillna(0)
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = files[id_][plane].fillna(0)
     return files
 
 
@@ -851,7 +841,8 @@ def _get_bpms(lin_files, given_bpms, file_path):
             bpms_not_found = [bpm for bpm in given_bpms if bpm not in found_bpms[plane]]
             if len(bpms_not_found):
                 LOG.warning(
-                    f"({file_path}) The following BPMs are not present or not present in plane {plane}: {list2str(bpms_not_found)}"
+                    f"({file_path}) The following BPMs are not present or not present in plane {plane}:"
+                    f" {list2str(bpms_not_found)}"
                 )
         if len(found_bpms[plane]) == 0:
             LOG.warning(f"({file_path}) No BPMs found for plane {plane} !")
@@ -895,12 +886,10 @@ def _get_figure_path(out_dir, filename, figurename):
 
 
 def _make_output_dir(out_dir, filename):
-    if out_dir is None:
-        return  None
-
-    if filename is not None:
-        out_dir = os.path.join(out_dir, os.path.splitext(filename)[0])
-    os.makedirs(out_dir, exist_ok=True)
+    if out_dir is not None:
+        if filename is not None:
+            out_dir = os.path.join(out_dir, os.path.splitext(filename)[0])
+        os.makedirs(out_dir, exist_ok=True)
     return out_dir
 
 
@@ -922,8 +911,8 @@ def _output_plot(fig_cont):
 # Helper -----------------------------------------------------------------------
 
 
-def list2str(l):
-    return str(l)[1:-1]
+def list2str(list_):
+    return str(list_)[1:-1]
 
 
 def _rescale_amp(amp_data):
