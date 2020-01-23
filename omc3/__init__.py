@@ -16,4 +16,4 @@ __author__ = "pylhc"
 __author_email__ = "pylhc@github.com"
 __license__ = "GNU GPLv3"
 
-__all__ = []
+__all__ = [__version__]

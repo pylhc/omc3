@@ -15,12 +15,12 @@ import pandas as pd
 import tfs
 from scipy.linalg import circulant
 
+from omc3 import __version__ as VERSION
 from omc3.optics_measurements.constants import (BETA_NAME, DELTA, ERR, EXT,
                                                 MDL, PI2)
 from omc3.optics_measurements.toolbox import df_diff, df_ratio, df_rel_diff
 from omc3.utils import logging_tools, stats
 
-__version__ = "2019.0.a"
 LOGGER = logging_tools.get_logger(__name__)
 
 EPSILON = 1.0E-16
@@ -334,7 +334,7 @@ def _assign_uncertainties(twiss_full, errordefspath):
 
 def _get_header(header_dict, error_method, range_of_bpms, rmsbb):
     header = header_dict.copy()
-    header['BetaAlgorithmVersion'] = __version__
+    header['BetaAlgorithmVersion'] = VERSION
     header['RCond'] = RCOND
     header['RangeOfBPMs'] = "Adjacent" if error_method == METH_3BPM else range_of_bpms
     header['ErrorsFrom:'] = error_method

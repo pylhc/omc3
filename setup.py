@@ -3,12 +3,12 @@ import setuptools
 
 # The directory containing this file
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.absolute()
-ABOUT = TOPLEVEL_DIR / "omc3" / "__init__.py"
+ABOUT_FILE = TOPLEVEL_DIR / "omc3" / "__init__.py"
 README = TOPLEVEL_DIR / "README.md"
 
 # Information on the omc3 package
 ABOUT_OMC3: dict = {}
-with ABOUT.open("r") as f:
+with ABOUT_FILE.open("r") as f:
     exec(f.read(), ABOUT_OMC3)
 
 with README.open("r") as docs:
