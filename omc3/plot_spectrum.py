@@ -2,8 +2,9 @@
 Plot Spectrum
 --------------------
 
-Takes data from frequency analysis and creates a stem-frequency plot for every given BPM - or all in a single figure -
-with the possibility to include spectral lines.
+Takes data from frequency analysis and creates a stem-frequency plot for every
+given BPM - or all in a single figure - with the possibility to include spectral lines.
+
 Optionally, a waterfall plot for all BPMs is created as well.
 Plots are saved in a sub-directory of the given output dir with the name of the original TbT file.
 Returns two dictionaries with the filename as keys, where the dictionary first
@@ -13,23 +14,27 @@ one contains the stem plot(s - subdict with bpms as keys) and the second one con
 
 - **files**: List with basenames of Tbt files, ie. tracking.sdds
 
+
 *--Optional--*
 
 - **amp_limit** *(float)*: All amplitudes <= limit are filtered.
-  This value needs to be at least 0 to filter non-found frequencies.
+This value needs to be at least 0 to filter non-found frequencies.
 
   Default: ``0.0``
 - **bpms**: List of BPMs for which spectra will be plotted. If not given all BPMs are used.
 
+- **bpms_single_fig**: Flag to plot given bpms into one single stem-plot
+
+  Action: ``store_true``
+- **files_single_fig**: Flag to plot given files into the same plots (both stem and waterfall)
+
+  Action: ``store_true``
 - **filetype** *(str)*: Filetype to save plots as (i.e. extension without ".")
 
   Default: ``pdf``
-- **hide_bpm_labels**: Hide the bpm labels in the plots.
-
-  Action: ``store_true``
 - **lines_manual** *(DictAsString)*: List of manual lines to plot. Need to contain arguments for axvline,
-  and may contain the additional key "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
-  and places the label as text at the given location.
+and may contain the additional key "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
+and places the label as text at the given location.
 
   Default: ``[]``
 - **lines_nattune** *(tuple)*: List of natural tune lines to plot
@@ -40,29 +45,30 @@ one contains the stem plot(s - subdict with bpms as keys) and the second one con
   Default: ``[(1, 0), (0, 1)]``
 - **manual_style** *(DictAsString)*: Additional Style parameters which update the set of predefined ones.
 
+- **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
+
+  Default: ``5``
 - **output_dir** *(str)*: Directory to write results to. If no option is given, plots will not be saved.
 
+- **plot_type**: Choose plot type (Multiple choices possible).
+
+  Choices: ``['stem', 'waterfall']``
+  Default: ``['stem']``
 - **rescale**: Flag to rescale plots amplitude to max-line = 1
 
   Action: ``store_true``
 - **show_plots**: Flag to show plots
 
   Action: ``store_true``
-- **stem_plot**: Flag to create stem plot
-
-  Action: ``store_true``
-- **bpms_single_fig**: Flag to plot given bpms into one single stem-plot
-
-  Action: ``store_true``
 - **waterfall_cmap** *(str)*: Colormap to use for waterfall plot.
 
   Default: ``inferno``
+- **waterfall_common_plane_colors**: Same colorbar scale for both planes in waterfall plots.
+
+  Action: ``store_true``
 - **waterfall_line_width**: Line width of the waterfall frequency lines. "auto" fills them up until the next one.
 
   Default: ``2``
-- **waterfall_plot**: Flag to create waterfall plot.
-
-  Action: ``store_true``
 - **xlim** *(float)*: Limits on the x axis (Tupel)
 
   Default: ``[0, 0.5]``
@@ -86,13 +92,10 @@ from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config, DotDict
 from matplotlib import cm, colors, transforms, lines as mlines
 from matplotlib.patches import Rectangle
-from matplotlib.figure import Figure
-from matplotlib.axes import Axes
-import pandas as pd
 
 from definitions import formats
-from utils import logging_tools
 from harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
 
@@ -259,7 +262,7 @@ def main(opt):
         _create_stem_plots(stem.figs, stem_opt)
 
     if waterfall_opt.plot:
-        _create_waterfall_plot(waterfall.figs, waterfall_opt)
+        _create_waterfall_plots(waterfall.figs, waterfall_opt)
 
     return stem.fig_list, waterfall.fig_list
 
@@ -393,8 +396,9 @@ def _get_waterfall_id(filename: str, bpm: str, output_dir: str,
         (True, True): _get_id_single_fig_files_and_bpms,
         (True, False): _get_id_single_fig_files,
         (False, True): _get_id_single_fig_bpms,
-        (False, False): _get_id_single_fig_bpms,  # single figure per file AND bpm does not make sense for waterfall
-    }
+        (False, False): _get_id_single_fig_bpms,  # same as above as single figure per file AND
+    }                                             # bpm does not make sense for waterfall
+
     return fun_map[(files_single_fig, bpms_single_fig)](
         output_dir, WATERFALL_FILENAME, filename, bpm, filetype
     )
@@ -402,37 +406,53 @@ def _get_waterfall_id(filename: str, bpm: str, output_dir: str,
 
 # IdData Mapping ---
 
-def _get_id_single_fig_files_and_bpms(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
-    """ Same id for all plots. Creates single figure. The label of the lines is a combination of filename and bpm. """
+def _get_id_single_fig_files_and_bpms(output_dir: str, default_name: str, filename: str,
+                                      bpm: str, filetype: str) -> IdData:
+    """ Same id for all plots. Creates single figure.
+    The label of the lines is a combination of filename and bpm.
+    """
     return IdData(
         id=default_name,
         label=f"{filename} {bpm}",
-        path=_get_figure_path(output_dir, filename=None, figurename=f"{default_name}.{filetype}")
+        path=_get_figure_path(output_dir, filename=None,
+                              figurename=f"{default_name}.{filetype}")
     )
 
 
-def _get_id_single_fig_files(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
-    """ BPM as id for plots. Creates len(bpm) figures, with filenames as labels for lines. """
+def _get_id_single_fig_files(output_dir: str, default_name: str, filename: str,
+                             bpm: str, filetype: str) -> IdData:
+    """ BPM as id for plots.
+    Creates len(bpm) figures, with filenames as labels for lines.
+    """
     return IdData(
         id=bpm,
         label=filename,
-        path=_get_figure_path(output_dir, filename=None, figurename=f"{default_name}_{bpm}.{filetype}")
+        path=_get_figure_path(output_dir, filename=None,
+                              figurename=f"{default_name}_{bpm}.{filetype}")
     )
 
 
-def _get_id_single_fig_bpms(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
-    """ Filename as ID for plots. Creates len(files) figures, with bpms as lables for lines."""
+def _get_id_single_fig_bpms(output_dir: str, default_name: str, filename: str,
+                            bpm: str, filetype: str) -> IdData:
+    """ Filename as ID for plots.
+    Creates len(files) figures, with bpms as lables for lines.
+    """
     return IdData(id=filename,
                   label=bpm,
-                  path=_get_figure_path(output_dir, filename=filename, figurename=f"{default_name}.{filetype}")
+                  path=_get_figure_path(output_dir, filename=filename,
+                                        figurename=f"{default_name}.{filetype}")
                   )
 
 
-def _get_id_multi_fig(output_dir: str, default_name: str, filename: str, bpm: str, filetype: str) -> IdData:
-    """ Combination of Filename and BPM as ID. Creates len(files)*len(bpms) plots. BPM-name is printed as label."""
+def _get_id_multi_fig(output_dir: str, default_name: str, filename: str,
+                      bpm: str, filetype: str) -> IdData:
+    """ Combination of Filename and BPM as ID. Creates len(files)*len(bpms) plots.
+    BPM-name is printed as label.
+    """
     return IdData(id=f"{filename}_{bpm}",
                   label=bpm,
-                  path=_get_figure_path(output_dir, filename=filename, figurename=f"{default_name}_{bpm}.{filetype}")
+                  path=_get_figure_path(output_dir, filename=filename,
+                                        figurename=f"{default_name}_{bpm}.{filetype}")
                   )
 
 
@@ -523,7 +543,8 @@ def _create_legend(ax, labels, lines, ncol):
 # Waterfall Plotting -----------------------------------------------------------
 
 
-def _create_waterfall_plot(figures: dict, opt: DotDict) -> None:
+def _create_waterfall_plots(figures: dict, opt: DotDict) -> None:
+    """ Main loop for waterfall plot creation. """
     LOG.debug(f"  ...creating Waterfall Plot")
 
     for fig_id, fig_cont in figures.items():
@@ -540,6 +561,7 @@ def _create_waterfall_plot(figures: dict, opt: DotDict) -> None:
 
 
 def _plot_waterfall(fig_cont, line_width, cmap, common_plane_colors):
+    """ Create the waterfall plot for this figure container. """
     for idx_plane, plane in enumerate(PLANES):
         ax = fig_cont.axes[idx_plane]
         norm = _get_waterfall_norm(fig_cont.minmax, plane, common_plane_colors)
@@ -665,10 +687,12 @@ def _plot_manual_line(ax, mline, transform, label_size):
 
 
 def _get_resonance_frequencies(resonances, q):
-    """ Calculates the frequencies for the resonance lines, but also filters lines in case the tune was not found. """
+    """ Calculates the frequencies for the resonance lines,
+    but also filters lines in case the tune was not found. """
     resonances = np.array(resonances)
 
-    # find zero-tune filter: if tune in plane is not used (i.e. coefficient is zero) we can still plot the line
+    # find zero-tune filter:
+    # if tune in plane is not used (i.e. coefficient is zero) we can still plot the line
     use_idx = np.ones(resonances.shape[0], dtype=bool)
     for idx, tune in enumerate(q):
         if tune == 0:
@@ -707,14 +731,17 @@ def get_approx_size_in_axes_coordinates(ax, label_size):
 def _check_opt(opt):
     if (opt.waterfall_line_width is not None and opt.waterfall_line_width != DEFAULTS.waterfall_line_width
             and 'waterfall' not in opt.plot_type):
-        LOG.warning("Setting 'waterfall_line_width' option has no effect, when waterfall plots are deactivated!")
+        LOG.warning("Setting 'waterfall_line_width' option has no effect, "
+                    "when waterfall plots are deactivated!")
 
     if (opt.waterfall_cmap is not None and opt.waterfall_cmap != DEFAULTS.waterfall_cmap
             and 'waterfall' not in opt.plot_type):
-        LOG.warning("Setting 'waterfall_cmap' option has no effect, when waterfall plots are deactivated!")
+        LOG.warning("Setting 'waterfall_cmap' option has no effect, "
+                    "when waterfall plots are deactivated!")
 
     if opt.amp_limit < 0:
-        raise ValueError("The amplitude limit needs to be at least '0' to filter for non-found frequencies.")
+        raise ValueError("The amplitude limit needs to be at least '0' "
+                         "to filter for non-found frequencies.")
 
     style_dict = DEFAULTS['manual_style']
     if opt.manual_style is not None:
@@ -740,8 +767,8 @@ def _sort_opt(opt):
     stem['plot'] = 'stem' in opt.plot_type
 
     # waterfall-plot options
-    waterfall = opt.get_subdict(('waterfall_line_width', 'waterfall_cmap', 'waterfall_common_plane_colors',
-                                 'ncol_legend'))
+    waterfall = opt.get_subdict(('waterfall_line_width', 'waterfall_cmap',
+                                 'waterfall_common_plane_colors', 'ncol_legend'))
     waterfall = _rename_dict_keys(waterfall, to_remove="waterfall_")
     waterfall['plot'] = 'waterfall' in opt.plot_type
 
@@ -753,7 +780,8 @@ def _sort_opt(opt):
 
     # sorting options
     sort = opt.get_subdict(('files_single_fig', 'bpms_single_fig',
-                           'filetype', 'files', 'bpms', 'output_dir', 'amp_limit', 'rescale'))
+                           'filetype', 'files', 'bpms', 'output_dir',
+                            'amp_limit', 'rescale'))
     sort['plot_stem'] = stem.plot
     sort['plot_waterfall'] = waterfall.plot
 
@@ -877,7 +905,8 @@ def _get_valid_indices(amps, freqs):
 
 
 def index_filter(data):
-    """ Only non-NaN and non-Zero data allowed. (Amps should not be zero due to _filter_amps() anyway.)"""
+    """ Only non-NaN and non-Zero data allowed.
+    (Amps should not be zero due to _filter_amps() anyway.)"""
     return data[~(data.isna() | (data == 0))].index
 
 
@@ -894,7 +923,9 @@ def _filter_amps(files, limit):
 
 def _save_options_to_config(opt):
     os.makedirs(opt.output_dir, exist_ok=True)
-    save_options_to_config(os.path.join(opt.output_dir, _get_ini_filename()), OrderedDict(sorted(opt.items())))
+    save_options_to_config(os.path.join(opt.output_dir, _get_ini_filename()),
+                           OrderedDict(sorted(opt.items()))
+                           )
 
 
 def _get_figure_path(out_dir, filename, figurename):
@@ -948,6 +979,9 @@ def _rename_dict_keys(d, to_remove):
     for key in list(d.keys()):  # using list to copy keys
         d[key.replace(to_remove, "")] = d.pop(key)
     return d
+
+
+# Script Mode ------------------------------------------------------------------
 
 
 if __name__ == "__main__":
