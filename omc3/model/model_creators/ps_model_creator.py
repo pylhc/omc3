@@ -1,8 +1,10 @@
-from model.accelerators.accelerator import AccExcitationMode
-import os
 import logging
+import os
 import shutil
-from model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
+
+from omc3.model.accelerators.accelerator import AccExcitationMode
+from omc3.model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
+
 LOGGER = logging.getLogger(__name__)
 
 

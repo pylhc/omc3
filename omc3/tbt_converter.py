@@ -12,12 +12,14 @@ Top-level script, which converts turn-by-turn files from various formats to LHC 
 """
 from collections import OrderedDict
 from datetime import datetime
-from os.path import join, basename
-from utils import logging_tools, iotools
-from definitions import formats
-import tbt
+from os.path import basename, join
 
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
+from generic_parser.entrypoint_parser import (EntryPointParameters, entrypoint,
+                                              save_options_to_config)
+
+from omc3 import tbt
+from omc3.definitions import formats
+from omc3.utils import iotools, logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 

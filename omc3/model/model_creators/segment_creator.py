@@ -1,8 +1,9 @@
-from os.path import join, dirname, pardir
 import shutil
-from utils import logging_tools
-from utils.iotools import read_all_lines_in_textfile, create_dirs
-from model.constants import MACROS_DIR, GENERAL_MACROS
+from os.path import join, dirname, pardir
+
+from omc3.model.constants import MACROS_DIR, GENERAL_MACROS
+from omc3.utils import logging_tools
+from omc3.utils.iotools import read_all_lines_in_textfile, create_dirs
 
 LOGGER = logging_tools.get_logger(__name__)
 

@@ -1,7 +1,8 @@
-from model.accelerators.accelerator import AccExcitationMode
-import shutil
 import os
-from model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
+import shutil
+
+from omc3.model.accelerators.accelerator import AccExcitationMode
+from omc3.model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
 
 
 class PsboosterModelCreator(object):
@@ -84,5 +85,3 @@ class PsboosterModelCreator(object):
             cls._prepare_corrtest(instance, output_path)
         src_path = os.path.join(instance.get_dir(), f"error_deff_ring{instance.ring}.txt")
         shutil.copy(src_path, os.path.join(output_path, ERROR_DEFFS_TXT))
-
-

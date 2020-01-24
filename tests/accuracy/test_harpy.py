@@ -1,16 +1,15 @@
 import os
-import string
 import random
+import string
 import tempfile
 
-import pytest
-import pandas as pd
 import numpy as np
-from . import context
-import tbt
+import pandas as pd
+import pytest
 import tfs
 
-from hole_in_one import hole_in_one_entrypoint
+from omc3 import tbt
+from omc3.hole_in_one import hole_in_one_entrypoint
 
 PLANES = ('X', 'Y')
 LIMITS = dict(F1=1e-6, A1=1.5e-3, P1=3e-4, F2=1.5e-4, A2=1.5e-1, P2=0.03)

@@ -1,9 +1,9 @@
 from os.path import join, isdir, abspath, dirname, pardir
 from shutil import rmtree
-from . import context
-from utils import iotools
-from model_creator import create_instance_and_model
-from model.constants import MODIFIERS_MADX
+
+from omc3.model.constants import MODIFIERS_MADX
+from omc3.model_creator import create_instance_and_model
+from omc3.utils import iotools
 
 BASE_OUTPUT = abspath(join(dirname(__file__), pardir, "model"))
 COMP_MODEL = join(dirname(__file__), pardir, "inputs", "models", "25cm_beam1")
