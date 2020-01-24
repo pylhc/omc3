@@ -4,19 +4,19 @@ RDTs
 
 Computes global resonance driving terms f_jklm.
 """
-from os.path import join
-import numpy as np
 from copy import deepcopy
-from utils import logging_tools
-from scipy.optimize import curve_fit
-from optics_measurements import phase
-from optics_measurements.toolbox import df_diff
-from optics_measurements.constants import PLANES, ERR, EXT
-from scipy.sparse import diags
-from utils import iotools
+from os.path import join
+
+import numpy as np
 import pandas as pd
-from utils import stats
 import tfs
+from scipy.optimize import curve_fit
+from scipy.sparse import diags
+
+from omc3.optics_measurements import phase
+from omc3.optics_measurements.constants import ERR, EXT, PLANES
+from omc3.optics_measurements.toolbox import df_diff
+from omc3.utils import iotools, logging_tools, stats
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
@@ -101,7 +101,7 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
     filtered["NAME2"], filtered["MEAS"], filtered["ERRMEAS"] = second_bmps, filtered.lookup(
         bpm_names, second_bmps), phases[plane]["ERRMEAS"].lookup(bpm_names, second_bmps)
     for_rdts = pd.merge(filtered.loc[:, ["NAME2", "MEAS", "ERRMEAS"]],
-                        meas_input.accelerator.get_model_tfs().loc[:, ["S"]], how="inner",
+                        meas_input.accelerator.model.loc[:, ["S"]], how="inner",
                         left_index=True, right_index=True)
     return for_rdts
 
@@ -141,7 +141,7 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
         _add_tunes_if_in_second_turn(df, input_files, line, phase2))
     # Get amplitude and phase of the line from linx/liny file
     line_amp, line_phase, line_amp_e, line_phase_e = complex_secondary_lines(  # TODO use the errors
-        df.loc[:, "MEAS"].to_numpy()[:, np.newaxis] * meas_input.accelerator.get_beam_direction(),
+        df.loc[:, "MEAS"].to_numpy()[:, np.newaxis] * meas_input.accelerator.beam_direction,
         df.loc[:, "ERRMEAS"].to_numpy()[:, np.newaxis], comp_coeffs1, comp_coeffs2)
     rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase)
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1

@@ -16,7 +16,8 @@ Feel free to use and extend this module.
 import json
 import os
 import shutil
-from utils import logging_tools
+
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -45,8 +46,6 @@ def delete_item(path_to_item):
             shutil.rmtree(path_to_item)
         elif os.path.islink(path_to_item):
             os.unlink(path_to_item)
-    except IOError:
-        LOG.error("Could not delete item because of IOError. Item: '{}'".format(path_to_item))
     except OSError:
         LOG.error("Could not delete item because of OSError. Item: '{}'".format(path_to_item))
 
@@ -221,17 +220,17 @@ def replace_keywords_in_textfile(path_to_textfile, dict_for_replacing, new_outpu
     write_string_into_new_file(destination_file, lines_with_replaced_keys)
 
 
-def json_dumps_readable(json_outfile, object):
+def json_dumps_readable(json_outfile, object_to_dump):
     """ This is how you write a beautiful json file
     
     Args:
         json_outfile: File to write
-        object: object to dump
+        object_to_dump: object to dump to json format
     """
-    object = json.dumps(object).replace(", ", ",\n    "
-                              ).replace("[", "[\n    "
+    object_to_dump = json.dumps(object_to_dump).replace(", ", ",\n    "
+                                                        ).replace("[", "[\n    "
                               ).replace("],\n    ", "],\n\n"
                               ).replace("{", "{\n"
                               ).replace("}", "\n}")
     with open(json_outfile, "w") as json_file:
-        json_file.write(object)
+        json_file.write(object_to_dump)

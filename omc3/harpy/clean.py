@@ -10,8 +10,8 @@ Cleaning functionality of harpy.
 import numpy as np
 import pandas as pd
 
-from utils import logging_tools
-from utils.contexts import timeit
+from omc3.utils import logging_tools
+from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.getLogger(__name__)
 NTS_LIMIT = 8.  # Noise to signal limit

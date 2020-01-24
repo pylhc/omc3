@@ -5,17 +5,17 @@ handler
 Handles the cleaning, frequency analysis and resonance search for a single-bunch TbtData.
 
 """
-from os.path import join, basename
 from collections import OrderedDict
+from os.path import basename, join
 
 import numpy as np
 import pandas as pd
-
 import tfs
-from definitions import formats
-from utils.contexts import timeit
-from utils import logging_tools
-from harpy import frequency, clean, kicker
+
+from omc3.definitions import formats
+from omc3.harpy import clean, frequency, kicker
+from omc3.utils import logging_tools
+from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
 PLANES = ("X", "Y")

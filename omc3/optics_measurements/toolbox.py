@@ -86,5 +86,3 @@ def ang_sum(a, b):
 
 def _interval_check(ang):
     return np.where(np.abs(ang) > 0.5, ang - np.sign(ang), ang)
-
-

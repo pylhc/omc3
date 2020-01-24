@@ -8,21 +8,25 @@ Measure optics
 Computes various lattice optics parameters from frequency spectra
 """
 
+import datetime
 import os
 import sys
-import datetime
 from collections import OrderedDict
 from copy import deepcopy
+
 import numpy as np
 import pandas as pd
 import tfs
-from utils import logging_tools, iotools
-from optics_measurements import dpp, tune, phase, beta_from_phase, iforest, chromatic, rdt
-from optics_measurements import beta_from_amplitude, dispersion, interaction_point, kick
-from optics_measurements.constants import PLANES, ERR, EXT, CHROM_BETA_NAME
-from utils.contexts import timeit
 
-VERSION = '0.4.0'
+from omc3 import __version__ as VERSION
+from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
+                                      chromatic, dispersion, dpp, iforest,
+                                      interaction_point, kick, phase, rdt,
+                                      tune)
+from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT,
+                                                PLANES)
+from omc3.utils import iotools, logging_tools
+
 LOGGER = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
 LOG_FILE = "measure_optics.log"
 

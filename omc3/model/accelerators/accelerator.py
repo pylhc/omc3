@@ -5,11 +5,17 @@ Accelerator
 Contains parent accelerator class and other support classes
 """
 
-from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, split_arguments
-import os
+from os.path import isfile, join
+
 import pandas as pd
 import tfs
-from utils import logging_tools
+from generic_parser.entrypoint_parser import EntryPointParameters
+
+from omc3.model.constants import (ERROR_DEFFS_TXT, MODIFIERS_MADX,
+                                  TWISS_AC_DAT, TWISS_ADT_DAT,
+                                  TWISS_BEST_KNOWLEDGE_DAT, TWISS_DAT,
+                                  TWISS_ELEMENTS_DAT)
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -17,6 +23,9 @@ LOGGER = logging_tools.get_logger(__name__)
 class AccExcitationMode(object):
     # it is very important that FREE = 0
     FREE, ACD, ADT = range(3)
+
+
+DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
 
 
 class AccElementTypes(object):
@@ -34,227 +43,122 @@ class Accelerator(object):
                AccElementTypes.MAGNETS: r".*",
                AccElementTypes.ARC_BPMS: r".*"
                }
-    MODIFIERS_MADX = "modifiers.madx"
-    ELEMENTS_CENTRE_DAT = "twiss_elements_centre.dat"
-    TWISS_BEST_KNOWLEDGE_DAT = "twiss_best_knowledge.dat"
-    TWISS_ADT_DAT = "twiss_adt.dat"
-    TWISS_AC_DAT = "twiss_ac.dat"
-    TWISS_ELEMENTS_DAT = "twiss_elements.dat"
-    TWISS_DAT = "twiss.dat"
-    ERROR_DEFFS_TXT = "error_deffs.txt"
     BPM_INITIAL = 'B'
 
     @staticmethod
-    def get_instance_parameters():
+    def get_parameters():
         params = EntryPointParameters()
-        params.add_parameter(flags=["--model_dir", "-m"],
-                             help="Path to model directory (loads tunes and excitation from model!).",
-                             name="model_dir", type=str, )
-        params.add_parameter(flags=["--nattunex"], help="Natural tune X without integer part.",
-                             name="nat_tune_x", type=float, )
-        params.add_parameter(flags=["--nattuney"], help="Natural tune Y without integer part.",
-                             name="nat_tune_y", type=float, )
-        params.add_parameter(flags=["--acd"], help="Activate excitation with ACD.", name="acd",
-                             action="store_true")
-        params.add_parameter(flags=["--adt"], help="Activate excitation with ADT.", name="adt",
-                             action="store_true", )
-        params.add_parameter(flags=["--drvtunex"], help="Driven tune X without integer part.",
-                             name="drv_tune_x", type=float, )
-        params.add_parameter(flags=["--drvtuney"], help="Driven tune Y without integer part.",
-                             name="drv_tune_y", type=float, )
-        params.add_parameter(flags=["--dpp"], help="Delta p/p to use.", name="dpp", default=0.0,
-                             type=float, )
-        params.add_parameter(flags=["--energy"], help="Energy in Tev.", name="energy", type=float, )
-        params.add_parameter(flags=["--optics_file"],
-                             help="Path to the optics file to use (modifiers file).", name="modifiers",
-                             type=str, )
-        params.add_parameter(flags=["--fullresponse"], help=(
-            "If True, fullresponse template will be filled and put in the output directory."),
-                             name="fullresponse", action="store_true", )
-        params.add_parameter(flags=["--xing"],
-                             help="If True, x-ing  angles will be applied to model", name="xing",
-                             action="store_true", )
-        params.add_parameter(flags=["--year_opt"],
-                             help="Year of the optics. Default is the current year.",
-                             name="year_opt", type=int, )
+        params.add_parameter(name="model_dir", type=str,
+                             help="Path to model directory; loads tunes and excitation from model!")
+        params.add_parameter(name="nat_tunes", type=float, nargs=2,
+                             help="Natural tunes without integer part.", )
+        params.add_parameter(name="drv_tunes", type=float, nargs=2,
+                             help="Driven tunes without integer part.", )
+        params.add_parameter(name="driven_excitation", type=str, choices=("acd", "adt"),
+                             help="Driven tunes without integer part.", )
+        params.add_parameter(name="dpp", default=0.0, type=float, help="Delta p/p to use.",)
+        params.add_parameter(name="energy", type=float, help="Energy in Tev.", )
+        params.add_parameter(name="modifiers", type=str,
+                             help="Path to the optics file to use (modifiers file).")
+        params.add_parameter(name="fullresponse", action="store_true",
+                             help="If True, outputs also fullresponse madx file.",)
+        params.add_parameter(name="xing", action="store_true",
+                             help="If True, x-ing angles will be applied to model")
 
         return params
 
-    def __init__(self, *args, **kwargs):
-        # for reasons of import-order and class creation, decoration was not possible
-
-        parser = EntryPoint(self.get_instance_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
+    def __init__(self, opt):
+        self.model_dir = None
+        self.drv_tunes = None
+        self.excitation = AccExcitationMode.FREE
+        self.model = None
+        self._model_driven = None
+        self.model_best_knowledge = None
+        self.elements = None
+        self.error_defs_file = None
+        self.modifiers = None
+        self._beam_direction = 1
+        self._beam = None
+        self._ring = None
+        self.energy = None
+        self.dpp = 0.0
+        self.xing = None
 
         if opt.model_dir:
+            if (opt.nat_tunes is not None) or (opt.drv_tunes is not None):
+                raise AcceleratorDefinitionError("Arguments 'nat_tunes' and 'driven_tunes' are "
+                                                 "not allowed when loading from model directory.")
             self.init_from_model_dir(opt.model_dir)
-            self.energy = None
-            self.dpp = 0.0
-            self.xing = None
-            if ((opt.nat_tune_x is not None) or (opt.nat_tune_y is not None) or
-                    (opt.drv_tune_x is not None) or (opt.drv_tune_y is not None)):
-                raise AcceleratorDefinitionError(
-                    "None of Arguments 'nat_tune_x', 'nat_tune_y', 'drv_tune_x' and 'drv_tune_y' "
-                    "are allowed when loading from model directory.")
+
         else:
             self.init_from_options(opt)
 
-        self.verify_object()
-
     def init_from_options(self, opt):
-        if opt.nat_tune_x is None:
-            raise AcceleratorDefinitionError("Argument 'nat_tune_x' is required.")
-        if opt.nat_tune_y is None:
-            raise AcceleratorDefinitionError("Argument 'nat_tune_y' is required.")
-        self.nat_tune_x = opt.nat_tune_x
-        self.nat_tune_y = opt.nat_tune_y
-        self.drv_tune_x = None
-        self.drv_tune_y = None
-        self._excitation = AccExcitationMode.FREE
-        if opt.acd or opt.adt:
-            if opt.acd and opt.adt:
-                raise AcceleratorDefinitionError("Select only one excitation type.")
+        if opt.nat_tunes is None:
+            raise AcceleratorDefinitionError("Argument 'nat_tunes' is required.")
+        if (opt.drv_tunes is None) and (opt.driven_excitation is not None):
+            raise AcceleratorDefinitionError("Argument 'drv_tunes' is required.")
+        self.nat_tunes = opt.nat_tunes
 
-            if opt.drv_tune_x is None:
-                raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
-            if opt.drv_tune_y is None:
-                raise AcceleratorDefinitionError("Argument 'drv_tune_x' is required.")
-            self.drv_tune_x = opt.drv_tune_x
-            self.drv_tune_y = opt.drv_tune_y
+        if opt.driven_excitation is not None:
+            self.drv_tunes = opt.drv_tunes
+            self.excitation = DRIVEN_EXCITATIONS[opt.driven_excitation]
 
-            if opt.acd:
-                self._excitation = AccExcitationMode.ACD
-            elif opt.adt:
-                self._excitation = AccExcitationMode.ADT
         # optional with default
         self.dpp = opt.dpp
         self.fullresponse = opt.fullresponse
         # optional no default
         self.energy = opt.get("energy", None)
         self.xing = opt.get("xing", None)
-        self.modifiers_file = opt.get("modifiers", None)
-        # for GetLLM
-        self.model_dir = None
-        self._model = None
-        self._model_driven = None
-        self._model_best_knowledge = None
-        self._elements = None
-        self._elements_centre = None
-        self._errordefspath = None
+        self.modifiers = opt.get("modifiers", None)
 
     def init_from_model_dir(self, model_dir):
         LOGGER.debug("Creating accelerator instance from model dir")
         self.model_dir = model_dir
 
-        LOGGER.debug("  model path = " + os.path.join(model_dir, self.TWISS_DAT))
+        # Elements #####################################
+        elements_path = join(model_dir, TWISS_ELEMENTS_DAT)
+        if not isfile(elements_path):
+            raise AcceleratorDefinitionError("Elements twiss not found")
+        self.elements = tfs.read(elements_path, index="NAME")
+
+        LOGGER.debug(f"  model path = {join(model_dir, TWISS_DAT)}")
         try:
-            self._model = tfs.read(os.path.join(model_dir, self.TWISS_DAT), index="NAME")
+            self.model = tfs.read(join(model_dir, TWISS_DAT), index="NAME")
         except IOError:
-            self._model = tfs.read(os.path.join(model_dir, self.TWISS_ELEMENTS_DAT), index="NAME")
-            bpm_index = [idx for idx in self._model.index.to_numpy() if idx.startswith(BPM_INITIAL)]  # <-- shouldnt startswith have an option which is the initial letter of BPM
-            self._model = self._model.loc[bpm_index, :]
-        self.nat_tune_x = float(self._model.headers["Q1"])
-        self.nat_tune_y = float(self._model.headers["Q2"])
+            bpm_index = [idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)]  # <-- shouldnt startswith have an option which is the initial letter of BPM
+            self.model = self.elements.loc[bpm_index, :]
+        self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
 
         # Excitations #####################################
-        self._model_driven = None
-        self.drv_tune_x = None
-        self.drv_tune_y = None
-        self._excitation = AccExcitationMode.FREE
+        driven_filenames = dict(acd=join(model_dir, TWISS_AC_DAT),
+                                adt=join(model_dir, TWISS_ADT_DAT))
+        if isfile(driven_filenames["acd"]) and isfile(driven_filenames["adt"]):
+            raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
+        for key in driven_filenames.keys():
+            if isfile(driven_filenames[key]):
+                self._model_driven = tfs.read(driven_filenames[key], index="NAME")
+                self.excitation = DRIVEN_EXCITATIONS[key]
 
-        ac_filename = os.path.join(model_dir, self.TWISS_AC_DAT)
-        adt_filename = os.path.join(model_dir, self.TWISS_ADT_DAT)
-
-        if os.path.isfile(ac_filename):
-            self._model_driven = tfs.read(ac_filename, index="NAME")
-            self._excitation = AccExcitationMode.ACD
-
-        if os.path.isfile(adt_filename):
-            if self._excitation == AccExcitationMode.ACD:
-                raise AcceleratorDefinitionError("ADT as well as ACD models provided."
-                                                 "Please choose only one.")
-
-            self._model_driven = tfs.read(adt_filename, index="NAME")
-            self._excitation = AccExcitationMode.ADT
-
-        if not self._excitation == AccExcitationMode.FREE:
-            self.drv_tune_x = float(self.get_driven_tfs().headers["Q1"])
-            self.drv_tune_y = float(self.get_driven_tfs().headers["Q2"])
+        if not self.excitation == AccExcitationMode.FREE:
+            self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
 
         # Best Knowledge #####################################
-        self._model_best_knowledge = None
-        best_knowledge_path = os.path.join(model_dir, self.TWISS_BEST_KNOWLEDGE_DAT)
-        if os.path.isfile(best_knowledge_path):
-            self._model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
-
-        # Elements #####################################
-        elements_path = os.path.join(model_dir, self.TWISS_ELEMENTS_DAT)
-        if os.path.isfile(elements_path):
-            self._elements = tfs.read(elements_path, index="NAME")
-        else:
-            raise AcceleratorDefinitionError("Elements twiss not found")
-
-        center_path = os.path.join(model_dir, self.ELEMENTS_CENTRE_DAT)
-        if os.path.isfile(center_path):
-            self._elements_centre = tfs.read(center_path, index="NAME")
-        else:
-            self._elements_centre = self._elements
+        best_knowledge_path = join(model_dir, TWISS_BEST_KNOWLEDGE_DAT)
+        if isfile(best_knowledge_path):
+            self.model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
 
         # Optics File #########################################
-        self.modifiers_file = None
-        opticsfilepath = os.path.join(self.model_dir, self.MODIFIERS_MADX)
-        if os.path.exists(opticsfilepath):
-            self.modifiers_file = opticsfilepath
+        opticsfilepath = join(self.model_dir, MODIFIERS_MADX)
+        if isfile(opticsfilepath):
+            self.modifiers = opticsfilepath
 
         # Error Def #####################################
-        self._errordefspath = None
-        errordefspath = os.path.join(self.model_dir, self.ERROR_DEFFS_TXT)
-        if os.path.exists(errordefspath):
-            self._errordefspath = errordefspath
+        errordefspath = join(self.model_dir, ERROR_DEFFS_TXT)
+        if isfile(errordefspath):
+            self.error_defs_file = errordefspath
 
     # Class methods ###########################################
-
-    @staticmethod
-    def get_class_parameters():
-        """
-        This method should return the parameter list of arguments needed to create the class.
-        """
-        params = EntryPointParameters()
-        return params
-
-    @classmethod
-    def init_and_get_unknowns(cls, args=None):
-        """ Initializes but also returns unknowns.
-         For the desired philosophy of returning parameters all the time,
-         try to avoid this function, e.g. parse outside parameters first.
-         """
-        opt, rest_args = split_arguments(args, cls.get_instance_parameters())
-        return cls(opt), rest_args
-
-    @classmethod
-    def get_class(cls, *args, **kwargs):
-        """
-        This method should return the accelerator class defined in the arguments.
-        """
-        parser = EntryPoint(cls.get_class_parameters(), strict=True)
-        opt = parser.parse(*args, **kwargs)
-        return cls._get_class(opt)
-
-    @classmethod
-    def get_class_and_unknown(cls, *args, **kwargs):
-        """ Returns subclass and unknown args.
-        For the desired philosophy of returning parameters all the time,
-        try to avoid this function, e.g. parse outside parameters first.
-        """
-        parser = EntryPoint(cls.get_class_parameters(), strict=False)
-        opt, unknown_opt = parser.parse(*args, **kwargs)
-        return cls._get_class(opt), unknown_opt
-
-    @classmethod
-    def _get_class(cls, opt):
-        """ Actual get_class function """
-        new_class = cls
-        return new_class
 
     @classmethod
     def get_element_types_mask(cls, list_of_elements, types):
@@ -273,7 +177,7 @@ class Accelerator(object):
         """
         unknown_elements = [ty for ty in types if ty not in cls.RE_DICT]
         if len(unknown_elements):
-            raise TypeError("Unknown element(s): '{:s}'".format(str(unknown_elements)))
+            raise TypeError(f"Unknown element(s): '{unknown_elements}'")
         series = pd.Series(list_of_elements)
         mask = series.str.match(cls.RE_DICT[types[0]], case=False)
         for ty in types[1:]:
@@ -296,7 +200,15 @@ class Accelerator(object):
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    # Instance methods ########################################
+    @property
+    def beam_direction(self):
+        return self._beam_direction
+
+    @beam_direction.setter
+    def beam_direction(self, value):
+        if value not in (1, -1):
+            raise AcceleratorDefinitionError("Beam direction has to be either 1 or -1")
+        self._beam_direction = value
 
     def verify_object(self):
         """
@@ -304,8 +216,6 @@ class Accelerator(object):
         instantiated.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    # For GetLLM #############################################################
 
     def get_exciter_bpm(self, plane, distance):
         """
@@ -315,87 +225,31 @@ class Accelerator(object):
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    def get_important_phase_advances(self):
+    def important_phase_advances(self):
         return []
 
-    def get_model_tfs(self):
-        return self._model
-
-    def get_driven_tfs(self):
+    @property
+    def model_driven(self):
         if self._model_driven is None:
             raise AttributeError("No driven model given in this accelerator instance.")
         return self._model_driven
-
-    def get_best_knowledge_model_tfs(self):
-        if self._model_best_knowledge is None:
-            raise AttributeError("No best knowledge model given in this accelerator instance.")
-        return self._model_best_knowledge
-
-    def get_elements_tfs(self):
-        return self._elements
-
-    def get_elements_centre_tfs(self):
-        return self._elements_centre
-
-    @property
-    def excitation(self):
-        return self._excitation
-
-    @excitation.setter
-    def excitation(self, excitation_mode):
-        if excitation_mode not in (AccExcitationMode.FREE,
-                                   AccExcitationMode.ACD,
-                                   AccExcitationMode.ADT):
-            raise ValueError("Wrong excitation mode.")
-        self._excitation = excitation_mode
-
-    def get_errordefspath(self):
-        """Returns the path to the uncertainty definitions file (formerly called error definitions file.
-        """
-        if self._errordefspath is None:
-            raise AttributeError("No error definitions file given in this accelerator instance.")
-        return self._errordefspath
-
-    def set_errordefspath(self, path):
-        self._errordefspath = path
-
-
-    # Templates ##############################################################
-    @classmethod
-    def get_nominal_tmpl(cls):
-        """ Returns template for nominal model (Model Creator) """
-        return cls.get_file("nominal.madx")
 
     @classmethod
     def get_file(cls, filename):
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    @classmethod
-    def get_iteration_tmpl(cls):
-        """
-        Returns template to create fullresponse.
-        TODO: only in _prepare_fullresponse in creator! Needs to be replaced by get_basic_seq
-        """
-        return cls.get_file("template.iterate.madx")
-
     # Jobs ###################################################################
 
-    def get_update_correction_job(self, tiwss_out_path, corrections_file_path):
+    def get_update_correction_script(self, tiwss_out_path, corrections_file_path):
         """
         Returns job (string) to create an updated model from changeparameters input
         (used in iterative correction).
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    def get_basic_seq_job(self):
+    def get_base_madx_script(self, model_directory, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    def get_multi_dpp_job(self, dpp_list):
-        """
-        Returns job (string) for model with multiple dp/p values (in W-Analysis)
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 

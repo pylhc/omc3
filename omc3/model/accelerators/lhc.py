@@ -5,85 +5,69 @@ LHC
 import json
 import os
 from collections import OrderedDict
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError, AccExcitationMode, AccElementTypes
-from utils import logging_tools
+
 import tfs
-from generic_parser import EntryPointParameters
+from generic_parser import EntryPoint
+
+from omc3.model.accelerators.accelerator import (AccElementTypes, Accelerator,
+                                                 AcceleratorDefinitionError,
+                                                 AccExcitationMode)
+from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
+                                  GENERAL_MACROS, LHC_MACROS, MACROS_DIR)
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
 LHC_DIR = os.path.join(CURRENT_DIR, "lhc")
 
 
-def get_lhc_modes():
-    return {
-        "lhc_runI": LhcRunI,
-        "lhc_runII": LhcRunII2015,
-        "lhc_runII_2016": LhcRunII2016,
-        "lhc_runII_2016_ats": LhcRunII2016Ats,
-        "lhc_runII_2017": LhcRunII2017,
-        "lhc_runII_2018": LhcRunII2018,
-        "hllhc10": HlLhc10,
-        "hllhc12": HlLhc12,
-        "hllhc13": HlLhc13,
-    }
-
-
 class Lhc(Accelerator):
     """ Parent Class for Lhc-Types.
     """
     NAME = "lhc"
-    MACROS_NAME = "lhc"
     RE_DICT = {AccElementTypes.BPMS: r"BPM",
                AccElementTypes.MAGNETS: r"M",
                AccElementTypes.ARC_BPMS: r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]"}  # bpms > 14 L or R of IP
 
+    LHC_IPS = ("1", "2", "5", "8")
+    NORMAL_IP_BPMS = "BPMSW.1{side}{ip}.B{beam}"
+    DOROS_IP_BPMS = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
+
     @staticmethod
-    def get_class_parameters():
-        params = EntryPointParameters()
-        params.add_parameter(flags="--lhcmode", name="lhc_mode", type=str, choices=list(get_lhc_modes().keys()),
-                             help=f"LHC mode to use. Should be one of: {str(get_lhc_modes().keys())}")
-        params.add_parameter(name="beam", type=int, help="Beam to use.")
+    def get_parameters():
+        params = super(Lhc, Lhc).get_parameters()
+        params.add_parameter(name="beam", type=int, choices=(1, 2), required=True,
+                             help="Beam to use.")
+        params.add_parameter(name="year", type=str, required=True,
+                             choices=("2012", "2015", "2016", "2017", "2018", "hllhc1.3"),
+                             help="Year of the optics (or hllhc1.3).")
+        params.add_parameter(name="ats", action="store_true",
+                             help="Marks ATS optics")
+
         return params
 
-    # Entry-Point Wrappers #####################################################
-
-    @classmethod
-    def _get_class(cls, opt):
-        """ Actual get_class function """
-        new_class = cls
-        if opt.lhc_mode is not None:
-            new_class = get_lhc_modes()[opt.lhc_mode]
-        if opt.beam is not None:
-            new_class = cls._get_beamed_class(new_class, opt.beam)
-        return new_class
-
-    # Public Methods ##########################################################
-
-
-    @classmethod
-    def _get_beamed_class(cls, new_class, beam):
-        beam_mixin = _LhcB1Mixin if beam == 1 else _LhcB2Mixin
-        beamed_class = type(new_class.__name__ + "B" + str(beam),
-                            (new_class, beam_mixin),
-                            {})
-        return beamed_class
+    def __init__(self, *args, **kwargs):
+        parser = EntryPoint(self.get_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
+        super().__init__(opt)
+        self.correctors_dir = "2012"
+        self.year = opt.year
+        self.ats = opt.ats
+        if self.year == "hllhc1.3":
+            self.correctors_dir = "hllhc1.3"
+        self.beam = opt.beam
+        beam_to_beam_direction={1: 1, 2: -1}
+        self.beam_direction = beam_to_beam_direction[self.beam]
+        self.verify_object()
 
     def verify_object(self):  # TODO: Maybe more checks?
         """Verifies if everything is defined which should be defined
         """
-
         LOGGER.debug("Accelerator class verification")
-        try:
-            self.get_beam()
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, beam "
-                "has to be specified (--beam option missing?)."
-            )
+        _ = self.beam
 
         if self.model_dir is None:  # is the class is used to create full response?
-            if self.modifiers_file is None:
+            if self.modifiers is None:
                 raise AcceleratorDefinitionError(
                     "The accelerator definition is incomplete, optics "
                     "file or model directory has not been specified."
@@ -93,76 +77,47 @@ class Lhc(Accelerator):
 
         if self.excitation is None:
             raise AcceleratorDefinitionError("Excitation mode not set.")
-        if (self.excitation == AccExcitationMode.ACD or
-                self.excitation == AccExcitationMode.ADT):
-            if self.drv_tune_x is None or self.drv_tune_y is None:
-                raise AcceleratorDefinitionError("Driven tunes not set.")
+        if (self.excitation != AccExcitationMode.FREE) and (self.drv_tunes is None):
+            raise AcceleratorDefinitionError("Driven tunes not set.")
 
-        if self.modifiers_file is not None and not os.path.exists(self.modifiers_file):
-            raise AcceleratorDefinitionError(
-                "Optics file '{:s}' does not exist.".format(self.modifiers_file))
+        if self.modifiers is not None and not os.path.exists(self.modifiers):
+            raise AcceleratorDefinitionError(f"Optics file '{self.modifiers}' does not exist.")
 
         # print info about the accelerator
         # TODO: write more output prints
-        LOGGER.debug(
-            "... verification passed. Will now print some information about the accelerator")
-        LOGGER.debug("{:32s} {}".format("class name", self.__class__.__name__))
-        LOGGER.debug("{:32s} {}".format("beam", self.get_beam()))
-        LOGGER.debug("{:32s} {}".format("beam direction", self.get_beam_direction()))
-        LOGGER.debug("")
+        LOGGER.debug("... verification passed. \nSome information about the accelerator:")
+        LOGGER.debug(f"Class name       {self.__class__.__name__}")
+        LOGGER.debug(f"Beam             {self.beam}")
+        LOGGER.debug(f"Beam direction   {self.beam_direction}")
 
+    @property
+    def beam(self):
+        if self._beam is None:
+            raise AcceleratorDefinitionError("The accelerator definition is incomplete, beam "
+                                             "has to be specified (--beam option missing?).")
+        return self._beam
 
-    @classmethod
-    def get_nominal_multidpp_tmpl(cls):
-        return cls.get_file("nominal_multidpp.madx")
-    
-    @classmethod
-    def get_coupling_tmpl(cls):
-        return cls.get_file("coupling_correct.madx")
-
-    @classmethod
-    def get_best_knowledge_tmpl(cls):
-        return cls.get_file("best_knowledge.madx")
-
-    @classmethod
-    def get_segment_tmpl(cls):
-        return cls.get_file("segment.madx")
-
-    @classmethod
-    def get_basic_seq_tmpl(cls):
-        return cls.get_file("template.basic_seq.madx")
-
-    @classmethod
-    def get_update_correction_tmpl(cls):
-        return cls.get_file("template.update_correction.madx")
+    @beam.setter
+    def beam(self, value):
+        if value not in (1, 2):
+            raise AcceleratorDefinitionError("Beam parameter has to be one of (1, 2)")
+        self._beam = value
 
     @classmethod
     def get_file(cls, filename):
-        return os.path.join(CURRENT_DIR, "lhc", filename)
-
-    @classmethod
-    def get_sequence_file(cls):
-        try:
-            return _get_file_for_year(cls.YEAR, "main.seq")
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, mode " +
-                "has to be specified (--lhcmode option missing?)."
-            )
+        return os.path.join(CURRENT_DIR, cls.NAME, filename)
 
     @classmethod
     def get_lhc_error_dir(cls):
         return os.path.join(LHC_DIR, "systematic_errors")
 
     @classmethod
-    def get_variables(cls, frm=None, to=None, classes=None):
-        correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")
+    def get_variables(self, frm=None, to=None, classes=None):
+        correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")  # not a bug
         all_corrs = _merge_jsons(
-            os.path.join(correctors_dir, "correctors_b" + str(cls.get_beam()),
-                         "beta_correctors.json"),
-            os.path.join(correctors_dir, "correctors_b" + str(cls.get_beam()),
-                         "coupling_correctors.json"),
-            cls._get_triplet_correctors_file(),
+            os.path.join(correctors_dir, f"correctors_b{self.beam}", "beta_correctors.json"),
+            os.path.join(correctors_dir, f"correctors_b{self.beam}", "coupling_correctors.json"),
+            self._get_triplet_correctors_file(),
         )
         my_classes = classes
         if my_classes is None:
@@ -172,9 +127,7 @@ class Lhc(Accelerator):
         )
         if frm is None and to is None:
             return list(vars_by_class)
-        elems_matrix = tfs.read(
-            cls._get_corrector_elems()
-        ).sort_values("S")
+        elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
                 elems_matrix = elems_matrix[(elems_matrix.S >= frm) | (elems_matrix.S <= to)]
@@ -190,126 +143,6 @@ class Lhc(Accelerator):
         ))
         return _list_intersect_keep_order(vars_by_position, vars_by_class)
 
-    def get_update_correction_job(self, tiwss_out_path, corrections_file_path):
-        """ Return string for madx job of correcting model """
-        with open(self.get_update_correction_tmpl(), "r") as template:
-            madx_template = template.read()
-        try:
-            replace_dict = {
-                "LIB": self.MACROS_NAME,
-                "MAIN_SEQ": self.load_main_seq_madx(),
-                "OPTICS_PATH": self.modifiers_file,
-                "CROSSING_ON": "1" if self.xing else "0",
-                "NUM_BEAM": self.get_beam(),
-                "DPP": self.dpp,
-                "QMX": self.nat_tune_x,
-                "QMY": self.nat_tune_y,
-                "PATH_TWISS": tiwss_out_path,
-                "CORRECTIONS": corrections_file_path,
-            }
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete. " +
-                "Needs to be an accelator instance. Also: --lhcmode or --beam option missing?"
-            )
-        return madx_template % replace_dict
-
-    def get_basic_seq_job(self):
-        """ Return string for madx job of correting model """
-        with open(self.get_basic_seq_tmpl(), "r") as template:
-            madx_template = template.read()
-        try:
-            replace_dict = {
-                "LIB": self.MACROS_NAME,
-                "MAIN_SEQ": self.load_main_seq_madx(),
-                "OPTICS_PATH": self.modifiers_file,
-                "CROSSING_ON": "1" if self.xing else "0",
-                "NUM_BEAM": self.get_beam(),
-                "DPP": self.dpp,
-                "QMX": self.nat_tune_x,
-                "QMY": self.nat_tune_y,
-            }
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete. " +
-                "Needs to be an accelator instance. Also: --lhcmode or --beam option missing?"
-            )
-        return madx_template % replace_dict
-
-    def get_multi_dpp_job(self, dpp_list):
-        """ Return madx job to create twisses (models) with dpps from dpp_list """
-        with open(self.get_nominal_multidpp_tmpl()) as textfile:
-            madx_template = textfile.read()
-        try:
-            output_path = self.model_dir
-            use_acd = "1" if (self.excitation ==
-                              AccExcitationMode.ACD) else "0"
-            use_adt = "1" if (self.excitation ==
-                              AccExcitationMode.ADT) else "0"
-            crossing_on = "1" if self.xing else "0"
-            beam = self.get_beam()
-
-            replace_dict = {
-                "LIB": self.MACROS_NAME,
-                "MAIN_SEQ": self.load_main_seq_madx(),
-                "OPTICS_PATH": self.modifiers_file,
-                "NUM_BEAM": beam,
-                "PATH": output_path,
-                "QMX": self.nat_tune_x,
-                "QMY": self.nat_tune_y,
-                "USE_ACD": use_acd,
-                "USE_ADT": use_adt,
-                "CROSSING_ON": crossing_on,
-                "QX": "",
-                "QY": "",
-                "QDX": "",
-                "QDY": "",
-                "DPP": "",
-                "DPP_ELEMS": "",
-                "DPP_AC": "",
-                "DPP_ADT": "",
-            }
-            if (self.excitation in
-                    (AccExcitationMode.ACD, AccExcitationMode.ADT)):
-                replace_dict["QX"] = self.nat_tune_x
-                replace_dict["QY"] = self.nat_tune_y
-                replace_dict["QDX"] = self.drv_tune_x
-                replace_dict["QDY"] = self.drv_tune_y
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete. " +
-                "Needs to be an accelator instance. Also: --lhcmode or --beam option missing?"
-            )
-
-        # add different dpp twiss-command lines
-        twisses_tmpl = "twiss, chrom, sequence=LHCB{beam:d}, deltap={dpp:f}, file='{twiss:s}';\n"
-        for dpp in dpp_list:
-            replace_dict["DPP"] += twisses_tmpl.format(
-                beam=beam,
-                dpp=dpp,
-                twiss=os.path.join(output_path, "twiss_{:f}.dat".format(dpp))
-            )
-            replace_dict["DPP_ELEMS"] += twisses_tmpl.format(
-                beam=beam,
-                dpp=dpp,
-                twiss=os.path.join(output_path, "twiss_{:f}_elements.dat".format(dpp))
-            )
-            replace_dict["DPP_AC"] += twisses_tmpl.format(
-                beam=beam,
-                dpp=dpp,
-                twiss=os.path.join(output_path, "twiss_{:f}_ac.dat".format(dpp))
-            )
-            replace_dict["DPP_ADT"] += twisses_tmpl.format(
-                beam=beam,
-                dpp=dpp,
-                twiss=os.path.join(output_path, "twiss_{:f}_adt.dat".format(dpp))
-            )
-        return madx_template % replace_dict
-
-    LHC_IPS = ("1", "2", "5", "8")
-    NORMAL_IP_BPMS = "BPMSW.1{side}{ip}.B{beam}"
-    DOROS_IP_BPMS = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
-
     @classmethod
     def get_ips(cls):
         """ Returns an iterable with this accelerator IPs.
@@ -318,39 +151,32 @@ class Lhc(Accelerator):
             An iterator returning tuples with:
                 ("ip name", "left BPM name", "right BPM name")
         """
-        beam = cls.get_beam()
         for ip in Lhc.LHC_IPS:
             yield ("IP{}".format(ip),
-                   Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=beam),
-                   Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=beam))
+                   Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=cls.beam),
+                   Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=cls.beam))
             yield ("IP{}_DOROS".format(ip),
-                   Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=beam),
-                   Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=beam))
+                   Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=cls.beam),
+                   Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=cls.beam))
 
     def log_status(self):
-        LOGGER.info("  model dir = " + self.model_dir)
-        LOGGER.info("{:20s} [{:10.3f}]".format("Natural Tune X", self.nat_tune_x))
-        LOGGER.info("{:20s} [{:10.3f}]".format("Natural Tune Y", self.nat_tune_y))
+        LOGGER.info(f"  model dir = {self.model_dir}")
+        LOGGER.info("Natural Tune X      [{:10.3f}]".format(self.nat_tunes[0]))
+        LOGGER.info("Natural Tune Y      [{:10.3f}]".format(self.nat_tunes[1]))
+        LOGGER.info("Best Knowledge Model     [{:>10s}]".format(
+            "NO" if self.model_best_knowledge is None else "OK"))
 
-        if self._model_best_knowledge is None:
-            LOGGER.info("{:20s} [{:>10s}]".format("Best Knowledge Model", "NO"))
-        else:
-            LOGGER.info("{:20s} [{:>10s}]".format("Best Knowledge Model", "OK"))
+        if self.excitation == AccExcitationMode.FREE:
+            LOGGER.info("Excitation          [{:>10s}]".format("NO"))
+            return
+        LOGGER.info("Excitation          [{:>10s}]".format(
+            "ACD" if self.excitation == AccExcitationMode.ACD else "ADT"))
+        LOGGER.info("> Driven Tune X     [{:10.3f}]".format(self.drv_tunes[0]))
+        LOGGER.info("> Driven Tune Y     [{:10.3f}]".format(self.drv_tunes[1]))
 
-        if self._excitation == AccExcitationMode.FREE:
-            LOGGER.info("{:20s} [{:>10s}]".format("Excitation", "NO"))
-        else:
-            if self._excitation == AccExcitationMode.ACD:
-                LOGGER.info("{:20s} [{:>10s}]".format("Excitation", "ACD"))
-            elif self._excitation == AccExcitationMode.ADT:
-                LOGGER.info("{:20s} [{:>10s}]".format("Excitation", "ADT"))
-            LOGGER.info("{:20s} [{:10.3f}]".format("> Driven Tune X", self.drv_tune_x))
-            LOGGER.info("{:20s} [{:10.3f}]".format("> Driven Tune Y", self.drv_tune_y))
-
-    @classmethod
-    def load_main_seq_madx(cls):
+    def load_main_seq_madx(self):
         try:
-            return _get_call_main_for_year(cls.YEAR)
+            return _get_call_main_for_year(self.year)
         except AttributeError:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete, mode " +
@@ -359,19 +185,16 @@ class Lhc(Accelerator):
 
     # Private Methods ##########################################################
 
-    @classmethod
-    def _get_triplet_correctors_file(cls):
-        correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")
+    def _get_triplet_correctors_file(self):
+        correctors_dir = os.path.join(LHC_DIR, self.correctors_dir, "correctors")
         return os.path.join(correctors_dir, "triplet_correctors.json")
 
-    @classmethod
-    def _get_corrector_elems(cls):
-        correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")
-        return os.path.join(correctors_dir,
-                            "corrector_elems_b" + str(cls.get_beam()) + ".tfs")
+    def _get_corrector_elems(self):
+        correctors_dir = os.path.join(LHC_DIR, self.correctors_dir, "correctors")
+        return os.path.join(correctors_dir, f"corrector_elems_b{self.beam}.tfs")
 
     def get_exciter_bpm(self, plane, commonbpms):
-        beam = self.get_beam()
+        beam = self.beam
         adt = 'H.C' if plane == "X" else 'V.B'
         l_r = 'L' if (beam == 1 != plane == 'Y') else 'R'
         a_b = 'B' if beam == 1 else 'A'
@@ -391,195 +214,78 @@ class Lhc(Accelerator):
             return list(bpms).index(found_bpms[0]), found_bpms[0]
         raise KeyError
 
-    def get_important_phase_advances(self):
-        if self.get_beam() == 2:
+    def important_phase_advances(self):
+        if self.beam == 2:
             return[["MKD.O5R6.B2", "TCTPH.4R1.B2"],
                    ["MKD.O5R6.B2", "TCTPH.4R5.B2"]]
-        if self.get_beam() == 1:
+        if self.beam == 1:
             return [["MKD.O5L6.B1", "TCTPH.4L1.B1"],
                     ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
 
     def get_synch_BPMs(self, index):
         # expect passing index.to_numpy()
-        if self.get_beam() == 1:
-            return [i in index for i in self.model_tfs.loc["BPMSW.33L2.B1":].index]
-        elif self.get_beam() == 2:
-            return [i in index for i in self.model_tfs.loc["BPMSW.33R8.B2":].index]
+        if self.beam == 1:
+            return [i in index for i in self.model.loc["BPMSW.33L2.B1":].index]
+        elif self.beam == 2:
+            return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
-
-class _LhcSegmentMixin(object):
-
-    def __init__(self):
-        self._start = None
-        self._end = None
-
-    def get_segment_vars(self, classes=None):
-        return self.get_variables(frm=self.start.s, to=self.end.s, classes=classes)
-
-    def verify_object(self):
-        try:
-            self.get_beam()
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, beam "
-                "has to be specified (--beam option missing?)."
-            )
-        if self.modifiers_file is None:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, optics "
-                "file has not been specified."
-            )
-        if self.xing is None:
-            raise AcceleratorDefinitionError("Crossing on or off not set.")
-        if self.label is None:
-            raise AcceleratorDefinitionError("Segment label not set.")
-        if self.start is None:
-            raise AcceleratorDefinitionError("Segment start not set.")
-        if self.end is None:
-            raise AcceleratorDefinitionError("Segment end not set.")
-
-
-class _LhcB1Mixin(object):
-    @classmethod
-    def get_beam(cls):
-        return 1
-
-    @classmethod
-    def get_beam_direction(cls):
-        return 1
-
-
-class _LhcB2Mixin(object):
-    @classmethod
-    def get_beam(cls):
-        return 2
-
-    @classmethod
-    def get_beam_direction(cls):
-        return -1
-
-
-class LhcAts(Lhc):
-    MACROS_NAME = "lhc_runII_ats"
-
-
-# Specific accelerator definitions ###########################################
-
-
-class LhcRunI(Lhc):
-    YEAR = "2012"
-
-    @classmethod
-    def load_main_seq_madx(cls):
-        load_main_seq = _get_call_main_for_year("2012")
-        load_main_seq += _get_madx_call_command(
-            os.path.join(LHC_DIR, "2012", "install_additional_elements.madx")
+    def get_base_madx_script(self, outdir, best_knowledge=False):
+        ats_md = False
+        high_beta = False
+        ats_suffix = '_ats' if self.ats else ''
+        madx_script = (
+            f"option, -echo;\n"
+            f"{_call_in_madx(os.path.join(outdir, MACROS_DIR, GENERAL_MACROS))}"
+            f"{_call_in_madx(os.path.join(outdir, MACROS_DIR, LHC_MACROS))}"
+            f'title, "Model from Lukas :-)";\n'
+            f"{self.load_main_seq_madx()}\n"
+            f"exec, define_nominal_beams();\n"
+            f"{_call_in_madx(self.modifiers)}"
+            f"exec, cycle_sequences();\n"
+            f"xing_angles = {'1' if self.xing else '0'};\n"
+            f"if(xing_angles==1){{\n"
+            f"    exec, set_crossing_scheme_ON();\n"
+            f"}}else{{\n"
+            f"    exec, set_default_crossing_scheme();\n"
+            f"}}\n"
+            f"use, sequence = LHCB{self.beam};\n"
+            f"option, echo;\n"
         )
-        return load_main_seq
+        if best_knowledge:
+            # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
+            madx_script += (
+                    f"readmytable, file = '{os.path.join(outdir, B2_ERRORS_TFS)}', table=errtab;\n"
+                    f"seterr, table=errtab;\n"
+                    f"{_call_in_madx(os.path.join(outdir, B2_SETTINGS_MADX))}")
+        if high_beta:
+            madx_script += "exec, high_beta_matcher();\n"
+        madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+        if ats_md:
+            madx_script += "exec, full_response_ats();\n"
+        madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
+        return madx_script
 
-
-class LhcRunII2015(Lhc):
-    YEAR = "2015"
-
-
-class LhcRunII2016(Lhc):
-    YEAR = "2016"
-
-
-class LhcRunII2016Ats(LhcAts, LhcRunII2016):
-    pass
-
-
-class LhcRunII2017(LhcAts):
-    YEAR = "2017"
-
-
-class LhcRunII2018(LhcAts):
-    YEAR = "2018"
-
-
-class HlLhc10(LhcAts):
-    MACROS_NAME = "hllhc"
-    YEAR = "hllhc1.0"
-
-    @classmethod
-    def load_main_seq_madx(cls):
-        load_main_seq = _get_call_main_for_year("2015")
-        load_main_seq += _get_call_main_for_year("hllhc1.0")
-        return load_main_seq
-
-
-class HlLhc12(LhcAts):
-    MACROS_NAME = "hllhc"
-    YEAR = "hllhc1.2"
-
-    @classmethod
-    def load_main_seq_madx(cls):
-        load_main_seq = _get_call_main_for_year("2015")
-        load_main_seq += _get_call_main_for_year("hllhc1.2")
-        return load_main_seq
-
-    @classmethod
-    def _get_triplet_correctors_file(cls):
-        correctors_dir = os.path.join(LHC_DIR, "hllhc1.2", "correctors")
-        return os.path.join(correctors_dir, "triplet_correctors.json")
-
-    @classmethod
-    def _get_corrector_elems(cls):
-        correctors_dir = os.path.join(LHC_DIR, "hllhc1.2", "correctors")
-        return os.path.join(correctors_dir,
-                            "corrector_elems_b" + str(cls.get_beam()) + ".tfs")
-
-
-class HlLhc12NewCircuit(LhcAts):
-    MACROS_NAME = "hllhc"
-    YEAR = "hllhc12"
-
-
-class HlLhc12NoQ2Trim(HlLhc12):
-    MACROS_NAME = "hllhc"
-    YEAR = "hllhc12"
-
-
-class HlLhc13(LhcAts):
-    MACROS_NAME = "hllhc"
-    YEAR = "hllhc1.3"
-
-    @classmethod
-    def load_main_seq_madx(cls):
-        load_main_seq = _get_madx_call_command(
-            os.path.join(LHC_DIR, "hllhc1.3", "lhcrunIII.seq")
-        )
-        load_main_seq += _get_call_main_for_year("hllhc1.3")
-        return load_main_seq
-
-    @classmethod
-    def _get_triplet_correctors_file(cls):
-        correctors_dir = os.path.join(LHC_DIR, "hllhc1.3", "correctors")
-        return os.path.join(correctors_dir, "triplet_correctors.json")
-
-    @classmethod
-    def _get_corrector_elems(cls):
-        correctors_dir = os.path.join(LHC_DIR, "hllhc1.3", "correctors")
-        return os.path.join(correctors_dir,
-                            "corrector_elems_b" + str(cls.get_beam()) + ".tfs")
+    def get_update_correction_script(self, outpath, corr_file):
+        madx_script = self.get_base_madx_script(self.model_dir)
+        madx_script += (f"call, file = '{corr_file}';\n"
+                        f"exec, do_twiss_elements(LHCB{self.beam}, {outpath}, {self.dpp});\n")
+        return madx_script
 
 
 # General functions ##########################################################
 
 
 def _get_call_main_for_year(year):
-    call_main = _get_madx_call_command(
-        _get_file_for_year(year, "main.seq")
-    )
+    call_main = _call_in_madx(_get_file_for_year(year, "main.seq"))
+    if year == "2012":
+        call_main += _call_in_madx(os.path.join(LHC_DIR, "2012", "install_additional_elements.madx"))
+    if year == "hllhc1.3":
+        call_main += _call_in_madx(os.path.join(LHC_DIR, "hllhc1.3", "main_update.seq"))
     return call_main
 
 
-def _get_madx_call_command(path_to_call):
-    command = "call, file = \""
-    command += path_to_call
-    command += "\";\n"
-    return command
+def _call_in_madx(path_to_call):
+    return f"call, file = '{path_to_call}';\n"
 
 
 def _get_file_for_year(year, filename):
@@ -606,3 +312,35 @@ def _remove_dups_keep_order(my_list):
 
 def _list_intersect_keep_order(primary_list, secondary_list):
     return [elem for elem in primary_list if elem in secondary_list]
+
+
+class _LhcSegmentMixin(object):
+
+    def __init__(self):
+        self._start = None
+        self._end = None
+
+    def get_segment_vars(self, classes=None):
+        return self.get_variables(frm=self.start.s, to=self.end.s, classes=classes)
+
+    def verify_object(self):
+        try:
+            self.beam
+        except AttributeError:
+            raise AcceleratorDefinitionError(
+                "The accelerator definition is incomplete, beam "
+                "has to be specified (--beam option missing?)."
+            )
+        if self.modifiers is None:
+            raise AcceleratorDefinitionError(
+                "The accelerator definition is incomplete, optics "
+                "file has not been specified."
+            )
+        if self.xing is None:
+            raise AcceleratorDefinitionError("Crossing on or off not set.")
+        if self.label is None:
+            raise AcceleratorDefinitionError("Segment label not set.")
+        if self.start is None:
+            raise AcceleratorDefinitionError("Segment start not set.")
+        if self.end is None:
+            raise AcceleratorDefinitionError("Segment end not set.")

@@ -6,11 +6,13 @@ Takes Hdf5 file path containing the TbT data and returns a TbtData class to be r
 
 """
 from datetime import datetime
+
+import h5py
 import numpy as np
 import pandas as pd
-import h5py
-from tbt import handler
-from utils import logging_tools
+
+from omc3.tbt import handler
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
@@ -103,7 +105,7 @@ def check_key_v2(key):
 
 
 def check_key_v1(key):
-    return (('state' not in key) or key.startswith('N:'))
+    return ('state' not in key) or key.startswith('N:')
 
 
 FUNCTIONS = {1: {'get_bpm_names': _get_list_of_bpmnames_v1,
