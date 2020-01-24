@@ -4,8 +4,7 @@ from shutil import rmtree
 
 import tfs
 
-from omc3.hole_in_one import \
-    _optics_entrypoint  # <- Accessing a protected member of module. Make public?
+from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.utils import stats

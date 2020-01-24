@@ -3,14 +3,16 @@ import sys
 
 from generic_parser import EntryPointParameters, entrypoint
 
+from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
-    LhcBestKnowledgeCreator, LhcCouplingCreator, LhcModelCreator,
-    LhcSegmentCreator)
-from omc3.model.model_creators.ps_model_creator import (PsModelCreator,
-                                                        PsSegmentCreator)
-from omc3.model.model_creators.psbooster_model_creator import (
-    PsboosterModelCreator, PsboosterSegmentCreator)
+    LhcBestKnowledgeCreator,
+    LhcCouplingCreator,
+    LhcModelCreator,
+)
+from omc3.model.model_creators.ps_model_creator import PsModelCreator
+from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
+from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 
 LOGGER = logging.getLogger(__name__)
@@ -18,12 +20,12 @@ LOGGER = logging.getLogger(__name__)
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
             "best_knowledge": LhcBestKnowledgeCreator,
-            "segment": LhcSegmentCreator,
+            "segment": SegmentCreator,
             "coupling_correction": LhcCouplingCreator},
     "psbooster": {"nominal": PsboosterModelCreator,
-                  "segment": PsboosterSegmentCreator},
+                  "segment": SegmentCreator},
     "ps": {"nominal": PsModelCreator,
-           "segment": PsSegmentCreator},
+           "segment": SegmentCreator},
 }
 
 
@@ -60,12 +62,12 @@ def create_instance_and_model(opt, accel_opt):
 
     create_dirs(opt.outputdir)
     accel_inst = manager.get_accelerator(accel_opt)
-    create_model(accel_inst, opt.type, opt.outputdir, writeto=opt.writeto, logfile=opt.logfile)
-
-
-def create_model(accel_inst, model_type, output_path, **kwargs):
-    LOGGER.info(f"Accelerator Instance {accel_inst.NAME}, model type {model_type}")
-    CREATORS[accel_inst.NAME][model_type].create_model(accel_inst, output_path, **kwargs)
+    LOGGER.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
+    accel_inst.verify_object()
+    creator = CREATORS[accel_inst.NAME][opt.type]
+    creator.prepare_run(accel_inst, opt.outputdir)
+    madx_script = creator.get_madx_script(accel_inst, opt.outputdir)
+    run_string(madx_script, output_file=opt.writeto, log_file=opt.logfile)
 
 
 if __name__ == "__main__":

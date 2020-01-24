@@ -3,10 +3,9 @@ import shutil
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
-from omc3.model.model_creators import model_creator
 
 
-class PsboosterModelCreator(model_creator.ModelCreator):
+class PsboosterModelCreator(object):
 
     @classmethod
     def get_madx_script(cls, instance, output_path):
@@ -86,26 +85,3 @@ class PsboosterModelCreator(model_creator.ModelCreator):
             cls._prepare_corrtest(instance, output_path)
         src_path = os.path.join(instance.get_dir(), f"error_deff_ring{instance.ring}.txt")
         shutil.copy(src_path, os.path.join(output_path, ERROR_DEFFS_TXT))
-
-
-class PsboosterSegmentCreator(model_creator.ModelCreator):
-    @classmethod
-    def get_madx_script(cls, instance, output_path):
-        with open(instance.get_file("segment.madx")) as textfile:
-            madx_template = textfile.read()
-        replace_dict = {
-            "FILES_DIR": instance.get_dir(),
-            "RING": instance.ring,
-            "NAT_TUNE_X": instance.nat_tunes[0],
-            "NAT_TUNE_Y": instance.nat_tunes[1],
-            "OPTICS_PATH": instance.modifiers,
-            "PATH": output_path,
-            "OUTPUT": output_path,
-            "LABEL": instance.label,
-            "BETAKIND": instance.kind,
-            "STARTFROM": instance.start.name,
-            "ENDAT": instance.end.name,
-        }
-
-        madx_script = madx_template % replace_dict
-        return madx_script
