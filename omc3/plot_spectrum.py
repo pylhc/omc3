@@ -2,17 +2,29 @@
 Plot Spectrum
 --------------------
 
-Takes data from frequency analysis and creates a stem-frequency plot for every
-given BPM - or all in a single figure - with the possibility to include spectral lines.
+Spectrum plotter for frequency analysis output-data (supports also DRIVE output).
 
-Optionally, a waterfall plot for all BPMs is created as well.
-Plots are saved in a sub-directory of the given output dir with the name of the original TbT file.
-Returns two dictionaries with the filename as keys, where the dictionary first
-one contains the stem plot(s - subdict with bpms as keys) and the second one contains the waterfall plot.
+The spectra can be either plottet as `stem`-plots or as `waterfall`-plots.
+The stem-plots can be in any combination: split by given files, split by given
+bpms or combined in any way (by usage of the `bpms_single_fig` and
+`files_single_fig` flags). Not that if both of those are false (as is default)
+there will be only one waterfall plot per given input file.
+
+In case of split-by-file, plots are saved in a sub-directory of
+the given output dir with the name of the original TbT file.
+In case of split by bpm the plots will have the bpm-name in their filename.
+
+The function two dictionaries, where the first dictionary contains the
+stem plots and the second one the waterfall plots. They are identifyable
+by unique id's which depend on which combination of merging the spectra into
+one figure is used.
+
 
 *--Required--*
 
-- **files**: List with basenames of Tbt files, ie. tracking.sdds
+- **files**: List of paths to the spectrum files. The files need to be given
+without their '.lin'/'.amps[xy]','.freqs[xy]' endings. (So usually the path
+of the TbT-Data file.)
 
 
 *--Optional--*
@@ -164,7 +176,9 @@ def get_params():
     params.add_parameter(name="files",
                          required=True,
                          nargs='+',
-                         help='List with basenames of Tbt files, ie. tracking.sdds')
+                         help=("List of paths to the spectrum files. The files need to be given"
+                               " without their '.lin'/'.amps[xy]','.freqs[xy]' endings. "
+                               " (So usually the path of the TbT-Data file.)"))
     params.add_parameter(name="output_dir",
                          type=str,
                          help='Directory to write results to. If no option is given, plots will not be saved.')
