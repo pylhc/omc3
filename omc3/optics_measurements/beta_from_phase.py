@@ -9,15 +9,18 @@ Computes betas and alphas from phase advances.
 """
 import os
 import re
+
 import numpy as np
 import pandas as pd
-from scipy.linalg import circulant
 import tfs
-from utils import logging_tools, stats
-from optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff
-from optics_measurements.constants import BETA_NAME, EXT, ERR, DELTA, MDL, PI2
+from scipy.linalg import circulant
 
-__version__ = "2019.0.a"
+from omc3 import __version__ as VERSION
+from omc3.optics_measurements.constants import (BETA_NAME, DELTA, ERR, EXT,
+                                                MDL, PI2)
+from omc3.optics_measurements.toolbox import df_diff, df_ratio, df_rel_diff
+from omc3.utils import logging_tools, stats
+
 LOGGER = logging_tools.get_logger(__name__)
 
 EPSILON = 1.0E-16
@@ -331,7 +334,7 @@ def _assign_uncertainties(twiss_full, errordefspath):
 
 def _get_header(header_dict, error_method, range_of_bpms, rmsbb):
     header = header_dict.copy()
-    header['BetaAlgorithmVersion'] = __version__
+    header['BetaAlgorithmVersion'] = VERSION
     header['RCond'] = RCOND
     header['RangeOfBPMs'] = "Adjacent" if error_method == METH_3BPM else range_of_bpms
     header['ErrorsFrom:'] = error_method
@@ -475,4 +478,3 @@ def _try_best_model(meas_input):
         LOGGER.debug("No best knowledge model - using the normal one.")
         return meas_input.accelerator.model
     return meas_input.accelerator.model_best_knowledge
-

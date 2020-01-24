@@ -1,5 +1,6 @@
 import os
-from model.constants import MACROS_DIR, OBS_POINTS
+
+from omc3.model.constants import MACROS_DIR, OBS_POINTS
 
 
 def _call(path_to_call):

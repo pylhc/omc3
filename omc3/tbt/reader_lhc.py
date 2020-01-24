@@ -7,12 +7,14 @@ Basic tbt io-functionality.
 
 """
 from datetime import datetime
-import pytz
+
 import numpy as np
 import pandas as pd
+import pytz
 import sdds
-from tbt import handler
-from utils import logging_tools
+
+from omc3.tbt import handler
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 

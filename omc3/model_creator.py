@@ -1,17 +1,19 @@
-import sys
 import logging
-from madx_wrapper import run_string
-from model import manager
-from utils.iotools import create_dirs
+import sys
+
 from generic_parser import EntryPointParameters, entrypoint
-from model.model_creators.lhc_model_creator import (  # noqa
-    LhcModelCreator,
+
+from omc3.madx_wrapper import run_string
+from omc3.model import manager
+from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
+    LhcModelCreator,
 )
-from model.model_creators.psbooster_model_creator import PsboosterModelCreator
-from model.model_creators.ps_model_creator import PsModelCreator
-from model.model_creators.segment_creator import SegmentCreator
+from omc3.model.model_creators.ps_model_creator import PsModelCreator
+from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
+from omc3.model.model_creators.segment_creator import SegmentCreator
+from omc3.utils.iotools import create_dirs
 
 LOGGER = logging.getLogger(__name__)
 

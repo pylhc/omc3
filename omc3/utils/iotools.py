@@ -16,7 +16,8 @@ Feel free to use and extend this module.
 import json
 import os
 import shutil
-from utils import logging_tools
+
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -90,17 +91,17 @@ def write_string_into_new_file(path_to_textfile, str_to_insert):
         new_file.write(str_to_insert)
 
 
-def json_dumps_readable(json_outfile, object):
+def json_dumps_readable(json_outfile, object_to_dump):
     """ This is how you write a beautiful json file
     
     Args:
         json_outfile: File to write
-        object: object to dump
+        object_to_dump: object to dump to json format
     """
-    object = json.dumps(object).replace(", ", ",\n    "
-                              ).replace("[", "[\n    "
+    object_to_dump = json.dumps(object_to_dump).replace(", ", ",\n    "
+                                                        ).replace("[", "[\n    "
                               ).replace("],\n    ", "],\n\n"
                               ).replace("{", "{\n"
                               ).replace("}", "\n}")
     with open(json_outfile, "w") as json_file:
-        json_file.write(object)
+        json_file.write(object_to_dump)

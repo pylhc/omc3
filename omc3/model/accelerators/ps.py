@@ -2,12 +2,12 @@
 PS
 -------------------
 """
+import logging
 import os
 
 from generic_parser import EntryPoint
 
-from model.accelerators.accelerator import Accelerator
-import logging
+from omc3.model.accelerators.accelerator import Accelerator
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)

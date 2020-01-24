@@ -6,7 +6,8 @@ Corrects phase of main spectral line in a case,
 when damped (exponentially decaying) oscillations are analysed.
 """
 import numpy as np
-from utils import logging_tools
+
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 

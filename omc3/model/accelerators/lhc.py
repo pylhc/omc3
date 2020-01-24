@@ -5,13 +5,16 @@ LHC
 import json
 import os
 from collections import OrderedDict
-from model.accelerators.accelerator import (Accelerator, AcceleratorDefinitionError,
-                                            AccExcitationMode, AccElementTypes)
-from model.constants import GENERAL_MACROS, LHC_MACROS, B2_SETTINGS_MADX, B2_ERRORS_TFS, MACROS_DIR
-from utils import logging_tools
+
 import tfs
 from generic_parser import EntryPoint
 
+from omc3.model.accelerators.accelerator import (AccElementTypes, Accelerator,
+                                                 AcceleratorDefinitionError,
+                                                 AccExcitationMode)
+from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
+                                  GENERAL_MACROS, LHC_MACROS, MACROS_DIR)
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)

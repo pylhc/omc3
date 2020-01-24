@@ -8,12 +8,13 @@ IP
 Computes beta* from phase.
 """
 from os.path import join
+
 import numpy as np
 import pandas as pd
 import tfs
-from utils import logging_tools
-from optics_measurements.constants import IP_NAME, EXT, PI2
 
+from omc3.optics_measurements.constants import EXT, IP_NAME, PI2
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 COLUMNS = ("IP", "BETASTAR", "ERRBETASTAR", "PHASEADV", "ERRPHASEADV", "PHASEDVMDL", "LSTAR")

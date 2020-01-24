@@ -5,13 +5,17 @@ Accelerator
 Contains parent accelerator class and other support classes
 """
 
-from generic_parser.entrypoint_parser import EntryPointParameters
-from os.path import join, isfile
+from os.path import isfile, join
+
 import pandas as pd
 import tfs
-from utils import logging_tools
-from model.constants import MODIFIERS_MADX, TWISS_BEST_KNOWLEDGE_DAT, TWISS_ADT_DAT, TWISS_AC_DAT, TWISS_ELEMENTS_DAT, TWISS_DAT, ERROR_DEFFS_TXT
+from generic_parser.entrypoint_parser import EntryPointParameters
 
+from omc3.model.constants import (ERROR_DEFFS_TXT, MODIFIERS_MADX,
+                                  TWISS_AC_DAT, TWISS_ADT_DAT,
+                                  TWISS_BEST_KNOWLEDGE_DAT, TWISS_DAT,
+                                  TWISS_ELEMENTS_DAT)
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 

@@ -8,12 +8,16 @@ Phase advance
 Computes betatron phase advances and provides structures to store them.
 """
 from os.path import join
+
 import numpy as np
 import pandas as pd
 import tfs
-from utils import logging_tools, stats
-from optics_measurements.toolbox import df_ang_diff, df_diff, ang_sum
-from optics_measurements.constants import EXT, PHASE_NAME, TOTAL_PHASE_NAME, ERR, DELTA, MDL
+
+from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL,
+                                                PHASE_NAME, TOTAL_PHASE_NAME)
+from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
+from omc3.utils import logging_tools, stats
+
 LOGGER = logging_tools.get_logger(__name__)
 
 
