@@ -285,8 +285,8 @@ def _get_id_multi_fig(output_dir: str, default_name: str, filename: str,
 
 
 def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
-    """ Loads data from files and returns a dictionary (over planes) of a dictionary over the files containing
-    the bpm data as pandas series. """
+    """ Loads data from files and returns a dictionary (over planes) of a
+    dictionary over the files containing the bpm data as pandas series. """
     data_series = {p: {} for p in PLANES}
     for plane in PLANES:
         try:
@@ -309,23 +309,27 @@ def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
 
 
 def get_unique_filenames(files: Union[Iterable, Sized]):
-    """ Way too complicated method to assure unique dictionary names."""
-    def _get_filename(path, nparts):
-        return "_".join(os.path.split(path)[nparts:])
-
+    """ Way too complicated method to assure unique dictionary names,
+        by going backwards through the file-path until the names differ.
+    """
     paths = [None] * len(files)
     names = [None] * len(files)
     parts = -1
     for idx, fpath in enumerate(files):
-        fname = _get_filename(fpath, parts)
+        fname = _get_partial_filepath(fpath, parts)
         while fname in names:
             parts -= 1
             for idx_old in range(idx):
-                names[idx_old] = _get_filename(paths[idx_old], parts)
-            fname = _get_filename(fpath, parts)
+                names[idx_old] = _get_partial_filepath(paths[idx_old], parts)
+            fname = _get_partial_filepath(fpath, parts)
         names[idx] = fname
         paths[idx] = fpath
     return zip(paths, names)
+
+
+def _get_partial_filepath(path, nparts):
+    """ Returns the path from nparts until the end, separated by underscores"""
+    return "_".join(os.path.split(path)[nparts:])
 
 
 def _get_valid_indices(amps, freqs):
@@ -340,6 +344,7 @@ def index_filter(data: pd.Series):
 
 
 def filter_amps(files: dict, limit: float):
+    """ Filter amplitudes by limit. """
     for plane in PLANES:
         filter_idx = files[AMPS][plane] <= limit
         files[AMPS][plane][filter_idx] = np.NaN
@@ -347,23 +352,33 @@ def filter_amps(files: dict, limit: float):
     return files
 
 
-def get_bpms(lin_files:dict, given_bpms: Iterable, file_path: str) -> dict:
+def get_bpms(lin_files: dict, given_bpms: Iterable, file_path: str) -> dict:
+    """ Return the bpm-names of the given bpms as found in the lin files.
+     'file_path' is only used for the error messages."""
     found_bpms = {}
+    empty_planes = 0
     for plane in PLANES:
         found_bpms[plane] = list(lin_files[plane].index)
         if given_bpms is not None:
-            found_bpms[plane] = [bpm for bpm in found_bpms[plane] if bpm in given_bpms]
-            bpms_not_found = [bpm for bpm in given_bpms if bpm not in found_bpms[plane]]
-            if len(bpms_not_found):
-                LOG.warning(
-                    f"({file_path}) The following BPMs are not present or not present in plane {plane}:"
-                    f" {list2str(bpms_not_found)}"
-                )
-        if len(found_bpms[plane]) == 0:
-            LOG.warning(f"({file_path}) No BPMs found for plane {plane} !")
+            found_bpms[plane] = _get_only_given_bpms(found_bpms[plane], given_bpms, plane, file_path)
 
-    if not any([len(bpms) for bpms in found_bpms.values()]):
+        if len(found_bpms[plane]) == 0:
+            LOG.warning(f"({file_path}) No BPMs found for plane {plane}!")
+            empty_planes += 1
+
+    if empty_planes == len(PLANES):
         raise IOError(f"({file_path}) No BPMs found in any plane!")
+    return found_bpms
+
+
+def _get_only_given_bpms(found_bpms, given_bpms, plane, file_path):
+    found_bpms = [bpm for bpm in found_bpms if bpm in given_bpms]
+    missing_bpms = [bpm for bpm in given_bpms if bpm not in found_bpms]
+    if len(missing_bpms):
+        LOG.warning(
+            f"({file_path}) The following BPMs are not present or not present in plane {plane}:"
+            f" {list2str(missing_bpms)}"
+        )
     return found_bpms
 
 
