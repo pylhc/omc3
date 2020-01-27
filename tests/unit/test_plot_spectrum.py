@@ -1,13 +1,11 @@
-from os.path import join, abspath, basename, dirname, splitext
+import tempfile
 from os import listdir
+from os.path import join, abspath, basename, dirname, splitext
+
 import pytest
 from matplotlib.figure import Figure
 
-from . import context
-from plot_spectrum import main as plot_spectrum, _get_unique_filenames
-
-
-import tempfile
+from omc3.plot_spectrum import main as plot_spectrum, _get_unique_filenames
 
 
 def test_unique_filenames():
