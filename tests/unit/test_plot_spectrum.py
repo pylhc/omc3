@@ -6,7 +6,7 @@ import pytest
 from matplotlib.figure import Figure
 
 from omc3.plot_spectrum import main as plot_spectrum
-from plotting.spectrum_utils import get_unique_filenames
+from omc3.plotting.spectrum_utils import get_unique_filenames
 
 
 def test_unique_filenames():

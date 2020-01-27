@@ -7,7 +7,6 @@ Common functions and sorting functions for the spectrum plotter.
 """
 import os
 from contextlib import suppress
-from dataclasses import dataclass
 from typing import Iterable, Sized, Union
 
 import matplotlib
@@ -76,7 +75,6 @@ class FigureContainer(object):
             )
 
 
-@dataclass
 class IdData:
     """ Container to keep track of the id-sorting output """
     def __init__(self, id_: str, label: str, path: str) -> None:
@@ -85,7 +83,6 @@ class IdData:
         self.path = path    # figure output path
 
 
-@dataclass
 class FigureCollector:
     """ Class to collect figure containers and manage data adding. """
     def __init__(self) -> None:
