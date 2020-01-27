@@ -22,16 +22,21 @@ To run either of the two or both steps, use options:
 """
 import os
 from collections import OrderedDict
-from datetime import datetime
-from os.path import join, dirname, basename, abspath
 from copy import deepcopy
-from utils import logging_tools, iotools
-from definitions import formats
-import tbt
+from datetime import datetime
+from os.path import abspath, basename, dirname, join
 
-from generic_parser.entrypoint_parser import (entrypoint, EntryPoint, EntryPointParameters,
-                                       add_to_arguments, save_options_to_config)
-from utils.contexts import timeit
+from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters,
+                                              add_to_arguments, entrypoint,
+                                              save_options_to_config)
+
+from omc3 import tbt
+from omc3.definitions import formats
+from omc3.harpy import handler
+from omc3.model import manager
+from omc3.optics_measurements import measure_optics
+from omc3.utils import iotools, logging_tools
+from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -263,7 +268,6 @@ def _get_suboptions(opt, rest):
 
     if opt.optics:
         optics_opt, rest = _optics_entrypoint(rest)
-        from model import manager
         accel_opt = manager.get_parsed_opt(rest)
         optics_opt.accelerator = manager.get_accelerator(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
@@ -297,7 +301,6 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
 
 
 def _run_harpy(harpy_options):
-    from harpy import handler
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
@@ -327,11 +330,10 @@ def _multibunch(tbt_datas, options):
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
         yield tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
-                      [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
+                               [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
 
 
 def _measure_optics(lins, optics_opt):
-    from optics_measurements import measure_optics
     if len(lins) == 0:
         lins = optics_opt.files
     inputs = measure_optics.InputFiles(lins, optics_opt)

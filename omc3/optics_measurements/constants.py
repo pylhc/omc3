@@ -1,4 +1,5 @@
 import numpy as np
+
 PI = np.pi
 PI2 = 2 * np.pi
 PI2I = 2j * np.pi
@@ -44,6 +45,3 @@ SQRT_ACTION = 'sqrt2J'
 
 # Headers ----------------------------------------------------------------------
 RESCALE_FACTOR = 'RescalingFactor'
-
-
-

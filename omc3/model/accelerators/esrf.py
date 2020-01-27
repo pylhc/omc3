@@ -4,7 +4,7 @@ ESRF
 """
 from generic_parser import EntryPoint
 
-from model.accelerators.accelerator import Accelerator, AccElementTypes
+from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
 
 
 class Esrf(Accelerator):

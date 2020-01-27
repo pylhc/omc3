@@ -2,19 +2,24 @@
 Entrypoint madx_wrapper
 --------------------------
 
-Runs MADX with a file or a string as an input, it processes @required macros.
+Runs MADX with a file or a string as an input.
 If defined, writes the processed MADX script and logging output into files.
+
+Usage:
+    python madx_wrapper.py --file your_madx_file.madx
 """
-from os.path import abspath, join, dirname, pardir
-import os
-import sys
-import re
-import subprocess
 import contextlib
+import os
+import subprocess
+import sys
 import warnings
+from os.path import abspath, dirname, join, pardir
 from tempfile import mkstemp
-from generic_parser import entrypoint, EntryPointParameters
-from utils import logging_tools
+
+from generic_parser import EntryPointParameters, entrypoint
+
+from omc3.utils import logging_tools
+
 LOG = logging_tools.get_logger(__name__)
 
 LIB = abspath(join(dirname(__file__), "lib"))
@@ -37,9 +42,10 @@ class MadxError(Exception):
 
 def madx_wrapper_params():
     params = EntryPointParameters()
-    params.add_parameter(name="file", help="The file with the annotated MADX input to run.")
+    params.add_parameter(name="file", required=True,
+                         help="The file with the annotated MADX input to run.")
     params.add_parameter(name="output",
-                         help="Path to a file where to write the processed MADX script.")
+                         help="Path to a file where to write the MADX script.")
     params.add_parameter(name="log", help="Path to a file where to write the MADX log output.")
     params.add_parameter(name="madx_path", default=MADX_PATH,
                          help="Path to the MAD-X executable to use")
@@ -47,47 +53,39 @@ def madx_wrapper_params():
     return params
 
 
-@entrypoint(madx_wrapper_params(), strict=False)
-def main(opt, rest):
-    if len(rest) > 1 or ((opt.file is None) == (len(rest) == 0)):
-        raise IOError("No input found: use --file option")
-    if len(rest) == 1:
-        warnings.warn("Calling madx_wrapper with an argument will be removed by the end of 2019\n"
-                      "Consider a call like: python madx_wrapper.py --file your_madx_script.madx",
-                      category=DeprecationWarning)
-        opt.file = rest[0]
-    resolve_and_run_file(opt.file, output_file=opt.output, log_file=opt.log,
-                         madx_path=opt.madx_path, cwd=opt.cwd)
+@entrypoint(madx_wrapper_params(), strict=True)
+def main(opt):
+    run_file(opt.file, output_file=opt.output, log_file=opt.log,
+             madx_path=opt.madx_path, cwd=opt.cwd)
 
 
-def resolve_and_run_file(input_file, output_file=None, log_file=None,
-                         madx_path=MADX_PATH, cwd=None):
+def run_file(input_file, output_file=None, log_file=None,
+             madx_path=MADX_PATH, cwd=None):
     """Runs MADX in a subprocess.
 
     Attributes:
         input_file: MADX input file
-        output_file: If given writes resolved MADX script.
+        output_file: If given writes MADX script.
         log_file: If given writes MADX logging output.
         madx_path: Path to MADX executable
     """
     input_string = _read_input_file(input_file)
-    resolve_and_run_string(input_string, output_file=output_file, log_file=log_file,
-                                  madx_path=madx_path, cwd=cwd)
+    run_string(input_string, output_file=output_file, log_file=log_file,
+               madx_path=madx_path, cwd=cwd)
 
 
-def resolve_and_run_string(input_string, output_file=None, log_file=None,
-                           madx_path=MADX_PATH, cwd=None):
+def run_string(input_string, output_file=None, log_file=None,
+               madx_path=MADX_PATH, cwd=None):
     """Runs MADX in a subprocess.
 
     Attributes:
         input_string: MADX input string
-        output_file: If given writes resolved MADX script.
+        output_file: If given writes MADX script.
         log_file: If given writes MADX logging output.
         madx_path: Path to MADX executable
     """
     _check_log_and_output_files(output_file, log_file)
-    full_madx_script = _resolve(input_string)
-    _run(full_madx_script, log_file, output_file, madx_path, cwd)
+    _run(input_string, log_file, output_file, madx_path, cwd)
 
 
 def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH, cwd=None):
@@ -102,41 +100,6 @@ def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH,
 
     if status:
         _raise_madx_error(log=log_file, file=output_file)
-
-
-# Macro Handling #############################################################
-
-
-def _resolve(input_string):
-    """Resolves the !@requires annotations of the input_string, and returns the resulting script."""
-    macro_calls = "option, -echo;\n" + _resolve_required_macros(input_string) + "option, echo;\n\n"
-    full_madx_script = macro_calls + input_string
-    return full_madx_script
-
-
-def _resolve_required_macros(file_content):
-    """
-    Recursively searches for "!@require lib" MADX annotations in the input script,
-    adding the required macros library calls to the script header.
-    """
-    call_commands = ""
-    for line in file_content.split("\n"):
-        match = re.search(r"^!@require\s+([^\s]+).*$", line)
-        if match is not None:
-            required_macros = _add_macro_lib_ending(match.group(1))
-            required_macros_file = abspath(join(LIB, required_macros))
-            call_commands += _resolve_required_macros(_read_input_file(required_macros_file))
-            call_commands += f'call, file = "{required_macros_file}";\n'
-    return call_commands
-
-
-def _add_macro_lib_ending(macro_lib_name):
-    macro_lib_name = macro_lib_name.strip()
-    if macro_lib_name.endswith(".macros.madx"):
-        return macro_lib_name
-    else:
-        return f"{macro_lib_name}.macros.madx"
-
 
 # Wrapper ####################################################################
 
@@ -219,4 +182,3 @@ def _raise_madx_error(log=None, file=None):
 
 if __name__ == "__main__":
     main()
-

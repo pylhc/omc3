@@ -5,13 +5,13 @@ PTC Turn-by-Turn Data Handler
 
 """
 from collections import namedtuple
-
-import pandas as pd
-import numpy as np
 from datetime import datetime
 
-from tbt import handler
-from utils.logging_tools import get_logger
+import numpy as np
+import pandas as pd
+
+from omc3.tbt import handler
+from omc3.utils.logging_tools import get_logger
 
 HEADER = "@"
 NAMES = "*"
