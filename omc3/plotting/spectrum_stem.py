@@ -27,7 +27,7 @@ def create_stem_plots(figures: dict, opt: DotDict) -> None:
 
         _plot_stems(fig_cont)
         plot_lines(fig_cont, opt.lines)
-        _format_stem_axes(fig_cont, opt.limits)
+        _format_axes(fig_cont, opt.limits)
         if opt.ncol_legend > 0:
             _create_legend(fig_cont.axes[0], fig_cont.data.keys(), opt.lines, opt.ncol_legend)
         output_plot(fig_cont)
@@ -55,7 +55,7 @@ def _plot_stems(fig_cont: FigureContainer) -> None:
             LOG.debug(f"    {label} {plane}: color={color}, nstems={len(data[plane][FREQS])}")
 
 
-def _format_stem_axes(fig_cont: FigureContainer, limits: DotDict):
+def _format_axes(fig_cont: FigureContainer, limits: DotDict):
     for idx_plane, plane in enumerate(PLANES):
         ax = fig_cont.axes[idx_plane]
 

@@ -113,8 +113,8 @@ def plot_lines(fig_cont: FigureContainer, lines: DotDict) -> None:
         bottom_natqlabel = bottom_qlabel + 2 * get_approx_size_in_axes_coordinates(ax, label_size)
 
         # Tune Lines ---
-        for line_params in (("", fig_cont.tunes, lines.tune, "--", bottom_qlabel),
-                            ("NAT", fig_cont.nattunes, lines.nattune, ":", bottom_natqlabel)):
+        for line_params in (("", fig_cont.tunes, lines.tunes, "--", bottom_qlabel),
+                            ("NAT", fig_cont.nattunes, lines.nattunes, ":", bottom_natqlabel)):
             _plot_tune_lines(ax, trans, label_size, *line_params)
 
         # Manual Lines ---
@@ -196,34 +196,32 @@ def _get_resonance_frequencies(resonances, q):
 # ID Finder --------------------------------------------------------------------
 
 
-def get_stem_id(filename: str, bpm: str, output_dir: str,
-                combined_files: bool, combined_bpms: bool, filetype: str) -> IdData:
+def get_stem_id(filename: str, bpm: str, output_dir: str, combine_by: list, filetype: str) -> IdData:
     """ Returns the stem-dictionary id and the path to which the output file should be written.
     By using more or less unique identifiers, this controls the creation of figures in the dictionary."""
     fun_map = {
-        (True, True): _get_id_single_fig_files_and_bpms,
-        (True, False): _get_id_single_fig_files,
-        (False, True): _get_id_single_fig_bpms,
-        (False, False): _get_id_multi_fig,
+        str({"bpms", "files"}): _get_id_single_fig_files_and_bpms,
+        str({"files"}): _get_id_single_fig_files,
+        str({"bpms"}): _get_id_single_fig_bpms,
+        str({}): _get_id_multi_fig,
     }
-    return fun_map[(combined_files, combined_bpms)](
+    return fun_map[str(set(combine_by))](
         output_dir, SPECTRUM_FILENAME, filename, bpm, filetype
     )
 
 
-def get_waterfall_id(filename: str, bpm: str, output_dir: str,
-                     combined_files: bool, combined_bpms: bool, filetype: str) -> IdData:
+def get_waterfall_id(filename: str, bpm: str, output_dir: str, combine_by: list, filetype: str) -> IdData:
     """ Returns the waterfall-dictionary id and the path to which the output file should be written.
     By using identifiers for figures and unique lables per figure,
     this controls the creation of figures in the dictionary."""
     fun_map = {
-        (True, True): _get_id_single_fig_files_and_bpms,
-        (True, False): _get_id_single_fig_files,
-        (False, True): _get_id_single_fig_bpms,
-        (False, False): _get_id_single_fig_bpms,  # same as above as single figure per file AND
-    }                                             # bpm does not make sense for waterfall
+        str({"bpms", "files"}): _get_id_single_fig_files_and_bpms,
+        str({"files"}): _get_id_single_fig_files,
+        str({"bpms"}): _get_id_single_fig_bpms,
+        str({}): _get_id_single_fig_bpms,  # same as above as single figure per file AND
+    }                                 # bpm does not make sense for waterfall
 
-    return fun_map[(combined_files, combined_bpms)](
+    return fun_map[str(set(combine_by))](
         output_dir, WATERFALL_FILENAME, filename, bpm, filetype
     )
 

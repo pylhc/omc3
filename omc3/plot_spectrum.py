@@ -6,8 +6,8 @@ Spectrum plotter for frequency analysis output-data (supports also DRIVE output)
 
 The spectra can be either plotted as `stem`-plots or as `waterfall`-plots.
 The stem-plots can be in any combination: split by given files, split by given
-bpms or combined in any way (by usage of the `combined_bpms` and
-`combined_files` flags). Note that if both of those are false (as is default)
+bpms or combined in any way (by usage of the `combine_by` option).
+Note that if both of those are false (as is default)
 there will anyway be only one waterfall plot per given input file.
 
 
@@ -16,7 +16,7 @@ the given `output_dir` with the name of the original TbT file.
 In case of split by bpm the plots will have the bpm-name in their filename.
 
 
-The `lines_tune` and `lines_nattune` lists accept tuples of multipliers for
+The `lines_tunes` and `lines_nattunes` lists accept tuples of multipliers for
 the respective tunes, which define the resonance lines plotted into the
 spectrum as well. A dashed line will indicate the average of all tunes
 given in the data of one figure, while a semi-transparent area will indicate
@@ -46,12 +46,10 @@ This value needs to be at least 0 to filter non-found frequencies.
   Default: ``0.0``
 - **bpms**: List of BPMs for which spectra will be plotted. If not given all BPMs are used.
 
-- **combined_bpms**: Flag to plot given bpms into one single stem-plot
+- **combine_by**: Choose how to combine the data into figures.
 
-  Action: ``store_true``
-- **combined_files**: Flag to plot given files into the same plots (both stem and waterfall)
-
-  Action: ``store_true``
+  Choices: ``['bpms', 'files']``
+  Default: ``[]``
 - **filetype** *(str)*: Filetype to save plots as (i.e. extension without ".")
 
   Default: ``pdf``
@@ -60,10 +58,10 @@ and may contain the additional key "loc" which is one of ['bottom', 'top', 'line
 and places the label as text at the given location.
 
   Default: ``[]``
-- **lines_nattune** *(tuple)*: List of natural tune lines to plot
+- **lines_nattunes** *(tuple)*: List of natural tune lines to plot
 
   Default: ``[(1, 0), (0, 1)]``
-- **lines_tune** *(tuple)*: list of tune lines to plot
+- **lines_tunes** *(tuple)*: list of tune lines to plot
 
   Default: ``[(1, 0), (0, 1)]``
 - **manual_style** *(DictAsString)*: Additional Style parameters which update the set of predefined ones.
@@ -189,12 +187,11 @@ def get_params():
                          choices=['stem', 'waterfall'],
                          default=['stem'],
                          help='Choose plot type (Multiple choices possible).')
-    params.add_parameter(name="combined_bpms",
-                         action="store_true",
-                         help='Flag to plot given bpms into one single stem-plot')
-    params.add_parameter(name="combined_files",
-                         action="store_true",
-                         help='Flag to plot given files into the same plots (both stem and waterfall)')
+    params.add_parameter(name="combine_by",
+                         nargs="*",
+                         choices=['bpms', 'files'],
+                         default=[],
+                         help='Choose how to combine the data into figures.')
     params.add_parameter(name="waterfall_line_width",
                          default=DEFAULTS.waterfall_line_width,
                          help='Line width of the waterfall frequency lines. "auto" fills them up until the next one.')
@@ -208,12 +205,12 @@ def get_params():
     params.add_parameter(name="show_plots",
                          action="store_true",
                          help='Flag to show plots')
-    params.add_parameter(name="lines_tune",
+    params.add_parameter(name="lines_tunes",
                          nargs="*",
                          type=tuple,
                          default=[(1, 0), (0, 1)],
                          help='list of tune lines to plot')
-    params.add_parameter(name="lines_nattune",
+    params.add_parameter(name="lines_nattunes",
                          nargs="*",
                          type=tuple,
                          default=[(1, 0), (0, 1)],
@@ -300,7 +297,7 @@ def _check_opt(opt):
 
 def _sort_opt(opt):
     # lines structure
-    lines = opt.get_subdict(('lines_tune', 'lines_nattune', 'lines_manual'))
+    lines = opt.get_subdict(('lines_tunes', 'lines_nattunes', 'lines_manual'))
     lines = _rename_dict_keys(lines, to_remove="lines_")
     for key, val in lines.items():
         if val is None:
@@ -326,8 +323,8 @@ def _sort_opt(opt):
         d['lines'] = lines
 
     # sorting options
-    sort = opt.get_subdict(('combined_files', 'combined_bpms',
-                           'filetype', 'files', 'bpms', 'output_dir',
+    sort = opt.get_subdict(('combine_by', 'filetype', 'files',
+                            'bpms', 'output_dir',
                             'amp_limit', 'rescale'))
     sort['plot_stem'] = stem.plot
     sort['plot_waterfall'] = waterfall.plot
@@ -374,7 +371,7 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
 
             for bpm in bpms:
                 the_id = get_id_fun(filename, bpm,
-                                    opt.output_dir, opt.combined_files, opt.combined_bpms, opt.filetype)
+                                    opt.output_dir, opt.combine_by, opt.filetype)
                 collector.add_data_for_id(the_id, get_data_for_bpm(data, bpm, opt.rescale))
     return stem_figs, waterfall_figs
 
@@ -396,22 +393,10 @@ def _load_spectrum_data(file_path, bpms):
 
 def _get_harpy_data(file_path):
     return {
-        AMPS: _get_amplitude_files(file_path),
-        FREQS: _get_frequency_files(file_path),
-        LIN: _get_lin_files(file_path),
+        AMPS: _get_planed_files(file_path, ext=FILE_AMPS_EXT),
+        FREQS: _get_planed_files(file_path, ext=FILE_FREQS_EXT),
+        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, index=COL_NAME),
     }
-
-
-def _get_amplitude_files(file_path):
-    return _get_planed_files(file_path, ext=FILE_AMPS_EXT)
-
-
-def _get_frequency_files(file_path):
-    return _get_planed_files(file_path, ext=FILE_FREQS_EXT)
-
-
-def _get_lin_files(file_path):
-    return _get_planed_files(file_path, ext=FILE_LIN_EXT, index=COL_NAME)
 
 
 def _get_planed_files(file_path, ext, index=None):
