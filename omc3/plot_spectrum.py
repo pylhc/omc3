@@ -31,17 +31,19 @@ by unique id's which depend on which combination of merging the spectra into
 one figure is used.
 
 
+**Arguments:**
+
 *--Required--*
 
 - **files**: List of paths to the spectrum files. The files need to be given
-without their '.lin'/'.amps[xy]','.freqs[xy]' endings. (So usually the path
-of the TbT-Data file.)
+  without their '.lin'/'.amps[xy]','.freqs[xy]' endings. (So usually the path
+  of the TbT-Data file.)
 
 
 *--Optional--*
 
 - **amp_limit** *(float)*: All amplitudes <= limit are filtered.
-This value needs to be at least 0 to filter non-found frequencies.
+  This value needs to be at least 0 to filter non-found frequencies.
 
   Default: ``0.0``
 - **bpms**: List of BPMs for which spectra will be plotted. If not given all BPMs are used.
@@ -54,8 +56,8 @@ This value needs to be at least 0 to filter non-found frequencies.
 
   Default: ``pdf``
 - **lines_manual** *(DictAsString)*: List of manual lines to plot. Need to contain arguments for axvline,
-and may contain the additional key "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
-and places the label as text at the given location.
+  and may contain the additional key "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
+  and places the label as text at the given location.
 
   Default: ``[]``
 - **lines_nattunes** *(tuple)*: List of natural tune lines to plot
