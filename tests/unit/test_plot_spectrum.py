@@ -34,9 +34,7 @@ def test_basic_functionality(file_path, bpms):
             output_dir=out_dir,
             bpms=bpms + ['unknown_bpm'],
             lines_manual=[dict(x=0.3, label="myline")],
-            lines_nattune=None,
-            combined_files=False,
-            combined_bpms=False,
+            lines_nattunes=None,
             show_plots=False,
             manual_style={},  # just to call the update line
         )
@@ -57,7 +55,7 @@ def test_combined_bpms_stem_plot(file_path, bpms):
             output_dir=out_dir,
             bpms=bpms + ['unknown_bpm'],
             lines_manual=[{'x': 0.44, 'loc': "top"}],
-            combined_bpms=True,
+            combined_by=['bpms'],
         )
         _, filename = list(get_unique_filenames([file_path]))[0]
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 1
