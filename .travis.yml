@@ -5,7 +5,7 @@ env:
 stages:
   - test
   - name: documentation
-    if: tag =~ ^v\d+\.\d+\.\d+.*
+    if: branch = master
   - name: package
     if: tag =~ ^v\d+\.\d+\.\d+.*
 
