@@ -112,13 +112,14 @@ import numpy as np
 import tfs
 from cycler import cycler
 from generic_parser.entry_datatypes import DictAsString
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config, DotDict
+from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
+                                              save_options_to_config, DotDict)
 from matplotlib import cm, colors, transforms, lines as mlines
 from matplotlib.patches import Rectangle
 
-from definitions import formats
-from harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
-from utils import logging_tools
+from omc3.definitions import formats
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
 
