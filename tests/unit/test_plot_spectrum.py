@@ -5,12 +5,13 @@ from os.path import join, abspath, basename, dirname, splitext
 import pytest
 from matplotlib.figure import Figure
 
-from omc3.plot_spectrum import main as plot_spectrum, _get_unique_filenames
+from omc3.plot_spectrum import main as plot_spectrum
+from plotting.spectrum_utils import get_unique_filenames
 
 
 def test_unique_filenames():
     def _test_list(list_of_paths):
-        paths, names = zip(*_get_unique_filenames(list_of_paths))
+        paths, names = zip(*get_unique_filenames(list_of_paths))
         for item in zip(list_of_paths, paths):
             assert item[0] == item[1]
         assert len(set(names)) == len(names)
@@ -39,7 +40,7 @@ def test_basic_functionality(file_path, bpms):
             show_plots=False,
             manual_style={},  # just to call the update line
         )
-        _, filename = list(_get_unique_filenames([file_path]))[0]
+        _, filename = list(get_unique_filenames([file_path]))[0]
         bpm_ids = (f"{filename}_{bpm}" for bpm in bpms)
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 3
         assert len(waterfall) == 1
@@ -58,7 +59,7 @@ def test_combined_bpms_stem_plot(file_path, bpms):
             lines_manual=[{'x': 0.44, 'loc': "top"}],
             combined_bpms=True,
         )
-        _, filename = list(_get_unique_filenames([file_path]))[0]
+        _, filename = list(get_unique_filenames([file_path]))[0]
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 1
         assert len(waterfall) == 0
         assert len(stem) == 1
