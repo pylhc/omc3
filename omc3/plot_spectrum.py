@@ -4,17 +4,28 @@ Plot Spectrum
 
 Spectrum plotter for frequency analysis output-data (supports also DRIVE output).
 
-The spectra can be either plottet as `stem`-plots or as `waterfall`-plots.
+The spectra can be either plotted as `stem`-plots or as `waterfall`-plots.
 The stem-plots can be in any combination: split by given files, split by given
-bpms or combined in any way (by usage of the `bpms_single_fig` and
-`files_single_fig` flags). Not that if both of those are false (as is default)
+bpms or combined in any way (by usage of the `combined_bpms` and
+`combined_files` flags). Not that if both of those are false (as is default)
 there will be only one waterfall plot per given input file.
 
+
 In case of split-by-file, plots are saved in a sub-directory of
-the given output dir with the name of the original TbT file.
+the given `output_dir` with the name of the original TbT file.
 In case of split by bpm the plots will have the bpm-name in their filename.
 
-The function two dictionaries, where the first dictionary contains the
+
+The `lines_tune` and `lines_nattune` lists accept tuples of multipliers for
+the respective tunes, which define the resonance lines plotted into the
+spectrum as well. A dashed line will indicate the average of all tunes
+given in the data of one figure, while a semi-transparent area will indicate
+min- and max- values of this line.
+
+With `lines_manual`, one can plot vertical lines at manual locations (see
+parameter specs below).
+
+The function returns two dictionaries, where the first dictionary contains the
 stem plots and the second one the waterfall plots. They are identifyable
 by unique id's which depend on which combination of merging the spectra into
 one figure is used.
@@ -35,10 +46,10 @@ This value needs to be at least 0 to filter non-found frequencies.
   Default: ``0.0``
 - **bpms**: List of BPMs for which spectra will be plotted. If not given all BPMs are used.
 
-- **bpms_single_fig**: Flag to plot given bpms into one single stem-plot
+- **combined_bpms**: Flag to plot given bpms into one single stem-plot
 
   Action: ``store_true``
-- **files_single_fig**: Flag to plot given files into the same plots (both stem and waterfall)
+- **combined_files**: Flag to plot given files into the same plots (both stem and waterfall)
 
   Action: ``store_true``
 - **filetype** *(str)*: Filetype to save plots as (i.e. extension without ".")
@@ -198,10 +209,10 @@ def get_params():
                          choices=['stem', 'waterfall'],
                          default=['stem'],
                          help='Choose plot type (Multiple choices possible).')
-    params.add_parameter(name="bpms_single_fig",
+    params.add_parameter(name="combined_bpms",
                          action="store_true",
                          help='Flag to plot given bpms into one single stem-plot')
-    params.add_parameter(name="files_single_fig",
+    params.add_parameter(name="combined_files",
                          action="store_true",
                          help='Flag to plot given files into the same plots (both stem and waterfall)')
     params.add_parameter(name="waterfall_line_width",
@@ -357,7 +368,7 @@ def _sort_input_data(opt: DotDict) -> tuple:
 
             for bpm in bpms:
                 the_id = get_id_fun(filename, bpm,
-                                    opt.output_dir, opt.files_single_fig, opt.bpms_single_fig, opt.filetype)
+                                    opt.output_dir, opt.combined_files, opt.combined_bpms, opt.filetype)
                 collector.add_data_for_id(the_id, _get_data_for_bpm(data, bpm, opt.rescale))
     return stem_figs, waterfall_figs
 
@@ -387,7 +398,7 @@ def _get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
 
 
 def _get_stem_id(filename: str, bpm: str, output_dir: str,
-                 files_single_fig: bool, bpms_single_fig: bool, filetype: str) -> IdData:
+                 combined_files: bool, combined_bpms: bool, filetype: str) -> IdData:
     """ Returns the stem-dictionary id and the path to which the output file should be written.
     By using more or less unique identifiers, this controls the creation of figures in the dictionary."""
     fun_map = {
@@ -396,13 +407,13 @@ def _get_stem_id(filename: str, bpm: str, output_dir: str,
         (False, True): _get_id_single_fig_bpms,
         (False, False): _get_id_multi_fig,
     }
-    return fun_map[(files_single_fig, bpms_single_fig)](
+    return fun_map[(combined_files, combined_bpms)](
         output_dir, SPECTRUM_FILENAME, filename, bpm, filetype
     )
 
 
 def _get_waterfall_id(filename: str, bpm: str, output_dir: str,
-                      files_single_fig: bool, bpms_single_fig: bool, filetype: str) -> IdData:
+                      combined_files: bool, combined_bpms: bool, filetype: str) -> IdData:
     """ Returns the waterfall-dictionary id and the path to which the output file should be written.
     By using identifiers for figures and unique lables per figure,
     this controls the creation of figures in the dictionary."""
@@ -413,7 +424,7 @@ def _get_waterfall_id(filename: str, bpm: str, output_dir: str,
         (False, False): _get_id_single_fig_bpms,  # same as above as single figure per file AND
     }                                             # bpm does not make sense for waterfall
 
-    return fun_map[(files_single_fig, bpms_single_fig)](
+    return fun_map[(combined_files, combined_bpms)](
         output_dir, WATERFALL_FILENAME, filename, bpm, filetype
     )
 
@@ -793,7 +804,7 @@ def _sort_opt(opt):
         d['lines'] = lines
 
     # sorting options
-    sort = opt.get_subdict(('files_single_fig', 'bpms_single_fig',
+    sort = opt.get_subdict(('combined_files', 'combined_bpms',
                            'filetype', 'files', 'bpms', 'output_dir',
                             'amp_limit', 'rescale'))
     sort['plot_stem'] = stem.plot

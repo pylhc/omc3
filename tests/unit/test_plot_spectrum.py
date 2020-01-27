@@ -27,36 +27,38 @@ def test_unique_filenames():
     assert "max" in names
 
 
-def test_basic_functionality(file_path):
+def test_basic_functionality(file_path, bpms):
     with tempfile.TemporaryDirectory() as out_dir:
         stem, waterfall = plot_spectrum(
+            plot_type=['stem', 'waterfall'],
             files=[file_path],
             output_dir=out_dir,
-            bpms=['BPM.10L1.B1', 'BPM.10L2.B1', 'unknown_bpm'],
+            bpms=bpms + ['unknown_bpm'],
             lines_manual=[dict(x=0.3, label="myline")],
             lines_nattune=None,
-            stem_plot=True,
-            stem_single_fig=False,
-            waterfall_plot=True,
+            combined_files=False,
+            combined_bpms=False,
             show_plots=False,
             manual_style={},  # just to call the update line
         )
         _, filename = list(_get_unique_filenames([file_path]))[0]
+        bpm_ids = (f"{filename}_{bpm}" for bpm in bpms)
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 3
         assert len(waterfall) == 1
         assert (filename in waterfall) and (waterfall[filename] is not None)
-        assert len(stem) == 1
-        assert (filename in stem) and (len(stem[filename]) == 2)
+        assert len(stem) == len(bpms)
+        assert all((bpm in stem) and (stem[bpm] is not None)
+                   for bpm in bpm_ids)
 
 
-def test_single_stem_plot(file_path):
+def test_combined_bpms_stem_plot(file_path, bpms):
     with tempfile.TemporaryDirectory() as out_dir:
         stem, waterfall = plot_spectrum(
             files=[file_path],
             output_dir=out_dir,
-            bpms=['BPM.10L1.B1', 'BPM.10L2.B1', 'unknown_bpm'],
-            stem_plot=True,
-            stem_single_fig=True,
+            bpms=bpms + ['unknown_bpm'],
+            lines_manual=[{'x': 0.44, 'loc': "top"}],
+            combined_bpms=True,
         )
         _, filename = list(_get_unique_filenames([file_path]))[0]
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 1
@@ -65,22 +67,12 @@ def test_single_stem_plot(file_path):
         assert (filename in stem) and isinstance(stem[filename], Figure)
 
 
-def test_crash_no_plot_selected():
-    with pytest.raises(ValueError):
-        with tempfile.TemporaryDirectory() as out_dir:
-            plot_spectrum(
-                files=['test'],
-                output_dir=out_dir,
-            )
-
-
 def test_crash_too_low_amplimit():
     with pytest.raises(ValueError):
         with tempfile.TemporaryDirectory() as out_dir:
             plot_spectrum(
                 files=['test'],
                 output_dir=out_dir,
-                stem_plot=True,
                 amp_limit=-1.,
             )
 
@@ -91,7 +83,6 @@ def test_crash_file_not_found_amplimit():
             plot_spectrum(
                 files=['test'],
                 output_dir=out_dir,
-                stem_plot=True,
             )
 
 
@@ -103,3 +94,7 @@ def _get_output_dir(out_dir, file_path):
 def file_path():
     return abspath(join(dirname(__file__), "..", "inputs", 'spec_test.sdds'))
 
+
+@pytest.fixture
+def bpms():
+    return ['BPM.10L1.B1', 'BPM.10L2.B1']
