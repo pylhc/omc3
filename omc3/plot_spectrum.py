@@ -7,8 +7,8 @@ Spectrum plotter for frequency analysis output-data (supports also DRIVE output)
 The spectra can be either plotted as `stem`-plots or as `waterfall`-plots.
 The stem-plots can be in any combination: split by given files, split by given
 bpms or combined in any way (by usage of the `combined_bpms` and
-`combined_files` flags). Not that if both of those are false (as is default)
-there will be only one waterfall plot per given input file.
+`combined_files` flags). Note that if both of those are false (as is default)
+there will anyway be only one waterfall plot per given input file.
 
 
 In case of split-by-file, plots are saved in a sub-directory of
@@ -104,6 +104,7 @@ import os
 from collections import OrderedDict
 from contextlib import suppress
 from datetime import datetime
+from typing import Tuple
 
 import matplotlib
 import tfs
@@ -268,7 +269,7 @@ def main(opt):
     if waterfall_opt.plot:
         create_waterfall_plots(waterfall.figs, waterfall_opt)
 
-    return stem.fig_list, waterfall.fig_list
+    return stem.fig_dict, waterfall.fig_dict
 
 
 # Input ------------------------------------------------------------------------
@@ -351,7 +352,7 @@ def _get_ini_filename():
 # Load Data --------------------------------------------------------------------
 
 
-def _sort_input_data(opt: DotDict) -> tuple:
+def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
     """ Load and sort input data by file and bpm and assign correct figure-containers. """
     LOG.debug("Sorting input data.")
 
@@ -465,5 +466,3 @@ def _rename_dict_keys(d, to_remove):
 
 if __name__ == "__main__":
     main()
-
-

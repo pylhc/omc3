@@ -8,15 +8,17 @@ Common functions and sorting functions for the spectrum plotter.
 import os
 from contextlib import suppress
 from dataclasses import dataclass
+from typing import Iterable, Sized, Union
 
 import matplotlib
 import numpy as np
-from matplotlib import transforms, pyplot as plt
+import pandas as pd
+from generic_parser import DotDict
+from matplotlib import transforms, axes, pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.utils import logging_tools
-
 
 LOG = logging_tools.getLogger(__name__)
 
@@ -58,7 +60,7 @@ class FigureContainer(object):
         self.path = path
         self.minmax = {p: (1, 0) for p in PLANES}
 
-    def add_data(self, label: str, new_data: dict):
+    def add_data(self, label: str, new_data: dict) -> None:
         self.data[label] = new_data
         for plane in PLANES:
             # Add tunes
@@ -85,24 +87,24 @@ class IdData:
 @dataclass
 class FigureCollector:
     """ Class to collect figure containers and manage data adding. """
-    fig_list: dict   # dictionary of matplotlib figures, for output
-    figs: dict       # dictionary of FigureContainers, for this routine
+    fig_dict: dict   # dictionary of matplotlib figures, for output
+    figs: dict       # dictionary of FigureContainers, used internally
 
-    def add_data_for_id(self, id_data: IdData, data: dict):
+    def add_data_for_id(self, id_data: IdData, data: dict) -> None:
         """ Add the data at the appropriate figure container. """
         try:
             figure_cont = self.figs[id_data.id]
         except KeyError:
             figure_cont = FigureContainer(id_data.path)
             self.figs[id_data.id] = figure_cont
-            self.fig_list[id_data.id] = figure_cont.fig
+            self.fig_dict[id_data.id] = figure_cont.fig
         figure_cont.add_data(id_data.label, data)
 
 
 # (Tune-) Line Plotting --------------------------------------------------------
 
 
-def plot_lines(fig_cont, lines):
+def plot_lines(fig_cont: FigureContainer, lines: DotDict) -> None:
     label_size = matplotlib.rcParams['axes.labelsize'] * 0.7
     bottom_qlabel = 1.01
 
@@ -307,7 +309,7 @@ def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
     return data_series
 
 
-def get_unique_filenames(files):
+def get_unique_filenames(files: Union[Iterable, Sized]):
     """ Way too complicated method to assure unique dictionary names."""
     def _get_filename(path, nparts):
         return "_".join(os.path.split(path)[nparts:])
@@ -332,13 +334,13 @@ def _get_valid_indices(amps, freqs):
     return index_filter(amps).intersection(index_filter(freqs))
 
 
-def index_filter(data):
+def index_filter(data: pd.Series):
     """ Only non-NaN and non-Zero data allowed.
     (Amps should not be zero due to _filter_amps() anyway.)"""
     return data[~(data.isna() | (data == 0))].index
 
 
-def filter_amps(files, limit):
+def filter_amps(files: dict, limit: float):
     for plane in PLANES:
         filter_idx = files[AMPS][plane] <= limit
         files[AMPS][plane][filter_idx] = np.NaN
@@ -346,7 +348,7 @@ def filter_amps(files, limit):
     return files
 
 
-def get_bpms(lin_files, given_bpms, file_path):
+def get_bpms(lin_files:dict, given_bpms: Iterable, file_path: str) -> dict:
     found_bpms = {}
     for plane in PLANES:
         found_bpms[plane] = list(lin_files[plane].index)
@@ -366,7 +368,7 @@ def get_bpms(lin_files, given_bpms, file_path):
     return found_bpms
 
 
-def rescale_amp(amp_data):
+def rescale_amp(amp_data: pd.Series) -> pd.Series:
     # return amp_data.divide(amp_data.max(axis=0), axis=1)  # dataframe
     return amp_data.divide(amp_data.max(skipna=True))  # series
 
@@ -374,7 +376,7 @@ def rescale_amp(amp_data):
 # For Output ---
 
 
-def output_plot(fig_cont):
+def output_plot(fig_cont: FigureContainer):
     fig = fig_cont.fig
 
     fig.tight_layout()
@@ -403,19 +405,19 @@ def _make_output_dir(out_dir, filename):
 # Plotting Helper --------------------------------------------------------------
 
 
-def get_cycled_color(idx):
+def get_cycled_color(idx: int):
     """ Get the color at (wrapped) idx in the color cycle. The CN-Method only works until 'C9'."""
     cycle = matplotlib.rcParams[u"axes.prop_cycle"].by_key()['color']
     return cycle[idx % len(cycle)]
 
 
-def get_approx_size_in_axes_coordinates(ax, label_size):
+def get_approx_size_in_axes_coordinates(ax: axes.Axes, label_size: float) -> float:
     transform = ax.transAxes.inverted().transform
     _, label_size_ax = transform((0, label_size)) - transform((0, 0))
     return label_size_ax
 
 
-def list2str(list_):
+def list2str(list_: list):
     return str(list_)[1:-1]
 
 
