@@ -1,7 +1,8 @@
 """
 PTC Turn-by-Turn Data Handler
----------------------
+-------------------------------
 
+Tbt data handling from PTC.
 
 """
 from collections import namedtuple

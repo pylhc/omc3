@@ -16,6 +16,7 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
+    "matplotlib>=3.1.0",
     "numpy>=1.14.1",
     "pandas>=0.24.0,<1.0",
     "scipy>=1.0.0",
@@ -24,13 +25,13 @@ DEPENDENCIES = [
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
     "pytz>=2018.9",
+    "h5py>=2.7.0",
 ]
 
 # Dependencies that should only be installed for test purposes
 TEST_DEPENDENCIES = [
     "pytest>=5.2",
     "pytest-cov>=2.6",
-    "h5py>=2.7.0",
     "hypothesis>=3.23.0",
     "attrs>=19.2.0",
 ]

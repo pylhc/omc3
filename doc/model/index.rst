@@ -1,31 +1,31 @@
 Model
 **************************
 
-.. automodule:: model.manager
+.. automodule:: omc3.model.manager
     :members:
 
 
-.. automodule:: model.accelerators.accelerator
+.. automodule:: omc3.model.accelerators.accelerator
     :members:
 
 
-.. automodule:: model.accelerators.esrf
+.. automodule:: omc3.model.accelerators.esrf
     :members:
 
 
-.. automodule:: model.accelerators.lhc
+.. automodule:: omc3.model.accelerators.lhc
     :members:
 
 
-.. automodule:: model.accelerators.ps
+.. automodule:: omc3.model.accelerators.ps
     :members:
 
 
-.. automodule:: model.accelerators.psbooster
+.. automodule:: omc3.model.accelerators.psbooster
     :members:
 
 
-.. automodule:: model.accelerators.skekb
+.. automodule:: omc3.model.accelerators.skekb
     :members:
 
 

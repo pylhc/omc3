@@ -26,7 +26,7 @@ import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
-sys.path.insert(0, os.path.abspath('../omc3/'))
+sys.path.insert(0, os.path.abspath('..'))
 
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.parent.absolute()
 ABOUT_FILE = TOPLEVEL_DIR / "omc3" / "__init__.py"
