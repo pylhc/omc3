@@ -79,16 +79,18 @@ class FigureContainer(object):
 @dataclass
 class IdData:
     """ Container to keep track of the id-sorting output """
-    id: str     # id for the figure-container dictionary
-    label: str  # plot labels
-    path: str   # figure output path
+    def __init__(self, id_: str, label: str, path: str) -> None:
+        self.id = id_        # id for the figure-container dictionary
+        self.label = label  # plot labels
+        self.path = path    # figure output path
 
 
 @dataclass
 class FigureCollector:
     """ Class to collect figure containers and manage data adding. """
-    fig_dict: dict   # dictionary of matplotlib figures, for output
-    figs: dict       # dictionary of FigureContainers, used internally
+    def __init__(self) -> None:
+        self.fig_dict = {}   # dictionary of matplotlib figures, for output
+        self.figs = {}       # dictionary of FigureContainers, used internally
 
     def add_data_for_id(self, id_data: IdData, data: dict) -> None:
         """ Add the data at the appropriate figure container. """
@@ -238,7 +240,7 @@ def _get_id_single_fig_files_and_bpms(output_dir: str, default_name: str, filena
     The label of the lines is a combination of filename and bpm.
     """
     return IdData(
-        id=default_name,
+        id_=default_name,
         label=f"{filename} {bpm}",
         path=_get_figure_path(output_dir, filename=None,
                               figurename=f"{default_name}.{filetype}")
@@ -251,7 +253,7 @@ def _get_id_single_fig_files(output_dir: str, default_name: str, filename: str,
     Creates len(bpm) figures, with filenames as labels for lines.
     """
     return IdData(
-        id=bpm,
+        id_=bpm,
         label=filename,
         path=_get_figure_path(output_dir, filename=None,
                               figurename=f"{default_name}_{bpm}.{filetype}")
@@ -263,7 +265,7 @@ def _get_id_single_fig_bpms(output_dir: str, default_name: str, filename: str,
     """ Filename as ID for plots.
     Creates len(files) figures, with bpms as lables for lines.
     """
-    return IdData(id=filename,
+    return IdData(id_=filename,
                   label=bpm,
                   path=_get_figure_path(output_dir, filename=filename,
                                         figurename=f"{default_name}.{filetype}")
@@ -275,7 +277,7 @@ def _get_id_multi_fig(output_dir: str, default_name: str, filename: str,
     """ Combination of Filename and BPM as ID. Creates len(files)*len(bpms) plots.
     BPM-name is printed as label.
     """
-    return IdData(id=f"{filename}_{bpm}",
+    return IdData(id_=f"{filename}_{bpm}",
                   label=bpm,
                   path=_get_figure_path(output_dir, filename=filename,
                                         figurename=f"{default_name}_{bpm}.{filetype}")

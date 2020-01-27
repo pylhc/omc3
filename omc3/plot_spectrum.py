@@ -356,8 +356,8 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
     """ Load and sort input data by file and bpm and assign correct figure-containers. """
     LOG.debug("Sorting input data.")
 
-    stem_figs = FigureCollector({}, {})
-    waterfall_figs = FigureCollector({}, {})
+    stem_figs = FigureCollector()
+    waterfall_figs = FigureCollector()
 
     # Data Sorting
     for file_path, filename in get_unique_filenames(opt.files):
