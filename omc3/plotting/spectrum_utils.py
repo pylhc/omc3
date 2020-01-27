@@ -218,7 +218,7 @@ def get_waterfall_id(filename: str, bpm: str, output_dir: str, combine_by: list,
         str({"bpms", "files"}): _get_id_single_fig_files_and_bpms,
         str({"files"}): _get_id_single_fig_files,
         str({"bpms"}): _get_id_single_fig_bpms,
-        str({}): _get_id_single_fig_bpms,  # same as above as single figure per file AND
+        str(set()): _get_id_single_fig_bpms,  # same as above as single figure per file AND
     }                                 # bpm does not make sense for waterfall
 
     return fun_map[str(set(combine_by))](
