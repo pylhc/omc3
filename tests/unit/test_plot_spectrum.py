@@ -55,7 +55,7 @@ def test_combined_bpms_stem_plot(file_path, bpms):
             output_dir=out_dir,
             bpms=bpms + ['unknown_bpm'],
             lines_manual=[{'x': 0.44, 'loc': "top"}],
-            combined_by=['bpms'],
+            combine_by=['bpms'],
         )
         _, filename = list(get_unique_filenames([file_path]))[0]
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 1
