@@ -68,6 +68,7 @@ one figure is used.
   Default: ``[(1, 0), (0, 1)]``
 - **manual_style** *(DictAsString)*: Additional Style parameters which update the set of predefined ones.
 
+  Default: ``{}``
 - **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
 
   Default: ``5``
@@ -244,6 +245,7 @@ def get_params():
                          help='Filetype to save plots as (i.e. extension without ".")')
     params.add_parameter(name="manual_style",
                          type=DictAsString,
+                         default={},
                          help='Additional Style parameters which update the set of predefined ones.')
     return params
 
