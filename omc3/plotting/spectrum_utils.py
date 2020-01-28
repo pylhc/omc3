@@ -214,35 +214,39 @@ def _get_evaluated_tune_array(fun, tunes):
 # ID Finder --------------------------------------------------------------------
 
 
-def get_stem_id(filename: str, bpm: str, output_dir: str, combine_by: list, filetype: str) -> IdData:
+def get_stem_id(filename: str, bpm: str, output_dir: str, combine_by: frozenset, filetype: str) -> IdData:
     """ Returns the stem-dictionary id and the path to which the output file should be written.
     By using more or less unique identifiers, this controls the creation of figures in the dictionary."""
+
     fun_map = {
-        str({"bpms", "files"}): _get_id_single_fig_files_and_bpms,
-        str({"files"}): _get_id_single_fig_files,
-        str({"bpms"}): _get_id_single_fig_bpms,
-        str(set()): _get_id_multi_fig,
+        _fset("bpms", "files"): _get_id_single_fig_files_and_bpms,
+        _fset("files"): _get_id_single_fig_files,
+        _fset("bpms"): _get_id_single_fig_bpms,
+        _fset(): _get_id_multi_fig,
     }
-    return fun_map[str(set(combine_by))](
+    return fun_map[combine_by](
         output_dir, SPECTRUM_FILENAME, filename, bpm, filetype
     )
 
 
-def get_waterfall_id(filename: str, bpm: str, output_dir: str, combine_by: list, filetype: str) -> IdData:
+def get_waterfall_id(filename: str, bpm: str, output_dir: str, combine_by: frozenset, filetype: str) -> IdData:
     """ Returns the waterfall-dictionary id and the path to which the output file should be written.
     By using identifiers for figures and unique lables per figure,
     this controls the creation of figures in the dictionary."""
     fun_map = {
-        str({"bpms", "files"}): _get_id_single_fig_files_and_bpms,
-        str({"files"}): _get_id_single_fig_files,
-        str({"bpms"}): _get_id_single_fig_bpms,
-        str(set()): _get_id_single_fig_bpms,  # same as above as single figure per file AND
-    }                                 # bpm does not make sense for waterfall
-
-    return fun_map[str(set(combine_by))](
+        _fset("bpms", "files"): _get_id_single_fig_files_and_bpms,
+        _fset("files"): _get_id_single_fig_files,
+        _fset("bpms"): _get_id_single_fig_bpms,
+        _fset(): _get_id_single_fig_bpms,  # same as above as single figure per file AND
+    }                                      # bpm does not make sense for waterfall
+    return fun_map[combine_by](
         output_dir, WATERFALL_FILENAME, filename, bpm, filetype
     )
 
+
+def _fset(*args):
+    """ Frozen Set shortcut for dict-key readability"""
+    return frozenset(args)
 
 # Specific Mappings ---
 

@@ -327,11 +327,12 @@ def _sort_opt(opt):
         d['lines'] = lines
 
     # sorting options
-    sort = opt.get_subdict(('combine_by', 'filetype', 'files',
+    sort = opt.get_subdict(('filetype', 'files',
                             'bpms', 'output_dir',
                             'amp_limit', 'rescale'))
-    sort['plot_stem'] = stem.plot
-    sort['plot_waterfall'] = waterfall.plot
+    sort.plot_stem = stem.plot
+    sort.plot_waterfall = waterfall.plot
+    sort.combine_by = frozenset(opt.combine_by)
 
     return stem, waterfall, sort
 
