@@ -68,6 +68,7 @@ one figure is used.
   Default: ``[(1, 0), (0, 1)]``
 - **manual_style** *(DictAsString)*: Additional Style parameters which update the set of predefined ones.
 
+  Default: ``{}``
 - **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
 
   Default: ``5``
@@ -244,6 +245,7 @@ def get_params():
                          help='Filetype to save plots as (i.e. extension without ".")')
     params.add_parameter(name="manual_style",
                          type=DictAsString,
+                         default={},
                          help='Additional Style parameters which update the set of predefined ones.')
     return params
 
@@ -325,11 +327,12 @@ def _sort_opt(opt):
         d['lines'] = lines
 
     # sorting options
-    sort = opt.get_subdict(('combine_by', 'filetype', 'files',
+    sort = opt.get_subdict(('filetype', 'files',
                             'bpms', 'output_dir',
                             'amp_limit', 'rescale'))
-    sort['plot_stem'] = stem.plot
-    sort['plot_waterfall'] = waterfall.plot
+    sort.plot_stem = stem.plot
+    sort.plot_waterfall = waterfall.plot
+    sort.combine_by = frozenset(opt.combine_by)
 
     return stem, waterfall, sort
 
@@ -417,12 +420,13 @@ def _get_sussix_data(file_path, bpms):
     bpm_dir = os.path.join(directory, 'BPM')
     files = {LIN: {}, AMPS: {}, FREQS: {}}
     for plane in PLANES:
-        files[LIN][plane] = tfs.read(os.path.join(directory, f'{filename}_lin{plane}'), index=COL_NAME)
+        files[LIN][plane] = tfs.read(
+            os.path.join(directory, f'{filename}_lin{plane.lower()}'), index=COL_NAME)
         for id_ in (FREQS, AMPS):
             files[id_][plane] = tfs.TfsDataFrame(columns=bpms)
         for bpm in bpms:
             with suppress(FileNotFoundError):
-                df = tfs.read(os.path.join(bpm_dir, f'{bpm}.{plane}'))
+                df = tfs.read(os.path.join(bpm_dir, f'{bpm}.{plane.lower()}'))
                 files[FREQS][plane][bpm] = df["FREQ"]
                 files[AMPS][plane][bpm] = df["AMP"]
         for id_ in (FREQS, AMPS):

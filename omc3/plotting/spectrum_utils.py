@@ -30,7 +30,7 @@ MANUAL_LOCATIONS = {
 }
 
 
-PLANES = ('x', 'y')
+PLANES = ('X', 'Y')
 STEM_LINES_ALPHA = 0.5
 RESONANCE_LINES_ALPHA = 0.5
 PATCHES_ALPHA = 0.2
@@ -63,9 +63,15 @@ class FigureContainer(object):
         self.data[label] = new_data
         for plane in PLANES:
             # Add tunes
-            self.tunes[plane].append(new_data[plane][LIN].loc[f'TUNE{plane.upper()}'])
-            with suppress(KeyError):
+            try:
+                self.tunes[plane].append(new_data[plane][LIN].loc[f'TUNE{plane.upper()}'])
+            except KeyError:
+                LOG.warning(f'TUNE{plane.upper()} not found for {label}.')
+
+            try:
                 self.nattunes[plane].append(new_data[plane][LIN].loc[f'NATTUNE{plane.upper()}'])
+            except KeyError:
+                LOG.debug(f'NATTUNE{plane.upper()} not found for {label}.')
 
             # update min/max
             mmin, mmax = self.minmax[plane]
@@ -126,10 +132,15 @@ def _plot_tune_lines(ax, transform, label_size, q_string, tunes, resonances, lin
     if len(resonances) == 0:
         return
 
+    if all(len(tunes[p]) == 0 for p in PLANES):
+        LOG.warning(f"Resonance lines can't be plotted for {q_string}, "
+                    "as no tunes were found in files.")
+        return
+
     pref = q_string[0] if len(q_string) else ""
-    q_mean = np.array([np.mean(tunes[p]) for p in PLANES])
-    q_min = np.array([np.min(tunes[p]) for p in PLANES])
-    q_max = np.array([np.max(tunes[p]) for p in PLANES])
+    q_mean = _get_evaluated_tune_array(np.mean, tunes)
+    q_min = _get_evaluated_tune_array(np.min, tunes)
+    q_max = _get_evaluated_tune_array(np.max, tunes)
     freqs_mean = _get_resonance_frequencies(resonances, q_mean)
     freqs_min = _get_resonance_frequencies(resonances, q_min)
     freqs_max = _get_resonance_frequencies(resonances, q_max)
@@ -193,38 +204,49 @@ def _get_resonance_frequencies(resonances, q):
     return freqs
 
 
+def _get_evaluated_tune_array(fun, tunes):
+    """ Array of tunes per plane that evaluates the tunes by fun,
+    returns 0 where no tunes are present.
+    """
+    return np.array([fun(tunes[p]) if len(tunes[p]) else 0 for p in PLANES])
+
+
 # ID Finder --------------------------------------------------------------------
 
 
-def get_stem_id(filename: str, bpm: str, output_dir: str, combine_by: list, filetype: str) -> IdData:
+def get_stem_id(filename: str, bpm: str, output_dir: str, combine_by: frozenset, filetype: str) -> IdData:
     """ Returns the stem-dictionary id and the path to which the output file should be written.
     By using more or less unique identifiers, this controls the creation of figures in the dictionary."""
+
     fun_map = {
-        str({"bpms", "files"}): _get_id_single_fig_files_and_bpms,
-        str({"files"}): _get_id_single_fig_files,
-        str({"bpms"}): _get_id_single_fig_bpms,
-        str(set()): _get_id_multi_fig,
+        _fset("bpms", "files"): _get_id_single_fig_files_and_bpms,
+        _fset("files"): _get_id_single_fig_files,
+        _fset("bpms"): _get_id_single_fig_bpms,
+        _fset(): _get_id_multi_fig,
     }
-    return fun_map[str(set(combine_by))](
+    return fun_map[combine_by](
         output_dir, SPECTRUM_FILENAME, filename, bpm, filetype
     )
 
 
-def get_waterfall_id(filename: str, bpm: str, output_dir: str, combine_by: list, filetype: str) -> IdData:
+def get_waterfall_id(filename: str, bpm: str, output_dir: str, combine_by: frozenset, filetype: str) -> IdData:
     """ Returns the waterfall-dictionary id and the path to which the output file should be written.
     By using identifiers for figures and unique lables per figure,
     this controls the creation of figures in the dictionary."""
     fun_map = {
-        str({"bpms", "files"}): _get_id_single_fig_files_and_bpms,
-        str({"files"}): _get_id_single_fig_files,
-        str({"bpms"}): _get_id_single_fig_bpms,
-        str(set()): _get_id_single_fig_bpms,  # same as above as single figure per file AND
-    }                                 # bpm does not make sense for waterfall
-
-    return fun_map[str(set(combine_by))](
+        _fset("bpms", "files"): _get_id_single_fig_files_and_bpms,
+        _fset("files"): _get_id_single_fig_files,
+        _fset("bpms"): _get_id_single_fig_bpms,
+        _fset(): _get_id_single_fig_bpms,  # same as above as single figure per file AND
+    }                                      # bpm does not make sense for waterfall
+    return fun_map[combine_by](
         output_dir, WATERFALL_FILENAME, filename, bpm, filetype
     )
 
+
+def _fset(*args):
+    """ Frozen Set shortcut for dict-key readability"""
+    return frozenset(args)
 
 # Specific Mappings ---
 

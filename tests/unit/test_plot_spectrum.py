@@ -1,12 +1,15 @@
 import tempfile
+from glob import glob
+from shutil import copy
 from os import listdir
 from os.path import join, abspath, basename, dirname, splitext
 
 import pytest
+import tfs
 from matplotlib.figure import Figure
 
 from omc3.plot_spectrum import main as plot_spectrum
-from omc3.plotting.spectrum_utils import get_unique_filenames
+from omc3.plotting.spectrum_utils import get_unique_filenames, PLANES
 
 
 def test_unique_filenames():
@@ -62,6 +65,24 @@ def test_combined_bpms_stem_plot(file_path, bpms):
         assert len(waterfall) == 0
         assert len(stem) == 1
         assert (filename in stem) and isinstance(stem[filename], Figure)
+
+
+def test_no_tunes_in_files_plot(file_path, bpms):
+    with tempfile.TemporaryDirectory() as out_dir:
+        for f in glob(f'{file_path}*'):
+            copy(f, out_dir)
+        file_path = join(out_dir, basename(file_path))
+        for p in PLANES:
+            fname = f'{file_path}.lin{p.lower()}'
+            df = tfs.read(fname)
+            tfs.write(fname,
+                      df.drop(columns=[f'TUNE{p.upper()}',
+                                       f'NATTUNE{p.upper()}']))
+        plot_spectrum(
+            files=[file_path],
+            bpms=bpms,
+            combine_by=['files', 'bpms'],
+        )
 
 
 def test_crash_too_low_amplimit():
