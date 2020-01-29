@@ -420,12 +420,13 @@ def _get_sussix_data(file_path, bpms):
     bpm_dir = os.path.join(directory, 'BPM')
     files = {LIN: {}, AMPS: {}, FREQS: {}}
     for plane in PLANES:
-        files[LIN][plane] = tfs.read(os.path.join(directory, f'{filename}_lin{plane}'), index=COL_NAME)
+        files[LIN][plane] = tfs.read(
+            os.path.join(directory, f'{filename}_lin{plane.lower()}'), index=COL_NAME)
         for id_ in (FREQS, AMPS):
             files[id_][plane] = tfs.TfsDataFrame(columns=bpms)
         for bpm in bpms:
             with suppress(FileNotFoundError):
-                df = tfs.read(os.path.join(bpm_dir, f'{bpm}.{plane}'))
+                df = tfs.read(os.path.join(bpm_dir, f'{bpm}.{plane.lower()}'))
                 files[FREQS][plane][bpm] = df["FREQ"]
                 files[AMPS][plane][bpm] = df["AMP"]
         for id_ in (FREQS, AMPS):

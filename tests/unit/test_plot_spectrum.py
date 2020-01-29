@@ -9,7 +9,7 @@ import tfs
 from matplotlib.figure import Figure
 
 from omc3.plot_spectrum import main as plot_spectrum
-from omc3.plotting.spectrum_utils import get_unique_filenames
+from omc3.plotting.spectrum_utils import get_unique_filenames, PLANES
 
 
 def test_unique_filenames():
@@ -72,8 +72,8 @@ def test_no_tunes_in_files_plot(file_path, bpms):
         for f in glob(f'{file_path}*'):
             copy(f, out_dir)
         file_path = join(out_dir, basename(file_path))
-        for p in ('x', 'y'):
-            fname = f'{file_path}.lin{p}'
+        for p in PLANES:
+            fname = f'{file_path}.lin{p.lower()}'
             df = tfs.read(fname)
             tfs.write(fname,
                       df.drop(columns=[f'TUNE{p.upper()}',
