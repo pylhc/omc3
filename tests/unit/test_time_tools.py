@@ -1,7 +1,7 @@
 import pytest
 import pytz
 
-from utils import time_tools as tt
+from omc3.utils import time_tools as tt
 
 
 def test_tz_check_succeed(now):
