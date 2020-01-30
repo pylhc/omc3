@@ -9,9 +9,11 @@ in particular to switch easily between local time and utc.
 :author: jdilly
 
 """
-import pytz
 from datetime import datetime, timedelta
-from definitions.formats import TIME
+
+import pytz
+
+from omc3.definitions.formats import TIME
 
 
 # Datetime Conversions #########################################################
