@@ -15,7 +15,7 @@ Important Convention:
 import numpy as np
 from scipy.odr import RealData, Model, ODR
 
-from utils import logging_tools
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 

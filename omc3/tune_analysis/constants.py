@@ -3,7 +3,7 @@ Module tune_analysis.constants
 ----------------------------------
 
 """
-from optics_measurements.constants import (ERR, RES, EXT, KICK_NAME, ACTION, TIME, NAT_TUNE)
+from omc3.optics_measurements.constants import (ERR, RES, EXT, KICK_NAME, ACTION, TIME, NAT_TUNE)
 
 
 # Global 'Parameters' for easy editing #########################################

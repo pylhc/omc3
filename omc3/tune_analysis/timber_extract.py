@@ -11,11 +11,11 @@ import re
 
 import numpy as np
 import pytimber
-
-from tune_analysis import constants as const
-from utils import logging_tools
-from utils.time_tools import CERNDatetime
 import tfs
+
+from omc3.tune_analysis import constants as const
+from omc3.utils import logging_tools
+from omc3.utils.time_tools import CERNDatetime
 
 TIME_COL = const.get_time_col()
 START_TIME = const.get_tstart_head()

@@ -15,18 +15,17 @@ linear fit from the measurements.
 :author: Joschua Dilly
 """
 import os
-import pandas as pd
 
-from tune_analysis import timber_extract, detuning_tools, kick_file_modifiers
-import tune_analysis.constants as ta_const
-
-from tune_analysis.kick_file_modifiers import (read_timed_dataframe,
-                                               write_timed_dataframe,
-                                               read_two_kick_files_from_folder
-                                               )
-from utils import logging_tools
-from utils.time_tools import CERNDatetime
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
+
+import omc3.tune_analysis.constants as ta_const
+from omc3.tune_analysis import timber_extract, detuning_tools, kick_file_modifiers
+from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
+                                                    write_timed_dataframe,
+                                                    read_two_kick_files_from_folder
+                                                    )
+from omc3.utils import logging_tools
+from omc3.utils.time_tools import CERNDatetime
 
 # Globals ####################################################################
 

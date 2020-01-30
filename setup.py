@@ -26,6 +26,7 @@ DEPENDENCIES = [
     "sdds>=0.1.3",
     "pytz>=2018.9",
     "h5py>=2.7.0",
+    "pytimber>=2.7.0",
 ]
 
 # Dependencies that should only be installed for test purposes

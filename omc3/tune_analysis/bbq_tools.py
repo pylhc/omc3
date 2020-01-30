@@ -9,9 +9,9 @@ This package contains a collection of tools to handle and modify BBQ data:
  - Plotting
 """
 import numpy as np
-from tune_analysis import constants as const
-from utils import logging_tools
 
+from omc3.tune_analysis import constants as const
+from omc3.utils import logging_tools
 
 PLANES = const.get_planes()
 

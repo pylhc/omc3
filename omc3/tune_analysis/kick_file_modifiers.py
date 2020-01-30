@@ -7,15 +7,14 @@ Functions to add data to or extract data from kick_ac files.
 import os
 
 import numpy as np
-import tfs
 import pandas as pd
-
-from tune_analysis import constants as const, bbq_tools
-
-from utils import logging_tools
-from utils.time_tools import CERNDatetime, get_cern_time_format
-from optics_measurements.constants import KICK_NAME
+import tfs
 from generic_parser.dict_parser import DotDict
+
+from omc3.optics_measurements.constants import KICK_NAME
+from omc3.tune_analysis import constants as const, bbq_tools
+from omc3.utils import logging_tools
+from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
 
 LOG = logging_tools.get_logger(__name__)
 
