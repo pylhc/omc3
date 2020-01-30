@@ -4,12 +4,12 @@ Module utils.contexts
 
 Provides contexts to use.
 """
-import sys
 import os
+import shutil
+import sys
+import tempfile
 import time
 import warnings
-import tempfile
-import shutil
 from contextlib import contextmanager
 
 

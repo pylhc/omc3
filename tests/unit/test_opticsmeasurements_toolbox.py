@@ -1,71 +1,71 @@
-import pytest
 import numpy as np
 import pandas as pd
-from . import context
-from optics_measurements import toolbox as tb
+import pytest
+
+from omc3.optics_measurements import toolbox
 
 ARRAY_LENGTH = 10
 
 
 def test_df_diff_zero(random, zeros):
-    assert all(random == tb.df_diff(*_df(random, zeros)))
+    assert all(random == toolbox.df_diff(*_df(random, zeros)))
 
 
 def test_df_sum_zero(random, zeros):
-    assert all(random == tb.df_sum(*_df(random, zeros)))
+    assert all(random == toolbox.df_sum(*_df(random, zeros)))
 
 
 def test_df_sum_diff():
     a, b = _arand(), _arand()
-    sum = tb.df_sum(*_df(a, b))
-    diff = tb.df_diff(*_df(sum, b))
+    sum_of_columns = toolbox.df_sum(*_df(a, b))
+    diff = toolbox.df_diff(*_df(sum_of_columns, b))
     assert _numerically_equal(a, diff)
 
 
 def test_df_ratio_one(random, ones):
-    assert all(random == tb.df_ratio(*_df(random, ones)))
+    assert all(random == toolbox.df_ratio(*_df(random, ones)))
 
 
 def test_df_ratio_zero(random, zeros):
-    assert not sum(tb.df_ratio(*_df(zeros, random)))
+    assert not sum(toolbox.df_ratio(*_df(zeros, random)))
     with pytest.warns(RuntimeWarning):
-        tb.df_ratio(*_df(random, zeros))
+        toolbox.df_ratio(*_df(random, zeros))
 
 
 def test_df_prod_zero(random, zeros):
-    assert not sum(tb.df_prod(*_df(random, zeros)))
+    assert not sum(toolbox.df_prod(*_df(random, zeros)))
 
 
 def test_df_prod_one(random, ones):
-    assert all(random == tb.df_prod(*_df(random, ones)))
+    assert all(random == toolbox.df_prod(*_df(random, ones)))
 
 
 def test_df_prod_ratio():
     a, b = _arand(), _arand()
-    prod = tb.df_prod(*_df(a, b))
-    ratio = tb.df_ratio(*_df(prod, b))
+    prod = toolbox.df_prod(*_df(a, b))
+    ratio = toolbox.df_ratio(*_df(prod, b))
     assert _numerically_equal(a, ratio)
 
 
 def test_df_rel_diff(random, zeros, ones):
-    assert all(-tb.df_rel_diff(*_df(zeros, random)) == ones)
+    assert all(-toolbox.df_rel_diff(*_df(zeros, random)) == ones)
     with pytest.warns(RuntimeWarning):
-        tb.df_rel_diff(*_df(random, zeros))
+        toolbox.df_rel_diff(*_df(random, zeros))
 
 
 # Test with errors ---
 
 def test_df_err_sum():
     a, b = _erand(), _erand()
-    err_sum = tb.df_err_sum(*_df(a, b))
-    sum = tb.df_sum(*_df(a, b))
+    err_sum = toolbox.df_err_sum(*_df(a, b))
+    sum_of_columns = toolbox.df_sum(*_df(a, b))
     assert all(err_sum > 0)
-    assert all(sum >= err_sum)
+    assert all(sum_of_columns >= err_sum)
 
 
 def test_df_rel_err_sum():
     a, b, aerr, berr = _arand(), _arand(), _erand(), _erand()
-    err_sum = tb.df_rel_err_sum(*_df(a, b, aerr, berr))
+    err_sum = toolbox.df_rel_err_sum(*_df(a, b, aerr, berr))
     assert all(err_sum > 0)
 
 
@@ -73,13 +73,13 @@ def test_df_other():
     # basic functionality is tested, just check that these run
     a, b, aerr, berr = _arand(), _arand(), _erand(), _erand()
     df_and_cols = _df(a, b, aerr, berr)
-    sum = tb.df_sum_with_err(*df_and_cols)
-    diff = tb.df_diff_with_err(*df_and_cols)
-    rel_diff = tb.df_rel_diff_with_err(*df_and_cols)
-    ratio = tb.df_ratio_with_err(*df_and_cols)
-    prod = tb.df_prod_with_err(*df_and_cols)
+    tuple_sum_columns_and_sum_errors = toolbox.df_sum_with_err(*df_and_cols)
+    diff = toolbox.df_diff_with_err(*df_and_cols)
+    rel_diff = toolbox.df_rel_diff_with_err(*df_and_cols)
+    ratio = toolbox.df_ratio_with_err(*df_and_cols)
+    prod = toolbox.df_prod_with_err(*df_and_cols)
 
-    for res in (sum, diff, rel_diff, ratio, prod):
+    for res in (tuple_sum_columns_and_sum_errors, diff, rel_diff, ratio, prod):
         assert len(res) == 2
         assert len(res[0]) == len(res[1])
         assert len(res[0]) == len(a)
@@ -90,9 +90,9 @@ def test_df_other():
 
 def test_ang():
     a, b = _arand(), _arand()
-    diff = tb.df_ang_diff(*_df(a, b))
-    sum = tb.ang_sum(a, b)
-    for res in (diff, sum):
+    diff = toolbox.df_ang_diff(*_df(a, b))
+    sum_angles = toolbox.ang_sum(a, b)
+    for res in (diff, sum_angles):
         assert len(res) == len(a)
         assert all(-0.5 <= res)
         assert all(res <= 0.5)

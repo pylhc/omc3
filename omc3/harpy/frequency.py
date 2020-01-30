@@ -7,9 +7,12 @@ Uses a combination of SVD decomposition zero_padded fft to speed up the analysis
 Also searches of resonances in the calculated spectra.
 """
 from collections import OrderedDict
+
 import numpy as np
 import pandas as pd
-from utils import outliers, logging_tools
+
+from omc3.utils import logging_tools, outliers
+
 LOGGER = logging_tools.getLogger(__name__)
 PI2I = 2 * np.pi * complex(0, 1)
 

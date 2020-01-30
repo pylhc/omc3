@@ -8,11 +8,14 @@ Beta from amplitude
 Computes beta from amplitude.
 """
 from os.path import join
+
 import numpy as np
 import pandas as pd
 import tfs
-from optics_measurements.toolbox import df_rel_diff, df_ratio
-from optics_measurements.constants import AMP_BETA_NAME, EXT, ERR, DELTA, MDL, RES
+
+from omc3.optics_measurements.constants import (AMP_BETA_NAME, DELTA, ERR, EXT,
+                                                MDL, RES)
+from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
 
 def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane):
@@ -21,9 +24,9 @@ def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane
         f"{AMP_BETA_NAME}{plane.lower()}{EXT}"
 
     Args:
-        measure_input: OpticsInput object
+        meas_input: OpticsInput object
         input_files: InputFiles object contains measurement files
-        tune_d: TuneDict contains measured tunes
+        tune_dict: TuneDict contains measured tunes
         beta_phase: contains beta functions from measured from phase
         header_dict: dictionary of header items common for all output files
         plane: plane
@@ -57,7 +60,7 @@ def add_rescaled_beta_columns(df, ratio, plane):
 
 
 def beta_from_amplitude(meas_input, input_files, plane, tunes):
-    df = pd.DataFrame(meas_input.accelerator.get_model_tfs()).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
+    df = pd.DataFrame(meas_input.accelerator.model).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
     df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
                        f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
     dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
@@ -83,7 +86,7 @@ def beta_from_amplitude(meas_input, input_files, plane, tunes):
 
 
 def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
-    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.get_beam_direction()
+    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
@@ -96,7 +99,7 @@ def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
 
 
 def _compensate_by_model(input_files, meas_input, df, plane):
-    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.get_driven_tfs().loc[:, [f"BET{plane}"]]
+    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"BET{plane}"]]
                                    .rename(columns={f"BET{plane}": f"BET{plane}comp"})),
                   how='inner', left_index=True, right_index=True)
     amp_compensation = np.sqrt(df_ratio(df, f"BET{plane}{MDL}", f"BET{plane}comp"))

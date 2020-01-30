@@ -1,13 +1,16 @@
 from datetime import datetime
+
 import numpy as np
 import pandas as pd
 import sdds
-from utils import logging_tools
-from tbt import reader_esrf, reader_iota, reader_lhc, reader_ptc, reader_trackone
+
+from omc3.tbt import (reader_esrf, reader_iota, reader_lhc, reader_ptc,
+                      reader_trackone)
+from omc3.utils import logging_tools
+
 LOGGER = logging_tools.getLogger(__name__)
 
 PLANES = ('X', 'Y')
-POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
@@ -32,26 +35,52 @@ class TbtData(object):
         self.bunch_ids = bunch_ids
 
 
+def generate_average_tbtdata(tbtdata):
+    """
+    Takes a TbtData object and returns TbtData object containing the average over all
+    bunches/particles at all used BPMs.
+    """
+    data = tbtdata.matrices
+    bpm_names = data[0]['X'].index
+
+    matrices = [{plane: pd.DataFrame(index=bpm_names,
+                                     data=get_averaged_data(bpm_names, data, plane, tbtdata.nturns),
+                                     dtype=float) for plane in PLANES}]
+    return TbtData(matrices, tbtdata.date, [1], tbtdata.nturns)
+
+
+def get_averaged_data(bpm_names, data, plane, turns):
+
+    bpm_data = np.empty((len(bpm_names), len(data), turns))
+    bpm_data.fill(np.nan)
+    for idx, bpm in enumerate(bpm_names):
+        for i in range(len(data)):
+            bpm_data[idx, i, :len(data[i][plane].loc[bpm])] = data[i][plane].loc[bpm]
+
+    return np.nanmean(bpm_data, axis=1)
+
+
 def read_tbt(file_path, datatype="lhc"):
     return DATA_READERS[datatype].read_tbt(file_path)
 
 
 def write_tbt(output_path, tbt_data, noise=None):
     LOGGER.info('TbTdata is written in binary SDDS (LHC) format')
+    defs = reader_lhc
     data = _matrices_to_array(tbt_data)
     if noise is not None:
         data = _add_noise(data, noise)
     definitions = [
-        sdds.classes.Parameter("acqStamp", "long"),
-        sdds.classes.Parameter("nbOfCapBunches", "long"),
-        sdds.classes.Parameter("nbOfCapTurns", "long"),
-        sdds.classes.Array("BunchId", "long"),
-        sdds.classes.Array("bpmNames", "string"),
-        sdds.classes.Array(POSITIONS['X'], "float"),
-        sdds.classes.Array(POSITIONS['Y'], "float")
+        sdds.classes.Parameter(defs.ACQ_STAMP, "llong"),
+        sdds.classes.Parameter(defs.N_BUNCHES, "long"),
+        sdds.classes.Parameter(defs.N_TURNS, "long"),
+        sdds.classes.Array(defs.BUNCH_ID, "long"),
+        sdds.classes.Array(defs.BPM_NAMES, "string"),
+        sdds.classes.Array(defs.POSITIONS['X'], "float"),
+        sdds.classes.Array(defs.POSITIONS['Y'], "float")
     ]
     values = [
-        tbt_data.date.timestamp()*1000,
+        tbt_data.date.timestamp()*1e9,
         tbt_data.nbunches,
         tbt_data.nturns,
         tbt_data.bunch_ids,

@@ -7,11 +7,14 @@ Basic tbt io-functionality.
 
 """
 from datetime import datetime
+
 import numpy as np
 import pandas as pd
+import pytz
 import sdds
-from tbt import handler
-from utils import logging_tools
+
+from omc3.tbt import handler
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
@@ -55,7 +58,7 @@ def read_tbt(file_path):
     if len(bunch_ids) > nbunches:
         bunch_ids = bunch_ids[:nbunches]
     nturns = sdds_file.values[N_TURNS]
-    date = datetime.fromtimestamp(sdds_file.values[ACQ_STAMP] / 1e9)
+    date = pytz.utc.localize(datetime.utcfromtimestamp(sdds_file.values[ACQ_STAMP] / 1e9))
     bpm_names = sdds_file.values[BPM_NAMES]
     nbpms = len(bpm_names)
     data = {k: sdds_file.values[POSITIONS[k]].reshape((nbpms, nbunches, nturns)) for k in PLANES}

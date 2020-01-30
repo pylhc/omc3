@@ -1,13 +1,14 @@
 import os
 import tempfile
+from datetime import datetime
 
-import pytest
+import h5py
 import numpy as np
 import pandas as pd
-from . import context
-from datetime import datetime
-from tbt import handler, reader_iota, reader_trackone, reader_ptc
-from tbt_converter import converter_entrypoint
+import pytest
+
+from omc3.tbt import handler, reader_iota, reader_ptc, reader_trackone
+from omc3.tbt_converter import converter_entrypoint
 
 CURRENT_DIR = os.path.dirname(__file__)
 PLANES = ('X', 'Y')
@@ -55,6 +56,66 @@ def test_tbt_read_hdf5(_hdf5_file):
     _compare_tbt(origin, new, False)
 
 
+def test_tbt_read_hdf5_v2(_hdf5_file_v2):
+
+    origin = handler.TbtData(
+        matrices=[
+                  {'X': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.sin),
+                    dtype=float),
+                   'Y': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.cos),
+                    dtype=float)}],
+        date=datetime.now(),
+        bunch_ids=[1],
+        nturns=2000)
+    new = reader_iota.read_tbt(_hdf5_file_v2)
+    _compare_tbt(origin, new, False)
+
+
+def test_compare_average_Tbtdata():
+    npart = 10
+    data = {plane: np.concatenate(
+                                  [[_create_data(np.linspace(1, 10, 10, endpoint=False, dtype=int), 2, (lambda x: np.random.randn(len(x))))]
+                                   for _ in range(npart)
+                                   ],
+                                  axis=0)
+            for plane in PLANES}
+
+    origin = handler.TbtData(
+        matrices=[
+                  {'X': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=data['X'][i],
+                    dtype=float),
+                   'Y': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=data['Y'][i],
+                    dtype=float)}
+                  for i in range(npart)],
+        date=datetime.now(),
+        bunch_ids=range(npart),
+        nturns=10)
+
+    new = handler.TbtData(
+        matrices=[
+                  {'X': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=np.mean(data['X'], axis=0),
+                    dtype=float),
+                   'Y': pd.DataFrame(
+                    index=['IBPMA1C', 'IBPME2R'],
+                    data=np.mean(data['Y'], axis=0),
+                    dtype=float)}],
+        date=datetime.now(),
+        bunch_ids=[1],
+        nturns=10)
+
+    _compare_tbt(handler.generate_average_tbtdata(origin), new, False)
+
+
 def test_tbt_read_ptc(_ptc_file):
     new = reader_ptc.read_tbt(_ptc_file)
     origin = _original_trackone()
@@ -63,6 +124,18 @@ def test_tbt_read_ptc(_ptc_file):
 
 def test_tbt_read_trackone(_ptc_file):
     new = reader_trackone.read_tbt(_ptc_file)
+    origin = _original_trackone(True)
+    _compare_tbt(origin, new, True)
+
+
+def test_tbt_read_ptc_sci(_ptc_file_sci):
+    new = reader_ptc.read_tbt(_ptc_file_sci)
+    origin = _original_trackone()
+    _compare_tbt(origin, new, True)
+
+
+def test_tbt_read_trackone_sci(_ptc_file_sci):
+    new = reader_trackone.read_tbt(_ptc_file_sci)
     origin = _original_trackone(True)
     _compare_tbt(origin, new, True)
 
@@ -130,14 +203,42 @@ def _sdds_file():
 
 @pytest.fixture()
 def _hdf5_file():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.hdf5")
+    with tempfile.TemporaryDirectory() as cwd:
+        with h5py.File(os.path.join(cwd, f'test_file.hdf5'), 'w') as hd5_file:
+            hd5_file.create_dataset("N:IBE2RH", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
+            hd5_file.create_dataset("N:IBE2RV", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
+            hd5_file.create_dataset("N:IBE2RS", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
+
+            hd5_file.create_dataset("N:IBA1CH", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
+            hd5_file.create_dataset("N:IBA1CV", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
+            hd5_file.create_dataset("N:IBA1CS", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
+
+        yield os.path.join(cwd, f'test_file.hdf5')
+
+
+@pytest.fixture()
+def _hdf5_file_v2():
+    with tempfile.TemporaryDirectory() as cwd:
+        with h5py.File(os.path.join(cwd, f'test_file_v2.hdf5'), 'w') as hd5_file:
+
+            hd5_file.create_group('A1C')
+            hd5_file['A1C'].create_dataset("Horizontal", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
+            hd5_file['A1C'].create_dataset("Vertical", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
+            hd5_file['A1C'].create_dataset("Intensity", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
+
+            hd5_file.create_group('E2R')
+            hd5_file['E2R'].create_dataset("Horizontal", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
+            hd5_file['E2R'].create_dataset("Vertical", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
+            hd5_file['E2R'].create_dataset("Intensity", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
+
+        yield os.path.join(cwd, f'test_file_v2.hdf5')
 
 
 @pytest.fixture()
 def _test_file():
     with tempfile.TemporaryDirectory() as cwd:
         yield os.path.join(cwd, "test_file")
-        
+
 
 @pytest.fixture()
 def _ptc_file():
@@ -147,3 +248,8 @@ def _ptc_file():
 @pytest.fixture()
 def _ptc_file_losses():
     return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_losses")
+
+
+@pytest.fixture()
+def _ptc_file_sci():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_sci")

@@ -1,17 +1,18 @@
 """
 PTC Turn-by-Turn Data Handler
----------------------
+-------------------------------
 
+Tbt data handling from PTC.
 
 """
 from collections import namedtuple
-
-import pandas as pd
-import numpy as np
 from datetime import datetime
 
-from tbt import handler
-from utils.logging_tools import get_logger
+import numpy as np
+import pandas as pd
+
+from omc3.tbt import handler
+from omc3.utils.logging_tools import get_logger
 
 HEADER = "@"
 NAMES = "*"
@@ -126,7 +127,7 @@ def _read_from_first_turn(lines):
                 raise IOError("Columns not defined in Tbt file!")
 
             new_data = _parse_data(column_indices, parts)
-            particle = int(new_data[COLPARTICLE])
+            particle = int(float(new_data[COLPARTICLE]))
             particles.append(particle)
 
     if len(particles) == 0:
@@ -156,8 +157,8 @@ def _read_data(lines, matrices, column_indices):
             continue
 
         data = _parse_data(column_indices, parts)
-        part_id = int(data[COLPARTICLE]) - 1
-        turn_nr = int(data[COLTURN]) - 1
+        part_id = int(float(data[COLPARTICLE])) - 1
+        turn_nr = int(float(data[COLTURN])) - 1
         for plane in PLANES:
             matrices[part_id][plane][segment.name][turn_nr] = float(data[column_map[plane]])
     return matrices
@@ -186,4 +187,3 @@ def _parse_column_names_to_indices(parts):
     if any(missing):
         raise ValueError(f"The following columns are missing in ptc file: '{str(missing)}'")
     return col_idx
-

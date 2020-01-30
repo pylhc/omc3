@@ -2,27 +2,27 @@ Turn-by-Turn
 **************************
 
 
-.. automodule:: tbt.handler
+.. automodule:: omc3.tbt.handler
     :members:
 
 
-.. automodule:: tbt.reader_esrf
+.. automodule:: omc3.tbt.reader_esrf
     :members:
 
 
-.. automodule:: tbt.reader_iota
+.. automodule:: omc3.tbt.reader_iota
     :members:
 
 
-.. automodule:: tbt.reader_lhc
+.. automodule:: omc3.tbt.reader_lhc
     :members:
 
 
-.. automodule:: tbt.reader_ptc
+.. automodule:: omc3.tbt.reader_ptc
     :members:
 
 
-.. automodule:: tbt.reader_trackone
+.. automodule:: omc3.tbt.reader_trackone
     :members:
 
 
