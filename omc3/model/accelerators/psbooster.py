@@ -54,6 +54,16 @@ class Psbooster(Accelerator):
     def get_file(cls, filename):
         return os.path.join(CURRENT_DIR, cls.NAME, filename)
 
+    def get_exciter_bpm(self, plane, bpms):
+        if not self.excitation:
+            return None
+        plane_to_hv = dict(X="h", Y="v")
+        bpms_to_find = [f"BR{self.ring}.BPM3L3", f"BR{self.ring}.BPM4L3"]
+        found_bpms = [bpm for bpm in bpms_to_find if bpm in bpms]
+        if not len(found_bpms):
+            raise KeyError
+        return (list(bpms).index(found_bpms[0]), found_bpms[0]), f"{plane_to_hv[plane]}acmap"
+
 
 class _PsboosterSegmentMixin(object):
 
