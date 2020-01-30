@@ -20,8 +20,8 @@ MEASURE_OPTICS_INPUT = list(
     itertools.product(
         ["model", "equation", "none"],  # compensation
         [2],                            # coupling method
-        [11, 15],                       # range of bpms
-        [False, True],                  # three bpm
+        [11, 13],                       # range of bpms
+        [False],                        # three bpm
         [False],                        # second order dispersion
     )
 )
@@ -38,6 +38,7 @@ def _create_input(motion):
     lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion)
     return lins, optics_opt
 
+CREATE_INPUT=dict(free=_create_input("free"), driven=_create_input("driven"))
 
 def set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
     optics_opt["compensation"] = compensation
@@ -50,7 +51,7 @@ def set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, thr
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
 def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    lins, optics_opt = _create_input("free" if compensation == 'none' else "driven")
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "single")
     inputs = measure_optics.InputFiles([lins[0]], optics_opt)
@@ -59,7 +60,7 @@ def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_met
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
 def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    lins, optics_opt = _create_input("free" if compensation == 'none' else "driven")
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "onmom")
     inputs = measure_optics.InputFiles(lins[:3], optics_opt)
@@ -68,7 +69,7 @@ def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_m
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
 def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    lins, optics_opt = _create_input("free" if compensation == 'none' else "driven")
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "pseudo_onmom")
     inputs = measure_optics.InputFiles(lins[-3:], optics_opt)
@@ -77,9 +78,9 @@ def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, thre
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
 def test_offmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    lins, optics_opt = _create_input("free" if compensation == 'none' else "driven")
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
-    optics_opt["chromatic_beating"] = Truee
+    optics_opt["chromatic_beating"] = True
     optics_opt["outputdir"] = join(BASE_PATH, "offmom")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)
     _run_evaluate_and_clean_up(inputs, optics_opt)
