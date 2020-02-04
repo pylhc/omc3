@@ -149,9 +149,14 @@ class AccDatetime(datetime):
         """ Add timedelta and return as new object """
         return self.__class__(super().__add__(td))
 
-    def __sub__(self, td):
-        """ Subtract timedelta and return as new object """
-        return self.__class__(super().__sub__(td))
+    def __sub__(self, other):
+        """ Subtract timedelta or datetime/AccDatetime and return as new object """
+        result = super().__sub__(other)
+        if isinstance(result, datetime):
+            return self.__class__(result)
+        if isinstance(result, timedelta):
+                return result
+        return NotImplemented
 
     @classmethod
     def from_local_string(cls, s):
