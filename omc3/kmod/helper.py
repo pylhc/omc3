@@ -8,7 +8,6 @@ from omc3.kmod import analysis
 from omc3.kmod.constants import SIDES, ERR, TUNE, EXT, PLANES, CLEANED, K, AVERAGE, BETA
 from omc3.definitions import formats
 
-plt.rc('text', usetex=True)
 LOG = logging_tools.get_logger(__name__)
 
 
