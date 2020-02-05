@@ -1,51 +1,51 @@
 Optics Measurements
 **************************
 
-.. automodule:: optics_measurements.measure_optics
+.. automodule:: omc3.optics_measurements.measure_optics
     :members:
 
 
-.. automodule:: optics_measurements.beta_from_amplitude
+.. automodule:: omc3.optics_measurements.beta_from_amplitude
     :members:
 
 
-.. automodule:: optics_measurements.beta_from_phase
+.. automodule:: omc3.optics_measurements.beta_from_phase
     :members:
 
 
-.. automodule:: optics_measurements.chromatic
+.. automodule:: omc3.optics_measurements.chromatic
     :members:
 
 
-.. automodule:: optics_measurements.dispersion
+.. automodule:: omc3.optics_measurements.dispersion
     :members:
 
 
-.. automodule:: optics_measurements.dpp
+.. automodule:: omc3.optics_measurements.dpp
     :members:
 
 
-.. automodule:: optics_measurements.iforest
+.. automodule:: omc3.optics_measurements.iforest
     :members:
 
 
-.. automodule:: optics_measurements.interaction_point
+.. automodule:: omc3.optics_measurements.interaction_point
     :members:
 
 
-.. automodule:: optics_measurements.kick
+.. automodule:: omc3.optics_measurements.kick
     :members:
 
 
-.. automodule:: optics_measurements.phase
+.. automodule:: omc3.optics_measurements.phase
     :members:
 
 
-.. automodule:: optics_measurements.rdt
+.. automodule:: omc3.optics_measurements.rdt
     :members:
 
 
-.. automodule:: optics_measurements.tune
+.. automodule:: omc3.optics_measurements.tune
     :members:
 
 
