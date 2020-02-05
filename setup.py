@@ -16,6 +16,7 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
+    "matplotlib>=3.1.0"
     "numpy>=1.14.1",
     "pandas>=0.24.0,<1.0",
     "scipy>=1.0.0",
