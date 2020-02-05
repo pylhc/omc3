@@ -1,11 +1,11 @@
 from os.path import join
-from utils import logging_tools, iotools
+from omc3.utils import logging_tools, iotools
 import numpy as np
 import tfs
-from kmod import analysis, helper
-from kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH
-from generic_parser.entrypoint import entrypoint, EntryPointParameters
-from definitions import formats
+from omc3.kmod import analysis, helper
+from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH
+from generic_parser import entrypoint, EntryPointParameters
+from omc3.definitions import formats
 
 LOG = logging_tools.get_logger(__name__)
 

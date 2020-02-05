@@ -1,11 +1,10 @@
 import pytest
 from os.path import dirname, join, isdir, pardir
-from . import context
 import tfs
 import shutil
 import numpy as np
-from run_kmod import analyse_kmod
-from kmod.constants import PLANES, BETA, ERR, STAR
+from omc3.run_kmod import analyse_kmod
+from omc3.kmod.constants import PLANES, BETA, ERR, STAR
 CURRENT_DIR = dirname(__file__)
 LIMITS = {'Accuracy': 0.01,
           'Meas Accuracy': 0.05,

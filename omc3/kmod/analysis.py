@@ -4,10 +4,10 @@ import numpy as np
 import tfs
 import datetime
 from tfs import tools as tfstools
-from utils import logging_tools
-from kmod import helper
-from kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
-from definitions import formats
+from omc3.utils import logging_tools
+from omc3.kmod import helper
+from omc3.kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from omc3.definitions import formats
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -327,6 +327,6 @@ def analyse(magnet1_df, magnet2_df, opt, betastar_required):
 
     LOG.info('Calculate beta at instruments')
     if opt.instruments_found:
-        instrument_beta_df = calc_beta_at_instruments(opt, results_df, magnet1_df, magnet2_df)    
+        instrument_beta_df = calc_beta_at_instruments(opt, results_df, magnet1_df, magnet2_df)
 
     return magnet1_df, magnet2_df, results_df, instrument_beta_df
