@@ -20,7 +20,7 @@ MEASURE_OPTICS_INPUT = list(
     itertools.product(
         ["model", "equation", "none"],  # compensation
         [2],                            # coupling method
-        [11, 13],                       # range of bpms
+        [11],                           # range of bpms
         [False],                        # three bpm
         [False],                        # second order dispersion
     )
