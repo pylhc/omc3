@@ -433,7 +433,7 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     # calculate errphi_ij^2 / sin^2 phimdl_ij * beta
     with np.errstate(divide='ignore', invalid='ignore'):
         sin_squared_model = tilted_errmeas**2 / np.square(np.sin(tilted_model)) * betmdl
-        sin_quadrup_model = tilted_errmeas**2 / np.pow(np.sin(tilted_model), 4) * betmdl
+        sin_quadrup_model = tilted_errmeas**2 / np.power(np.sin(tilted_model), 4) * betmdl
     # square it again beacause it's used in a vector length
     sin_squared_model = np.square(sin_squared_model)
     sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
