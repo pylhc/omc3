@@ -55,7 +55,7 @@ class Accelerator(object):
         params.add_parameter(name="drv_tunes", type=float, nargs=2,
                              help="Driven tunes without integer part.", )
         params.add_parameter(name="driven_excitation", type=str, choices=("acd", "adt"),
-                             help="Driven tunes without integer part.", )
+                             help="Denotes driven excitation by AC-dipole (acd) or by ADT (adt)", )
         params.add_parameter(name="dpp", default=0.0, type=float, help="Delta p/p to use.",)
         params.add_parameter(name="energy", type=float, help="Energy in Tev.", )
         params.add_parameter(name="modifiers", type=str,
