@@ -2,13 +2,15 @@ from os.path import join
 from omc3.utils import logging_tools, iotools
 import numpy as np
 import tfs
+import pandas as pd
 from omc3.kmod import analysis, helper
-from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH
+from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH, BETA, ERR, STAR
 from generic_parser import entrypoint, EntryPointParameters
 from omc3.definitions import formats
 
 LOG = logging_tools.get_logger(__name__)
 
+LSA_COLUMNS = ['NAME',f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
 
 def kmod_params():
     parser = EntryPointParameters()
@@ -108,6 +110,15 @@ def analyse_kmod(opt):
     if opt.instruments_found:
         tfs.write(join(output_dir, 'beta_instrument.tfs'), instrument_beta_df)
 
+    lsa_results_df = pd.DataFrame(columns=LSA_COLUMNS)
+    if betastar_required:
+        exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
+        lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
+    if opt.instruments_found:
+        lsa_results_df=lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
+    
+    if not lsa_results_df.empty:
+        tfs.write(join(output_dir, 'lsa_results.tfs'), lsa_results_df)
 
 def convert_betastar_and_waist(bs):
     if len(bs) == 2:
