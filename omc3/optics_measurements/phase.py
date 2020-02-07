@@ -8,7 +8,6 @@ Phase advance
 Computes betatron phase advances and provides structures to store them.
 """
 from os.path import join
-
 import numpy as np
 import pandas as pd
 import tfs
@@ -163,18 +162,19 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
     meas = phase_advances["MEAS"]
     bd = accel.beam_direction
     elements = accel.elements
-    special_phase_df = pd.DataFrame(columns=['ELEMENT1', 
-                                             'ELEMENT2', 
-                                             f'PHASE{plane}',
-                                             f'{ERR}PHASE{plane}',
-                                             f'PHASE_DEG_{plane}',
-                                             f'{ERR}PHASE_DEG_{plane}',
-                                             f'{MDL}PHASE{plane}',
-                                             f'{MDL}PHASE_DEG_{plane}',
-                                             'BPM1', 
-                                             'BPM2', 
-                                             f'BPM_PHASE{plane}',
-                                             f'BPM_{ERR}PHASE{plane}'])
+    special_phase_columns = ['ELEMENT1',
+                             'ELEMENT2',
+                             f'PHASE{plane}',
+                             f'{ERR}PHASE{plane}',
+                             f'PHASE{plane}_DEG',
+                             f'{ERR}PHASE{plane}_DEG',
+                             f'PHASE{plane}{MDL}',
+                             f'PHASE{plane}{MDL}_DEG',
+                             'BPM1',
+                             'BPM2',
+                             f'BPM_PHASE{plane}',
+                             f'BPM_{ERR}PHASE{plane}',]
+    special_phase_df = pd.DataFrame(columns=special_phase_columns)
     
     for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
@@ -190,20 +190,20 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
         ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
         model_value = (model_value * bd) % 1
-        special_phase_df=special_phase_df.append({
-            'ELEMENT1':                 elem1, 
-            'ELEMENT2':                 elem2, 
-            f'PHASE{plane}':            ph_result % 1,
-            f'{ERR}PHASE{plane}':       bpm_err,
-            f'PHASE_DEG_{plane}':       _to_deg(ph_result),
-            f'{ERR}PHASE_DEG_{plane}':  bpm_err * 360,
-            f'{MDL}PHASE{plane}':       model_value,
-            f'{MDL}PHASE_DEG_{plane}':  _to_deg(model_value),
-            'BPM1':                     minmu1, 
-            'BPM2':                     minmu2, 
-            f'BPM_PHASE{plane}':        bpm_phase_advance,
-            f'BPM_{ERR}PHASE{plane}':   elems_to_bpms
-        }, ignore_index=True)
+        special_phase_df=special_phase_df.append(dict(zip(special_phase_columns,[
+                                                            elem1,
+                                                            elem2,
+                                                            ph_result % 1,
+                                                            bpm_err,
+                                                            _to_deg(ph_result),
+                                                            bpm_err * 360,
+                                                            model_value,
+                                                            _to_deg(model_value),
+                                                            minmu1,
+                                                            minmu2,
+                                                            bpm_phase_advance,
+                                                            elems_to_bpms,
+        ])), ignore_index=True)
 
     tfs.write(join(meas_input.outputdir, f"special_phase_{plane.lower()}.tfs"), special_phase_df)
     
