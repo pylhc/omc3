@@ -60,6 +60,9 @@ Some examples can be found in the test files.
 
 - Accuracy tests
 - Regression tests
+- Responsematrix calculation
+- Global corrections
+- Amplitude detuning
 
 ## Quality checks
 
