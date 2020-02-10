@@ -1,0 +1,138 @@
+! Values of quadrupole magnet gradients for Electron Lens option
+dipAp = 0.029; ! main dipole half gap (iron)
+
+kq01 = 2.21012828;
+kq02 = -4.86232603;
+kq03 = 10.11005363;
+kq04 = -7.28408755;
+kq05 = -5.35096478;
+kq06 = 12.27948857;
+kq07 = -5.80122073;
+kq08 = -8.97731284;
+kq09 = 10.89364438;
+kq10 = -7.43805696;
+kq11 = -10.92151026;
+kq12 = 11.62580577;
+kq13 = -8.38119428;
+kq14 = -4.28451251;
+kq15 = 2.57443623;
+kq16 = 4.39326709;
+kq17 = -4.57344915;
+kq18 = 1.3942896;
+kq19 = -3.01154602;
+kq20 = 4.97641876;
+
+kqA1R:=kq01;
+kqA2R:=kq02;
+kqA3R:=kq03;
+kqA4R:=kq04;
+ kqB1R:=kq05;
+ kqB2R:=kq06;
+ kqB3R:=kq07;
+ kqB4R:=kq08;
+ kqB5R:=kq09;
+ kqB6R:=kq10;
+kqC1R:=kq11;
+kqC2R:=kq12;
+kqC3R:=kq13;
+ kqD1R:=kq14;
+ kqD2R:=kq15;
+ kqD3R:=kq16;
+ kqD4R:=kq17;
+kqE1R:=kq18;
+kqE2R:=kq19;
+
+ kqE3:=kq20;
+
+kqA1L:=kq01;
+kqA2L:=kq02;
+kqA3L:=kq03;
+kqA4L:=kq04;
+ kqB1L:=kq05;
+ kqB2L:=kq06;
+ kqB3L:=kq07;
+ kqB4L:=kq08;
+ kqB5L:=kq09;
+ kqB6L:=kq10;
+kqC1L:=kq11;
+kqC2L:=kq12;
+kqC3L:=kq13;
+ kqD1L:=kq14;
+ kqD2L:=kq15;
+ kqD3L:=kq16;
+ kqD4L:=kq17;
+kqE1L:=kq18;
+kqE2L:=kq19;
+
+
+! EL solenoid
+ksEL=1;
+
+! RF voltage
+Vrf = 0.001;
+
+! sextupoles
+/*
+sk1 =               -0 ;
+sk2 =                0 ;
+sk3 =                  0 ;
+sk4 =       0;
+sk5 =        0 ;
+sk6 =                  0 ;
+*/
+
+/**/
+sk1 = -350;
+sk2 = 350;
+sk3 = -110;
+sk4 = 0;
+sk5 = 0;
+sk6 = -70;
+
+/* symmetrical case*/
+sk1r := sk1;     !SC1R
+sk1l := sk1;
+sk2r := sk2;     !SC2R 
+sk2l := sk2;
+sk3r := sk3;     !SD1R
+sk3l := sk3;
+sk4r := sk4;     !SE1R
+sk4l := sk4;
+sk5r := sk5;     !SE2R
+sk5l := sk5;
+sk6r := sk6;     !SA1
+sk6l := sk6;
+
+/* good DA, symmetric*/
+sk1r =               -350 ;
+sk1l =               -350 ;
+sk2r =                350 ;
+sk2l =                350 ;
+sk3r =               -110 ;
+sk3l =               -110 ;
+sk4r =       -46.39263629 ;
+sk4l =       -46.39263629 ;
+sk5r =        53.19881896 ;
+sk5l =        53.19881896 ;
+sk6r =                -70 ;
+sk6l =                -70 ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

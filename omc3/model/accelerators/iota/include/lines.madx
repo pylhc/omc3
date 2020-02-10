@@ -1,0 +1,54 @@
+! IOTA lattice definition
+! Date: 9/16/2014
+! A.Valishev
+
+
+AR_Line: LINE=(bpmA1, oAR, phQA1R, oA1, phQA2R, phBUMPR, oA2s, phlSA1R, phSQA1R, bpmA2R, phQA3R, oA3, phQA4R, bpmA3R, phSQA2R, obmpc);
+
+AL_Line: LINE=(obmpc, phSQA2L, bpmA3L, phQA4L, oA3, phQA3L, bpmA2L, phSQA1L, phlSA1L, oA2s, phBUMPL, phQA2L, oA1, phQA1L, oAL);
+
+BR_Line: LINE=(oB1, phSQB1R, oB2, phQB1R, oB3, phQB2R, oB4, phQB3R, bpmB1R, 
+               nlR1, oNu, ioR, oNd, nlR2, 
+               bpmB2R, phQB4R, oB5, phQB5R, oB6, phQB6R, oB7, phSQB2R, oB8);
+BL_Line: LINE=(oB8, phSQB2L, OB7, phQB6L, oB6, phQB5L, oB5, phQB4L, bpmB2L, 
+               nlL1, oNu, ioL, oNd, nlL2, 
+               bpmB1L, phQB3L, oB4, phQB2L, oB3, phQB1L, oB2, phSQB1L, oB1);
+
+
+CR_Line: LINE=(obmc, phSQC1R, bpmC1R, phQC1R, oC1s, phSC1R, oC1s, phQC2R, 
+                    oC2s, phSC2R, oC2s, phQC3R, bpmC2R, phSQC2R, obmc);
+CL_Line: LINE=(obmc, phSQC2L, bpmC2L, phQC3L, oC2s, phSC2L, oC2s, 
+               phQC2L, oC1s, phSC1L, oC1s, phQC1L, bpmC1L, phSQC1L, obmc);
+
+DR_Line: LINE=(obm, bpmD1R, oD1c, phSQD1R, phQD1R, oD2s, phSD1R, oD2s, phQD2R, oDs, 
+               el1, cEL, el2, 
+               oDs, phQD3R, oD2c, phSQD2R, oD2c, phQD4R, oD1, bpmD2R, obm);
+DL_Line: LINE=(obm, bpmD2L, oD1, phQD4L, oD2c, phSQD2L, oD2c, phQD3L, 
+               oDrf, rfc, oDrf, 
+               phQD2L, oD2s, phSD1L, oD2s, phQD1L, phSQD1L, oD1c, bpmD1L, obm);
+
+E_Line:  LINE=(obm, bpmE1R, oE1, phQE1R, oE2, phSQE1R, oE3, bpmE2R, phQE2R, oE4, phSE1R, oE5, phSQE2R, oE6, phSE2R, oE7,
+               phQE3, oE7, phSE2L, oE6, phSQE2L, oE5, phSE1L, oE4, phQE2L, bpmE2L, oE3, phSQE1L, oE2, phQE1L, oE1, bpmE1L, obm);
+
+
+
+
+IOTA: LINE=(
+       AR_Line,
+       phM1R, 
+       BR_Line, 
+       phM2R, 
+       CR_Line, 
+       phM3R, 
+       DR_Line, 
+       phM4R, 
+       E_Line, 
+       phM4L,
+       DL_Line, 
+       phM3L, 
+       CL_Line, 
+       phM2L, 
+       BL_Line, 
+       phM1L,
+       AL_Line
+);

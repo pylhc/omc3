@@ -12,13 +12,13 @@ for free motion and for driven motion. The twisses should contain the chromatic 
 """
 from collections import OrderedDict
 from datetime import datetime
+from os.path import join
 
 import numpy as np
 import pandas as pd
-from os.path import join
-from . import context
 import tfs
-from definitions import formats
+
+from omc3.definitions import formats
 
 PLANES = ('X', 'Y')
 DRIVEN = "_d"
@@ -33,6 +33,7 @@ ERRTUNE = 3e-7
 NAT_OVER_DRV = 0.01
 MAGIC_NUMBER = 6   # SVD cleaning effect + main lobe size effect
 COUPLING = 0.1
+
 
 def optics_measurement_test_files(modeldir, dpps):
     """
@@ -52,7 +53,7 @@ def optics_measurement_test_files(modeldir, dpps):
 
 
 def generate_lin_files(model, tune, nattune, dpp=0.0):
-    nbpms = len(model.index.values)
+    nbpms = len(model.index.to_numpy())
 
     lins = {}
     for plane in PLANES:
@@ -82,8 +83,8 @@ def generate_lin_files(model, tune, nattune, dpp=0.0):
                                                   * (1 + dpp * np.sin(model.loc[:, f"PHI{OTHER[plane]}{DRIVEN}"]) * model.loc[:, f"W{OTHER[plane]}{DRIVEN}"])) + COUPLING * noise_freq_domain * np.random.randn(nbpms)
 
         # backwards compatibility with drive  TODO remove
-        lin[f"AMP{plane}"] = lin.loc[:, f"AMP{plane}"].values / 2
-        lin[f"NATAMP{plane}"] = lin.loc[:, f"NATAMP{plane}"].values / 2
+        lin[f"AMP{plane}"] = lin.loc[:, f"AMP{plane}"].to_numpy() / 2
+        lin[f"NATAMP{plane}"] = lin.loc[:, f"NATAMP{plane}"].to_numpy() / 2
 
         lins[plane] = tfs.TfsDataFrame(lin, headers=_get_header(tune, nattune, plane)).set_index("NAME")
     return lins

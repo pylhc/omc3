@@ -2,18 +2,7 @@
 * Macros for runI and runII of the LHC
 */
 
-!@require beta_beat.macros.madx
-
-/*
-* Defines runII(runII nominal), db5(runI nominal) and ats(runI ats) links.
-*/
-define_lhc_links(): macro = {
-    System, "test -e runII || ln -ns /afs/cern.ch/eng/lhc/optics/runII/2015/ runII";
-    System, "test -e runII_2016 || ln -ns /afs/cern.ch/eng/lhc/optics/runII/2016/ runII_2016";
-    System, "test -e db5   || ln -ns /afs/cern.ch/eng/lhc/optics/V6.503 db5";
-    System, "test -e ats   || ln -ns /afs/cern.ch/eng/lhc/optics/ATS_V6.503 ats";
-};
-
+!requires general.macros.madx
 
 /*
 * Sets the sequences as cycles at their injection point
@@ -37,15 +26,6 @@ cycle_sequences(): macro = {
 define_nominal_beams(): macro = {
     beam, sequence=LHCB1, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;
     beam, sequence=LHCB2, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=-1;
-};
-
-
-/*
-* Define the default nominal beams for the LHC for the given accelerator.
-* @param accel: The name of the accelerator where to define the beam.
-*/
-define_nominal_beams_for(accel): macro = {
-    beam, sequence=accel, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;
 };
 
 
@@ -185,6 +165,32 @@ match_tunes(nqx, nqy, beam_number): macro = {
     endmatch;
 };
 
+
+/*
+* Performs the matching of the LHC tunes, adapted to ATS optics.
+* @param qx: The horizontal tune to match to.
+* @param qy: The vertical tune to match to.
+* @param beam_number: The beam to use either 1 or 2.
+*/
+match_tunes_ats(nqx, nqy, beam_number): macro = {
+    exec, find_complete_tunes(nqx, nqy, beam_number);
+    if (ARC_SQUEEZE == 1.0){
+        match;
+        vary, name=dQx.bbeam_number_sq;
+        vary, name=dQy.bbeam_number_sq;
+        constraint, range=#E, mux=total_qx, muy=total_qy;
+        lmdif;
+        endmatch;
+
+    } else {
+        match;
+        vary, name=dQx.bbeam_number;
+        vary, name=dQy.bbeam_number;
+        constraint, range=#E, mux=total_qx, muy=total_qy;
+        lmdif;
+        endmatch;
+    }
+};
 
 /*
 * Installs the AC dipole into the LHC sequence, subsequent twiss calls
@@ -413,102 +419,6 @@ twiss_adt(natural_qx, natural_qy, driven_qx, driven_qy, beam_number, output_file
 };
 
 
-/* Fully defines the nominal LHC sequence. This macro should only be used after
-* loading lhc_runii.macros.madx or lhc_runi.macros.madx.
-* @param modifiers_path: Modifiers file to use, should contain at least the
-* injection settings.
-* @param beam_number: The beam to use either 1 or 2.
-*/
-full_lhc_def(modifiers_path, beam_number): macro = {
-    exec, define_lhc_links();
-    exec, load_main_sequence();
-
-    exec, define_nominal_beams();
-    call, file = modifiers_path;
-    exec, cycle_sequences();
-    exec, set_default_crossing_scheme();
-    use, period = LHCBbeam_number;
-};
-
-
-/*
-* Runs a full twiss command for the LHC. This macro should only be used after
-* loading lhc_runii.macros.madx or lhc_runi.macros.madx.
-* @param modifiers_path: Modifiers file to use, should contain at least the
-* injection settings.
-* @param beam_number: The beam to use either 1 or 2.
-* @param qx: The horizontal tune to match to (with integer part).
-* @param qy: The vertical tune to match to (with integer part).
-* @param dpp: Delta p / p to use in the twiss command.
-* @param monitors_output_file: path to the monitors only file to write, it 
-* has to be input in "" to preserve upper case characters.
-* @param elements_output_file: path to the all elements file to write, it 
-* has to be input in "" to preserve upper case characters.
-*/
-full_lhc_twiss(modifiers_path, beam_number, qx, qy, dpp,
-               monitors_file, elements_file): macro = {
-    exec, full_lhc_def(modifiers_path, beam_number, qx, qy, dpp);
-    exec, match_tunes(qx, qy, beam_number);
-    exec, do_twiss_monitors(LHCBbeam_number, monitors_file, dpp);
-    exec, do_twiss_elements(LHCBbeam_number, elements_file, dpp);
-};
-
-
-/*
-* Same as full_lhc_twiss but with AC dipole active.
-* NOTE: Sorry for the naming here, but MADX seems to have some
-* kind of limit on the total length of the parameters (weird,
-* probably Fortran related).
-* @param m_p: Modifiers file to use, should contain at least the
-* injection settings.
-* @param b_num: The beam to use either 1 or 2.
-* @param qx: The horizontal tune to match to (with integer part).
-* @param qy: The vertical tune to match to (with integer part).
-* @param q_nx: Fractional part of the natural horizontal tune.
-* @param q_ny: Fractional part of the natural vertical tune.
-* @param q_dx: Fractional part of the driven horizontal tune.
-* @param q_dy: Fractional part of the driven vertical tune.
-* @param dpp: Delta p / p to use in the twiss command.
-* @param m_f: path to the monitors only file to write, it 
-* has to be input in "" to preserve upper case characters.
-* @param e_f: path to the all elements file to write, it 
-* has to be input in "" to preserve upper case characters.
-* @param a_f: path to the AC dipole file to write, it 
-* has to be input in "" to preserve upper case characters.
-*/
-full_lhc_twiss_ac(m_p, b_num, qx, qy, q_nx, q_ny, q_dx, q_dy, dpp, m_f, e_f, a_f): macro = {
-    exec, full_lhc_twiss(m_p, b_num, qx, qy, dpp, m_f, e_f);
-    exec, twiss_ac_dipole(q_nx, q_ny, q_dx, q_dy, b_num, a_f, dpp);
-};
-
-
-/*
-* Loads random dipole b2 errors and correction from the 60 seeds provided by WISE.
-* @param energy: The energy to be used.
-* @param beam_number: The beam to use either 1 or 2.
-* @param error_num: The number of the error table to load, has to be a 4 digits number (e.g. 0004).
-*/
-load_error_table_number(energy, beam_number, error_num): macro = {
-    call, file = "/afs/cern.ch/work/o/omcsyst/public/error_tables/Beambeam_number/error_tables_energyTeV/MBx-error_num.errors";
-    readmytable, file = "/afs/cern.ch/work/o/omcsyst/public/error_tables/Beambeam_number/error_tables_energyTeV/MBx-error_num.errors",
-                 table=errtab;
-    seterr, table = errtab;
-
-    call, file = "/afs/cern.ch/work/o/omcsyst/public/error_tables/Beambeam_number/MB_corr_setting_Bbeam_number_energyTeV.mad";
-};
-
-
-/*
-* Loads the average dipole b2 errors and correction.
-* @param energy: The energy to be used.
-* @param beam_number: The beam to use either 1 or 2.
-*/
-load_average_error_table(energy, beam_number): macro = {
-    readmytable, file = "/afs/cern.ch/work/o/omc/error_tables/Beambeam_number/MB_Bbeam_number_energyTeV.errors", table=errtab;
-    seterr, table=errtab;
-    call, file = "/afs/cern.ch/work/o/omc/error_tables/Beambeam_number/MB_corr_setting_Bbeam_number_energyTeV.mad";
-}
-
 
 /*
 * Special for TOTEM Optics.
@@ -693,3 +603,27 @@ coupling_knob(beam_number): macro = {
         kqs.a34b2:=startVal_kqs.a34b2 + b2_im_ip7_knob *   0.01390953298 - b2_re_ip7_knob *  0.02452644363;
     }
 }
+
+/*
+* Coupling knobs convention for 2016 ATS optics
+*/
+coupling_knob_ats(beam_number): macro = {
+    if (ARC_SQUEEZE == 1.0){
+    /*This correct but the knob was not implemented by in LSA
+        Cmrs.b1_sq := b1_re_ip7_knob;
+        Cmrs.b2_sq := b2_re_ip7_knob;
+        Cmis.b1_sq := b1_im_ip7_knob;
+        Cmis.b2_sq := b2_im_ip7_knob;
+        */
+        Cmrs.b1 := b1_re_ip7_knob;
+        Cmrs.b2 := b2_re_ip7_knob;
+        Cmis.b1 := b1_im_ip7_knob;
+        Cmis.b2 := b2_im_ip7_knob;
+    } else {
+        Cmrs.b1 := b1_re_ip7_knob;
+        Cmrs.b2 := b2_re_ip7_knob;
+        Cmis.b1 := b1_im_ip7_knob;
+        Cmis.b2 := b2_im_ip7_knob;
+    }
+};
+

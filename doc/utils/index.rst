@@ -6,27 +6,23 @@ Package Content
 =======================
 
 
-.. automodule:: utils.contexts
+.. automodule:: omc3.utils.contexts
     :members:
 
 
-.. automodule:: utils.dict_tools
+.. automodule:: omc3.utils.iotools
     :members:
 
 
-.. automodule:: utils.iotools
+.. automodule:: omc3.utils.logging_tools
     :members:
 
 
-.. automodule:: utils.logging_tools
+.. automodule:: omc3.utils.outliers
     :members:
 
 
-.. automodule:: utils.outliers
-    :members:
-
-
-.. automodule:: utils.stats
+.. automodule:: omc3.utils.stats
     :members:
 
 

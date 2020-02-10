@@ -10,12 +10,12 @@ Functions for easier use of logging, like automatic logger setup
 import datetime
 import inspect
 import logging
-from io import StringIO
 import os
 import sys
 import time
 import warnings
 from contextlib import contextmanager
+from io import StringIO
 
 import pandas as pd
 
@@ -98,7 +98,7 @@ class DebugMode(object):
     def __enter__(self):
         return None
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, value, traceback):
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
@@ -130,7 +130,7 @@ class TempFile(object):
         def __enter__(self):
             return self.path
 
-        def __exit__(self, type, value, traceback):
+        def __exit__(self, value, traceback):
             try:
                 with open(self.path, "r") as f:
                     content = f.read()
@@ -235,6 +235,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
     if name == "__main__":
         # set up root logger
         root_logger = logging.getLogger("")
+        root_logger.handlers = []  # remove handlers in case someone already created them
         root_logger.setLevel(level_root)
 
         # print logs to the console

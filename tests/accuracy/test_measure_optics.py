@@ -1,30 +1,29 @@
 from os import listdir
+from os.path import abspath, dirname, isdir, isfile, join
 from shutil import rmtree
-from os.path import isfile, join, dirname, abspath, isdir
-import pytest
-
-from .twiss_to_lin import optics_measurement_test_files
-from . import context
 
 import tfs
-from utils import stats
-from optics_measurements import measure_optics
-from utils.contexts import timeit
-from model import manager
-from hole_in_one import _optics_entrypoint
 
-LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 5e-3}
+from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
+from omc3.model import manager
+from omc3.optics_measurements import measure_optics
+from omc3.utils import stats
+from omc3.utils.contexts import timeit
+from .twiss_to_lin import optics_measurement_test_files
+
+LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
 DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
+
 
 def _create_input():
     dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
     print(f"\nInput creation: {dpps}")
-    opt_dict = dict(accel="lhc", lhc_mode="lhc_runII_2018", beam=1, files=[""],
+    opt_dict = dict(accel="lhc", year="2018", ats=True, beam=1, files=[""],
                     model_dir=join(dirname(__file__), "..", "inputs", "models", "25cm_beam1"),
                     outputdir=BASE_PATH)
     optics_opt, rest = _optics_entrypoint(opt_dict)
-    optics_opt.accelerator = manager.get_accel_instance(rest)
+    optics_opt.accelerator = manager.get_accelerator(rest)
     lins = optics_measurement_test_files(opt_dict["model_dir"], dpps)
     return lins, optics_opt
 
@@ -108,11 +107,11 @@ def _run_evaluate_and_clean_up(inputs, optics_opt):
 def evaluate_accuracy(meas_path):
     for f in [f for f in listdir(meas_path) if (isfile(join(meas_path, f)) and (".tfs" in f))]:
         a = tfs.read(join(meas_path, f))
-        cols = [column for column in a.columns.values if column.startswith('DELTA')]
+        cols = [column for column in a.columns.to_numpy() if column.startswith('DELTA')]
         if f == "normalised_dispersion_x.tfs":
             cols.remove("DELTADX")
         for col in cols:
-            rms = stats.weighted_rms(a.loc[:, col].values, errors=a.loc[:, f"ERR{col}"].values)
+            rms = stats.weighted_rms(a.loc[:, col].to_numpy(), errors=a.loc[:, f"ERR{col}"].to_numpy())
             if col[5] in LIMITS.keys():
                 assert rms < LIMITS[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
             else:

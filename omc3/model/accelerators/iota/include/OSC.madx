@@ -1,0 +1,146 @@
+! OSC section
+
+oX1: DRIFT, L = 0.01;
+oX2: DRIFT, L = 0.02;
+oX3: DRIFT, L = 0.02;
+oX4: DRIFT, L = 0.01;
+oX5: DRIFT, L = 0.0195;
+oX6: DRIFT, L = 0.01;
+oX7: DRIFT, L = 0.01;
+oX8: DRIFT, L = 0.00648;
+oX9: DRIFT, L = 0.01626;
+oX10: DRIFT, L = 0.0175;
+oX11: DRIFT, L = 0.0175;
+oX12: DRIFT, L = 0.08;
+oX13: DRIFT, L = 0.0105;
+
+inBX1L:  DIPEDGE,  H=-0.059603/0.08, HGAP=0.01, FINT=0.5, E1= 0,;
+outBX1L: DIPEDGE,  H=-0.059603/0.08, HGAP=0.01, FINT=0.5, E1= -0.059603;
+BX1L: SBEND,  L=0.08,  ANGLE=-0.059603;
+
+inBX2L:  DIPEDGE,  H= 0.059603/0.08, HGAP=0.01, FINT=0.5, E1= 0.059603;
+outBX2L: DIPEDGE,  H= 0.059603/0.08, HGAP=0.01, FINT=0.5, E1= 0;
+BX2L: SBEND,  L=0.08,  ANGLE= 0.059603;
+
+inBX1R:  DIPEDGE,  H=-0.059603/0.08, HGAP=0.01, FINT=0.5, E1=-0.059603;
+outBX1R: DIPEDGE,  H=-0.059603/0.08, HGAP=0.01, FINT=0.5, E1= 0;
+BX1R: SBEND,  L=0.08,  ANGLE=-0.059603;
+
+inBX2R:  DIPEDGE,  H= 0.059603/0.08, HGAP=0.01, FINT=0.5, E1= 0;
+outBX2R: DIPEDGE,  H= 0.059603/0.08, HGAP=0.01, FINT=0.5, E1= 0.059603;
+BX2R: SBEND,  L=0.08,  ANGLE= 0.059603;
+
+oBXCoil: DRIFT, L=0.03;
+phBX1L: LINE= (oBXCoil, inBX1L, BX1L, outBX1L, oBXCoil);
+phBX2L: LINE= (oBXCoil, inBX2L, BX2L, outBX2L, oBXCoil);
+phBX1R: LINE= (oBXCoil, inBX1R, BX1R, outBX1R, oBXCoil);
+phBX2R: LINE= (oBXCoil, inBX2R, BX2R, outBX2R, oBXCoil);
+
+QX4R: QUADRUPOLE,  L=      0.10,  K1:=kqX4R;
+QX3R: QUADRUPOLE,  L=      0.10,  K1:=kqX3R;
+QX2R: QUADRUPOLE,  L=      0.06,  K1:=kqX2R;
+QX1:  QUADRUPOLE,  L=      0.06,  K1:=kqX1C;
+QX2L: QUADRUPOLE,  L=      0.06,  K1:=kqX2L;
+QX3L: QUADRUPOLE,  L=      0.10,  K1:=kqX3L;
+QX4L: QUADRUPOLE,  L=      0.10,  K1:=kqX4L;
+
+oXCoilSmall:  DRIFT, L = 0.02;
+oXCoilMedium: DRIFT, L = 0.03;
+phQX4R: LINE=(oXCoilMedium, QX4R, oXCoilMedium);
+phQX3R: LINE=(oXCoilMedium, QX3R, oXCoilMedium);
+phQX2R: LINE=(oXCoilSmall, QX2R, oXCoilSmall);
+phQX1: LINE=(oXCoilSmall, QX1, oXCoilSmall);
+phQX2L: LINE=(oXCoilSmall, QX2L, oXCoilSmall);
+phQX3L: LINE=(oXCoilMedium, QX3L, oXCoilMedium);
+phQX4L: LINE=(oXCoilMedium, QX4L, oXCoilMedium);
+
+SX1R: SEXTUPOLE, L = 0.1, K2=-2514.48;
+SX2R: SEXTUPOLE, L = 0.1, K2= 4593.12;
+SX1L: SEXTUPOLE, L = 0.1, K2=-2514.48;
+SX2L: SEXTUPOLE, L = 0.1, K2= 4593.12;
+oSextXCoil: DRIFT, L = 0.05;
+phSX1R: LINE=(oSextXCoil, SX1R, oSextXCoil);
+phSX2R: LINE=(oSextXCoil, SX2R, oSextXCoil);
+phSX1L: LINE=(oSextXCoil, SX1L, oSextXCoil);
+phSX2L: LINE=(oSextXCoil, SX2L, oSextXCoil);
+
+oValveR: DRIFT,   L = 0.075 ;
+oValveL: DRIFT,   L = 0.075 ;
+
+oXwm: DRIFT, L = 0.03; 
+obpmX: DRIFT,   L = 0.03 ;
+ibpmX1L: ibpm;
+ibpmX1R: ibpm;
+ibpmX2L: ibpm;
+ibpmX2R: ibpm;
+bpmX1L:  LINE=(obpmX, ibpmX1L, obpmX);
+bpmX1R:  LINE=(obpmX, ibpmX1R, obpmX);
+bpmX2L:  LINE=(obpmX, ibpmX2L, obpmX);
+bpmX2R:  LINE=(obpmX, ibpmX2R, obpmX);
+
+
+Wedge: DIPEDGE, H = 0.00414188/0.013817143, HGAP=0.0, FINT=0.0, E1=0.00414188;
+bWp:   SBEND,   L = 0.027634286,  ANGLE=0.00828375,  E1=0,  E2=0 ;
+bWm:   SBEND,   L = 0.027634286,  ANGLE=-0.00828375,  E1=0,  E2=0 ;
+bWph:  SBEND,   L = 0.013817143,  ANGLE=0.00414188,  E1=0,  E2=0 ;
+bWpE:  LINE=(Wedge, bWp, Wedge);
+bWmE:  LINE=(Wedge, bWm, Wedge);
+
+oW:    DRIFT,   L = 0.027634286 ;
+
+WL_Line:  LINE=(bWph, Wedge, oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW, Wedge, bWph  );
+
+WR_Line:  LINE=(bWph, Wedge, oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW,  
+                bWpE,  oW,  bWmE,  oW, Wedge, bWph  );
+
+OSC_Line: LINE=(
+oX13, oValveR, oX12, phSE1R, oX11, phQE1R, oX10, phSE2R,
+oX9, bpmX2R, oXwm, 
+WR_Line,
+oXwm, bpmX1R, oX8, phQX4R, oX7, phQX3R, oX6,
+phBX2R,
+oX5, phSX2R, oX4, phSX1R, oX3,
+phBX1R,
+oX2, phQX2R, oX1,
+phQX1, 
+oX1, phQX2L, oX2, 
+phBX1L, 
+oX3, phSX1L, oX4, phSX2L, oX5, 
+phBX2L,
+oX6, phQX3L, oX7, phQX4L, oX8, bpmX1L, oXwm,
+WL_Line,
+oXwm, bpmX2L, oX9,
+phSE2L, oX10, phQE1L, oX11, phSE1L, oX12, oValveL, oX13
+);
+
+
+IOTA: LINE=(
+       AR_Line,
+       phM1R, 
+       BR_Line, 
+       phM2R, 
+       CR_Line, 
+       phM3R, 
+       DR_Line, 
+       phM4R, 
+       OSC_Line, 
+       phM4L,
+       DL_Line, 
+       phM3L, 
+       CL_Line, 
+       phM2L, 
+       BL_Line, 
+       phM1L,
+       AL_Line
+);

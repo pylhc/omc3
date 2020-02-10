@@ -9,15 +9,18 @@ Computes betas and alphas from phase advances.
 """
 import os
 import re
+
 import numpy as np
 import pandas as pd
-from scipy.linalg import circulant
 import tfs
-from utils import logging_tools, stats
-from optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff
-from optics_measurements.constants import BETA_NAME, EXT, ERR, DELTA, MDL, PI2
+from scipy.linalg import circulant
 
-__version__ = "2019.0.a"
+from omc3 import __version__ as VERSION
+from omc3.optics_measurements.constants import (BETA_NAME, DELTA, ERR, EXT,
+                                                MDL, PI2)
+from omc3.optics_measurements.toolbox import df_diff, df_ratio, df_rel_diff
+from omc3.utils import logging_tools, stats
+
 LOGGER = logging_tools.get_logger(__name__)
 
 EPSILON = 1.0E-16
@@ -53,7 +56,7 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     else:
         beta_df, error_method = n_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
     LOGGER.info(f"Errors from {error_method}")
-    rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].values, errors=beta_df.loc[:, f"{ERR}{DELTA}BET{plane}"].values) * 100
+    rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].to_numpy(), errors=beta_df.loc[:, f"{ERR}{DELTA}BET{plane}"].to_numpy()) * 100
     LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
     header = _get_header(header_dict, error_method, meas_input.range_of_bpms, rmsbb)
     return beta_df, header
@@ -110,16 +113,16 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
         else:
             outer_meas_phase_adv = phases_meas.iloc[indx, indx + loc_range]
             outer_meas_err = phases_err.iloc[indx, indx + loc_range]
-            outer_mdl_ph = bk_model.iloc[indx + loc_range][mu_column].values * PI2
+            outer_mdl_ph = bk_model.iloc[indx + loc_range][mu_column].to_numpy() * PI2
             outer_elmts = elements.iloc[indx_el_first:indx_el_last + 1]
             outer_elmts_ph = elements.iloc[indx_el_first:indx_el_last + 1][mu_column] * PI2
-        bpms_inds_elements = [outer_elmts.index.get_loc(bpm_name) for bpm_name in outer_meas_phase_adv.index.values]
+        bpms_inds_elements = [outer_elmts.index.get_loc(bpm_name) for bpm_name in outer_meas_phase_adv.index.to_numpy()]
         sin_squared_elements = np.square(np.sin(outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :]))
         with np.errstate(divide='ignore'):
-            cot_meas = 1.0 / np.tan(outer_meas_phase_adv.values)
+            cot_meas = 1.0 / np.tan(outer_meas_phase_adv.to_numpy())
             cot_model = 1.0 / np.tan((outer_mdl_ph - outer_mdl_ph[m]))
         patter = (np.abs(cot_meas) <= COT_THRESHOLD) & (np.abs(cot_model) <= COT_THRESHOLD)
-        diag = np.concatenate((np.square(outer_meas_err.values), outer_elmts.loc[:]["dK1"],
+        diag = np.concatenate((np.square(outer_meas_err.to_numpy()), outer_elmts.loc[:]["dK1"],
                                outer_elmts.loc[:]["dX"], outer_elmts.loc[:]["KdS"],
                                outer_elmts.loc[:]["mKdS"]))
         outer_elmts = outer_elmts.rename(columns={"BET" + plane: "BETA"})
@@ -163,14 +166,13 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
 
 
 def get_elements_with_errors(meas_input, plane):
-    if meas_input.accelerator.get_errordefspath() is None:
+    if meas_input.accelerator.error_defs_file is None:
         raise IOError(f"Error definition file could not be found")
-    elements = meas_input.accelerator.get_elements_tfs().loc[:,
-               ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
+    elements = meas_input.accelerator.elements.loc[:, ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
     LOGGER.debug("Accelerator Error Definition")
-    elements = _assign_uncertainties(elements, meas_input.accelerator.get_errordefspath())
-    errors_assigned = (len(elements["dK1"].nonzero()[0]) + len(
-        elements["dX"].nonzero()[0]) + len(elements["KdS"].nonzero()[0])) > 0
+    elements = _assign_uncertainties(elements, meas_input.accelerator.error_defs_file)
+    errors_assigned = (len(elements["dK1"].to_numpy().nonzero()[0]) + len(
+        elements["dX"].to_numpy().nonzero()[0]) + len(elements["KdS"].to_numpy().nonzero()[0])) > 0
     if not errors_assigned:
         LOGGER.warning("No systematic errors were given or no element was found for the given "
                        "error definitions. The systematic lattice errors are not used.")
@@ -216,8 +218,8 @@ def calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_
 
     lng = len(outer_elmts)
     line_length = 4 * len(outer_elmts.index) + 2 * m + 1
-    outer_elmts_bet = outer_elmts.loc[:, "BETA"].values
-    outer_el_k2 = outer_elmts.loc[:, "K2L"].values
+    outer_elmts_bet = outer_elmts.loc[:, "BETA"].to_numpy()
+    outer_el_k2 = outer_elmts.loc[:, "K2L"].to_numpy()
     betaline = np.zeros(line_length)
     alfaline = np.zeros(line_length)
 
@@ -332,7 +334,7 @@ def _assign_uncertainties(twiss_full, errordefspath):
 
 def _get_header(header_dict, error_method, range_of_bpms, rmsbb):
     header = header_dict.copy()
-    header['BetaAlgorithmVersion'] = __version__
+    header['BetaAlgorithmVersion'] = VERSION
     header['RCond'] = RCOND
     header['RangeOfBPMs'] = "Adjacent" if error_method == METH_3BPM else range_of_bpms
     header['ErrorsFrom:'] = error_method
@@ -398,11 +400,11 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     tune, mdltune = meas_and_mdl_tunes
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     # tilt phase advances in order to have the phase advances in a neighbourhood
-    tilted_meas = _tilt_slice_matrix(phase["MEAS"].values, 2, 5, tune) * PI2
-    tilted_model = _tilt_slice_matrix(phase["MODEL"].values, 2, 5, mdltune) * PI2
-    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].values, 2, 5, mdltune) * PI2
-    betmdl = beta_df.loc[:, f"BET{plane}{MDL}"].values
-    alfmdl = beta_df.loc[:, f"ALF{plane}{MDL}"].values
+    tilted_meas = _tilt_slice_matrix(phase["MEAS"].to_numpy(), 2, 5, tune) * PI2
+    tilted_model = _tilt_slice_matrix(phase["MODEL"].to_numpy(), 2, 5, mdltune) * PI2
+    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].to_numpy(), 2, 5, mdltune) * PI2
+    betmdl = beta_df.loc[:, f"BET{plane}{MDL}"].to_numpy()
+    alfmdl = beta_df.loc[:, f"ALF{plane}{MDL}"].to_numpy()
     with np.errstate(divide='ignore'):
         cot_phase_meas = 1 / np.tan(tilted_meas)
         cot_phase_model = 1 / np.tan(tilted_model)
@@ -440,7 +442,7 @@ def _get_delta_columns(beta_df, plane):
     beta_df[f"{DELTA}BET{plane}"] = df_rel_diff(beta_df, f"BET{plane}", f"BET{plane}{MDL}")
     beta_df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(beta_df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
     beta_df[f"{DELTA}ALF{plane}"] = df_diff(beta_df, f"ALF{plane}", f"ALF{plane}{MDL}")
-    beta_df[f"{ERR}{DELTA}ALF{plane}"] = beta_df.loc[:, f"{ERR}ALF{plane}"].values
+    beta_df[f"{ERR}{DELTA}ALF{plane}"] = beta_df.loc[:, f"{ERR}ALF{plane}"].to_numpy()
     return beta_df
 
 
@@ -464,7 +466,7 @@ def _tilt_slice_matrix(matrix, slice_shift, slice_width, tune=0):
 
 
 def _get_filtered_model_df(meas_input, phase, plane, best=False):
-    model = _try_best_model(meas_input) if best else meas_input.accelerator.get_model_tfs()
+    model = _try_best_model(meas_input) if best else meas_input.accelerator.model
     df = pd.DataFrame(model).loc[phase["MEAS"].index, ["S", f"BET{plane}", f"ALF{plane}", f"MU{plane}"]]
     if not best:
         df.rename(columns={f"BET{plane}": f"BET{plane}{MDL}", f"ALF{plane}": f"ALF{plane}{MDL}", f"MU{plane}": f"MU{plane}{MDL}"}, inplace=True)
@@ -472,8 +474,7 @@ def _get_filtered_model_df(meas_input, phase, plane, best=False):
 
 
 def _try_best_model(meas_input):
-    try:
-        return meas_input.accelerator.get_best_knowledge_model_tfs()
-    except AttributeError:
+    if meas_input.accelerator.model_best_knowledge is None:
         LOGGER.debug("No best knowledge model - using the normal one.")
-        return meas_input.accelerator.get_model_tfs()
+        return meas_input.accelerator.model
+    return meas_input.accelerator.model_best_knowledge
