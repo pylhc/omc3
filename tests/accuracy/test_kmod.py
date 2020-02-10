@@ -125,7 +125,7 @@ def test_kmod_meas_ip4b1(_workdir_path):
                  errorK=0.0,
                  errorL=0.0,
                  tune_uncertainty=0.5E-5)
-    results = tfs.read(join(_workdir_path, "MQY.6R4.B1-MQM.7R4.B1", "beta_instrument.tfs"), index='INSTRUMENT')
+    results = tfs.read(join(_workdir_path, "MQY.6R4.B1-MQM.7R4.B1", "beta_instrument.tfs"), index='NAME')
 
     original = {
                 'BPMCS.7R4.B1': (17.5074335336, 157.760070696),
@@ -158,7 +158,7 @@ def test_kmod_meas_ip4b2(_workdir_path):
                  errorK=0.0,
                  errorL=0.0,
                  tune_uncertainty=0.5E-5)
-    results = tfs.read(join(_workdir_path, "MQM.7L4.B2-MQY.6L4.B2", "beta_instrument.tfs"), index='INSTRUMENT')
+    results = tfs.read(join(_workdir_path, "MQM.7L4.B2-MQY.6L4.B2", "beta_instrument.tfs"), index='NAME')
 
     original = {
                 'BPMYA.6L4.B2': (456.789268726, 149.073169556),
