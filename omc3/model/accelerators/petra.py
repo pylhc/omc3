@@ -2,15 +2,8 @@
 PETRA
 -------------------
 """
-import os
-import datetime as dt
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.constants import PLANE_TO_HV
-import logging
-
-LOGGER = logging.getLogger(__name__)
-
-CURRENT_DIR = os.path.dirname(__file__)
 
 EXCITER_BPM = "BPM_SOR_13"
 

@@ -14,6 +14,7 @@ from omc3.optics_measurements.constants import PLANES, PLANE_TO_NUM
 
 LOG = logging_tools.get_logger(__name__)
 
+
 def calculate(measure_input, input_files):
     LOG.debug("calculating tune")
     tune_d = TuneDict()
@@ -74,7 +75,6 @@ class TuneDict(dict):
         """
         model = accelerator.elements
         r = self.get_lambda(plane)
-        LOG.debug("lambda (plane {}) = {}".format(plane, r))
         [k, bpmac1], exciter = accelerator.get_exciter_bpm(plane, df_idx_by_bpms.index)
         psi = model.loc[bpmac1, f"MU{plane}"] - model.loc[exciter, f"MU{plane}"]
         psi = np.arctan((1 + r) / (1 - r) * np.tan(
