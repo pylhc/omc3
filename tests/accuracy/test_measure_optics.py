@@ -12,7 +12,7 @@ from omc3.utils.contexts import timeit
 from .twiss_to_lin import optics_measurement_test_files
 
 LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
-LIMITS_3BPM = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-1}
+LIMITS_3BPM = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 9e-1}
 DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
 
