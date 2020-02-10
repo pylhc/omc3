@@ -20,10 +20,10 @@ Important ones are: `numpy`, `pandas` and `scipy`.
 
 ### Installing
 
-To use the codes, first a local copy should be obtained via git clone. 
-To run the codes, the package has to be either installed using
-`pip install -e /path/to/omc3` or can be
-used temporarily by appending the path to PYTHONPATH.
+To use the codes, a local copy should be obtained via git clonewhich then has to be either installed using
+`pip install -e /path/to/omc3` or can be used temporarily by appending the path to PYTHONPATH.
+Alternatively, the previous two steps can be combined with `pip install git+https://github.com/pylhc/omc3.git`.
+Codes can be run with `python -m omc3.SCRIPT --FLAG ARGUMENT`.
 
 ## Description
 
@@ -48,11 +48,10 @@ Some examples can be found in the test files.
 
 ### Implemented
 
-- Main functions: hole_in_one, harpy
-- Utils: logging, iotools, file handlers
 - Madx wrapper
-- optics measurement
-- accelerator class
+- Frequency Analysis of turn by turn
+- Optics measurement analysis scripts
+- Accelerator class
 - K-mod
 
 

@@ -13,7 +13,7 @@ import pandas as pd
 import tfs
 
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL,
-                                                PHASE_NAME, TOTAL_PHASE_NAME)
+                                                PHASE_NAME, TOTAL_PHASE_NAME, SPECIAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
@@ -205,7 +205,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                                                             elems_to_bpms,
         ])), ignore_index=True)
 
-    tfs.write(join(meas_input.outputdir, f"special_phase_{plane.lower()}.tfs"), special_phase_df)
+    tfs.write(join(meas_input.outputdir, f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}"), special_phase_df)
     
 def _to_deg(phase):  # -90 to 90 degrees
     phase = phase % 0.5 * 360
