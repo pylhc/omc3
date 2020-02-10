@@ -110,11 +110,14 @@ def analyse_kmod(opt):
     if opt.instruments_found:
         tfs.write(join(output_dir, 'beta_instrument.tfs'), instrument_beta_df)
 
+    create_lsa_results_file(betastar_required, opt.instruments_found, results_df, instrument_beta_df, output_dir)
+
+def create_lsa_results_file(betastar_required, instruments_found, results_df, instrument_beta_df, output_dir):
     lsa_results_df = pd.DataFrame(columns=LSA_COLUMNS)
     if betastar_required:
         exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
         lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
-    if opt.instruments_found:
+    if instruments_found:
         lsa_results_df=lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
     
     if not lsa_results_df.empty:
