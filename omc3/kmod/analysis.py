@@ -112,7 +112,7 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
                 name, position, results_df, magnet1_df, magnet2_df, kmod_input_params))
 
     instrument_beta_df = tfs.TfsDataFrame(
-        columns=['INSTRUMENT',
+        columns=['NAME',
                  f"{BETA}{'X'}",
                  f"{ERR}{BETA}{'X'}",
                  f"{BETA}{'Y'}",
