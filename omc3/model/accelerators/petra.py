@@ -4,7 +4,7 @@ PETRA
 """
 import os
 import datetime as dt
-from model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
+from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 import logging
 
 LOGGER = logging.getLogger(__name__)

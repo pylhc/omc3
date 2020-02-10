@@ -8,9 +8,9 @@ Tune
 Computes betatron tunes and provides structures to store them.
 """
 import numpy as np
-from utils import stats
-from utils import logging_tools
-from optics_measurements.constants import PLANES, PLANE_TO_NUM
+from omc3.utils import stats
+from omc3.utils import logging_tools
+from omc3.optics_measurements.constants import PLANES, PLANE_TO_NUM
 
 LOG = logging_tools.get_logger(__name__)
 

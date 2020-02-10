@@ -4,8 +4,8 @@ Manager
 
 Contains entrypoint wrappers to get accelerator classes or their instances
 """
-from generic_parser.entrypoint import entrypoint, EntryPoint, EntryPointParameters, split_arguments
-from model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota
+from generic_parser.entrypoint_parser import entrypoint, EntryPoint, EntryPointParameters, split_arguments
+from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota
 
 ACCELS = {
     lhc.Lhc.NAME: lhc.Lhc,
