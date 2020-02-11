@@ -77,14 +77,22 @@ def _getkick(measure_input, files, plane):
     return kick_frame
 
 
-def _gen_kick_calc(meas_input, lin, plane):
+def _gen_kick_calc(meas_input, lin, plane, coupling=None):
     """
     Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation
     """
     frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin.loc[:, [f"{AMPLITUDE}{plane}", PEAK2PEAK]],
                      how='inner', left_index=True, right_index=True)
+    if coupling is not None:
+        coupling_df = pd.merge(coupling["1010"], coupling["1001"], how='inner',
+                               left_index=True, right_index=True, suffixes=("_1010", "_1001"))
+        frame = pd.merge(frame, coupling_df, how='inner', left_index=True, right_index=True,)
+        cosh2p = np.cosh(2 * np.sqrt(np.abs(frame.loc[:, f"AMP_1010"].to_numpy()**2
+                                            - frame.loc[:, f"AMP_1001"].to_numpy()**2)))
     amps = (frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy() if meas_input.accelerator.excitation
             else frame.loc[:, PEAK2PEAK].to_numpy() / 2.0)
+    if coupling is not None:
+        amps = amps * cosh2p
     meansqrt2j = amps / np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
     mean2j = np.square(amps) / frame.loc[:, f"{BETA}{plane}"].to_numpy()
     return np.array([np.mean(meansqrt2j), np.std(meansqrt2j), np.mean(mean2j), np.std(mean2j)])
