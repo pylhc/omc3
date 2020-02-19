@@ -18,7 +18,7 @@ with README.open("r") as docs:
 DEPENDENCIES = [
     "matplotlib>=3.1.0",
     "numpy>=1.14.1",
-    "pandas>=0.24.0,<1.0",
+    "pandas==0.24.*",
     "scipy>=1.0.0",
     "scikit-learn>=0.20.3",
     "tfs-pandas>=1.0.3",
@@ -26,7 +26,7 @@ DEPENDENCIES = [
     "sdds>=0.1.3",
     "pytz>=2018.9",
     "h5py>=2.7.0",
-    "pytimber>=2.7.0",
+    "pytimber>=2.8.0",
 ]
 
 # Dependencies that should only be installed for test purposes
