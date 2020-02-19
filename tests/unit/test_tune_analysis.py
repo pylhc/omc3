@@ -1,5 +1,5 @@
-from tune_analysis.bbq_tools import get_moving_average
-from tune_analysis.detuning_tools import get_poly_fun
+from omc3.tune_analysis.bbq_tools import get_moving_average
+from omc3.tune_analysis.detuning_tools import get_poly_fun
 
 
 import pandas as pd
