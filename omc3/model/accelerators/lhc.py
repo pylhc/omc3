@@ -103,15 +103,13 @@ class Lhc(Accelerator):
             raise AcceleratorDefinitionError("Beam parameter has to be one of (1, 2)")
         self._beam = value
 
-    @classmethod
-    def get_file(cls, filename):
-        return os.path.join(CURRENT_DIR, cls.NAME, filename)
+    def get_file(self, filename):
+        return os.path.join(CURRENT_DIR, self.NAME, filename)
 
-    @classmethod
-    def get_lhc_error_dir(cls):
+    @staticmethod
+    def get_lhc_error_dir():
         return os.path.join(LHC_DIR, "systematic_errors")
 
-    @classmethod
     def get_variables(self, frm=None, to=None, classes=None):
         correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")  # not a bug
         all_corrs = _merge_jsons(
@@ -143,8 +141,7 @@ class Lhc(Accelerator):
         ))
         return _list_intersect_keep_order(vars_by_position, vars_by_class)
 
-    @classmethod
-    def get_ips(cls):
+    def get_ips(self):
         """ Returns an iterable with this accelerator IPs.
 
         Returns:
@@ -153,11 +150,11 @@ class Lhc(Accelerator):
         """
         for ip in Lhc.LHC_IPS:
             yield ("IP{}".format(ip),
-                   Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=cls.beam),
-                   Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=cls.beam))
+                   Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=self.beam),
+                   Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=self.beam))
             yield ("IP{}_DOROS".format(ip),
-                   Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=cls.beam),
-                   Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=cls.beam))
+                   Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=self.beam),
+                   Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=self.beam))
 
     def log_status(self):
         LOGGER.info(f"  model dir = {self.model_dir}")

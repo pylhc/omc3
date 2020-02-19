@@ -1,9 +1,9 @@
 from os import listdir
 from os.path import abspath, dirname, isdir, isfile, join
 from shutil import rmtree
-
+import itertools
 import tfs
-
+import pytest
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
@@ -16,7 +16,18 @@ DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
 
 
-def _create_input():
+MEASURE_OPTICS_INPUT = list(
+    itertools.product(
+        ["model", "equation", "none"],  # compensation
+        [2],                            # coupling method
+        [11],                           # range of bpms
+        [False],                        # three bpm
+        [False],                        # second order dispersion
+    )
+)
+
+
+def _create_input(motion):
     dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
     print(f"\nInput creation: {dpps}")
     opt_dict = dict(accel="lhc", year="2018", ats=True, beam=1, files=[""],
@@ -24,75 +35,53 @@ def _create_input():
                     outputdir=BASE_PATH)
     optics_opt, rest = _optics_entrypoint(opt_dict)
     optics_opt.accelerator = manager.get_accelerator(rest)
-    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps)
+    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion)
     return lins, optics_opt
 
+CREATE_INPUT=dict(free=_create_input("free"), driven=_create_input("driven"))
 
-INPUT_CREATED = _create_input()
+def set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    optics_opt["compensation"] = compensation
+    optics_opt["coupling_method"] = coupling_method
+    optics_opt["range_of_bpms"] = range_of_bpms
+    optics_opt["three_bpm_method"] = three_bpm_method
+    optics_opt["second_order_dispersion"] = second_order_disp
+    return optics_opt
 
 
-def test_single_file():
-    lins, optics_opt = INPUT_CREATED
-    optics_opt["compensation"] = "model"
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
+def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
+    optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "single")
     inputs = measure_optics.InputFiles([lins[0]], optics_opt)
     _run_evaluate_and_clean_up(inputs, optics_opt)
 
 
-def test_single_file_eq():
-    lins, optics_opt = INPUT_CREATED
-    optics_opt["compensation"] = "equation"
-    optics_opt["outputdir"] = join(BASE_PATH, "single_eq")
-    inputs = measure_optics.InputFiles([lins[0]], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
-
-
-def test_3_onmom_files():
-    lins, optics_opt = INPUT_CREATED
-    optics_opt["compensation"] = "model"
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
+def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
+    optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "onmom")
     inputs = measure_optics.InputFiles(lins[:3], optics_opt)
     _run_evaluate_and_clean_up(inputs, optics_opt)
 
 
-def test_3_onmom_files_eq():
-    lins, optics_opt = INPUT_CREATED
-    optics_opt["compensation"] = "equation"
-    optics_opt["outputdir"] = join(BASE_PATH, "onmom_eq")
-    inputs = measure_optics.InputFiles(lins[:3], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
-
-
-def test_3_pseudo_onmom_files():
-    lins, optics_opt = INPUT_CREATED
-    optics_opt["compensation"] = "model"
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
+def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
+    optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "pseudo_onmom")
     inputs = measure_optics.InputFiles(lins[-3:], optics_opt)
     _run_evaluate_and_clean_up(inputs, optics_opt)
 
 
-def test_3_pseudo_onmom_files_eq():
-    lins, optics_opt = INPUT_CREATED
-    optics_opt["compensation"] = "equation"
-    optics_opt["outputdir"] = join(BASE_PATH, "pseudo_onmom_eq")
-    inputs = measure_optics.InputFiles(lins[-3:], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
-
-
-def test_offmom_files():
-    lins, optics_opt = INPUT_CREATED
-    optics_opt["compensation"] = "model"
-    #optics_opt["chromatic_beating"] = True
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
+def test_offmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    lins, optics_opt = CREATE_INPUT["free" if compensation == 'none' else "driven"]
+    optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
+    optics_opt["chromatic_beating"] = True
     optics_opt["outputdir"] = join(BASE_PATH, "offmom")
-    inputs = measure_optics.InputFiles(lins[:7], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
-
-
-def test_offmom_files_eq():
-    lins, optics_opt = INPUT_CREATED
-    #optics_opt["chromatic_beating"] = True
-    optics_opt["compensation"] = "equation"
-    optics_opt["outputdir"] = join(BASE_PATH, "offmom_eq")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)
     _run_evaluate_and_clean_up(inputs, optics_opt)
 
