@@ -233,7 +233,7 @@ def read_timed_dataframe(path):
 def write_timed_dataframe(path, df):
     df = df.copy()
     df.index = pd.Index([i.strftime(get_cern_time_format()) for i in df.index], dtype=str)
-    tfs.write(path, df, save_index=COL_TIME())
+    tfs.write(str(path), df, save_index=COL_TIME())
 
 
 def read_two_kick_files_from_folder(folder):

@@ -98,7 +98,7 @@ class DebugMode(object):
     def __enter__(self):
         return None
 
-    def __exit__(self, value, traceback):
+    def __exit__(self, *args, **kwargs):
         if self.active:
             # summarize
             time_used = time.time() - self.start_time

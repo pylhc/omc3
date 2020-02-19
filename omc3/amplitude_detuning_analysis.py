@@ -15,6 +15,7 @@ linear fit from the measurements.
 :author: Joschua Dilly
 """
 import os
+from pathlib import Path
 
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
 
@@ -181,10 +182,10 @@ def analyse_with_bbq_corrections(opt):
 
     # output kick and bbq data
     if opt.output:
-        os.makedirs(os.path.dirname(opt.output), exist_ok=True)
-        write_timed_dataframe(os.path.join(opt.output, ta_const.get_kick_out_name()),
+        opt.output.mkdir(parents=True, exist_ok=True)
+        write_timed_dataframe(opt.output.joinpath(ta_const.get_kick_out_name()),
                               kick_df)
-        write_timed_dataframe(os.path.join(opt.output, ta_const.get_bbq_out_name()),
+        write_timed_dataframe(opt.output.joinpath(ta_const.get_bbq_out_name()),
                               bbq_df.loc[x_interval[0]:x_interval[1]])
 
     return kick_df, bbq_df
@@ -238,12 +239,15 @@ def _check_analyse_opt(opt):
     # check fine cleaning
     if bool(opt.fine_cut) != bool(opt.fine_window):
         raise KeyError("To activate fine cleaning, both fine cut and fine window need to be specified")
+
+    if opt.output is not None:
+        opt.output = Path(opt.output)
+
     return opt
 
 
 def _get_timber_data(beam, input, kick_df):
     """ Return Timber data from input """
-
     try:
         fill_number = int(input)
     except ValueError:
