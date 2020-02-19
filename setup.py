@@ -18,7 +18,7 @@ with README.open("r") as docs:
 DEPENDENCIES = [
     "matplotlib>=3.1.0",
     "numpy>=1.14.1",
-    "pandas==0.24.*",
+    "pandas==0.25.*",
     "scipy>=1.0.0",
     "scikit-learn>=0.20.3",
     "tfs-pandas>=1.0.3",
