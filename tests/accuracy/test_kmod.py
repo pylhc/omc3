@@ -149,7 +149,7 @@ class ExtendedTests:
                 assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
     @staticmethod
-    def test_kmod_meas_ip4b2(self, _workdir_path):
+    def test_kmod_meas_ip4b2(_workdir_path):
 
         analyse_kmod(betastar_and_waist=[200.0, -100.0],
                      working_directory=_workdir_path,

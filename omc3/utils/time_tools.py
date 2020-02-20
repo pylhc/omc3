@@ -100,10 +100,9 @@ class AccDatetime(datetime):
         if len(args) == 1 and isinstance(args[0], datetime):
             dt = args[0]
         else:
-            dt = datetime.__new__(*args, **kwargs)
+            dt = datetime.__new__(cls, *args, **kwargs)
         dt = utc_to_local(dt, pytz.utc)  # does not convert, but checks tz
-        return datetime.__new__(cls,
-                                dt.year, dt.month, dt.day,
+        return datetime.__new__(cls, dt.year, dt.month, dt.day,
                                 dt.hour, dt.minute, dt.second, dt.microsecond,
                                 tzinfo=pytz.utc)
 
