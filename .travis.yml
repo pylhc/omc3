@@ -37,7 +37,6 @@ jobs:
 
     # Test only basic test classes
     - &test-basic
-      <<: *test-full
       stage: test-basic
       script:
         - python setup.py test --pytest-args='-o python_classes=BasicTests'
