@@ -12,6 +12,7 @@ import numpy as np
 
 from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
+from omc3.utils.outliers import get_filter_mask
 
 PLANES = const.get_planes()
 
@@ -39,7 +40,7 @@ def get_moving_average(data_series, length=20,
 
     Returns: filtered and averaged Series and the mask used for filtering data.
     """
-    LOG.debug("Calculating BBQ moving average of length {:d}.".format(length))
+    LOG.debug("Cutting data and calculating moving average of length {:d}.".format(length))
 
     if bool(fine_length) != bool(fine_cut):
         raise NotImplementedError("To activate fine cleaning, both "
@@ -69,6 +70,28 @@ def get_moving_average(data_series, length=20,
     return data_mav, std_mav, cut_mask
 
 
+def clean_outliers_moving_average(data_series, length, limit):
+    """ Get a moving average of the ``data_series`` over ``length`` entries,
+    by means of :func:`outlier filter <omc3.utils.outliers.get_filter_mask>`.
+    The values are shifted, so that the averaged value takes ceil((length-1)/2) values previous
+    and floor((length-1)/2) following values into account.
+
+    Args:
+        data_series: Series of data
+        length: length of the averaging window
+        limit: points beyond that limit are always filtered
+    """
+    LOG.debug("Filtering and calculating moving average of length {:d}.".format(length))
+    init_mask = ~data_series.isna()
+    mask = init_mask.copy()
+    for i in range(len(data_series)-length):
+        mask[i:i+length] &= get_filter_mask(data_series[i:i+length], limit=limit, mask=init_mask[i:i+length])
+
+    _is_almost_empty_mask(~mask, length)
+    data_mav, std_mav = _get_interpolated_moving_average(data_series, mask, length)
+    return data_mav, std_mav, mask
+
+
 # Private methods ############################################################
 
 
@@ -93,4 +116,4 @@ def _get_interpolated_moving_average(data_series, clean_mask, length):
 def _is_almost_empty_mask(mask, av_length):
     """ Checks if masked data could be used to calculate moving average. """
     if sum(mask) <= av_length:
-        raise ValueError("Too many points have been filtered. Maybe wrong tune, cutoff?")
+        raise ValueError("Too many points have been filtered. Maybe wrong filtering parameters?")

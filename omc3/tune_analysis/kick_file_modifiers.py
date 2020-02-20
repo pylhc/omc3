@@ -80,18 +80,25 @@ def add_bbq_data(kick_df, bbq_series, column):
     return kick_df
 
 
-def add_moving_average(kickac_df, bbq_df, **kwargs):
+def add_moving_average(kickac_df, bbq_df, filter_args):
     """ Adds the moving average of the bbq data to kickac_df and bbq_df. """
     LOG.debug("Calculating moving average.")
     for plane in PLANES:
         tune = f"tune_{plane.lower()}"
-        bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[COL_BBQ(plane)],
-                                                              length=kwargs["window_length"],
-                                                              min_val=kwargs[f"{tune}_min"],
-                                                              max_val=kwargs[f"{tune}_max"],
-                                                              fine_length=kwargs["fine_window"],
-                                                              fine_cut=kwargs["fine_cut"],
-                                                              )
+        if filter_args.bbq_filtering_method != 'cut':
+            bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[COL_BBQ(plane)],
+                                                                  length=filter_args.window_length,
+                                                                  min_val=filter_args[f"{tune}_min"],
+                                                                  max_val=filter_args[f"{tune}_max"],
+                                                                  fine_length=filter_args.fine_window,
+                                                                  fine_cut=filter_args.fine_cut,
+                                                                  )
+        else:
+            bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[COL_BBQ(plane)],
+                                                                             length=filter_args.window_length,
+                                                                             limit=filter_args.outlier_limit
+                                                                             )
+
         bbq_df[COL_MAV(plane)] = bbq_mav
         bbq_df[COL_MAV_STD(plane)] = bbq_std
         bbq_df[COL_IN_MAV(plane)] = ~mask

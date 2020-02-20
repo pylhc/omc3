@@ -25,7 +25,7 @@ from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     write_timed_dataframe,
                                                     read_two_kick_files_from_folder
                                                     )
-from omc3.utils import logging_tools
+from utils.logging_tools import get_logger, list2str, DebugMode
 from omc3.utils.time_tools import CERNDatetime
 
 # Globals ####################################################################
@@ -44,7 +44,7 @@ TIMBER_KEY = ta_const.get_timber_bbq_key
 
 DTIME = 60  # extra seconds to add to kick times when extracting from timber
 
-LOG = logging_tools.get_logger(__name__)
+LOG = get_logger(__name__)
 
 
 # Get Parameters #############################################################
@@ -89,43 +89,55 @@ def _get_params():
             type=int,
             default=20,
         ),
-        # Cleaning Method A
+        bbq_filtering_method=dict(
+            help="",
+            type=str,
+            choices=["cut", "minmax", "outliers"],
+            default="outliers",
+        ),
+        # Filtering method outliers
+        outlier_limit=dict(
+            help="Limit, i.e. cut, on outliers (Method 'outliers')",
+            type=float,
+            default=2e-4,
+        ),
+        # Filtering method tune-cut
         tune_x=dict(
-            help="Horizontal Tune. For BBQ cleaning (Method A).",
+            help="Horizontal Tune. For BBQ cleaning (Method 'cut').",
             type=float,
         ),
         tune_y=dict(
-            help="Vertical Tune. For BBQ cleaning (Method A).",
+            help="Vertical Tune. For BBQ cleaning (Method 'cut').",
             type=float,
         ),
         tune_cut=dict(
-            help="Cuts for the tune. For BBQ cleaning (Method A).",
+            help="Cuts for the tune. For BBQ cleaning (Method 'cut').",
             type=float,
         ),
-        # Cleaning Method B:
+        # Filtering method tune-minmax
         tune_x_min=dict(
-            help="Horizontal Tune minimum. For BBQ cleaning (Method B).",
+            help="Horizontal Tune minimum. For BBQ cleaning (Method 'minmax').",
             type=float,
         ),
         tune_x_max=dict(
-            help="Horizontal Tune maximum. For BBQ cleaning (Method B).",
+            help="Horizontal Tune maximum. For BBQ cleaning (Method 'minmax').",
             type=float,
         ),
         tune_y_min=dict(
-            help="Vertical  Tune minimum. For BBQ cleaning (Method B).",
+            help="Vertical Tune minimum. For BBQ cleaning (Method 'minmax').",
             type=float,
         ),
         tune_y_max=dict(
-            help="Vertical Tune maximum. For BBQ cleaning (Method B).",
+            help="Vertical Tune maximum. For BBQ cleaning (Method 'minmax').",
             type=float,
         ),
         # Fine Cleaning
         fine_window=dict(
-            help="Length of the moving average window, i.e # data points (fine cleaning).",
+            help="Length of the moving average window, i.e # data points (fine cleaning for 'minmax' or 'cut').",
             type=int,
         ),
         fine_cut=dict(
-            help="Cut, i.e. tolerance, of the tune (fine cleaning).",
+            help="Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
             type=float,
         ),
         # Debug
@@ -151,8 +163,8 @@ def analyse_with_bbq_corrections(opt):
     LOG.info("Starting Amplitude Detuning Analysis")
     _save_options(opt)
 
-    with logging_tools.DebugMode(active=opt.debug, log_file=opt.logfile):
-        opt = _check_analyse_opt(opt)
+    with DebugMode(active=opt.debug, log_file=opt.logfile):
+        opt, filter_opt = _check_analyse_opt(opt)
 
         # get data
         kick_df = read_two_kick_files_from_folder(opt.kick)
@@ -160,9 +172,7 @@ def analyse_with_bbq_corrections(opt):
         x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
 
         # add moving average to kick
-        kick_df, bbq_df = kick_file_modifiers.add_moving_average(
-            kick_df, bbq_df, **opt.get_subdict(["tune_x_min", "tune_x_max", "tune_y_min", "tune_y_max",
-                                                "window_length", "fine_cut", "fine_window"]))
+        kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
 
         # add corrected values to kick
         kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
@@ -218,32 +228,46 @@ def _check_analyse_opt(opt):
         opt.label = f"Amplitude Detuning for Beam {opt.beam:d}"
 
     # check if cleaning is properly specified
-    method_a = [opt.tune_x, opt.tune_y, opt.tune_cut]
-    method_b = [opt.tune_x_min, opt.tune_x_max, opt.tune_y_min, opt.tune_y_max]
-    if any(method_a) and any(method_b):
-        raise KeyError("Choose either the method of cleaning BBQ with tunes and cut or with min and max values")
+    all_filter_opt = dict(
+        cut=opt.get_subdict(['bbq_filtering_method', 'window_length',
+                             'tune_x', 'tune_y', 'tune_cut',
+                             'fine_window', 'fine_cut']
+                            ),
+        minmax=opt.get_subdict(['bbq_filtering_method', 'window_length',
+                                'tune_x_min', 'tune_x_max', 'tune_y_min', 'tune_y_max',
+                                'fine_window', 'fine_cut']
+                               ),
+        outliers=opt.get_subdict(['bbq_filtering_method',
+                                  'window_length', 'outlier_limit']
+                                 ),
+    )
 
-    if any(method_a):
-        if opt.tune_cut is None:
-            raise KeyError("Tune cut is needed for cleaning tune.")
+    for method, params in all_filter_opt.items():
+        if opt.bbq_filtering_method == method:
+            missing_params = [k for k, v in params.items() if v is None]
+            if any(missing_params):
+                raise KeyError(f"Missing parameters for chosen cleaning method {method}: '{list2str(missing_params)}'")
+            filter_opt = params
 
+    if filter_opt.bbq_filtering_method == 'cut':
         # set min and max for specified tune cut
         for plane in PLANES:
             qstr = f"tune_{plane.lower()}"
             tune = opt.pop(qstr)
             if tune:
-                opt[f"{qstr}_min"] = tune - opt.tune_cut
-                opt[f"{qstr}_max"] = tune + opt.tune_cut
-        opt.pop('tune_cut')
+                filter_opt[f"{qstr}_min"] = tune - opt.tune_cut
+                filter_opt[f"{qstr}_max"] = tune + opt.tune_cut
+        filter_opt.pop('tune_cut')
 
-    # check fine cleaning
-    if bool(opt.fine_cut) != bool(opt.fine_window):
-        raise KeyError("To activate fine cleaning, both fine cut and fine window need to be specified")
+    if filter_opt.bbq_filtering_method != 'outliers':
+        # check fine cleaning
+        if bool(filter_opt.fine_cut) != bool(filter_opt.fine_window):
+            raise KeyError("To activate fine cleaning, both fine cut and fine window need to be specified")
 
     if opt.output is not None:
         opt.output = Path(opt.output)
 
-    return opt
+    return opt, filter_opt
 
 
 def _get_timber_data(beam, input, kick_df):
