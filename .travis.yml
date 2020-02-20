@@ -3,7 +3,10 @@ env:
     - CC_TEST_REPORTER_ID=ddd9a311ee312287c63200b8ab887053bb39bae63f4cc15b1a873f9ac3fee7cf
 
 stages:
-  - test
+  - name: test-basic
+    if: branch != master
+  - name: test-full
+    if: branch = master
   - name: documentation
     if: branch = master
   - name: package
@@ -20,8 +23,9 @@ email:
 
 jobs:
   include:
-    - &test-stage
-      stage: test
+    # Tests ---
+    - &test-full
+      stage: test-full
       before_script:
         - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         - chmod +x ./cc-test-reporter
@@ -31,13 +35,28 @@ jobs:
       after_script:
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
+    # Test only basic test classes
+    - &test-basic
+      <<: *test-full
+      stage: test-basic
+      script:
+        - python setup.py test --pytest-args='-o python_classes=BasicTests'
+
+
     # Define additional python versions for tests
-    - <<: *test-stage
+    - <<: *test-full
       python: 3.7
 
-    - <<: *test-stage
+    - <<: *test-full
       python: 3.8
 
+    - <<: *test-basic
+      python: 3.7
+
+    - <<: *test-basic
+      python: 3.8
+
+    # Other ---
     - stage: documentation
       install:
         - pip install '.[doc]'
