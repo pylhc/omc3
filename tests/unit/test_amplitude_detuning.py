@@ -5,6 +5,7 @@ import pytest
 
 from omc3.amplitude_detuning_analysis import analyse_with_bbq_corrections
 
+
 class BasicTests:
     @staticmethod
     def test_amplitude_detuning_outliers_filter():
