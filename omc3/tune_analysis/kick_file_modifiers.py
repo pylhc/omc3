@@ -85,7 +85,12 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
     LOG.debug("Calculating moving average.")
     for plane in PLANES:
         tune = f"tune_{plane.lower()}"
-        if filter_args.bbq_filtering_method != 'cut':
+        if filter_args.bbq_filtering_method == 'outliers':
+            bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[COL_BBQ(plane)],
+                                                                             length=filter_args.window_length,
+                                                                             limit=filter_args.outlier_limit
+                                                                             )
+        else:
             bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[COL_BBQ(plane)],
                                                                   length=filter_args.window_length,
                                                                   min_val=filter_args[f"{tune}_min"],
@@ -93,15 +98,10 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
                                                                   fine_length=filter_args.fine_window,
                                                                   fine_cut=filter_args.fine_cut,
                                                                   )
-        else:
-            bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[COL_BBQ(plane)],
-                                                                             length=filter_args.window_length,
-                                                                             limit=filter_args.outlier_limit
-                                                                             )
 
         bbq_df[COL_MAV(plane)] = bbq_mav
         bbq_df[COL_MAV_STD(plane)] = bbq_std
-        bbq_df[COL_IN_MAV(plane)] = ~mask
+        bbq_df[COL_IN_MAV(plane)] = mask
         kickac_df = add_bbq_data(kickac_df, bbq_mav, COL_MAV(plane))
         kickac_df = add_bbq_data(kickac_df, bbq_std, COL_MAV_STD(plane))
     return kickac_df, bbq_df

@@ -67,7 +67,7 @@ def get_moving_average(data_series, length=20,
         _is_almost_empty_mask(~cut_mask, fine_length)
         data_mav, std_mav = _get_interpolated_moving_average(data_series, cut_mask, fine_length)
 
-    return data_mav, std_mav, cut_mask
+    return data_mav, std_mav, ~cut_mask
 
 
 def clean_outliers_moving_average(data_series, length, limit):
@@ -87,8 +87,8 @@ def clean_outliers_moving_average(data_series, length, limit):
     for i in range(len(data_series)-length):
         mask[i:i+length] &= get_filter_mask(data_series[i:i+length], limit=limit, mask=init_mask[i:i+length])
 
-    _is_almost_empty_mask(~mask, length)
-    data_mav, std_mav = _get_interpolated_moving_average(data_series, mask, length)
+    _is_almost_empty_mask(mask, length)
+    data_mav, std_mav = _get_interpolated_moving_average(data_series, ~mask, length)
     return data_mav, std_mav, mask
 
 
