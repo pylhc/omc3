@@ -25,7 +25,7 @@ from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     write_timed_dataframe,
                                                     read_two_kick_files_from_folder
                                                     )
-from utils.logging_tools import get_logger, list2str, DebugMode
+from omc3.utils.logging_tools import get_logger, list2str, DebugMode
 from omc3.utils.time_tools import CERNDatetime
 
 # Globals ####################################################################
