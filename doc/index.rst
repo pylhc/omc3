@@ -11,7 +11,7 @@ Contents:
    model/index
    optics_measurements/index
    plotting/index
-   tbt/index
+   tune_analysis/index
    utils/index
 
 

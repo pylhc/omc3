@@ -9,7 +9,7 @@ additionally getting BBQ data from timber, averaging and filtering this data and
 subtracting it from the measurement data.
 
 Furthermore, the orthogonal distance regression is utilized to get a
-linear fit from the measurements.
+linear or quadratic fit from the measurements.
 
 
 :author: Joschua Dilly

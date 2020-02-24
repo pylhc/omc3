@@ -9,6 +9,10 @@ Analysis
     :members:
 
 
+.. automodule:: omc3.amplitude_detuning_analysis
+    :members:
+
+
 MAD-X
 =======================
 
