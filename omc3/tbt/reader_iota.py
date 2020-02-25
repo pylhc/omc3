@@ -11,12 +11,11 @@ import h5py
 import numpy as np
 import pandas as pd
 
+from omc3.definitions.constants import PLANES
 from omc3.tbt import handler
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
-
-PLANES = ('X', 'Y')
 
 VERSIONS = (1, 2)
 

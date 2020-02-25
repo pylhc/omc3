@@ -6,7 +6,6 @@ Common functions and sorting functions for the spectrum plotter.
 
 """
 import os
-from contextlib import suppress
 from typing import Iterable, Sized, Union
 
 import matplotlib
@@ -16,6 +15,7 @@ from generic_parser import DotDict
 from matplotlib import transforms, axes, pyplot as plt
 from matplotlib.patches import Rectangle
 
+from omc3.definitions.constants import PLANES
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.utils import logging_tools
 
@@ -30,7 +30,6 @@ MANUAL_LOCATIONS = {
 }
 
 
-PLANES = ('X', 'Y')
 STEM_LINES_ALPHA = 0.5
 RESONANCE_LINES_ALPHA = 0.5
 PATCHES_ALPHA = 0.2

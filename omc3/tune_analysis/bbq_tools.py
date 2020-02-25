@@ -3,20 +3,12 @@ Module tune_analysis.bbq_tools
 ----------------------------------
 
 Tools to handle BBQ data.
-
-This package contains a collection of tools to handle and modify BBQ data:
- - Calculating moving average
- - Plotting
 """
 import numpy as np
 
-from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
 
-COL_MAV = const.get_mav_col
-COL_IN_MAV = const.get_used_in_mav_col
-COL_BBQ = const.get_bbq_col
 
 LOG = logging_tools.get_logger(__name__)
 

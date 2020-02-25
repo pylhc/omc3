@@ -4,13 +4,13 @@ import numpy as np
 import pandas as pd
 import sdds
 
+from omc3.definitions.constants import PLANES
 from omc3.tbt import (reader_esrf, reader_iota, reader_lhc, reader_ptc,
                       reader_trackone)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
-PLANES = ('X', 'Y')
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6

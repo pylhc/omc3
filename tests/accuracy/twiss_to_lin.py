@@ -19,14 +19,14 @@ import pandas as pd
 import tfs
 
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
 
-PLANES = ('X', 'Y')
 MOTION = dict(free="_f", driven="_d")
 PLANE_TO_NUM = dict(X=1, Y=2)
 COUP = dict(X="01", Y="10")
 OTHER = dict(X="Y", Y="X")
-NOISE=1e-4
-NTURNS=6600
+NOISE = 1e-4
+NTURNS = 6600
 ACTION = 5e-9
 ERRTUNE = 3e-7
 NAT_OVER_DRV = 0.01

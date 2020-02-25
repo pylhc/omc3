@@ -9,9 +9,9 @@ import pytest
 import tfs
 
 from omc3 import tbt
+from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import hole_in_one_entrypoint
 
-PLANES = ('X', 'Y')
 LIMITS = dict(F1=1e-6, A1=1.5e-3, P1=3e-4, F2=1.5e-4, A2=1.5e-1, P2=0.03)
 NOISE = 3.2e-5
 COUPLING = 0.01

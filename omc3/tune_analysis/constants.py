@@ -4,7 +4,7 @@ Module tune_analysis.constants
 
 """
 from omc3.optics_measurements.constants import (ERR, RES, EXT, KICK_NAME, ACTION, TIME, NAT_TUNE)
-
+from omc3.definitions.constants import PLANE_TO_NUM
 
 # Global 'Parameters' for easy editing #########################################
 
@@ -18,7 +18,7 @@ BBQ = "BBQ"
 
 def get_timber_bbq_key(plane, beam):
     """ Key to extract bbq from timber. """
-    return f'lhc.bofsu:eigen_freq_{ {"X": 1, "Y": 2}[plane] :d}_b{beam:d}'
+    return f'lhc.bofsu:eigen_freq_{PLANE_TO_NUM[plane] :d}_b{beam:d}'
 
 
 def get_kick_out_name():

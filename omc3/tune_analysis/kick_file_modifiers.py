@@ -102,8 +102,9 @@ def add_corrected_natural_tunes(kickac_df):
         Modified kick_ac
     """
     for plane in PLANES:
-        kickac_df[get_natq_corr_col(plane)] = \
+        kickac_df[get_natq_corr_col(plane)] = (
             kickac_df[get_natq_col(plane)] - kickac_df[get_mav_col(plane)]
+        )
     return kickac_df
 
 
