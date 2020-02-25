@@ -1,5 +1,5 @@
 from omc3.tune_analysis.bbq_tools import get_moving_average, clean_outliers_moving_average
-from omc3.tune_analysis.detuning_tools import get_poly_fun
+from omc3.tune_analysis.fitting_tools import get_poly_fun
 
 import pandas as pd
 import numpy as np
