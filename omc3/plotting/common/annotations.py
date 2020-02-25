@@ -1,6 +1,6 @@
 """
-Plotshop: Annotations
----------------------------------
+Common Plotting Functions: Annotations
+----------------------------------------
 
 Helper functions to create annotations as well as style labels in plots.
 

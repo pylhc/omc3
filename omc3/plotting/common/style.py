@@ -1,6 +1,6 @@
 """
-Plot Style
-----------------------------
+Plotting: Style
+-----------------------------------
 
 Helper functions to make the most awesome* plots out there.
 

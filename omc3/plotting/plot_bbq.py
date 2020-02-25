@@ -1,5 +1,5 @@
 """
-Plotting: BBQ
+Plot BBQ
 ------------------------------------
 
 Provides the plotting function for the extracted and cleaned BBQ data from timber.

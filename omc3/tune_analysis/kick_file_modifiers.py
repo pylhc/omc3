@@ -184,15 +184,15 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
 
 
     Returns:
-        Dictionary containing x,y, x_err and y_err
+        Dictionary containing action, tune, action_err and tune_err
 
     """
     col_natq, col_natq_std = _get_ampdet_columns(corrected)
 
-    columns = {"x": get_action_col(action_plane),
-               "xerr": get_action_err_col(action_plane),
-               "y": col_natq(tune_plane),
-               "yerr": col_natq_std(tune_plane),
+    columns = {"action": get_action_col(action_plane),
+               "action_err": get_action_err_col(action_plane),
+               "tune": col_natq(tune_plane),
+               "tune_err": col_natq_std(tune_plane),
                }
 
     not_found = [cv for cv in columns.values() if cv not in kickac_df.columns]

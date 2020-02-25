@@ -72,7 +72,7 @@ from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, s
 
 from definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.tune_analysis import timber_extract, detuning_tools, kick_file_modifiers
+from omc3.tune_analysis import timber_extract, fitting_tools, kick_file_modifiers
 from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     write_timed_dataframe,
                                                     read_two_kick_files_from_folder
@@ -219,7 +219,9 @@ def analyse_with_bbq_corrections(opt):
                 data = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corr)
 
                 # make the odr
-                odr_fit = detuning_tools.do_odr(**data, order=opt.detuning_order)
+                odr_fit = fitting_tools.do_odr(x=data['action'], y=data['tune'],
+                                               xerr=data['action_err'], yerr=data['tune_err'],
+                                               order=opt.detuning_order)
                 kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corr)
 
     # output kick and bbq data

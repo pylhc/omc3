@@ -1,5 +1,5 @@
 """
-Plotshop: Lines
+Plotting: Lines
 ---------------------------------
 
 Line-plotting related functionality.

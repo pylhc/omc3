@@ -1,6 +1,6 @@
 """
-Plotshop: Colors
----------------------------------
+CPlotting: Colors
+-----------------------------------
 
 Make everything Rainbow.
 

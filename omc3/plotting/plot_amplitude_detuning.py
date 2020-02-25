@@ -1,5 +1,5 @@
 """
-Amplitude Detuning Results Plotting
+Plot Amplitude Detuning Results
 ------------------------------------
 
 Provides the plotting function for amplitude detuning analysis
@@ -256,15 +256,17 @@ def plot_odr(ax, odr_fit, xmax, action_unit, tune_scale, color=None):
 
 def _plot_detuning(ax, data, label, action_unit, tune_scale, color=None, limits=None, odr_fit=None):
     """ Plot the detuning and the ODR into axes. """
-    x_lim = _get_default(limits, 'x_lim', [0, max(data['x']+data['xerr'])])
+    x_lim = _get_default(limits, 'x_lim', [0, max(data['action']+data['action_err'])])
 
     # Plot Fit
     offset = odr_fit.beta[0]
     plot_odr(ax, odr_fit, xmax=x_lim[1], action_unit=action_unit, tune_scale=tune_scale, color=color)
 
     # Plot Data
-    data['y'] -= offset
-    ax.errorbar(**data, label=label, color=color)
+    data['tune'] -= offset
+    ax.errorbar(x=data['action'], xerr=['action_err'],
+                y=data['tune'], yerr=['tune_err'],
+                label=label, color=color)
 
 
 def _set_plotstyle(manual_style):
@@ -325,13 +327,13 @@ def _correct_and_scale(data, odr_fit, action_unit, action_plot_unit, tune_scale,
     """ Corrects data for AC-Dipole and scales to plot-units (y=tune_scale, x=um)"""
     # scale action units
     x_scale = UNIT_TO_M[action_unit] / UNIT_TO_M[action_plot_unit]
-    data['x'] *= x_scale
-    data['xerr'] *= x_scale
+    data['action'] *= x_scale
+    data['action_err'] *= x_scale
 
     # correct for ac-diple and tune scaling
     y_scale = acd_corr / tune_scale
-    data['y'] *= y_scale
-    data['yerr'] *= y_scale
+    data['tune'] *= y_scale
+    data['tune_err'] *= y_scale
 
     # same for odr_fit:
     for idx in range(len(odr_fit.beta)):

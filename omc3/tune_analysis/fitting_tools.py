@@ -1,8 +1,8 @@
 """
-Module tune_analysis.detuning_tools
+Module tune_analysis.fitting_tools
 -------------------------------------
 
-Some tools for amplitude detuning, mainly plotting.
+Tools for fitting functions, mainly via odr.
 
 Important Convention:
     The beta-parameter in the ODR models go upwards with order, i.e.
