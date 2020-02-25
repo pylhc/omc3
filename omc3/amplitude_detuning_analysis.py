@@ -72,8 +72,9 @@ def _get_params():
             help="Label to identify this run.",
             type=str,
         ),
-        timber_in=dict(
-            help="Fill number of desired data or path to presaved tfs-file",
+        bbq_in=dict(
+            help=("Fill number of desired data to extract from timber "
+                  "or path to presaved bbq-tfs-file"),
         ),
         detuning_order=dict(
             help="Order of the detuning as int. Basically just the order of the applied fit.",
@@ -102,34 +103,21 @@ def _get_params():
             default=2e-4,
         ),
         # Filtering method tune-cut
-        tune_x=dict(
-            help="Horizontal Tune. For BBQ cleaning (Method 'cut').",
+        tunes=dict(
+            help="Tunes for BBQ cleaning (Method 'cut').",
             type=float,
-        ),
-        tune_y=dict(
-            help="Vertical Tune. For BBQ cleaning (Method 'cut').",
-            type=float,
+            nargs=2,
         ),
         tune_cut=dict(
             help="Cuts for the tune. For BBQ cleaning (Method 'cut').",
             type=float,
         ),
         # Filtering method tune-minmax
-        tune_x_min=dict(
-            help="Horizontal Tune minimum. For BBQ cleaning (Method 'minmax').",
+        tunes_minmax=dict(
+            help=("Tunes minima and maxima in the order x_min, x_max, y_min, y_max. "
+                  "For BBQ cleaning (Method 'minmax')."),
             type=float,
-        ),
-        tune_x_max=dict(
-            help="Horizontal Tune maximum. For BBQ cleaning (Method 'minmax').",
-            type=float,
-        ),
-        tune_y_min=dict(
-            help="Vertical Tune minimum. For BBQ cleaning (Method 'minmax').",
-            type=float,
-        ),
-        tune_y_max=dict(
-            help="Vertical Tune maximum. For BBQ cleaning (Method 'minmax').",
-            type=float,
+            nargs=4,
         ),
         # Fine Cleaning
         fine_window=dict(
@@ -168,7 +156,7 @@ def analyse_with_bbq_corrections(opt):
 
         # get data
         kick_df = read_two_kick_files_from_folder(opt.kick)
-        bbq_df = _get_timber_data(opt.beam, opt.timber_in, kick_df)
+        bbq_df = _get_bbq_data(opt.beam, opt.bbq_in, kick_df)
         x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
 
         # add moving average to kick
@@ -230,12 +218,11 @@ def _check_analyse_opt(opt):
     # check if cleaning is properly specified
     all_filter_opt = dict(
         cut=opt.get_subdict(['bbq_filtering_method', 'window_length',
-                             'tune_x', 'tune_y', 'tune_cut',
+                             'tunes', 'tune_cut',
                              'fine_window', 'fine_cut']
                             ),
         minmax=opt.get_subdict(['bbq_filtering_method', 'window_length',
-                                'tune_x_min', 'tune_x_max', 'tune_y_min', 'tune_y_max',
-                                'fine_window', 'fine_cut']
+                                'tunes_minmax', 'fine_window', 'fine_cut']
                                ),
         outliers=opt.get_subdict(['bbq_filtering_method',
                                   'window_length', 'outlier_limit']
@@ -250,14 +237,9 @@ def _check_analyse_opt(opt):
             filter_opt = params
 
     if filter_opt.bbq_filtering_method == 'cut':
-        # set min and max for specified tune cut
-        for plane in PLANES:
-            qstr = f"tune_{plane.lower()}"
-            tune = opt.pop(qstr)
-            if tune:
-                filter_opt[f"{qstr}_min"] = tune - opt.tune_cut
-                filter_opt[f"{qstr}_max"] = tune + opt.tune_cut
+        filter_opt[f"tunes_minmax"] = [minmax for t in opt.tunes for minmax in (t - opt.tune_cut, t + opt.tune_cut)]
         filter_opt.pop('tune_cut')
+        filter_opt.pop('tunes')
 
     if filter_opt.bbq_filtering_method != 'outliers':
         # check fine cleaning
@@ -270,14 +252,14 @@ def _check_analyse_opt(opt):
     return opt, filter_opt
 
 
-def _get_timber_data(beam, input, kick_df):
-    """ Return Timber data from input """
+def _get_bbq_data(beam, input_, kick_df):
+    """ Return bbq data from input, either file or timber fill """
     try:
-        fill_number = int(input)
+        fill_number = int(input_)
     except ValueError:
         # input is a string
-        LOG.debug(f"Getting timber data from file '{input:s}'")
-        data = read_timed_dataframe(input)
+        LOG.debug(f"Getting bbq data from file '{input_:s}'")
+        data = read_timed_dataframe(input_)
         data.drop([COL_MAV(p) for p in PLANES if COL_MAV(p) in data.columns], axis='columns')
     except TypeError:
         # input is None
@@ -289,7 +271,7 @@ def _get_timber_data(beam, input, kick_df):
                                                     names=dict(zip(timber_keys, bbq_cols)))
     else:
         # input is a number
-        LOG.debug(f"Getting timber data from fill '{input:d}'")
+        LOG.debug(f"Getting timber data from fill '{input_:d}'")
         timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
         data = timber_extract.lhc_fill_to_tfs(fill_number, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols)))
     return data
