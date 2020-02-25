@@ -42,28 +42,28 @@ def get_tend_head():
     return "END_TIME"
 
 
-def get_odr_header_default(j_plane, q_plane):
-    return f"{ODR_PREF}J{j_plane.upper():s}Q{q_plane.upper():s}"
+def get_odr_header_default(q_plane, j_plane):
+    return f"{ODR_PREF}dQ{q_plane.upper():s}d2J{j_plane.upper():s}"
 
 
-def get_odr_header_coeff(j_plane, q_plane, order):
+def get_odr_header_coeff(q_plane, j_plane, order):
     """ Header key for odr coefficient for term of given order (i.e. beta[order]) """
-    return f"{get_odr_header_default(j_plane, q_plane):s}_{COEFFICIENT.format(order=order)}"
+    return f"{get_odr_header_default(q_plane, j_plane) :s}_{COEFFICIENT.format(order=order)}"
 
 
-def get_odr_header_err_coeff(j_plane, q_plane, order):
+def get_odr_header_err_coeff(q_plane, j_plane, order):
     """ Header key for odr coefficient standard deviation for term of given order (i.e. sd_beta[order]) """
-    return f"{get_odr_header_default(j_plane, q_plane):s}_{ERR}{COEFFICIENT.format(order=order)}"
+    return f"{get_odr_header_default(q_plane, j_plane) :s}_{ERR}{COEFFICIENT.format(order=order)}"
 
 
-def get_odr_header_coeff_corrected(j_plane, q_plane, order):
+def get_odr_header_coeff_corrected(q_plane, j_plane, order):
     """ Header key for corrected odr coefficient for term of given order (i.e. beta[order]) """
-    return f"{get_odr_header_default(j_plane, q_plane)}_{CORRECTED}{COEFFICIENT.format(order=order)}"
+    return f"{get_odr_header_default(q_plane, j_plane)}_{CORRECTED}{COEFFICIENT.format(order=order)}"
 
 
-def get_odr_header_err_coeff_corrected(j_plane, q_plane, order):
+def get_odr_header_err_coeff_corrected(q_plane, j_plane, order):
     """ Header key for corrected odr coefficient standard deviation for term of given order (i.e. sd_beta[order]) """
-    return f"{get_odr_header_default(j_plane, q_plane)}_{ERR}{CORRECTED}{COEFFICIENT.format(order=order)}"
+    return f"{get_odr_header_default(q_plane, j_plane)}_{ERR}{CORRECTED}{COEFFICIENT.format(order=order)}"
 
 
 def get_mav_window_header(plane):
@@ -131,7 +131,7 @@ def get_action_err_col(plane):
 # Plotting #####################################################################
 
 
-def get_paired_lables(action_plane, tune_plane, tune_scale=None):
+def get_paired_lables(tune_plane, action_plane, tune_scale=None):
     """ Labels for the action/tune plots. """
     tune_unit = ''
     if tune_scale:

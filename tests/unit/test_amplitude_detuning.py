@@ -4,12 +4,37 @@ import tempfile
 import pytest
 
 from omc3.amplitude_detuning_analysis import analyse_with_bbq_corrections
+from omc3.plotting.plot_bbq import main as pltbbq
+from omc3.plotting.plot_amplitude_detuning import main as pltampdet
 
 
 class BasicTests:
     @staticmethod
     def test_amplitude_detuning_outliers_filter():
         ExtendedTests().test_amplitude_detuning_full(method='outliers')
+
+    @staticmethod
+    def test_bbq_plot():
+        with tempfile.TemporaryDirectory() as out:
+            fig = pltbbq(
+                input=str(get_input_dir() / 'bbq_ampdet.tfs'),
+                output=str(Path(out) / 'bbq.pdf'),
+            )
+            assert fig is not None
+            assert len(list(Path(out).glob("*.pdf"))) == 1
+
+    @staticmethod
+    def test_ampdet_plot():
+        with tempfile.TemporaryDirectory() as out:
+            fig = pltampdet(
+                kicks=[str(get_input_dir() / 'kick_ampdet_xy.tfs')],
+                labels=['Beam 1 Vertical'],
+                plane='Y',
+                correct_acd=True,
+                output=str(Path(out) / 'ampdet.pdf'),
+            )
+            assert len(fig) == 4
+            assert len(list(Path(out).glob("*.pdf"))) == 4
 
 
 class ExtendedTests:
@@ -22,7 +47,7 @@ class ExtendedTests:
                 kick=str(get_input_dir()),
                 plane="Y",
                 label="B1Vkicks",
-                bbq_in=str(get_input_dir().joinpath("bbq_ampdet.tfs")),
+                bbq_in=str(get_input_dir() / "bbq_ampdet.tfs"),
                 detuning_order=1,
                 output=out,
                 window_length=100 if method != 'outliers' else 50,
@@ -41,4 +66,4 @@ class ExtendedTests:
 
 
 def get_input_dir():
-    return Path(__file__).parent.parent.joinpath('inputs', 'amplitude_detuning')
+    return Path(__file__).parent.parent / 'inputs' / 'amplitude_detuning'

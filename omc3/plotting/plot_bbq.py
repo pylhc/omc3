@@ -38,9 +38,9 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 :author: jdilly
 
 """
-import os
 from collections import OrderedDict
 from contextlib import suppress
+from pathlib import Path
 
 import matplotlib.dates as mdates
 import numpy as np
@@ -49,13 +49,14 @@ from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, gridspec
 from matplotlib.ticker import FormatStrFormatter
 
-from definitions import formats
 from omc3 import amplitude_detuning_analysis as ad_ana
+from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.plotting.common import colors as pcolors, style as pstyle
 from omc3.tune_analysis import kick_file_modifiers as kick_mod
+from omc3.tune_analysis.constants import (get_mav_window_header, get_used_in_mav_col,
+                                          get_bbq_col, get_mav_col)
 from omc3.utils import logging_tools
-from tune_analysis.constants import get_mav_window_header, get_used_in_mav_col, get_bbq_col, get_mav_col
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -252,11 +253,11 @@ def _plot_bbq_data(bbq_df,
 
 def _save_options(opt):
     if opt.output:
-        os.makedirs(opt.output, exist_ok=True)
-        save_options_to_config(os.path.join(opt.output, formats.get_config_filename(__file__)),
+        out_path = Path(opt.output).parent
+        out_path.mkdir(exist_ok=True, parents=True)
+        save_options_to_config(str(out_path / formats.get_config_filename(__file__)),
                                OrderedDict(sorted(opt.items()))
                                )
-
 
 # Script Mode ------------------------------------------------------------------
 

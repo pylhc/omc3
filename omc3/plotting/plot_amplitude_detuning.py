@@ -52,9 +52,9 @@ Provides the plotting function for amplitude detuning analysis
 :author: jdilly
 
 """
-import os
 from collections import OrderedDict
 from functools import partial
+from pathlib import Path
 
 import numpy as np
 from generic_parser import entrypoint, EntryPointParameters
@@ -64,10 +64,10 @@ from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from tfs.tools import significant_digits
 
-from definitions import formats
+from omc3.definitions import formats
 from omc3.definitions.constants import UNIT_TO_M, PLANES
 from omc3.plotting.common import colors as pcolors, annotations as pannot, style as pstyle
-from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, detuning_tools
+from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -187,8 +187,8 @@ def main(opt):
                                color=pcolors.get_mpl_color(idx),
                                action_unit=opt.action_plot_unit, tune_scale=10**opt.tune_scale)
 
-            ax_labels = const.get_paired_lables(kick_plane, tune_plane, opt.tune_scale)
-            id_str = f"Q{tune_plane.upper():s}J{kick_plane.upper():s}{corr_label:s}"
+            ax_labels = const.get_paired_lables(tune_plane, kick_plane, opt.tune_scale)
+            id_str = f"dQ{tune_plane.upper():s}d2J{kick_plane.upper():s}{corr_label:s}"
             pannot.set_name(id_str, fig)
             _format_axes(ax, labels=ax_labels, limits=limits)
 
@@ -196,11 +196,9 @@ def main(opt):
                 plt.show()
 
             if opt.output:
-                output = os.path.splitext(opt.output)
-                output = "{:s}_{:s}{:s}".format(output[0], id_str, output[1])
-                fig.savefig(output)
+                output = Path(opt.output)
+                fig.savefig(f'{output.with_suffix("")}_{id_str}{output.suffix}')
 
-            plt.close(fig)
             figs[id_str] = fig
 
     return figs
@@ -237,7 +235,7 @@ def plot_odr(ax, odr_fit, xmax, action_unit, tune_scale, color=None):
 
     # get fits
     order = len(odr_fit.beta) - 1
-    fit_fun = detuning_tools.get_poly_fun(order)
+    fit_fun = fitting_tools.get_poly_fun(order)
     f = partial(fit_fun, odr_fit.beta)
     f_low = partial(fit_fun, np.array(odr_fit.beta)-np.array(odr_fit.sd_beta))
     f_upp = partial(fit_fun, np.array(odr_fit.beta)+np.array(odr_fit.sd_beta))
@@ -264,8 +262,8 @@ def _plot_detuning(ax, data, label, action_unit, tune_scale, color=None, limits=
 
     # Plot Data
     data['tune'] -= offset
-    ax.errorbar(x=data['action'], xerr=['action_err'],
-                y=data['tune'], yerr=['tune_err'],
+    ax.errorbar(x=data['action'], xerr=data['action_err'],
+                y=data['tune'], yerr=data['tune_err'],
                 label=label, color=color)
 
 
@@ -305,8 +303,9 @@ def _get_scaled_labels(val, std, scale):
 
 def _save_options(opt):
     if opt.output:
-        os.makedirs(opt.output, exist_ok=True)
-        save_options_to_config(os.path.join(opt.output, formats.get_config_filename(__file__)),
+        out_path = Path(opt.output).parent
+        out_path.mkdir(exist_ok=True, parents=True)
+        save_options_to_config(str(out_path / formats.get_config_filename(__file__)),
                                OrderedDict(sorted(opt.items()))
                                )
 
