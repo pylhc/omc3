@@ -39,8 +39,6 @@ class BasicTests:
         model = tfs.read(_model_file)
         _assert_spectra(lin, model)
 
-
-class ExtendedTests:
     @staticmethod
     def test_harpy_without_model(_test_file, _model_file):
         model = _get_model_dataframe()
@@ -58,6 +56,8 @@ class ExtendedTests:
         model = tfs.read(_model_file)
         _assert_spectra(lin, model)
 
+
+class ExtendedTests:
     @staticmethod
     def test_freekick_harpy(_test_file, _model_file):
         model = _get_model_dataframe()
