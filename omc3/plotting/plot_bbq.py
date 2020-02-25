@@ -38,14 +38,18 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 :author: jdilly
 
 """
+import os
+from collections import OrderedDict
 from contextlib import suppress
 
 import matplotlib.dates as mdates
 import numpy as np
 from generic_parser import entrypoint, EntryPointParameters
+from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, gridspec
 from matplotlib.ticker import FormatStrFormatter
 
+from definitions import formats
 from omc3 import amplitude_detuning_analysis as ad_ana
 from omc3.definitions.constants import PLANES
 from omc3.plotting.common import colors as pcolors, style as pstyle
@@ -113,6 +117,7 @@ def main(opt):
 
     """
     LOG.info("Plotting BBQ.")
+    _save_options(opt)
     bbq_df = kick_mod.read_timed_dataframe(opt.input) if isinstance(opt.input, str) else opt.input
     opt.pop("input")
 
@@ -243,6 +248,14 @@ def _plot_bbq_data(bbq_df,
     fig.tight_layout()
     fig.tight_layout()
     return fig
+
+
+def _save_options(opt):
+    if opt.output:
+        os.makedirs(opt.output, exist_ok=True)
+        save_options_to_config(os.path.join(opt.output, formats.get_config_filename(__file__)),
+                               OrderedDict(sorted(opt.items()))
+                               )
 
 
 # Script Mode ------------------------------------------------------------------

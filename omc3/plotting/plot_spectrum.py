@@ -339,16 +339,11 @@ def _sort_opt(opt):
 
 # Output ---
 
-
 def _save_options_to_config(opt):
     os.makedirs(opt.output_dir, exist_ok=True)
-    save_options_to_config(os.path.join(opt.output_dir, _get_ini_filename()),
+    save_options_to_config(os.path.join(opt.output_dir, formats.get_config_filename(__file__)),
                            OrderedDict(sorted(opt.items()))
                            )
-
-
-def _get_ini_filename():
-    return CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
 
 
 # Load Data --------------------------------------------------------------------

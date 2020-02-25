@@ -53,15 +53,18 @@ Provides the plotting function for amplitude detuning analysis
 
 """
 import os
+from collections import OrderedDict
 from functools import partial
 
 import numpy as np
 from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entry_datatypes import DictAsString
+from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from tfs.tools import significant_digits
 
+from definitions import formats
 from omc3.definitions.constants import UNIT_TO_M, PLANES
 from omc3.plotting.common import colors as pcolors, annotations as pannot, style as pstyle
 from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, detuning_tools
@@ -150,7 +153,7 @@ def get_params():
 @entrypoint(get_params(), strict=True)
 def main(opt):
     LOG.info("Plotting Amplitude Detuning Results.")
-    # todo: save opt
+    _save_options(opt)
     _check_opt(opt)
 
     kick_plane = opt.plane
@@ -296,6 +299,14 @@ def _get_scaled_labels(val, std, scale):
 
 
 # Helper -----------------------------------------------------------------------
+
+
+def _save_options(opt):
+    if opt.output:
+        os.makedirs(opt.output, exist_ok=True)
+        save_options_to_config(os.path.join(opt.output, formats.get_config_filename(__file__)),
+                               OrderedDict(sorted(opt.items()))
+                               )
 
 
 def _check_opt(opt):
