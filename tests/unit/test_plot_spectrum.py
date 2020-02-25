@@ -9,7 +9,7 @@ import tfs
 from matplotlib.figure import Figure
 
 from plotting.plot_spectrum import main as plot_spectrum
-from plotting.spectrum.spectrum_utils import get_unique_filenames, PLANES
+from plotting.spectrum.utils import get_unique_filenames, PLANES
 
 
 def test_unique_filenames():
