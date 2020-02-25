@@ -6,7 +6,8 @@ import datetime
 from tfs import tools as tfstools
 from omc3.utils import logging_tools
 from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from definitions.constants import PLANES
 from omc3.definitions import formats
 
 LOG = logging_tools.get_logger(__name__)

@@ -23,8 +23,8 @@ from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       chromatic, dispersion, dpp, iforest,
                                       interaction_point, kick, phase, rdt,
                                       tune)
-from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT,
-                                                PLANES)
+from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT)
+from definitions.constants import PLANES
 from omc3.utils import iotools, logging_tools
 
 LOGGER = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)

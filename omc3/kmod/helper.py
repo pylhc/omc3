@@ -5,7 +5,8 @@ from matplotlib import pyplot as plt
 import tfs
 from omc3.utils import logging_tools, outliers
 from omc3.kmod import analysis
-from omc3.kmod.constants import SIDES, ERR, TUNE, EXT, PLANES, CLEANED, K, AVERAGE, BETA
+from omc3.kmod.constants import SIDES, ERR, TUNE, EXT, CLEANED, K, AVERAGE, BETA
+from definitions.constants import PLANES
 from omc3.definitions import formats
 
 LOG = logging_tools.get_logger(__name__)

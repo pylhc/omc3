@@ -19,7 +19,7 @@ from pathlib import Path
 
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
 
-import omc3.tune_analysis.constants as ta_const
+from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import timber_extract, detuning_tools, kick_file_modifiers
 from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     write_timed_dataframe,
@@ -27,27 +27,19 @@ from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     )
 from omc3.utils.logging_tools import get_logger, list2str, DebugMode
 from omc3.utils.time_tools import CERNDatetime
+from tune_analysis.constants import (get_kick_out_name, get_bbq_out_name,
+                                     get_mav_col, get_timber_bbq_key,
+                                     get_bbq_col)
 
-# Globals ####################################################################
 
-# Column Names
-COL_TIME = ta_const.get_time_col
-COL_BBQ = ta_const.get_bbq_col
-COL_MAV = ta_const.get_mav_col
-COL_MAV_STD = ta_const.get_mav_err_col
-COL_IN_MAV = ta_const.get_used_in_mav_col
-COL_NATQ = ta_const.get_natq_col
-COL_CORRECTED = ta_const.get_natq_corr_col
-
-PLANES = ta_const.get_planes()
-TIMBER_KEY = ta_const.get_timber_bbq_key
+# Globals ----------------------------------------------------------------------
 
 DTIME = 60  # extra seconds to add to kick times when extracting from timber
 
 LOG = get_logger(__name__)
 
 
-# Get Parameters #############################################################
+# Get Parameters ---------------------------------------------------------------
 
 
 def _get_params():
@@ -140,7 +132,7 @@ def _get_params():
     )
 
 
-# Main #########################################################################
+# Main -------------------------------------------------------------------------
 
 
 @entrypoint(_get_params(), strict=True)
@@ -181,9 +173,9 @@ def analyse_with_bbq_corrections(opt):
     # output kick and bbq data
     if opt.output:
         opt.output.mkdir(parents=True, exist_ok=True)
-        write_timed_dataframe(opt.output.joinpath(ta_const.get_kick_out_name()),
+        write_timed_dataframe(opt.output / get_kick_out_name(),
                               kick_df)
-        write_timed_dataframe(opt.output.joinpath(ta_const.get_bbq_out_name()),
+        write_timed_dataframe(opt.output / get_bbq_out_name(),
                               bbq_df.loc[x_interval[0]:x_interval[1]])
 
     return kick_df, bbq_df
@@ -204,7 +196,7 @@ def get_approx_bbq_interval(bbq_df, time_array, window_length):
     return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
 
-# Private Functions ############################################################
+# Private Functions ------------------------------------------------------------
 
 
 def _check_analyse_opt(opt):
@@ -233,18 +225,21 @@ def _check_analyse_opt(opt):
         if opt.bbq_filtering_method == method:
             missing_params = [k for k, v in params.items() if v is None]
             if any(missing_params):
-                raise KeyError(f"Missing parameters for chosen cleaning method {method}: '{list2str(missing_params)}'")
+                raise KeyError("Missing parameters for chosen cleaning method "
+                               f"{method}: '{list2str(missing_params)}'")
             filter_opt = params
 
     if filter_opt.bbq_filtering_method == 'cut':
-        filter_opt[f"tunes_minmax"] = [minmax for t in opt.tunes for minmax in (t - opt.tune_cut, t + opt.tune_cut)]
+        filter_opt[f"tunes_minmax"] = [minmax for t in opt.tunes
+                                       for minmax in (t - opt.tune_cut, t + opt.tune_cut)]
         filter_opt.pop('tune_cut')
         filter_opt.pop('tunes')
 
     if filter_opt.bbq_filtering_method != 'outliers':
         # check fine cleaning
         if bool(filter_opt.fine_cut) != bool(filter_opt.fine_window):
-            raise KeyError("To activate fine cleaning, both fine cut and fine window need to be specified")
+            raise KeyError("To activate fine cleaning, "
+                           "both fine cut and fine window need to be specified")
 
     if opt.output is not None:
         opt.output = Path(opt.output)
@@ -260,26 +255,30 @@ def _get_bbq_data(beam, input_, kick_df):
         # input is a string
         LOG.debug(f"Getting bbq data from file '{input_:s}'")
         data = read_timed_dataframe(input_)
-        data.drop([COL_MAV(p) for p in PLANES if COL_MAV(p) in data.columns], axis='columns')
+        data.drop([get_mav_col(p) for p in PLANES
+                   if get_mav_col(p) in data.columns], axis='columns')
     except TypeError:
         # input is None
         LOG.debug("Getting timber data from kick-times.")
         timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
         t_start = min(kick_df.index.values)
         t_end = max(kick_df.index.values)
-        data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME, keys=timber_keys,
+        data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME,
+                                                    keys=timber_keys,
                                                     names=dict(zip(timber_keys, bbq_cols)))
     else:
         # input is a number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")
         timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
-        data = timber_extract.lhc_fill_to_tfs(fill_number, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols)))
+        data = timber_extract.lhc_fill_to_tfs(fill_number,
+                                              keys=timber_keys,
+                                              names=dict(zip(timber_keys, bbq_cols)))
     return data
 
 
 def _get_timber_keys_and_bbq_columns(beam):
-    keys = [TIMBER_KEY(plane, beam) for plane in PLANES]
-    cols = [COL_BBQ(plane) for plane in PLANES]
+    keys = [get_timber_bbq_key(plane, beam) for plane in PLANES]
+    cols = [get_bbq_col(plane) for plane in PLANES]
     return keys, cols
 
 

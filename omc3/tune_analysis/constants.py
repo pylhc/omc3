@@ -16,11 +16,6 @@ COEFFICIENT = "COEFF{order:d}"
 BBQ = "BBQ"
 
 
-def get_planes():
-    """ Names for the planes."""
-    return "XY"
-
-
 def get_timber_bbq_key(plane, beam):
     """ Key to extract bbq from timber. """
     return f'lhc.bofsu:eigen_freq_{ {"X": 1, "Y": 2}[plane] :d}_b{beam:d}'

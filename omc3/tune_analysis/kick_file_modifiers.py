@@ -11,49 +11,35 @@ import pandas as pd
 import tfs
 from generic_parser.dict_parser import DotDict
 
+from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import KICK_NAME
-from omc3.tune_analysis import constants as const, bbq_tools
+from omc3.tune_analysis import bbq_tools
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
+from tune_analysis.constants import (get_odr_header_coeff_corrected,
+                                     get_odr_header_err_coeff_corrected,
+                                     get_odr_header_err_coeff, get_odr_header_coeff,
+                                     get_natq_corr_col, get_corr_natq_err_col,
+                                     get_natq_err_col, get_natq_col, get_bbq_col,
+                                     get_mav_col, get_mav_err_col, get_used_in_mav_col,
+                                     get_time_col, get_action_col, get_action_err_col
+                                     )
 
 LOG = logging_tools.get_logger(__name__)
-
-# Column Names
-COL_ACTION = const.get_action_col
-COL_ACTION_ERR = const.get_action_err_col
-
-COL_MAV = const.get_mav_col
-COL_MAV_STD = const.get_mav_err_col
-COL_IN_MAV = const.get_used_in_mav_col
-
-COL_NATQ = const.get_natq_col
-COL_NATQ_STD = const.get_natq_err_col
-COL_NATQ_CORR = const.get_natq_corr_col
-COL_NATQ_CORRSTD = const.get_corr_natq_err_col
-
-COL_TIME = const.get_time_col
-COL_BBQ = const.get_bbq_col
-
-HEADER_ODR_COEFF = const.get_odr_header_coeff
-HEADER_ODR_ERR_COEFF = const.get_odr_header_err_coeff
-HEADER_CORR_ODR_COEFF = const.get_odr_header_coeff_corrected
-HEADER_CORR_ODR_ERR_COEFF = const.get_odr_header_err_coeff_corrected
-
-PLANES = const.get_planes()
 
 
 def _get_odr_headers(corrected):
     """ Return Headers needed for ODR. """
     if corrected:
-        return HEADER_CORR_ODR_COEFF, HEADER_CORR_ODR_ERR_COEFF
-    return HEADER_ODR_COEFF, HEADER_ODR_ERR_COEFF
+        return get_odr_header_coeff_corrected, get_odr_header_err_coeff_corrected
+    return get_odr_header_coeff, get_odr_header_err_coeff
 
 
 def _get_ampdet_columns(corrected):
     """ Get columns needed for amplitude detuning """
     if corrected:
-        return COL_NATQ_CORR, COL_NATQ_CORRSTD
-    return COL_NATQ, COL_NATQ_STD
+        return get_natq_corr_col, get_corr_natq_err_col
+    return get_natq_col, get_natq_err_col
 
 
 # Data Addition ################################################################
@@ -85,12 +71,12 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
     LOG.debug("Calculating moving average.")
     for idx, plane in enumerate(PLANES):
         if filter_args.bbq_filtering_method == 'outliers':
-            bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[COL_BBQ(plane)],
+            bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)],
                                                                              length=filter_args.window_length,
                                                                              limit=filter_args.outlier_limit
                                                                              )
         else:
-            bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[COL_BBQ(plane)],
+            bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[get_bbq_col(plane)],
                                                                   length=filter_args.window_length,
                                                                   min_val=filter_args.tunes_minmax[2*idx],
                                                                   max_val=filter_args.tunes_minmax[2*idx+1],
@@ -98,11 +84,11 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
                                                                   fine_cut=filter_args.fine_cut,
                                                                   )
 
-        bbq_df[COL_MAV(plane)] = bbq_mav
-        bbq_df[COL_MAV_STD(plane)] = bbq_std
-        bbq_df[COL_IN_MAV(plane)] = mask
-        kickac_df = add_bbq_data(kickac_df, bbq_mav, COL_MAV(plane))
-        kickac_df = add_bbq_data(kickac_df, bbq_std, COL_MAV_STD(plane))
+        bbq_df[get_mav_col(plane)] = bbq_mav
+        bbq_df[get_mav_err_col(plane)] = bbq_std
+        bbq_df[get_used_in_mav_col(plane)] = mask
+        kickac_df = add_bbq_data(kickac_df, bbq_mav, get_mav_col(plane))
+        kickac_df = add_bbq_data(kickac_df, bbq_std, get_mav_err_col(plane))
     return kickac_df, bbq_df
 
 
@@ -116,8 +102,8 @@ def add_corrected_natural_tunes(kickac_df):
         Modified kick_ac
     """
     for plane in PLANES:
-        kickac_df[COL_NATQ_CORR(plane)] = \
-            kickac_df[COL_NATQ(plane)] - kickac_df[COL_MAV(plane)]
+        kickac_df[get_natq_corr_col(plane)] = \
+            kickac_df[get_natq_col(plane)] - kickac_df[get_mav_col(plane)]
     return kickac_df
 
 
@@ -153,9 +139,9 @@ def add_total_natq_std(kickac_df):
         Modified kick_ac
     """
     for plane in PLANES:
-        kickac_df[COL_NATQ_CORRSTD(plane)] = np.sqrt(
-            np.power(kickac_df[COL_NATQ_STD(plane)], 2) +
-            np.power(kickac_df[COL_MAV_STD(plane)], 2)
+        kickac_df[get_corr_natq_err_col(plane)] = np.sqrt(
+            np.power(kickac_df[get_natq_err_col(plane)], 2) +
+            np.power(kickac_df[get_mav_err_col(plane)], 2)
         )
     return kickac_df
 
@@ -202,8 +188,8 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
     """
     col_natq, col_natq_std = _get_ampdet_columns(corrected)
 
-    columns = {"x": COL_ACTION(action_plane),
-               "xerr": COL_ACTION_ERR(action_plane),
+    columns = {"x": get_action_col(action_plane),
+               "xerr": get_action_err_col(action_plane),
                "y": col_natq(tune_plane),
                "yerr": col_natq_std(tune_plane),
                }
@@ -231,7 +217,7 @@ def get_timestamp_index(index):
 
 
 def read_timed_dataframe(path):
-    df = tfs.read(path, index=COL_TIME())
+    df = tfs.read(path, index=get_time_col())
     df.index = pd.Index([CERNDatetime.from_cern_utc_string(i) for i in df.index], dtype=object)
     return df
 
@@ -239,7 +225,7 @@ def read_timed_dataframe(path):
 def write_timed_dataframe(path, df):
     df = df.copy()
     df.index = pd.Index([i.strftime(get_cern_time_format()) for i in df.index], dtype=str)
-    tfs.write(str(path), df, save_index=COL_TIME())
+    tfs.write(str(path), df, save_index=get_time_col())
 
 
 def read_two_kick_files_from_folder(folder):

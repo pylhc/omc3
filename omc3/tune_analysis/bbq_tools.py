@@ -14,8 +14,6 @@ from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
 
-PLANES = const.get_planes()
-
 COL_MAV = const.get_mav_col
 COL_IN_MAV = const.get_used_in_mav_col
 COL_BBQ = const.get_bbq_col
