@@ -30,6 +30,6 @@ Converter
 Plotting
 =======================
 
-.. automodule:: omc3.plot_spectrum
+.. automodule:: omc3.plotting.plot_spectrum
     :members:
 

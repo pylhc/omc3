@@ -38,7 +38,7 @@ LABEL_Y_WATERFALL = 'Plane {plane:s}'
 LABEL_X = 'Frequency [tune units]'
 NCOL_LEGEND = 5  # number of columns in the legend
 WATERFALL_FILENAME = "waterfall_spectrum"
-SPECTRUM_FILENAME = "spectrum"
+SPECTRUM_FILENAME = ""
 CONFIG_FILENAME = "plot_spectrum_{time:s}.ini"
 AMPS = FILE_AMPS_EXT.format(plane='')
 FREQS = FILE_FREQS_EXT.format(plane='')

@@ -5,14 +5,21 @@ Spectrum Plots
 =================
 
 
-.. automodule:: omc3.plotting.spectrum_stem
+.. automodule:: omc3.plotting.spectrum.stem
     :members:
 
 
-.. automodule:: omc3.plotting.spectrum_waterfall
+.. automodule:: omc3.plotting.spectrum.waterfall
     :members:
 
 
-.. automodule:: omc3.plotting.spectrum_utils
+.. automodule:: omc3.plotting.spectrum.utils
+    :members:
+
+
+Common Plot Functionality
+==========================
+
+.. automodule:: omc3.plotting.common.style
     :members:
 

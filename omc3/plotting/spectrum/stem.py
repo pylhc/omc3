@@ -9,10 +9,10 @@ import matplotlib
 from generic_parser import DotDict
 from matplotlib import pyplot as plt, lines as mlines
 
-from omc3.plotting.spectrum_utils import (plot_lines, FigureContainer, get_cycled_color,
-                                          get_approx_size_in_axes_coordinates,
-                                          PLANES, STEM_LINES_ALPHA, LABEL_Y_SPECTRUM,
-                                          LABEL_X, AMPS, FREQS, output_plot)
+from plotting.spectrum.spectrum_utils import (plot_lines, FigureContainer, get_cycled_color,
+                                              get_approx_size_in_axes_coordinates,
+                                              PLANES, STEM_LINES_ALPHA, LABEL_Y_SPECTRUM,
+                                              LABEL_X, AMPS, FREQS, output_plot)
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
