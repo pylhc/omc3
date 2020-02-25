@@ -33,3 +33,9 @@ Plotting
 .. automodule:: omc3.plotting.plot_spectrum
     :members:
 
+.. automodule:: omc3.plotting.plot_amplitude_detuning
+    :members:
+
+.. automodule:: omc3.plotting.plot_bbq
+    :members:
+

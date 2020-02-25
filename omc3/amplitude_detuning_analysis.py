@@ -12,6 +12,56 @@ Furthermore, the orthogonal distance regression is utilized to get a
 linear or quadratic fit from the measurements.
 
 
+**Arguments:**
+
+*--Required--*
+
+- **beam** *(int)*: Which beam to use.
+
+- **kick** *(str)*: Location of the kick files (parent folder).
+
+- **plane** *(str)*: Plane of the kicks. 'X' or 'Y'.
+
+  Choices: ``('X', 'Y')``
+
+*--Optional--*
+
+- **bbq_filtering_method** *(str)*:
+
+  Choices: ``['cut', 'minmax', 'outliers']``
+  Default: ``outliers``
+- **bbq_in**: Fill number of desired data to extract from timber or path to presaved bbq-tfs-file
+
+- **debug**: Activates Debug mode
+
+  Action: ``store_true``
+- **detuning_order** *(int)*: Order of the detuning as int. Basically just the order of the applied fit.
+
+  Default: ``1``
+- **fine_cut** *(float)*: Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').
+
+- **fine_window** *(int)*: Length of the moving average window, i.e # data points (fine cleaning for 'minmax' or 'cut').
+
+- **label** *(str)*: Label to identify this run.
+
+- **logfile** *(str)*: Logfile if debug mode is active.
+
+- **outlier_limit** *(float)*: Limit, i.e. cut, on outliers (Method 'outliers')
+
+  Default: ``0.0002``
+- **output** *(str)*: Output directory for the modified kickfile and bbq data.
+
+- **tune_cut** *(float)*: Cuts for the tune. For BBQ cleaning (Method 'cut').
+
+- **tunes** *(float)*: Tunes for BBQ cleaning (Method 'cut').
+
+- **tunes_minmax** *(float)*: Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For BBQ cleaning (Method 'minmax').
+
+- **window_length** *(int)*: Length of the moving average window. (# data points)
+
+  Default: ``20``
+
+
 :author: Joschua Dilly
 """
 import os
