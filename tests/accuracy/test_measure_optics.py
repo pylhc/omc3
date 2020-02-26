@@ -12,7 +12,6 @@ from omc3.utils.contexts import timeit
 from .twiss_to_lin import optics_measurement_test_files
 
 LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
-LIMITS_3BPM = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 0.95}
 DEFAULT_LIMIT = 5e-3
 BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
 
@@ -22,7 +21,7 @@ MEASURE_OPTICS_INPUT = list(
         ["model", "equation", "none"],  # compensation
         [2],                            # coupling method
         [11],                           # range of bpms
-        [True, False],                        # three bpm
+        [False],                        # three bpm
         [False],                        # second order dispersion
     )
 )
@@ -56,7 +55,7 @@ def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_met
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "single")
     inputs = measure_optics.InputFiles([lins[0]], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS_3BPM if three_bpm_method else LIMITS)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
@@ -65,7 +64,7 @@ def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_m
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "onmom")
     inputs = measure_optics.InputFiles(lins[:3], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS_3BPM if three_bpm_method else LIMITS)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
@@ -74,7 +73,7 @@ def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, thre
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "pseudo_onmom")
     inputs = measure_optics.InputFiles(lins[-3:], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS_3BPM if three_bpm_method else LIMITS)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
@@ -84,7 +83,7 @@ def test_offmom_files(compensation, coupling_method, range_of_bpms, three_bpm_me
     optics_opt["chromatic_beating"] = True
     optics_opt["outputdir"] = join(BASE_PATH, "offmom")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS_3BPM if three_bpm_method else LIMITS)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
 def _run_evaluate_and_clean_up(inputs, optics_opt, limits):
