@@ -165,7 +165,7 @@ def get_odr_data(kickac_df, action_plane, tune_plane, order, corrected=False):
         corrected: (BBQ) corrected data or uncorrected fit?
 
     Returns:
-        Dictionary containing
+        Dictionary containing fit data from odr
 
     """
 
