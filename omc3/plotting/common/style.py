@@ -5,6 +5,10 @@ Plotting: Style
 Helper functions to make the most awesome* plots out there.
 
 * please feel free to add more stuff
+
+:module: omc3.plotting.common.style
+:author: jdilly
+
 """
 import matplotlib
 

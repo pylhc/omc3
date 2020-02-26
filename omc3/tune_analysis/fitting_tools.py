@@ -11,6 +11,9 @@ Important Convention:
     |  beta[2] = quadratic term
     |  etc.
 
+:module: omc3.tune_analysis.fitting_tools
+:author: jdilly
+
 """
 import numpy as np
 from scipy.odr import RealData, Model, ODR

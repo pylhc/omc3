@@ -3,6 +3,10 @@ Module tune_analysis.bbq_tools
 ----------------------------------
 
 Tools to handle BBQ data.
+
+:module: omc3.tune_analysis.bbq_tools
+:author: jdilly
+
 """
 import numpy as np
 

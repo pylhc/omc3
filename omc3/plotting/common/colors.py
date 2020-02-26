@@ -4,7 +4,7 @@ CPlotting: Colors
 
 Make everything Rainbow.
 
-:module: plotshop.colors
+:module: omc3.plotting.common.colors
 :author: jdilly
 
 """

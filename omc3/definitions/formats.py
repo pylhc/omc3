@@ -1,3 +1,12 @@
+"""
+Formats
+-------------
+
+Recurring formats are defined here.
+
+:module: omc3.definitions.formats
+
+"""
 from pathlib import Path
 from datetime import datetime
 

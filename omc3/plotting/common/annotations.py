@@ -4,7 +4,7 @@ Common Plotting Functions: Annotations
 
 Helper functions to create annotations as well as style labels in plots.
 
-:module: plotshop.annotations
+:module: omc3.plotting.common.annotations
 :author: jdilly
 
 """

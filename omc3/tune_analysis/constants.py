@@ -2,6 +2,9 @@
 Module tune_analysis.constants
 ----------------------------------
 
+:module: omc3.tune_analysis.constants
+:author: jdilly
+
 """
 from omc3.optics_measurements.constants import (ERR, RES, EXT, KICK_NAME, ACTION, TIME, NAT_TUNE)
 from omc3.definitions.constants import PLANE_TO_NUM

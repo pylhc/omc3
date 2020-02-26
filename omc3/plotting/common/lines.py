@@ -4,7 +4,7 @@ Plotting: Lines
 
 Line-plotting related functionality.
 
-:module: plotshop.lines
+:module: omc3.plotting.common.lines
 :author: jdilly
 
 """

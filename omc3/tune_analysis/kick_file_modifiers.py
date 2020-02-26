@@ -3,6 +3,10 @@ Module tune_analysis.kickac_modifiers
 --------------------------------------
 
 Functions to add data to or extract data from kick_ac files.
+
+:module: omc3.tune_analysis.kick_file_modifiers
+:author: jdilly
+
 """
 import os
 

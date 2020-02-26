@@ -65,7 +65,7 @@ from matplotlib import pyplot as plt
 from tfs.tools import significant_digits
 
 from omc3.definitions import formats
-from omc3.definitions.constants import UNIT_TO_M, PLANES
+from omc3.definitions.constants import UNIT_IN_METERS, PLANES
 from omc3.plotting.common import colors as pcolors, annotations as pannot, style as pstyle
 from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
@@ -128,13 +128,13 @@ def get_params():
         action_unit=dict(
             help="Unit the action is given in.",
             default="m",
-            choices=list(UNIT_TO_M.keys()),
+            choices=list(UNIT_IN_METERS.keys()),
             type=str,
         ),
         action_plot_unit=dict(
             help="Unit the action should be plotted in.",
             default="um",
-            choices=list(UNIT_TO_M.keys()),
+            choices=list(UNIT_IN_METERS.keys()),
             type=str,
         ),
         manual_style=dict(
@@ -208,7 +208,7 @@ def main(opt):
 
 
 def _get_scaled_odr_label(odr_fit, order, action_unit, tune_scale, magnitude_exponent=3):
-    scale = (tune_scale * (10 ** -magnitude_exponent)) / (UNIT_TO_M[action_unit] ** order)
+    scale = (tune_scale * (10 ** -magnitude_exponent)) / (UNIT_IN_METERS[action_unit] ** order)
     str_val, str_std = _get_scaled_labels(odr_fit.beta[order], odr_fit.sd_beta[order], scale)
     str_mag = ''
     if magnitude_exponent != 0:
@@ -325,7 +325,7 @@ def _get_default(ddict, key, default):
 def _correct_and_scale(data, odr_fit, action_unit, action_plot_unit, tune_scale, acd_corr):
     """ Corrects data for AC-Dipole and scales to plot-units (y=tune_scale, x=um)"""
     # scale action units
-    x_scale = UNIT_TO_M[action_unit] / UNIT_TO_M[action_plot_unit]
+    x_scale = UNIT_IN_METERS[action_unit] / UNIT_IN_METERS[action_plot_unit]
     data['action'] *= x_scale
     data['action_err'] *= x_scale
 

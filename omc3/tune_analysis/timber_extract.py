@@ -6,6 +6,10 @@ Tools to extract data from timber.
 
 It is a bit heavy on the LHC-side at the moment.
 Feel free to make it more accelerator independent.
+
+:module: omc3.tune_analysis.timber_extract
+:author: jdilly
+
 """
 import re
 
