@@ -55,7 +55,7 @@ def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_met
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "single")
     inputs = measure_optics.InputFiles([lins[0]], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
@@ -64,7 +64,7 @@ def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_m
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "onmom")
     inputs = measure_optics.InputFiles(lins[:3], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
@@ -73,7 +73,7 @@ def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, thre
     optics_opt = set_optics_opt(optics_opt, compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp)
     optics_opt["outputdir"] = join(BASE_PATH, "pseudo_onmom")
     inputs = measure_optics.InputFiles(lins[-3:], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
 @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp", MEASURE_OPTICS_INPUT)
@@ -83,17 +83,17 @@ def test_offmom_files(compensation, coupling_method, range_of_bpms, three_bpm_me
     optics_opt["chromatic_beating"] = True
     optics_opt["outputdir"] = join(BASE_PATH, "offmom")
     inputs = measure_optics.InputFiles(lins[:7], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
+    _run_evaluate_and_clean_up(inputs, optics_opt, LIMITS)
 
 
-def _run_evaluate_and_clean_up(inputs, optics_opt):
+def _run_evaluate_and_clean_up(inputs, optics_opt, limits):
     with timeit(lambda spanned: print(f"\nTotal time for optics measurements: {spanned}")):
         measure_optics.measure_optics(inputs, optics_opt)
-    evaluate_accuracy(optics_opt.outputdir)
+    evaluate_accuracy(optics_opt.outputdir, limits)
     _clean_up(optics_opt.outputdir)
 
 
-def evaluate_accuracy(meas_path):
+def evaluate_accuracy(meas_path, limits):
     for f in [f for f in listdir(meas_path) if (isfile(join(meas_path, f)) and (".tfs" in f))]:
         a = tfs.read(join(meas_path, f))
         cols = [column for column in a.columns.to_numpy() if column.startswith('DELTA')]
@@ -101,8 +101,8 @@ def evaluate_accuracy(meas_path):
             cols.remove("DELTADX")
         for col in cols:
             rms = stats.weighted_rms(a.loc[:, col].to_numpy(), errors=a.loc[:, f"ERR{col}"].to_numpy())
-            if col[5] in LIMITS.keys():
-                assert rms < LIMITS[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
+            if col[5] in limits.keys():
+                assert rms < limits[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
             else:
                 assert rms < DEFAULT_LIMIT, "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
             print(f"\nFile: {f:25}  Column: {col[5:]:15}   RMS:    {rms:.6f}")
