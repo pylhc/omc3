@@ -52,7 +52,7 @@ from matplotlib.ticker import FormatStrFormatter
 from omc3 import amplitude_detuning_analysis as ad_ana
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.plotting.common import colors as pcolors, style as pstyle
+from omc3.plotting.utils import colors as pcolors, style as pstyle
 from omc3.tune_analysis import kick_file_modifiers as kick_mod
 from omc3.tune_analysis.constants import (get_mav_window_header, get_used_in_mav_col,
                                           get_bbq_col, get_mav_col)

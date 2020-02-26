@@ -66,7 +66,7 @@ from tfs.tools import significant_digits
 
 from omc3.definitions import formats
 from omc3.definitions.constants import UNIT_IN_METERS, PLANES
-from omc3.plotting.common import colors as pcolors, annotations as pannot, style as pstyle
+from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
 from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
 
