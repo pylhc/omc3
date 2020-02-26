@@ -5,7 +5,7 @@ import shutil
 import numpy as np
 from omc3.run_kmod import analyse_kmod
 from omc3.kmod.constants import BETA, ERR, STAR
-from definitions.constants import PLANES
+from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.run_kmod import RESULTS_FILE_NAME, INSTRUMENTS_FILE_NAME, LSA_FILE_NAME 
 CURRENT_DIR = dirname(__file__)

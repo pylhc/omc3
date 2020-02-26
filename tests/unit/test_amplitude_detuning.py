@@ -1,11 +1,11 @@
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 import pytest
 
 from omc3.amplitude_detuning_analysis import analyse_with_bbq_corrections
-from omc3.plotting.plot_bbq import main as pltbbq
 from omc3.plotting.plot_amplitude_detuning import main as pltampdet
+from omc3.plotting.plot_bbq import main as pltbbq
 
 
 class BasicTests:

@@ -1,15 +1,15 @@
 import tempfile
 from glob import glob
-from shutil import copy
 from os import listdir
 from os.path import join, abspath, basename, dirname, splitext
+from shutil import copy
 
 import pytest
 import tfs
 from matplotlib.figure import Figure
 
-from plotting.plot_spectrum import main as plot_spectrum
-from plotting.spectrum.utils import get_unique_filenames, PLANES
+from omc3.plotting.plot_spectrum import main as plot_spectrum
+from omc3.plotting.spectrum.utils import get_unique_filenames, PLANES
 
 
 def test_unique_filenames():
