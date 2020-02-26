@@ -20,15 +20,15 @@ Spectrum Plots
 Common Plot Functionality
 ==========================
 
-.. automodule:: omc3.plotting.common.annotations
+.. automodule:: omc3.plotting.utils.annotations
     :members:
 
-.. automodule:: omc3.plotting.common.colors
+.. automodule:: omc3.plotting.utils.colors
     :members:
 
-.. automodule:: omc3.plotting.common.lines
+.. automodule:: omc3.plotting.utils.lines
     :members:
 
-.. automodule:: omc3.plotting.common.style
+.. automodule:: omc3.plotting.utils.style
     :members:
 

@@ -1,10 +1,10 @@
 """
-CPlotting: Colors
+Plotting Utilities: Colors
 -----------------------------------
 
 Make everything Rainbow.
 
-:module: omc3.plotting.common.colors
+:module: omc3.plotting.utils.colors
 :author: jdilly
 
 """

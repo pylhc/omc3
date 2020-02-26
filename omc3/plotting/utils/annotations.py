@@ -1,10 +1,10 @@
 """
-Common Plotting Functions: Annotations
+Plotting Utilities: Annotations
 ----------------------------------------
 
 Helper functions to create annotations as well as style labels in plots.
 
-:module: omc3.plotting.common.annotations
+:module: omc3.plotting.utils.annotations
 :author: jdilly
 
 """
@@ -264,7 +264,7 @@ def figure_title(text, ax=None, pad=0, **kwargs):
 
 
 def get_legend_ncols(labels, max_length=78):
-    """ Calulate the number of columns in legend dynamically """
+    """ Calculate the number of columns in legend dynamically """
     return max([max_length/max([len(l) for l in labels]), 1])
 
 

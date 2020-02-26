@@ -110,7 +110,9 @@ def get_params():
             action="store_true",
         ),
         output=dict(
-            help="Save the amplitude detuning plot here.",
+            help=("Save the amplitude detuning plot here. "
+                  "Give filename with extension. An id for the 4 different "
+                  "plots will be added before the suffix."),
             type=str,
         ),
         show=dict(

@@ -1,10 +1,10 @@
 """
-Plotting: Lines
+Plotting Utilities: Lines
 ---------------------------------
 
 Line-plotting related functionality.
 
-:module: omc3.plotting.common.lines
+:module: omc3.plotting.utils.lines
 :author: jdilly
 
 """
