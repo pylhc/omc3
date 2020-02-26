@@ -2,12 +2,19 @@ from os.path import join
 from omc3.utils import logging_tools, iotools
 import numpy as np
 import tfs
+import pandas as pd
 from omc3.kmod import analysis, helper
-from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH
+from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH, BETA, ERR, STAR
+from omc3.optics_measurements.constants import EXT
 from generic_parser import entrypoint, EntryPointParameters
 from omc3.definitions import formats
 
 LOG = logging_tools.get_logger(__name__)
+
+LSA_COLUMNS = ['NAME',f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
+RESULTS_FILE_NAME = 'results'
+INSTRUMENTS_FILE_NAME = 'beta_instrument'
+LSA_FILE_NAME = 'lsa_results'
 
 
 def kmod_params():
@@ -103,11 +110,23 @@ def analyse_kmod(opt):
     LOG.info('Write magnet dataframes and results')
     for magnet_df in [magnet1_df, magnet2_df]:
         tfs.write(join(output_dir, f"{magnet_df.headers['QUADRUPOLE']}{EXT}"), magnet_df)
-    tfs.write(join(output_dir, 'results.tfs'), results_df)
+    tfs.write(join(output_dir, f'{RESULTS_FILE_NAME}{EXT}'), results_df)
 
     if opt.instruments_found:
-        tfs.write(join(output_dir, 'beta_instrument.tfs'), instrument_beta_df)
+        tfs.write(join(output_dir, f'{INSTRUMENTS_FILE_NAME}{EXT}'), instrument_beta_df)
 
+    create_lsa_results_file(betastar_required, opt.instruments_found, results_df, instrument_beta_df, output_dir)
+
+def create_lsa_results_file(betastar_required, instruments_found, results_df, instrument_beta_df, output_dir):
+    lsa_results_df = pd.DataFrame(columns=LSA_COLUMNS)
+    if betastar_required:
+        exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
+        lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
+    if instruments_found:
+        lsa_results_df=lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
+    
+    if not lsa_results_df.empty:
+        tfs.write(join(output_dir, f'{LSA_FILE_NAME}{EXT}'), lsa_results_df)
 
 def convert_betastar_and_waist(bs):
     if len(bs) == 2:
