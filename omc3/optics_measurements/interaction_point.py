@@ -13,8 +13,8 @@ import numpy as np
 import pandas as pd
 import tfs
 
+from omc3.definitions.constants import PI2
 from omc3.optics_measurements.constants import EXT, IP_NAME
-from definitions.constants import PI2
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)

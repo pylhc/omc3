@@ -10,7 +10,7 @@ Tune Analysis
     :members:
 
 
-.. automodule:: omc3.tune_analysis.detuning_tools
+.. automodule:: omc3.tune_analysis.fitting_tools
     :members:
 
 

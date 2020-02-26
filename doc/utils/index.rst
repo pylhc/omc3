@@ -22,10 +22,6 @@ Package Content
     :members:
 
 
-.. automodule:: omc3.utils.plot_style
-    :members:
-
-
 .. automodule:: omc3.utils.stats
     :members:
 

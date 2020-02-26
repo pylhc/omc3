@@ -10,9 +10,9 @@ import numpy as np
 from generic_parser import DotDict
 from matplotlib import pyplot as plt, colors
 
+from omc3.plotting.spectrum.utils import (plot_lines, PLANES, LABEL_Y_WATERFALL,
+                                          LABEL_X, AMPS, FREQS, output_plot)
 from omc3.utils import logging_tools
-from plotting.spectrum.utils import (plot_lines, PLANES, LABEL_Y_WATERFALL,
-                                     LABEL_X, AMPS, FREQS, output_plot)
 
 LOG = logging_tools.getLogger(__name__)
 

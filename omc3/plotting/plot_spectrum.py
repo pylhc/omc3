@@ -104,7 +104,6 @@ one figure is used.
 import os
 from collections import OrderedDict
 from contextlib import suppress
-from datetime import datetime
 from typing import Tuple
 
 import matplotlib
@@ -117,15 +116,14 @@ from matplotlib import cm
 
 from omc3.definitions import formats
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.plotting.spectrum.stem import create_stem_plots
+from omc3.plotting.spectrum.utils import (PLANES, NCOL_LEGEND, AMPS, FREQS, LIN,
+                                          MANUAL_LOCATIONS, LOG,
+                                          FigureCollector, get_unique_filenames,
+                                          filter_amps, get_bpms, get_stem_id,
+                                          get_waterfall_id, get_data_for_bpm)
+from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.utils import logging_tools
-from plotting.spectrum.stem import create_stem_plots
-from plotting.spectrum.utils import (PLANES, NCOL_LEGEND, CONFIG_FILENAME,
-                                     AMPS, FREQS, LIN,
-                                     MANUAL_LOCATIONS, LOG,
-                                     FigureCollector, get_unique_filenames,
-                                     filter_amps, get_bpms, get_stem_id,
-                                     get_waterfall_id, get_data_for_bpm)
-from plotting.spectrum.waterfall import create_waterfall_plots
 
 LOG = logging_tools.getLogger(__name__)
 

@@ -70,7 +70,7 @@ from pathlib import Path
 
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
 
-from definitions import formats
+from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import timber_extract, fitting_tools, kick_file_modifiers
 from omc3.tune_analysis.constants import (get_kick_out_name, get_bbq_out_name,
