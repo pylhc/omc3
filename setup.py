@@ -52,7 +52,7 @@ setuptools.setup(
     author=ABOUT_OMC3["__author__"],
     author_email=ABOUT_OMC3["__author_email__"],
     url=ABOUT_OMC3["__url__"],
-    packages=setuptools.find_packages(exclude=["tests", "doc", "bin"]),
+    packages=setuptools.find_packages(exclude=["tests*", "doc"]),
     python_requires=">=3.6",
     license=ABOUT_OMC3["__license__"],
     classifiers=[
