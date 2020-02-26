@@ -1,5 +1,4 @@
 from os import listdir
-from operator import itemgetter
 from os.path import abspath, dirname, isdir, isfile, join
 from shutil import rmtree
 import itertools
@@ -119,17 +118,17 @@ def _test_prototype(lin_slice, **kwargs):
     lins, optics_opt = PRE_CREATED_INPUT["free" if kwargs['compensation'] == 'none' else "driven"]
     optics_opt.update(kwargs)
     inputs = measure_optics.InputFiles(lins[lin_slice], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt)
+    _run_evaluate_and_clean_up(inputs, optics_opt, kwargs.get('limits', LIMITS))
 
 
-def _run_evaluate_and_clean_up(inputs, optics_opt):
+def _run_evaluate_and_clean_up(inputs, optics_opt, limits):
     with timeit(lambda spanned: print(f"\nTotal time for optics measurements: {spanned}")):
         measure_optics.measure_optics(inputs, optics_opt)
-    evaluate_accuracy(optics_opt.outputdir)
+    evaluate_accuracy(optics_opt.outputdir, limits)
     _clean_up(optics_opt.outputdir)
 
 
-def evaluate_accuracy(meas_path):
+def evaluate_accuracy(meas_path, limits):
     for f in [f for f in listdir(meas_path) if (isfile(join(meas_path, f)) and (".tfs" in f))]:
         a = tfs.read(join(meas_path, f))
         cols = [column for column in a.columns.to_numpy() if column.startswith('DELTA')]
@@ -137,8 +136,8 @@ def evaluate_accuracy(meas_path):
             cols.remove("DELTADX")
         for col in cols:
             rms = stats.weighted_rms(a.loc[:, col].to_numpy(), errors=a.loc[:, f"ERR{col}"].to_numpy())
-            if col[5] in LIMITS.keys():
-                assert rms < LIMITS[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
+            if col[5] in limits.keys():
+                assert rms < limits[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
             else:
                 assert rms < DEFAULT_LIMIT, "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
             print(f"\nFile: {f:25}  Column: {col[5:]:15}   RMS:    {rms:.6f}")

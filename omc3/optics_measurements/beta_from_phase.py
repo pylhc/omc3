@@ -420,21 +420,33 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     bet_frac = (cot_phase_meas_shift1[0]/cot_phase_model_shift1[0] +
                 cot_phase_meas_shift1[3]/cot_phase_model_shift1[3] +
                 cot_phase_meas_shift2[1]/cot_phase_model_shift2[1]) / 3
+
+    alf_mdl_term = (((cot_phase_model + np.roll(cot_phase_model, -1, axis=0))[0] + 2.0 * alfmdl)
+                + ((cot_phase_model + np.roll(cot_phase_model, -1, axis=0))[3] + 2.0 * alfmdl)
+                + ((cot_phase_model + np.roll(cot_phase_model, -2, axis=0))[1] + 2.0 * alfmdl)) / 6.0
+    alf_meas_term = (((cot_phase_meas + np.roll(cot_phase_meas, -1, axis=0))[0])
+                + ((cot_phase_meas + np.roll(cot_phase_meas, -1, axis=0))[3])
+                + ((cot_phase_meas + np.roll(cot_phase_meas, -2, axis=0))[1])) / 6.0
+
     # multiply the fractions by betmdl and calculate the arithmetic mean
     beti = bet_frac * betmdl
-    alfi = (bet_frac * (cot_phase_model[1] + cot_phase_model[3] + 2 * alfmdl) - (cot_phase_meas[1] + cot_phase_meas[3])) / 2
+    alfi = bet_frac * alf_mdl_term + alf_meas_term
     # calculate errphi_ij^2 / sin^2 phimdl_ij * beta
     with np.errstate(divide='ignore', invalid='ignore'):
-        sin_squared_model = tilted_errmeas / np.square(np.sin(tilted_model)) * betmdl
+        sin_squared_model = tilted_errmeas**2 / np.square(np.sin(tilted_model)) * betmdl
+        sin_quadrup_model = tilted_errmeas**2 / np.power(np.sin(tilted_model), 4) * betmdl
     # square it again beacause it's used in a vector length
     sin_squared_model = np.square(sin_squared_model)
     sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
     sin_squ_model_shift2 = sin_squared_model + np.roll(sin_squared_model, -2, axis=0) / np.square(cot_phase_model_shift2)
+    sin_quad_model_shift1 = sin_quadrup_model + np.roll(sin_quadrup_model, -1, axis=0) / np.square(cot_phase_model_shift1)
+    sin_quad_model_shift2 = sin_quadrup_model + np.roll(sin_quadrup_model, -2, axis=0) / np.square(cot_phase_model_shift2)
     beterr = np.sqrt(sin_squ_model_shift1[0] + sin_squ_model_shift1[3] + sin_squ_model_shift2[1]) / 3
     beta_df["BET" + plane] = beti
     beta_df["ERRBET" + plane] = beterr
     beta_df["ALF" + plane] = alfi
-    beta_df["ERRALF" + plane] = 0  # TODO calculate alferr
+    beta_df["ERRALF" + plane] = alf_mdl_term * beterr / betmdl + 0.5 * np.sqrt(
+        sin_quad_model_shift1[0] + sin_quad_model_shift1[3] + sin_quad_model_shift2[1])
     beta_df = _get_delta_columns(beta_df, plane)
     return beta_df
 
