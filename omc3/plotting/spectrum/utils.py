@@ -40,8 +40,7 @@ LABEL_Y_WATERFALL = 'Plane {plane:s}'
 LABEL_X = 'Frequency [tune units]'
 NCOL_LEGEND = 5  # number of columns in the legend
 WATERFALL_FILENAME = "waterfall_spectrum"
-SPECTRUM_FILENAME = ""
-CONFIG_FILENAME = "plot_spectrum_{time:s}.ini"
+STEM_FILENAME = "stem_spectrum"
 AMPS = FILE_AMPS_EXT.format(plane='')
 FREQS = FILE_FREQS_EXT.format(plane='')
 LIN = FILE_LIN_EXT.format(plane='')
@@ -226,7 +225,7 @@ def get_stem_id(filename: str, bpm: str, output_dir: str, combine_by: frozenset,
         _fset(): _get_id_multi_fig,
     }
     return fun_map[combine_by](
-        output_dir, SPECTRUM_FILENAME, filename, bpm, filetype
+        output_dir, STEM_FILENAME, filename, bpm, filetype
     )
 
 
