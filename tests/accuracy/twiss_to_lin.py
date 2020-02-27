@@ -32,7 +32,7 @@ ERRTUNE = 3e-7
 NAT_OVER_DRV = 0.01
 MAGIC_NUMBER = 6   # SVD cleaning effect + main lobe size effect
 COUPLING = 0.1
-
+np.random.seed(1234567)
 
 def optics_measurement_test_files(modeldir, dpps, motion):
     """

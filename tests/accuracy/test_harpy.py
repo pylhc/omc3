@@ -18,7 +18,7 @@ COUPLING = 0.01
 NTURNS = 1024
 NBPMS = 100
 BASEAMP = 0.001
-
+np.random.seed(1234567)
 
 class BasicTests:
     @staticmethod
