@@ -34,9 +34,6 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 - **y_lim** *(float)*: Y-Axis limits.
 
 
-:module: plotting.plot_bbq
-:author: jdilly
-
 """
 from collections import OrderedDict
 from contextlib import suppress

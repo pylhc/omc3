@@ -5,7 +5,6 @@ Plot Spectrum - Waterfall Plotter
 Waterfall plotting functionality for spectrum plotter.
 
 :module: omc3.plotting.spectrum.waterfall
-:author: jdilly
 
 """
 import matplotlib

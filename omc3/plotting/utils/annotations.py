@@ -5,7 +5,6 @@ Plotting Utilities: Annotations
 Helper functions to create annotations as well as style labels in plots.
 
 :module: omc3.plotting.utils.annotations
-:author: jdilly
 
 """
 import re
@@ -19,24 +18,25 @@ from matplotlib import pyplot as plt
 # List of common y-labels. Sorry for the ugly.
 _ylabels = {
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
-    "betabeat":           r'$\Delta \beta_{{{0}}} / \beta_{{{0}}}$',
-    "betabeat_permile":   r'$\Delta \beta_{{{0}}} / \beta_{{{0}}} [$'u'\u2030'r'$]$',
+    "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
+    "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$'u'\u2030'r'$]$',
     "dbeta":              r"$\beta'_{{{0}}} \quad [m]$",
-    "dbetabeat":          r'$1/\beta_{{{0}}} \cdot \partial\beta_{{{0}}} / \partial\delta_{{{0}}}$',
-    "norm_dispersion":    r'$\frac{{D_{{{0}}}}}{{\sqrt{{\beta_{{{0}}}}}}} \quad [\sqrt{{m}}]$',
-    "norm_dispersion_mu": r'$\frac{{D_{{{0}}}}}{{\sqrt{{\beta_{{{0}}}}}}} \quad [\mu \sqrt{{m}}]$',
+    "dbetabeat":          r'$1 \; / \; \beta_{{{0}}} \cdot \partial\beta_{{{0}}} \; / \; \partial\delta_{{{0}}}$',
+    "norm_dispersion":    r'D$_{{{0}}} \; / \; \sqrt{{\beta_{{{0}}}}} \quad \left[\sqrt{{\rm m}}\right]$',
+    "norm_dispersion_mu": r'D$_{{{0}}} \; / \; \sqrt{{\beta_{{{0}}}}} \quad \left[\sqrt{{\rm \mu m}}\right]$',
     "phase":              r'$\phi_{{{0}}} \quad [2\pi]$',
     "phasetot":           r'$\phi_{{{0}}} \quad [2\pi]$',
     "phase_milli":        r'$\phi_{{{0}}} \quad [2\pi\cdot10^{{-3}}]$',
-    "dispersion":         r'$D_{{{0}}} \quad [m]$',
-    "dispersion_mm":      r'$D_{{{0}}} \quad [mm]$',
-    "co":                 r'${0} \quad [mm]$',
-    "tune":               r'$Q_{{{0}}} \quad [Hz]$',
-    "nattune":            r'$Nat Q_{{{0}}} \quad [Hz]$',
-    "chromamp":           r'$W_{{{0}}}$',
-    "real":               r'$re({0})$',
-    "imag":               r'$im({0})$',
-    "absolute":           r'$|{0}|$',
+    "dispersion":         r'D$_{{{0}}}$ [m]',
+    "dispersion_mm":      r'D$_{{{0}}}$ [mm]',
+    "co":                 r'{0} [m]',
+    "co_mm":              r'{0} [mm]',
+    "tune":               r'Q$_{{{0}}}$',
+    "nattune":            r'Nat. Q$_{{{0}}}$',
+    "chromamp":           r'W$_{{{0}}}$',
+    "real":               r'$\Re({0})$',
+    "imag":               r'$\Im({0})$',
+    "absolute":           r'$\left|{0}\right|$',
 }
 
 

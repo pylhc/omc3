@@ -5,7 +5,6 @@ Plotting Utilities: Colors
 Make everything Rainbow.
 
 :module: omc3.plotting.utils.colors
-:author: jdilly
 
 """
 import colorsys

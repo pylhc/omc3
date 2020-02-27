@@ -5,7 +5,6 @@ Plot Spectrum - Utilities
 Common functions and sorting functions for the spectrum plotter.
 
 :module: omc3.plotting.spectrum.utils
-:author: jdilly
 
 """
 import os

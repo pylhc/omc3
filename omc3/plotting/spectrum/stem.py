@@ -5,7 +5,6 @@ Plot Spectrum - Stem Plotter
 Stem plotting functionality for spectrum plotter.
 
 :module: omc3.plotting.spectrum.stem
-:author: jdilly
 
 """
 import matplotlib

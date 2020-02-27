@@ -5,7 +5,6 @@ Plotting Utilities: Lines
 Line-plotting related functionality.
 
 :module: omc3.plotting.utils.lines
-:author: jdilly
 
 """
 import matplotlib.transforms as mtrans
