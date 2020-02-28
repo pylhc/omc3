@@ -377,12 +377,12 @@ def filter_amps(files: dict, limit: float):
     return files
 
 
-def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str) -> dict:
+def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Iterable) -> dict:
     """ Return the bpm-names of the given bpms as found in the lin files.
      'file_path' is only used for the error messages."""
     found_bpms = {}
     empty_planes = 0
-    for plane in PLANES:
+    for plane in planes:
         found_bpms[plane] = list(lin_files[plane].index)
         if given_bpms is not None:
             found_bpms[plane] = _get_only_given_bpms(found_bpms[plane], given_bpms, plane, filename)
@@ -391,7 +391,7 @@ def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str) -> dict:
             LOG.warning(f"(id:{filename}) No BPMs found for plane {plane}!")
             empty_planes += 1
 
-    if empty_planes == len(PLANES):
+    if empty_planes == len(planes):
         raise IOError(f"(id:{filename}) No BPMs found in any plane!")
     return found_bpms
 
@@ -463,16 +463,16 @@ def list2str(list_: list):
 # Spectrum File Loading --------------------------------------------------------
 
 
-def load_spectrum_data(file_path: Path, bpms):
+def load_spectrum_data(file_path: Path, bpms, planes=PLANES):
     """ Load Amps, Freqs and Lin Files into a dictionary, keys are the fileendings without plane,
      with subdicts of the planes. """
     LOG.info("Loading HARPY data.")
     with suppress(FileNotFoundError):
-        return _get_harpy_data(file_path)
+        return _get_harpy_data(file_path, planes)
 
     LOG.info("Some files not present. Loading SUSSIX data format")
     with suppress(FileNotFoundError):
-        return _get_sussix_data(file_path, bpms)
+        return _get_sussix_data(file_path, bpms, planes)
 
     raise FileNotFoundError(f"Neither harpy nor sussix files found in '{file_path.parent}' "
                             f"matching the name '{file_path.name}'.")
@@ -481,30 +481,30 @@ def load_spectrum_data(file_path: Path, bpms):
 # Harpy Data ---
 
 
-def _get_harpy_data(file_path):
+def _get_harpy_data(file_path, planes):
     return {
-        AMPS: _get_planed_files(file_path, ext=FILE_AMPS_EXT),
-        FREQS: _get_planed_files(file_path, ext=FILE_FREQS_EXT),
-        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, index=COL_NAME),
+        AMPS: _get_planed_files(file_path, ext=FILE_AMPS_EXT, planes=planes),
+        FREQS: _get_planed_files(file_path, ext=FILE_FREQS_EXT, planes=planes),
+        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, planes=planes, index=COL_NAME),
     }
 
 
-def _get_planed_files(file_path, ext, index=None):
+def _get_planed_files(file_path, ext, planes, index=None):
     return {
         plane: tfs.read(
             str(file_path.with_suffix(file_path.suffix + ext.format(plane=plane.lower()))),
             index=index)
-        for plane in PLANES
+        for plane in planes
     }
 
 
 # SUSSIX Data ---
 
 
-def _get_sussix_data(file_path, bpms):
+def _get_sussix_data(file_path, bpms, planes):
     bpm_dir = file_path.parent / 'BPM'
     files = {LIN: {}, AMPS: {}, FREQS: {}}
-    for plane in PLANES:
+    for plane in planes:
         files[LIN][plane] = tfs.read(
             str(file_path.with_suffix(file_path.suffix + f'_lin{plane.lower()}')),
             index=COL_NAME)

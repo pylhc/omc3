@@ -49,17 +49,17 @@ from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entrypoint_parser import save_options_to_config
 
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
 from omc3.harpy.constants import FILE_LIN_EXT
-from omc3.harpy.frequency import PLANES  # TODO change to constants
-from omc3.plotting.spectrum_utils import (load_spectrum_data, get_bpms,
+from omc3.plotting.spectrum.utils import (load_spectrum_data, get_bpms,
                                           LIN, AMPS, FREQS
                                           )
-from omc3.utils import logging_tools
+from omc3.utils.logging_tools import get_logger, list2str
 
-LOG = logging_tools.get_logger(__name__)
+LOG = get_logger(__name__)
 
 
-# TODO: create constants in measure optics and use these
+# TODO: create constants in measure optics and use these (jdilly)
 COL_NATTUNE = "NATTUNE{plane}"
 COL_NATAMP = "NATAMP{plane}"
 COL_NAME = "NAME"
@@ -118,20 +118,14 @@ def main(opt):
     LOG.info("Updating Natural Tunes in Lin-Files.")
 
     for file_path in (Path(f) for f in opt.files):
-        # TODO: Could be optimized for opt.planes
-        data = load_spectrum_data(file_path, opt.bpms)
-        bpms = get_bpms(data[LIN], opt.bpms, file_path)
+        data = load_spectrum_data(file_path, opt.bpms, opt.planes)
+        bpms = get_bpms(data[LIN], opt.bpms, file_path, opt.planes)
 
         data = _update_lin_columns(data, bpms,
                                    opt.planes, opt.range, opt.not_found_action,
                                    file_path.name)
 
         _save_linfiles(data[LIN], file_path, opt.planes, opt.rename_suffix)
-
-
-def list2str(list_):
-    # TODO remove and use from earlier functions
-    return str(list_).rstrip("[").lstrip(']')
 
 
 def _update_lin_columns(data, bpms, planes, range, not_found_action, filename):
