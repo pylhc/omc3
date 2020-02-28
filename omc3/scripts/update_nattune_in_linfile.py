@@ -128,18 +128,21 @@ def main(opt):
         _save_linfiles(data[LIN], file_path, opt.planes, opt.rename_suffix)
 
 
-def _update_lin_columns(data, bpms, planes, range, not_found_action, filename):
+# Update -----------------------------------------------------------------------
+
+
+def _update_lin_columns(data, bpms, planes, range_, not_found_action, filename):
     for plane in planes:
         col_nattune = COL_NATTUNE.format(plane=plane.upper())
         col_natamp = COL_NATAMP.format(plane=plane.upper())
 
         for bpm in bpms[plane]:
             freqs, amps = data[FREQS][plane][bpm], data[AMPS][plane][bpm]
-            peak = _get_peak_in_range(freqs, amps, range)
+            peak = _get_peak_in_range(freqs, amps, range_)
 
             if peak is None:
                 msg = (f'No lines found for bpm {bpm} in plane {plane} '
-                       f'in range {list2str(range)} for file-id "{filename}".')
+                       f'in range {list2str(range_)} for file-id "{filename}".')
                 if not_found_action == 'error':
                     raise ValueError(msg)
                 LOG.warning(msg)
@@ -156,15 +159,18 @@ def _update_lin_columns(data, bpms, planes, range, not_found_action, filename):
     return data
 
 
-def _get_peak_in_range(freqs, amps, range):
+def _get_peak_in_range(freqs, amps, range_):
     data_series = pd.Series(data=amps.to_numpy(), index=freqs.to_numpy())
     data_series = data_series.sort_index()
     try:
-        f_peak = data_series.loc[slice(*sorted(range))].idxmax()
+        f_peak = data_series.loc[slice(*sorted(range_))].idxmax()
     except ValueError:
         return None
     else:
         return data_series.loc[[f_peak]]
+
+
+# Output -----------------------------------------------------------------------
 
 
 def _save_linfiles(lin_data, file_path, planes, suffix):
@@ -178,6 +184,9 @@ def _save_options_to_config(opt):
     with suppress(IOError):
         save_options_to_config(formats.get_config_filename(__file__),
                                OrderedDict(sorted(opt.items())))
+
+
+# Script Mode ------------------------------------------------------------------
 
 
 if __name__ == '__main__':
