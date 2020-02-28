@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import tfs
 
-from harpy.constants import COL_NATTUNE, COL_NATAMP, COL_TUNE, COL_AMP
+from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_TUNE, COL_AMP
 from omc3.scripts.update_nattune_in_linfile import main as update_nattune, PLANES
 
 RENAME_SUFFIX = '_mytest'
