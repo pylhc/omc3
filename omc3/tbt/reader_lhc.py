@@ -13,12 +13,12 @@ import pandas as pd
 import pytz
 import sdds
 
+from omc3.definitions.constants import PLANES
 from omc3.tbt import handler
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
-PLANES = ('X', 'Y')
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": "0", "Y": "1"}
 POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}

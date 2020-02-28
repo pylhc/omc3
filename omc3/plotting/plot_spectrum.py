@@ -103,9 +103,11 @@ one figure is used.
 """
 import os
 from collections import OrderedDict
+from contextlib import suppress
 from typing import Tuple
 
 import matplotlib
+import tfs
 from cycler import cycler
 from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
@@ -113,16 +115,19 @@ from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
 from matplotlib import cm
 
 from omc3.definitions import formats
-from omc3.plotting.spectrum_stem import create_stem_plots
-from omc3.plotting.spectrum_utils import (NCOL_LEGEND, LIN, MANUAL_LOCATIONS, LOG,
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.plotting.spectrum.stem import create_stem_plots
+from omc3.plotting.spectrum.utils import (PLANES, NCOL_LEGEND, AMPS, FREQS, LIN,
+                                          MANUAL_LOCATIONS, LOG,
                                           FigureCollector, get_unique_filenames,
                                           filter_amps, get_bpms, get_stem_id,
                                           get_waterfall_id, get_data_for_bpm)
-from omc3.plotting.spectrum_waterfall import create_waterfall_plots
+from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.utils import logging_tools
-from plotting.spectrum_utils import load_spectrum_data
 
 LOG = logging_tools.getLogger(__name__)
+
+COL_NAME = 'NAME'
 
 
 def get_reshuffled_tab20c():
@@ -332,7 +337,6 @@ def _sort_opt(opt):
 
 # Output ---
 
-
 def _save_options_to_config(opt):
     os.makedirs(opt.output_dir, exist_ok=True)
     save_options_to_config(os.path.join(opt.output_dir, formats.get_config_filename(__file__)),
@@ -354,9 +358,9 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
     for file_path, filename in get_unique_filenames(opt.files):
         LOG.info(f"Loading data for file '{filename}'.")
 
-        data = load_spectrum_data(file_path, opt.bpms)
+        data = _load_spectrum_data(file_path, opt.bpms)
         data = filter_amps(data, opt.amp_limit)
-        bpms = _get_all_bpms(get_bpms(data[LIN], opt.bpms, filename))
+        bpms = _get_all_bpms(get_bpms(data[LIN], opt.bpms, file_path))
 
         for collector, get_id_fun, active in ((stem_figs, get_stem_id, opt.plot_stem),
                                               (waterfall_figs, get_waterfall_id, opt.plot_waterfall)):
@@ -370,7 +374,64 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
     return stem_figs, waterfall_figs
 
 
+def _load_spectrum_data(file_path, bpms):
+    LOG.info("Loading HARPY data.")
+    with suppress(FileNotFoundError):
+        return _get_harpy_data(file_path)
+
+    LOG.info("Some files not present. Loading SUSSIX data format")
+    with suppress(FileNotFoundError):
+        return _get_sussix_data(file_path, bpms)
+
+    raise FileNotFoundError(f"Neither harpy nor sussix files found in '{os.path.dirname(file_path)}' "
+                            f"matching the name '{os.path.basename(file_path)}'.")
+
+# Harpy Loader ---
+
+
+def _get_harpy_data(file_path):
+    return {
+        AMPS: _get_planed_files(file_path, ext=FILE_AMPS_EXT),
+        FREQS: _get_planed_files(file_path, ext=FILE_FREQS_EXT),
+        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, index=COL_NAME),
+    }
+
+
+def _get_planed_files(file_path, ext, index=None):
+    directory, filename = _get_dir_and_name(file_path)
+    return {
+        plane: tfs.read(os.path.join(directory, f'{filename}{ext.format(plane=plane.lower())}'), index=index)
+        for plane in PLANES
+    }
+
+
+# Sussix loader ---
+
+
+def _get_sussix_data(file_path, bpms):
+    directory, filename = _get_dir_and_name(file_path)
+    bpm_dir = os.path.join(directory, 'BPM')
+    files = {LIN: {}, AMPS: {}, FREQS: {}}
+    for plane in PLANES:
+        files[LIN][plane] = tfs.read(
+            os.path.join(directory, f'{filename}_lin{plane.lower()}'), index=COL_NAME)
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = tfs.TfsDataFrame(columns=bpms)
+        for bpm in bpms:
+            with suppress(FileNotFoundError):
+                df = tfs.read(os.path.join(bpm_dir, f'{bpm}.{plane.lower()}'))
+                files[FREQS][plane][bpm] = df["FREQ"]
+                files[AMPS][plane][bpm] = df["AMP"]
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = files[id_][plane].fillna(0)
+    return files
+
+
 # Helper -----------------------------------------------------------------------
+
+
+def _get_dir_and_name(file_path):
+    return os.path.dirname(file_path), os.path.basename(file_path)
 
 
 def _get_all_bpms(bpms_dict):

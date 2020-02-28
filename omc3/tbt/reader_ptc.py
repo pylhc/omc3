@@ -11,6 +11,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
+from omc3.definitions.constants import PLANES
 from omc3.tbt import handler
 from omc3.utils.logging_tools import get_logger
 
@@ -26,8 +27,6 @@ COLPARTICLE = "NUMBER"
 DATE = "DATE"
 TIME = "TIME"
 TIME_FORMAT = "%d/%m/%y %H.%M.%S"
-
-PLANES = ("X", "Y")
 
 Segment = namedtuple("Segment", ["number", "turns", "particles", "element", "name"])
 

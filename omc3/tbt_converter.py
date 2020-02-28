@@ -24,7 +24,6 @@ from omc3.utils import iotools, logging_tools
 LOGGER = logging_tools.get_logger(__name__)
 
 DEFAULT_CONFIG_FILENAME = "converter_{time:s}.ini"
-PLANES = ("X", "Y")
 
 
 def converter_params():
@@ -93,7 +92,9 @@ def _read_and_write_files(opt):
             if opt.noise_levels is None:
                 tbt.write(join(opt.outputdir, f"{_file_name(input_file)}{suffix}"), tbt_data=tbt_data)
             else:
-                [tbt.write(join(opt.outputdir, f"{_file_name(input_file)}_n{n}{suffix}"), tbt_data=tbt_data, noise=n) for n in opt.noise_levels]
+                for noise_level in opt.noise_levels:
+                    tbt.write(join(opt.outputdir, f"{_file_name(input_file)}_n{noise_level}{suffix}"),
+                              tbt_data=tbt_data, noise=noise_level)
 
 
 def _file_name(filename: str):

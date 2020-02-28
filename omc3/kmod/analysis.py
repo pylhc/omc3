@@ -1,13 +1,15 @@
-import scipy.optimize
-from os.path import join
-import numpy as np
-import tfs
 import datetime
+
+import numpy as np
+import scipy.optimize
+import tfs
 from tfs import tools as tfstools
-from omc3.utils import logging_tools
-from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
+from omc3.kmod import helper
+from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -46,7 +48,7 @@ def calc_betastar(kmod_input_params, results_df, l_star):
         if kmod_input_params.no_sig_digits:
             results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = (betastar[0], betastar_err)
         else:
-            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_numbers(betastar[0], betastar_err)
+            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_digits(betastar[0], betastar_err)
 
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
@@ -96,7 +98,7 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df, kmod_inpu
         if kmod_input_params.no_sig_digits:
             betas[i, 0], betas[i, 1] = beta[0], beta_err
         else:
-            betas[i, 0], betas[i, 1] = tfstools.significant_numbers(beta[0], beta_err)
+            betas[i, 0], betas[i, 1] = tfstools.significant_digits(beta[0], beta_err)
     return name, betas[0, 0], betas[0, 1], betas[1, 0], betas[1, 1]
 
 
