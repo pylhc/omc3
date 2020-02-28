@@ -10,14 +10,13 @@ from harpy.constants import COL_NATTUNE, COL_NATAMP, COL_TUNE, COL_AMP
 from omc3.scripts.update_nattune_in_linfile import main as update_nattune, PLANES
 
 RENAME_SUFFIX = '_mytest'
-CLEAN_OUTPUT = True  # set false for debugging
 
 
 def runclean(func):
     @staticmethod
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
-        _clean_output_files()
+        _clean_output_files()  # comment for debugging single tests
     return wrapper
 
 
@@ -113,11 +112,10 @@ def _get_input_file():
 
 
 def _clean_output_files():
-    if CLEAN_OUTPUT:
-        for out_file in _get_input_dir().glob(f'*{RENAME_SUFFIX}.lin*'):
-            with suppress(IOError):
-                os.remove(out_file)
+    for out_file in _get_input_dir().glob(f'*{RENAME_SUFFIX}.lin*'):
+        with suppress(IOError):
+            os.remove(out_file)
 
-        for ini_file in Path.cwd().glob('*update_nattune*.ini'):
-            with suppress(IOError):
-                os.remove(ini_file)
+    for ini_file in Path.cwd().glob('*update_nattune*.ini'):
+        with suppress(IOError):
+            os.remove(ini_file)
