@@ -48,6 +48,7 @@ import tfs
 from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entrypoint_parser import save_options_to_config
 
+from harpy.constants import COL_NATTUNE, COL_NATAMP, COL_NAME
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.harpy.constants import FILE_LIN_EXT
@@ -57,12 +58,6 @@ from omc3.plotting.spectrum.utils import (load_spectrum_data, get_bpms,
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
-
-
-# TODO: create constants in measure optics and use these (jdilly)
-COL_NATTUNE = "NATTUNE{plane}"
-COL_NATAMP = "NATAMP{plane}"
-COL_NAME = "NAME"
 
 
 def get_params():
@@ -117,7 +112,8 @@ def main(opt):
     _save_options_to_config(opt)
     LOG.info("Updating Natural Tunes in Lin-Files.")
 
-    for file_path in (Path(f) for f in opt.files):
+    gathered = [None] * len(opt.files)
+    for idx_file, file_path in enumerate(Path(f) for f in opt.files):
         data = load_spectrum_data(file_path, opt.bpms, opt.planes)
         bpms = get_bpms(data[LIN], opt.bpms, file_path, opt.planes)
 
@@ -126,6 +122,8 @@ def main(opt):
                                    file_path.name)
 
         _save_linfiles(data[LIN], file_path, opt.planes, opt.rename_suffix)
+        gathered[idx_file] = data[LIN]
+    return gathered
 
 
 # Update -----------------------------------------------------------------------
@@ -133,8 +131,8 @@ def main(opt):
 
 def _update_lin_columns(data, bpms, planes, range_, not_found_action, filename):
     for plane in planes:
-        col_nattune = COL_NATTUNE.format(plane=plane.upper())
-        col_natamp = COL_NATAMP.format(plane=plane.upper())
+        col_nattune = f'{COL_NATTUNE}{plane.upper()}'
+        col_natamp = f'{COL_NATAMP}{plane.upper()}'
 
         for bpm in bpms[plane]:
             freqs, amps = data[FREQS][plane][bpm], data[AMPS][plane][bpm]
@@ -148,12 +146,12 @@ def _update_lin_columns(data, bpms, planes, range_, not_found_action, filename):
                 LOG.warning(msg)
 
                 if not_found_action == 'remove':
-                    data[LIN][plane].drop(bpm, axis='index')
+                    data[LIN][plane] = data[LIN][plane].drop(bpm, axis='index')
 
             else:
                 freq_peak, amp_peak = next(peak.items())
-                data[LIN][plane].loc[bpm, col_natamp] = freq_peak
-                data[LIN][plane].loc[bpm, col_nattune] = amp_peak
+                data[LIN][plane].loc[bpm, col_nattune] = freq_peak
+                data[LIN][plane].loc[bpm, col_natamp] = amp_peak
                 LOG.debug(f"{filename}.{bpm}.{plane} nattune set to"
                           f"f={freq_peak}, A={amp_peak}")
     return data
@@ -173,10 +171,9 @@ def _get_peak_in_range(freqs, amps, range_):
 # Output -----------------------------------------------------------------------
 
 
-def _save_linfiles(lin_data, file_path, planes, suffix):
-    file_path = file_path.with_suffix('')
+def _save_linfiles(lin_data, file_path, planes, id_suffix):
     for plane in planes:
-        out_path = file_path.with_name(file_path.name + suffix).with_suffix(FILE_LIN_EXT.format(plane=plane.lower()))
+        out_path = file_path.with_name(f'{file_path.name}{id_suffix}{FILE_LIN_EXT.format(plane=plane.lower())}')
         tfs.write(str(out_path), lin_data[plane], save_index=COL_NAME)
 
 
@@ -190,4 +187,4 @@ def _save_options_to_config(opt):
 
 
 if __name__ == '__main__':
-    main(files=['tests/inputs/spec_test.sdds'], range=[0.2, 0.3], rename_suffix='_mytest')
+    main()

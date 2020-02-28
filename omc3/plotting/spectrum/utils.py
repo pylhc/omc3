@@ -21,10 +21,9 @@ from matplotlib import transforms, axes, pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
 from omc3.utils import logging_tools
 
-COL_NAME = 'NAME'
 
 LOG = logging_tools.getLogger(__name__)
 
