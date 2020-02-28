@@ -121,4 +121,3 @@ def _clean_output_files():
         for ini_file in Path.cwd().glob('*update_nattune*.ini'):
             with suppress(IOError):
                 os.remove(ini_file)
-
