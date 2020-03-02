@@ -48,10 +48,9 @@ import tfs
 from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entrypoint_parser import save_options_to_config
 
-from harpy.constants import COL_NATTUNE, COL_NATAMP, COL_NAME
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_LIN_EXT
+from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_NAME, FILE_LIN_EXT
 from omc3.plotting.spectrum.utils import (load_spectrum_data, get_bpms,
                                           LIN, AMPS, FREQS
                                           )
