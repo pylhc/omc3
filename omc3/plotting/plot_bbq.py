@@ -168,15 +168,10 @@ def _plot_bbq_data(bbq_df,
         u"lines.linestyle": u""}
                      )
 
-    fig = plt.figure()
+    fig, axs = plt.subplots(1+two_plots, 1)
 
-    if two_plots:
-        gs = gridspec.GridSpec(2, 1, height_ratios=[1, 1])
-        ax = [fig.add_subplot(gs[1]), fig.add_subplot(gs[0])]
-    else:
-        gs = gridspec.GridSpec(1, 1, height_ratios=[1])
-        ax = fig.add_subplot(gs[0])
-        ax = [ax, ax]
+    if not two_plots:
+        axs = [axs[0], axs[0]]
 
     handles = [None] * (3 * len(PLANES))
     for idx, plane in enumerate(PLANES):
@@ -184,59 +179,59 @@ def _plot_bbq_data(bbq_df,
         mask = np.array(bbq_df[get_used_in_mav_col(plane)], dtype=bool)
 
         # plot and save handles for nicer legend
-        handles[idx] = ax[idx].plot([i.get_datetime() for i in bbq_df.index],
+        handles[idx] = axs[idx].plot([i.get_datetime() for i in bbq_df.index],
                                     bbq_df[get_bbq_col(plane)],
                                     color=pcolors.change_color_brightness(color, .4),
                                     marker="o", markerfacecolor="None",
                                     label="$Q_{:s}$".format(plane.lower(),)
                                     )[0]
         filtered_data = bbq_df.loc[mask, get_bbq_col(plane)].dropna()
-        handles[len(PLANES)+idx] = ax[idx].plot(filtered_data.index, filtered_data.values,
+        handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.values,
                                                 color=pcolors.change_color_brightness(color, .7),
                                                 marker=".",
                                                 label="filtered".format(plane.lower())
                                                 )[0]
-        handles[2*len(PLANES)+idx] = ax[idx].plot(bbq_df.index, bbq_df[get_mav_col(plane)],
+        handles[2*len(PLANES)+idx] = axs[idx].plot(bbq_df.index, bbq_df[get_mav_col(plane)],
                                                   color=color,
                                                   linestyle="-",
                                                   label="moving av.".format(plane.lower())
                                                   )[0]
 
         if (y_lim is None or y_lim[0] is None) and two_plots:
-            ax[idx].set_ylim(bottom=min(bbq_df.loc[mask, get_bbq_col(plane)]))
+            axs[idx].set_ylim(bottom=min(bbq_df.loc[mask, get_bbq_col(plane)]))
 
         if (y_lim is None or y_lim[1] is None) and two_plots:
-            ax[idx].set_ylim(top=max(bbq_df.loc[mask, get_bbq_col(plane)]))
+            axs[idx].set_ylim(top=max(bbq_df.loc[mask, get_bbq_col(plane)]))
 
     # things to add/do only once if there is only one plot
     for idx in range(1+two_plots):
         if interval:
-            ax[idx].axvline(x=interval[0], color="red")
-            ax[idx].axvline(x=interval[1], color="red")
+            axs[idx].axvline(x=interval[0], color="red")
+            axs[idx].axvline(x=interval[1], color="red")
 
         if two_plots:
-            ax[idx].set_ylabel("$Q_{:s}$".format(PLANES[idx]))
+            axs[idx].set_ylabel("$Q_{:s}$".format(PLANES[idx]))
         else:
-            ax[idx].set_ylabel('Tune')
+            axs[idx].set_ylabel('Tune')
 
         if y_lim is not None:
-            ax[idx].set_ylim(y_lim)
-        ax[idx].yaxis.set_major_formatter(FormatStrFormatter('%.5f'))
+            axs[idx].set_ylim(y_lim)
+        axs[idx].yaxis.set_major_formatter(FormatStrFormatter('%.5f'))
 
         if x_lim is not None:
-            ax[idx].set_xlim(x_lim)
-        ax[idx].set_xlabel('Time')
-        ax[idx].xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
+            axs[idx].set_xlim(x_lim)
+        axs[idx].set_xlabel('Time')
+        axs[idx].xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
 
         if idx:
             # don't show labels on upper plot (if two plots)
             # use the visibility to allow cursor x-position to be shown
-            ax[idx].tick_params(labelbottom=False)
-            ax[idx].xaxis.get_label().set_visible(False)
+            axs[idx].tick_params(labelbottom=False)
+            axs[idx].xaxis.get_label().set_visible(False)
 
         if not two_plots or idx:
             # reorder legend
-            ax[idx].legend(handles, [h.get_label() for h in handles],
+            axs[idx].legend(handles, [h.get_label() for h in handles],
                            loc='lower right', bbox_to_anchor=(1.0, 1.01), ncol=3,)
 
     fig.tight_layout()
