@@ -214,11 +214,11 @@ def analyse_with_bbq_corrections(opt):
         for tune_plane in PLANES:
             for corr in [False, True]:
                 # get the proper data
-                data = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corr)
+                data_df = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corr)
 
                 # make the odr
-                odr_fit = fitting_tools.do_odr(x=data['action'], y=data['tune'],
-                                               xerr=data['action_err'], yerr=data['tune_err'],
+                odr_fit = fitting_tools.do_odr(x=data_df['action'], y=data_df['tune'],
+                                               xerr=data_df['action_err'], yerr=data_df['tune_err'],
                                                order=opt.detuning_order)
                 kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corr)
 

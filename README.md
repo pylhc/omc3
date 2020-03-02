@@ -16,7 +16,7 @@ Feel free to use them anyway, if you wish!
 
 The codes use a multitude of packages as can be found in the [`setup.py`](setup.py) file.
 
-Important ones are: `numpy`, `pandas`, `scipy`, `tfs-pandas`, `sdds` and `generic_parser`.
+Important ones are: `numpy`, `pandas` and `scipy` as well as our `tfs-pandas`, `sdds` and `generic_parser`.
 
 ### Installing
 
@@ -57,7 +57,11 @@ Some examples can be found in the test files.
 
 #### 2020-02-24
 
-- Added amplitude detuning analysis
+- Added:
+   - amplitude detuning analysis
+   - amplitude detuning and bbq plotting
+   - time tools
+   - plotting helpers
 - Distinction between `BasicTests` and `Extended Tests`
 
 #### Before

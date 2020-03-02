@@ -106,28 +106,34 @@ class AccDatetime(datetime):
                                 dt.hour, dt.minute, dt.second, dt.microsecond,
                                 tzinfo=pytz.utc)
 
-    def get_datetime(self):
+    @property
+    def datetime(self):
         """ Return normal datetime object (in case ducktyping does not work. Looking at you, mpl!). """
         return datetime(self.year, self.month, self.day,
                         self.hour, self.minute, self.second, self.microsecond,
                         tzinfo=pytz.utc)
 
-    def get_local_timezone(self):
+    @property
+    def local_timezone(self):
         """ Get local timezone. """
         return self._LOCAL_TIMEZONE
 
+    @property
     def utc(self):
         """ Get utc datetime object """
         return self
 
+    @property
     def local(self):
         """ Get local datetime object """
         return self.astimezone(self._LOCAL_TIMEZONE)
 
+    @property
     def local_string(self):
         """ Get local time as string """
-        return self.local().strftime(get_readable_time_format())
+        return self.local.strftime(get_readable_time_format())
 
+    @property
     def utc_string(self):
         """ Get utc time as string """
         return self.strftime(get_readable_time_format())

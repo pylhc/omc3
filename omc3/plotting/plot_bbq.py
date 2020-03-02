@@ -61,7 +61,6 @@ LOG = logging_tools.get_logger(__name__)
 def get_params():
     params = EntryPointParameters()
     params.add_parameter(
-        flags="--in",
         help="BBQ data as data frame or tfs file.",
         name="input",
         required=True,
@@ -71,7 +70,6 @@ def get_params():
         name="kick",
     )
     params.add_parameter(
-        flags="--out",
         help="Save figure to this location.",
         name="output",
         type=str,
@@ -94,14 +92,12 @@ def get_params():
         nargs=2,
     )
     params.add_parameter(
-        flags="--interval",
         help="x_axis interval that was used in calculations.",
         name="interval",
         type=float,
         nargs=2,
     )
     params.add_parameter(
-        flags="--two",
         help="Plot two axis into the figure.",
         name="two_plots",
         action="store_true",

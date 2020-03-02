@@ -175,14 +175,14 @@ def main(opt):
             for idx, (kick, label) in enumerate(zip(opt.kicks, opt.labels)):
                 kick_df = kick_mod.read_timed_dataframe(kick) if isinstance(kick, str) else kick
 
-                data = kick_mod.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corr)
+                data_df = kick_mod.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corr)
                 odr_fit = kick_mod.get_odr_data(kick_df, kick_plane, tune_plane,
                                                 order=opt.detuning_order, corrected=corr)
-                data, odr_fit = _correct_and_scale(data, odr_fit,
+                data_df, odr_fit = _correct_and_scale(data_df, odr_fit,
                                                    opt.action_unit, opt.action_plot_unit,
                                                    10**opt.tune_scale, acd_corr)
 
-                _plot_detuning(ax, data=data, label=label, limits=limits,
+                _plot_detuning(ax, data=data_df, label=label, limits=limits,
                                odr_fit=odr_fit,
                                color=pcolors.get_mpl_color(idx),
                                action_unit=opt.action_plot_unit, tune_scale=10**opt.tune_scale)
