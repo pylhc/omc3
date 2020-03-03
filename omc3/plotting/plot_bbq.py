@@ -171,7 +171,7 @@ def _plot_bbq_data(bbq_df,
     fig, axs = plt.subplots(1+two_plots, 1)
 
     if not two_plots:
-        axs = [axs[0], axs[0]]
+        axs = [axs, axs]
 
     handles = [None] * (3 * len(PLANES))
     for idx, plane in enumerate(PLANES):
@@ -179,7 +179,7 @@ def _plot_bbq_data(bbq_df,
         mask = np.array(bbq_df[get_used_in_mav_col(plane)], dtype=bool)
 
         # plot and save handles for nicer legend
-        handles[idx] = axs[idx].plot([i.get_datetime() for i in bbq_df.index],
+        handles[idx] = axs[idx].plot([i.datetime for i in bbq_df.index],
                                     bbq_df[get_bbq_col(plane)],
                                     color=pcolors.change_color_brightness(color, .4),
                                     marker="o", markerfacecolor="None",

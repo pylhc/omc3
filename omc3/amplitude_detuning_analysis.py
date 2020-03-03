@@ -26,11 +26,14 @@ linear or quadratic fit from the measurements.
 
 *--Optional--*
 
-- **bbq_filtering_method** *(str)*:
+- **bbq_filtering_method** *(str)*:Filtering method for the bbq to use. 'cut' cuts around a given tune,
+  'minmax' lets you specify the limits and 'outliers' uses the outlier filtering from utils.
 
   Choices: ``['cut', 'minmax', 'outliers']``
   Default: ``outliers``
-- **bbq_in**: Fill number of desired data to extract from timber or path to presaved bbq-tfs-file
+- **bbq_in**: Fill number of desired data to extract from timber
+  or path to presaved bbq-tfs-file. Use the string 'kick' to use the timestamps
+  in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.
 
 - **debug**: Activates Debug mode
 
@@ -116,7 +119,9 @@ def _get_params():
         ),
         bbq_in=dict(
             help=("Fill number of desired data to extract from timber "
-                  "or path to presaved bbq-tfs-file"),
+                  "or path to presaved bbq-tfs-file. Use the string 'kick' to "
+                  "use the timestamps in the kickfile for timber extraction. "
+                  "Not giving this parameter skips bbq compensation."),
         ),
         detuning_order=dict(
             help="Order of the detuning as int. Basically just the order of the applied fit.",
@@ -133,7 +138,9 @@ def _get_params():
             default=20,
         ),
         bbq_filtering_method=dict(
-            help="",
+            help="Filtering method for the bbq to use. 'cut' cuts around a given tune, "
+                 "'minmax' lets you specify the limits and 'outliers' uses the outlier filtering "
+                 "from utils.",
             type=str,
             choices=["cut", "minmax", "outliers"],
             default="outliers",
@@ -198,37 +205,44 @@ def analyse_with_bbq_corrections(opt):
 
         # get data
         kick_df = read_two_kick_files_from_folder(opt.kick)
-        bbq_df = _get_bbq_data(opt.beam, opt.bbq_in, kick_df)
-        x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
+        bbq_df = None
 
-        # add moving average to kick
-        kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
+        if opt.bbq_in is not None:
+            bbq_df = _get_bbq_data(opt.beam, opt.bbq_in, kick_df)
+            x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
 
-        # add corrected values to kick
-        kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
-        kick_df = kick_file_modifiers.add_total_natq_std(kick_df)
+            # add moving average to kick
+            kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
+
+            # add corrected values to kick
+            kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
+            kick_df = kick_file_modifiers.add_total_natq_std(kick_df)
 
         kick_plane = opt.plane
 
         # amplitude detuning odr
         for tune_plane in PLANES:
-            for corr in [False, True]:
+            for corrected in [False, True]:
+                if corrected and opt.bbq_in is None:
+                    continue
+
                 # get the proper data
-                data_df = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corr)
+                data_df = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corrected)
 
                 # make the odr
                 odr_fit = fitting_tools.do_odr(x=data_df['action'], y=data_df['tune'],
                                                xerr=data_df['action_err'], yerr=data_df['tune_err'],
                                                order=opt.detuning_order)
-                kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corr)
+                kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected)
 
     # output kick and bbq data
     if opt.output:
         opt.output.mkdir(parents=True, exist_ok=True)
         write_timed_dataframe(opt.output / get_kick_out_name(),
                               kick_df)
-        write_timed_dataframe(opt.output / get_bbq_out_name(),
-                              bbq_df.loc[x_interval[0]:x_interval[1]])
+        if bbq_df is not None:
+            write_timed_dataframe(opt.output / get_bbq_out_name(),
+                                  bbq_df.loc[x_interval[0]:x_interval[1]])
 
     return kick_df, bbq_df
 
@@ -305,19 +319,20 @@ def _get_bbq_data(beam, input_, kick_df):
         fill_number = int(input_)
     except ValueError:
         # input is a string
-        LOG.debug(f"Getting bbq data from file '{input_:s}'")
-        data = read_timed_dataframe(input_)
-        data.drop([get_mav_col(p) for p in PLANES
-                   if get_mav_col(p) in data.columns], axis='columns')
-    except TypeError:
-        # input is None
-        LOG.debug("Getting timber data from kick-times.")
-        timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
-        t_start = min(kick_df.index.values)
-        t_end = max(kick_df.index.values)
-        data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME,
-                                                    keys=timber_keys,
-                                                    names=dict(zip(timber_keys, bbq_cols)))
+        if input_ == "kick":
+            LOG.debug("Getting timber data from kick-times.")
+            timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
+            t_start = min(kick_df.index.values)
+            t_end = max(kick_df.index.values)
+            data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME,
+                                                        keys=timber_keys,
+                                                        names=dict(zip(timber_keys, bbq_cols)))
+        else:
+            LOG.debug(f"Getting bbq data from file '{input_:s}'")
+            data = read_timed_dataframe(input_)
+            data.drop([get_mav_col(p) for p in PLANES
+                       if get_mav_col(p) in data.columns], axis='columns')
+
     else:
         # input is a number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")
