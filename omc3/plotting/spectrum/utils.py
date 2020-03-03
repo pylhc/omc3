@@ -346,7 +346,7 @@ def get_unique_filenames(files: Union[Iterable, Sized]):
                 names[idx_old] = _get_partial_filepath(paths[idx_old], parts)
             fname = _get_partial_filepath(fpath, parts)
         names[idx] = fname
-        paths[idx] = fpath
+        paths[idx] = Path(fpath)
     return zip(paths, names)
 
 
@@ -375,22 +375,22 @@ def filter_amps(files: dict, limit: float):
     return files
 
 
-def get_bpms(lin_files: dict, given_bpms: Iterable, file_path: str) -> dict:
+def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Iterable) -> dict:
     """ Return the bpm-names of the given bpms as found in the lin files.
      'file_path' is only used for the error messages."""
     found_bpms = {}
     empty_planes = 0
-    for plane in PLANES:
+    for plane in planes:
         found_bpms[plane] = list(lin_files[plane].index)
         if given_bpms is not None:
-            found_bpms[plane] = _get_only_given_bpms(found_bpms[plane], given_bpms, plane, file_path)
+            found_bpms[plane] = _get_only_given_bpms(found_bpms[plane], given_bpms, plane, filename)
 
         if len(found_bpms[plane]) == 0:
-            LOG.warning(f"({file_path}) No BPMs found for plane {plane}!")
+            LOG.warning(f"(id:{filename}) No BPMs found for plane {plane}!")
             empty_planes += 1
 
-    if empty_planes == len(PLANES):
-        raise IOError(f"({file_path}) No BPMs found in any plane!")
+    if empty_planes == len(planes):
+        raise IOError(f"(id:{filename}) No BPMs found in any plane!")
     return found_bpms
 
 
