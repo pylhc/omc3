@@ -8,17 +8,20 @@ Common functions and sorting functions for the spectrum plotter.
 
 """
 import os
+from contextlib import suppress
+from pathlib import Path
 from typing import Iterable, Sized, Union
 
 import matplotlib
 import numpy as np
 import pandas as pd
+import tfs
 from generic_parser import DotDict
 from matplotlib import transforms, axes, pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
@@ -455,3 +458,65 @@ def list2str(list_: list):
     return str(list_)[1:-1]
 
 
+# Spectrum File Loading --------------------------------------------------------
+
+
+def load_spectrum_data(file_path: Path, bpms, planes=PLANES):
+    """ Load Amps, Freqs and Lin Files into a dictionary, keys are the fileendings without plane,
+     with subdicts of the planes. """
+    LOG.info("Loading HARPY data.")
+    with suppress(FileNotFoundError):
+        return _get_harpy_data(file_path, planes)
+
+    LOG.info("Some files not present. Loading SUSSIX data format")
+    with suppress(FileNotFoundError):
+        return _get_sussix_data(file_path, bpms, planes)
+
+    raise FileNotFoundError(f"Neither harpy nor sussix files found in '{file_path.parent}' "
+                            f"matching the name '{file_path.name}'.")
+
+
+# Harpy Data ---
+
+
+def _get_harpy_data(file_path, planes):
+    return {
+        AMPS: _get_planed_files(file_path, ext=FILE_AMPS_EXT, planes=planes),
+        FREQS: _get_planed_files(file_path, ext=FILE_FREQS_EXT, planes=planes),
+        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, planes=planes, index=COL_NAME),
+    }
+
+
+def _get_planed_files(file_path, ext, planes, index=None):
+    return {
+        plane: tfs.read(
+            str(file_path.with_suffix(file_path.suffix + ext.format(plane=plane.lower()))),
+            index=index)
+        for plane in planes
+    }
+
+
+# SUSSIX Data ---
+
+
+def _get_sussix_data(file_path, bpms, planes):
+    bpm_dir = file_path.parent / 'BPM'
+    files = {LIN: {}, AMPS: {}, FREQS: {}}
+    for plane in planes:
+        files[LIN][plane] = tfs.read(
+            str(file_path.with_suffix(file_path.suffix + f'_lin{plane.lower()}')),
+            index=COL_NAME)
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = tfs.TfsDataFrame(columns=bpms)
+        for bpm in bpms:
+            with suppress(FileNotFoundError):
+                df = tfs.read(str(bpm_dir / f'{bpm}.{plane.lower()}'))
+                files[FREQS][plane][bpm] = df["FREQ"]
+                files[AMPS][plane][bpm] = df["AMP"]
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = files[id_][plane].fillna(0)
+    return files
+
+
+def _get_dir_and_name(file_path):
+    return os.path.dirname(file_path), os.path.basename(file_path)
