@@ -273,39 +273,41 @@ def _check_analyse_opt(opt):
     if opt.label is None:
         opt.label = f"Amplitude Detuning for Beam {opt.beam:d}"
 
-    # check if cleaning is properly specified
-    all_filter_opt = dict(
-        cut=opt.get_subdict(['bbq_filtering_method', 'window_length',
-                             'tunes', 'tune_cut',
-                             'fine_window', 'fine_cut']
-                            ),
-        minmax=opt.get_subdict(['bbq_filtering_method', 'window_length',
-                                'tunes_minmax', 'fine_window', 'fine_cut']
-                               ),
-        outliers=opt.get_subdict(['bbq_filtering_method',
-                                  'window_length', 'outlier_limit']
-                                 ),
-    )
+    filter_opt = None
+    if opt.bbq_in is not None:
+        # check if cleaning is properly specified
+        all_filter_opt = dict(
+            cut=opt.get_subdict(['bbq_filtering_method', 'window_length',
+                                 'tunes', 'tune_cut',
+                                 'fine_window', 'fine_cut']
+                                ),
+            minmax=opt.get_subdict(['bbq_filtering_method', 'window_length',
+                                    'tunes_minmax', 'fine_window', 'fine_cut']
+                                   ),
+            outliers=opt.get_subdict(['bbq_filtering_method',
+                                      'window_length', 'outlier_limit']
+                                     ),
+        )
 
-    for method, params in all_filter_opt.items():
-        if opt.bbq_filtering_method == method:
-            missing_params = [k for k, v in params.items() if v is None]
-            if any(missing_params):
-                raise KeyError("Missing parameters for chosen cleaning method "
-                               f"{method}: '{list2str(missing_params)}'")
-            filter_opt = params
+        for method, params in all_filter_opt.items():
+            if opt.bbq_filtering_method == method:
+                missing_params = [k for k, v in params.items() if v is None]
+                if any(missing_params):
+                    raise KeyError("Missing parameters for chosen cleaning method "
+                                   f"{method}: '{list2str(missing_params)}'")
+                filter_opt = params
 
-    if filter_opt.bbq_filtering_method == 'cut':
-        filter_opt[f"tunes_minmax"] = [minmax for t in opt.tunes
-                                       for minmax in (t - opt.tune_cut, t + opt.tune_cut)]
-        filter_opt.pop('tune_cut')
-        filter_opt.pop('tunes')
+        if filter_opt.bbq_filtering_method == 'cut':
+            filter_opt[f"tunes_minmax"] = [minmax for t in opt.tunes
+                                           for minmax in (t - opt.tune_cut, t + opt.tune_cut)]
+            filter_opt.pop('tune_cut')
+            filter_opt.pop('tunes')
 
-    if filter_opt.bbq_filtering_method != 'outliers':
-        # check fine cleaning
-        if bool(filter_opt.fine_cut) != bool(filter_opt.fine_window):
-            raise KeyError("To activate fine cleaning, "
-                           "both fine cut and fine window need to be specified")
+        if filter_opt.bbq_filtering_method != 'outliers':
+            # check fine cleaning
+            if bool(filter_opt.fine_cut) != bool(filter_opt.fine_window):
+                raise KeyError("To activate fine cleaning, "
+                               "both fine cut and fine window need to be specified")
 
     if opt.output is not None:
         opt.output = Path(opt.output)
