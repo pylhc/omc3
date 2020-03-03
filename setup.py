@@ -1,5 +1,29 @@
 import pathlib
+import sys
+
 import setuptools
+from setuptools.command.test import test as TestCommand
+
+
+class PyTest(TestCommand):
+    """ Allows passing commandline arguments to pytest. """
+    user_options = [('pytest-args=', 'a', "Arguments to pass into pytest")]
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = ''
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+
+        errno = pytest.main(self.pytest_args.split())
+        sys.exit(errno)
+
 
 # The directory containing this file
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.absolute()
@@ -18,7 +42,7 @@ with README.open("r") as docs:
 DEPENDENCIES = [
     "matplotlib>=3.1.0",
     "numpy>=1.14.1",
-    "pandas>=0.24.0,<1.0",
+    "pandas==0.25.*",
     "scipy>=1.0.0",
     "scikit-learn>=0.20.3",
     "tfs-pandas>=1.0.3",
@@ -26,6 +50,7 @@ DEPENDENCIES = [
     "sdds>=0.1.3",
     "pytz>=2018.9",
     "h5py>=2.7.0",
+    "pytimber>=2.8.0",
 ]
 
 # Dependencies that should only be installed for test purposes
@@ -55,6 +80,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests*", "doc"]),
     python_requires=">=3.6",
     license=ABOUT_OMC3["__license__"],
+    cmdclass={'pytest': PyTest},  # pass test arguments
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

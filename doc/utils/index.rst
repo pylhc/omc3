@@ -26,4 +26,7 @@ Package Content
     :members:
 
 
+.. automodule:: omc3.utils.time_tools
+    :members:
+
 

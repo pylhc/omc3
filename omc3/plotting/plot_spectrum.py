@@ -104,7 +104,6 @@ one figure is used.
 import os
 from collections import OrderedDict
 from contextlib import suppress
-from datetime import datetime
 from typing import Tuple
 
 import matplotlib
@@ -117,14 +116,13 @@ from matplotlib import cm
 
 from omc3.definitions import formats
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
-from omc3.plotting.spectrum_stem import create_stem_plots
-from omc3.plotting.spectrum_utils import (PLANES, NCOL_LEGEND, CONFIG_FILENAME,
-                                          AMPS, FREQS, LIN,
+from omc3.plotting.spectrum.stem import create_stem_plots
+from omc3.plotting.spectrum.utils import (PLANES, NCOL_LEGEND, AMPS, FREQS, LIN,
                                           MANUAL_LOCATIONS, LOG,
                                           FigureCollector, get_unique_filenames,
                                           filter_amps, get_bpms, get_stem_id,
                                           get_waterfall_id, get_data_for_bpm)
-from omc3.plotting.spectrum_waterfall import create_waterfall_plots
+from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
@@ -339,16 +337,11 @@ def _sort_opt(opt):
 
 # Output ---
 
-
 def _save_options_to_config(opt):
     os.makedirs(opt.output_dir, exist_ok=True)
-    save_options_to_config(os.path.join(opt.output_dir, _get_ini_filename()),
+    save_options_to_config(os.path.join(opt.output_dir, formats.get_config_filename(__file__)),
                            OrderedDict(sorted(opt.items()))
                            )
-
-
-def _get_ini_filename():
-    return CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
 
 
 # Load Data --------------------------------------------------------------------

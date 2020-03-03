@@ -1,13 +1,14 @@
 from os.path import join
-from omc3.utils import logging_tools, iotools
+
 import numpy as np
-import tfs
 import pandas as pd
+import tfs
+from generic_parser import entrypoint, EntryPointParameters
+
 from omc3.kmod import analysis, helper
 from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH, BETA, ERR, STAR
 from omc3.optics_measurements.constants import EXT
-from generic_parser import entrypoint, EntryPointParameters
-from omc3.definitions import formats
+from omc3.utils import logging_tools, iotools
 
 LOG = logging_tools.get_logger(__name__)
 

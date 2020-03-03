@@ -9,7 +9,7 @@ Computes betatron tunes and provides structures to store them.
 """
 import numpy as np
 
-from omc3.optics_measurements.constants import PLANE_TO_NUM, PLANES
+from omc3.definitions.constants import PLANES, PLANE_TO_NUM
 from omc3.utils import stats
 
 

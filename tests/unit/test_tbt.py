@@ -7,11 +7,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from omc3.definitions.constants import PLANES
 from omc3.tbt import handler, reader_iota, reader_ptc, reader_trackone
 from omc3.tbt_converter import converter_entrypoint
 
 CURRENT_DIR = os.path.dirname(__file__)
-PLANES = ('X', 'Y')
 
 
 def test_converter_one_file(_sdds_file, _test_file):

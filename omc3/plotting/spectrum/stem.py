@@ -4,12 +4,14 @@ Plot Spectrum - Stem Plotter
 
 Stem plotting functionality for spectrum plotter.
 
+:module: omc3.plotting.spectrum.stem
+
 """
 import matplotlib
 from generic_parser import DotDict
 from matplotlib import pyplot as plt, lines as mlines
 
-from omc3.plotting.spectrum_utils import (plot_lines, FigureContainer, get_cycled_color,
+from omc3.plotting.spectrum.utils import (plot_lines, FigureContainer, get_cycled_color,
                                           get_approx_size_in_axes_coordinates,
                                           PLANES, STEM_LINES_ALPHA, LABEL_Y_SPECTRUM,
                                           LABEL_X, AMPS, FREQS, output_plot)

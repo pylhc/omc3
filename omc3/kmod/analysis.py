@@ -1,13 +1,15 @@
-import scipy.optimize
-from os.path import join
-import numpy as np
-import tfs
 import datetime
+
+import numpy as np
+import scipy.optimize
+import tfs
 from tfs import tools as tfstools
-from omc3.utils import logging_tools
-from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
+from omc3.kmod import helper
+from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
