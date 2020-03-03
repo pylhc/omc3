@@ -188,7 +188,7 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
 
 
     Returns:
-        Dictionary containing action, tune, action_err and tune_err
+        Dataframe containing action, tune, action_err and tune_err
 
     """
     col_natq, col_natq_std = _get_ampdet_columns(corrected)
@@ -211,7 +211,7 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
             f"Amplitude Detuning data for Q{tune_plane} and J{action_plane} contains NaNs"
         )
         data = data.dropna(axis=0)
-    return data.to_dict('series')
+    return data
 
 
 # Timed DataFrames -------------------------------------------------------------

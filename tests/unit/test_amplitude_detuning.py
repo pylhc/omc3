@@ -64,6 +64,23 @@ class ExtendedTests:
             assert len(list(Path(out).glob("*.tfs"))) == 2
             assert len([k for k, v in kick_df.headers.items() if k.startswith("ODR") and v != 0]) == 16
 
+    @staticmethod
+    def test_no_bbq_input():
+        with tempfile.TemporaryDirectory() as out:
+            setup = dict(
+                beam=1,
+                kick=str(get_input_dir()),
+                plane="Y",
+                label="B1Vkicks",
+                detuning_order=1,
+                output=out,
+            )
+            kick_df, bbq_df = analyse_with_bbq_corrections(**setup)
+
+            assert bbq_df is None
+            assert len(list(Path(out).glob("*.tfs"))) == 1
+            assert len([k for k, v in kick_df.headers.items() if k.startswith("ODR") and v != 0]) == 8
+
 
 def get_input_dir():
     return Path(__file__).parent.parent / 'inputs' / 'amplitude_detuning'

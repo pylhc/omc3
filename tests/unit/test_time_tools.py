@@ -37,9 +37,9 @@ def test_accelerator_datetime(now):
     lhc = tt.AcceleratorDatetime['lhc'](now)
     ps = tt.AcceleratorDatetime['ps'](now)
     sps = tt.AcceleratorDatetime['sps'](now)
-    assert lhc.local().time() == ps.local().time()
-    assert lhc.local().time() == sps.local().time()
-    assert lhc.local().time != lhc.utc().time()
+    assert lhc.local.time() == ps.local.time()
+    assert lhc.local.time() == sps.local.time()
+    assert lhc.local.time != lhc.utc.time()
 
 
 # Fixtures #####################################################################
