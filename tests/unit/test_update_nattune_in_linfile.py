@@ -85,7 +85,7 @@ class ExtendedTests:
 
 
     @runclean
-    def test_remove_not_found():
+    def test_remove_some_not_found():
         update_nattune(
             files=[str(_get_input_file())],
             range=[0.2631, 0.265],  # some here

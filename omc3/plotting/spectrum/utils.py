@@ -461,7 +461,7 @@ def list2str(list_: list):
 # Spectrum File Loading --------------------------------------------------------
 
 
-def load_spectrum_data(file_path: Path, bpms, planes=PLANES):
+def load_spectrum_data(file_path: Path, bpms: Iterable, planes: Iterable = PLANES):
     """ Load Amps, Freqs and Lin Files into a dictionary, keys are the fileendings without plane,
      with subdicts of the planes. """
     LOG.info("Loading HARPY data.")
@@ -516,7 +516,3 @@ def _get_sussix_data(file_path, bpms, planes):
         for id_ in (FREQS, AMPS):
             files[id_][plane] = files[id_][plane].fillna(0)
     return files
-
-
-def _get_dir_and_name(file_path):
-    return os.path.dirname(file_path), os.path.basename(file_path)
