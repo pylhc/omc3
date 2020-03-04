@@ -25,7 +25,7 @@ class BasicTests:
     def test_all_planes_update():
         update_nattune(
             files=[str(_get_input_file())],
-            range=[0.26, 0.33],  # actual tunes are in that range
+            interval=[0.26, 0.33],  # actual tunes are in that interval
             rename_suffix=RENAME_SUFFIX)
         assert len(list(_get_input_dir().glob(f'*{RENAME_SUFFIX}*'))) == 2
         for plane in PLANES:
@@ -34,11 +34,11 @@ class BasicTests:
             assert np.allclose(new[f'{COL_NATAMP}{plane}'], new[f'{COL_AMP}{plane}'], atol=1e-5)
 
     @runclean
-    def test_error_in_range():
+    def test_error_in_interval():
         with pytest.raises(ValueError):
             update_nattune(
                 files=[str(_get_input_file())],
-                range=[0., 0.],  # nothing here
+                interval=[0., 0.],  # nothing here
                 rename_suffix=RENAME_SUFFIX,
             )
 
@@ -48,7 +48,7 @@ class ExtendedTests:
     def test_single_plane_update():
         update_nattune(
             files=[str(_get_input_file())],
-            range=[0.26, 0.33],
+            interval=[0.26, 0.33],
             rename_suffix=RENAME_SUFFIX,
             planes=["X"],
         )
@@ -60,7 +60,7 @@ class ExtendedTests:
     def test_keep_not_found():
         update_nattune(
             files=[str(_get_input_file())],
-            range=[0., 0.],  # nothing here
+            interval=[0., 0.],  # nothing here
             rename_suffix=RENAME_SUFFIX,
             not_found_action='ignore'
         )
@@ -75,7 +75,7 @@ class ExtendedTests:
     def test_remove_not_found():
         update_nattune(
             files=[str(_get_input_file())],
-            range=[0., 0.],  # nothing here
+            interval=[0., 0.],  # nothing here
             rename_suffix=RENAME_SUFFIX,
             not_found_action='remove'
         )
@@ -88,7 +88,7 @@ class ExtendedTests:
     def test_remove_some_not_found():
         update_nattune(
             files=[str(_get_input_file())],
-            range=[0.2631, 0.265],  # some here
+            interval=[0.2631, 0.265],  # some here
             rename_suffix=RENAME_SUFFIX,
             not_found_action='remove'
         )

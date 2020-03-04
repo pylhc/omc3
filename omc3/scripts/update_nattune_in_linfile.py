@@ -3,7 +3,7 @@ Update Natural Tune in Lin-Files
 ----------------------------------
 
 Script to update the natural tune in lin files, based on the spectrum data
-(amps and freqs) and a given frequency range.
+(amps and freqs) and a given frequency interval.
 
 
 **Arguments:**
@@ -14,14 +14,14 @@ Script to update the natural tune in lin files, based on the spectrum data
   The files need to be given without their '.lin'/'.amps[xy]','.freqs[xy]' endings.
   (So usually the path of the TbT-Data file.)
 
-- **range** *(float)*: Frequency range in which the highest peak should be found.
+- **interval** *(float)*: Frequency interval in which the highest peak should be found.
 
 
 *--Optional--*
 
 - **bpms**: List of BPMs which need to be updated. If not given it will be all of them.
 
-- **not_found_action** *(str)*: Defines what to do, if no line was found in given range.
+- **not_found_action** *(str)*: Defines what to do, if no line was found in given interval.
   'error': throws a ValueError; 'remove': removes the bpm; 'ignore': keeps the old values.
 
   Choices: ``['error', 'remove', 'ignore']``
@@ -68,11 +68,11 @@ def get_params():
                   " without their '.lin'/'.amps[xy]','.freqs[xy]' endings. "
                   " (So usually the path of the TbT-Data file.)")
         ),
-        range=dict(
+        interval=dict(
             required=True,
             nargs=2,
             type=float,
-            help="Frequency range in which the highest peak should be found."
+            help="Frequency interval in which the highest peak should be found."
         ),
         bpms=dict(
             nargs='+',
@@ -98,7 +98,7 @@ def get_params():
         not_found_action=dict(
             type=str,
             choices=['error', 'remove', 'ignore'],
-            help=('Defines what to do, if no line was found in given range.'
+            help=('Defines what to do, if no line was found in given interval.'
                   "'error': throws a ValueError; 'remove': removes the bpm; "
                   "'ignore': keeps the old values."),
             default='error'
@@ -117,7 +117,7 @@ def main(opt):
         bpms = get_bpms(data[LIN], opt.bpms, file_path, opt.planes)
 
         data = _update_lin_columns(data, bpms,
-                                   opt.planes, opt.range, opt.not_found_action,
+                                   opt.planes, opt.interval, opt.not_found_action,
                                    file_path.name)
 
         _save_linfiles(data[LIN], file_path, opt.planes, opt.rename_suffix)
@@ -128,18 +128,18 @@ def main(opt):
 # Update -----------------------------------------------------------------------
 
 
-def _update_lin_columns(data, bpms, planes, range_, not_found_action, filename):
+def _update_lin_columns(data, bpms, planes, interval, not_found_action, filename):
     for plane in planes:
         col_nattune = f'{COL_NATTUNE}{plane.upper()}'
         col_natamp = f'{COL_NATAMP}{plane.upper()}'
 
         for bpm in bpms[plane]:
             freqs, amps = data[FREQS][plane][bpm], data[AMPS][plane][bpm]
-            peak = _get_peak_in_range(freqs, amps, range_)
+            peak = _get_peak_in_interval(freqs, amps, interval)
 
             if peak is None:
                 msg = (f'No lines found for bpm {bpm} in plane {plane} '
-                       f'in range {list2str(range_)} for file-id "{filename}".')
+                       f'in interval {list2str(interval)} for file-id "{filename}".')
                 if not_found_action == 'error':
                     raise ValueError(msg)
                 LOG.warning(msg)
@@ -156,11 +156,11 @@ def _update_lin_columns(data, bpms, planes, range_, not_found_action, filename):
     return data
 
 
-def _get_peak_in_range(freqs, amps, range_):
+def _get_peak_in_interval(freqs, amps, interval):
     data_series = pd.Series(data=amps.to_numpy(), index=freqs.to_numpy())
     data_series = data_series.sort_index()
     try:
-        f_peak = data_series.loc[slice(*sorted(range_))].idxmax()
+        f_peak = data_series.loc[slice(*sorted(interval))].idxmax()
     except ValueError:
         return None
     else:
