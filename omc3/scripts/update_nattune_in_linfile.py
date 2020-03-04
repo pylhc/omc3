@@ -148,7 +148,7 @@ def _update_lin_columns(data, bpms, planes, range_, not_found_action, filename):
                     data[LIN][plane] = data[LIN][plane].drop(bpm, axis='index')
 
             else:
-                freq_peak, amp_peak = next(peak.items())
+                freq_peak, amp_peak = peak
                 data[LIN][plane].loc[bpm, col_nattune] = freq_peak
                 data[LIN][plane].loc[bpm, col_natamp] = amp_peak
                 LOG.debug(f"{filename}.{bpm}.{plane} nattune set to"
@@ -164,7 +164,7 @@ def _get_peak_in_range(freqs, amps, range_):
     except ValueError:
         return None
     else:
-        return data_series.loc[[f_peak]]
+        return f_peak, data_series.loc[f_peak]
 
 
 # Output -----------------------------------------------------------------------
