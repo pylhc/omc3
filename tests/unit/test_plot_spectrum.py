@@ -16,7 +16,7 @@ def test_unique_filenames():
     def _test_list(list_of_paths):
         paths, names = zip(*get_unique_filenames(list_of_paths))
         for item in zip(list_of_paths, paths):
-            assert item[0] == item[1]
+            assert item[0] == str(item[1])
         assert len(set(names)) == len(names)
         assert len(names) == len(list_of_paths)
         return names
