@@ -1,5 +1,5 @@
 """
-Module harpy.frequency
+frequency
 ---------------------------
 
 Calculates the frequency spectra of turn-by-turn data.
@@ -7,25 +7,25 @@ Uses a combination of SVD decomposition zero_padded fft to speed up the analysis
 Also searches of resonances in the calculated spectra.
 """
 from collections import OrderedDict
+
 import numpy as np
 import pandas as pd
-from utils import outliers, logging_tools
-from harpy import kicker
+
+from omc3.utils import logging_tools, outliers
+from omc3.definitions.constants import PLANES, PI2I
+
 LOGGER = logging_tools.getLogger(__name__)
-PI2I = 2 * np.pi * complex(0, 1)
 
 RESONANCES = {
-    "X": ((0, 1, 0), (-2, 0, 0), (0, 2, 0), (-3, 0, 0), (-1, -1, 0),
-          (2, -2, 0), (0, -2, 0), (1, -2, 0), (-1, 3, 0), (1, 2, 0),
-          (-2, 1, 0), (1, 1, 0), (2, 0, 0), (-1, -2, 0), (3, 0, 0)),
-    "Y": ((1, 0, 0), (-1, 1, 0), (-2, 0, 0), (1, -1, 0), (0, -2, 0),
-          (0, -3, 0), (2, 1, 0), (-1, 3, 0), (1, 1, 0), (-1, 2, 0)),
+    "X": ((2, 0, 0), (3, 0, 0), (0, 1, 0), (0, 2, 0), (1, 1, 0), (1, -1, 0),
+          (1, 2, 0), (1, -2, 0), (1, -3, 0), (2, -2, 0), (2, -1, 0)),
+    "Y": ((0, 2, 0), (0, 3, 0), (1, 0, 0), (2, 0, 0), (1, 1, 0), (1, -1, 0),
+          (1, -2, 0), (1, -3, 0), (2, -1, 0), (2, 1, 0)),
     "Z": ((1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1))
 }
 
 MAIN_LINES = {"X": (1, 0, 0), "Y": (0, 1, 0), "Z": (0, 0, 1)}
 Z_TOLERANCE = 0.0003
-PLANES = ("X", "Y")
 
 
 def estimate_tunes(harpy_input, usvs):
@@ -84,8 +84,6 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     bpm_matrix = bpm_matrix.loc[panda.index]
     spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
 
-    if harpy_input.is_free_kick:
-        panda = kicker.phase_correction(bpm_matrix, panda, plane)
     if _get_natural_tunes(harpy_input, tunes) is not None:
         panda = panda.join(_calculate_natural_tunes(spectra, _get_natural_tunes(harpy_input, tunes),
                                                     harpy_input.tolerance, plane))

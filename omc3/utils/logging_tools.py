@@ -10,12 +10,12 @@ Functions for easier use of logging, like automatic logger setup
 import datetime
 import inspect
 import logging
-from io import StringIO
 import os
 import sys
 import time
 import warnings
 from contextlib import contextmanager
+from io import StringIO
 
 import pandas as pd
 
@@ -98,7 +98,7 @@ class DebugMode(object):
     def __enter__(self):
         return None
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, *args, **kwargs):
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
@@ -130,7 +130,7 @@ class TempFile(object):
         def __enter__(self):
             return self.path
 
-        def __exit__(self, type, value, traceback):
+        def __exit__(self, value, traceback):
             try:
                 with open(self.path, "r") as f:
                     content = f.read()
@@ -214,6 +214,27 @@ class TempStringLogger:
         """ Get the log as string. """
         return self.stream.getvalue()
 
+
+def odr_pprint(printer, odr_out):
+    """ Logs the odr output results.
+    Adapted from odr_output pretty print.
+    """
+    printer('ODR-Summary:')
+    printer(f'  Beta: {odr_out.beta}')
+    printer(f'  Beta Std Error: {odr_out.sd_beta}')
+    printer(f'  Beta Covariance: {odr_out.cov_beta}')
+    if hasattr(odr_out, 'info'):
+        printer(f'  Residual Variance: {odr_out.res_var}')
+        printer(f'  Inverse Condition #: {odr_out.inv_condnum}')
+        printer(f'  Reason(s) for Halting:')
+        for r in odr_out.stopreason:
+            printer(f'    {r}')
+
+
+def list2str(list_: list) -> str:
+    """ Returns string representation of list_, but without brackets."""
+    return str(list_).lstrip("[").rstrip("]")
+
 # Public Methods ###############################################################
 
 
@@ -235,6 +256,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
     if name == "__main__":
         # set up root logger
         root_logger = logging.getLogger("")
+        root_logger.handlers = []  # remove handlers in case someone already created them
         root_logger.setLevel(level_root)
 
         # print logs to the console

@@ -1,19 +1,19 @@
 Harpy
 **************************
 
-.. automodule:: harpy.clean
+.. automodule:: omc3.harpy.clean
     :members:
 
 
-.. automodule:: harpy.frequency
+.. automodule:: omc3.harpy.frequency
     :members:
 
 
-.. automodule:: harpy.handler
+.. automodule:: omc3.harpy.handler
     :members:
 
 
-.. automodule:: harpy.kicker
+.. automodule:: omc3.harpy.kicker
     :members:
 
 

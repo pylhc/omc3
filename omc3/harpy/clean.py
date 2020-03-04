@@ -1,5 +1,5 @@
 """
-Module harpy.clean
+clean
 --------------------
 
 Cleaning functionality of harpy.
@@ -10,11 +10,12 @@ Cleaning functionality of harpy.
 import numpy as np
 import pandas as pd
 
-from utils import logging_tools
-from utils.contexts import timeit
+from omc3.utils import logging_tools
+from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.getLogger(__name__)
 NTS_LIMIT = 8.  # Noise to signal limit
+N_SVD_ITER = 3
 
 
 def clean(harpy_input, bpm_data, model):
@@ -44,6 +45,8 @@ def clean(harpy_input, bpm_data, model):
 
 
 def _get_only_model_bpms(bpm_data, model):
+    if model is None:
+        return bpm_data, []
     bpm_data_in_model = bpm_data.loc[model.index.intersection(bpm_data.index)]
     not_in_model = bpm_data.index.difference(model.index)
     return bpm_data_in_model, [f"{bpm} not found in model" for bpm in not_in_model]
@@ -58,20 +61,23 @@ def _cut_cleaning(harpy_input, bpm_data, model):
     all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros)
     original_bpms = bpm_data.index
 
-    bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms)]
+    bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms, sort=False)]
     bad_bpms_with_reasons = _get_bad_bpms_summary(
         harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros
     )
     _report_clean_stats(original_bpms.size, bpm_data.index.size)
     bpm_data = _fix_polarity(harpy_input.wrong_polarity_bpms, bpm_data)
-    if harpy_input.first_bpm is not None:
+    if model is not None and harpy_input.first_bpm is not None:
         bpm_data = _resync_bpms(harpy_input, bpm_data, model)
     return bpm_data, bad_bpms_with_reasons
 
 
 def _svd_clean(bpm_data, harpy_input):
-    u_mat, sv_mat, bpm_data_mean = svd_decomposition(bpm_data, harpy_input.sing_val)
-    clean_u, dominant_bpms = _clean_dominant_bpms(u_mat, harpy_input.svd_dominance_limit)
+    signed_limit = harpy_input.svd_dominance_limit * (1 if harpy_input.keep_dominant_bpms else -1)
+    u_mat, sv_mat, bpm_data_mean, u_mask = svd_decomposition(bpm_data, harpy_input.sing_val,
+                                                             dominance_limit=signed_limit)
+
+    clean_u, dominant_bpms = _clean_dominant_bpms(u_mat, u_mask, harpy_input.svd_dominance_limit)
     clean_data = clean_u.dot(sv_mat) + bpm_data_mean
     bpm_res = (clean_data - bpm_data.loc[clean_u.index]).std(axis=1)
     LOGGER.debug(f"Average BPM resolution: {np.mean(bpm_res)}")
@@ -167,46 +173,74 @@ def _resync_bpms(harpy_input, bpm_data, model):
     return bpm_data.iloc[:, :-1]
 
 
-def svd_decomposition(bpm_data, num_singular_values):
+def svd_decomposition(bpm_data, num_singular_values, dominance_limit=None):
     """
     Computes reduced (n largest values) singular value docomposition of a matrix (bpm_data)
 
     Args:
         bpm_data: matrix to be decomposed
         num_singular_values: input options object that contains
+        dominance_limit: limit on SVD dominance
 
     Returns:
-        An indexed DataFrame of U matrix, product of S and V^T martices, and mean of original matrix
+        An indexed DataFrame of U matrix, product of S and V^T martices,
+            mean of original matrix and U matrix mask for cleaned elements
     """
-    bpm_data_mean = bpm_data.values.mean()
-    u_mat, svt_mat = _get_decomposition(bpm_data - bpm_data_mean, num_singular_values)
-    return pd.DataFrame(index=bpm_data.index, data=u_mat), svt_mat, bpm_data_mean
+    bpm_data_mean = bpm_data.to_numpy().mean()
+    u_mat, svt_mat, u_mat_mask = _get_decomposition(bpm_data - bpm_data_mean, num_singular_values,
+                                                    dominance_limit=dominance_limit)
+    return pd.DataFrame(index=bpm_data.index, data=u_mat), svt_mat, bpm_data_mean, u_mat_mask
 
 
-def _get_decomposition(matrix, num):
+def _get_decomposition(matrix, num, dominance_limit=None):
     """
     Removes noise floor
     Requiring K singular values from MxN matrix results in matrices sized: ((MxK) x diag(K) x (K,N))
 
     Returns:
-        U (MxK),  SVt (diag(K).(K,N))
+        U (MxK),  SVt (diag(K).(K,N)), U matrix mask for cleaned elements (same dimensions as U)
     """
     u_mat, s_mat, vt_mat = np.linalg.svd(matrix / np.sqrt(matrix.shape[1]), full_matrices=False)
+
+    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit)
+
     available = np.sum(s_mat > 0.)
     if num > available:
         LOGGER.warning(f"Requested more singular values than available(={available})")
     keep = min(num, available)
+    indices = np.argsort(s_mat)[::-1][:keep]
     LOGGER.debug(f"Number of singular values to keep: {keep}")
-    return (u_mat[:, :keep],
-            np.dot(np.sqrt(matrix.shape[1]) * np.diag(s_mat[:keep]), vt_mat[:keep, :]))
+    return (u_mat[:, indices],
+            np.dot(np.sqrt(matrix.shape[1]) * np.diag(s_mat[indices]), vt_mat[indices, :]),
+            u_mat_mask[:, indices])
 
 
-def _clean_dominant_bpms(u_mat, svd_dominance_limit):
-    if svd_dominance_limit < 1 / np.sqrt(2):
-        LOGGER.warning(f"The svd_dominance_limit looks too low: {svd_dominance_limit}")
-    dominant_bpms = u_mat[np.max(u_mat.abs(), axis=1) > svd_dominance_limit].index
+def _remove_dominant_elements(u_mat, s_mat, dominance_limit):
+    u_mat_mask = np.ones(u_mat.shape, dtype=bool)
+    if dominance_limit is None:
+        return u_mat, s_mat, u_mat_mask
+    abs_dominance_limit = np.abs(dominance_limit)
+    if abs_dominance_limit < 1 / np.sqrt(2):
+        LOGGER.warning(f"The svd_dominance_limit looks too low: {abs_dominance_limit}")
+
+    for i in range(N_SVD_ITER):
+        if np.all(np.abs(u_mat) <= abs_dominance_limit):
+            break
+        u_mat_mask[np.abs(u_mat) > abs_dominance_limit] = False
+        u_mat[np.abs(u_mat) > abs_dominance_limit] = 0.0
+        norms = np.sqrt(np.sum(np.square(u_mat), axis=0))
+        u_mat = u_mat / norms
+        s_mat = s_mat * norms
+    # do not remove any BPMs
+    if dominance_limit < 0.0:
+        u_mat_mask = np.ones(u_mat.shape, dtype=bool)
+    return u_mat, s_mat, u_mat_mask
+
+
+def _clean_dominant_bpms(u_mat, u_mat_mask, svd_dominance_limit):
+    dominant_bpms = u_mat[np.any(~u_mat_mask, axis=1)].index
     if dominant_bpms.size > 0:
         LOGGER.debug(f"Bad BPMs from SVD detected. Number of BPMs removed: {dominant_bpms.size}")
-    clean_u = u_mat.loc[u_mat.index.difference(dominant_bpms)]
+    clean_u = u_mat.loc[u_mat.index.difference(dominant_bpms, sort=False)]
     return clean_u, [f"{bpm_name} Dominant BPM in SVD, peak value > {svd_dominance_limit}"
                      for bpm_name in dominant_bpms]

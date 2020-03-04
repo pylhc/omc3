@@ -1,28 +1,25 @@
-"""
-Module tbt.handler
----------------------
-
-
-Basic tbt io-functionality.
-
-"""
 from datetime import datetime
-import time
+
 import numpy as np
 import pandas as pd
-
 import sdds
-from utils import logging_tools
+
+from omc3.definitions.constants import PLANES
+from omc3.tbt import (reader_esrf, reader_iota, reader_lhc, reader_ptc,
+                      reader_trackone)
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
-PLANES = ('X', 'Y')
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
-PLANE_TO_NUM = {"X": "0", "Y": "1"}
-POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}
+PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
 FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
-_ACQ_DATE_PREFIX = "#Acquisition date: "
+DATA_READERS = dict(lhc=reader_lhc,
+                    iota=reader_iota,
+                    esrf=reader_esrf,
+                    ptc=reader_ptc,
+                    trackone=reader_trackone)
 
 
 class TbtData(object):
@@ -38,89 +35,86 @@ class TbtData(object):
         self.bunch_ids = bunch_ids
 
 
-def read_tbt(file_path):
+def generate_average_tbtdata(tbtdata):
     """
-    Reads TbTData object from provided file_path
-    Args:
-        file_path: path to a file containing TbtData
+    Takes a TbtData object and returns TbtData object containing the average over all
+    bunches/particles at all used BPMs.
+    """
+    data = tbtdata.matrices
+    bpm_names = data[0]['X'].index
 
-    Returns:
-        TbtData
-    """
-    if _is_ascii_file(file_path):
-        matrices, date = _read_ascii(file_path)
-        return TbtData(matrices, date, [0], matrices[0]["X"].shape[1])
-    sdds_file = sdds.read(file_path)
-    nbunches = sdds_file.values["nbOfCapBunches"]
-    bunch_ids = sdds_file.values["BunchId" if "BunchId" in sdds_file.values else "horBunchId"]
-    if len(bunch_ids) > nbunches:
-        bunch_ids = bunch_ids[:nbunches]
-    nturns = sdds_file.values["nbOfCapTurns"]
-    date = datetime.fromtimestamp(sdds_file.values["acqStamp"] / 1e9)
-    bpm_names = sdds_file.values["bpmNames"]
-    nbpms = len(bpm_names)
-    data_x = sdds_file.values[POSITIONS['X']].reshape((nbpms, nbunches, nturns))
-    data_y = sdds_file.values[POSITIONS['Y']].reshape((nbpms, nbunches, nturns))
-    matrices = []
-    for index in range(nbunches):
-        matrices.append({
-            'X': pd.DataFrame(index=bpm_names, data=data_x[:, index, :], dtype=float),
-            'Y': pd.DataFrame(index=bpm_names, data=data_y[:, index, :], dtype=float)})
-    return TbtData(matrices, date, bunch_ids, nturns)
+    matrices = [{plane: pd.DataFrame(index=bpm_names,
+                                     data=get_averaged_data(bpm_names, data, plane, tbtdata.nturns),
+                                     dtype=float) for plane in PLANES}]
+    return TbtData(matrices, tbtdata.date, [1], tbtdata.nturns)
 
 
-def write_tbt(output_path, tbt_data, headers=None, no_binary=False):
-    """
-    Writes TbtData either into Sdds file or ascii file in output_path
-    Args:
-        output_path: path to an output file
-        tbt_data: TbtData to be written
-        headers: optional header dictionary (for the moment only in ASCII output)
-        no_binary: If True ascii file is output
-    """
-    if no_binary:
-        _write_ascii(output_path, tbt_data, headers_dict=headers)
-        return
-    nbpms = tbt_data.matrices[0]["X"].index.size
-    data = {'X': np.empty((nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float),
-            'Y': np.empty((nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float)}
-    for index in range(tbt_data.nbunches):
-        for plane in PLANES:
-            data[plane][:, index, :] = tbt_data.matrices[index][plane].values
+def get_averaged_data(bpm_names, data, plane, turns):
+
+    bpm_data = np.empty((len(bpm_names), len(data), turns))
+    bpm_data.fill(np.nan)
+    for idx, bpm in enumerate(bpm_names):
+        for i in range(len(data)):
+            bpm_data[idx, i, :len(data[i][plane].loc[bpm])] = data[i][plane].loc[bpm]
+
+    return np.nanmean(bpm_data, axis=1)
+
+
+def read_tbt(file_path, datatype="lhc"):
+    return DATA_READERS[datatype].read_tbt(file_path)
+
+
+def write_tbt(output_path, tbt_data, noise=None):
+    LOGGER.info('TbTdata is written in binary SDDS (LHC) format')
+    defs = reader_lhc
+    data = _matrices_to_array(tbt_data)
+    if noise is not None:
+        data = _add_noise(data, noise)
     definitions = [
-        sdds.classes.Parameter("acqStamp", "double"),
-        sdds.classes.Parameter("nbOfCapBunches", "long"),
-        sdds.classes.Parameter("nbOfCapTurns", "long"),
-        sdds.classes.Array("BunchId", "long"),
-        sdds.classes.Array("bpmNames", "string"),
-        sdds.classes.Array(POSITIONS['X'], "float"),
-        sdds.classes.Array(POSITIONS['Y'], "float")
+        sdds.classes.Parameter(defs.ACQ_STAMP, "llong"),
+        sdds.classes.Parameter(defs.N_BUNCHES, "long"),
+        sdds.classes.Parameter(defs.N_TURNS, "long"),
+        sdds.classes.Array(defs.BUNCH_ID, "long"),
+        sdds.classes.Array(defs.BPM_NAMES, "string"),
+        sdds.classes.Array(defs.POSITIONS['X'], "float"),
+        sdds.classes.Array(defs.POSITIONS['Y'], "float")
     ]
     values = [
-        int(time.time()) * 1e9,
+        tbt_data.date.timestamp()*1e9,
         tbt_data.nbunches,
         tbt_data.nturns,
         tbt_data.bunch_ids,
-        tbt_data.matrices[0]["X"].index.values,
-        np.ravel(data['X']),
-        np.ravel(data['Y'])
+        tbt_data.matrices[0]["X"].index,
+        np.ravel(data[PLANE_TO_NUM['X']]),
+        np.ravel(data[PLANE_TO_NUM['Y']])
     ]
-    sdds.write(sdds.SddsFile("SDDS1", None, definitions, values), output_path)
-
-##################################################################################
-#                   ASCII
-##################################################################################
+    sdds.write(sdds.SddsFile("SDDS1", None, definitions, values), f'{output_path}.sdds')
 
 
-def _write_ascii(output_path, tbt_data, headers_dict=None):
+def _matrices_to_array(tbt_data):
+    nbpms = tbt_data.matrices[0]["X"].index.size
+    data = np.empty((2, nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float)
+    for index in range(tbt_data.nbunches):
+        for plane in PLANES:
+            data[PLANE_TO_NUM[plane], :, index, :] = tbt_data.matrices[index][plane].to_numpy()
+    return data
+
+
+def _add_noise(data, noise):
+    return data + noise * np.random.standard_normal(data.shape)
+
+
+def write_lhc_ascii(output_path, tbt_data):
+    LOGGER.info('TbTdata is written in ascii SDDS (LHC) format')
+
     for index in range(tbt_data.nbunches):
         suffix = f"_{tbt_data.bunch_ids[index]}" if tbt_data.nbunches > 1 else ""
         with open(output_path + suffix, "w") as output_file:
-            _write_header(tbt_data, index, output_file, headers_dict)
+            _write_header(tbt_data, index, output_file)
             _write_tbt_data(tbt_data, index, output_file)
 
 
-def _write_header(tbt_data, index, output_file, headers_dict):
+def _write_header(tbt_data, index, output_file):
     output_file.write("#SDDSASCIIFORMAT v1\n")
     output_file.write(f"#Created: {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')} "
                       f"By: Python SDDS converter\n")
@@ -129,67 +123,30 @@ def _write_header(tbt_data, index, output_file, headers_dict):
         f"#Number of horizontal monitors: {tbt_data.matrices[index]['X'].index.size}\n")
     output_file.write(f"#Number of vertical monitors: {tbt_data.matrices[index]['Y'].index.size}\n")
     output_file.write(f"#Acquisition date: {tbt_data.date.strftime('%Y-%m-%d at %H:%M:%S')}\n")
-    if headers_dict is not None:
-        for name in headers_dict.keys():
-            output_file.write(f"#{name}: {headers_dict[name]}\n")
 
 
 def _write_tbt_data(tbt_data, bunch_id, output_file):
     row_format = "{} {} {}  " + FORMAT_STRING * tbt_data.nturns + "\n"
     for plane in PLANES:
         for bpm_index, bpm_name in enumerate(tbt_data.matrices[bunch_id][plane].index):
-            samples = tbt_data.matrices[bunch_id][plane].loc[bpm_name, :].values
+            samples = tbt_data.matrices[bunch_id][plane].loc[bpm_name, :].to_numpy()
             output_file.write(row_format.format(PLANE_TO_NUM[plane], bpm_name, bpm_index, *samples))
 
 
-def _is_ascii_file(file_path):
+def numpy_to_tbts(names, matrix):
+    """Converts turn by turn data and names into TbTData.
+
+    Arguments:
+        names: Numpy array of BPM names
+        matrix: 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
+            quantities in order [x, y]
     """
-    Returns true only if the file looks like a redable tbt ASCII file.
-    """
-    with open(file_path, "r") as file_data:
-        try:
-            for line in file_data:
-                if line.strip() == "":
-                    continue
-                return line.startswith("#")
-        except UnicodeDecodeError:
-            return False
-    return False
-
-
-def _read_ascii(file_path):
-    bpm_names = {"X": [], "Y": []}
-    matrix = {"X": [], "Y": []}
-    date = None
-    with open(file_path, "r") as file_data:
-        for line in file_data:
-            line = line.strip()
-            # Empty lines and comments:
-            if line == "" or "#" in line:
-                continue
-            if _ACQ_DATE_PREFIX in line:
-                date = _parse_date(line)
-                continue
-            # Samples:
-            parts = line.split()
-            plane_num = parts.pop(0)
-            bpm_name = parts.pop(0)
-            parts.pop(0)
-            bpm_samples = np.array([float(part) for part in parts])
-            try:
-                bpm_names[NUM_TO_PLANE[plane_num]].append(bpm_name)
-                matrix[NUM_TO_PLANE[plane_num]].append(bpm_samples)
-            except KeyError:
-                raise ValueError(f"Wrong plane found in: {file_path}")
-    matrices = {}
-    for plane in PLANES:
-        matrices[plane] = pd.DataFrame(index=bpm_names[plane], data=np.array(matrix[plane]))
-    return [matrices], date 
-
-
-def _parse_date(line):
-    date_str = line.replace(_ACQ_DATE_PREFIX, "")
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d at %H:%M:%S")
-    except ValueError:
-        return datetime.today()
+    # get list of TbTFile from 4D matrix ...
+    _, nbpms, nbunches, nturns = matrix.shape
+    matrices = []
+    indices = []
+    for index in range(nbunches):
+        matrices.append({"X": pd.DataFrame(index=names, data=matrix[0, :, index, :]),
+                         "Y": pd.DataFrame(index=names, data=matrix[1, :, index, :])})
+        indices.append(index)
+    return TbtData(matrices, None, indices, nturns)
