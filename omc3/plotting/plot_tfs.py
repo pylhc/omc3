@@ -7,7 +7,7 @@ Wrapper to easily plot tfs-files. With entrypoint functionality.
 
 """
 import os
-from collections import Iterable
+from collections import Iterable, OrderedDict
 from contextlib import suppress
 from pathlib import Path
 
@@ -19,7 +19,6 @@ from matplotlib import pyplot as plt, rcParams
 from omc3.definitions import formats
 from omc3.plotting.utils import annotations, lines, style as pstyle
 from omc3.optics_measurements.constants import EXT
-from pylhc.constants.plot_tfs import IR_POS_DEFAULT, MANUAL_STYLE, ERROR_ALPHA, MAX_LEGENDLENGTH, COMPLEX_NAMES
 
 from omc3.utils.logging_tools import get_logger, list2str
 from omc3.plotting.optics_measurements.utils import FigureCollector, IdData
@@ -89,12 +88,6 @@ def get_params():
         type=str,
     )
     params.add_parameter(
-        name="plot_suffix",
-        help="Suffix for the plots.",
-        type=str,
-        default=".pdf"
-    )
-    params.add_parameter(
         name="change_marker",
         help="Changes marker for each line in the plot.",
         action="store_true",
@@ -134,6 +127,11 @@ def get_params():
              'Need to contain arguments for axvline, and may contain '
              f'the additional key "loc" which is one of {list(MANUAL_LOCATIONS.keys())} '
              'and places the label as text at the given location.')
+    params.add_parameter(
+        name="manual_style",
+        type=DictAsString,
+        default={},
+        help='Additional Style parameters which update the set of predefined ones.')
     return params
 
 
@@ -249,10 +247,6 @@ def get_id(filename, column, file_label, column_label, combine_by):
     return map[combine_by]
 
 
-
-
-
-
 def _read_data(file_path, x_col, y_col, err_col):
     tfs_data = tfs.read(str(file_path))
     return dict(
@@ -260,20 +254,6 @@ def _read_data(file_path, x_col, y_col, err_col):
         y=tfs_data[y_col],
         err=tfs_data[err_col] if err_col is not None else None,
     )
-
-
-
-def get_ncols(self):
-    """ Returns the number of columns for the legend.
-
-    Done here, as this class divides single-plot from multiplot anyway
-    """
-    names = self.column_labels if self.figure_per_dataframe else self.dataframe_labels
-    names = [n for n in names if n is not None]
-    try:
-        return annotations.get_legend_ncols(names, MAX_LEGENDLENGTH)
-    except ValueError:
-        return 3
 
 
 def create_plots(dataframes, x_cols, y_cols, e_cols, dataframe_labels, column_labels, y_labels, xy, change_marker,
@@ -349,9 +329,11 @@ def create_plots(dataframes, x_cols, y_cols, e_cols, dataframe_labels, column_la
 
 # Output ---
 
+
 def _save_options_to_config(opt):
-    os.makedirs(Path(opt.output).parent, exist_ok=True)
-    save_options_to_config(os.path.join(opt.output_dir, formats.get_config_filename(__file__)),
+    output_dir = Path(opt.output).parent
+    os.makedirs(output_dir, exist_ok=True)
+    save_options_to_config(output_dir / formats.get_config_filename(__file__),
                            OrderedDict(sorted(opt.items()))
                            )
 
