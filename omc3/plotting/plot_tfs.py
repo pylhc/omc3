@@ -11,6 +11,7 @@ import os
 from collections import OrderedDict
 from pathlib import Path
 
+import matplotlib
 import tfs
 from generic_parser import EntryPointParameters, entrypoint, DotDict
 from generic_parser.entry_datatypes import DictAsString
@@ -18,17 +19,15 @@ from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, rcParams
 
 from omc3.definitions import formats
+from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import FigureCollector
-from omc3.plotting.spectrum.utils import get_unique_filenames
+from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
 from omc3.plotting.utils import (annotations as pannot, lines as plines,
                                  style as pstyle, colors as pcolors)
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
-
-
-# Constants, Style and Arguments #############################################
 
 
 def get_params():
@@ -62,13 +61,25 @@ def get_params():
     )
     params.add_parameter(
         name="column_labels",
-        help="Column-Lables for the plots, default: y_column.",
+        help="Column-Labels for the plots, default: y_columns.",
         type=str,
         nargs="+",
     )
     params.add_parameter(
         name="file_labels",
-        help="Names for the sources for the plots, default: filenames.",
+        help="Labels for the files, default: filenames.",
+        type=str,
+        nargs="+",
+    )
+    params.add_parameter(
+        name="y_labels",
+        help="Labels for the y-axis, default: file_labels or column_labels (depending on combine_by).",
+        type=str,
+        nargs="+",
+    )
+    params.add_parameter(
+        name="x_labels",
+        help="Labels for the x-axis, default: x_columns.",
         type=str,
         nargs="+",
     )
@@ -84,8 +95,8 @@ def get_params():
         choices=["X", "Y", "XY"],
     )
     params.add_parameter(
-        name="output",
-        help="Base-Name of the output files. Some ID and file-suffix will be attached.",
+        name="output",  # TODO: use dir only, filename should be created from file_label column_label plane !!
+        help="Folder to output the plots to.",
         type=str,
     )
     params.add_parameter(
@@ -103,12 +114,14 @@ def get_params():
         name="xlim",
         nargs=2,
         type=float,
-        help='Limits on the x axis (Tupel)')
+        help='Limits on the x axis (Tupel)'
+    )
     params.add_parameter(
         name="ylim",
         nargs=2,
         type=float,
-        help='Limits on the y axis (Tupel)')
+        help='Limits on the y axis (Tupel)'
+    )
     params.add_parameter(
         name="vertical_lines",
         nargs="*",
@@ -131,7 +144,8 @@ def get_params():
         name="manual_style",
         type=DictAsString,
         default={},
-        help='Additional style rcParameters which update the set of predefined ones.')
+        help='Additional style rcParameters which update the set of predefined ones.'
+    )
     params.add_parameter(
         name="change_marker",
         help="Changes marker for each line in the plot.",
@@ -140,13 +154,14 @@ def get_params():
     params.add_parameter(
         name="ncol_legend",
         type=int,
-        default=3,
-        help='Number of bpm legend-columns. If < 1 no legend is shown.')
+        default=DEFAULTS['ncol_legend'],
+        help='Number of bpm legend-columns. If < 1 no legend is shown.'
+    )
     params.add_parameter(
         name="errorbar_alpha",
         help="Alpha value for error bars",
         type=float,
-        default=0.6,
+        default=DEFAULTS['errorbar_alpha'],
     )
     return params
 
@@ -162,27 +177,19 @@ def plot(opt):
 
     # preparations
     opt, sorting_opts = _check_opt(opt)
+    pstyle.set_style(opt.plot_styles, opt.manual_style)
 
     # extract data
     fig_collection = sort_data(opt.get_subdict(
-        ['planes',
-         'x_columns', 'y_columns', 'error_coumns',
-         'file_labels', 'column_labels',
-         'combine_by', 'output', 'plot_suffix']))
+        ['planes', 'x_columns', 'y_columns', 'error_columns',
+         'file_labels', 'column_labels', 'x_labels', 'y_labels',
+         'combine_by', 'output']))
 
     # plotting
-    pstyle.set_style(opt.plot_styles, opt.manual_style)
     _create_plots(fig_collection,
                   opt.get_subdict(['xlim', 'ylim',
-                                  'ncols_legend', 'change_marker', 'errorbar_alpha',
-                                  'vertical_lines']))
-
-    # exports
-    if opt.output:
-        _export_plots(fig_collection, opt.output)
-
-    if not opt.no_show:
-        plt.show()
+                                   'ncols_legend', 'change_marker', 'errorbar_alpha',
+                                   'vertical_lines']))
 
     return fig_collection.fig_dict
 
@@ -197,12 +204,14 @@ def sort_data(opt):
     for (file_path, filename), file_label in zip(get_unique_filenames(opt.files), opt.file_labels):
         for x_col, y_col, err_col, column_label in zip(opt.x_columns, opt.y_columns, opt.error_columns, opt.column_labels):
             id_map = get_id(filename, y_col, file_label, column_label, combine_by_set)
+            output_path = f"{opt.output}_{id_map['id']}.{matplotlib.rcParams['savefig.format']}"
+
             if opt.planes is None:
 
                 collector.add_data_for_id(
                     id_=id_map['id'], label=id_map['label'],
                     data=_read_data(file_path, x_col, y_col, err_col),
-                    path=opt.output, y_label=id_map['ylabel']
+                    path=output_path, y_label=id_map['ylabel']
                     )
             else:
 
@@ -217,7 +226,7 @@ def sort_data(opt):
                     collector.add_data_for_id(
                         id_=id_map['id'], label=id_map['label'],
                         data=_read_data(file_path_plane, x_col, y_col_plane, err_col),
-                        path=opt.output, y_label=y_label_plane,
+                        path=output_path, y_label=y_label_plane,
                         n_planes=len(planes),
                         plane_idx=idx_plane,
                         combine_planes='planes' in opt.combine_by,
@@ -279,6 +288,11 @@ def _create_plots(fig_collection, opt):
 
             if idx_ax == 0:
                 pannot.make_top_legend(ax, opt.ncols_legend)
+
+        output_plot(fig_container)
+
+    if opt.show:
+        plt.show()
 
 
 def _plot_data(ax, data, change_marker, ebar_alpha):
@@ -364,6 +378,17 @@ def _get_marker(idx, change):
     else:
         return rcParams['lines.marker']
 
+
+# TODO
+    if auto_scale:
+        current_y_lims = _get_auto_scale(y_val, auto_scale)
+        if y_lims is None:
+            y_lims = current_y_lims
+        else:
+            y_lims = [min(y_lims[0], current_y_lims[0]),
+                      max(y_lims[1], current_y_lims[1])]
+        if last_line:
+            ax.set_ylim(*y_lims)
 
 # Script Mode ------------------------------------------------------------------
 

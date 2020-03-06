@@ -8,7 +8,7 @@ Constants and definitions for the tfs plotter.
 :author: jdilly
 
 """
-IR_POS_DEFAULT = {
+IP_POS_DEFAULT = {
     "LHCB1": {
         'IP1': 23519.36962,
         'IP2': 192.923,
@@ -30,6 +30,7 @@ IR_POS_DEFAULT = {
         'IP8': 26510.4792,
     }
 }
+
 MANUAL_STYLE = {
     # differences to the standard style
     u'lines.markersize': 5.0,
@@ -37,6 +38,9 @@ MANUAL_STYLE = {
     # u'figure.figsize': [6, 3.8],
 }
 
-ERROR_ALPHA = 1.  # Set errorbar transparency
-MAX_LEGENDLENGTH = 78  # maximum length of legend letters before linebreak
 COMPLEX_NAMES = [p+ext for p in ["1001", "1010"] for ext in "RI"]  # Endings of columns that contain complex data
+
+DEFAULTS = {
+    'ncol_legend': 3,
+    'errorbar_alpha': .6,
+}
