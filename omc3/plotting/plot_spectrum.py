@@ -115,11 +115,12 @@ from matplotlib import cm
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
 from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
-                                          MANUAL_LOCATIONS, LOG,
+                                          LOG,
                                           FigureCollector, get_unique_filenames,
                                           filter_amps, get_bpms, get_stem_id,
                                           get_waterfall_id, get_data_for_bpm,
                                           load_spectrum_data)
+from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.utils import logging_tools
 
@@ -217,7 +218,7 @@ def get_params():
                          default=[],
                          type=DictAsString,
                          help='List of manual lines to plot. Need to contain arguments for axvline, and may contain '
-                              f'the additional key "loc" which is one of {list(MANUAL_LOCATIONS.keys())} '
+                              f'the additional key "loc" which is one of {list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} '
                               'and places the label as text at the given location.')
     params.add_parameter(name="xlim",
                          nargs=2,

@@ -22,21 +22,12 @@ from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
+from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
 
-
-MANUAL_LOCATIONS = {
-    'bottom': dict(y=-0.01, va='top', ha='center'),
-    'top': dict(y=1.01, va='bottom', ha='center'),
-    'line bottom': dict(y=0.01, va='bottom', ha='right', rotation=90),
-    'line top': dict(y=0.99, va='top', ha='right', rotation=90),
-}
-
-
 STEM_LINES_ALPHA = 0.5
-RESONANCE_LINES_ALPHA = 0.5
 PATCHES_ALPHA = 0.2
 LABEL_Y_SPECTRUM = 'Amplitude in {plane:s} [a.u]'
 LABEL_Y_WATERFALL = 'Plane {plane:s}'
@@ -128,7 +119,9 @@ def plot_lines(fig_cont: FigureContainer, lines: DotDict) -> None:
 
         # Manual Lines ---
         for mline in lines.manual:
-            _plot_manual_line(ax, mline, trans, label_size)
+            loc = mline.pop('loc', None)  # needs to be removed in axvline
+            plot_vertical_line(ax, mline, loc, label_size)
+            mline['loc'] = loc  # reset it for later axes/plots
 
 
 def _plot_tune_lines(ax, transform, label_size, q_string, tunes, resonances, linestyle, label_y):
@@ -153,34 +146,13 @@ def _plot_tune_lines(ax, transform, label_size, q_string, tunes, resonances, lin
             color = get_cycled_color(order-2)
             ax.axvline(x=f_mean, label=label,
                        linestyle=linestyle, color=color, marker='None',
-                       zorder=-1, alpha=RESONANCE_LINES_ALPHA)
+                       zorder=-1, alpha=VERTICAL_LINES_ALPHA)
             ax.text(x=f_mean, y=label_y, s=label, transform=transform,
                     color=color,
                     va='bottom', ha='center',
                     fontdict={'size': label_size})
             ax.add_patch(Rectangle(xy=(f_min, 0), width=f_max-f_min, height=1,
                                    transform=transform, color=color, alpha=PATCHES_ALPHA, zorder=-2,))
-
-
-def _plot_manual_line(ax, mline, transform, label_size):
-    mline.setdefault('alpha', RESONANCE_LINES_ALPHA)
-    mline.setdefault('marker', 'None')
-    mline.setdefault('zorder', -1)
-    if 'linestyle' not in mline and 'ls' not in mline:
-        mline['linestyle'] = '--'
-
-    label = mline.get('label', None)
-    loc = mline.pop('loc', None)  # needs to be removed in axvline
-
-    line = ax.axvline(**mline)
-    mline['loc'] = loc  # reset it for later axes/plots
-
-    if label is not None and loc is not None:
-        if loc not in MANUAL_LOCATIONS:
-            raise ValueError(f"Unknown value '{loc}' for label location.")
-
-        ax.text(x=mline['x'], s=label, transform=transform,
-                color=line.get_color(), fontdict={'size': label_size}, **MANUAL_LOCATIONS[loc])
 
 
 def _get_resonance_frequencies(resonances, q):

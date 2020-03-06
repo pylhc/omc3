@@ -65,3 +65,42 @@ def _find_ir_pos(all_data):
     return {}
 
 
+    if auto_scale:
+        current_y_lims = _get_auto_scale(y_val, auto_scale)
+        if y_lims is None:
+            y_lims = current_y_lims
+        else:
+            y_lims = [min(y_lims[0], current_y_lims[0]),
+                      max(y_lims[1], current_y_lims[1])]
+        if last_line:
+            ax.set_ylim(*y_lims)
+
+    # things to do only once
+    if last_line:
+        # setting the y_label
+        if y_label is None:
+            _set_ylabel(ax, y_col, y_label_from_col, y_plane, chromatic)
+        else:
+            y_label_from_label = ""
+            if y_label:
+                y_label_from_label, y_plane, _, _, chromatic = _get_names_and_columns(
+                    idx_plot, xy, y_label, "")
+            if xy:
+                y_label = f"{y_label:s} {y_plane:s}"
+            _set_ylabel(ax, y_label, y_label_from_label, y_plane, chromatic)
+
+        # setting x limits
+        if x_is_position:
+            with suppress(AttributeError, ValueError):
+                post_processing.set_xlimits(data.SEQUENCE, ax)
+
+        # setting visibility, ir-markers and label
+        if xy and idx_plot == 0:
+            ax.axes.get_xaxis().set_visible(False)
+            if x_is_position and ir_positions:
+                annotations.show_ir(ir_positions, ax, mode='lines')
+        else:
+            if x_is_position:
+                annotations.set_xaxis_label(ax)
+                if ir_positions:
+                    annotations.show_ir(ir_positions, ax, mode='outside')

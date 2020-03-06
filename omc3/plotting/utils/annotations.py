@@ -270,6 +270,9 @@ def get_legend_ncols(labels, max_length=78):
 
 def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
     """ Create a legend on top of the plot. """
+    if ncol < 1:
+        return
+
     leg = ax.legend(handles=handles, labels=labels, loc='lower right',
                     bbox_to_anchor=(1.0, 1.0+pad),
                     fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)

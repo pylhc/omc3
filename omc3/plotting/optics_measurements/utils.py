@@ -7,8 +7,9 @@ from matplotlib import pyplot as plt
 
 class FigureContainer:
     """ Container for attaching additional information to one figure. """
-    def __init__(self, path: Path, n_planes: int, combine_planes: bool) -> None:
+    def __init__(self, id_: str, path: Path, n_planes: int, combine_planes: bool) -> None:
         self.fig, axs = plt.subplots(nrows=1 if combine_planes else n_planes)
+        self.fig.canvas.set_window_title(id_)
 
         if n_planes == 1:
             self.axes = [axs]
@@ -35,7 +36,7 @@ class FigureCollector:
         try:
             figure_cont = self.figs[id_]
         except KeyError:
-            figure_cont = FigureContainer(path, n_planes, combine_planes)
+            figure_cont = FigureContainer(id_, path, n_planes, combine_planes)
 
             self.figs[id_] = figure_cont
             self.fig_dict[id_] = figure_cont.fig

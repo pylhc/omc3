@@ -2,27 +2,28 @@
 Plot TFS
 -------------------------
 
-Wrapper to easily plot tfs-files. With entrypoint functionality.
+Easily plot tfs-files with all kinds of additional functionality and ways to
+combine plots.
 
 
 """
 import os
-from collections import Iterable, OrderedDict
-from contextlib import suppress
+from collections import OrderedDict
 from pathlib import Path
 
 import tfs
-from generic_parser import EntryPointParameters, entrypoint
+from generic_parser import EntryPointParameters, entrypoint, DotDict
+from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, rcParams
 
 from omc3.definitions import formats
-from omc3.plotting.utils import annotations, lines, style as pstyle
-from omc3.optics_measurements.constants import EXT
-
-from omc3.utils.logging_tools import get_logger, list2str
-from omc3.plotting.optics_measurements.utils import FigureCollector, IdData
+from omc3.plotting.optics_measurements.utils import FigureCollector
 from omc3.plotting.spectrum.utils import get_unique_filenames
+from omc3.plotting.utils import (annotations as pannot, lines as plines,
+                                 style as pstyle, colors as pcolors)
+from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
+from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
 
@@ -88,16 +89,6 @@ def get_params():
         type=str,
     )
     params.add_parameter(
-        name="change_marker",
-        help="Changes marker for each line in the plot.",
-        action="store_true",
-    )
-    params.add_parameter(
-        name="no_legend",
-        help="Deactivates the legend.",
-        action="store_true",
-    )
-    params.add_parameter(
         name="show",
         help="Shows plots.",
         action="store_true",
@@ -125,13 +116,38 @@ def get_params():
         type=DictAsString,
         help='List of vertical lines (e.g. IR positions) to plot. '
              'Need to contain arguments for axvline, and may contain '
-             f'the additional key "loc" which is one of {list(MANUAL_LOCATIONS.keys())} '
+             f'the additional key "loc" which is one of {list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} '
              'and places the label as text at the given location.')
+
+    # Plotting Style Parameters ---
+    params.add_parameter(
+        name="plot_styles",
+        type=str,
+        nargs="+",
+        default=['standard'],
+        help='Which plotting styles to use, either from plotting.utils.*.mplstyles or default mpl.'
+    )
     params.add_parameter(
         name="manual_style",
         type=DictAsString,
         default={},
-        help='Additional Style parameters which update the set of predefined ones.')
+        help='Additional style rcParameters which update the set of predefined ones.')
+    params.add_parameter(
+        name="change_marker",
+        help="Changes marker for each line in the plot.",
+        action="store_true",
+    )
+    params.add_parameter(
+        name="ncol_legend",
+        type=int,
+        default=3,
+        help='Number of bpm legend-columns. If < 1 no legend is shown.')
+    params.add_parameter(
+        name="errorbar_alpha",
+        help="Alpha value for error bars",
+        type=float,
+        default=0.6,
+    )
     return params
 
 
@@ -155,20 +171,23 @@ def plot(opt):
          'combine_by', 'output', 'plot_suffix']))
 
     # plotting
-    figs = create_plots(twiss_data, opt.x_cols, opt.y_cols, opt.e_cols, opt.file_labels, opt.column_labels,
-                        opt.y_labels, opt.xy, opt.change_marker, opt.no_legend, opt.auto_scale, opt.figure_per_file)
+    pstyle.set_style(opt.plot_styles, opt.manual_style)
+    _create_plots(fig_collection,
+                  opt.get_subdict(['xlim', 'ylim',
+                                  'ncols_legend', 'change_marker', 'errorbar_alpha',
+                                  'vertical_lines']))
 
     # exports
     if opt.output:
-        export_plots(figs, opt.output)
+        _export_plots(fig_collection, opt.output)
 
     if not opt.no_show:
         plt.show()
 
-    return figs
+    return fig_collection.fig_dict
 
 
-# Private Functions ------------------------------------------------------------
+# Sorting ----------------------------------------------------------------------
 
 
 def sort_data(opt):
@@ -206,14 +225,6 @@ def sort_data(opt):
     return collector
 
 
-
-
-
-
-
-
-
-
 def get_id(filename, column, file_label, column_label, combine_by):
     if filename is None:
         file_label = filename
@@ -249,82 +260,48 @@ def get_id(filename, column, file_label, column_label, combine_by):
 
 def _read_data(file_path, x_col, y_col, err_col):
     tfs_data = tfs.read(str(file_path))
-    return dict(
+    return DotDict(
         x=tfs_data[x_col],
         y=tfs_data[y_col],
         err=tfs_data[err_col] if err_col is not None else None,
     )
 
 
-def create_plots(dataframes, x_cols, y_cols, e_cols, dataframe_labels, column_labels, y_labels, xy, change_marker,
-                 no_legend, auto_scale, figure_per_dataframe=False):
-    # create layout
-    pstyle.set_style("standard", MANUAL_STYLE)
-    ir_positions, x_is_position = _get_ir_positions(dataframes, x_cols)
+# Plotting ---------------------------------------------------------------------
 
-    y_lims = None
-    the_loop = _LoopGenerator(x_cols, y_cols, e_cols, dataframes,
-                              dataframe_labels, column_labels, y_labels,
-                              xy, figure_per_dataframe)
 
-    for ax, idx_plot, idx, data, x_col, y_col, e_col, legend, y_label, last_line in the_loop():
-        # plot data
-        y_label_from_col, y_plane, y_col, e_col, chromatic = _get_names_and_columns(idx_plot, xy,
-                                                                                     y_col, e_col)
+def _create_plots(fig_collection, opt):
+    for fig_container in fig_collection.figs:
+        for idx_ax, (ax, data, ylabel) in enumerate(zip(fig_container.axes, fig_container.data, fig_container.ylabels)):
+            _plot_vlines(ax, opt.vertical_lines)
+            _plot_data(ax, data, opt.change_marker, opt.errorbar_alpha)
+            _set_axes_layout(ax, opt.xlim, opt.ylim, ylabel)
 
-        x_val, y_val, e_val = _get_column_data(data, x_col, y_col, e_col)
+            if idx_ax == 0:
+                pannot.make_top_legend(ax, opt.ncols_legend)
 
-        ebar = ax.errorbar(x_val, y_val, yerr=e_val,
-                           ls=rcParams[u"lines.linestyle"], fmt=get_marker(idx, change_marker),
-                           label=legend)
 
-        _change_ebar_alpha(ebar)
+def _plot_data(ax, data, change_marker, ebar_alpha):
+    for idx, (label, values) in enumerate(data.items()):
+        ebar = ax.errorbar(values.x, values.y, yerr=values.err,
+                           ls=rcParams[u"lines.linestyle"],
+                           fmt=_get_marker(idx, change_marker),
+                           label=label)
 
-        if auto_scale:
-            current_y_lims = _get_auto_scale(y_val, auto_scale)
-            if y_lims is None:
-                y_lims = current_y_lims
-            else:
-                y_lims = [min(y_lims[0], current_y_lims[0]),
-                          max(y_lims[1], current_y_lims[1])]
-            if last_line:
-                ax.set_ylim(*y_lims)
+        pcolors.change_ebar_alpha_for_line(ebar, ebar_alpha)
 
-        # things to do only once
-        if last_line:
-            # setting the y_label
-            if y_label is None:
-                _set_ylabel(ax, y_col, y_label_from_col, y_plane, chromatic)
-            else:
-                y_label_from_label = ""
-                if y_label:
-                    y_label_from_label, y_plane, _, _, chromatic = _get_names_and_columns(
-                        idx_plot, xy, y_label, "")
-                if xy:
-                    y_label = f"{y_label:s} {y_plane:s}"
-                _set_ylabel(ax, y_label, y_label_from_label, y_plane, chromatic)
 
-            # setting x limits
-            if x_is_position:
-                with suppress(AttributeError, ValueError):
-                    post_processing.set_xlimits(data.SEQUENCE, ax)
+def _plot_vlines(ax, lines):
+    for line in lines:
+        loc = line.pop('loc', None)
+        plines.plot_vertical_line(ax, line, label_loc=loc)
+        line['loc'] = loc  # put back for other axes
 
-            # setting visibility, ir-markers and label
-            if xy and idx_plot == 0:
-                ax.axes.get_xaxis().set_visible(False)
-                if x_is_position and ir_positions:
-                    annotations.show_ir(ir_positions, ax, mode='lines')
-            else:
-                if x_is_position:
-                    annotations.set_xaxis_label(ax)
-                    if ir_positions:
-                        annotations.show_ir(ir_positions, ax, mode='outside')
 
-            if not no_legend and idx_plot == 0:
-                annotations.make_top_legend(ax, the_loop.get_ncols())
-
-    return the_loop.get_figs()
-
+def _set_axes_layout(ax, xlim, ylim, ylabel):
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    ax.set_ylabel(ylabel)
 
 
 # Output ---
@@ -337,7 +314,8 @@ def _save_options_to_config(opt):
                            OrderedDict(sorted(opt.items()))
                            )
 
-def export_plots(figs, output):
+
+def _export_plots(figs, output):
     """ Export all created figures to PDF """
     for param in figs:
         pdf_path = f"{output:s}_{param:s}.pdf"
@@ -345,7 +323,7 @@ def export_plots(figs, output):
         LOG.debug(f"Exported tfs-contents to PDF '{pdf_path:s}'")
 
 
-# Helper #####################################################################
+# Helper -----------------------------------------------------------------------
 
 
 def _check_opt(opt):
@@ -379,34 +357,15 @@ def _check_opt(opt):
     return opt
 
 
-def get_marker(idx, change):
+def _get_marker(idx, change):
     """ Return the marker used """
     if change:
-        return lines.MarkerList.get_marker(idx)
+        return plines.MarkerList.get_marker(idx)
     else:
         return rcParams['lines.marker']
 
 
-def _get_column_data(data, x_col, y_col, e_col):
-    """ Extract column data """
-    x_val = data[x_col]
-    y_val = data[y_col]
-    try:
-        e_val = data[e_col]
-    except (KeyError, ValueError):
-        e_val = None
-    return x_val, y_val, e_val
-
-
-def _change_ebar_alpha(ebar, alpha):
-    """ loop through bars (ebar[1]) and caps (ebar[2]) and set the alpha value """
-    for bars_or_caps in ebar[1:]:
-        for bar_or_cap in bars_or_caps:
-            bar_or_cap.set_alpha(alpha)
-
-
-
-# Script Mode ################################################################
+# Script Mode ------------------------------------------------------------------
 
 
 if __name__ == "__main__":
