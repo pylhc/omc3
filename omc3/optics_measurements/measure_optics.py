@@ -23,7 +23,7 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       chromatic, dispersion, dpp, iforest,
                                       interaction_point, kick, phase, rdt,
-                                      tune)
+                                      tune, crdt)
 from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT)
 from omc3.utils import iotools, logging_tools
 
@@ -65,9 +65,12 @@ def measure_optics(input_files, measure_input):
         if plane == "X":
             dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
-    if measure_input.nonlinear:
+    if 'rdt' in measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))
         rdt.calculate(measure_input, input_files, tune_dict, invariants, common_header)
+    if 'crdt' in measure_input.nonlinear:
+        iotools.create_dirs(os.path.join(measure_input.outputdir, "crdt"))
+        crdt.calculate(measure_input, input_files, common_header)
     if measure_input.chromatic_beating:
         chromatic_beating(input_files, measure_input, tune_dict)
 

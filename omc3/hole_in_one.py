@@ -330,7 +330,7 @@ def _multibunch(tbt_datas, options):
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
         yield tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
-                               [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
+                          [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
 
 
 def _measure_optics(lins, optics_opt):
@@ -453,7 +453,7 @@ def _optics_entrypoint(params):
 
 def optics_params():
     params = EntryPointParameters()
-    params.add_parameter(name="files",  required=True, nargs='+',
+    params.add_parameter(name="files", required=True, nargs='+',
                          help="Files for analysis")
     params.add_parameter(name="outputdir", required=True,
                          help="Output directory")
@@ -468,7 +468,9 @@ def optics_params():
     params.add_parameter(name="union", action="store_true",
                          help="If present, the phase advances are calculate for union of BPMs "
                               "with at least 3 valid measurements, instead of intersection .")
-    params.add_parameter(name="nonlinear", action="store_true", help="Calculate higher order RDTs")
+    params.add_parameter(name="nonlinear", nargs='+', default=OPTICS_DEFAULTS["nonlinear"],
+                         choices=('rdt', 'crdt'),
+                         help="Choose which analysis is conducted.")
     params.add_parameter(name="three_bpm_method", action="store_true",
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")
@@ -506,6 +508,7 @@ OPTICS_DEFAULTS = {
         "coupling_method": 2,
         "range_of_bpms": 11,
         "compensation": "model",
+        "nonlinear": ['rdt']
 }
 
 
