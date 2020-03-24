@@ -4,7 +4,8 @@ CRDTs
 
 :module: optics_measurements.crdt
 
-Computes combined resonance driving terms following the derivatons in https://arxiv.org/pdf/1402.1461.pdf.
+Computes combined resonance driving terms
+following the derivatons in https://arxiv.org/pdf/1402.1461.pdf.
 """
 
 from pathlib import Path
@@ -13,36 +14,40 @@ import tfs
 import pandas as pd
 from omc3.optics_measurements.constants import ERR, EXT, PLANES, AMPLITUDE
 from omc3.utils import iotools, logging_tools
+from omc3.harpy.constant import FILE_LIN_EXT
 
 LOGGER = logging_tools.get_logger(__name__)
 PHASE = 'PHASE'
 
-# ORDER = {
-#     "Coupling": {
-#         "F_XY": get_Fxy,
-#         "F_YX": get_Fyx,
-#                 },
-#     "Sextupole": {
-#         "F_NS3":get_Fns3,
-#         "F_NS2":get_Fns2,
-#         "F_NS1":get_Fns1,
-#         "F_NS0":get_Fns0,
-#                  },
-#     "Skew Sextupole": {
-#         "F_SS3":get_Fss3,
-#         "F_SS2":get_Fss2,
-#         "F_SS1":get_Fss1,
-#         "F_SS0":get_Fss0,
-#                       },
-#     "Octupole": {
-#         "F_NO5":get_Fno5,
-#         "F_NO4":get_Fno4,
-#         "F_NO3":get_Fno3,
-#         "F_NO2":get_Fno2,
-#         "F_NO1":get_Fno1,
-#         "F_NO0":get_Fno0,
-#                 }
-# }
+ORDER = {
+    "Coupling": {
+        "F_XY": {'func': Aover2B, 'A': 'X01', 'B': 'Y01'},
+        "F_YX": {'func': Aover2B, 'A': 'Y10', 'B': 'X10'},
+    },
+
+    "Sextupole": {
+        "F_NS3": {'func': Aover4B, 'A': 'X_20', 'B': 'X10'},
+        "F_NS2": {'func': Aover4B, 'A': 'X0_2', 'B': 'Y01'},
+        "F_NS1": {'func': Aover4BC, 'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'},
+        "F_NS0": {'func': Aover4BC, 'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'},
+    },
+
+    "Skew Sextupole": {
+        "F_SS3": {'func': Aover4B, 'A': 'Y0_2', 'B': 'Y01'},
+        "F_SS2": {'func': Aover4B, 'A': 'Y_20', 'B': 'X10'},
+        "F_SS1": {'func': Aover4BC, 'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'},
+        "F_SS0": {'func': Aover4BC, 'A': 'X1_1', 'B': 'X10', 'C': 'Y01'},
+    },
+
+    "Octupole": {
+        "F_NO5": {'func': Aover8B, 'A': 'Y03', 'B': 'Y01'},
+        "F_NO4": {'func': Aover8BC, 'A': 'X12', 'B': 'X10', 'C': 'Y01'},
+        "F_NO3": {'func': Aover8B, 'A': 'X30', 'B': 'X10'},
+        "F_NO2": {'func': Aover8BC, 'A': 'X_12', 'B': 'X10', 'C': 'Y01'},
+        "F_NO1": {'func': Aover8BC, 'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'},
+        "F_NO0": {'func': Aover8BC, 'A': 'Y21', 'B': 'X10', 'C': 'Y01'},
+    }
+}
 
 
 def calculate(measure_input, input_files, header):
@@ -63,6 +68,15 @@ def calculate(measure_input, input_files, header):
     # for order, crdts in ORDER.items():
     #     for crdt in crdts.keys():
     # print(input_files)
+
+
+def translate_line_to_col(line):
+    plane = line[0]
+    line = line[1:]
+
+    if (plane == 'X' and line == '10') or (plane == 'Y' and line == '01'):
+        return FILE_LIN_EXT.format(plane=plane.lower()), f'AMP{plane.lower()}', f'MU{plane.lower()}'
+    return FILE_LIN_EXT.format(plane=plane.lower()), f'AMP{line}', f'PHASE{line}'
 
 
 def write(df, header, meas_input, order, crdt):
@@ -92,7 +106,7 @@ def Aover4B(df, lineA, lineB, phaseA, phaseB):
 def Aover4BC(df, lineA, lineB, lineC, phaseA, phaseB, phaseC, sign=1):
     df[AMPLITUDE] = lineA['val']/(4*lineB['val']*lineC['val'])
     df[f'{ERR}{AMPLITUDE}'] = np.sqrt(lineA['err']/(16*lineB['val']**2*lineC['val']**2
-                                                    + (1/16.)*lineA['val']**2*np.abs(
+                              + (1/16.)*lineA['val']**2*np.abs(
         np.sqrt(lineB['err']*lineC['val']+lineB['val']
                 * lineC['err'])/lineB['val']*lineC['val']
     )**2))
