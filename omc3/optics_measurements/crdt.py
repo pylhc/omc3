@@ -12,41 +12,33 @@ from pathlib import Path
 import numpy as np
 import tfs
 import pandas as pd
-from omc3.optics_measurements.constants import ERR, EXT, PLANES, AMPLITUDE
+from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
 from omc3.harpy.constant import FILE_LIN_EXT
 
 LOGGER = logging_tools.get_logger(__name__)
 PHASE = 'PHASE'
 
-ORDER = {
-    "Coupling": {
-        "F_XY": {'func': Aover2B, 'A': 'X01', 'B': 'Y01'},
-        "F_YX": {'func': Aover2B, 'A': 'Y10', 'B': 'X10'},
-    },
+CRDTS = {
+    {'order':"Coupling", 'term': "F_XY", 'func': Aover2B, 'A': 'X01', 'B': 'Y01'},
+    {'order':"Coupling", 'term': "F_YX", 'func': Aover2B, 'A': 'Y10', 'B': 'X10'},
 
-    "Sextupole": {
-        "F_NS3": {'func': Aover4B, 'A': 'X_20', 'B': 'X10'},
-        "F_NS2": {'func': Aover4B, 'A': 'X0_2', 'B': 'Y01'},
-        "F_NS1": {'func': Aover4BC, 'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'},
-        "F_NS0": {'func': Aover4BC, 'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'},
-    },
+    {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B, 'A': 'X_20', 'B': 'X10'},
+    {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B, 'A': 'X0_2', 'B': 'Y01'},
+    {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC, 'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'},
+    {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC, 'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'},
 
-    "Skew Sextupole": {
-        "F_SS3": {'func': Aover4B, 'A': 'Y0_2', 'B': 'Y01'},
-        "F_SS2": {'func': Aover4B, 'A': 'Y_20', 'B': 'X10'},
-        "F_SS1": {'func': Aover4BC, 'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'},
-        "F_SS0": {'func': Aover4BC, 'A': 'X1_1', 'B': 'X10', 'C': 'Y01'},
-    },
+    {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B, 'A': 'Y0_2', 'B': 'Y01'},
+    {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B, 'A': 'Y_20', 'B': 'X10'},
+    {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC, 'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'},
+    {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC, 'A': 'X1_1', 'B': 'X10', 'C': 'Y01'},
 
-    "Octupole": {
-        "F_NO5": {'func': Aover8B, 'A': 'Y03', 'B': 'Y01'},
-        "F_NO4": {'func': Aover8BC, 'A': 'X12', 'B': 'X10', 'C': 'Y01'},
-        "F_NO3": {'func': Aover8B, 'A': 'X30', 'B': 'X10'},
-        "F_NO2": {'func': Aover8BC, 'A': 'X_12', 'B': 'X10', 'C': 'Y01'},
-        "F_NO1": {'func': Aover8BC, 'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'},
-        "F_NO0": {'func': Aover8BC, 'A': 'Y21', 'B': 'X10', 'C': 'Y01'},
-    }
+    {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B, 'A': 'Y03', 'B': 'Y01'},
+    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'A': 'X12', 'B': 'X10', 'C': 'Y01'},
+    {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B, 'A': 'X30', 'B': 'X10'},
+    {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC, 'A': 'X_12', 'B': 'X10', 'C': 'Y01'},
+    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'},
+    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'A': 'Y21', 'B': 'X10', 'C': 'Y01'},
 }
 
 
