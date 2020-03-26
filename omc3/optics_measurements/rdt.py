@@ -119,10 +119,11 @@ def _determine_line(rdt, plane):
 
 
 def add_freq_to_header(header, plane, rdt):
+    mod_header = header.copy()
     line = _determine_line(rdt, plane)
     freq = np.mod(line@np.array([header['Q1'], header['Q2'], 0]), 1)
-    header["FREQ"] = freq if freq <= 0.5 else 1 - freq
-    return header
+    mod_header["FREQ"] = freq if freq <= 0.5 else 1 - freq
+    return mod_header
 
 
 def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
