@@ -12,9 +12,11 @@ from pathlib import Path
 import numpy as np
 import tfs
 import pandas as pd
+from functools import reduce
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
 from omc3.definitions.constants import PLANES
+from omc3.utils import stats
 
 LOGGER = logging_tools.get_logger(__name__)
 PHASE = 'PHASE'
@@ -66,31 +68,31 @@ def Aover8BC(df, lines, phases, errlines, errphases, sign=1):
                                       np.abs(np.sqrt(errlines['B']**2*errlines['C']**4 + 4 * lines['B']**2*np.abs(lines['C']*errlines['C'])**2) /
                                              (lines['B']*lines['C']**4))**2
                                       )
-    df[PHASE] = phases['A'] + (sign) * phases['B'] - 2 * phases['C'] - 0.5*np.pi
+    df[PHASE] = phases['A'] - 2 * phases['B'] + (sign) * phases['C'] + (sign) * 0.5*np.pi
     df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2 + errphases['C']**2)
     return df
 
 
 CRDTS = [
-    {'order':"Coupling", 'term': "F_XY", 'func': Aover2B, 'lines': {'A': 'X01', 'B': 'Y01'}},
-    {'order':"Coupling", 'term': "F_YX", 'func': Aover2B, 'lines': {'A': 'Y10', 'B': 'X10'}},
+    {'order':"Coupling", 'term': "F_XY", 'func': Aover2B, 'lines': {'A': 'X01', 'B': 'Y01'}, 'sign':1},
+    {'order':"Coupling", 'term': "F_YX", 'func': Aover2B, 'lines': {'A': 'Y10', 'B': 'X10'}, 'sign':1},
 
-    {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B, 'lines': {'A': 'X_20', 'B': 'X10'}},
-    {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B, 'lines': {'A': 'X0_2', 'B': 'Y01'}},
-    {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC, 'lines': {'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'}},
-    {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC, 'lines': {'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B, 'lines': {'A': 'X_20', 'B': 'X10'}, 'sign':1},
+    {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B, 'lines': {'A': 'X0_2', 'B': 'Y01'}, 'sign':1},
+    {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC, 'lines': {'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+    {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC, 'lines': {'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
 
-    {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B, 'lines': {'A': 'Y0_2', 'B': 'Y01'}},
-    {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B, 'lines': {'A': 'Y_20', 'B': 'X10'}},
-    {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC, 'lines': {'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'}},
-    {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC, 'lines': {'A': 'X1_1', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B, 'lines': {'A': 'Y0_2', 'B': 'Y01'}, 'sign':1},
+    {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B, 'lines': {'A': 'Y_20', 'B': 'X10'}, 'sign':1},
+    {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC, 'lines': {'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+    {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC, 'lines': {'A': 'X1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
 
-    {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B, 'lines': {'A': 'Y03', 'B': 'Y01'}},
-    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'lines': {'A': 'X12', 'B': 'X10', 'C': 'Y01'}},
-    {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B, 'lines': {'A': 'X30', 'B': 'X10'}},
-    {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC, 'lines': {'A': 'X_12', 'B': 'X10', 'C': 'Y01'}},
-    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'lines': {'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'}},
-    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'lines': {'A': 'Y21', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B, 'lines': {'A': 'Y03', 'B': 'Y01'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'lines': {'A': 'X12', 'B': 'Y01', 'C': 'X10'}, 'sign':-1},
+    {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B, 'lines': {'A': 'X30', 'B': 'X10'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC, 'lines': {'A': 'X_12', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'lines': {'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'lines': {'A': 'Y21', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
 ]
 
 
@@ -131,12 +133,21 @@ def process_crdt(joined_df, crdt):
             except KeyError:
                 LOGGER.debug(f"No {prefix} for line {line} found in lin-files, set to 0")
                 data_dict[key] = 0
-    df = crdt['func'](df, lines, phases, errlines, errphases, -1 if crdt['term'] in [] else 1)
+    df = crdt['func'](df, lines, phases, errlines, errphases, crdt['sign'])
     return df
 
 
-def average_results(results_df):
-    return results_df[0]
+def average_results(result_dfs):
+    result_df = reduce(lambda left, right: pd.merge(left.reset_index(level=0)[['NAME', 'S']],
+                                                    right.reset_index(level=0)[['NAME', 'S']],
+                                                    on=['NAME', 'S'],
+                                                    how='outer'),
+                                                    result_dfs).set_index('NAME')
+    result_dfs = [df.reindex(result_df.index) for df in result_dfs]
+    for column, func in zip([AMPLITUDE, PHASE, f'{ERR}{AMPLITUDE}', f'{ERR}{PHASE}'], [stats.weighted_mean, stats.circular_mean, stats.weighted_rms, stats.circular_error]):
+        data = np.array([df[column].to_numpy() for df in result_dfs])
+        result_df[column] = func(data=data, axis=0)
+    return result_df
 
 
 def translate_line_to_col(line):
