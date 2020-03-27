@@ -144,7 +144,7 @@ def average_results(result_dfs):
                                                     how='outer'),
                                                     result_dfs).set_index('NAME')
     result_dfs = [df.reindex(result_df.index) for df in result_dfs]
-    for column, func in zip([AMPLITUDE, PHASE, f'{ERR}{AMPLITUDE}', f'{ERR}{PHASE}'], [stats.weighted_mean, stats.circular_mean, stats.weighted_rms, stats.circular_error]):
+    for column, func in zip([AMPLITUDE,  f'{ERR}{AMPLITUDE}', PHASE,f'{ERR}{PHASE}'], [stats.weighted_mean, stats.weighted_rms, stats.circular_mean, stats.circular_error]):
         data = np.array([df[column].to_numpy() for df in result_dfs])
         result_df[column] = func(data=data, axis=0)
     return result_df

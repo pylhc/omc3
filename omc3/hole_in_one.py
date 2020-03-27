@@ -468,7 +468,7 @@ def optics_params():
     params.add_parameter(name="union", action="store_true",
                          help="If present, the phase advances are calculate for union of BPMs "
                               "with at least 3 valid measurements, instead of intersection .")
-    params.add_parameter(name="nonlinear", nargs='*',
+    params.add_parameter(name="nonlinear", nargs='+', default=[],
                          choices=('rdt', 'crdt'),
                          help="Choose which analysis is conducted.")
     params.add_parameter(name="three_bpm_method", action="store_true",
