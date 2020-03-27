@@ -119,10 +119,10 @@ def calculate(measure_input, input_files, header):
 def process_crdt(joined_df, crdt):
     df = pd.DataFrame(index=joined_df.index, data={'S': joined_df['S']})
 
-    lines={}
-    phases={}
-    errlines={}
-    errphases={}
+    lines = {}
+    phases = {}
+    errlines = {}
+    errphases = {}
     for data_dict, prefix in zip([lines, phases, errlines, errphases], ['AMP', 'FREQ', 'ERRAMP', 'ERRFREQ']):
         for key, line in crdt['lines'].items():
             try:
