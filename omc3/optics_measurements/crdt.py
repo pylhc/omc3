@@ -14,32 +14,84 @@ import tfs
 import pandas as pd
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
-from omc3.harpy.constant import FILE_LIN_EXT
+from omc3.definitions.constants import PLANES
 
 LOGGER = logging_tools.get_logger(__name__)
 PHASE = 'PHASE'
 
-CRDTS = {
-    {'order':"Coupling", 'term': "F_XY", 'func': Aover2B, 'A': 'X01', 'B': 'Y01'},
-    {'order':"Coupling", 'term': "F_YX", 'func': Aover2B, 'A': 'Y10', 'B': 'X10'},
 
-    {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B, 'A': 'X_20', 'B': 'X10'},
-    {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B, 'A': 'X0_2', 'B': 'Y01'},
-    {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC, 'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'},
-    {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC, 'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'},
+def Aover2B(df, lines, phases, errlines, errphases, sign=1):
+    df[AMPLITUDE] = lines['A']/(2*lines['A'])
+    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']**2/(4*lines['B']**2)
+                                      + 0.25 * lines['A']**2 * np.abs(errlines['B']/lines['B']**2)**2)
+    df[PHASE] = phases['A'] - phases['B'] - 1.5*np.pi
+    df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2)
+    return df
 
-    {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B, 'A': 'Y0_2', 'B': 'Y01'},
-    {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B, 'A': 'Y_20', 'B': 'X10'},
-    {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC, 'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'},
-    {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC, 'A': 'X1_1', 'B': 'X10', 'C': 'Y01'},
 
-    {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B, 'A': 'Y03', 'B': 'Y01'},
-    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'A': 'X12', 'B': 'X10', 'C': 'Y01'},
-    {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B, 'A': 'X30', 'B': 'X10'},
-    {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC, 'A': 'X_12', 'B': 'X10', 'C': 'Y01'},
-    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'},
-    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'A': 'Y21', 'B': 'X10', 'C': 'Y01'},
-}
+def Aover4B(df, lines, phases, errlines, errphases, sign=1):
+    df[AMPLITUDE] = lines['A']/(4*lines['B']**2)
+    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']**2/(16*lines['B']**4)
+                                      + 0.25 * lines['A']**2 * np.abs(errlines['B']/lines['B']**3)**2)
+    df[PHASE] = phases['A'] + 2*phases['B'] - 1.5*np.pi
+    df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2)
+    return df
+
+
+def Aover4BC(df, lines, phases, errlines, errphases, sign=1):
+    df[AMPLITUDE] = lines['A']/(4*lines['B']*lines['C'])
+    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']/(16*lines['B']**2*lines['C']**2
+                              + (1/16.)*lines['A']**2*np.abs(
+        np.sqrt(errlines['B']*lines['C']+lines['B']
+                * errlines['C'])/lines['B']*lines['C']
+    )**2))
+    df[PHASE] = phases['A'] + (sign) * phases['B'] + phases['C'] - 1.5*np.pi
+    df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2 + errphases['C']**2)
+    return df
+
+
+def Aover8B(df, lines, phases, errlines, errphases, sign=1):
+    df[AMPLITUDE] = lines['A']/(8*lines['B']**3)
+    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']/(64.*lines['B']**6) + (9./64)
+                                      * lines['A']*np.abs(errlines['B']/lines['B']**4))
+    df[PHASE] = phases['A'] - 3 * phases['B'] - 0.5*np.pi
+    df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + 9 * errphases['B']**2)
+    return df
+
+
+def Aover8BC(df, lines, phases, errlines, errphases, sign=1):
+    df[AMPLITUDE] = lines['A']/(8*lines['B']*lines['C']**2)
+    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']/(64*lines['B']**2*lines['C']**4) +
+                                      (1./64)*lines['A'] *
+                                      np.abs(np.sqrt(errlines['B']**2*errlines['C']**4 + 4 * lines['B']**2*np.abs(lines['C']*errlines['C'])**2) /
+                                             (lines['B']*lines['C']**4))**2
+                                      )
+    df[PHASE] = phases['A'] + (sign) * phases['B'] - 2 * phases['C'] - 0.5*np.pi
+    df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2 + errphases['C']**2)
+    return df
+
+
+CRDTS = [
+    {'order':"Coupling", 'term': "F_XY", 'func': Aover2B, 'lines': {'A': 'X01', 'B': 'Y01'}},
+    {'order':"Coupling", 'term': "F_YX", 'func': Aover2B, 'lines': {'A': 'Y10', 'B': 'X10'}},
+
+    {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B, 'lines': {'A': 'X_20', 'B': 'X10'}},
+    {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B, 'lines': {'A': 'X0_2', 'B': 'Y01'}},
+    {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC, 'lines': {'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC, 'lines': {'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'}},
+
+    {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B, 'lines': {'A': 'Y0_2', 'B': 'Y01'}},
+    {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B, 'lines': {'A': 'Y_20', 'B': 'X10'}},
+    {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC, 'lines': {'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC, 'lines': {'A': 'X1_1', 'B': 'X10', 'C': 'Y01'}},
+
+    {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B, 'lines': {'A': 'Y03', 'B': 'Y01'}},
+    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'lines': {'A': 'X12', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B, 'lines': {'A': 'X30', 'B': 'X10'}},
+    {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC, 'lines': {'A': 'X_12', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'lines': {'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'}},
+    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'lines': {'A': 'Y21', 'B': 'X10', 'C': 'Y01'}},
+]
 
 
 def calculate(measure_input, input_files, header):
@@ -52,14 +104,39 @@ def calculate(measure_input, input_files, header):
     Returns:
 
     """
-    LOGGER.info(f"Start of CRDT analysis")
+    LOGGER.info("Start of CRDT analysis")
+    joined_dfs = joined_planes(input_files)
     
-    # CRDT relies on double plane BPMs, selection here
-    bpm_names = input_files.bpms(dpp_value=0)
-    
-    # for order, crdts in ORDER.items():
-    #     for crdt in crdts.keys():
-    # print(input_files)
+    for crdt in CRDTS:
+        LOGGER.debug(f"Processing CRDT {crdt['term']}")
+        result_dfs = []
+        for joined_df in joined_dfs:
+            result_dfs.append(process_crdt(joined_df, crdt))
+        df = average_results(result_dfs)
+        write(df, header, measure_input, crdt['order'], crdt['term'])
+
+
+def process_crdt(joined_df, crdt):
+    df = pd.DataFrame(index=joined_df.index, data={'S': joined_df['S']})
+
+    lines={}
+    phases={}
+    errlines={}
+    errphases={}
+    for data_dict, prefix in zip([lines, phases, errlines, errphases], ['AMP', 'FREQ', 'ERRAMP', 'ERRFREQ']):
+        for key, line in crdt['lines'].items():
+            try:
+                translate_line = translate_line_to_col(line)
+                data_dict[key] = joined_df[translate_line[prefix]]
+            except KeyError:
+                LOGGER.debug(f"No {prefix} for line {line} found in lin-files, set to 0")
+                data_dict[key] = 0
+    df = crdt['func'](df, lines, phases, errlines, errphases, -1 if crdt['term'] in [] else 1)
+    return df
+
+
+def average_results(results_df):
+    return results_df[0]
 
 
 def translate_line_to_col(line):
@@ -67,62 +144,43 @@ def translate_line_to_col(line):
     line = line[1:]
 
     if (plane == 'X' and line == '10') or (plane == 'Y' and line == '01'):
-        return FILE_LIN_EXT.format(plane=plane.lower()), f'AMP{plane.lower()}', f'MU{plane.lower()}'
-    return FILE_LIN_EXT.format(plane=plane.lower()), f'AMP{line}', f'PHASE{line}'
+        return {'AMP': f'AMP{plane}', 'FREQ': f'MU{plane}', 'ERRAMP': f'ERRAMP{plane}', 'ERRFREQ': f'ERRMU{plane}'}
+    return {'AMP': f'AMP{line}_{plane}', 'FREQ': f'PHASE{line}_{plane}', 'ERRAMP': f'ERRAMP{line}_{plane}', 'ERRFREQ': f'ERRPHASE{line}_{plane}'}
 
 
 def write(df, header, meas_input, order, crdt):
     outputdir = Path(meas_input.outputdir)/"crdt"/order
     iotools.create_dirs(outputdir)
-    tfs.write(outputdir/crdt.with_suffix(EXT), df, header, save_index='NAME')
+    tfs.write(str(outputdir/f"{crdt}{EXT}"), df, header, save_index='NAME')
+
+def joined_planes(input_files):
+    """
+    Merges DataFrame from the two planes in one df
+    Parameters:
+        input_files
+    Returns:
+        merged DataFrame 
+    """
+    joined_dfs = []
+
+    assert len(input_files['X']) == len(input_files['Y'])
+
+    for linx, liny in zip(input_files['X'], input_files['Y']):
+
+        for df, plane in zip((linx, liny), PLANES):
+            rename_cols(df, plane, ['NAME', 'S', f'TUNE{plane}', f'AMP{plane}', f'MU{plane}', f'MU{plane}SYNC'])
+
+        joined_dfs.append(pd.merge(left=linx,
+                                   right=liny,
+                                   on=['NAME', 'S'],
+                                   how='inner',
+                                   sort=False,
+                                   suffixes=(False, False)
+                                   ).set_index('NAME'))
+
+    return joined_dfs 
 
 
-def Aover2B(df, lineA, lineB, phaseA, phaseB):
-    df[AMPLITUDE] = lineA['val']/(2*lineB['val'])
-    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(lineA['err']**2/(4*lineB['val']**2)
-                                      + 0.25 * lineA['val']**2 * np.abs(lineB['err']/lineB['val']**2)**2)
-    df[PHASE] = phaseA['val'] - phaseB['val'] - 1.5*np.pi
-    df[f'{ERR}{PHASE}'] = np.sqrt(phaseA['err']**2 + phaseB['err']**2)
-    return df
-
-
-def Aover4B(df, lineA, lineB, phaseA, phaseB):
-    df[AMPLITUDE] = lineA['val']/(4*lineB['val']**2)
-    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(lineA['err']**2/(16*lineB['val']**4)
-                                      + 0.25 * lineA['val']**2 * np.abs(lineB['err']/lineB['val']**3)**2)
-    df[PHASE] = phaseA['val'] + 2*phaseB['val'] - 1.5*np.pi
-    df[f'{ERR}{PHASE}'] = np.sqrt(phaseA['err']**2 + phaseB['err']**2)
-    return df
-
-
-def Aover4BC(df, lineA, lineB, lineC, phaseA, phaseB, phaseC, sign=1):
-    df[AMPLITUDE] = lineA['val']/(4*lineB['val']*lineC['val'])
-    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(lineA['err']/(16*lineB['val']**2*lineC['val']**2
-                              + (1/16.)*lineA['val']**2*np.abs(
-        np.sqrt(lineB['err']*lineC['val']+lineB['val']
-                * lineC['err'])/lineB['val']*lineC['val']
-    )**2))
-    df[PHASE] = phaseA['val'] + (sign) * phaseB['val'] + phaseC['val'] - 1.5*np.pi
-    df[f'{ERR}{PHASE}'] = np.sqrt(phaseA['err']**2 + phaseB['err']**2 + phaseC['err']**2)
-    return df
-
-
-def Aover8B(df, lineA, lineB, phaseA, phaseB):
-    df[AMPLITUDE] = lineA['val']/(8*lineB['val']**3)
-    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(lineA['val']/(64.*lineB['val']**6) + (9./64)
-                                      * lineA['val']*np.abs(lineB['err']/lineB['val']**4))
-    df[PHASE] = phaseA['val'] - 3 * phaseB['val'] - 0.5*np.pi
-    df[f'{ERR}{PHASE}'] = np.sqrt(phaseA['err']**2 + 9 * phaseB['err']**2)
-    return df
-
-
-def Aover8BC(df, lineA, lineB, lineC, phaseA, phaseB, phaseC, sign=1):
-    df[AMPLITUDE] = lineA['val']/(8*lineB['val']*lineC['val']**2)
-    df[f'{ERR}{AMPLITUDE}'] = np.sqrt(lineA['err']/(64*lineB['val']**2*lineC['val']**4) +
-                                      (1./64)*lineA['val'] *
-                                      np.abs(np.sqrt(lineB['err']**2*lineC['err']**4 + 4 * lineB['val']**2*np.abs(lineC['val']*lineC['err'])**2) /
-                                             (lineB['val']*lineC['val']**4))**2
-                                      )
-    df[PHASE] = phaseA['val'] + (sign) * phaseB['val'] - 2 * phaseC['val'] - 0.5*np.pi
-    df[f'{ERR}{PHASE}'] = np.sqrt(phaseA['err']**2 + phaseB['err']**2 + phaseC['err']**2)
+def rename_cols(df, suffix, exceptions=['']):
+    df.columns = [f'{col}_{suffix}' if col not in exceptions else col for col in df.columns]
     return df
