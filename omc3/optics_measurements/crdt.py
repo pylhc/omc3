@@ -114,7 +114,12 @@ def calculate(measure_input, input_files, header):
         result_dfs = []
         for joined_df in joined_dfs:
             result_dfs.append(process_crdt(joined_df, crdt))
-        df = average_results(result_dfs)
+        df = average_results(results_dfs=result_dfs,
+                             union_columns=['NAME', 'S'],
+                             merge_columns=[AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}'],
+                             merge_functions=[stats.weighted_nanmean, stats.weighted_nanrms, stats.circular_nanmean, stats.circular_nanerror],
+                             index="NAME",
+                             )
         write(df, header, measure_input, crdt['order'], crdt['term'])
 
 
@@ -132,19 +137,19 @@ def process_crdt(joined_df, crdt):
                 data_dict[key] = joined_df[translate_line[prefix]]
             except KeyError:
                 LOGGER.debug(f"No {prefix} for line {line} found in lin-files, set to 0")
-                data_dict[key] = 0
+                data_dict[key] = np.nan
     df = crdt['func'](df, lines, phases, errlines, errphases, crdt['sign'])
     return df
 
 
-def average_results(result_dfs):
-    result_df = reduce(lambda left, right: pd.merge(left.reset_index(level=0)[['NAME', 'S']],
-                                                    right.reset_index(level=0)[['NAME', 'S']],
-                                                    on=['NAME', 'S'],
+def average_results(result_dfs, union_columns, merge_columns, merge_functions, index):
+    result_df = reduce(lambda left, right: pd.merge(left.reset_index(level=0)[union_columns],
+                                                    right.reset_index(level=0)[union_columns],
+                                                    on=union_columns,
                                                     how='outer'),
-                                                    result_dfs).set_index('NAME')
+                                                    result_dfs).set_index(index)
     result_dfs = [df.reindex(result_df.index) for df in result_dfs]
-    for column, func in zip([AMPLITUDE,  f'{ERR}{AMPLITUDE}', PHASE,f'{ERR}{PHASE}'], [stats.weighted_mean, stats.weighted_rms, stats.circular_mean, stats.circular_error]):
+    for column, func in zip(merge_columns, merge_functions):
         data = np.array([df[column].to_numpy() for df in result_dfs])
         result_df[column] = func(data=data, axis=0)
     return result_df
@@ -189,7 +194,7 @@ def joined_planes(input_files):
                                    suffixes=(False, False)
                                    ).set_index('NAME'))
 
-    return joined_dfs 
+    return joined_dfs
 
 
 def rename_cols(df, suffix, exceptions=['']):
