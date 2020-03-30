@@ -48,6 +48,14 @@ def circular_mean(data, period=PI2, errors=None, axis=None):
     return np.angle(np.average(np.exp(phases), axis=axis, weights=weights)) * period / PI2
 
 
+def circular_nanmean(data, period=PI2, errors=None, axis=None):
+    """"Wrapper around circular_mean with added nan handling"""
+    return circular_mean(data=np.ma.array(data, mask=np.isnan(data)),
+                         period=period,
+                         errors= None if errors is None else np.ma.array(errors, mask=np.isnan(data)),
+                         axis=axis)
+
+
 def circular_error(data, period=PI2, errors=None, axis=None, t_value_corr=True):
     """
     Computes error of weighted circular average along the specified axis.
@@ -84,6 +92,15 @@ def circular_error(data, period=PI2, errors=None, axis=None, t_value_corr=True):
     return np.where(phase_error > 0.25 * PI2, 0.3 * period, phase_error * period / PI2)
 
 
+def circular_nanerror(data, period=PI2, errors=None, axis=None, t_value_corr=True):
+    """"Wrapper around circular_error with added nan handling"""
+    return circular_error(data=np.ma.array(data, mask=np.isnan(data)),
+                          period=period,
+                          errors=None if errors is None else np.ma.array(errors, mask=np.isnan(data)),
+                          axis=axis,
+                          t_value_corr=t_value_corr)
+
+
 def weighted_mean(data, errors=None, axis=None):
     """
     Computes weighted average along the specified axis.
@@ -101,6 +118,13 @@ def weighted_mean(data, errors=None, axis=None):
     """
     weights = weights_from_errors(errors)
     return np.average(data, axis=axis, weights=weights)
+
+
+def weighted_nanmean(data, errors=None, axis=None):
+    """"Wrapper around weighted_mean with added nan handling"""
+    return weighted_mean(data=np.ma.array(data, mask=np.isnan(data)),
+                         errors=None if errors is None else np.ma.array(errors, mask=np.isnan(data)),
+                         axis=axis)
 
 
 def _get_shape(orig_shape, axis):
@@ -131,7 +155,7 @@ def weighted_error(data, errors=None, axis=None, t_value_corr=True):
     """
     weights = weights_from_errors(errors)
     weighted_average = np.average(data, axis=axis, weights=weights)
-    (sample_variance, sum_of_weights) = np.average(np.square(np.abs(data - weighted_average.reshape(
+    (sample_variance, sum_of_weights) = np.ma.average(np.square(np.abs(data - weighted_average.reshape(
             _get_shape(data.shape, axis)))), weights=weights, axis=axis, returned=True)
     if weights is not None:
         sample_variance = sample_variance + 1 / sum_of_weights
@@ -158,6 +182,13 @@ def weighted_rms(data, errors=None, axis=None):
     """
     weights = weights_from_errors(errors)
     return np.sqrt(np.average(np.square(data), weights=weights, axis=axis))
+
+
+def weighted_nanrms(data, errors=None, axis=None):
+    """"Wrapper around weigthed_rms with added nan handling"""
+    return weighted_rms(data=np.ma.array(data, mask=np.isnan(data)),
+                        errors=None if errors is None else np.ma.array(errors, mask=np.isnan(data)),
+                        axis=axis)
 
 
 def weights_from_errors(errors, period=PI2):
