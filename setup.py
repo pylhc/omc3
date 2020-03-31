@@ -5,6 +5,8 @@ import setuptools
 from setuptools.command.test import test as TestCommand
 
 
+# Additional Commands ----------------------------------------------------------
+
 class PyTest(TestCommand):
     """ Allows passing commandline arguments to pytest. """
     user_options = [('pytest-args=', 'a', "Arguments to pass into pytest")]
@@ -24,6 +26,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args.split())
         sys.exit(errno)
 
+# Meta-Data --------------------------------------------------------------------
 
 # The directory containing this file
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.absolute()
@@ -37,6 +40,8 @@ with ABOUT_FILE.open("r") as f:
 
 with README.open("r") as docs:
     long_description = docs.read()
+
+# Dependencies -----------------------------------------------------------------
 
 # Dependencies for the package itself
 DEPENDENCIES = [
@@ -62,39 +67,46 @@ TEST_DEPENDENCIES = [
 ]
 
 # pytest-runner to be able to run pytest via setuptools
-SETUP_REQUIRES = ["pytest-runner"]
+SETUP_DEPENDENCIES = ["pytest-runner"]
 
 # Extra dependencies for tools
 EXTRA_DEPENDENCIES = {"doc": ["sphinx", "travis-sphinx", "sphinx_rtd_theme"]}
 
-
-setuptools.setup(
-    name=ABOUT_OMC3["__title__"],
-    version=ABOUT_OMC3["__version__"],
-    description=ABOUT_OMC3["__description__"],
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    author=ABOUT_OMC3["__author__"],
-    author_email=ABOUT_OMC3["__author_email__"],
-    url=ABOUT_OMC3["__url__"],
-    packages=setuptools.find_packages(exclude=["tests*", "doc"]),
-    python_requires=">=3.6",
-    license=ABOUT_OMC3["__license__"],
-    cmdclass={'pytest': PyTest},  # pass test arguments
-    classifiers=[
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Natural Language :: English",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Topic :: Scientific/Engineering :: Physics",
-        "Topic :: Scientific/Engineering :: Visualization",
-    ],
+# Gather as if you would in setup()
+ALL_DEPENDENCIES = dict(
     install_requires=DEPENDENCIES,
     tests_require=DEPENDENCIES + TEST_DEPENDENCIES,
     extras_require=EXTRA_DEPENDENCIES,
-    setup_requires=SETUP_REQUIRES,
+    setup_requires=SETUP_DEPENDENCIES,
 )
+
+# __main __ --------------------------------------------------------------------
+
+if __name__ == '__main__':
+    setuptools.setup(
+        name=ABOUT_OMC3["__title__"],
+        version=ABOUT_OMC3["__version__"],
+        description=ABOUT_OMC3["__description__"],
+        long_description=long_description,
+        long_description_content_type="text/markdown",
+        author=ABOUT_OMC3["__author__"],
+        author_email=ABOUT_OMC3["__author_email__"],
+        url=ABOUT_OMC3["__url__"],
+        packages=setuptools.find_packages(exclude=["tests*", "doc"]),
+        python_requires=">=3.6",
+        license=ABOUT_OMC3["__license__"],
+        cmdclass={'pytest': PyTest},  # pass test arguments
+        classifiers=[
+            "Intended Audience :: Science/Research",
+            "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+            "Natural Language :: English",
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 3 :: Only",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
+            "Topic :: Scientific/Engineering :: Physics",
+            "Topic :: Scientific/Engineering :: Visualization",
+        ],
+        **ALL_DEPENDENCIES,
+    )
