@@ -48,8 +48,8 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "matplotlib>=3.1.0",
-    "pillow>=6.0.0",  # not our dependency but older versions crash with mpl
+    "matplotlib==3.2.*",
+    "Pillow>=6.0.0",  # not our dependency but older versions crash with mpl
     "numpy>=1.14.1",
     "pandas==0.25.*",
     "scipy>=1.0.0",
