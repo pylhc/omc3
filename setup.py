@@ -48,17 +48,17 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "matplotlib==3.2.*",
-    "Pillow>=6.0.0",  # not our dependency but older versions crash with mpl
-    "numpy>=1.14.1",
+    "matplotlib>=3.2.0",
+    "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
+    "numpy>=1.18.0",
     "pandas==0.25.*",
-    "scipy>=1.0.0",
-    "scikit-learn>=0.20.3",
+    "scipy>=1.4.0",
+    "scikit-learn>=0.22.0",
     "tfs-pandas>=1.0.3",
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
     "pytz>=2018.9",
-    "h5py>=2.7.0",
+    "h5py>=2.9.0",
     "pytimber>=2.8.0",
 ]
 
@@ -69,8 +69,8 @@ EXTRA_DEPENDENCIES = {
     ],
     "test": [
         "pytest>=5.2",
-        "pytest-cov>=2.6",
-        "hypothesis>=3.23.0",
+        "pytest-cov>=2.7",
+        "hypothesis>=5.0.0",
         "attrs>=19.2.0",
     ],
     "doc": [
