@@ -129,6 +129,37 @@ Coding style guide is found [here](https://twiki.cern.ch/twiki/bin/view/BEABP/Py
 - [Beta-Beat Source](https://github.com/pylhc/Beta-Beat.src)
 - [optics functions](https://github.com/pylhc/optics_functions)
 
+## Hints for Developers
+
+### Install in Editable Mode
+
+In case you want to install `omc3` as a development package
+from the current folder, you can use:
+
+```
+git clone https://github.com/pylhc/omc3
+pip install --editable omc3
+```
+
+This installs the package as a link into the python environment and any changes 
+are reflected immediately, without the need to reinstall.
+
+#### Dependencies
+```
+pip install --editable omc3
+```
+will also install the required dependencies. 
+
+If you want to install more dependencies, you can use for example:
+```
+pip install --editable omc3[test]
+pip install --editable omc3[setup]
+pip install --editable omc3[test,doc]
+pip install --editable omc3[all]
+```
+ where the last one installs **all** dependencies defined in `setup.py`.
+ 
+ Note that the default dependencies and omc3-as-link are also always installed.
 
 ## Authors
 
