@@ -7,19 +7,19 @@ from matplotlib import pyplot as plt
 
 class FigureContainer:
     """ Container for attaching additional information to one figure. """
-    def __init__(self, id_: str, path: Path, n_planes: int, combine_planes: bool) -> None:
-        self.fig, axs = plt.subplots(nrows=1 if combine_planes else n_planes)
+    def __init__(self, id_: str, path: Path, n_axes: int, combine_planes: bool) -> None:
+        self.fig, axs = plt.subplots(nrows=1 if combine_planes else n_axes)
         self.fig.canvas.set_window_title(id_)
 
-        if n_planes == 1:
+        if n_axes == 1:
             self.axes = [axs]
         elif combine_planes:
-            self.axes = [axs for _ in range(n_planes)]
+            self.axes = [axs for _ in range(n_axes)]
         else:
             self.axes = axs
 
-        self.ylabels = [None for _ in range(n_planes)]
-        self.data = [{} for _ in range(n_planes)]
+        self.ylabels = [None for _ in range(n_axes)]
+        self.data = [{} for _ in range(n_axes)]
         self.path = path
 
 
@@ -30,16 +30,16 @@ class FigureCollector:
         self.figs = {}       # dictionary of FigureContainers, used internally
 
     def add_data_for_id(self, id_: str, label: str, data: dict, y_label: str,
-                        path: Path = None, plane_idx: int = 0,
-                        n_planes: int = 1, combine_planes: bool = False) -> None:
+                        path: Path = None, axis_idx: int = 0,
+                        n_axes: int = 1, combine_planes: bool = False) -> None:
         """ Add the data at the appropriate figure container. """
         try:
             figure_cont = self.figs[id_]
         except KeyError:
-            figure_cont = FigureContainer(id_, path, n_planes, combine_planes)
+            figure_cont = FigureContainer(id_, path, n_axes, combine_planes)
 
             self.figs[id_] = figure_cont
             self.fig_dict[id_] = figure_cont.fig
 
-        figure_cont.ylabels[plane_idx] = y_label  # always replaced but doesn't matters
-        figure_cont.data[plane_idx][label] = data
+        figure_cont.ylabels[axis_idx] = y_label  # always replaced but doesn't matters
+        figure_cont.data[axis_idx][label] = data

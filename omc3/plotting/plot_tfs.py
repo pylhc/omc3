@@ -107,7 +107,7 @@ def get_params():
     params.add_parameter(
         name="combine_by",
         help="Combine plots into one. The option 'planes' only works if planes 'XY' is chosen.",
-        action="store_true",
+        type=str,
         choices=['files', 'columns', 'planes']
     )
     params.add_parameter(
@@ -227,8 +227,8 @@ def sort_data(opt):
                         id_=id_map['id'], label=id_map['label'],
                         data=_read_data(file_path_plane, x_col, y_col_plane, err_col),
                         path=output_path, y_label=y_label_plane,
-                        n_planes=len(planes),
-                        plane_idx=idx_plane,
+                        n_axes=len(planes),
+                        axis_idx=idx_plane,
                         combine_planes='planes' in opt.combine_by,
                     )
     return collector
