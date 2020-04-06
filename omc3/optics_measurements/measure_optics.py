@@ -129,7 +129,7 @@ class InputFiles(dict):
             for plane in PLANES:
                 df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME", drop=False)
                               if read_files else file_in[plane])
-                df_to_load.index.name = None            
+                df_to_load.index.name = None
                 self[plane].append(self._repair_backwards_compatible_frame(df_to_load, plane))
 
         if len(self['X']) + len(self['Y']) == 0:

@@ -9,10 +9,10 @@ following the derivatons in https://arxiv.org/pdf/1402.1461.pdf.
 """
 
 from pathlib import Path
-import numpy as np
-import tfs
-import pandas as pd
 from functools import reduce
+import numpy as np
+import pandas as pd
+import tfs
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
 from omc3.definitions.constants import PLANES
@@ -23,7 +23,7 @@ PHASE = 'PHASE'
 
 
 def Aover2B(df, lines, phases, errlines, errphases, sign=1):
-    df[AMPLITUDE] = lines['A']/(2*lines['A'])
+    df[AMPLITUDE] = lines['A']/(2*lines['B'])
     df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']**2/(4*lines['B']**2)
                                       + 0.25 * lines['A']**2 * np.abs(errlines['B']/lines['B']**2)**2)
     df[PHASE] = phases['A'] - phases['B'] - 1.5*np.pi
@@ -107,21 +107,44 @@ def calculate(measure_input, input_files, header):
 
     """
     LOGGER.info("Start of CRDT analysis")
+    for plane in PLANES:
+        input_files[plane] = unscale_amps(input_files[plane], plane)
+        input_files[plane] = scale_amps_with_sqrtbeta(input_files[plane], measure_input, plane)
+
     joined_dfs = joined_planes(input_files)
-    
+
     for crdt in CRDTS:
         LOGGER.debug(f"Processing CRDT {crdt['term']}")
         result_dfs = []
         for joined_df in joined_dfs:
             result_dfs.append(process_crdt(joined_df, crdt))
-        df = average_results(results_dfs=result_dfs,
+        df = average_results(result_dfs=result_dfs,
                              union_columns=['NAME', 'S'],
                              merge_columns=[AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}'],
-                             merge_functions=[stats.weighted_nanmean, stats.weighted_nanrms, stats.circular_nanmean, stats.circular_nanerror],
-                             index="NAME",
-                             )
+                             merge_functions=[stats.weighted_nanmean, stats.weighted_nanrms,
+                                              stats.circular_nanmean, stats.circular_nanerror],
+                             index="NAME")
         write(df, header, measure_input, crdt['order'], crdt['term'])
 
+
+def scale_amps_with_sqrtbeta(input_files, meas_input, plane):
+    model_beta = meas_input.accelerator.model[f'BET{plane}']
+    processed_files = []
+    for lin_df in input_files:
+        cols = [col for col in lin_df.columns.to_numpy() if col.startswith('AMP')]
+        lin_df.loc[:, cols] = lin_df.loc[:, cols].div(model_beta**0.5, axis="index")
+        processed_files.append(lin_df)
+    return processed_files
+
+
+def unscale_amps(input_files, plane):
+    processed_files = []
+    for lin_df in input_files:
+        cols = [col for col in lin_df.columns.to_numpy() if col.startswith('AMP')]
+        cols.remove(f"AMP{plane}")
+        lin_df.loc[:, cols] = lin_df.loc[:, cols].mul(lin_df.loc[:, f'AMP{plane}'], axis="index")
+        processed_files.append(lin_df)
+    return processed_files
 
 def process_crdt(joined_df, crdt):
     df = pd.DataFrame(index=joined_df.index, data={'S': joined_df['S']})
@@ -143,15 +166,17 @@ def process_crdt(joined_df, crdt):
 
 
 def average_results(result_dfs, union_columns, merge_columns, merge_functions, index):
+    assert len(merge_columns) == len(merge_functions)
+
     result_df = reduce(lambda left, right: pd.merge(left.reset_index(level=0)[union_columns],
                                                     right.reset_index(level=0)[union_columns],
                                                     on=union_columns,
-                                                    how='outer'),
-                                                    result_dfs).set_index(index)
+                                                    how='outer').set_index(index),
+                       result_dfs)
     result_dfs = [df.reindex(result_df.index) for df in result_dfs]
     for column, func in zip(merge_columns, merge_functions):
         data = np.array([df[column].to_numpy() for df in result_dfs])
-        result_df[column] = func(data=data, axis=0)
+        result_df[column] = func(data, axis=0)
     return result_df
 
 
