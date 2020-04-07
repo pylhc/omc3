@@ -1,4 +1,5 @@
 import pathlib
+import shlex
 import sys
 
 import setuptools
@@ -6,7 +7,13 @@ from setuptools.command.test import test as TestCommand
 
 
 class PyTest(TestCommand):
-    """ Allows passing commandline arguments to pytest. """
+    """ Allows passing commandline arguments to pytest.
+
+        e.g. `python setup.py test -a='-o python_classes=BasicTests'`
+        or   `python setup.py pytest -a '-o python_classes="BasicTests ExtendedTests"'
+        or   `python setup.py test --pytest-args='--collect-only'`
+
+    """
     user_options = [('pytest-args=', 'a', "Arguments to pass into pytest")]
 
     def initialize_options(self):
@@ -21,7 +28,8 @@ class PyTest(TestCommand):
     def run_tests(self):
         import pytest
 
-        errno = pytest.main(self.pytest_args.split())
+        # shlex.split() preserves quotes
+        errno = pytest.main(shlex.split(self.pytest_args))
         sys.exit(errno)
 
 
@@ -40,32 +48,40 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "matplotlib>=3.1.0",
-    "numpy>=1.14.1",
+    "matplotlib>=3.2.0",
+    "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
+    "numpy>=1.18.0",
     "pandas==0.25.*",
-    "scipy>=1.0.0",
-    "scikit-learn>=0.20.3",
+    "scipy>=1.4.0",
+    "scikit-learn>=0.22.0",
     "tfs-pandas>=1.0.3",
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
     "pytz>=2018.9",
-    "h5py>=2.7.0",
+    "h5py>=2.9.0",
     "pytimber>=2.8.0",
 ]
 
-# Dependencies that should only be installed for test purposes
-TEST_DEPENDENCIES = [
-    "pytest>=5.2",
-    "pytest-cov>=2.6",
-    "hypothesis>=3.23.0",
-    "attrs>=19.2.0",
-]
-
-# pytest-runner to be able to run pytest via setuptools
-SETUP_REQUIRES = ["pytest-runner"]
-
-# Extra dependencies for tools
-EXTRA_DEPENDENCIES = {"doc": ["sphinx", "travis-sphinx", "sphinx_rtd_theme"]}
+# Extra dependencies
+EXTRA_DEPENDENCIES = {
+    "setup": [
+        "pytest-runner"
+    ],
+    "test": [
+        "pytest>=5.2",
+        "pytest-cov>=2.7",
+        "hypothesis>=5.0.0",
+        "attrs>=19.2.0",
+    ],
+    "doc": [
+        "sphinx",
+        "travis-sphinx",
+        "sphinx_rtd_theme"
+    ],
+}
+EXTRA_DEPENDENCIES.update(
+    {'all': [elem for list_ in EXTRA_DEPENDENCIES.values() for elem in list_]}
+)
 
 
 setuptools.setup(
@@ -94,7 +110,7 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Visualization",
     ],
     install_requires=DEPENDENCIES,
-    tests_require=DEPENDENCIES + TEST_DEPENDENCIES,
+    tests_require=EXTRA_DEPENDENCIES['test'],
+    setup_requires=EXTRA_DEPENDENCIES['setup'],
     extras_require=EXTRA_DEPENDENCIES,
-    setup_requires=SETUP_REQUIRES,
 )
