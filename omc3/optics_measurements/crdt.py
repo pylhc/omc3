@@ -68,7 +68,7 @@ def Aover8BC(df, lines, phases, errlines, errphases, sign=1):
                                       np.abs(np.sqrt(errlines['B']**2*errlines['C']**4 + 4 * lines['B']**2*np.abs(lines['C']*errlines['C'])**2) /
                                              (lines['B']*lines['C']**4))**2
                                       )
-    df[PHASE] = phases['A'] - 2 * phases['B'] + (sign) * phases['C'] + (sign) * 0.5*np.pi
+    df[PHASE] = phases['A'] + (sign) * phases['B'] - 2 * phases['C']  + (sign) * 0.5*np.pi
     df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2 + errphases['C']**2)
     return df
 
@@ -88,11 +88,11 @@ CRDTS = [
     {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC, 'lines': {'A': 'X1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
 
     {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B, 'lines': {'A': 'Y03', 'B': 'Y01'}, 'sign':1},
-    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'lines': {'A': 'X12', 'B': 'Y01', 'C': 'X10'}, 'sign':-1},
+    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'lines': {'A': 'X12', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
     {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B, 'lines': {'A': 'X30', 'B': 'X10'}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC, 'lines': {'A': 'X_12', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
-    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'lines': {'A': 'Y2_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
-    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'lines': {'A': 'Y21', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
+    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'lines': {'A': 'Y2_1', 'B': 'Y01', 'C': 'X10'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'lines': {'A': 'Y21', 'B': 'Y01', 'C': 'X10'}, 'sign':-1},
 ]
 
 

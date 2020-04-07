@@ -33,7 +33,7 @@ ACCURACY_LIMIT = dict(
     Coupling=0.001,
     Sextupole=0.001,
     SkewSextupole=0.001,
-    Octupole=0.29,
+    Octupole=0.14,
 )
 
 class BasicTests:
