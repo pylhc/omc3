@@ -30,9 +30,9 @@ MEASURE_OPTICS_SETTINGS = dict(
 )
 
 ACCURACY_LIMIT = dict(
-    Coupling=0.001,
-    Sextupole=0.001,
-    SkewSextupole=0.001,
+    Coupling=0.01,
+    Sextupole=0.01,
+    SkewSextupole=0.01,
     Octupole=0.14,
 )
 
@@ -99,17 +99,18 @@ class ExtendedTests:
 
         for crdt_dict in crdt.CRDTS:
             if order == crdt_dict["order"]:
-                print(crdt_dict["term"])
                 hio_crdt = tfs.read(join(optics_opt["outputdir"], "crdt", order, f'{crdt_dict["term"]}.tfs'), index="NAME")
-                assert _max_dev(hio_crdt["AMP"].to_numpy(), ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy()) < ACCURACY_LIMIT[order]
+                assert _max_dev(hio_crdt["AMP"].to_numpy(), ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(), 1E-2) < ACCURACY_LIMIT[order]
 
         _clean_up(optics_opt["outputdir"])
 
+def _rel_dev(a, b, limit):
+    a = a[b > limit]
+    b = b[b > limit]
+    return np.abs((a-b)/b)
 
-def _max_dev(a, b):
-    a = a[b > 0.01]
-    b = b[b > 0.01]
-    return np.max(np.abs((a-b)/b))
+def _max_dev(a, b, limit):
+    return np.max(_rel_dev(a, b, limit))
 
 def _clean_up(path_dir):
     if isdir(path_dir):

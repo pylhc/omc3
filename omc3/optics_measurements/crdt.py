@@ -26,7 +26,7 @@ def Aover2B(df, lines, phases, errlines, errphases, sign=1):
     df[AMPLITUDE] = lines['A']/(2*lines['B'])
     df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']**2/(4*lines['B']**2)
                                       + 0.25 * lines['A']**2 * np.abs(errlines['B']/lines['B']**2)**2)
-    df[PHASE] = phases['A'] - phases['B'] - 1.5*np.pi
+    df[PHASE] = phases['A'] - phases['B'] - 0.75
     df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2)
     return df
 
@@ -35,7 +35,7 @@ def Aover4B(df, lines, phases, errlines, errphases, sign=1):
     df[AMPLITUDE] = lines['A']/(4*lines['B']**2)
     df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']**2/(16*lines['B']**4)
                                       + 0.25 * lines['A']**2 * np.abs(errlines['B']/lines['B']**3)**2)
-    df[PHASE] = phases['A'] + 2*phases['B'] - 1.5*np.pi
+    df[PHASE] = phases['A'] + 2*phases['B'] - 0.75
     df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2)
     return df
 
@@ -47,7 +47,7 @@ def Aover4BC(df, lines, phases, errlines, errphases, sign=1):
         np.sqrt(errlines['B']*lines['C']+lines['B']
                 * errlines['C'])/lines['B']*lines['C']
     )**2))
-    df[PHASE] = phases['A'] + (sign) * phases['B'] + phases['C'] - 1.5*np.pi
+    df[PHASE] = phases['A'] + (sign) * phases['B'] + phases['C'] - 0.75
     df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2 + errphases['C']**2)
     return df
 
@@ -56,7 +56,7 @@ def Aover8B(df, lines, phases, errlines, errphases, sign=1):
     df[AMPLITUDE] = lines['A']/(8*lines['B']**3)
     df[f'{ERR}{AMPLITUDE}'] = np.sqrt(errlines['A']/(64.*lines['B']**6) + (9./64)
                                       * lines['A']*np.abs(errlines['B']/lines['B']**4))
-    df[PHASE] = phases['A'] - 3 * phases['B'] - 0.5*np.pi
+    df[PHASE] = phases['A'] - 3 * phases['B'] - 0.25
     df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + 9 * errphases['B']**2)
     return df
 
@@ -68,7 +68,7 @@ def Aover8BC(df, lines, phases, errlines, errphases, sign=1):
                                       np.abs(np.sqrt(errlines['B']**2*errlines['C']**4 + 4 * lines['B']**2*np.abs(lines['C']*errlines['C'])**2) /
                                              (lines['B']*lines['C']**4))**2
                                       )
-    df[PHASE] = phases['A'] + (sign) * phases['B'] - 2 * phases['C']  + (sign) * 0.5*np.pi
+    df[PHASE] = phases['A'] + (sign) * phases['B'] - 2 * phases['C']  + (sign) * 0.25
     df[f'{ERR}{PHASE}'] = np.sqrt(errphases['A']**2 + errphases['B']**2 + errphases['C']**2)
     return df
 
