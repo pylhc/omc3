@@ -101,14 +101,7 @@ class ExtendedTests:
             if order == crdt_dict["order"]:
                 print(crdt_dict["term"])
                 hio_crdt = tfs.read(join(optics_opt["outputdir"], "crdt", order, f'{crdt_dict["term"]}.tfs'), index="NAME")
-                fac = 1
-                if order == 'Sextupole':
-                    fac = 2
-                if order == 'SkewSextupole':
-                    fac = 2
-                if order == 'Octupole':
-                    fac = 4
-                assert _max_dev(fac*hio_crdt["AMP"].to_numpy(), ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy()) < ACCURACY_LIMIT[order]
+                assert _max_dev(hio_crdt["AMP"].to_numpy(), ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy()) < ACCURACY_LIMIT[order]
 
         _clean_up(optics_opt["outputdir"])
 

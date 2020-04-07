@@ -142,6 +142,7 @@ def unscale_amps(input_files, plane):
     for lin_df in input_files:
         cols = [col for col in lin_df.columns.to_numpy() if col.startswith('AMP')]
         cols.remove(f"AMP{plane}")
+        lin_df[f"AMP{plane}"] = lin_df.loc[:, f"AMP{plane}"].to_numpy()/2.
         lin_df.loc[:, cols] = lin_df.loc[:, cols].mul(lin_df.loc[:, f'AMP{plane}'], axis="index")
         processed_files.append(lin_df)
     return processed_files
