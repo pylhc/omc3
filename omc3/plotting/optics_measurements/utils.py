@@ -1,4 +1,4 @@
-from collections import Iterable
+from typing import Iterable
 from pathlib import Path
 
 from omc3.plotting.spectrum.utils import IdData, FigureCollector as SpectFigCollector
@@ -7,19 +7,17 @@ from matplotlib import pyplot as plt
 
 class FigureContainer:
     """ Container for attaching additional information to one figure. """
-    def __init__(self, id_: str, path: Path, n_axes: int, combine_planes: bool) -> None:
-        self.fig, axs = plt.subplots(nrows=1 if combine_planes else n_axes)
+    def __init__(self, id_: str, path: Path, axes_ids: Iterable[str]) -> None:
+        self.fig, axs = plt.subplots(nrows=len(axes_ids))
         self.fig.canvas.set_window_title(id_)
 
-        if n_axes == 1:
-            self.axes = [axs]
-        elif combine_planes:
-            self.axes = [axs for _ in range(n_axes)]
-        else:
-            self.axes = axs
+        if len(axes_ids) == 1:
+            axs = [axs]
 
-        self.ylabels = [None for _ in range(n_axes)]
-        self.data = [{} for _ in range(n_axes)]
+        self.axes = {ax_id: ax for ax_id, ax in zip(axes_ids, axs)}
+        self.xlabels = {ax_id: None for ax_id in axes_ids}
+        self.ylabels = {ax_id: None for ax_id in axes_ids}
+        self.data = {ax_id: {} for ax_id in axes_ids}
         self.path = path
 
 
@@ -29,17 +27,19 @@ class FigureCollector:
         self.fig_dict = {}   # dictionary of matplotlib figures, for output
         self.figs = {}       # dictionary of FigureContainers, used internally
 
-    def add_data_for_id(self, id_: str, label: str, data: dict, y_label: str,
-                        path: Path = None, axis_idx: int = 0,
-                        n_axes: int = 1, combine_planes: bool = False) -> None:
+    def add_data_for_id(self, figure_id: str, label: str, data: dict,
+                        x_label: str, y_label: str,
+                        path: Path = None, axes_id: str = '',
+                        axes_ids: Iterable[str] = ('',)) -> None:
         """ Add the data at the appropriate figure container. """
         try:
-            figure_cont = self.figs[id_]
+            figure_cont = self.figs[figure_id]
         except KeyError:
-            figure_cont = FigureContainer(id_, path, n_axes, combine_planes)
+            figure_cont = FigureContainer(figure_id, path, axes_ids)
 
-            self.figs[id_] = figure_cont
-            self.fig_dict[id_] = figure_cont.fig
+            self.figs[figure_id] = figure_cont
+            self.fig_dict[figure_id] = figure_cont.fig
 
-        figure_cont.ylabels[axis_idx] = y_label  # always replaced but doesn't matters
-        figure_cont.data[axis_idx][label] = data
+        figure_cont.ylabels[axes_id] = y_label  # always replaced but doesn't matters
+        figure_cont.xlabels[axes_id] = x_label  # always replaced but doesn't matters
+        figure_cont.data[axes_id][label] = data

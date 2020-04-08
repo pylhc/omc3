@@ -14,7 +14,7 @@ axes.titlesize: x-large
 axes.titleweight: bold
 figure.edgecolor: w
 figure.facecolor: w
-figure.figsize: [10.24
+figure.figsize: 10.24, 7.68
 figure.frameon: True
 figure.titlesize: large
 figure.titleweight: normal
@@ -25,7 +25,7 @@ font.family:
 font.serif: Computer Modern Roman
 font.sans-serif: Computer Modern Sans serif
 grid.alpha: .6
-grid.color: #b0b0b0
+grid.color: b0b0b0
 grid.linestyle: --
 grid.linewidth: 0.6
 legend.edgecolor: 0.8

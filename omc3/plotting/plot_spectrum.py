@@ -218,8 +218,9 @@ def get_params():
                          default=[],
                          type=DictAsString,
                          help='List of manual lines to plot. Need to contain arguments for axvline, and may contain '
-                              f'the additional key "loc" which is one of {list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} '
-                              'and places the label as text at the given location.')
+                              'the additional keys "text" and "loc" which is one of '
+                              f'{list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} and places the text at the given location.'
+                         )
     params.add_parameter(name="xlim",
                          nargs=2,
                          type=float,

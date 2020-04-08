@@ -58,10 +58,11 @@ def plot_vertical_lines_fast(ax, x, y=(0, 1), **kwargs):
     ax.plot(np.repeat(x, 3), np.tile([*y, np.nan], len(x)), transform=trans, **kwargs)
 
 
-def plot_vertical_line(ax, axvline_args: dict, label_loc: str = None, label_size: float = matplotlib.rcParams['axes.labelsize'] * 0.7):
+def plot_vertical_line(ax, axvline_args: dict, text: str = None, text_loc: str = None,
+                       label_size: float = matplotlib.rcParams['font.size']):
     """ Plot a vertical line into the plot, where mline is a dictionary with arguments for axvline.
     Advanced capabilities include: Automatic alpha value (if not overwritten), automatic zorder = -1 (if not overwritten),
-    and adding a label to the line, where the location is given by label_loc.
+    and adding a label to the line, where the location is given by text_loc.
     """
     axvline_args.setdefault('alpha', VERTICAL_LINES_ALPHA)
     axvline_args.setdefault('marker', 'None')
@@ -70,14 +71,16 @@ def plot_vertical_line(ax, axvline_args: dict, label_loc: str = None, label_size
         axvline_args['linestyle'] = '--'
 
     label = axvline_args.get('label', None)
+    if label is None:
+        axvline_args['label'] = "__nolegend__"
 
     line = ax.axvline(**axvline_args)
 
-    if label is not None and label_loc is not None:
-        if label_loc not in VERTICAL_LINES_TEXT_LOCATIONS:
-            raise ValueError(f"Unknown value '{label_loc}' for label location.")
+    if text is not None and text_loc is not None:
+        if text_loc not in VERTICAL_LINES_TEXT_LOCATIONS:
+            raise ValueError(f"Unknown value '{text_loc}' for label location.")
 
-        ax.text(x=axvline_args['x'], s=label,
+        ax.text(x=axvline_args['x'], s=text,
                 transform=transforms.blended_transform_factory(ax.transData, ax.transAxes),
                 color=line.get_color(),
-                fontdict={'size': label_size}, **VERTICAL_LINES_TEXT_LOCATIONS[label_loc])
+                fontdict={'size': label_size}, **VERTICAL_LINES_TEXT_LOCATIONS[text_loc])

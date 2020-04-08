@@ -8,6 +8,14 @@ Constants and definitions for the tfs plotter.
 :author: jdilly
 
 """
+from omc3.optics_measurements.constants import (
+    S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
+    AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,
+    SPECIAL_PHASE_NAME, TOTAL_PHASE_NAME, DISPERSION_NAME,
+    NORM_DISP_NAME, ORBIT_NAME, KICK_NAME, IP_NAME,
+)
+from omc3.plotting.utils.annotations import ylabels
+
 IP_POS_DEFAULT = {
     "LHCB1": {
         'IP1': 23519.36962,
@@ -43,4 +51,21 @@ COMPLEX_NAMES = [p+ext for p in ["1001", "1010"] for ext in "RI"]  # Endings of 
 DEFAULTS = {
     'ncol_legend': 3,
     'errorbar_alpha': .6,
+}
+
+
+XAXIS = { # Column, Label
+    'location': ('S', 'Location [m]'),
+    'phase-advance': ('MUX', 'Phase Advance [$2 \pi$]')
+}
+
+YAXIS = {  # Column, Label [, Delta Label]
+            BETA_NAME: (BETA, ylabels['beta'], ylabels['betabeat']),
+            AMP_BETA_NAME: (BETA, ylabels['beta'], ylabels['betabeat']),
+            ORBIT_NAME: ('', ylabels['co']),
+            PHASE_NAME: (PHASE, ylabels['phase']),
+            'rdt_amp': (AMPLITUDE, ylabels['absolute']),
+            'rdt_phase': (PHASE, ylabels['phase']),
+            'rdt_real': (REAL, ylabels['real']),
+            'rdt_imag': (IMAG, ylabels['imag']),
 }

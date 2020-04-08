@@ -120,8 +120,10 @@ def plot_lines(fig_cont: FigureContainer, lines: DotDict) -> None:
         # Manual Lines ---
         for mline in lines.manual:
             loc = mline.pop('loc', None)  # needs to be removed in axvline
-            plot_vertical_line(ax, mline, loc, label_size)
+            text = mline.pop('text', None)
+            plot_vertical_line(ax, mline,  text, loc, label_size)
             mline['loc'] = loc  # reset it for later axes/plots
+            mline['text'] = text
 
 
 def _plot_tune_lines(ax, transform, label_size, q_string, tunes, resonances, linestyle, label_y):

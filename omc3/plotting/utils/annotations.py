@@ -16,7 +16,7 @@ import tfs
 from matplotlib import pyplot as plt
 
 # List of common y-labels. Sorry for the ugly.
-_ylabels = {
+ylabels = {
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
     "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$'u'\u2030'r'$]$',
@@ -52,7 +52,7 @@ def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plo
     if not ax:
         ax = plt.gca()
     try:
-        label = _ylabels[param].format(plane)
+        label = ylabels[param].format(plane)
     except KeyError:
         raise ValueError(f"Label '{param}' not found.")
 

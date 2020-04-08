@@ -14,11 +14,12 @@ from pathlib import Path
 import matplotlib
 import tfs
 from generic_parser import EntryPointParameters, entrypoint, DotDict
-from generic_parser.entry_datatypes import DictAsString
+from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, rcParams
 
 from omc3.definitions import formats
+from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import FigureCollector
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
@@ -34,7 +35,9 @@ def get_params():
     params = EntryPointParameters()
     params.add_parameter(
         name="files",
-        help="Path to files to plot. If planes are used, omit file-ending.",
+        help=("Path to files to plot. "
+              f"If planes are used, omit file-ending. In this case '{EXT}' is"
+              "assumed"),
         required=True,
         nargs="+",
         type=str,
@@ -73,7 +76,7 @@ def get_params():
     )
     params.add_parameter(
         name="y_labels",
-        help="Labels for the y-axis, default: file_labels or column_labels (depending on combine_by).",
+        help="Labels for the y-axis, default: file_labels or column_labels (depending on same_axes).",
         type=str,
         nargs="+",
     )
@@ -85,14 +88,12 @@ def get_params():
     )
     params.add_parameter(
         name="planes",
-        help=("Works only with filenames ending in '_x' and '_y' and "
+        help=("Works only with filenames ending in 'x' and 'y' and "
               "columns ending in X or Y. These suffixes will be attached "
-              "to the given names. If 'XY' is chosen here, both are present in "
-              "the same figure. Either as top- and bottom- axes or, if "
-              "'combine_by planes' is chosen, in one single axis."),
+              "to the given files and y_columns."),
         type=str,
         nargs='+',
-        choices=["X", "Y", "XY"],
+        choices=["X", "Y"],
     )
     params.add_parameter(
         name="output",  # TODO: use dir only, filename should be created from file_label column_label plane !!
@@ -105,8 +106,17 @@ def get_params():
         action="store_true",
     )
     params.add_parameter(
-        name="combine_by",
-        help="Combine plots into one. The option 'planes' only works if planes 'XY' is chosen.",
+        name="same_axes",
+        help="Combine plots into single axes. Multiple choices possible.",
+        type=str,
+        nargs='+',
+        choices=['files', 'columns', 'planes']
+    )
+    params.add_parameter(
+        name="same_figure",
+        help=("Plot two axes into the same figure "
+              "(can't be the same as 'same_axes'). "
+              "Has no effect if there is only one of the given thing."),
         type=str,
         choices=['files', 'columns', 'planes']
     )
@@ -129,8 +139,8 @@ def get_params():
         type=DictAsString,
         help='List of vertical lines (e.g. IR positions) to plot. '
              'Need to contain arguments for axvline, and may contain '
-             f'the additional key "loc" which is one of {list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} '
-             'and places the label as text at the given location.')
+             'the additional keys "text" and "loc" which is one of '
+             f' {list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} and places the text at the given location.')
 
     # Plotting Style Parameters ---
     params.add_parameter(
@@ -176,20 +186,22 @@ def plot(opt):
         _save_options_to_config(opt)
 
     # preparations
-    opt, sorting_opts = _check_opt(opt)
+    opt = _check_opt(opt)
     pstyle.set_style(opt.plot_styles, opt.manual_style)
 
     # extract data
     fig_collection = sort_data(opt.get_subdict(
-        ['planes', 'x_columns', 'y_columns', 'error_columns',
+        ['files', 'planes', 'x_columns', 'y_columns', 'error_columns',
          'file_labels', 'column_labels', 'x_labels', 'y_labels',
-         'combine_by', 'output']))
+         'same_axes', 'same_figure', 'output']))
 
     # plotting
     _create_plots(fig_collection,
                   opt.get_subdict(['xlim', 'ylim',
-                                   'ncols_legend', 'change_marker', 'errorbar_alpha',
-                                   'vertical_lines']))
+                                   'ncol_legend', 'change_marker',
+                                   'errorbar_alpha',
+                                   'vertical_lines',
+                                   'show']))
 
     return fig_collection.fig_dict
 
@@ -200,71 +212,95 @@ def plot(opt):
 def sort_data(opt):
     """ Load all data from files and sort into figures"""
     collector = FigureCollector()
-    combine_by_set = frozenset(opt.combine_by) - {'planes'}
+    same_axes_set = frozenset()
+    if opt.same_axes:
+        same_axes_set = frozenset(opt.same_axes) - {'planes'}
     for (file_path, filename), file_label in zip(get_unique_filenames(opt.files), opt.file_labels):
-        for x_col, y_col, err_col, column_label in zip(opt.x_columns, opt.y_columns, opt.error_columns, opt.column_labels):
-            id_map = get_id(filename, y_col, file_label, column_label, combine_by_set)
-            output_path = f"{opt.output}_{id_map['id']}.{matplotlib.rcParams['savefig.format']}"
+        for x_col, y_col, err_col, x_label, column_label in zip(
+                opt.x_columns, opt.y_columns, opt.error_columns, opt.x_labels, opt.column_labels):
+
+            id_map = get_id(filename, y_col, file_label, column_label, same_axes_set, opt.same_figure)
+            output_path = f"{opt.output}_{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
+
+            axes_ids = opt.get(opt.same_figure)
+            if axes_ids is None:  # do not put into 'get' as could be None at multiple levels
+                axes_ids = ('',)
 
             if opt.planes is None:
-
                 collector.add_data_for_id(
-                    id_=id_map['id'], label=id_map['label'],
+                    figure_id=id_map['figure_id'],
+                    label=id_map['legend_label'],
                     data=_read_data(file_path, x_col, y_col, err_col),
-                    path=output_path, y_label=id_map['ylabel']
-                    )
+                    path=output_path,
+                    x_label=x_label,
+                    y_label=id_map['ylabel'],
+                    axes_id=id_map['axes_id'],
+                    axes_ids=axes_ids,
+                )
+
             else:
-
-                planes = opt.planes
-                if 'XY' in planes:
-                    planes = ['X', 'Y']
-
-                for idx_plane, plane in enumerate(planes):
-                    file_path_plane = file_path.with_name(f'{file_path.name}{plane.lower()}')
+                for plane in opt.planes:
+                    file_path_plane = file_path.with_name(f'{file_path.name}{plane.lower()}{EXT}')
                     y_col_plane = f'{y_col}{plane.upper()}'
+                    err_col_plane = f'{err_col}{plane.upper()}'
                     y_label_plane = id_map['ylabel'].format(plane)
+
                     collector.add_data_for_id(
-                        id_=id_map['id'], label=id_map['label'],
-                        data=_read_data(file_path_plane, x_col, y_col_plane, err_col),
-                        path=output_path, y_label=y_label_plane,
-                        n_axes=len(planes),
-                        axis_idx=idx_plane,
-                        combine_planes='planes' in opt.combine_by,
+                        figure_id=id_map['figure_id'],
+                        label=id_map['legend_label'],
+                        data=_read_data(file_path_plane, x_col, y_col_plane, err_col_plane),
+                        path=output_path,
+                        x_label=x_label,
+                        y_label=y_label_plane,
+                        axes_id=id_map['axes_id'],
+                        axes_ids=axes_ids,
                     )
     return collector
 
 
-def get_id(filename, column, file_label, column_label, combine_by):
+def get_id(filename, column, file_label, column_label, same_axes, same_figure):
+    """ Get the right IDs for the current sorting way.
+
+    This is where the actual sorting happens, by mapping the right IDs according
+    to the chosen options.
+    """
     if filename is None:
         file_label = filename
 
     if column_label is None:
         column_label = column
 
-    map = {
+    axes_id = {'files': f'{filename}',
+               'columns': f'{column}',
+               'planes': f'{column[-1]}'
+               }.get(same_figure, '')
+
+    return {
         frozenset(['files', 'columns']): dict(
-            id=f'',
-            label=f'{file_label} {column}',
+            figure_id=f'',
+            axes_id=axes_id,
+            legend_label=f'{file_label} {column}',
             ylabel=f'{column_label}'
         ),
         frozenset(['files']): dict(
-            id=f'{column}',
-            label=f'{file_label}',
+            figure_id=f'{column}',
+            axes_id=axes_id,
+            legend_label=f'{file_label}',
             ylabel=f'{column_label}'
         ),
         frozenset(['columns']): dict(
-            id=f'{filename}',
-            label=f'{column_label}',
+            figure_id=f'{filename}',
+            axes_id=axes_id,
+            legend_label=f'{column_label}',
             ylabel=f'{file_label}'
         ),
         frozenset([]): dict(
-            id=f'{filename}_{column}',
-            label=f'',
+            figure_id=f'{filename}_{column}',
+            axes_id=axes_id,
+            legend_label=f'',
             ylabel=f'{column_label}'
         ),
-
-    }
-    return map[combine_by]
+    }[same_axes]
 
 
 def _read_data(file_path, x_col, y_col, err_col):
@@ -280,14 +316,17 @@ def _read_data(file_path, x_col, y_col, err_col):
 
 
 def _create_plots(fig_collection, opt):
-    for fig_container in fig_collection.figs:
-        for idx_ax, (ax, data, ylabel) in enumerate(zip(fig_container.axes, fig_container.data, fig_container.ylabels)):
+    """ Main plotting routine """
+    for fig_container in fig_collection.figs.values():
+        for idx_ax, (ax, data, ylabel, xlabel) in enumerate(
+                zip(fig_container.axes.values(), fig_container.data.values(),
+                    fig_container.ylabels.values(), fig_container.xlabels.values())):
             _plot_vlines(ax, opt.vertical_lines)
             _plot_data(ax, data, opt.change_marker, opt.errorbar_alpha)
-            _set_axes_layout(ax, opt.xlim, opt.ylim, ylabel)
+            _set_axes_layout(ax, opt.xlim, opt.ylim, ylabel, xlabel)
 
             if idx_ax == 0:
-                pannot.make_top_legend(ax, opt.ncols_legend)
+                pannot.make_top_legend(ax, opt.ncol_legend)
 
         output_plot(fig_container)
 
@@ -306,14 +345,20 @@ def _plot_data(ax, data, change_marker, ebar_alpha):
 
 
 def _plot_vlines(ax, lines):
+    if not lines:
+        return
+
     for line in lines:
         loc = line.pop('loc', None)
-        plines.plot_vertical_line(ax, line, label_loc=loc)
+        text = line.pop('text', None)
+        plines.plot_vertical_line(ax, line, text=text, text_loc=loc)
         line['loc'] = loc  # put back for other axes
+        line['text'] = text
 
 
-def _set_axes_layout(ax, xlim, ylim, ylabel):
+def _set_axes_layout(ax, xlim, ylim, ylabel, xlabel):
     ax.set_xlim(xlim)
+    ax.set_xlabel(xlabel)
     ax.set_ylim(ylim)
     ax.set_ylabel(ylabel)
 
@@ -322,7 +367,7 @@ def _set_axes_layout(ax, xlim, ylim, ylabel):
 
 
 def _save_options_to_config(opt):
-    output_dir = Path(opt.output).parent
+    output_dir = Path(opt.output)
     os.makedirs(output_dir, exist_ok=True)
     save_options_to_config(output_dir / formats.get_config_filename(__file__),
                            OrderedDict(sorted(opt.items()))
@@ -362,11 +407,10 @@ def _check_opt(opt):
     elif len(opt.column_labels) != len(opt.y_columns):
         raise AttributeError("The number of column-labels and number of y columns differ!")
 
-    if 'XY' in opt.planes and len(opt.planes) > 1:
-        raise AttributeError("Planes 'XY' can not be chosen in combination with other planes.")
-
-    if 'planes' in opt.combine_by and 'XY' not in opt.planes:
-        raise AttributeError("Combine by 'planes' can only be used in combination with planes 'XY'.")
+    if opt.same_figure is not None:
+        if opt.same_figure in opt.same_axes:
+            raise AttributeError("Found the same option in 'same_axes' "
+                                 "and 'same_figure'. This is not allowed.")
 
     return opt
 
