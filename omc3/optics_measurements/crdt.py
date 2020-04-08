@@ -15,11 +15,14 @@ import pandas as pd
 import tfs
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
-from omc3.definitions.constants import PLANES
+from omc3.definitions.constants import PLANES, HV_TO_PLANE
 from omc3.utils import stats
+from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE, COL_ERR
 
 LOGGER = logging_tools.get_logger(__name__)
 PHASE = 'PHASE'
+
+CRDT_COLUMNS = ['AMP', 'FREQ', 'ERRAMP', 'ERRFREQ']
 
 
 def Aover2B(df, lines, phases, errlines, errphases, sign=1):
@@ -74,25 +77,41 @@ def Aover8BC(df, lines, phases, errlines, errphases, sign=1):
 
 
 CRDTS = [
-    {'order':"Coupling", 'term': "F_XY", 'func': Aover2B, 'lines': {'A': 'X01', 'B': 'Y01'}, 'sign':1},
-    {'order':"Coupling", 'term': "F_YX", 'func': Aover2B, 'lines': {'A': 'Y10', 'B': 'X10'}, 'sign':1},
+    {'order':"Coupling", 'term': "F_XY", 'func': Aover2B,
+     'lines': {'A': 'X01', 'B': 'Y01'}, 'sign':1},
+    {'order':"Coupling", 'term': "F_YX", 'func': Aover2B,
+     'lines': {'A': 'Y10', 'B': 'X10'}, 'sign':1},
 
-    {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B, 'lines': {'A': 'X_20', 'B': 'X10'}, 'sign':1},
-    {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B, 'lines': {'A': 'X0_2', 'B': 'Y01'}, 'sign':1},
-    {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC, 'lines': {'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
-    {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC, 'lines': {'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
+    {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B,
+     'lines': {'A': 'X_20', 'B': 'X10'}, 'sign':1},
+    {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B,
+     'lines': {'A': 'X0_2', 'B': 'Y01'}, 'sign':1},
+    {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC,
+     'lines': {'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+    {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC,
+     'lines': {'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
 
-    {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B, 'lines': {'A': 'Y0_2', 'B': 'Y01'}, 'sign':1},
-    {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B, 'lines': {'A': 'Y_20', 'B': 'X10'}, 'sign':1},
-    {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC, 'lines': {'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
-    {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC, 'lines': {'A': 'X1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
+    {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B,
+     'lines': {'A': 'Y0_2', 'B': 'Y01'}, 'sign':1},
+    {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B,
+     'lines': {'A': 'Y_20', 'B': 'X10'}, 'sign':1},
+    {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC,
+     'lines': {'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+    {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC,
+     'lines': {'A': 'X1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
 
-    {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B, 'lines': {'A': 'Y03', 'B': 'Y01'}, 'sign':1},
-    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC, 'lines': {'A': 'X12', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
-    {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B, 'lines': {'A': 'X30', 'B': 'X10'}, 'sign':1},
-    {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC, 'lines': {'A': 'X_12', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
-    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC, 'lines': {'A': 'Y2_1', 'B': 'Y01', 'C': 'X10'}, 'sign':1},
-    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC, 'lines': {'A': 'Y21', 'B': 'Y01', 'C': 'X10'}, 'sign':-1},
+    {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B,
+     'lines': {'A': 'Y03', 'B': 'Y01'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC,
+     'lines': {'A': 'X12', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
+    {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B,
+     'lines': {'A': 'X30', 'B': 'X10'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC,
+     'lines': {'A': 'X_12', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC,
+     'lines': {'A': 'Y2_1', 'B': 'Y01', 'C': 'X10'}, 'sign':1},
+    {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC,
+     'lines': {'A': 'Y21', 'B': 'Y01', 'C': 'X10'}, 'sign':-1},
 ]
 
 
@@ -131,7 +150,7 @@ def scale_amps_with_sqrtbeta(input_files, meas_input, plane):
     model_beta = meas_input.accelerator.model[f'BET{plane}']
     processed_files = []
     for lin_df in input_files:
-        cols = [col for col in lin_df.columns.to_numpy() if col.startswith('AMP')]
+        cols = [col for col in lin_df.columns.to_numpy() if col.startswith(COL_AMP)]
         lin_df.loc[:, cols] = lin_df.loc[:, cols].div(model_beta**0.5, axis="index")
         processed_files.append(lin_df)
     return processed_files
@@ -140,10 +159,10 @@ def scale_amps_with_sqrtbeta(input_files, meas_input, plane):
 def unscale_amps(input_files, plane):
     processed_files = []
     for lin_df in input_files:
-        cols = [col for col in lin_df.columns.to_numpy() if col.startswith('AMP')]
-        cols.remove(f"AMP{plane}")
-        lin_df[f"AMP{plane}"] = lin_df.loc[:, f"AMP{plane}"].to_numpy()/2.
-        lin_df.loc[:, cols] = lin_df.loc[:, cols].mul(lin_df.loc[:, f'AMP{plane}'], axis="index")
+        cols = [col for col in lin_df.columns.to_numpy() if col.startswith(COL_AMP)]
+        cols.remove(f"{COL_AMP}{plane}")
+        lin_df[f"{COL_AMP}{plane}"] = lin_df.loc[:, f"{COL_AMP}{plane}"].to_numpy()/2.
+        lin_df.loc[:, cols] = lin_df.loc[:, cols].mul(lin_df.loc[:, f'{COL_AMP}{plane}'], axis="index")
         processed_files.append(lin_df)
     return processed_files
 
@@ -154,7 +173,7 @@ def process_crdt(joined_df, crdt):
     phases = {}
     errlines = {}
     errphases = {}
-    for data_dict, prefix in zip([lines, phases, errlines, errphases], ['AMP', 'FREQ', 'ERRAMP', 'ERRFREQ']):
+    for data_dict, prefix in zip([lines, phases, errlines, errphases], CRDT_COLUMNS):
         for key, line in crdt['lines'].items():
             try:
                 translate_line = translate_line_to_col(line)
@@ -186,8 +205,14 @@ def translate_line_to_col(line):
     line = line[1:]
 
     if (plane == 'X' and line == '10') or (plane == 'Y' and line == '01'):
-        return {'AMP': f'AMP{plane}', 'FREQ': f'MU{plane}', 'ERRAMP': f'ERRAMP{plane}', 'ERRFREQ': f'ERRMU{plane}'}
-    return {'AMP': f'AMP{line}_{plane}', 'FREQ': f'PHASE{line}_{plane}', 'ERRAMP': f'ERRAMP{line}_{plane}', 'ERRFREQ': f'ERRPHASE{line}_{plane}'}
+        return {'AMP': f'{COL_AMP}{plane}',
+                'FREQ': f'{COL_MU}{plane}',
+                'ERRAMP': f'{COL_ERR}{COL_AMP}{plane}',
+                'ERRFREQ': f'{COL_ERR}{COL_MU}{plane}'}
+    return {'AMP': f'{COL_AMP}{line}_{plane}',
+            'FREQ': f'{COL_PHASE}{line}_{plane}',
+            'ERRAMP': f'{COL_ERR}{COL_AMP}{line}_{plane}',
+            'ERRFREQ': f'{COL_ERR}{COL_PHASE}{line}_{plane}'}
 
 
 def write(df, header, meas_input, order, crdt):
@@ -201,7 +226,7 @@ def joined_planes(input_files):
     Parameters:
         input_files
     Returns:
-        merged DataFrame 
+        merged DataFrame
     """
     joined_dfs = []
 
@@ -210,7 +235,7 @@ def joined_planes(input_files):
     for linx, liny in zip(input_files['X'], input_files['Y']):
 
         for df, plane in zip((linx, liny), PLANES):
-            rename_cols(df, plane, ['NAME', 'S', f'TUNE{plane}', f'AMP{plane}', f'MU{plane}', f'MU{plane}SYNC'])
+            rename_cols(df, plane, ['NAME', 'S', f'{COL_TUNE}{plane}', f'{COL_AMP}{plane}', f'{COL_MU}{plane}', f'{COL_MU}{plane}SYNC'])
 
         joined_dfs.append(pd.merge(left=linx,
                                    right=liny,

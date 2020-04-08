@@ -12,7 +12,10 @@ import numpy as np
 import pandas as pd
 
 from omc3.utils import logging_tools, outliers
-from omc3.definitions.constants import PLANES, PI2I
+from omc3.definitions.constants import PLANES, PI2
+from omc3.harpy.constants import (COL_TUNE, COL_AMP, COL_MU,
+                                  COL_NATTUNE, COL_NATAMP, COL_NATMU,
+                                  COL_FREQ, COL_PHASE)
 
 LOGGER = logging_tools.getLogger(__name__)
 
@@ -80,10 +83,10 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     frequencies, coefficients = windowed_padded_rfft(harpy_input, bpm_matrix, tunes, usv)
     panda, not_tune_bpms = _get_main_resonances(tunes, dict(FREQS=frequencies, COEFFS=coefficients),
                                                 plane, harpy_input.tolerance, panda)
-    cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"TUNE{plane}"], harpy_input.tune_clean_limit)
+    cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"{COL_TUNE}{plane}"], harpy_input.tune_clean_limit)
     panda = panda.loc[panda.index.difference(cleaned_by_tune_bpms)]
-    panda[f"MU{plane}"] = _realign_phases(panda.loc[:, f"MU{plane}"].values,
-                                          panda.loc[:, f"TUNE{plane}"].values, bpm_matrix.shape[1])
+    panda[f"{COL_MU}{plane}"] = _realign_phases(panda.loc[:, f"{COL_MU}{plane}"].values,
+                                          panda.loc[:, f"{COL_TUNE}{plane}"].values, bpm_matrix.shape[1])
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
     bpm_matrix = bpm_matrix.loc[panda.index]
     spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
@@ -91,8 +94,8 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     if _get_natural_tunes(harpy_input, tunes) is not None:
         panda = panda.join(_calculate_natural_tunes(spectra, _get_natural_tunes(harpy_input, tunes),
                                                     harpy_input.tolerance, plane))
-        panda[f"NATMU{plane}"] = _realign_phases(panda.loc[:, f"NATMU{plane}"].values,
-                                                 panda.loc[:, f"NATTUNE{plane}"].values,
+        panda[f"{COL_NATMU}{plane}"] = _realign_phases(panda.loc[:, f"{COL_NATMU}{plane}"].values,
+                                                 panda.loc[:, f"{COL_NATTUNE}{plane}"].values,
                                                  bpm_matrix.shape[1])
     if tunes[2] > 0:
         panda, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, panda)
@@ -121,10 +124,10 @@ def find_resonances(tunes, nturns, plane, spectra):
         max_coefs, max_freqs = _search_highest_coefs(resonances_freqs[resonance], tolerance,
                                                      spectra["FREQS"], spectra["COEFFS"])
         resstr = _get_resonance_suffix(resonance)
-        df[f"FREQ{resstr}"], df[f"AMP{resstr}"], df[f"PHASE{resstr}"] = _get_freqs_amps_phases(
+        df[f"{COL_FREQ}{resstr}"], df[f"{COL_AMP}{resstr}"], df[f"{COL_PHASE}{resstr}"] = _get_freqs_amps_phases(
             max_freqs, max_coefs, resonances_freqs[resonance])
-        df[f"PHASE{resstr}"] = _realign_phases(df.loc[:, f"PHASE{resstr}"].values,
-                                               df.loc[:, f"FREQ{resstr}"].values, nturns)
+        df[f"{COL_PHASE}{resstr}"] = _realign_phases(df.loc[:, f"{COL_PHASE}{resstr}"].values,
+                                               df.loc[:, f"{COL_FREQ}{resstr}"].values, nturns)
     return df
 
 
@@ -135,7 +138,7 @@ def _get_main_resonances(tunes, spectra, plane, tolerance, df):
         raise ValueError(f"No main {plane} resonances found, "
                          f"try to increase the tolerance or adjust the tunes")
     bad_bpms_by_tune = spectra["COEFFS"].loc[max_coefs == 0.].index
-    df[f"TUNE{plane}"], df[f"AMP{plane}"], df[f"MU{plane}"] = _get_freqs_amps_phases(
+    df[f"{COL_TUNE}{plane}"], df[f"{COL_AMP}{plane}"], df[f"{COL_MU}{plane}"] = _get_freqs_amps_phases(
         max_freqs, max_coefs, freq)
     if plane != "Z":
         df = df.loc[df.index.difference(bad_bpms_by_tune)]
@@ -147,13 +150,13 @@ def _calculate_natural_tunes(spectra, nattunes, tolerance, plane):
     x, y, _ = nattunes
     freq = x % 1 if plane == "X" else y % 1
     max_coefs, max_freqs = _search_highest_coefs(freq, tolerance, spectra["FREQS"], spectra["COEFFS"])
-    df[f"NATTUNE{plane}"], df[f"NATAMP{plane}"], df[f"NATMU{plane}"] = _get_freqs_amps_phases(
+    df[f"{COL_NATTUNE}{plane}"], df[f"{COL_NATAMP}{plane}"], df[f"{COL_NATMU}{plane}"] = _get_freqs_amps_phases(
         max_freqs, max_coefs, freq)
     return df
 
 
 def _get_freqs_amps_phases(max_freqs, max_coefs, freq):
-    return max_freqs, np.abs(max_coefs), np.sign(0.5 - freq) * np.angle(max_coefs) / (2 * np.pi)
+    return max_freqs, np.abs(max_coefs), np.sign(0.5 - freq) * np.angle(max_coefs) / PI2
 
 
 def _realign_phases(phase_data, freq_data, nturns):
@@ -279,7 +282,7 @@ def windowing(length, window='hamming'):
 
     Currently, the following windowing functions are implemented
     (sorted by increasing width of main lobe, also decreasing spectral leakage in closest lobes):
-    ``rectangle``, ``welch``, ``trinagle``, ``hann``, ``hamming``, ``nuttal3``, ``nuttal4``
+    ``rectangle``, ``welch``, ``triangle``, ``hann``, ``hamming``, ``nuttal3``, ``nuttal4``
 
     Args:
         length: length of the window
@@ -288,7 +291,7 @@ def windowing(length, window='hamming'):
     Returns:
         Normalised windowing function of specified type and length
     """
-    ints2pi = 2 * np.pi * np.arange(length) / (length - 1)
+    ints2pi = PI2 * np.arange(length) / (length - 1)
     windows = {
         "nuttal4": 0.3125 - 0.46875 * np.cos(ints2pi) + 0.1875 * np.cos(2 * ints2pi) - 0.03125 * np.cos(3 * ints2pi),
         "nuttal3": 0.375 - 0.5 * np.cos(ints2pi) + 0.125 * np.cos(2 * ints2pi),
