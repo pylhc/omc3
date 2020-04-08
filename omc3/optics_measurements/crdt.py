@@ -22,7 +22,7 @@ from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE, COL_ERR
 LOGGER = logging_tools.get_logger(__name__)
 PHASE = 'PHASE'
 
-CRDT_COLUMNS = ['AMP', 'FREQ', 'ERRAMP', 'ERRFREQ']
+CRDT_COLUMNS = [AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}']
 
 
 def Aover2B(df, lines, phases, errlines, errphases, sign=1):
@@ -78,40 +78,40 @@ def Aover8BC(df, lines, phases, errlines, errphases, sign=1):
 
 CRDTS = [
     {'order':"Coupling", 'term': "F_XY", 'func': Aover2B,
-     'lines': {'A': 'X01', 'B': 'Y01'}, 'sign':1},
+     'lines': {'A': ['H', 0, 1], 'B': ['V', 0, 1]}, 'sign':1},
     {'order':"Coupling", 'term': "F_YX", 'func': Aover2B,
-     'lines': {'A': 'Y10', 'B': 'X10'}, 'sign':1},
+     'lines': {'A': ['V', 1, 0], 'B': ['H', 1, 0]}, 'sign':1},
 
     {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B,
-     'lines': {'A': 'X_20', 'B': 'X10'}, 'sign':1},
+     'lines': {'A': ['H', -2, 0], 'B': ['H', 1, 0]}, 'sign':1},
     {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B,
-     'lines': {'A': 'X0_2', 'B': 'Y01'}, 'sign':1},
+     'lines': {'A': ['H', 0, -2], 'B': ['V', 0, 1]}, 'sign':1},
     {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC,
-     'lines': {'A': 'Y_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+     'lines': {'A': ['V', -1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':1},
     {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC,
-     'lines': {'A': 'Y1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
+     'lines': {'A': ['V', 1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':-1},
 
     {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B,
-     'lines': {'A': 'Y0_2', 'B': 'Y01'}, 'sign':1},
+     'lines': {'A': ['V', 0, -2], 'B': ['V', 0, 1]}, 'sign':1},
     {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B,
-     'lines': {'A': 'Y_20', 'B': 'X10'}, 'sign':1},
+     'lines': {'A': ['V', -2, 0], 'B': ['H', 1, 0]}, 'sign':1},
     {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC,
-     'lines': {'A': 'X_1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+     'lines': {'A': ['H', -1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':1},
     {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC,
-     'lines': {'A': 'X1_1', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
+     'lines': {'A': ['H', 1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':-1},
 
     {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B,
-     'lines': {'A': 'Y03', 'B': 'Y01'}, 'sign':1},
+     'lines': {'A': ['V', 0, 3], 'B': ['V', 0, 1]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC,
-     'lines': {'A': 'X12', 'B': 'X10', 'C': 'Y01'}, 'sign':-1},
+     'lines': {'A': ['H', 1, 2], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':-1},
     {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B,
-     'lines': {'A': 'X30', 'B': 'X10'}, 'sign':1},
+     'lines': {'A': ['H', 3, 0], 'B': ['H', 1, 0]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC,
-     'lines': {'A': 'X_12', 'B': 'X10', 'C': 'Y01'}, 'sign':1},
+     'lines': {'A': ['H', -1, 2], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC,
-     'lines': {'A': 'Y2_1', 'B': 'Y01', 'C': 'X10'}, 'sign':1},
+     'lines': {'A': ['V', 2, -1], 'B': ['V', 0, 1], 'C': ['H', 1, 0]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC,
-     'lines': {'A': 'Y21', 'B': 'Y01', 'C': 'X10'}, 'sign':-1},
+     'lines': {'A': ['V', 2, 1], 'B': ['V', 0, 1], 'C': ['H', 1, 0]}, 'sign':-1},
 ]
 
 
@@ -139,7 +139,7 @@ def calculate(measure_input, input_files, header):
             result_dfs.append(process_crdt(joined_df, crdt))
         df = average_results(result_dfs=result_dfs,
                              union_columns=['NAME', 'S'],
-                             merge_columns=[AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}'],
+                             merge_columns=CRDT_COLUMNS,
                              merge_functions=[stats.weighted_nanmean, stats.weighted_nanrms,
                                               stats.circular_nanmean, stats.circular_nanerror],
                              index="NAME")
@@ -173,13 +173,17 @@ def process_crdt(joined_df, crdt):
     phases = {}
     errlines = {}
     errphases = {}
-    for data_dict, prefix in zip([lines, phases, errlines, errphases], CRDT_COLUMNS):
+    for data_dict, prefix in zip([lines, errlines, phases, errphases], CRDT_COLUMNS):
         for key, line in crdt['lines'].items():
-            try:
-                translate_line = translate_line_to_col(line)
+            translate_line = translate_line_to_col(line)
+            line[1], line[2] = -line[1], -line[2]
+            conj_translate_line = translate_line_to_col(line)
+            if translate_line[prefix] in joined_df.columns:
                 data_dict[key] = joined_df[translate_line[prefix]]
-            except KeyError:
-                LOGGER.debug(f"No {prefix} for line {line} found in lin-files, set to 0")
+            elif conj_translate_line[prefix] in joined_df.columns:
+                data_dict[key] = -joined_df[translate_line[prefix]] if prefix == 'PHASE' else joined_df[translate_line[prefix]]
+            else:
+                LOGGER.debug(f"No {prefix} for line {line} found in lin-files, set to Nan")
                 data_dict[key] = np.nan
     df = crdt['func'](df, lines, phases, errlines, errphases, crdt['sign'])
     return df
@@ -201,18 +205,18 @@ def average_results(result_dfs, union_columns, merge_columns, merge_functions, i
 
 
 def translate_line_to_col(line):
-    plane = line[0]
-    line = line[1:]
+    plane = HV_TO_PLANE[line[0]] 
+    line = f"{line[1]}{line[2]}".replace('-', '_')
 
     if (plane == 'X' and line == '10') or (plane == 'Y' and line == '01'):
-        return {'AMP': f'{COL_AMP}{plane}',
-                'FREQ': f'{COL_MU}{plane}',
-                'ERRAMP': f'{COL_ERR}{COL_AMP}{plane}',
-                'ERRFREQ': f'{COL_ERR}{COL_MU}{plane}'}
-    return {'AMP': f'{COL_AMP}{line}_{plane}',
-            'FREQ': f'{COL_PHASE}{line}_{plane}',
-            'ERRAMP': f'{COL_ERR}{COL_AMP}{line}_{plane}',
-            'ERRFREQ': f'{COL_ERR}{COL_PHASE}{line}_{plane}'}
+        return dict(zip(CRDT_COLUMNS, [f'{COL_AMP}{plane}',
+                                       f'{COL_ERR}{COL_AMP}{plane}',
+                                       f'{COL_MU}{plane}',
+                                       f'{COL_ERR}{COL_MU}{plane}']))
+    return dict(zip(CRDT_COLUMNS, [f'{COL_AMP}{line}_{plane}',
+                                   f'{COL_ERR}{COL_AMP}{line}_{plane}',
+                                   f'{COL_PHASE}{line}_{plane}',
+                                   f'{COL_ERR}{COL_PHASE}{line}_{plane}']))
 
 
 def write(df, header, meas_input, order, crdt):
