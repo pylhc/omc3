@@ -220,7 +220,7 @@ def sort_data(opt):
                 opt.x_columns, opt.y_columns, opt.error_columns, opt.x_labels, opt.column_labels):
 
             id_map = get_id(filename, y_col, file_label, column_label, same_axes_set, opt.same_figure)
-            output_path = f"{opt.output}_{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
+            output_path = Path(opt.output) / f"plot_{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
 
             axes_ids = opt.get(opt.same_figure)
             if axes_ids is None:  # do not put into 'get' as could be None at multiple levels
@@ -255,6 +255,8 @@ def sort_data(opt):
                         axes_id=id_map['axes_id'],
                         axes_ids=axes_ids,
                     )
+    if opt.y_labels:
+        _update_y_labels(collector, opt.y_labels)
     return collector
 
 
@@ -280,7 +282,7 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure):
             figure_id=f'',
             axes_id=axes_id,
             legend_label=f'{file_label} {column}',
-            ylabel=f'{column_label}'
+            ylabel=f''
         ),
         frozenset(['files']): dict(
             figure_id=f'{column}',
@@ -289,13 +291,13 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure):
             ylabel=f'{column_label}'
         ),
         frozenset(['columns']): dict(
-            figure_id=f'{filename}',
+            figure_id=f'{file_label}_{filename}',
             axes_id=axes_id,
             legend_label=f'{column_label}',
             ylabel=f'{file_label}'
         ),
         frozenset([]): dict(
-            figure_id=f'{filename}_{column}',
+            figure_id=f'{file_label}_{filename}_{column}',
             axes_id=axes_id,
             legend_label=f'',
             ylabel=f'{column_label}'
@@ -310,6 +312,18 @@ def _read_data(file_path, x_col, y_col, err_col):
         y=tfs_data[y_col],
         err=tfs_data[err_col] if err_col is not None else None,
     )
+
+
+def _update_y_labels(fig_collection, ylabels):
+    if len(ylabels) == 1:
+        ylabels = ylabels * len(fig_collection.figs)
+
+    for idx_fig, fig_container in enumerate(fig_collection.figs.values()):
+        for idx_ax, (key, _) in enumerate(fig_container.ylabels.items()):
+            idx = idx_ax
+            if len(ylabels) == len(fig_collection.figs):
+                idx = idx_fig
+            fig_container.ylabels[key] = ylabels[idx]
 
 
 # Plotting ---------------------------------------------------------------------

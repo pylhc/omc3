@@ -225,14 +225,15 @@ def _get_x_options(x_axis):
 def _get_plotting_options(folders: Iterable, optics_parameter: str, delta: bool):
     is_rdt = optics_parameter.lower().startswith("f")
     files, file_labels = zip(*get_unique_filenames(folders))
-    plot_opts = {'is_rdt': is_rdt}
+    plot_opts = {'is_rdt': is_rdt,
+                 'file_labels': list(file_labels),
+                 }
     if is_rdt:
         if delta:
             LOG.warning('Delta Columns for RDTs not implemented. Using normal columns.')
         subfolder = _rdt_to_order_and_type(optics_parameter[1:5])
         plot_opts.update(_get_rdt_columns())
         plot_opts['files'] = [f/'rdt'/subfolder/f'{optics_parameter}{EXT}' for f in files]
-        plot_opts['file_labels'] = file_labels
 
     else:
         if not optics_parameter.endswith("_"):
@@ -240,10 +241,9 @@ def _get_plotting_options(folders: Iterable, optics_parameter: str, delta: bool)
         y_column, error_column, y_label = _get_columns_and_label(optics_parameter, delta)
         plot_opts['files'] = [f/optics_parameter for f in files]
         if delta:
-            file_labels = [f"delta_{label}" for label in file_labels]
-        plot_opts['file_labels'] = list(file_labels)
+            plot_opts['file_labels'] = [f"delta_{label}" for label in plot_opts['file_labels']]
         plot_opts['y_columns'] = [y_column]
-        plot_opts['y_labels'] = [y_label]
+        plot_opts['column_labels'] = [y_label]
         plot_opts['error_columns'] = [error_column]
 
     plot_opts['files'] = [str(path.absolute()) for path in plot_opts['files']]
@@ -275,7 +275,7 @@ def _get_rdt_columns():
         column, label = YAXIS[meas]
         result['y_columns'][idx] = column
         result['error_columns'][idx] = f"{ERR}{AMPLITUDE}"
-        result['y_labels'][idx] = label
+        result['column_labels'][idx] = label
     result['error_columns'][2] = f"{ERR}{PHASE}"
     return result
 

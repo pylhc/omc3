@@ -53,6 +53,7 @@ lines.markersize: 8.0
 lines.solid_capstyle: projecting
 lines.solid_joinstyle: round
 markers.fillstyle: none
+savefig.format : pdf
 text.antialiased: True
 text.color: k
 xtick.alignment: center
