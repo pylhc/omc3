@@ -21,6 +21,7 @@ from omc3.optics_measurements.rdt import _rdt_to_order_and_type
 from omc3.plotting.spectrum.utils import get_unique_filenames
 
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
 from omc3.plotting.optics_measurements.constants import (DEFAULTS,
                                                          XAXIS, YAXIS,
                                                          IP_POS_DEFAULT)
@@ -176,21 +177,39 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
     files = [str(f.absolute()/'rdt'/subfolder/f'{optics_parameter}{EXT}') for f in files]
     columns = _get_rdt_columns()
 
+
+    prefix = 'plot'
+    combine_by = opt.combine_by
+    combine_planes = False
+    if combine_by is not None:
+        prefix += optics_parameter
+        if "planes" in combine_by:
+            combine_by[combine_by.index("planes")] = "columns"
+            combine_planes = True
+
     for idxs in (slice(0, 2), slice(2, 4)):  # amp,phase - real,imag
+        if combine_planes:
+            y_labels = [optics_parameter.upper()]
+            column_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+        else:
+            y_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+            column_labels = [optics_parameter.upper()]
+
         fig_dict.update(
             plot_tfs(
                 files=files,
                 file_labels=list(file_labels),
                 y_columns=columns['y_columns'][idxs],
-                column_labels=[optics_parameter.upper()],
-                y_labels=[[l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]],
+                column_labels=column_labels,
+                y_labels=[y_labels],
                 error_columns=columns['error_columns'][idxs],
                 x_columns=[x_column],
                 x_labels=[x_label],
                 vertical_lines=ip_positions + opt.lines_manual,
-                same_figure="columns",
+                same_figure="columns" if "columns" not in opt.combine_by else None,
                 same_axes=opt.combine_by,
                 single_legend=True,
+                output_prefix=prefix,
                 **opt.get_subdict(['show', 'output',
                                    'plot_styles', 'manual_style',
                                    'change_marker', 'errorbar_alpha',
@@ -219,22 +238,26 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
     if opt.delta:
         file_labels = [f"delta_{label}" for label in file_labels]
 
+    y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
+
     same_fig = None
+    column_labels = [column_label]
     if opt.combine_by is None or 'planes' not in opt.combine_by:
         same_fig = 'planes'
 
-    y_column, error_column,  column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
+    if opt.combine_by is not None and "planes" in opt.combine_by:  # not else!
+        column_labels = [f'{column_label} {{0}}']
 
     return plot_tfs(
         files=[str(f.absolute()/optics_parameter) for f in files],
         file_labels=list(file_labels),
         y_columns=[y_column],
         y_labels=[[y_label]],
-        column_labels=[column_label],
+        column_labels=column_labels,
         error_columns=[error_column],
         x_columns=[x_column],
         x_labels=[x_label],
-        planes=['X', 'Y'],
+        planes=list(PLANES),
         vertical_lines=ip_positions + opt.lines_manual,
         same_figure=same_fig,
         same_axes=opt.combine_by,
@@ -352,6 +375,7 @@ if __name__ == '__main__':
     import matplotlib
     matplotlib.use('qt5agg')
     plot(folders=['/home/josch/Software/myomc3/optics93'],
-         # optics_parameters=['beta_amplitude', 'orbit', 'f0012_y', 'f3000_x'],
-         optics_parameters=['f0012_y', 'f3000_x'],
+         optics_parameters=['beta_amplitude', 'orbit', 'f0012_y'],
+         # combine_by=["files", "planes"],
+         # optics_parameters=['f0012_y', 'f3000_x'],
          output="temp/", show=True, ip_positions="LHCB1")

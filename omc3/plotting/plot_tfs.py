@@ -105,6 +105,12 @@ def get_params():
         type=str,
     )
     params.add_parameter(
+        name="output_prefix",
+        help="Prefix for the output filename.",
+        type=str,
+        default="plot_"
+    )
+    params.add_parameter(
         name="show",
         help="Shows plots.",
         action="store_true",
@@ -202,7 +208,7 @@ def plot(opt):
     fig_collection = sort_data(opt.get_subdict(
         ['files', 'planes', 'x_columns', 'y_columns', 'error_columns',
          'file_labels', 'column_labels', 'x_labels', 'y_labels',
-         'same_axes', 'same_figure', 'output']))
+         'same_axes', 'same_figure', 'output', 'output_prefix']))
 
     # plotting
     _create_plots(fig_collection,
@@ -228,13 +234,10 @@ def sort_data(opt):
         for x_col, y_col, err_col, x_label, column_label in zip(
                 opt.x_columns, opt.y_columns, opt.error_columns, opt.x_labels, opt.column_labels):
 
-            axes_ids = opt.get(opt.same_figure.replace('columns', 'y_columns'))
-
-            if axes_ids is None:  # do not put into 'get' as could be None at multiple levels
-                axes_ids = ('',)
+            axes_ids = _get_axes_ids(opt)
 
             if opt.planes is None:
-                id_map = get_id(filename, y_col, file_label, column_label, same_axes_set, opt.same_figure)
+                id_map = get_id(filename, y_col, file_label, column_label, same_axes_set, opt.same_figure, opt.output_prefix)
                 output_path = Path(opt.output) / f"plot_{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
 
                 collector.add_data_for_id(
@@ -250,8 +253,9 @@ def sort_data(opt):
 
             else:
                 for plane in opt.planes:
-                    id_map = get_id(filename, y_col, file_label, column_label, same_axes_set, opt.same_figure, plane)
-                    output_path = Path(opt.output) / f"plot_{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
+                    id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
+                                    opt.same_figure, opt.output_prefix, plane)
+                    output_path = Path(opt.output) / f"{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
 
                     file_path_plane = file_path.with_name(f'{file_path.name}{plane.lower()}{EXT}')
                     y_col_plane = f'{y_col}{plane.upper()}'
@@ -272,13 +276,13 @@ def sort_data(opt):
     return collector
 
 
-def get_id(filename, column, file_label, column_label, same_axes, same_figure, plane=''):
+def get_id(filename, column, file_label, column_label, same_axes, same_figure, prefix, plane=''):
     """ Get the right IDs for the current sorting way.
 
     This is where the actual sorting happens, by mapping the right IDs according
     to the chosen options.
     """
-    file_output = filename.strip("_")
+    file_output = filename.strip("_").replace(EXT, "")
     if file_label is not None:
         file_output = f'{file_label}_{file_output}'
     else:
@@ -294,56 +298,58 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
                'planes': f'{plane}'
                }.get(same_figure, '')
 
+    key = same_axes if same_figure is None else same_axes.union({same_figure})
+
     return {
         frozenset(['files', 'columns', 'planes']): dict(
-            figure_id=f'',
+            figure_id=f'{prefix}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
             ylabel=f'',
         ),
         frozenset(['files', 'columns']): dict(
-            figure_id=f'{plane}',
+            figure_id=f'{prefix}{plane}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
             ylabel=f'',
         ),
         frozenset(['planes', 'columns']): dict(
-            figure_id=f'{file_output}',
+            figure_id=f'{prefix}{file_output}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
         ),
         frozenset(['planes', 'files']): dict(
-            figure_id=f'{file_output}{plane}',
+            figure_id=f'{prefix}{file_output}',
             axes_id=axes_id,
-            legend_label=column_label,
+            legend_label=f'{file_label} {column_label}',
             ylabel=column_label,
         ),
         frozenset(['planes']): dict(
-            figure_id=f'{file_output}_{column}',
+            figure_id=f'{prefix}{file_output}_{column}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
         ),
         frozenset(['files']): dict(
-            figure_id=f'{column}{plane}',
+            figure_id=f'{prefix}{column}{plane}',
             axes_id=axes_id,
             legend_label=f'{file_label}',
             ylabel=column_label,
         ),
         frozenset(['columns']): dict(
-            figure_id=f'{file_label}_{filename.strip("_")}',
+            figure_id=f'{prefix}{file_output}{plane}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=f'{file_label}',
         ),
         frozenset([]): dict(
-            figure_id=f'{file_label}_{filename.strip("_")}_{column}{plane}',
+            figure_id=f'{prefix}{file_output}_{column}{plane}',
             axes_id=axes_id,
             legend_label=f'',
             ylabel=column_label,
         ),
-    }[same_axes.union({same_figure})]
+    }[key]
 
 
 def _read_data(file_path, x_col, y_col, err_col):
@@ -476,6 +482,17 @@ def _check_opt(opt):
                                  "and 'same_figure'. This is not allowed.")
 
     return opt
+
+
+def _get_axes_ids(opt):
+    if opt.same_figure == "columns":
+        axes_ids = opt.get("y_columns")
+    else:
+        axes_ids = opt.get(opt.same_figure)
+
+    if axes_ids is None:  # do not put into 'get' as could be None at multiple levels
+        axes_ids = ('',)
+    return axes_ids
 
 
 def _get_marker(idx, change):
