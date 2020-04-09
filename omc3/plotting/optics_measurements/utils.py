@@ -1,7 +1,6 @@
-from typing import Iterable
 from pathlib import Path
+from typing import Iterable
 
-from omc3.plotting.spectrum.utils import IdData, FigureCollector as SpectFigCollector
 from matplotlib import pyplot as plt
 
 
@@ -40,6 +39,6 @@ class FigureCollector:
             self.figs[figure_id] = figure_cont
             self.fig_dict[figure_id] = figure_cont.fig
 
-        figure_cont.ylabels[axes_id] = y_label  # always replaced but doesn't matters
-        figure_cont.xlabels[axes_id] = x_label  # always replaced but doesn't matters
+        figure_cont.ylabels[axes_id] = y_label
+        figure_cont.xlabels[axes_id] = x_label
         figure_cont.data[axes_id][label] = data

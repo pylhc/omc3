@@ -143,49 +143,123 @@ def plot(opt):
     ip_positions = _get_ip_positions(opt.ip_positions, opt.x_axis, opt.ip_search_pattern)
     x_column, x_label = _get_x_options(opt.x_axis)
 
+    fig_dict = {}
     for optics_parameter in opt.optics_parameters:
-        plot_opts = _get_plotting_options(
-            opt.folders, optics_parameter, opt.delta
-        )
 
-        if plot_opts.pop('is_rdt'):
-            fig_dict = {}
-            for idxs in (slice(0, 2), slice(2, 4)):  # amp,phase - real,imag
-                fig_dict.update(
-                    plot_tfs(
-                        files=plot_opts['files'],
-                        file_labels=plot_opts['file_labels'],
-                        y_columns=plot_opts['y_columns'][idxs],
-                        y_labels=plot_opts['y_labels'][idxs],
-                        error_columns=plot_opts['error_columns'][idxs],
-                        x_columns=[x_column],
-                        xlabels=[x_label],
-                        vertical_lines=ip_positions + opt.lines_manual,
-                        same_figure="columns",
-                        same_axes=opt.comibe_by,
-                        **opt.get_subdict(['show', 'output',
-                                           'plot_styles', 'manual_style',
-                                           'change_marker', 'errorbar_alpha', 'ncol_legend'])
-                ))
-            return fig_dict
+        is_rdt = optics_parameter.lower().startswith("f")
+        files, file_labels = zip(*get_unique_filenames(opt.folders))
 
+        if is_rdt:
+            fig_dict.update(_plot_rdt(
+                optics_parameter, files, file_labels, x_column, x_label,
+                ip_positions, opt,)
+            )
         else:
-            same_fig = None
-            if opt.combine_by is not None and 'planes' not in opt.combine_by:
-                same_fig = 'planes'
+            if not optics_parameter.endswith("_"):
+                optics_parameter += "_"
 
-            return plot_tfs(
-                **plot_opts,
+            fig_dict.update(_plot_param(
+                optics_parameter, files, file_labels, x_column, x_label,
+                ip_positions, opt,)
+            )
+    return fig_dict
+
+
+# Plot RDTs --------------------------------------------------------------------
+
+def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
+    fig_dict = {}
+    if opt.delta:
+        LOG.warning('Delta Columns for RDTs not implemented. Using normal columns.')
+
+    subfolder = _rdt_to_order_and_type([int(n) for n in optics_parameter[1:5]])
+    files = [str(f.absolute()/'rdt'/subfolder/f'{optics_parameter}{EXT}') for f in files]
+    columns = _get_rdt_columns()
+
+    for idxs in (slice(0, 2), slice(2, 4)):  # amp,phase - real,imag
+        fig_dict.update(
+            plot_tfs(
+                files=files,
+                file_labels=list(file_labels),
+                y_columns=columns['y_columns'][idxs],
+                column_labels=[optics_parameter.upper()],
+                y_labels=[[l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]],
+                error_columns=columns['error_columns'][idxs],
                 x_columns=[x_column],
                 x_labels=[x_label],
-                planes=['X', 'Y'],
                 vertical_lines=ip_positions + opt.lines_manual,
-                same_figure=same_fig,
+                same_figure="columns",
                 same_axes=opt.combine_by,
+                single_legend=True,
                 **opt.get_subdict(['show', 'output',
                                    'plot_styles', 'manual_style',
-                                   'change_marker', 'errorbar_alpha', 'ncol_legend'])
-            )
+                                   'change_marker', 'errorbar_alpha',
+                                   'ncol_legend'])
+            ))
+
+    return fig_dict
+
+
+def _get_rdt_columns():
+    rdt_measures = ['rdt_amp', 'rdt_phase', 'rdt_real', 'rdt_imag']
+    result = {key: [None] * len(rdt_measures) for key in ['y_columns', 'y_labels', 'error_columns']}
+    for idx, meas in enumerate(rdt_measures):
+        column, _, label = YAXIS[meas]
+        result['y_columns'][idx] = column
+        result['error_columns'][idx] = f"{ERR}{AMPLITUDE}"
+        result['y_labels'][idx] = label
+    result['error_columns'][rdt_measures.index('rdt_phase')] = f"{ERR}{PHASE}"
+    return result
+
+
+# Plot Other Parameter ---------------------------------------------------------
+
+
+def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
+    if opt.delta:
+        file_labels = [f"delta_{label}" for label in file_labels]
+
+    same_fig = None
+    if opt.combine_by is None or 'planes' not in opt.combine_by:
+        same_fig = 'planes'
+
+    y_column, error_column,  column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
+
+    return plot_tfs(
+        files=[str(f.absolute()/optics_parameter) for f in files],
+        file_labels=list(file_labels),
+        y_columns=[y_column],
+        y_labels=[[y_label]],
+        column_labels=[column_label],
+        error_columns=[error_column],
+        x_columns=[x_column],
+        x_labels=[x_label],
+        planes=['X', 'Y'],
+        vertical_lines=ip_positions + opt.lines_manual,
+        same_figure=same_fig,
+        same_axes=opt.combine_by,
+        single_legend=True,
+        **opt.get_subdict(['show', 'output',
+                           'plot_styles', 'manual_style',
+                           'change_marker', 'errorbar_alpha',
+                           'ncol_legend'])
+    )
+
+
+def _get_columns_and_label(parameter, delta):
+    column_and_label = YAXIS[parameter]
+    column = column_and_label[0]
+    column_label = column_and_label[1]
+    y_label = column_and_label[2]
+    if delta:
+        column = f"{DELTA}{column}"
+        try:
+            y_label = column_and_label[3]
+        except IndexError:
+            y_label = fr'$\Delta {y_label[1:]}'
+
+    return column, f"{ERR}{column}", column_label, y_label
+
 
 # IP-Positions -----------------------------------------------------------------
 
@@ -220,64 +294,6 @@ def _get_x_options(x_axis):
 
 
 # Y-Axis -----------------------------------------------------------------------
-
-
-def _get_plotting_options(folders: Iterable, optics_parameter: str, delta: bool):
-    is_rdt = optics_parameter.lower().startswith("f")
-    files, file_labels = zip(*get_unique_filenames(folders))
-    plot_opts = {'is_rdt': is_rdt,
-                 'file_labels': list(file_labels),
-                 }
-    if is_rdt:
-        if delta:
-            LOG.warning('Delta Columns for RDTs not implemented. Using normal columns.')
-        subfolder = _rdt_to_order_and_type(optics_parameter[1:5])
-        plot_opts.update(_get_rdt_columns())
-        plot_opts['files'] = [f/'rdt'/subfolder/f'{optics_parameter}{EXT}' for f in files]
-
-    else:
-        if not optics_parameter.endswith("_"):
-            optics_parameter += "_"
-        y_column, error_column, y_label = _get_columns_and_label(optics_parameter, delta)
-        plot_opts['files'] = [f/optics_parameter for f in files]
-        if delta:
-            plot_opts['file_labels'] = [f"delta_{label}" for label in plot_opts['file_labels']]
-        plot_opts['y_columns'] = [y_column]
-        plot_opts['column_labels'] = [y_label]
-        plot_opts['error_columns'] = [error_column]
-
-    plot_opts['files'] = [str(path.absolute()) for path in plot_opts['files']]
-    return plot_opts
-
-
-def _get_columns_and_label(parameter, delta):
-    column_and_label = YAXIS[parameter]
-    column = column_and_label[0]
-    label = column_and_label[1]
-    if delta:
-        column = f"{DELTA}{column}"
-        try:
-            label = column_and_label[2]
-        except IndexError:
-            label = _default_delta_from_label(label)
-
-    return column, f"{ERR}{column}", label
-
-
-def _default_delta_from_label(label):
-    return fr'$\Delta {label[1:]}'
-
-
-def _get_rdt_columns():
-    rdt_measures = ['rdt_amp', 'rdt_phase', 'rdt_real', 'rdt_imag']
-    result = {key: [None] * len(rdt_measures) for key in ['y_columns', 'y_labels', 'error_columns']}
-    for idx, meas in enumerate(rdt_measures):
-        column, label = YAXIS[meas]
-        result['y_columns'][idx] = column
-        result['error_columns'][idx] = f"{ERR}{AMPLITUDE}"
-        result['column_labels'][idx] = label
-    result['error_columns'][2] = f"{ERR}{PHASE}"
-    return result
 
 
 def _get_auto_scale(y_val, scaling):
@@ -336,5 +352,6 @@ if __name__ == '__main__':
     import matplotlib
     matplotlib.use('qt5agg')
     plot(folders=['/home/josch/Software/myomc3/optics93'],
-         optics_parameters=['beta_amplitude', 'orbit', 'f0012_y', 'f3000_x'],
+         # optics_parameters=['beta_amplitude', 'orbit', 'f0012_y', 'f3000_x'],
+         optics_parameters=['f0012_y', 'f3000_x'],
          output="temp/", show=True, ip_positions="LHCB1")

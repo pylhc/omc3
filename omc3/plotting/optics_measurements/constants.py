@@ -59,13 +59,13 @@ XAXIS = { # Column, Label
     'phase-advance': ('MUX', 'Phase Advance [$2 \pi$]')
 }
 
-YAXIS = {  # Column, Label [, Delta Label]
-            BETA_NAME: (BETA, ylabels['beta'], ylabels['betabeat']),
-            AMP_BETA_NAME: (BETA, ylabels['beta'], ylabels['betabeat']),
-            ORBIT_NAME: ('', ylabels['co']),
-            PHASE_NAME: (PHASE, ylabels['phase']),
-            'rdt_amp': (AMPLITUDE, ylabels['absolute']),
-            'rdt_phase': (PHASE, ylabels['phase']),
-            'rdt_real': (REAL, ylabels['real']),
-            'rdt_imag': (IMAG, ylabels['imag']),
+YAXIS = {  # column, column label, yaxis-label [, Delta yaxis-label]
+            BETA_NAME:     (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
+            AMP_BETA_NAME: (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
+            ORBIT_NAME:    ('', 'orbit', ylabels['co']),
+            PHASE_NAME:    (PHASE, 'phase', ylabels['phase']),
+            'rdt_amp':     (AMPLITUDE, None, ylabels['absolute']),
+            'rdt_phase':   (PHASE, None, ylabels['phase']),
+            'rdt_real':    (REAL, None, ylabels['real']),
+            'rdt_imag':    (IMAG, None, ylabels['imag']),
 }
