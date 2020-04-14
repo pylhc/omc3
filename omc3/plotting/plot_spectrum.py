@@ -354,6 +354,7 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
 
     # Data Sorting
     for file_path, filename in get_unique_filenames(opt.files):
+        filename = "_".join(filename)
         LOG.info(f"Loading data for file '{filename}'.")
 
         data = load_spectrum_data(file_path, opt.bpms)

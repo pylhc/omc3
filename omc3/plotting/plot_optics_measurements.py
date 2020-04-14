@@ -86,7 +86,7 @@ def get_params():
         name="combine_by",
         help="Combine plots into one. Either files, planes (not separated into two axes) or both.",
         nargs="+",
-        choices=['files', 'planes']  # combine by columns does not really make sense
+        choices=['files', 'planes'],  # combine by columns does not really make sense
     )
     params.add_parameter(
         name="output",
@@ -139,7 +139,7 @@ def plot(opt):
     if opt.output is not None:
         _save_options_to_config(opt)
 
-    # opt = _check_opt(opt)
+    opt = _check_opt(opt)
 
     ip_positions = _get_ip_positions(opt.ip_positions, opt.x_axis, opt.ip_search_pattern)
     x_column, x_label = _get_x_options(opt.x_axis)
@@ -149,6 +149,7 @@ def plot(opt):
 
         is_rdt = optics_parameter.lower().startswith("f")
         files, file_labels = zip(*get_unique_filenames(opt.folders))
+        file_labels = ["_".join(flabels) for flabels in file_labels]
 
         if is_rdt:
             fig_dict.update(_plot_rdt(
@@ -166,7 +167,12 @@ def plot(opt):
     return fig_dict
 
 
+def _check_opt(opt):
+    return opt
+
+
 # Plot RDTs --------------------------------------------------------------------
+
 
 def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
     fig_dict = {}
@@ -177,15 +183,16 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
     files = [str(f.absolute()/'rdt'/subfolder/f'{optics_parameter}{EXT}') for f in files]
     columns = _get_rdt_columns()
 
-
-    prefix = 'plot'
-    combine_by = opt.combine_by
-    combine_planes = False
-    if combine_by is not None:
+    prefix = 'plot_'
+    combine_by = []
+    if opt.combine_by is not None:
         prefix += optics_parameter
-        if "planes" in combine_by:
-            combine_by[combine_by.index("planes")] = "columns"
-            combine_planes = True
+        combine_by = list(opt.combine_by)
+
+    combine_planes = False
+    if "planes" in combine_by:
+        combine_by[combine_by.index("planes")] = "columns"
+        combine_planes = True
 
     for idxs in (slice(0, 2), slice(2, 4)):  # amp,phase - real,imag
         if combine_planes:
@@ -206,8 +213,8 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
                 x_columns=[x_column],
                 x_labels=[x_label],
                 vertical_lines=ip_positions + opt.lines_manual,
-                same_figure="columns" if "columns" not in opt.combine_by else None,
-                same_axes=opt.combine_by,
+                same_figure="columns" if "columns" not in combine_by else None,
+                same_axes=combine_by if len(combine_by) else None,
                 single_legend=True,
                 output_prefix=prefix,
                 **opt.get_subdict(['show', 'output',
@@ -374,8 +381,14 @@ if __name__ == '__main__':
     # plot()
     import matplotlib
     matplotlib.use('qt5agg')
-    plot(folders=['/home/josch/Software/myomc3/optics93'],
-         optics_parameters=['beta_amplitude', 'orbit', 'f0012_y'],
+    plot(folders=[
+        '/home/josch/Software/myomc3/optics93',
+        '/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/Sextupole/omc3harpyoutput'],
+         optics_parameters=[
+             # 'beta_amplitude',
+              'orbit',
+             'f0012_y'
+             ],
          # combine_by=["files", "planes"],
          # optics_parameters=['f0012_y', 'f3000_x'],
          output="temp/", show=True, ip_positions="LHCB1")

@@ -18,6 +18,7 @@ from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, rcParams
 
+from omc3.definitions.constants import PLANES
 from omc3.definitions import formats
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
@@ -97,7 +98,7 @@ def get_params():
               "to the given files and y_columns."),
         type=str,
         nargs='+',
-        choices=["X", "Y"],
+        choices=PLANES,
     )
     params.add_parameter(
         name="output",
@@ -238,7 +239,7 @@ def sort_data(opt):
 
             if opt.planes is None:
                 id_map = get_id(filename, y_col, file_label, column_label, same_axes_set, opt.same_figure, opt.output_prefix)
-                output_path = Path(opt.output) / f"plot_{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
+                output_path = Path(opt.output) / f"{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
 
                 collector.add_data_for_id(
                     figure_id=id_map['figure_id'],
@@ -254,7 +255,7 @@ def sort_data(opt):
             else:
                 for plane in opt.planes:
                     id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
-                                    opt.same_figure, opt.output_prefix, plane)
+                                    opt.same_figure, opt.output_prefix, plane, opt.planes)
                     output_path = Path(opt.output) / f"{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
 
                     file_path_plane = file_path.with_name(f'{file_path.name}{plane.lower()}{EXT}')
@@ -276,15 +277,16 @@ def sort_data(opt):
     return collector
 
 
-def get_id(filename, column, file_label, column_label, same_axes, same_figure, prefix, plane=''):
+def get_id(filename, column, file_label, column_label, same_axes, same_figure, prefix, plane='', planes=[]):
     """ Get the right IDs for the current sorting way.
 
     This is where the actual sorting happens, by mapping the right IDs according
     to the chosen options.
     """
-    file_output = filename.strip("_").replace(EXT, "")
+    file_last = filename[-1].replace(EXT, "").strip("_")
+    file_output = "_".join(filename).replace(EXT, "").strip("_")
     if file_label is not None:
-        file_output = f'{file_label}_{file_output}'
+        file_output = f'{file_label}_{file_last}'
     else:
         file_label = file_output
 
@@ -326,7 +328,7 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
             ylabel=column_label,
         ),
         frozenset(['planes']): dict(
-            figure_id=f'{prefix}{file_output}_{column}',
+            figure_id=f'{prefix}{file_output}_{column}{"".join(planes)}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,

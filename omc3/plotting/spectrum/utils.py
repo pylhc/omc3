@@ -313,6 +313,7 @@ def get_unique_filenames(files: Union[Iterable, Sized]):
     names = [None] * len(files)
     parts = -1
     for idx, fpath in enumerate(files):
+        fpath = Path(fpath)
         fname = _get_partial_filepath(fpath, parts)
         while fname in names:
             parts -= 1
@@ -320,13 +321,13 @@ def get_unique_filenames(files: Union[Iterable, Sized]):
                 names[idx_old] = _get_partial_filepath(paths[idx_old], parts)
             fname = _get_partial_filepath(fpath, parts)
         names[idx] = fname
-        paths[idx] = Path(fpath)
+        paths[idx] = fpath
     return zip(paths, names)
 
 
-def _get_partial_filepath(path, nparts):
+def _get_partial_filepath(path: Path, nparts: int):
     """ Returns the path from nparts until the end, separated by underscores"""
-    return "_".join(os.path.split(path)[nparts:])
+    return path.parts[nparts:]
 
 
 def _get_valid_indices(amps, freqs):
