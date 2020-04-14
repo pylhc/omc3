@@ -14,12 +14,12 @@ from pathlib import Path
 import matplotlib
 import tfs
 from generic_parser import EntryPointParameters, entrypoint, DotDict
-from generic_parser.entry_datatypes import DictAsString, get_multi_class
+from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, rcParams
 
-from omc3.definitions.constants import PLANES
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import FigureCollector
@@ -137,13 +137,13 @@ def get_params():
         action="store_true",
     )
     params.add_parameter(
-        name="xlim",
+        name="x_lim",
         nargs=2,
         type=float,
         help='Limits on the x axis (Tupel)'
     )
     params.add_parameter(
-        name="ylim",
+        name="y_lim",
         nargs=2,
         type=float,
         help='Limits on the y axis (Tupel)'
@@ -213,7 +213,7 @@ def plot(opt):
 
     # plotting
     _create_plots(fig_collection,
-                  opt.get_subdict(['xlim', 'ylim',
+                  opt.get_subdict(['x_lim', 'y_lim',
                                    'ncol_legend', 'single_legend',
                                    'change_marker', 'errorbar_alpha',
                                    'vertical_lines',
@@ -238,7 +238,8 @@ def sort_data(opt):
             axes_ids = _get_axes_ids(opt)
 
             if opt.planes is None:
-                id_map = get_id(filename, y_col, file_label, column_label, same_axes_set, opt.same_figure, opt.output_prefix)
+                id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
+                                opt.same_figure, opt.output_prefix)
                 output_path = Path(opt.output) / f"{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
 
                 collector.add_data_for_id(
@@ -389,7 +390,7 @@ def _create_plots(fig_collection, opt):
                     fig_container.ylabels.values(), fig_container.xlabels.values())):
             _plot_vlines(ax, opt.vertical_lines)
             _plot_data(ax, data, opt.change_marker, opt.errorbar_alpha)
-            _set_axes_layout(ax, opt.xlim, opt.ylim, ylabel, xlabel)
+            _set_axes_layout(ax, opt.x_lim, opt.y_lim, ylabel, xlabel)
 
             if idx_ax == 0 or not opt.single_legend:
                 pannot.make_top_legend(ax, opt.ncol_legend)
@@ -422,10 +423,10 @@ def _plot_vlines(ax, lines):
         line['text'] = text
 
 
-def _set_axes_layout(ax, xlim, ylim, ylabel, xlabel):
-    ax.set_xlim(xlim)
+def _set_axes_layout(ax, x_lim, y_lim, ylabel, xlabel):
+    ax.set_xlim(x_lim)
     ax.set_xlabel(xlabel)
-    ax.set_ylim(ylim)
+    ax.set_ylim(y_lim)
     ax.set_ylabel(ylabel)
 
 
@@ -513,16 +514,6 @@ def _safe_format(label, insert):
     except KeyError:  # can happen for latex strings
         return label
 
-# TODO
-    if auto_scale:
-        current_y_lims = _get_auto_scale(y_val, auto_scale)
-        if y_lims is None:
-            y_lims = current_y_lims
-        else:
-            y_lims = [min(y_lims[0], current_y_lims[0]),
-                      max(y_lims[1], current_y_lims[1])]
-        if last_line:
-            ax.set_ylim(*y_lims)
 
 # Script Mode ------------------------------------------------------------------
 

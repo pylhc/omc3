@@ -6,29 +6,26 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
 
 """
-
 import os
 from collections import OrderedDict
 from pathlib import Path
-from typing import Iterable
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-from generic_parser.entry_datatypes import DictAsString, get_multi_class
+from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import save_options_to_config
-from omc3.optics_measurements.rdt import _rdt_to_order_and_type
-
-from omc3.plotting.spectrum.utils import get_unique_filenames
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
+from omc3.optics_measurements.constants import ERR, DELTA, AMPLITUDE, PHASE, EXT
+from omc3.optics_measurements.rdt import _rdt_to_order_and_type
 from omc3.plotting.optics_measurements.constants import (DEFAULTS,
                                                          XAXIS, YAXIS,
                                                          IP_POS_DEFAULT)
-from omc3.optics_measurements.constants import ERR, DELTA, AMPLITUDE, PHASE, EXT
 from omc3.plotting.plot_tfs import plot as plot_tfs
-from omc3.utils.logging_tools import get_logger, list2str
+from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
+from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
 
@@ -134,6 +131,18 @@ def get_params():
         type=float,
         default=DEFAULTS['errorbar_alpha'],
     )
+    params.add_parameter(
+        name="x_lim",
+        nargs=2,
+        type=float,
+        help='Limits on the x axis (Tupel)'
+    )
+    params.add_parameter(
+        name="y_lim",
+        nargs=2,
+        type=float,
+        help='Limits on the y axis (Tupel)'
+    )
     return params
 
 
@@ -232,7 +241,7 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
                 **opt.get_subdict(['show', 'output',
                                    'plot_styles', 'manual_style',
                                    'change_marker', 'errorbar_alpha',
-                                   'ncol_legend'])
+                                   'ncol_legend', 'x_lim', 'y_lim'])
             ))
 
     return fig_dict
@@ -287,7 +296,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
         **opt.get_subdict(['show', 'output',
                            'plot_styles', 'manual_style',
                            'change_marker', 'errorbar_alpha',
-                           'ncol_legend'])
+                           'ncol_legend', 'x_lim', 'y_lim'])
     )
 
 
@@ -332,53 +341,10 @@ def _get_ip_positions_from_file(path, axis, pattern):
     return model.loc[ip_mask, column].to_dict()
 
 
-# X-Axis -----------------------------------------------------------------------
+# Other ------------------------------------------------------------------------
 
 def _get_x_options(x_axis):
     return XAXIS[x_axis]
-
-
-# Y-Axis -----------------------------------------------------------------------
-
-
-def _get_auto_scale(y_val, scaling):
-    """ Find the y-limits so that scaling% of the points are visible """
-    y_sorted = sorted(y_val)
-    n_points = len(y_val)
-    y_min = y_sorted[int(((1 - scaling/100.) / 2.) * n_points)]
-    y_max = y_sorted[int(((1 + scaling/100.) / 2.) * n_points)]
-    return y_min, y_max
-
-
-    # # things to do only once
-    # if last_line:
-    #     # setting the y_label
-    #     if y_label is None:
-    #         _set_ylabel(ax, y_col, y_label_from_col, y_plane, chromatic)
-    #     else:
-    #         y_label_from_label = ""
-    #         if y_label:
-    #             y_label_from_label, y_plane, _, _, chromatic = _get_names_and_columns(
-    #                 idx_plot, xy, y_label, "")
-    #         if xy:
-    #             y_label = f"{y_label:s} {y_plane:s}"
-    #         _set_ylabel(ax, y_label, y_label_from_label, y_plane, chromatic)
-    #
-    #     # setting x limits
-    #     if x_is_position:
-    #         with suppress(AttributeError, ValueError):
-    #             post_processing.set_xlimits(data.SEQUENCE, ax)
-    #
-    #     # setting visibility, ir-markers and label
-    #     if xy and idx_plot == 0:
-    #         ax.axes.get_xaxis().set_visible(False)
-    #         if x_is_position and ir_positions:
-    #             annotations.show_ir(ir_positions, ax, mode='lines')
-    #     else:
-    #         if x_is_position:
-    #             annotations.set_xaxis_label(ax)
-    #             if ir_positions:
-    #                 annotations.show_ir(ir_positions, ax, mode='outside')
 
 
 def _save_options_to_config(opt):
