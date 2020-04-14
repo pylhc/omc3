@@ -123,6 +123,12 @@ def get_params():
         help='Number of bpm legend-columns. If < 1 no legend is shown.'
     )
     params.add_parameter(
+        name="suppress_column_legend",
+        help=("Does not show column name in legend "
+              "e.g. when combining by files (see also `ncol_legend`)."),
+        action="store_true",
+    )
+    params.add_parameter(
         name="errorbar_alpha",
         help="Alpha value for error bars",
         type=float,
@@ -183,10 +189,10 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
     files = [str(f.absolute()/'rdt'/subfolder/f'{optics_parameter}{EXT}') for f in files]
     columns = _get_rdt_columns()
 
-    prefix = 'plot_'
+    prefix = ''
     combine_by = []
     if opt.combine_by is not None:
-        prefix += optics_parameter
+        prefix = optics_parameter
         combine_by = list(opt.combine_by)
 
     combine_planes = False
@@ -194,13 +200,19 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
         combine_by[combine_by.index("planes")] = "columns"
         combine_planes = True
 
-    for idxs in (slice(0, 2), slice(2, 4)):  # amp,phase - real,imag
+    for idxs, mode in ((slice(0, 2), "amplitude"), (slice(2, 4), "complex")):
         if combine_planes:
             y_labels = [optics_parameter.upper()]
-            column_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+            if opt.suppress_column_legend:
+                column_labels = [l.format('F') for l in columns['y_labels'][idxs]]
+            else:
+                column_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+
         else:
             y_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
             column_labels = [optics_parameter.upper()]
+            if opt.suppress_column_legend:
+                column_labels = ['']
 
         fig_dict.update(
             plot_tfs(
@@ -216,7 +228,7 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
                 same_figure="columns" if "columns" not in combine_by else None,
                 same_axes=combine_by if len(combine_by) else None,
                 single_legend=True,
-                output_prefix=prefix,
+                output_prefix=f"plot_{mode}_{prefix}",
                 **opt.get_subdict(['show', 'output',
                                    'plot_styles', 'manual_style',
                                    'change_marker', 'errorbar_alpha',
@@ -254,6 +266,9 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
 
     if opt.combine_by is not None and "planes" in opt.combine_by:  # not else!
         column_labels = [f'{column_label} {{0}}']
+
+    if opt.suppress_column_legend:
+        column_labels = ['{0}']
 
     return plot_tfs(
         files=[str(f.absolute()/optics_parameter) for f in files],
@@ -386,9 +401,14 @@ if __name__ == '__main__':
         '/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/Sextupole/omc3harpyoutput'],
          optics_parameters=[
              # 'beta_amplitude',
-              'orbit',
-             'f0012_y'
+              # 'orbit',
+             'f0012_y',
+             # 'f3000_x'
              ],
-         # combine_by=["files", "planes"],
-         # optics_parameters=['f0012_y', 'f3000_x'],
+         combine_by=[
+             "files",
+             "planes"
+         ],
+         ncol_legend=2,
+         suppress_column_legend=True,
          output="temp/", show=True, ip_positions="LHCB1")

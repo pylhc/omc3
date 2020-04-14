@@ -295,6 +295,8 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
     else:
         column_label = _safe_format(column_label, plane)
 
+    planes = "".join(planes)
+
     axes_id = {'files': f'{filename}',
                'columns': f'{column}',
                'planes': f'{plane}'
@@ -316,19 +318,19 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
             ylabel=f'',
         ),
         frozenset(['planes', 'columns']): dict(
-            figure_id=f'{prefix}{file_output}',
+            figure_id=f'{prefix}{file_output}{planes}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
         ),
         frozenset(['planes', 'files']): dict(
-            figure_id=f'{prefix}{file_output}',
+            figure_id=f'{prefix}{column}{planes}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
             ylabel=column_label,
         ),
         frozenset(['planes']): dict(
-            figure_id=f'{prefix}{file_output}_{column}{"".join(planes)}',
+            figure_id=f'{prefix}{file_output}_{column}{planes}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
