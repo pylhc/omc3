@@ -19,7 +19,10 @@ def test_nanhandling():
     assert stats.circular_nanmean(vector) == stats.circular_mean(vector[:-1])
     assert stats.weighted_nanmean(vector) == stats.weighted_mean(vector[:-1])
     assert stats.weighted_nanrms(vector) == stats.weighted_rms(vector[:-1])
-    assert stats.circular_nanerror(vector) == stats.circular_error(vector[:-1])
+    vector = np.array([[355., 0., 5., 0.],
+                       [355., 0., 5., 0.],
+                       [np.nan, np.nan, np.nan, np.nan]])
+    assert np.all(stats.circular_nanerror(vector, axis=0) == stats.circular_error(vector[:-1], axis=0))
 
 
 def test_circular_empties():
