@@ -15,7 +15,7 @@ import pandas as pd
 import tfs
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
-from omc3.definitions.constants import PLANES, HV_TO_PLANE
+from omc3.definitions.constants import PLANES
 from omc3.utils import stats
 from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE, COL_ERR
 
@@ -78,40 +78,40 @@ def Aover8BC(df, lines, phases, errlines, errphases, sign=1):
 
 CRDTS = [
     {'order':"Coupling", 'term': "F_XY", 'func': Aover2B,
-     'lines': {'A': ['H', 0, 1], 'B': ['V', 0, 1]}, 'sign':1},
+     'lines': {'A': ['X', 0, 1], 'B': ['Y', 0, 1]}, 'sign':1},
     {'order':"Coupling", 'term': "F_YX", 'func': Aover2B,
-     'lines': {'A': ['V', 1, 0], 'B': ['H', 1, 0]}, 'sign':1},
+     'lines': {'A': ['Y', 1, 0], 'B': ['X', 1, 0]}, 'sign':1},
 
     {'order':"Sextupole", 'term': "F_NS3", 'func': Aover4B,
-     'lines': {'A': ['H', -2, 0], 'B': ['H', 1, 0]}, 'sign':1},
+     'lines': {'A': ['X', -2, 0], 'B': ['X', 1, 0]}, 'sign':1},
     {'order':"Sextupole", 'term': "F_NS2", 'func': Aover4B,
-     'lines': {'A': ['H', 0, -2], 'B': ['V', 0, 1]}, 'sign':1},
+     'lines': {'A': ['X', 0, -2], 'B': ['Y', 0, 1]}, 'sign':1},
     {'order':"Sextupole", 'term': "F_NS1", 'func': Aover4BC,
-     'lines': {'A': ['V', -1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':1},
+     'lines': {'A': ['Y', -1, -1], 'B': ['X', 1, 0], 'C': ['Y', 0, 1]}, 'sign':1},
     {'order':"Sextupole", 'term': "F_NS0", 'func': Aover4BC,
-     'lines': {'A': ['V', 1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':-1},
+     'lines': {'A': ['Y', 1, -1], 'B': ['X', 1, 0], 'C': ['Y', 0, 1]}, 'sign':-1},
 
     {'order':"SkewSextupole", 'term': "F_SS3", 'func': Aover4B,
-     'lines': {'A': ['V', 0, -2], 'B': ['V', 0, 1]}, 'sign':1},
+     'lines': {'A': ['Y', 0, -2], 'B': ['Y', 0, 1]}, 'sign':1},
     {'order':"SkewSextupole", 'term': "F_SS2", 'func': Aover4B,
-     'lines': {'A': ['V', -2, 0], 'B': ['H', 1, 0]}, 'sign':1},
+     'lines': {'A': ['Y', -2, 0], 'B': ['X', 1, 0]}, 'sign':1},
     {'order':"SkewSextupole", 'term': "F_SS1", 'func': Aover4BC,
-     'lines': {'A': ['H', -1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':1},
+     'lines': {'A': ['X', -1, -1], 'B': ['X', 1, 0], 'C': ['Y', 0, 1]}, 'sign':1},
     {'order':"SkewSextupole", 'term': "F_SS0", 'func': Aover4BC,
-     'lines': {'A': ['H', 1, -1], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':-1},
+     'lines': {'A': ['X', 1, -1], 'B': ['X', 1, 0], 'C': ['Y', 0, 1]}, 'sign':-1},
 
     {'order':"Octupole", 'term': "F_NO5", 'func': Aover8B,
-     'lines': {'A': ['V', 0, 3], 'B': ['V', 0, 1]}, 'sign':1},
+     'lines': {'A': ['Y', 0, 3], 'B': ['Y', 0, 1]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO4", 'func': Aover8BC,
-     'lines': {'A': ['H', 1, 2], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':-1},
+     'lines': {'A': ['X', 1, 2], 'B': ['X', 1, 0], 'C': ['Y', 0, 1]}, 'sign':-1},
     {'order':"Octupole", 'term': "F_NO3", 'func': Aover8B,
-     'lines': {'A': ['H', 3, 0], 'B': ['H', 1, 0]}, 'sign':1},
+     'lines': {'A': ['X', 3, 0], 'B': ['X', 1, 0]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO2", 'func': Aover8BC,
-     'lines': {'A': ['H', -1, 2], 'B': ['H', 1, 0], 'C': ['V', 0, 1]}, 'sign':1},
+     'lines': {'A': ['X', -1, 2], 'B': ['X', 1, 0], 'C': ['Y', 0, 1]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO1", 'func': Aover8BC,
-     'lines': {'A': ['V', 2, -1], 'B': ['V', 0, 1], 'C': ['H', 1, 0]}, 'sign':1},
+     'lines': {'A': ['Y', 2, -1], 'B': ['Y', 0, 1], 'C': ['X', 1, 0]}, 'sign':1},
     {'order':"Octupole", 'term': "F_NO0", 'func': Aover8BC,
-     'lines': {'A': ['V', 2, 1], 'B': ['V', 0, 1], 'C': ['H', 1, 0]}, 'sign':-1},
+     'lines': {'A': ['Y', 2, 1], 'B': ['Y', 0, 1], 'C': ['X', 1, 0]}, 'sign':-1},
 ]
 
 
@@ -181,7 +181,7 @@ def process_crdt(joined_df, crdt):
             if translate_line[prefix] in joined_df.columns:
                 data_dict[key] = joined_df[translate_line[prefix]]
             elif conj_translate_line[prefix] in joined_df.columns:
-                data_dict[key] = -joined_df[translate_line[prefix]] if prefix == 'PHASE' else joined_df[translate_line[prefix]]
+                data_dict[key] = -joined_df[conj_translate_line[prefix]] if prefix == 'PHASE' else joined_df[conj_translate_line[prefix]]
             else:
                 LOGGER.debug(f"No {prefix} for line {line} found in lin-files, set to Nan")
                 data_dict[key] = np.nan
@@ -205,7 +205,7 @@ def average_results(result_dfs, union_columns, merge_columns, merge_functions, i
 
 
 def translate_line_to_col(line):
-    plane = HV_TO_PLANE[line[0]] 
+    plane = line[0]
     line = f"{line[1]}{line[2]}".replace('-', '_')
 
     if (plane == 'X' and line == '10') or (plane == 'Y' and line == '01'):
