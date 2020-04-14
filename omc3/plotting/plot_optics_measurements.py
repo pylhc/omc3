@@ -191,6 +191,10 @@ def _check_opt(opt):
 
 def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
     fig_dict = {}
+    if opt.x_axis != 'location':
+        LOG.error("Phase advance not yet implemented in RDT-files. Skipping.")
+        return fig_dict
+
     if opt.delta:
         LOG.warning('Delta Columns for RDTs not implemented. Using normal columns.')
 
@@ -198,11 +202,13 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
     files = [str(f.absolute()/'rdt'/subfolder/f'{optics_parameter}{EXT}') for f in files]
     columns = _get_rdt_columns()
 
-    prefix = ''
     combine_by = []
     if opt.combine_by is not None:
-        prefix = optics_parameter
         combine_by = list(opt.combine_by)
+
+    prefix = ''
+    if "files" in combine_by:
+        prefix = f'{optics_parameter}_'
 
     combine_planes = False
     if "planes" in combine_by:
@@ -277,15 +283,18 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
         column_labels = [f'{column_label} {{0}}']
 
     if opt.suppress_column_legend:
-        column_labels = ['{0}']
+        if same_fig == 'planes':
+            column_labels = ['']
+        else:
+            column_labels = ['{0}']   #  show planes in labels as all are in same axes
 
     return plot_tfs(
-        files=[str(f.absolute()/optics_parameter) for f in files],
+        files=[str(f.absolute()/f'{optics_parameter}{{0}}{EXT}') for f in files],
         file_labels=list(file_labels),
-        y_columns=[y_column],
+        y_columns=[f'{y_column}{{0}}'],
         y_labels=[[y_label]],
         column_labels=column_labels,
-        error_columns=[error_column],
+        error_columns=[f'{error_column}{{0}}'],
         x_columns=[x_column],
         x_labels=[x_label],
         planes=list(PLANES),
@@ -328,20 +337,29 @@ def _get_ip_positions(ip_positions, xaxis, ip_pattern):
             if xaxis != 'location':
                 raise NotImplementedError("No default IP positions for "
                                           f"{xaxis} implemented.")
+        return _create_ip_list(positions)
 
-            return [{'text': name, 'x': x,
-                     'loc': 'top', 'color': 'k'} for name, x in positions.items()]
+    if ip_positions is None:
+        return []
+
     return ip_positions
 
 
 def _get_ip_positions_from_file(path, axis, pattern):
     model = tfs.read(path, index="NAME")
     ip_mask = model.index.str.match(pattern)
-    column = XAXIS[axis][1]
-    return model.loc[ip_mask, column].to_dict()
+    column = XAXIS[axis][0]
+    return _create_ip_list(model.loc[ip_mask, column])
+
+
+def _create_ip_list(ip_dict):
+    """ ip_dict can be series as well. """
+    return [{'text': name, 'x': x,
+             'loc': 'top', 'color': 'k'} for name, x in ip_dict.items()]
 
 
 # Other ------------------------------------------------------------------------
+
 
 def _get_x_options(x_axis):
     return XAXIS[x_axis]
@@ -362,19 +380,28 @@ if __name__ == '__main__':
     # plot()
     import matplotlib
     matplotlib.use('qt5agg')
-    plot(folders=[
-        '/home/josch/Software/myomc3/optics93',
-        '/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/Sextupole/omc3harpyoutput'],
-         optics_parameters=[
-             # 'beta_amplitude',
-              # 'orbit',
-             'f0012_y',
-             # 'f3000_x'
-             ],
-         combine_by=[
-             "files",
-             "planes"
-         ],
-         ncol_legend=2,
-         suppress_column_legend=True,
-         output="temp/", show=True, ip_positions="LHCB1")
+    plot(
+        show=True,
+        output="temp/",
+        delta=True,  # plots delta column
+        x_axis='location',
+        # x_axis='phase-advance',
+        folders=[
+            '/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/Octupole/omc3harpyoutput',
+            '/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/Sextupole/omc3harpyoutput'
+        ],
+        optics_parameters=[
+            'beta_amplitude',
+            'orbit',
+            'f0012_y',
+            # 'f3000_x'
+        ],
+        combine_by=[
+            "files",
+            # "planes"
+        ],
+        ncol_legend=2,
+        suppress_column_legend=True,
+        # ip_positions="LHCB1",
+        # ip_positions="/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/model/twiss_elements.dat"
+    )

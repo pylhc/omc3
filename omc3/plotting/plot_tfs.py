@@ -37,15 +37,14 @@ def get_params():
     params.add_parameter(
         name="files",
         help=("Path to files to plot. "
-              f"If planes are used, omit file-ending. In this case '{EXT}' is"
-              "assumed"),
+              "If planes are used, replace the plane in the filename with '{0}'"),
         required=True,
         nargs="+",
         type=str,
     )
     params.add_parameter(
         name="y_columns",
-        help="List of column names to plot (e.g. BETX, BETY or just BET if `planes` is used.)",
+        help="List of column names to plot (e.g. BETX, BETY or BET{0} if `planes` is used.)",
         required=True,
         type=str,
         nargs="+",
@@ -240,7 +239,7 @@ def sort_data(opt):
             if opt.planes is None:
                 id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
                                 opt.same_figure, opt.output_prefix)
-                output_path = Path(opt.output) / f"{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
+                output_path = _get_full_output_path(opt.output, id_map['figure_id'])
 
                 collector.add_data_for_id(
                     figure_id=id_map['figure_id'],
@@ -257,16 +256,17 @@ def sort_data(opt):
                 for plane in opt.planes:
                     id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
                                     opt.same_figure, opt.output_prefix, plane, opt.planes)
-                    output_path = Path(opt.output) / f"{id_map['figure_id']}.{matplotlib.rcParams['savefig.format']}"
+                    output_path = _get_full_output_path(opt.output, id_map['figure_id'])
 
-                    file_path_plane = file_path.with_name(f'{file_path.name}{plane.lower()}{EXT}')
-                    y_col_plane = f'{y_col}{plane.upper()}'
-                    err_col_plane = f'{err_col}{plane.upper()}'
+                    file_path_plane = file_path.with_name(f'{_safe_format(file_path.name, plane.lower())}')
+                    y_col_plane = _safe_format(y_col, plane.upper())
+                    err_col_plane = _safe_format(err_col, plane.upper())
+                    x_col_plane = _safe_format(x_col, plane.upper())
 
                     collector.add_data_for_id(
                         figure_id=id_map['figure_id'],
                         label=id_map['legend_label'],
-                        data=_read_data(file_path_plane, x_col, y_col_plane, err_col_plane),
+                        data=_read_data(file_path_plane, x_col_plane, y_col_plane, err_col_plane),
                         path=output_path,
                         x_label=x_label,
                         y_label=id_map['ylabel'],
@@ -284,19 +284,23 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
     This is where the actual sorting happens, by mapping the right IDs according
     to the chosen options.
     """
+    planes = "".join(planes)
+
     file_last = filename[-1].replace(EXT, "").strip("_")
     file_output = "_".join(filename).replace(EXT, "").strip("_")
     if file_label is not None:
         file_output = f'{file_label}_{file_last}'
     else:
         file_label = file_output
+    file_output_planes = _safe_format(file_output, planes.lower())
+    file_output = _safe_format(file_output, plane)
 
+    column_planes = _safe_format(column, planes)
+    column = _safe_format(column, plane)
     if column_label is None:
-        column_label = f'{column}{plane}'
+        column_label = column
     else:
         column_label = _safe_format(column_label, plane)
-
-    planes = "".join(planes)
 
     axes_id = {'files': f'{filename}',
                'columns': f'{column}',
@@ -305,56 +309,59 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
 
     key = same_axes if same_figure is None else same_axes.union({same_figure})
 
-    return {
+    out_dict = {
         frozenset(['files', 'columns', 'planes']): dict(
-            figure_id=f'{prefix}',
+            figure_id=f'{prefix}{planes}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
             ylabel=f'',
         ),
         frozenset(['files', 'columns']): dict(
-            figure_id=f'{prefix}{plane}',
+            figure_id=f'{prefix}{plane.lower()}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
             ylabel=f'',
         ),
         frozenset(['planes', 'columns']): dict(
-            figure_id=f'{prefix}{file_output}{planes}',
+            figure_id=f'{prefix}{file_output_planes}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
         ),
         frozenset(['planes', 'files']): dict(
-            figure_id=f'{prefix}{column}{planes}',
+            figure_id=f'{prefix}{column_planes}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
             ylabel=column_label,
         ),
         frozenset(['planes']): dict(
-            figure_id=f'{prefix}{file_output}_{column}{planes}',
+            figure_id=f'{prefix}{file_output_planes}_{column_planes}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
         ),
         frozenset(['files']): dict(
-            figure_id=f'{prefix}{column}{plane}',
+            figure_id=f'{prefix}{column}',
             axes_id=axes_id,
             legend_label=f'{file_label}',
             ylabel=column_label,
         ),
         frozenset(['columns']): dict(
-            figure_id=f'{prefix}{file_output}{plane}',
+            figure_id=f'{prefix}{file_output}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=f'{file_label}',
         ),
         frozenset([]): dict(
-            figure_id=f'{prefix}{file_output}_{column}{plane}',
+            figure_id=f'{prefix}{file_output}_{column}',
             axes_id=axes_id,
             legend_label=f'',
             ylabel=column_label,
         ),
     }[key]
+
+    out_dict['figure_id'] = out_dict['figure_id'].strip("_")
+    return out_dict
 
 
 def _read_data(file_path, x_col, y_col, err_col):
@@ -441,12 +448,8 @@ def _save_options_to_config(opt):
                            )
 
 
-def _export_plots(figs, output):
-    """ Export all created figures to PDF """
-    for param in figs:
-        pdf_path = f"{output:s}_{param:s}.pdf"
-        figs[param].savefig(pdf_path, bbox_inches='tight')
-        LOG.debug(f"Exported tfs-contents to PDF '{pdf_path:s}'")
+def _get_full_output_path(folder, filename):
+    return Path(folder) / f"{filename}.{matplotlib.rcParams['savefig.format']}"
 
 
 # Helper -----------------------------------------------------------------------

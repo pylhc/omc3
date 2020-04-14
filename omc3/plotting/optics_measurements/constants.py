@@ -12,7 +12,7 @@ from omc3.optics_measurements.constants import (
     S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
     AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,
     SPECIAL_PHASE_NAME, TOTAL_PHASE_NAME, DISPERSION_NAME,
-    NORM_DISP_NAME, ORBIT_NAME, KICK_NAME, IP_NAME,
+    NORM_DISP_NAME, ORBIT_NAME, KICK_NAME, IP_NAME, PHASE_ADV, MDL
 )
 from omc3.plotting.utils.annotations import ylabels
 
@@ -55,14 +55,14 @@ DEFAULTS = {
 
 
 XAXIS = { # Column, Label
-    'location': ('S', 'Location [m]'),
-    'phase-advance': ('MUX', 'Phase Advance [$2 \pi$]')
+    'location': (S, 'Location [m]'),
+    'phase-advance': (f'{PHASE_ADV}{{0}}{MDL}', 'Phase Advance [$2 \pi$]')
 }
 
 YAXIS = {  # column, column label, yaxis-label [, Delta yaxis-label]
             BETA_NAME:     (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
             AMP_BETA_NAME: (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
-            ORBIT_NAME:    ('', 'orbit', ylabels['co']),
+            ORBIT_NAME:    ('', 'orbit', ylabels['co'], f"$\Delta$ {ylabels['co']}"),
             PHASE_NAME:    (PHASE, 'phase', ylabels['phase']),
             'rdt_amp':     (AMPLITUDE, None, ylabels['absolute']),
             'rdt_phase':   (PHASE, None, ylabels['phase']),
