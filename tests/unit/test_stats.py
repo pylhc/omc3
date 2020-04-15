@@ -21,8 +21,8 @@ def test_nanhandling():
     assert stats.weighted_nanrms(vector) == stats.weighted_rms(vector[:-1])
     vector = np.array([[355., 0., 5., 0.],
                        [355., 0., 5., 0.],
-                       [np.nan, np.nan, np.nan, np.nan]])
-    assert np.all(stats.circular_nanerror(vector, axis=0) == stats.circular_error(vector[:-1], axis=0))
+                       [355., 0., 5., np.nan]])
+    assert np.all(stats.circular_nanerror(vector, axis=1) == stats.circular_error(vector[:, :-1], axis=1))
 
 
 def test_circular_empties():
