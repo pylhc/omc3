@@ -32,7 +32,6 @@ ERRTUNE = 3e-7
 NAT_OVER_DRV = 0.01
 MAGIC_NUMBER = 6   # SVD cleaning effect + main lobe size effect
 COUPLING = 0.1
-np.random.seed(1234567)
 
 def optics_measurement_test_files(modeldir, dpps, motion):
     """
@@ -46,6 +45,7 @@ def optics_measurement_test_files(modeldir, dpps, motion):
     """
     model, tune, nattune = get_combined_model_and_tunes(modeldir)
     lins = []
+    np.random.seed(12345678)
     for dpp_value in dpps:
         lins.append(generate_lin_files(model, tune, nattune, MOTION[motion], dpp=dpp_value))
     return lins
@@ -53,7 +53,6 @@ def optics_measurement_test_files(modeldir, dpps, motion):
 
 def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0):
     nbpms = len(model.index.to_numpy())
-
     lins = {}
     for plane in PLANES:
         lin = model.loc[:, ['NAME', 'S']]

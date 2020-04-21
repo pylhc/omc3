@@ -23,6 +23,7 @@ def test_converter_one_file(_sdds_file, _test_file):
 
 
 def test_converter_one_file_with_noise(_sdds_file, _test_file):
+    np.random.seed(2019)
     noiselevel = 0.0005
     converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), noise_levels=[noiselevel])
     origin = handler.read_tbt(_sdds_file)
@@ -39,6 +40,7 @@ def test_converter_more_files(_sdds_file, _test_file):
         _compare_tbt(origin, new, False)
 
 def test_converter_more_files_with_noise(_sdds_file, _test_file):
+    np.random.seed(2019)
     rep = 2
     noiselevel = 0.0005
     converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep, noise_levels=[noiselevel])
