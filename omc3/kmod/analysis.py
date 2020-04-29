@@ -310,7 +310,6 @@ def phase_constraint(kmod_input_params,plane):
 
     # weight given to phase
     weight = kmod_input_params.phase_weight
-    scale = kmod_input_params.phase_scale
 
     model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
 
@@ -319,24 +318,22 @@ def phase_constraint(kmod_input_params,plane):
     phase_adv_err = 0.0
 
     # if measured data exists
-
     if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'getphase{plane.lower()}.out')):
         #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
         phase_adv_model, phase_adv_err = get_phase_from_measurement(kmod_input_params,plane)
-        LOG.info('Phase from measurement')
+        LOG.info('Phase from measurement. Weight = %1.3f' % weight)
     # model is taken (if exists) in case no measurement data is provided
-    elif (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}')) and weight!=0):
+    elif (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'))):
         phase_adv_model, phase_adv_err = get_phase_from_model(kmod_input_params,plane)
-        LOG.info('Phase from model')
+        LOG.info('Phase from model. Weight = %1.3f' % weight)
 
     else:
         LOG.info('Phase is not used as a constraint')
         weight = 0
-        scale = 0
-        phase_adv_model = 0.0
-        phase_adv_err = 0.0
+        phase_adv_model = 1.0 # random number to avoid divergences in c2
+        phase_adv_err = 1.0
 
-    phase_adv_constraint = [phase_adv_model, phase_adv_err, weight, scale]
+    phase_adv_constraint = [phase_adv_model, phase_adv_err, weight]
 
     return phase_adv_constraint
     
@@ -349,7 +346,6 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
     phase_adv = phase_adv_from_kmod(BPM_distance,b,0.0,w,0.0)[0]
 
     weight = phase_adv_constraint[2]
-    scale = phase_adv_constraint[3]
 
     c2 = (1-weight)*((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
         sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
@@ -357,14 +353,14 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
         foc_magnet_df.headers['LSTAR'] +
         sign[2] * kmod_input_params.misalignment) -
         foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2 +
+        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]/foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) ** 2 +
         (average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
         sign[4] * kmod_input_params.errorL, def_magnet_df.headers[K] +
         sign[5] * kmod_input_params.errorK * def_magnet_df.headers[K],
         def_magnet_df.headers['LSTAR'] +
         sign[6] * kmod_input_params.misalignment) -
         def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-         sign[7] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) ** 2) + scale*weight*((phase_adv - (phase_adv_constraint[0]+sign[8]*phase_adv_constraint[1]))**2)
+         sign[7] * def_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]/def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) ** 2) + weight*(((phase_adv - (phase_adv_constraint[0]+sign[8]*phase_adv_constraint[1]))/phase_adv_constraint[0])**2)
 
     return c2
 
@@ -379,8 +375,9 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
     phase_adv_constraint = phase_constraint(kmod_input_params,plane)
     BPML,BPMR = get_BPM(kmod_input_params)
     BPM_distance = get_BPM_distance(kmod_input_params,BPML,BPMR)
-    
+
     for i, s in enumerate(sign):
+
         def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s, BPM_distance, phase_adv_constraint)
         fitresults = scipy.optimize.minimize(fun=fun,
                                              x0=kmod_input_params.betastar_and_waist[plane],
