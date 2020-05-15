@@ -89,4 +89,4 @@ def _get_meas_phase(bpml, bpmr, phases_df):
 
 
 def _get_lstar(bpml, bpmr, model):
-    return abs(model.S[model.indx[bpml]] - model.S[model.indx[bpmr]]) / 2.
+    return abs(model.S[model.index[bpml]] - model.S[model.index[bpmr]]) / 2.
