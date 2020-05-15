@@ -14,7 +14,7 @@ import pandas as pd
 import tfs
 
 from omc3.definitions.constants import PI2
-from omc3.optics_measurements.constants import EXT, IP_NAME
+from omc3.optics_measurements.constants import EXT, IP_NAME, S
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -89,4 +89,4 @@ def _get_meas_phase(bpml, bpmr, phases_df):
 
 
 def _get_lstar(bpml, bpmr, model):
-    return abs(model.S[model.index[bpml]] - model.S[model.index[bpmr]]) / 2.
+    return abs(model.loc[bpml, S] - model.loc[bpmr, S]) / 2.
