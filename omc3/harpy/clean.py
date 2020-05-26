@@ -158,7 +158,7 @@ def _index_union(*indices):
 
 def _fix_polarity(wrong_polarity_names, bpm_data):
     """  Fixes wrong polarity  """
-    bpm_data.loc[wrong_polarity_names] *= -1
+    bpm_data.loc[wrong_polarity_names, :] = -1 * bpm_data.loc[wrong_polarity_names, :].to_numpy()
     return bpm_data
 
 
