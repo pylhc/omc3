@@ -15,7 +15,6 @@ from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.getLogger(__name__)
 NTS_LIMIT = 8.  # Noise to signal limit
-N_SVD_ITER = 3
 
 
 def clean(harpy_input, bpm_data, model):
@@ -73,12 +72,14 @@ def _cut_cleaning(harpy_input, bpm_data, model):
 
 
 def _svd_clean(bpm_data, harpy_input):
-    signed_limit = harpy_input.svd_dominance_limit * (1 if harpy_input.keep_dominant_bpms else -1)
-    u_mat, sv_mat, bpm_data_mean, u_mask = svd_decomposition(bpm_data, harpy_input.sing_val,
-                                                             dominance_limit=signed_limit)
+    bpm_data_mean = np.mean(bpm_data.to_numpy(), axis=1)
+    u_mat, sv_mat, u_mask = svd_decomposition(bpm_data - bpm_data_mean[:, None],
+                                              harpy_input.sing_val,
+                                              dominance_limit=harpy_input.svd_dominance_limit,
+                                              num_iter=harpy_input.num_svd_iterations)
 
     clean_u, dominant_bpms = _clean_dominant_bpms(u_mat, u_mask, harpy_input.svd_dominance_limit)
-    clean_data = clean_u.dot(sv_mat) + bpm_data_mean
+    clean_data = clean_u.dot(sv_mat) + bpm_data_mean[np.all(u_mask, axis=1), None]
     bpm_res = (clean_data - bpm_data.loc[clean_u.index]).std(axis=1)
     LOGGER.debug(f"Average BPM resolution: {np.mean(bpm_res)}")
     average_signal = np.mean(np.std(clean_data, axis=1))
@@ -173,49 +174,38 @@ def _resync_bpms(harpy_input, bpm_data, model):
     return bpm_data.iloc[:, :-1]
 
 
-def svd_decomposition(bpm_data, num_singular_values, dominance_limit=None):
+def svd_decomposition(matrix, num_singular_values, dominance_limit=None, num_iter=None):
     """
-    Computes reduced (n largest values) singular value docomposition of a matrix (bpm_data)
+    Computes reduced (K largest values) singular value docomposition of a matrix
+    Requiring K singular values from MxN matrix results in matrices sized: ((M,K) x diag(K) x (K,N))
 
     Args:
-        bpm_data: matrix to be decomposed
-        num_singular_values: input options object that contains
+        matrix: matrix to be decomposed
+        num_singular_values: Required number of singular values for reconstruction
         dominance_limit: limit on SVD dominance
+        num_iter: maximal number of iteration to remove elements and renormalise matrices
 
     Returns:
-        An indexed DataFrame of U matrix, product of S and V^T martices,
-            mean of original matrix and U matrix mask for cleaned elements
+        An indexed DataFrame of U matrix (M,K),
+        product of S and V^T martices (diag(K).x(K,N)),
+        and U matrix mask for cleaned elements
     """
-    bpm_data_mean = bpm_data.to_numpy().mean()
-    u_mat, svt_mat, u_mat_mask = _get_decomposition(bpm_data - bpm_data_mean, num_singular_values,
-                                                    dominance_limit=dominance_limit)
-    return pd.DataFrame(index=bpm_data.index, data=u_mat), svt_mat, bpm_data_mean, u_mat_mask
-
-
-def _get_decomposition(matrix, num, dominance_limit=None):
-    """
-    Removes noise floor
-    Requiring K singular values from MxN matrix results in matrices sized: ((MxK) x diag(K) x (K,N))
-
-    Returns:
-        U (MxK),  SVt (diag(K).(K,N)), U matrix mask for cleaned elements (same dimensions as U)
-    """
-    u_mat, s_mat, vt_mat = np.linalg.svd(matrix / np.sqrt(matrix.shape[1]), full_matrices=False)
-
-    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit)
+    u_mat, s_mat, vt_mat = np.linalg.svd(matrix, full_matrices=False)
+    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=num_iter)
 
     available = np.sum(s_mat > 0.)
-    if num > available:
+    if num_singular_values > available:
         LOGGER.warning(f"Requested more singular values than available(={available})")
-    keep = min(num, available)
-    indices = np.argsort(s_mat)[::-1][:keep]
+    keep = min(num_singular_values, available)
     LOGGER.debug(f"Number of singular values to keep: {keep}")
-    return (u_mat[:, indices],
-            np.dot(np.sqrt(matrix.shape[1]) * np.diag(s_mat[indices]), vt_mat[indices, :]),
-            u_mat_mask[:, indices])
+
+    indices = np.argsort(s_mat)[::-1][:keep]
+    return (pd.DataFrame(index=matrix.index, data=u_mat[:, indices]),
+            np.dot(np.diag(s_mat[indices]), vt_mat[indices, :]),
+            u_mat_mask[:, :int(np.max(indices))+1])
 
 
-def _remove_dominant_elements(u_mat, s_mat, dominance_limit):
+def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=1):
     u_mat_mask = np.ones(u_mat.shape, dtype=bool)
     if dominance_limit is None:
         return u_mat, s_mat, u_mat_mask
@@ -223,17 +213,16 @@ def _remove_dominant_elements(u_mat, s_mat, dominance_limit):
     if abs_dominance_limit < 1 / np.sqrt(2):
         LOGGER.warning(f"The svd_dominance_limit looks too low: {abs_dominance_limit}")
 
-    for i in range(N_SVD_ITER):
+    for i in range(num_iter):
         if np.all(np.abs(u_mat) <= abs_dominance_limit):
             break
-        u_mat_mask[np.abs(u_mat) > abs_dominance_limit] = False
-        u_mat[np.abs(u_mat) > abs_dominance_limit] = 0.0
+        condition = np.logical_and(np.abs(u_mat) > abs_dominance_limit,
+                                   np.abs(u_mat) == np.max(np.abs(u_mat), axis=0))
+        u_mat_mask[condition] = False
+        u_mat[condition] = 0.0
         norms = np.sqrt(np.sum(np.square(u_mat), axis=0))
         u_mat = u_mat / norms
         s_mat = s_mat * norms
-    # do not remove any BPMs
-    if dominance_limit < 0.0:
-        u_mat_mask = np.ones(u_mat.shape, dtype=bool)
     return u_mat, s_mat, u_mat_mask
 
 
