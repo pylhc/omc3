@@ -4,19 +4,24 @@ Plot Spectrum - Utilities
 
 Common functions and sorting functions for the spectrum plotter.
 
+:module: omc3.plotting.spectrum.utils
+
 """
 import os
 from contextlib import suppress
+from pathlib import Path
 from typing import Iterable, Sized, Union
 
 import matplotlib
 import numpy as np
 import pandas as pd
+import tfs
 from generic_parser import DotDict
 from matplotlib import transforms, axes, pyplot as plt
 from matplotlib.patches import Rectangle
 
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.definitions.constants import PLANES
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
@@ -30,7 +35,6 @@ MANUAL_LOCATIONS = {
 }
 
 
-PLANES = ('X', 'Y')
 STEM_LINES_ALPHA = 0.5
 RESONANCE_LINES_ALPHA = 0.5
 PATCHES_ALPHA = 0.2
@@ -39,8 +43,7 @@ LABEL_Y_WATERFALL = 'Plane {plane:s}'
 LABEL_X = 'Frequency [tune units]'
 NCOL_LEGEND = 5  # number of columns in the legend
 WATERFALL_FILENAME = "waterfall_spectrum"
-SPECTRUM_FILENAME = "spectrum"
-CONFIG_FILENAME = "plot_spectrum_{time:s}.ini"
+STEM_FILENAME = "stem_spectrum"
 AMPS = FILE_AMPS_EXT.format(plane='')
 FREQS = FILE_FREQS_EXT.format(plane='')
 LIN = FILE_LIN_EXT.format(plane='')
@@ -225,7 +228,7 @@ def get_stem_id(filename: str, bpm: str, output_dir: str, combine_by: frozenset,
         _fset(): _get_id_multi_fig,
     }
     return fun_map[combine_by](
-        output_dir, SPECTRUM_FILENAME, filename, bpm, filetype
+        output_dir, STEM_FILENAME, filename, bpm, filetype
     )
 
 
@@ -343,7 +346,7 @@ def get_unique_filenames(files: Union[Iterable, Sized]):
                 names[idx_old] = _get_partial_filepath(paths[idx_old], parts)
             fname = _get_partial_filepath(fpath, parts)
         names[idx] = fname
-        paths[idx] = fpath
+        paths[idx] = Path(fpath)
     return zip(paths, names)
 
 
@@ -372,22 +375,22 @@ def filter_amps(files: dict, limit: float):
     return files
 
 
-def get_bpms(lin_files: dict, given_bpms: Iterable, file_path: str) -> dict:
+def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Iterable = PLANES) -> dict:
     """ Return the bpm-names of the given bpms as found in the lin files.
      'file_path' is only used for the error messages."""
     found_bpms = {}
     empty_planes = 0
-    for plane in PLANES:
+    for plane in planes:
         found_bpms[plane] = list(lin_files[plane].index)
         if given_bpms is not None:
-            found_bpms[plane] = _get_only_given_bpms(found_bpms[plane], given_bpms, plane, file_path)
+            found_bpms[plane] = _get_only_given_bpms(found_bpms[plane], given_bpms, plane, filename)
 
         if len(found_bpms[plane]) == 0:
-            LOG.warning(f"({file_path}) No BPMs found for plane {plane}!")
+            LOG.warning(f"(id:{filename}) No BPMs found for plane {plane}!")
             empty_planes += 1
 
-    if empty_planes == len(PLANES):
-        raise IOError(f"({file_path}) No BPMs found in any plane!")
+    if empty_planes == len(planes):
+        raise IOError(f"(id:{filename}) No BPMs found in any plane!")
     return found_bpms
 
 
@@ -455,3 +458,61 @@ def list2str(list_: list):
     return str(list_)[1:-1]
 
 
+# Spectrum File Loading --------------------------------------------------------
+
+
+def load_spectrum_data(file_path: Path, bpms: Iterable, planes: Iterable = PLANES):
+    """ Load Amps, Freqs and Lin Files into a dictionary, keys are the fileendings without plane,
+     with subdicts of the planes. """
+    LOG.info("Loading HARPY data.")
+    with suppress(FileNotFoundError):
+        return _get_harpy_data(file_path, planes)
+
+    LOG.info("Some files not present. Loading SUSSIX data format")
+    with suppress(FileNotFoundError):
+        return _get_sussix_data(file_path, bpms, planes)
+
+    raise FileNotFoundError(f"Neither harpy nor sussix files found in '{file_path.parent}' "
+                            f"matching the name '{file_path.name}'.")
+
+
+# Harpy Data ---
+
+
+def _get_harpy_data(file_path, planes):
+    return {
+        AMPS: _get_planed_files(file_path, ext=FILE_AMPS_EXT, planes=planes),
+        FREQS: _get_planed_files(file_path, ext=FILE_FREQS_EXT, planes=planes),
+        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, planes=planes, index=COL_NAME),
+    }
+
+
+def _get_planed_files(file_path, ext, planes, index=None):
+    return {
+        plane: tfs.read(
+            str(file_path.with_name(file_path.name + ext.format(plane=plane.lower()))),
+            index=index)
+        for plane in planes
+    }
+
+
+# SUSSIX Data ---
+
+
+def _get_sussix_data(file_path, bpms, planes):
+    bpm_dir = file_path.parent / 'BPM'
+    files = {LIN: {}, AMPS: {}, FREQS: {}}
+    for plane in planes:
+        files[LIN][plane] = tfs.read(
+            str(file_path.with_name(f'{file_path.name}_lin{plane.lower()}')),
+            index=COL_NAME)
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = tfs.TfsDataFrame(columns=bpms)
+        for bpm in bpms:
+            with suppress(FileNotFoundError):
+                df = tfs.read(str(bpm_dir / f'{bpm}.{plane.lower()}'))
+                files[FREQS][plane][bpm] = df["FREQ"]
+                files[AMPS][plane][bpm] = df["AMP"]
+        for id_ in (FREQS, AMPS):
+            files[id_][plane] = files[id_][plane].fillna(0)
+    return files

@@ -15,11 +15,12 @@ import numpy as np
 import pandas as pd
 import tfs
 
+from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.model.accelerators.accelerator import AccElementTypes
 from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 DPPAMP, ERR, EXT, KICK_NAME,
                                                 NAT_TUNE, PEAK2PEAK,
-                                                PLANE_TO_NUM, RES,
+                                                RES,
                                                 RESCALE_FACTOR, RMS,
                                                 SQRT_ACTION, TIME, TUNE, S)
 

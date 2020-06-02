@@ -13,9 +13,10 @@ import numpy as np
 import pandas as pd
 import tfs
 
+from omc3.definitions.constants import PI2I
 from omc3.optics_measurements.constants import (DELTA, DISPERSION_NAME, ERR,
                                                 EXT, MDL, NORM_DISP_NAME,
-                                                ORBIT_NAME, PI2I)
+                                                ORBIT_NAME)
 from omc3.utils import stats
 
 

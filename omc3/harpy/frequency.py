@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 
 from omc3.utils import logging_tools, outliers
+from omc3.definitions.constants import PLANES, PI2I
 
 LOGGER = logging_tools.getLogger(__name__)
-PI2I = 2 * np.pi * complex(0, 1)
 
 RESONANCES = {
     "X": ((2, 0, 0), (3, 0, 0), (0, 1, 0), (0, 2, 0), (1, 1, 0), (1, -1, 0),
@@ -26,7 +26,6 @@ RESONANCES = {
 
 MAIN_LINES = {"X": (1, 0, 0), "Y": (0, 1, 0), "Z": (0, 0, 1)}
 Z_TOLERANCE = 0.0003
-PLANES = ("X", "Y")
 
 
 def estimate_tunes(harpy_input, usvs):
