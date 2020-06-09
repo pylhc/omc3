@@ -88,7 +88,8 @@ def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
 
 def _scale_to_meters(bpm_data, unit):
     scales_to_meters = {'um': 1e-6, 'mm': 0.001, 'cm': 0.01, 'm': 1}
-    return bpm_data * scales_to_meters[unit]
+    bpm_data.iloc[:,:] = bpm_data.iloc[:,:].to_numpy() * scales_to_meters[unit]
+    return bpm_data
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
