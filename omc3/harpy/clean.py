@@ -30,9 +30,9 @@ def clean(harpy_input, bpm_data, model):
     Returns:
         Clean BPM matrix, its decomposition, bad BPMs summary and estimated BPM resolutions
     """
-    if not harpy_input.clean:
-        return bpm_data, None, [], None
     bpm_data, bpms_not_in_model = _get_only_model_bpms(bpm_data, model)
+    if not harpy_input.clean:
+        return bpm_data, None, bpms_not_in_model, None
     if bpm_data.empty:
         raise AssertionError("Check BPMs names! None of the BPMs was found in the model!")
     with timeit(lambda spanned: LOGGER.debug(f"Time for filtering: {spanned}")):
