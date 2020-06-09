@@ -81,6 +81,8 @@ def _svd_clean(bpm_data, harpy_input):
     clean_u, dominant_bpms = _clean_dominant_bpms(u_mat, u_mask, harpy_input.svd_dominance_limit)
     clean_data = clean_u.dot(sv_mat) + bpm_data_mean[np.all(u_mask, axis=1), None]
     bpm_res = (clean_data - bpm_data.loc[clean_u.index]).std(axis=1)
+    orbit_offset = (clean_data - bpm_data.loc[clean_u.index]).mean(axis=1)
+    LOGGER.debug(f"Average closed orbit offset: {np.mean(orbit_offset)}")
     LOGGER.debug(f"Average BPM resolution: {np.mean(bpm_res)}")
     average_signal = np.mean(np.std(clean_data, axis=1))
     LOGGER.debug(f"np.mean(np.std(A, axis=1): {average_signal}")
@@ -205,18 +207,17 @@ def svd_decomposition(matrix, num_singular_values, dominance_limit=None, num_ite
             u_mat_mask[:, :int(np.max(indices))+1])
 
 
-def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=1):
+def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=3):
     u_mat_mask = np.ones(u_mat.shape, dtype=bool)
     if dominance_limit is None:
         return u_mat, s_mat, u_mat_mask
-    abs_dominance_limit = np.abs(dominance_limit)
-    if abs_dominance_limit < 1 / np.sqrt(2):
-        LOGGER.warning(f"The svd_dominance_limit looks too low: {abs_dominance_limit}")
+    if dominance_limit < 1 / np.sqrt(2):
+        LOGGER.warning(f"The svd_dominance_limit looks too low: {dominance_limit}")
 
     for i in range(num_iter):
-        if np.all(np.abs(u_mat) <= abs_dominance_limit):
+        if np.all(np.abs(u_mat) <= dominance_limit):
             break
-        condition = np.logical_and(np.abs(u_mat) > abs_dominance_limit,
+        condition = np.logical_and(np.abs(u_mat) > dominance_limit,
                                    np.abs(u_mat) == np.max(np.abs(u_mat), axis=0))
         u_mat_mask[condition] = False
         u_mat[condition] = 0.0
