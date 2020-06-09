@@ -23,7 +23,7 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       chromatic, dispersion, dpp, iforest,
                                       interaction_point, kick, phase, rdt,
-                                      tune)
+                                      tune, coupling)
 from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT)
 from omc3.utils import iotools, logging_tools
 
@@ -41,30 +41,33 @@ def measure_optics(input_files, measure_input):
     Returns:
     """
     LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
+    LOGGER.info(f"-- coupling branch --")
     iotools.create_dirs(measure_input.outputdir)
     logging_tools.add_module_handler(logging_tools.file_handler(
         os.path.join(measure_input.outputdir, LOG_FILE)))
     tune_dict = tune.calculate(measure_input, input_files)
     common_header = _get_header(measure_input, tune_dict)
     invariants = {}
+    phase_dict = {}
     for plane in PLANES:
-        phase_dict, out_dfs = phase.calculate(measure_input, input_files, tune_dict, plane)
+        phase_dict[plane], out_dfs = phase.calculate(measure_input, input_files, tune_dict, plane)
         phase.write(out_dfs, [common_header, common_header], measure_input.outputdir, plane)
-        phase.write_special(measure_input, phase_dict, tune_dict[plane]["QF"], plane)
+        phase.write_special(measure_input, phase_dict[plane], tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
             continue
-        beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict, common_header, plane)
+        beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict[plane], common_header, plane)
         beta_from_phase.write(beta_df, beta_header, measure_input.outputdir, plane)
 
         ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_df, common_header, plane)
         invariants[plane] = kick.calculate(measure_input, input_files, ratio, common_header, plane)
-        ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict)
+        ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict[plane])
         interaction_point.write(ip_df, common_header, measure_input.outputdir, plane)
         dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
         dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
         if plane == "X":
             dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
-    # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
+
+    coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
     if measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))
         rdt.calculate(measure_input, input_files, tune_dict, invariants, common_header)
