@@ -25,9 +25,9 @@ from omc3.utils import logging_tools, stats
 LOGGER = logging_tools.get_logger(__name__)
 
 EPSILON = 1.0E-16
-ZERO_THRESHOLD = 1e-3
+ZERO_THRESHOLD = 1e-2
 COT_THRESHOLD = 15.9
-RCOND = 1.0e-10
+RCOND = 1.0e-14
 
 METH_3BPM = "3BPM method"
 METH_A_NBPM = "Analytical N-BPM method"
@@ -162,6 +162,10 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     beta_df["NCOMB"] = n_comb
     LOGGER.debug(f"No valid combinations for BPMs: {list(beta_df.index[beta_df['NCOMB'] == 0])}.")
     beta_df = beta_df.loc[beta_df["NCOMB"] > 0]
+    beta_df = beta_df.loc[beta_df[f"BET{plane}"] > 0]
+    too_high_error_mask = np.logical_or(beta_df[f"BET{plane}"] > beta_df[f"{ERR}BET{plane}"],
+                                        beta_df[f"BET{plane}{MDL}"] > beta_df[f"{ERR}BET{plane}"])
+    beta_df = beta_df.loc[too_high_error_mask]
     beta_df = _get_delta_columns(beta_df, plane)
     return beta_df, error_method
 
