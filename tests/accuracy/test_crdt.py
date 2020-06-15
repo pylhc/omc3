@@ -56,34 +56,6 @@ class BasicTests:
                                                  'AMP20_Y', 'FREQ20_Y'])
 
 
-    @staticmethod
-    def test_average_results():
-        result_dfs = []
-        result_dfs.append(pd.DataFrame(index=['A', 'B'],
-                                       data={'NAME':['A', 'B'],
-                                             'S':[1, 2],
-                                             'RES_A':[0.28, 0.28],
-                                             'RES_B':[3, 1],
-                                             'RES_C':[1, 2]}))
-        result_dfs.append(pd.DataFrame(index=['A', 'C'],
-                                       data={'NAME':['A', 'C'],
-                                             'S':[1, 3],
-                                             'RES_A':[0.28, 0.28],
-                                             'RES_B':[1, 1],
-                                             'RES_C':[np.nan, 1]}))
-        result_df = crdt.average_results(result_dfs,
-                                         ['NAME', 'S'],
-                                         ['RES_A', 'RES_B', 'RES_C'],
-                                         [np.nanmean, stats.weighted_nanmean, np.nanmean],
-                                         'NAME')
-        assert np.all(result_df == pd.DataFrame(index=['A', 'B', 'C'],
-                                                data={'S': [1, 2, 3],
-                                                      'RES_A': [0.28, 0.28, 0.28],
-                                                      'RES_B': [2., 1., 1.],
-                                                      'RES_C': [1., 2., 1.],
-                                                     }))
-
-
 class ExtendedTests:
     @staticmethod
     @pytest.mark.parametrize("order", ['Coupling', 'Sextupole', 'SkewSextupole', 'Octupole'])
