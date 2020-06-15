@@ -9,7 +9,6 @@ following the derivatons in https://arxiv.org/pdf/1402.1461.pdf.
 """
 
 from pathlib import Path
-from functools import reduce
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -141,13 +140,16 @@ def get_crdt_phases(joined_dfs, crdt, lines_and_phases, phase_sign):
     phases, err_phases = np.zeros((len(joined_dfs), len(joined_dfs[0]))), np.zeros((len(joined_dfs), len(joined_dfs[0])))
 
     for idx, joined_df in enumerate(joined_dfs):
-            phases[idx, :] = phase_sign*joined_df[lines_and_phases[PHASE]] - crdt['line'][1]*joined_df['MUX'] - crdt['line'][2]*joined_df['MUY'] - (3- (np.abs(crdt['line'][1])+np.abs(crdt['line'][2])-1)//2)/2*np.pi 
-            try:
-                err_phases[idx, :] = np.sqrt(joined_df[lines_and_phases[f'{ERR}{PHASE}']]**2+
-                                             (crdt['line'][1]*joined_df['ERRMUX'])**2+
-                                             (crdt['line'][2]*joined_df['ERRMUY'])**2)
-            except KeyError:
-                err_phases[idx, :] = np.NaN
+        phases[idx, :] = (phase_sign*joined_df[lines_and_phases[PHASE]] -
+                          crdt['line'][1]*joined_df['MUX'] -
+                          crdt['line'][2]*joined_df['MUY'] -
+                          (3 - (np.abs(crdt['line'][1])+np.abs(crdt['line'][2])-1)//2)/2*np.pi)
+        try:
+            err_phases[idx, :] = np.sqrt(joined_df[lines_and_phases[f'{ERR}{PHASE}']]**2+
+                                         (crdt['line'][1]*joined_df['ERRMUX'])**2+
+                                         (crdt['line'][2]*joined_df['ERRMUY'])**2)
+        except KeyError:
+            err_phases[idx, :] = np.NaN
 
     return np.mean(phases, axis=0), np.nanmean(err_phases, axis=0)
 
@@ -171,9 +173,9 @@ def get_crdt_amplitude(joined_dfs, crdt, invariants, lines_and_phases):
     for idx, bpm in enumerate(joined_dfs[0].index):
         lineamplitudes, err_lineamplitudes = [], []
         for joined_df in joined_dfs:
-            lineamplitudes.append(joined_df.loc[bpm, lines_and_phases[AMPLITUDE]]/2.) # factor 2 to get to complex amplitudes again
+            lineamplitudes.append(joined_df.loc[bpm, lines_and_phases[AMPLITUDE]])
             try:
-                err_lineamplitudes.append(joined_df.loc[bpm, lines_and_phases[f'{ERR}{AMPLITUDE}']]/2.)
+                err_lineamplitudes.append(joined_df.loc[bpm, lines_and_phases[f'{ERR}{AMPLITUDE}']])
             except KeyError:
                 err_lineamplitudes.append(0.)
 
@@ -185,7 +187,7 @@ def get_crdt_amplitude(joined_dfs, crdt, invariants, lines_and_phases):
 def fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariant, err_crdt_invariant):
 
     def fun(p, x):
-        return p * x
+        return p * x/2. # factor 2 to get to complex amplitudes again
     fit_model = scipy.odr.Model(fun)
     data_model = scipy.odr.RealData(
         x=crdt_invariant,
