@@ -70,7 +70,7 @@ def measure_optics(input_files, measure_input):
         rdt.calculate(measure_input, input_files, tune_dict, invariants, common_header)
     if 'crdt' in measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "crdt"))
-        crdt.calculate(measure_input, input_files, common_header)
+        crdt.calculate(measure_input, input_files, invariants, common_header)
     if measure_input.chromatic_beating:
         chromatic_beating(input_files, measure_input, tune_dict)
 
