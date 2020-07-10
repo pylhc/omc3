@@ -11,7 +11,7 @@ from omc3.run_kmod import RESULTS_FILE_NAME, INSTRUMENTS_FILE_NAME, LSA_FILE_NAM
 CURRENT_DIR = dirname(__file__)
 LIMITS = {'Accuracy': 1E-5,
           'Meas Accuracy': 0.05,
-          'Num Precision': 1E-20,
+          'Num Precision': 1E-15,
           'Meas Precision': 0.1}
 
 
