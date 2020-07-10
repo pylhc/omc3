@@ -9,9 +9,9 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.run_kmod import RESULTS_FILE_NAME, INSTRUMENTS_FILE_NAME, LSA_FILE_NAME 
 CURRENT_DIR = dirname(__file__)
-LIMITS = {'Accuracy': 0.01,
+LIMITS = {'Accuracy': 1E-5,
           'Meas Accuracy': 0.05,
-          'Num Precision': 1E-4,
+          'Num Precision': 1E-20,
           'Meas Precision': 0.1}
 
 
