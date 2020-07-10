@@ -210,13 +210,10 @@ def do_fit(magnet_df, plane, use_approx=False):
         fun = fit_prec
     elif use_approx:
         fun = fit_approx
-
-    if not np.any(magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()):
-        sigma = 1.E-22*np.ones(len(magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()))
-
-    else:
-        sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
-            f"{ERR}{TUNE}{plane}"].dropna()
+    
+    sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()
+    if not np.any(sigma):
+        sigma = 1.E-22*np.ones(len(sigma))
 
     av_beta, av_beta_err = scipy.optimize.curve_fit(
         fun,
