@@ -67,8 +67,14 @@ def calculate(measure_input, input_files, invariants, header):
         result_df = pd.DataFrame(measure_input.accelerator.model).loc[bpm_names, ["S"]]
         lines_and_phases, phase_sign = get_line_and_phase(crdt, joined_dfs)
 
-        result_df[AMPLITUDE], result_df[f'{ERR}{AMPLITUDE}'] = get_crdt_amplitude(joined_dfs, crdt, invariants, lines_and_phases)
-        result_df[PHASE], result_df[f'{ERR}{PHASE}'] = get_crdt_phases(joined_dfs, crdt, lines_and_phases, phase_sign)
+        result_df[AMPLITUDE], result_df[f'{ERR}{AMPLITUDE}'] = get_crdt_amplitude(joined_dfs,
+                                                                                  crdt,
+                                                                                  invariants,
+                                                                                  lines_and_phases)
+        result_df[PHASE], result_df[f'{ERR}{PHASE}'] = get_crdt_phases(joined_dfs,
+                                                                       crdt,
+                                                                       lines_and_phases,
+                                                                       phase_sign)
 
         write(result_df, header, measure_input, crdt['order'], crdt['term'])
 
@@ -117,7 +123,9 @@ def joined_planes(input_files):
     for linx, liny in zip(input_files['X'], input_files['Y']):
 
         for df, plane in zip((linx, liny), PLANES):
-            rename_cols(df, plane, ['NAME', 'S', f'{COL_TUNE}{plane}', f'{COL_AMP}{plane}', f'{COL_MU}{plane}', f'{COL_MU}{plane}SYNC'])
+            rename_cols(df, plane, ['NAME', 'S',
+                                    f'{COL_TUNE}{plane}', f'{COL_AMP}{plane}',
+                                    f'{COL_MU}{plane}', f'{COL_MU}{plane}SYNC'])
 
         joined_dfs.append(pd.merge(left=linx,
                                    right=liny,
@@ -157,8 +165,10 @@ def get_crdt_invariant(crdt, invariants):
     exp[crdt['line'][0]] = exp[crdt['line'][0]] - 1 # to compensate for the normalization with tune line
 
     crdt_invariant = invariants['X'].T[0]**exp['X']*invariants['Y'].T[0]**exp['Y']
-    err_crdt_invariant = np.sqrt((exp['X']*crdt_invariant/invariants['X'].T[0])**2*invariants['X'].T[1]**2 +
-                                 (exp['Y']*crdt_invariant/invariants['Y'].T[0])**2*invariants['Y'].T[1]**2)
+    err_crdt_invariant = np.sqrt((exp['X']*crdt_invariant/invariants['X'].T[0])**2*
+                                 invariants['X'].T[1]**2 +
+                                 (exp['Y']*crdt_invariant/invariants['Y'].T[0])**2*
+                                 invariants['Y'].T[1]**2)
     return crdt_invariant, err_crdt_invariant
 
 
@@ -178,7 +188,10 @@ def get_crdt_amplitude(joined_dfs, crdt, invariants, lines_and_phases):
             except KeyError:
                 err_lineamplitudes.append(0.)
 
-        amps[idx], err_amps[idx] = fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariants, err_crdt_invariants)
+        amps[idx], err_amps[idx] = fit_amplitude(lineamplitudes,
+                                                 err_lineamplitudes,
+                                                 crdt_invariants,
+                                                 err_crdt_invariants)
 
     return amps, err_amps
 
@@ -186,7 +199,7 @@ def get_crdt_amplitude(joined_dfs, crdt, invariants, lines_and_phases):
 def fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariant, err_crdt_invariant):
 
     def fun(p, x):
-        return p * x/2. # factor 2 to get to complex amplitudes again
+        return p * x * 2 # factor 2 to get to complex amplitudes again
     fit_model = scipy.odr.Model(fun)
     data_model = scipy.odr.RealData(
         x=crdt_invariant,
@@ -195,7 +208,8 @@ def fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariant, err_crdt_i
         sy=None if all(err == 0. for err in err_lineamplitudes) else err_lineamplitudes,
     )
     odr = scipy.odr.ODR(data_model, fit_model,
-                           beta0=[lineamplitudes[0]/crdt_invariant[0]])
+                        beta0=[0.5*lineamplitudes[0]/crdt_invariant[0]])
     
     odr_output = odr.run()
+
     return odr_output.beta[0], odr_output.sd_beta[0]

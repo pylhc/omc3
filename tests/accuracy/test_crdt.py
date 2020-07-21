@@ -70,8 +70,14 @@ class ExtendedTests:
 
         for crdt_dict in crdt.CRDTS:
             if order == crdt_dict["order"]:
-                hio_crdt = tfs.read(join(optics_opt["outputdir"], "crdt", order, f'{crdt_dict["term"]}.tfs'), index="NAME")
-                assert _max_dev(hio_crdt["AMP"].to_numpy(), ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(), 1E-2) < ACCURACY_LIMIT[order]
+                hio_crdt = tfs.read(join(optics_opt["outputdir"],
+                                         "crdt",
+                                         order,
+                                         f'{crdt_dict["term"]}.tfs'),
+                                    index="NAME")
+                assert _max_dev(hio_crdt["AMP"].to_numpy(),
+                                ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(),
+                                1E-2) < ACCURACY_LIMIT[order]
 
         _clean_up(optics_opt["outputdir"])
 
