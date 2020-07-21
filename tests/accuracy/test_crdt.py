@@ -7,7 +7,6 @@ import tfs
 from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements import crdt
-from omc3.utils import stats
 
 MEASURE_OPTICS_SETTINGS = dict(
     harpy=False,

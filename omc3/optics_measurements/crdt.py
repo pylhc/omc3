@@ -5,7 +5,7 @@ CRDTs
 :module: optics_measurements.crdt
 
 Computes combined resonance driving terms
-following the derivatons in https://arxiv.org/pdf/1402.1461.pdf.
+following the derivations in https://arxiv.org/pdf/1402.1461.pdf.
 """
 
 from pathlib import Path
@@ -17,7 +17,6 @@ import scipy.odr
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
 from omc3.definitions.constants import PLANES
-from omc3.utils import stats
 from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE, COL_ERR
 
 LOGGER = logging_tools.get_logger(__name__)
