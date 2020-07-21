@@ -12,7 +12,7 @@ from omc3.utils import logging_tools, iotools
 
 LOG = logging_tools.get_logger(__name__)
 
-LSA_COLUMNS = ['NAME',f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
+LSA_COLUMNS = ['NAME', f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
 RESULTS_FILE_NAME = 'results'
 INSTRUMENTS_FILE_NAME = 'beta_instrument'
 LSA_FILE_NAME = 'lsa_results'
