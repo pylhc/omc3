@@ -210,14 +210,10 @@ def do_fit(magnet_df, plane, use_approx=False):
         fun = fit_prec
     elif use_approx:
         fun = fit_approx
-
-    if not np.any(magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()):
-        sigma = None
-        absolute_sigma = False
-    else:
-        sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
-            f"{ERR}{TUNE}{plane}"].dropna()
-        absolute_sigma = True
+    
+    sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()
+    if not np.any(sigma):
+        sigma = 1.E-22*np.ones(len(sigma))
 
     av_beta, av_beta_err = scipy.optimize.curve_fit(
         fun,
@@ -225,7 +221,7 @@ def do_fit(magnet_df, plane, use_approx=False):
         ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
             f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
         sigma=sigma,
-        absolute_sigma=absolute_sigma,
+        absolute_sigma=True,
         p0=1
     )
     return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
@@ -285,7 +281,7 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
         fitresults = scipy.optimize.minimize(fun=fun,
                                              x0=kmod_input_params.betastar_and_waist[plane],
                                              method='nelder-mead',
-                                             tol=1E-9)
+                                             tol=1E-22)
         results[i, :] = fitresults.x[0], fitresults.x[1]
 
     beta_waist_err = get_err(results[1::2, 0]-results[0, 0])

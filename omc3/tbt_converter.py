@@ -94,7 +94,7 @@ def _read_and_write_files(opt):
             else:
                 for noise_level in opt.noise_levels:
                     tbt.write(join(opt.outputdir, f"{_file_name(input_file)}_n{noise_level}{suffix}"),
-                              tbt_data=tbt_data, noise=noise_level)
+                              tbt_data=tbt_data, noise=float(noise_level))
 
 
 def _file_name(filename: str):

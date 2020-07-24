@@ -4,12 +4,12 @@ import pandas as pd
 from omc3.tune_analysis.bbq_tools import get_moving_average, clean_outliers_moving_average
 from omc3.tune_analysis.fitting_tools import get_poly_fun
 
-np.random.seed(2020)
 
 
 class BasicTests:
     @staticmethod
     def test_moving_average():
+        np.random.seed(2020)
         sin_data, data = _get_noisy_sinus()
         kwargs = dict(
             min_val=-2,
@@ -39,6 +39,7 @@ class BasicTests:
 class ExtendedTests:
     @staticmethod
     def test_clean_outliers_moving_average():
+        np.random.seed(2021)
         sin_data, data = _get_noisy_sinus()
         kwargs = dict(
             length=int(len(data)/10),

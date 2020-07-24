@@ -9,7 +9,7 @@ from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
-from .twiss_to_lin import optics_measurement_test_files
+from tests.accuracy.twiss_to_lin import optics_measurement_test_files
 
 LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
 DEFAULT_LIMIT = 5e-3

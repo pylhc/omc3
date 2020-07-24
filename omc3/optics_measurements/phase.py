@@ -48,6 +48,8 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
         +------++--------+--------+--------+--------+
         | BPM3 || phi_31 | phi_32 |   0    | phi_34 |
         +------++--------+--------+--------+--------+
+        | BPM4 || phi_41 | phi_42 | phi_43 |    0   |
+        +------++--------+--------+--------+--------+
 
 
         The phase advance between BPM_i and BPM_j can be obtained via:
