@@ -282,7 +282,7 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
         ax.figure.tight_layout(rect=[0, 0, 1, 1+pad-legend_height])
 
     leg.axes.figure.canvas.draw()
-    legend_width = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).width
+    legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
     if legend_width > 1:
         x_shift = (legend_width - 1) / 2.
         ax.legend(handles=handles, labels=labels, loc='lower right',

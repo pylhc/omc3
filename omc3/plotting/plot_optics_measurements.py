@@ -377,31 +377,4 @@ def _save_options_to_config(opt):
 
 
 if __name__ == '__main__':
-    # plot()
-    import matplotlib
-    matplotlib.use('qt5agg')
-    plot(
-        show=True,
-        output="temp/",
-        delta=True,  # plots delta column
-        x_axis='location',
-        # x_axis='phase-advance',
-        folders=[
-            '/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/Octupole/omc3harpyoutput',
-            '/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/Sextupole/omc3harpyoutput'
-        ],
-        optics_parameters=[
-            'beta_amplitude',
-            'orbit',
-            'f0012_y',
-            # 'f3000_x'
-        ],
-        combine_by=[
-            "files",
-            # "planes"
-        ],
-        ncol_legend=2,
-        suppress_column_legend=True,
-        # ip_positions="LHCB1",
-        # ip_positions="/afs/cern.ch/work/m/mihofer5/public/CRDTDev/LHCTrackingTest/model/twiss_elements.dat"
-    )
+    plot()
