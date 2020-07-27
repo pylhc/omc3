@@ -69,7 +69,7 @@ def get_params():
                          )
     params.add_parameter(
         name="ip_search_pattern",
-        default=r"IP\d",
+        default=r"IP\d$",
         help="In case your IPs have a weird name. Specify regex pattern.",
     )
     params.add_parameter(
@@ -269,8 +269,6 @@ def _get_rdt_columns():
 
 
 def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
-    if opt.delta:
-        file_labels = [f"delta_{label}" for label in file_labels]
 
     y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
 
@@ -288,6 +286,12 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
         else:
             column_labels = ['{0}']   #  show planes in labels as all are in same axes
 
+    prefix = ''
+    if opt.delta:
+        prefix += f'delta_'
+    if opt.combine_by and "files" in opt.combine_by:
+        prefix += f'{optics_parameter}'
+
     return plot_tfs(
         files=[str(f.absolute()/f'{optics_parameter}{{0}}{EXT}') for f in files],
         file_labels=list(file_labels),
@@ -302,6 +306,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
         same_figure=same_fig,
         same_axes=opt.combine_by,
         single_legend=True,
+        output_prefix=f"plot_{prefix}",
         **opt.get_subdict(['show', 'output',
                            'plot_styles', 'manual_style',
                            'change_marker', 'errorbar_alpha',
@@ -328,7 +333,7 @@ def _get_columns_and_label(parameter, delta):
 
 
 def _get_ip_positions(ip_positions, xaxis, ip_pattern):
-    if isinstance(ip_positions, str):
+    if isinstance(ip_positions, (str, Path)):
         try:
             positions = IP_POS_DEFAULT[ip_positions]
         except KeyError:

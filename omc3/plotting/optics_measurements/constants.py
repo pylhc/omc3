@@ -60,12 +60,13 @@ XAXIS = { # Column, Label
 }
 
 YAXIS = {  # column, column label, yaxis-label [, Delta yaxis-label]
-            BETA_NAME:     (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
-            AMP_BETA_NAME: (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
-            ORBIT_NAME:    ('', 'orbit', ylabels['co'], f"$\Delta$ {ylabels['co']}"),
-            PHASE_NAME:    (PHASE, 'phase', ylabels['phase']),
-            'rdt_amp':     (AMPLITUDE, None, ylabels['absolute']),
-            'rdt_phase':   (PHASE, None, ylabels['phase']),
-            'rdt_real':    (REAL, None, ylabels['real']),
-            'rdt_imag':    (IMAG, None, ylabels['imag']),
+    BETA_NAME:        (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
+    AMP_BETA_NAME:    (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
+    ORBIT_NAME:       ('', 'orbit', ylabels['co'], f"$\Delta$ {ylabels['co']}"),
+    PHASE_NAME:       (PHASE, 'phase', ylabels['phase']),
+    TOTAL_PHASE_NAME: (PHASE, 'total phase', ylabels['phase']),
+    'rdt_amp':        (AMPLITUDE, None, ylabels['absolute']),
+    'rdt_phase':      (PHASE, None, ylabels['phase']),
+    'rdt_real':       (REAL, None, ylabels['real']),
+    'rdt_imag':       (IMAG, None, ylabels['imag']),
 }
