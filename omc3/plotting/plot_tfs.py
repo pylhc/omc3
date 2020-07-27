@@ -33,6 +33,7 @@ combine plots.
 **Arguments:**
 
 *--Required--*
+
 - **files** *(MultiClass)*: Path to files to plot.
   If planes are used, replace the plane in the filename with '{0}'
 
@@ -42,6 +43,7 @@ combine plots.
 
 
 *--Optional--*
+
 - **change_marker**: Changes marker for each line in the plot.
 
   Action: ``store_true``

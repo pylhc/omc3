@@ -28,6 +28,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 **Arguments:**
 
 *--Required--*
+
 - **folders** *(MultiClass)*: Optics Measurements folders containing the analysed data.
 
 - **optics_parameters** *(str)*: Optics parameters to plot, e.g. 'beta_amplitude'.
@@ -35,6 +36,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
 
 *--Optional--*
+
 - **change_marker**: Changes marker for each line in the plot.
 
   Action: ``store_true``
@@ -86,6 +88,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 - **x_lim** *(float)*: Limits on the x axis (Tupel)
 
 - **y_lim** *(float)*: Limits on the y axis (Tupel)
+
 
 """
 import os
