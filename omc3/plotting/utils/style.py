@@ -28,9 +28,12 @@ def set_style(styles=('standard',), manual=None):
     """Sets the style for all following plots.
 
     Args:
-        styles: List of styles, either 'standard', 'presentation' or one of the mpl styles
+        styles: List of styles (or single string), either 'standard', 'presentation' or from the mpl styles
         manual: Dict of manual parameters to update. Convention: "REMOVE_ENTRY" removes entry
     """
+    if isinstance(styles, str):
+        styles = (styles,)
+
     styles = [STYLES.get(style, style) for style in styles]
     if manual:
         for key, value in manual.items():
