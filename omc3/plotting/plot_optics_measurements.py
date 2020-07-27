@@ -12,7 +12,7 @@ from pathlib import Path
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-from generic_parser.entry_datatypes import DictAsString
+from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
 
 from omc3.definitions import formats
@@ -29,6 +29,8 @@ from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
 
+PATH_OR_STR = get_multi_class(Path, str)
+
 
 def get_params():
     params = EntryPointParameters()
@@ -37,7 +39,7 @@ def get_params():
         help="Optics Measurements folders containing the analysed data.",
         required=True,
         nargs="+",
-        type=str,
+        type=PATH_OR_STR,
     )
     params.add_parameter(
         name="optics_parameters",
@@ -88,7 +90,7 @@ def get_params():
     params.add_parameter(
         name="output",
         help="Folder to output the results to.",
-        type=str,
+        type=PATH_OR_STR,
     )
     params.add_parameter(
         name="show",
@@ -293,7 +295,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
         prefix += f'{optics_parameter}'
 
     return plot_tfs(
-        files=[str(f.absolute()/f'{optics_parameter}{{0}}{EXT}') for f in files],
+        files=[f.absolute()/f'{optics_parameter}{{0}}{EXT}' for f in files],
         file_labels=list(file_labels),
         y_columns=[f'{y_column}{{0}}'],
         y_labels=[[y_label]],

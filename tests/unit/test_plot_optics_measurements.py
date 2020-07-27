@@ -153,8 +153,8 @@ def _default_test(*args, **kwargs):
     default_args.update(kwargs)
     with _output_dir() as out_dir:
         figs = plot(
-            folders=[str(INPUT), ],
-            output=str(out_dir),
+            folders=[INPUT, ],
+            output=out_dir,
             optics_parameters=list(args),
             **default_args
         )

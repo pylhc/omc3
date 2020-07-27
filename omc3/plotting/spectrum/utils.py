@@ -326,7 +326,7 @@ def get_unique_filenames(files: Union[Iterable, Sized]):
 
 
 def _get_partial_filepath(path: Path, nparts: int):
-    """ Returns the path from nparts until the end, separated by underscores"""
+    """ Returns the path from nparts until the end"""
     return path.parts[nparts:]
 
 

@@ -14,7 +14,7 @@ from pathlib import Path
 import matplotlib
 import tfs
 from generic_parser import EntryPointParameters, entrypoint, DotDict
-from generic_parser.entry_datatypes import DictAsString
+from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, rcParams
 
@@ -31,6 +31,8 @@ from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
 
+PATH_OR_STR = get_multi_class(Path, str)
+
 
 def get_params():
     params = EntryPointParameters()
@@ -40,7 +42,7 @@ def get_params():
               "If planes are used, replace the plane in the filename with '{0}'"),
         required=True,
         nargs="+",
-        type=str,
+        type=PATH_OR_STR,
     )
     params.add_parameter(
         name="y_columns",
@@ -102,7 +104,7 @@ def get_params():
     params.add_parameter(
         name="output",
         help="Folder to output the plots to.",
-        type=str,
+        type=PATH_OR_STR,
     )
     params.add_parameter(
         name="output_prefix",
@@ -227,14 +229,15 @@ def plot(opt):
 def sort_data(opt):
     """ Load all data from files and sort into figures"""
     collector = FigureCollector()
+    axes_ids = _get_axes_ids(opt)
+
     same_axes_set = frozenset()
     if opt.same_axes:
         same_axes_set = frozenset(opt.same_axes)
+
     for (file_path, filename), file_label in zip(get_unique_filenames(opt.files), opt.file_labels):
         for x_col, y_col, err_col, x_label, column_label in zip(
                 opt.x_columns, opt.y_columns, opt.error_columns, opt.x_labels, opt.column_labels):
-
-            axes_ids = _get_axes_ids(opt)
 
             if opt.planes is None:
                 id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
@@ -278,7 +281,7 @@ def sort_data(opt):
     return collector
 
 
-def get_id(filename, column, file_label, column_label, same_axes, same_figure, prefix, plane='', planes=[]):
+def get_id(filename_parts, column, file_label, column_label, same_axes, same_figure, prefix, plane='', planes=[]):
     """ Get the right IDs for the current sorting way.
 
     This is where the actual sorting happens, by mapping the right IDs according
@@ -286,8 +289,8 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
     """
     planes = "".join(planes)
 
-    file_last = filename[-1].replace(EXT, "").strip("_")
-    file_output = "_".join(filename).replace(EXT, "").strip("_")
+    file_last = filename_parts[-1].replace(EXT, "").strip("_")
+    file_output = "_".join(filename_parts).replace(EXT, "").strip("_")
     if file_label is not None:
         file_output = f'{file_label}_{file_last}'
     else:
@@ -302,7 +305,7 @@ def get_id(filename, column, file_label, column_label, same_axes, same_figure, p
     else:
         column_label = _safe_format(column_label, plane)
 
-    axes_id = {'files': f'{filename}',
+    axes_id = {'files': '_'.join(filename_parts),
                'columns': f'{column}',
                'planes': f'{plane}'
                }.get(same_figure, '')
@@ -467,7 +470,9 @@ def _check_opt(opt):
     elif len(opt.x_columns) != len(opt.y_columns):
         raise AttributeError("The number of x-columns and y-columns differ!")
 
-    if len(opt.x_labels) == 1 and len(opt.x_columns) > 1:
+    if opt.x_labels is None:
+        opt.x_labels = [None] * len(opt.x_columns)
+    elif len(opt.x_labels) == 1 and len(opt.x_columns) > 1:
         opt.x_labels *= len(opt.x_columns)
     elif len(opt.x_labels) != len(opt.x_columns):
         raise AttributeError("The number of x-labels and x-columns differ!")
@@ -493,14 +498,27 @@ def _check_opt(opt):
 
 
 def _get_axes_ids(opt):
-    if opt.same_figure == "columns":
-        axes_ids = opt.get("y_columns")
-    else:
-        axes_ids = opt.get(opt.same_figure)
+    """ Get's all id's first and then later again.
+    Couldn't find a quicker way... (jdillly)
+    """
+    axes_ids = []
+    same_axes_set = frozenset()
+    if opt.same_axes:
+        same_axes_set = frozenset(opt.same_axes)
+    for (file_path, filename), file_label in zip(get_unique_filenames(opt.files), opt.file_labels):
+        for x_col, y_col, err_col, x_label, column_label in zip(
+                opt.x_columns, opt.y_columns, opt.error_columns, opt.x_labels, opt.column_labels):
 
-    if axes_ids is None:  # do not put into 'get' as could be None at multiple levels
-        axes_ids = ('',)
-    return axes_ids
+            if opt.planes is None:
+                id_ = get_id(filename, y_col, file_label, column_label, same_axes_set,
+                             opt.same_figure, opt.output_prefix)['axes_id']
+                axes_ids.append(id_)
+            else:
+                for plane in opt.planes:
+                    id_ = get_id(filename, y_col, file_label, column_label, same_axes_set,
+                                 opt.same_figure, opt.output_prefix, plane, opt.planes)['axes_id']
+                    axes_ids.append(id_)
+    return set(axes_ids)
 
 
 def _get_marker(idx, change):
@@ -516,6 +534,8 @@ def _safe_format(label, insert):
         return label.format(insert)
     except KeyError:  # can happen for latex strings
         return label
+    except AttributeError:  # label is None
+        return None
 
 
 # Script Mode ------------------------------------------------------------------
