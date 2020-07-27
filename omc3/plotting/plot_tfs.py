@@ -6,6 +6,30 @@ Easily plot tfs-files with all kinds of additional functionality and ways to
 combine plots.
 
 
+.. code-block:: python
+
+    from omc3.plotting.plot_tfs import plot
+
+    figs = plot(
+        files=['beta_phase_{0}.tfs', 'beta_amp_{0}.tfs'],
+        same_figure='planes',
+        same_axes=['files'],
+        x_columns=['S'],
+        y_columns=['BET{0}'],
+        error_columns=None,
+        planes=['X', 'Y'],
+        x_labels=['Location [m]'],
+        file_labels=[r'$\\beta$ from phase', r'$\beta$ from amplitude'],
+        # column_labels=[r'$\\beta_{0}$'],    # would have bx in legend
+        column_labels=[''],                  # removes COLUMNX COLUMNY from legend-names
+        y_labels=[[r'$\\beta_x$', r'$\\beta_y$']],  # axes labels (outer = figures, inner = axes)
+        output='output_dir',
+        show=False,
+        single_legend=True,
+        change_marker=True,
+    )
+
+
 **Arguments:**
 
 *--Required--*

@@ -4,6 +4,27 @@ Plot Optics Measurements
 
 Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
+
+.. code-block:: python
+
+    from omc3.plotting.plot_optics_measurements import plot
+
+    figs = plot(
+        folders=['folder1', 'folder2'],
+        combine_by=['files'],  # to compare folder1 and folder2
+        output='output_directory',
+        delta=True,  # delta from reference
+        optics_parameters=['orbit', 'beta_phase', 'beta_amplitude',
+                           'phase', 'total_phase',
+                           'f1001_x', 'f1010_x'],
+        x_axis='location',  # or 'phase-advance'
+        ip_positions='LHCB1',
+        suppress_column_legend=True,
+        show=True,
+        ncol_legend=2,
+    )
+
+
 **Arguments:**
 
 *--Required--*
