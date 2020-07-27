@@ -4,6 +4,67 @@ Plot Optics Measurements
 
 Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
+**Arguments:**
+
+*--Required--*
+- **folders** *(MultiClass)*: Optics Measurements folders containing the analysed data.
+
+- **optics_parameters** *(str)*: Optics parameters to plot, e.g. 'beta_amplitude'.
+  RDTs need to be specified with plane, e.g. 'f1001_x'
+
+
+*--Optional--*
+- **change_marker**: Changes marker for each line in the plot.
+
+  Action: ``store_true``
+- **combine_by**: Combine plots into one. Either files, planes (not separated into two axes) or both.
+
+  Choices: ``['files', 'planes']``
+- **delta**: Plot the difference to model instead of the parameter.
+
+  Action: ``store_true``
+- **errorbar_alpha** *(float)*: Alpha value for error bars
+
+  Default: ``0.6``
+- **ip_positions**: Input to plot IP-Positions into the plots. Either 'LHCB1'
+  or 'LHCB2' for LHC defaults, a dictionary of labels and positions or path to TFS file of a model.
+
+- **ip_search_pattern**: In case your IPs have a weird name. Specify regex pattern.
+
+  Default: ``IP\d$``
+- **lines_manual** *(DictAsString)*: List of manual lines to plot.
+  Need to contain arguments for axvline, and may contain the additional keys "text"
+  and "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
+  and places the text at the given location.
+
+  Default: ``[]``
+- **manual_style** *(DictAsString)*: Additional style rcParameters which
+  update the set of predefined ones.
+
+  Default: ``{}``
+- **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
+
+  Default: ``3``
+- **output** *(MultiClass)*: Folder to output the results to.
+
+- **plot_styles** *(str)*: Which plotting styles to use,
+  either from plotting.utils.*.mplstyles or default mpl.
+
+  Default: ``['standard']``
+- **show**: Shows plots.
+
+  Action: ``store_true``
+- **suppress_column_legend**: Does not show column name in legend
+  e.g. when combining by files (see also `ncol_legend`).
+
+  Action: ``store_true``
+- **x_axis**: Which parameter to use for the x axis.
+
+  Choices: ``['location', 'phase-advance']``
+  Default: ``location``
+- **x_lim** *(float)*: Limits on the x axis (Tupel)
+
+- **y_lim** *(float)*: Limits on the y axis (Tupel)
 
 """
 import os
@@ -150,6 +211,7 @@ def get_params():
 
 @entrypoint(get_params(), strict=True)
 def plot(opt):
+    """ Main plotting function. """
     LOG.info("Starting plotting of optics measurement data: "
              f"{list2str(opt.optics_parameters)} in {list2str(opt.folders):s}")
 

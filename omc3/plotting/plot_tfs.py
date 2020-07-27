@@ -6,6 +6,77 @@ Easily plot tfs-files with all kinds of additional functionality and ways to
 combine plots.
 
 
+**Arguments:**
+
+*--Required--*
+- **files** *(MultiClass)*: Path to files to plot.
+  If planes are used, replace the plane in the filename with '{0}'
+
+- **x_columns** *(str)*: List of column names to use as x-values.
+
+- **y_columns** *(str)*: List of column names to plot (e.g. BETX, BETY or BET{0} if `planes` is used.)
+
+
+*--Optional--*
+- **change_marker**: Changes marker for each line in the plot.
+
+  Action: ``store_true``
+- **column_labels** *(str)*: Column-Labels for the plots, default: y_columns.
+
+- **error_columns** *(str)*: List of parameters to get error values from.
+
+- **errorbar_alpha** *(float)*: Alpha value for error bars
+
+  Default: ``0.6``
+- **file_labels** *(str)*: Labels for the files, default: filenames.
+
+- **manual_style** *(DictAsString)*: Additional style rcParameters which update the set of predefined ones.
+
+  Default: ``{}``
+- **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
+
+  Default: ``3``
+- **output** *(MultiClass)*: Folder to output the plots to.
+
+- **output_prefix** *(str)*: Prefix for the output filename.
+
+  Default: ``plot_``
+- **planes** *(str)*: Works only with filenames ending in 'x' and 'y' and columns ending in X or Y.
+  These suffixes will be attached to the given files and y_columns.
+
+  Choices: ``('X', 'Y')``
+- **plot_styles** *(str)*: Which plotting styles to use,
+  either from plotting.utils.*.mplstyles or default mpl.
+
+  Default: ``['standard']``
+- **same_axes** *(str)*: Combine plots into single axes. Multiple choices possible.
+
+  Choices: ``['files', 'columns', 'planes']``
+- **same_figure** *(str)*: Plot two axes into the same figure (can't be the same as 'same_axes').
+  Has no effect if there is only one of the given thing.
+
+  Choices: ``['files', 'columns', 'planes']``
+- **show**: Shows plots.
+
+  Action: ``store_true``
+- **single_legend**: Show only one legend instance (at the top plot).
+
+  Action: ``store_true``
+- **vertical_lines** *(DictAsString)*: List of vertical lines (e.g. IR positions) to plot.
+  Need to contain arguments for axvline, and may contain the additional keys "text" and "loc"
+  which is one of  ['bottom', 'top', 'line bottom', 'line top'] and places the text at the given location.
+
+  Default: ``[]``
+- **x_labels** *(str)*: Labels for the x-axis, default: x_columns.
+
+- **x_lim** *(float)*: Limits on the x axis (Tupel)
+
+- **y_labels**: Override labels for the y-axis, default: file_labels or column_labels (depending on same_axes).
+  Needs to be a list of lists, where the inner list goes over the axes in one figure and the outer over the figures.
+  If the respective length is 1, the same label will be used for all figures or axes.
+
+- **y_lim** *(float)*: Limits on the y axis (Tupel)
+
 """
 import os
 from collections import OrderedDict
@@ -198,6 +269,7 @@ def get_params():
 
 @entrypoint(get_params(), strict=True)
 def plot(opt):
+    """ Main plotting function. """
     LOG.info(f"Starting plotting of tfs files: {list2str(opt.files):s}")
     if opt.output is not None:
         _save_options_to_config(opt)
