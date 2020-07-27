@@ -69,6 +69,12 @@ can be found in the [`tests`](https://github.com/pylhc/omc3/tree/master/tests) f
 
 ### Changelog
 
+#### 2020-07-27
+
+- Added:
+  - tfs-plotter
+  - optics-measurements plotter
+
 #### 2020-03-04
 
 - Added:
