@@ -106,11 +106,6 @@ def hole_in_one_entrypoint(opt, rest):
         Used to resynchronise the TbT data with model.
 
         Flags: **--first_bpm**
-      - **keep_dominant_bpms**: If present, will not remove BPMs dominating an SVD mode,
-        removes just its contribution to the mode.
-
-        Flags: **--keep_dominant_bpms**
-        Action: ``store_true``
       - **keep_exact_zeros**: If present, will not remove BPMs with exact zeros in TbT data.
 
         Flags: **--keep_exact_zeros**
@@ -122,6 +117,12 @@ def hole_in_one_entrypoint(opt, rest):
       - **model**: Model for BPM locations
 
         Flags: **--model**
+      - **num_svd_iterations** *(int)*: Maximal number of iterations of U matrix elements removal
+        and renormalisation in iterative SVD cleaning of dominant BPMs.
+        This is also equal to maximal number of BPMs removed per SVD mode.
+
+        Flags: **--num_svd_iterations**
+        Default: ``3``
       - **opposite_direction**: If present, beam in the opposite direction to model
         is assumed for resynchronisation of BPMs.
 
@@ -207,6 +208,10 @@ def hole_in_one_entrypoint(opt, rest):
       - **calibrationdir** *(str)*: Path to calibration files directory.
 
         Flags: **--calibrationdir**
+      - **chromatic_beating**: Calculate chromatic beatings: W, PHI and coupling
+
+        Flags: **--chromatic_beating**
+        Action: ``store_true``
       - **coupling_method** *(int)*: Coupling analysis option: disabled, 1 BPM or 2 BPMs method
 
         Flags: **--coupling_method**
@@ -236,7 +241,18 @@ def hole_in_one_entrypoint(opt, rest):
         Action: ``store_true``
 
 
-    Accelerator Kwargs:  TODO
+    Accelerator Kwargs:
+      - **accel**: Choose the accelerator to use. More details can be found in omc3/model/manager.py
+
+        Flags: **--accel**
+        Required: ``True``
+      - **model_dir**: Model directory, specify if ``--model`` option is not used.
+
+        Flags: **--model_dir**
+
+      - For the rest, please see get_parameters() methods in child Accelerator classes,
+      which are declared in ``omc3/model/accelerators/*.py``.
+
 
     """
     if not opt.harpy and not opt.optics:
@@ -394,9 +410,11 @@ def harpy_params():
     params.add_parameter(name="svd_dominance_limit", type=float,
                          default=HARPY_DEFAULTS["svd_dominance_limit"],
                          help="Limit for single BPM dominating a mode.")
-    params.add_parameter(name="keep_dominant_bpms", action="store_true",
-                         help="If present, will not remove BPMs dominating an SVD mode," 
-                              "removes just its contribution to the mode.")
+    params.add_parameter(name="num_svd_iterations", type=int,
+                         default=HARPY_DEFAULTS["num_svd_iterations"],
+                         help="Maximal number of iterations of U matrix elements removal "
+                              "and renormalisation in iterative SVD cleaning of dominant BPMs."
+                              " This is also equal to maximal number of BPMs removed per SVD mode.")
     params.add_parameter(name="bad_bpms", nargs='*', help="Bad BPMs to clean.")
     params.add_parameter(name="wrong_polarity_bpms", nargs='*',
                          help="BPMs with swapped polarity in both planes.")
@@ -493,6 +511,7 @@ HARPY_DEFAULTS = {
     "peak_to_peak": 1e-8,
     "max_peak": 0.02,
     "svd_dominance_limit": 0.925,
+    "num_svd_iterations": 3,
     "tolerance": 0.01,
     "tune_clean_limit": 1e-5,
     "window": "hann",
