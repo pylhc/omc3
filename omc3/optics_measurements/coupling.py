@@ -12,7 +12,7 @@ Coupling calculations
 
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from collections import namedtuple
-from numpy import cos, tan, exp, sin
+from numpy import cos, tan, exp, sin, sqrt
 import numpy as np
 import os
 import sys
@@ -93,7 +93,9 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     print(q1010_from_B)
     print(q1010_from_B-q1010_from_A)
 
-    ret_df = pd.DataFrame(index=joined_index,
+    if meas_input.compensation == "model":
+        f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
+    rdt_df = pd.DataFrame(index=joined_index,
                           columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "q1001"],
                           data=np.array([
                               meas_input.accelerator.model.loc[joined_index, "S"].values,
@@ -102,9 +104,40 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
                               q1001_from_A.values,
                           ]).transpose())
 
-    tfs.write(os.path.join(measure_input.outputdir, "coupling.tfs"),
-              ret_df, header_dict, save_index="NAME")
-    return ret_df
+
+    tfs.write(os.path.join(meas_input.outputdir, "coupling.tfs"),
+              rdt_df, header_dict, save_index="NAME")
+
+
+def compensate_model(f1001, f1010, tune_dict):
+    """
+    Compensation by model only.
+
+    Args:
+        df (DataFrame): the pre-calculated driven coupling RDTs
+        tune_dict (TuneDict): the free and driven tunes
+    """
+    Qx = PI2 * tune_dict["X"]["QFM"]  # natural tunes
+    Qy = PI2 * tune_dict["Y"]["QFM"]
+
+    dQx = PI2 * tune_dict["X"]["QM"]  # driven tunes
+    dQy = PI2 * tune_dict["Y"]["QM"]
+
+    print(tune_dict)
+
+    factor1001 = np.sqrt(0.0j + sin(dQy - Qx)*sin(dQx - Qy))/sin(Qx - Qy)
+    factor1010 = sqrt(sin(Qx + dQy)*sin(Qy + dQx))/sin(Qx + Qy)
+    f1001 *= factor1001
+    f1010 *= factor1010
+
+    LOG.debug("compensation by model")
+    LOG.debug(f"f1001 factor: {factor1001}")
+    LOG.debug(f"f1010 factor: {factor1010}")
+
+    return f1001, f1010
+
+def compensate_ryoichi():
+    pass
 
 # --------------------------------------------------------------------------------------------------
 # ---- helper functions ----------------------------------------------------------------------------

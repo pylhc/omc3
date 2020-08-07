@@ -68,8 +68,9 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
     phase_advances = {"MODEL": _get_square_data_frame(
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
-    if meas_input.compensation == "model":
-        df = _compensate_by_model(input_files, meas_input, df, plane)
+    LOGGER.warn("---- ATTENTION: PHASE COMPENSATION by model TURNED OFF")
+    #if meas_input.compensation == "model":
+    #    df = _compensate_by_model(input_files, meas_input, df, plane)
     phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
     if meas_input.compensation == "equation":
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
