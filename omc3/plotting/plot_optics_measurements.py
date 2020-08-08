@@ -278,6 +278,7 @@ def _check_opt(opt):
 
 
 def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
+    """ Main plotting function for RDTs. """
     fig_dict = {}
     if opt.x_axis != 'location':
         LOG.error("Phase advance not yet implemented in RDT-files. Skipping.")
@@ -347,7 +348,7 @@ def _get_rdt_columns():
     for idx, meas in enumerate(rdt_measures):
         column, _, label = YAXIS[meas]
         result['y_columns'][idx] = column
-        result['error_columns'][idx] = f"{ERR}{AMPLITUDE}"
+        result['error_columns'][idx] = f"{ERR}{AMPLITUDE}"  # replaced for phase below
         result['y_labels'][idx] = label
     result['error_columns'][rdt_measures.index('rdt_phase')] = f"{ERR}{PHASE}"
     return result
@@ -357,7 +358,7 @@ def _get_rdt_columns():
 
 
 def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
-
+    """ Main plotting function for all parameters but RDTs. """
     y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
 
     same_fig = None

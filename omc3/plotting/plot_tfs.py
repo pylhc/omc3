@@ -493,13 +493,13 @@ def _update_y_labels(fig_collection, y_labels):
 def _create_plots(fig_collection, opt):
     """ Main plotting routine """
     for fig_container in fig_collection.figs.values():
-        for idx_ax, (ax, data, ylabel, xlabel) in enumerate(
-                zip(fig_container.axes.values(), fig_container.data.values(),
-                    fig_container.ylabels.values(), fig_container.xlabels.values())):
+        for idx_ax, ax_id in enumerate(fig_container.axes_ids):
+            ax, data, xlabel, ylabel = fig_container[ax_id]
             _plot_vlines(ax, opt.vertical_lines)
             _plot_data(ax, data, opt.change_marker, opt.errorbar_alpha)
             _set_axes_layout(ax, opt.x_lim, opt.y_lim, ylabel, xlabel)
 
+            # plt.show(block=False)  # for debugging
             if idx_ax == 0 or not opt.single_legend:
                 pannot.make_top_legend(ax, opt.ncol_legend)
 
@@ -596,11 +596,16 @@ def _check_opt(opt):
 
 
 def _get_axes_ids(opt):
-    """ Get's all id's first (to know how many axes to use)
-    and then later again (for actual plotting).
-    Couldn't find a quicker way... (jdillly)
+    """ Get's all id's first (to know how many axes to use).
+    So the `get_id` is done later for actual plotting again.
+
+    The order matters, as this function detemines the order in which
+    the data is distributed on the figure axes (if multiple), which is important
+    if one gives the manual y-labels option.
+
+    Couldn't find a quicker way... (jdilly)
     """
-    axes_ids = []
+    axes_ids = []  # needs to be something ordered
     same_axes_set = frozenset()
     if opt.same_axes:
         same_axes_set = frozenset(opt.same_axes)
@@ -617,7 +622,7 @@ def _get_axes_ids(opt):
                     id_ = get_id(filename, y_col, file_label, column_label, same_axes_set,
                                  opt.same_figure, opt.output_prefix, plane, opt.planes)['axes_id']
                     axes_ids.append(id_)
-    return set(axes_ids)
+    return list(OrderedDict.fromkeys(axes_ids).keys())  # unique list with preserved order
 
 
 def _get_marker(idx, change):

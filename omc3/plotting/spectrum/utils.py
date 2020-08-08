@@ -8,6 +8,7 @@ Common functions and sorting functions for the spectrum plotter.
 
 """
 import os
+from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
 from typing import Iterable, Sized, Union
@@ -47,7 +48,7 @@ class FigureContainer(object):
     """ Container for attaching additional information to one figure. """
     def __init__(self, path: str) -> None:
         self.fig, self.axes = plt.subplots(nrows=len(PLANES), ncols=1)
-        self.data = {}  # hint: needs to be ordered. Which is the case for python3 dicts!
+        self.data = OrderedDict()  # make sure in plotting to use this order
         self.tunes = {p: [] for p in PLANES}
         self.nattunes = {p: [] for p in PLANES}
         self.path = path
