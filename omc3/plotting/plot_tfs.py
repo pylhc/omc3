@@ -72,7 +72,7 @@ combine plots.
 
   Choices: ``('X', 'Y')``
 - **plot_styles** *(str)*: Which plotting styles to use,
-  either from plotting.utils.*.mplstyles or default mpl.
+  either from plotting.styles.*.mplstyles or default mpl.
 
   Default: ``['standard']``
 - **same_axes** *(str)*: Combine plots into single axes. Multiple choices possible.
@@ -262,7 +262,7 @@ def get_params():
         type=str,
         nargs="+",
         default=['standard'],
-        help='Which plotting styles to use, either from plotting.utils.*.mplstyles or default mpl.'
+        help='Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.'
     )
     params.add_parameter(
         name="manual_style",

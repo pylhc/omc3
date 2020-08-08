@@ -71,7 +71,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 - **output** *(MultiClass)*: Folder to output the results to.
 
 - **plot_styles** *(str)*: Which plotting styles to use,
-  either from plotting.utils.*.mplstyles or default mpl.
+  either from plotting.styles.*.mplstyles or default mpl.
 
   Default: ``['standard']``
 - **show**: Shows plots.
@@ -187,7 +187,7 @@ def get_params():
         type=str,
         nargs="+",
         default=['standard'],
-        help='Which plotting styles to use, either from plotting.utils.*.mplstyles or default mpl.'
+        help='Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.'
     )
     params.add_parameter(
         name="manual_style",
