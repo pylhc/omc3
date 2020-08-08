@@ -557,7 +557,7 @@ def _get_full_output_path(folder, filename):
 
 
 def _check_opt(opt):
-    """ Sanity checks for the opt structure """
+    """ Sanity checks for the opt structure and broadcasting of parameters. """
     if opt.file_labels is None:
         opt.file_labels = [None] * len(opt.files)
     elif len(opt.file_labels) != len(opt.files):
@@ -596,7 +596,8 @@ def _check_opt(opt):
 
 
 def _get_axes_ids(opt):
-    """ Get's all id's first and then later again.
+    """ Get's all id's first (to know how many axes to use)
+    and then later again (for actual plotting).
     Couldn't find a quicker way... (jdillly)
     """
     axes_ids = []
@@ -628,6 +629,11 @@ def _get_marker(idx, change):
 
 
 def _safe_format(label, insert):
+    """ Formats label.
+    Usually just `.format()` works fine, even if there is no {}-placeholder in the label,
+    but it might cause errors if latex is used in the label or `None`.
+    Hence the try-excepts.
+    """
     try:
         return label.format(insert)
     except KeyError:  # can happen for latex strings
