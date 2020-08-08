@@ -16,25 +16,29 @@ from pathlib import Path
 
 REMOVE_ENTRY = "REMOVE ENTRY"  # id to remove entries in manual style
 
+STYLES_DIR = Path(__file__).parent.parent / 'styles'
 
-STYLES = dict(standard=Path(__file__).parent / 'standard.mplstyle',
-              presentation=Path(__file__).parent / 'presentation.mplstyle'
-              )
 
 # Style ######################################################################
+
+
+def omc3_styles():
+    return {p.with_suffix('').name: p for p in STYLES_DIR.glob('*.mplstyle')}
 
 
 def set_style(styles=('standard',), manual=None):
     """Sets the style for all following plots.
 
     Args:
-        styles: List of styles (or single string), either 'standard', 'presentation' or from the mpl styles
+        styles: List of styles (or single string), either path to style-file, name of style in styles or from the mpl styles
         manual: Dict of manual parameters to update. Convention: "REMOVE_ENTRY" removes entry
     """
     if isinstance(styles, str):
         styles = (styles,)
 
-    styles = [STYLES.get(style, style) for style in styles]
+    local_styles = omc3_styles()
+    styles = [local_styles.get(style, style) for style in styles]
+
     if manual:
         for key, value in manual.items():
             if value == REMOVE_ENTRY:
