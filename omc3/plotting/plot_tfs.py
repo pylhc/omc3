@@ -401,11 +401,11 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
     if column_label is None:
         column_label = column
     else:
-        column_label = _safe_format(column_label, plane)
+        column_label = _safe_format(column_label, plane.lower())
 
     axes_id = {'files': '_'.join(filename_parts),
                'columns': f'{column}',
-               'planes': f'{plane}'
+               'planes': f'{plane.lower()}'
                }.get(same_figure, '')
 
     key = same_axes if same_figure is None else same_axes.union({same_figure})

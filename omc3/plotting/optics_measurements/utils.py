@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from pathlib import Path
 from typing import Iterable
 
@@ -27,8 +28,8 @@ class FigureContainer:
 class FigureCollector:
     """ Class to collect figure containers and manage data adding. """
     def __init__(self) -> None:
-        self.fig_dict = {}   # dictionary of matplotlib figures, for output
-        self.figs = {}       # dictionary of FigureContainers, used internally
+        self.fig_dict = OrderedDict()   # dictionary of matplotlib figures, for output
+        self.figs = OrderedDict()       # dictionary of FigureContainers, used internally
 
     def add_data_for_id(self, figure_id: str, label: str, data: dict,
                         x_label: str, y_label: str,

@@ -16,6 +16,9 @@ class BasicTests:
     @staticmethod
     def test_phase():
         _default_test('phase')
+
+    @staticmethod
+    def test_phase_delta():
         _default_test('phase', delta=True)
 
     @staticmethod
@@ -83,16 +86,25 @@ class ExtendedTests:
     @staticmethod
     def test_beta_phase():
         _default_test('beta_phase')
+
+    @staticmethod
+    def test_beta_phase_delta():
         _default_test('beta_phase', delta=True)
 
     @staticmethod
     def test_beta_amplitude():
         _default_test('beta_amplitude')
+
+    @staticmethod
+    def test_beta_amplitude_delta():
         _default_test('beta_amplitude', delta=True)
 
     @staticmethod
     def test_total_phase():
         _default_test('total_phase')
+
+    @staticmethod
+    def test_total_phase_delta():
         _default_test('total_phase', delta=True)
 
     @staticmethod
