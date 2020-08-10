@@ -78,11 +78,12 @@ def run_string(input_string, output_file=None, log_file=None,
                madx_path=MADX_PATH, cwd=None):
     """Runs MADX in a subprocess.
 
-    Attributes:
+    Arguments:
         input_string: MADX input string
         output_file: If given writes MADX script.
         log_file: If given writes MADX logging output.
         madx_path: Path to MADX executable
+
     """
     _check_log_and_output_files(output_file, log_file)
     _run(input_string, log_file, output_file, madx_path, cwd)

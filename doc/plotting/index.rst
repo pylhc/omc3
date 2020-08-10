@@ -1,9 +1,19 @@
 Plot-Subfunctions
 **************************
 
+Optics Measurements Plots
+===========================
+
+
+.. automodule:: omc3.plotting.optics_measurements.constants
+    :members:
+
+.. automodule:: omc3.plotting.optics_measurements.utils
+    :members:
+
+
 Spectrum Plots
 =================
-
 
 .. automodule:: omc3.plotting.spectrum.stem
     :members:

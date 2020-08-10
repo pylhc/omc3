@@ -16,7 +16,14 @@ Feel free to use and extend this module.
 import json
 import os
 import shutil
+from collections import OrderedDict
+from contextlib import suppress
+from pathlib import Path
 
+from generic_parser.entry_datatypes import get_instance_faker_meta
+from generic_parser.entrypoint_parser import save_options_to_config
+
+from omc3.definitions import formats
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -228,3 +235,53 @@ def json_dumps_readable(json_outfile, object_to_dump):
                               ).replace("}", "\n}")
     with open(json_outfile, "w") as json_file:
         json_file.write(object_to_dump)
+
+
+class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
+    """ A class that behaves like a Path when possible, otherwise like a string."""
+    def __new__(cls, value):
+        if isinstance(value, str):
+            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+        return Path(value)
+
+
+def convert_paths_in_dict_to_strings(dict_):
+    """ Converts all Paths in the dict to strings. """
+    for key, value in dict_.items():
+        if isinstance(value, Path):
+            dict_[key] = str(value)
+        else:
+            try:
+                list_ = list(value)
+            except TypeError:
+                pass
+            else:
+                has_changed = False
+                for idx, item in enumerate(list_):
+                    if isinstance(item, Path):
+                        list_[idx] = str(item)
+                        has_changed = True
+            if has_changed:
+                dict_[key] = list_
+    return dict_
+
+
+def remove_none_dict_entries(dict_):
+    """ Removes None entries from dict.
+    This can be used as a workaround to
+    https://github.com/pylhc/generic_parser/issues/26 """
+    for key, value in list(dict_.items()):
+        if value is None:
+            del dict_[key]
+    return dict_
+
+
+def save_config(output_dir, opt, script):
+    """ Quick wrapper for save_options_to_config. """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    opt = opt.copy()
+    opt = remove_none_dict_entries(opt)  # temporary fix
+    opt = convert_paths_in_dict_to_strings(opt)
+    save_options_to_config(output_dir / formats.get_config_filename(script),
+                           OrderedDict(sorted(opt.items()))
+                           )

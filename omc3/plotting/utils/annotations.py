@@ -16,7 +16,7 @@ import tfs
 from matplotlib import pyplot as plt
 
 # List of common y-labels. Sorry for the ugly.
-_ylabels = {
+ylabels = {
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
     "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$'u'\u2030'r'$]$',
@@ -29,8 +29,8 @@ _ylabels = {
     "phase_milli":        r'$\phi_{{{0}}} \quad [2\pi\cdot10^{{-3}}]$',
     "dispersion":         r'D$_{{{0}}}$ [m]',
     "dispersion_mm":      r'D$_{{{0}}}$ [mm]',
-    "co":                 r'{0} [m]',
-    "co_mm":              r'{0} [mm]',
+    "co":                 r'Orbit {0} [m]',
+    "co_mm":              r'Orbit {0} [mm]',
     "tune":               r'Q$_{{{0}}}$',
     "nattune":            r'Nat. Q$_{{{0}}}$',
     "chromamp":           r'W$_{{{0}}}$',
@@ -44,7 +44,7 @@ def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plo
     """ Set y-axis labels.
 
     Args:
-        param: One of the ylabels above
+        param: One of the y_labels above
         plane: Usually x or y, but can be any string actually to be placed into the label ({0})
         ax: Axes to put the label on (default: gca())
         delta: If True adds a Delta before the label (default: False)
@@ -52,7 +52,7 @@ def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plo
     if not ax:
         ax = plt.gca()
     try:
-        label = _ylabels[param].format(plane)
+        label = ylabels[param].format(plane)
     except KeyError:
         raise ValueError(f"Label '{param}' not found.")
 
@@ -270,6 +270,9 @@ def get_legend_ncols(labels, max_length=78):
 
 def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
     """ Create a legend on top of the plot. """
+    if ncol < 1:
+        return
+
     leg = ax.legend(handles=handles, labels=labels, loc='lower right',
                     bbox_to_anchor=(1.0, 1.0+pad),
                     fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
@@ -279,7 +282,7 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
         ax.figure.tight_layout(rect=[0, 0, 1, 1+pad-legend_height])
 
     leg.axes.figure.canvas.draw()
-    legend_width = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).width
+    legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
     if legend_width > 1:
         x_shift = (legend_width - 1) / 2.
         ax.legend(handles=handles, labels=labels, loc='lower right',
