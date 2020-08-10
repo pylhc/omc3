@@ -88,9 +88,9 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
   Choices: ``['location', 'phase-advance']``
   Default: ``location``
-- **x_lim** *(float)*: Limits on the x axis (Tupel)
+- **x_lim** *(float, int, None)*: Limits on the x axis (Tupel)
 
-- **y_lim** *(float)*: Limits on the y axis (Tupel)
+- **y_lim** *(float, int, None)*: Limits on the y axis (Tupel)
 
 
 """

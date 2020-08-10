@@ -98,13 +98,13 @@ combine plots.
   Default: ``[]``
 - **x_labels** *(str)*: Labels for the x-axis, default: x_columns.
 
-- **x_lim** *(float)*: Limits on the x axis (Tupel)
+- **x_lim** *(float, int, None)*: Limits on the x axis (Tupel)
 
 - **y_labels**: Override labels for the y-axis, default: file_labels or column_labels (depending on same_axes).
   Needs to be a list of lists, where the inner list goes over the axes in one figure and the outer over the figures.
   If the respective length is 1, the same label will be used for all figures or axes.
 
-- **y_lim** *(float)*: Limits on the y axis (Tupel)
+- **y_lim** *(float, int None)*: Limits on the y axis (Tupel)
 
 """
 from collections import OrderedDict

@@ -238,7 +238,7 @@ def json_dumps_readable(json_outfile, object_to_dump):
 
 
 class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
-    """ A class that behaves like a boolean when possible, otherwise like a string."""
+    """ A class that behaves like a Path when possible, otherwise like a string."""
     def __new__(cls, value):
         if isinstance(value, str):
             value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
