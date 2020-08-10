@@ -113,7 +113,7 @@ from pathlib import Path
 import matplotlib
 import tfs
 from generic_parser import EntryPointParameters, entrypoint, DotDict
-from generic_parser.entry_datatypes import DictAsString
+from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from matplotlib import pyplot as plt, rcParams
 
 from omc3.definitions.constants import PLANES
@@ -128,6 +128,8 @@ from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
+
+float_or_none = get_multi_class(float, int, type(None))  # for the limits
 
 
 def get_params():
@@ -236,13 +238,13 @@ def get_params():
     params.add_parameter(
         name="x_lim",
         nargs=2,
-        type=float,
+        type=float_or_none,
         help='Limits on the x axis (Tupel)'
     )
     params.add_parameter(
         name="y_lim",
         nargs=2,
-        type=float,
+        type=float_or_none,
         help='Limits on the y axis (Tupel)'
     )
     params.add_parameter(
