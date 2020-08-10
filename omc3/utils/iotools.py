@@ -261,8 +261,8 @@ def convert_paths_in_dict_to_strings(dict_):
                     if isinstance(item, Path):
                         list_[idx] = str(item)
                         has_changed = True
-            if has_changed:
-                dict_[key] = list_
+                if has_changed:
+                    dict_[key] = list_
     return dict_
 
 
