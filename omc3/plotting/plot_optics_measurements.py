@@ -74,6 +74,9 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
   either from plotting.styles.*.mplstyles or default mpl.
 
   Default: ``['standard']``
+- **share_xaxis**: In case of multiple axes per figure, share x-axis.
+
+  Action: ``store_true``
 - **show**: Shows plots.
 
   Action: ``store_true``
@@ -230,6 +233,11 @@ def get_params():
         type=float,
         help='Limits on the y axis (Tupel)'
     )
+    params.add_parameter(
+        name="share_xaxis",
+        help="In case of multiple axes per figure, share x-axis.",
+        action="store_true",
+    )
     return params
 
 
@@ -336,7 +344,8 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
                 **opt.get_subdict(['show', 'output',
                                    'plot_styles', 'manual_style',
                                    'change_marker', 'errorbar_alpha',
-                                   'ncol_legend', 'x_lim', 'y_lim'])
+                                   'ncol_legend', 'x_lim', 'y_lim',
+                                   'share_xaxis'])
             ))
 
     return fig_dict
@@ -399,7 +408,8 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
         **opt.get_subdict(['show', 'output',
                            'plot_styles', 'manual_style',
                            'change_marker', 'errorbar_alpha',
-                           'ncol_legend', 'x_lim', 'y_lim'])
+                           'ncol_legend', 'x_lim', 'y_lim',
+                           'share_xaxis'])
     )
 
 

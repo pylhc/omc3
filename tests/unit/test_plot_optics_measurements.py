@@ -29,7 +29,12 @@ class BasicTests:
 class ExtendedTests:
     @staticmethod
     def test_orbit():
-        _default_test('orbit')
+        figs = _default_test('orbit')
+        for fig in figs.values():
+            assert len(fig.axes) == 2
+
+    @staticmethod
+    def test_orbit_delta():
         figs = _default_test('orbit', delta=True)
         for fig in figs.values():
             assert len(fig.axes) == 2
@@ -39,6 +44,15 @@ class ExtendedTests:
         figs = _default_test('orbit', combine_by=['planes'])
         for fig in figs.values():
             assert len(fig.axes) == 1
+
+    @staticmethod
+    def test_orbit_share_xaxis():
+        figs = _default_test('orbit', share_xaxis=True)
+        for fig in figs.values():
+            assert len(fig.axes) == 2
+            sharedx = list(fig.axes[0].get_shared_x_axes())
+            assert len(sharedx) == 1
+            assert len(sharedx[0]) == 2
 
     @staticmethod
     def test_orbit_ip_positions_location():

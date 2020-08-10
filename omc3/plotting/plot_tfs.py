@@ -82,6 +82,9 @@ combine plots.
   Has no effect if there is only one of the given thing.
 
   Choices: ``['files', 'columns', 'planes']``
+- **share_xaxis**: In case of multiple axes per figure, share x-axis.
+
+  Action: ``store_true``
 - **show**: Shows plots.
 
   Action: ``store_true``
@@ -287,6 +290,11 @@ def get_params():
         type=float,
         default=DEFAULTS['errorbar_alpha'],
     )
+    params.add_parameter(
+        name="share_xaxis",
+        help="In case of multiple axes per figure, share x-axis.",
+        action="store_true",
+    )
     return params
 
 
@@ -308,15 +316,15 @@ def plot(opt):
     fig_collection = sort_data(opt.get_subdict(
         ['files', 'planes', 'x_columns', 'y_columns', 'error_columns',
          'file_labels', 'column_labels', 'x_labels', 'y_labels',
-         'same_axes', 'same_figure', 'output', 'output_prefix']))
+         'same_axes', 'same_figure', 'output', 'output_prefix',
+         'share_xaxis']))
 
     # plotting
     _create_plots(fig_collection,
                   opt.get_subdict(['x_lim', 'y_lim',
                                    'ncol_legend', 'single_legend',
                                    'change_marker', 'errorbar_alpha',
-                                   'vertical_lines',
-                                   'show']))
+                                   'vertical_lines', 'show']))
 
     return fig_collection.fig_dict
 
@@ -328,6 +336,9 @@ def sort_data(opt):
     """ Load all data from files and sort into figures"""
     collector = FigureCollector()
     axes_ids = _get_axes_ids(opt)
+
+    if len(axes_ids) == 1 and opt.share_xaxis:
+        LOG.warning("Option `share_xaxis` is activated but only one axes is present. The option has no effect.")
 
     same_axes_set = frozenset()
     if opt.same_axes:
@@ -375,7 +386,11 @@ def sort_data(opt):
                         axes_ids=axes_ids,
                     )
     if opt.y_labels:
-        _update_y_labels(collector, opt.y_labels)
+        collector = _update_y_labels(collector, opt.y_labels)
+
+    if opt.share_xaxis:
+        collector = _share_xaxis(collector)
+
     return collector
 
 
@@ -485,6 +500,19 @@ def _update_y_labels(fig_collection, y_labels):
 
         for idx_ax, (ax_id, _) in enumerate(fig_container.ylabels.items()):
             fig_container.ylabels[ax_id] = _safe_format(axes_labels[idx_ax], ax_id)
+    return fig_collection
+
+
+def _share_xaxis(fig_collection):
+    """ Shared xaxis at last axes and remove all xlabels, ticks of other axes. """
+    for fig_container in fig_collection.figs.values():
+        axs = fig_container.axes.values()
+        fig_container.axes[fig_container.axes_ids[-1]].get_shared_x_axes().join(*axs)
+        for ax_id in fig_container.axes_ids[:-1]:
+            fig_container.axes[ax_id].set_xticklabels([])
+            fig_container.xlabels[ax_id] = None
+
+    return fig_collection
 
 
 # Plotting ---------------------------------------------------------------------
