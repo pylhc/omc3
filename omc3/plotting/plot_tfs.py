@@ -107,18 +107,15 @@ combine plots.
 - **y_lim** *(float)*: Limits on the y axis (Tupel)
 
 """
-import os
 from collections import OrderedDict
 from pathlib import Path
 
 import matplotlib
 import tfs
 from generic_parser import EntryPointParameters, entrypoint, DotDict
-from generic_parser.entry_datatypes import DictAsString, get_multi_class
-from generic_parser.entrypoint_parser import save_options_to_config
+from generic_parser.entry_datatypes import DictAsString
 from matplotlib import pyplot as plt, rcParams
 
-from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
@@ -127,11 +124,10 @@ from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
 from omc3.plotting.utils import (annotations as pannot, lines as plines,
                                  style as pstyle, colors as pcolors)
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
+from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
-
-PATH_OR_STR = get_multi_class(Path, str)
 
 
 def get_params():
@@ -142,7 +138,7 @@ def get_params():
               "If planes are used, replace the plane in the filename with '{0}'"),
         required=True,
         nargs="+",
-        type=PATH_OR_STR,
+        type=PathOrStr,
     )
     params.add_parameter(
         name="y_columns",
@@ -204,7 +200,7 @@ def get_params():
     params.add_parameter(
         name="output",
         help="Folder to output the plots to.",
-        type=PATH_OR_STR,
+        type=PathOrStr,
     )
     params.add_parameter(
         name="output_prefix",
@@ -306,7 +302,7 @@ def plot(opt):
     """ Main plotting function. """
     LOG.info(f"Starting plotting of tfs files: {list2str(opt.files):s}")
     if opt.output is not None:
-        _save_options_to_config(opt)
+        save_config(Path(opt.output), opt, __file__)
 
     # preparations
     opt = _check_opt(opt)
@@ -567,14 +563,6 @@ def _set_axes_layout(ax, x_lim, y_lim, ylabel, xlabel):
 
 
 # Output ---
-
-
-def _save_options_to_config(opt):
-    output_dir = Path(opt.output)
-    os.makedirs(output_dir, exist_ok=True)
-    save_options_to_config(output_dir / formats.get_config_filename(__file__),
-                           OrderedDict(sorted(opt.items()))
-                           )
 
 
 def _get_full_output_path(folder, filename):

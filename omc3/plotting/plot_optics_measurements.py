@@ -94,16 +94,12 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
 
 """
-import os
-from collections import OrderedDict
 from pathlib import Path
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-from generic_parser.entry_datatypes import DictAsString, get_multi_class
-from generic_parser.entrypoint_parser import save_options_to_config
+from generic_parser.entry_datatypes import DictAsString
 
-from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import ERR, DELTA, AMPLITUDE, PHASE, EXT
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
@@ -113,11 +109,10 @@ from omc3.plotting.optics_measurements.constants import (DEFAULTS,
 from omc3.plotting.plot_tfs import plot as plot_tfs
 from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
+from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
-
-PATH_OR_STR = get_multi_class(Path, str)
 
 
 def get_params():
@@ -127,7 +122,7 @@ def get_params():
         help="Optics Measurements folders containing the analysed data.",
         required=True,
         nargs="+",
-        type=PATH_OR_STR,
+        type=PathOrStr,
     )
     params.add_parameter(
         name="optics_parameters",
@@ -178,7 +173,7 @@ def get_params():
     params.add_parameter(
         name="output",
         help="Folder to output the results to.",
-        type=PATH_OR_STR,
+        type=PathOrStr,
     )
     params.add_parameter(
         name="show",
@@ -248,7 +243,7 @@ def plot(opt):
              f"{list2str(opt.optics_parameters)} in {list2str(opt.folders):s}")
 
     if opt.output is not None:
-        _save_options_to_config(opt)
+        save_config(Path(opt.output), opt, __file__)
 
     opt = _check_opt(opt)
 
@@ -467,14 +462,6 @@ def _create_ip_list(ip_dict):
 
 def _get_x_options(x_axis):
     return XAXIS[x_axis]
-
-
-def _save_options_to_config(opt):
-    output_dir = Path(opt.output)
-    os.makedirs(output_dir, exist_ok=True)
-    save_options_to_config(output_dir / formats.get_config_filename(__file__),
-                           OrderedDict(sorted(opt.items()))
-                           )
 
 
 # Script Mode ------------------------------------------------------------------
