@@ -26,7 +26,7 @@ LIB = abspath(join(dirname(__file__), "lib"))
 _LOCAL_PATH = join(dirname(__file__), "bin")
 
 if "darwin" in sys.platform:
-    _MADX_BIN = "madx-macosx64-intel"
+    _MADX_BIN = "madx-macosx64-gnu"
 elif "win" in sys.platform:
     _MADX_BIN = "madx-win64-gnu.exe"
 else:
