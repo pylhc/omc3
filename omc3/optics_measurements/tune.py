@@ -8,15 +8,12 @@ Tune
 Computes betatron tunes and provides structures to store them.
 """
 import numpy as np
-from omc3.utils import stats
-from omc3.utils import logging_tools
-from omc3.optics_measurements.constants import PLANES, PLANE_TO_NUM
 
-LOG = logging_tools.get_logger(__name__)
+from omc3.definitions.constants import PLANES, PLANE_TO_NUM
+from omc3.utils import stats
 
 
 def calculate(measure_input, input_files):
-    LOG.debug("calculating tune")
     tune_d = TuneDict()
     accelerator = measure_input.accelerator
     for plane in PLANES:
@@ -27,7 +24,6 @@ def calculate(measure_input, input_files):
         tune_d[plane]["Q"], tune_d[plane]["QF"] = measured_tune, measured_tune
         tune_d[plane]["QFM"] = accelerator.nat_tunes[PLANE_TO_NUM[plane] - 1]
         if accelerator.excitation:
-            LOG.debug("compensating excited tune")
             tune_d[plane]["QM"] = accelerator.drv_tunes[PLANE_TO_NUM[plane] - 1]
             tune_d[plane]["QF"] = tune_d[plane]["Q"] - tune_d[plane]["QM"] + tune_d[plane]["QFM"]
             tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
