@@ -115,11 +115,12 @@ from matplotlib import cm
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
 from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
-                                          MANUAL_LOCATIONS, LOG,
+                                          LOG,
                                           FigureCollector, get_unique_filenames,
                                           filter_amps, get_bpms, get_stem_id,
                                           get_waterfall_id, get_data_for_bpm,
                                           load_spectrum_data)
+from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.utils import logging_tools
 
@@ -217,8 +218,9 @@ def get_params():
                          default=[],
                          type=DictAsString,
                          help='List of manual lines to plot. Need to contain arguments for axvline, and may contain '
-                              f'the additional key "loc" which is one of {list(MANUAL_LOCATIONS.keys())} '
-                              'and places the label as text at the given location.')
+                              'the additional keys "text" and "loc" which is one of '
+                              f'{list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} and places the text at the given location.'
+                         )
     params.add_parameter(name="xlim",
                          nargs=2,
                          type=float,
@@ -352,6 +354,7 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
 
     # Data Sorting
     for file_path, filename in get_unique_filenames(opt.files):
+        filename = "_".join(filename)
         LOG.info(f"Loading data for file '{filename}'.")
 
         data = load_spectrum_data(file_path, opt.bpms)

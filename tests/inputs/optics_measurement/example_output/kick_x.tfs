@@ -1,0 +1,14 @@
+@ Measure_optics:version %s "0.4.0"
+@ Command %s "/afs/cern.ch/work/o/omc/anaconda3/bin/python /afs/cern.ch/user/l/lmalina/public/omc3/omc3/hole_in_one.py --optics --accel=lhc --lhcmode=lhc_runII_2018 --beam=1 --model_dir /afs/cern.ch/work/l/lmalina/2019-01-10/models/LHCB1/b1_inj/ --files /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid0_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid550_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid650_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds --outputdir=/afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/optics93 --nonlinear"
+@ CWD %s "/afs/cern.ch/user/l/lmalina/public/omc3"
+@ Date %s "14. May 2019, 12:18:02"
+@ Model_directory %s "/afs/cern.ch/work/l/lmalina/2019-01-10/models/LHCB1/b1_inj/"
+@ Compensation %s "by model"
+@ Q1 %le 0.2731720602787391
+@ Q2 %le 0.29294607681438123
+@ RescalingFactor %le 0.9998775761624139
+*                  DPP               DPPAMP                   QX                ERRQX                NATQX             ERRNATQX              sqrt2JX           ERRsqrt2JX                  2JX               ERR2JX           sqrt2JXRES        ERRsqrt2JXRES               2JXRES            ERR2JXRES
+$                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le
+                     0    0.000101062663994       0.261172200348    3.10306329078e-07        0.27317798069     0.00032850979751      0.0855849515271      0.0017753931603     0.00732793594878    0.000303330995452      0.0855744738889     0.00177517580985     0.00732703883474    0.000303293860507
+                     0     0.00010532112523       0.261172138728    2.90066113949e-07       0.273015370736    0.000783028359443      0.0854739996496     0.00179591457579     0.00730902992527    0.000306881203966      0.0854635355946     0.00179569471304     0.00730813512577    0.000306843634391
+                     0    9.87983617933e-05       0.261172126703    2.48202329185e-07       0.273188224562    0.000595133907966      0.0855806586222     0.00179610556161     0.00732727512539    0.000306709964657      0.0855701815095     0.00179588567547     0.00732637809225    0.000306672416047

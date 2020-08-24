@@ -15,6 +15,7 @@ from omc3.plotting.spectrum.utils import get_unique_filenames, PLANES
 def test_unique_filenames():
     def _test_list(list_of_paths):
         paths, names = zip(*get_unique_filenames(list_of_paths))
+        names = ["_".join(n) for n in names]
         for item in zip(list_of_paths, paths):
             assert item[0] == str(item[1])
         assert len(set(names)) == len(names)
@@ -42,6 +43,7 @@ def test_basic_functionality(file_path, bpms):
             manual_style={},  # just to call the update line
         )
         _, filename = list(get_unique_filenames([file_path]))[0]
+        filename = "_".join(filename)
         bpm_ids = (f"{filename}_{bpm}" for bpm in bpms)
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 3
         assert len(waterfall) == 1
@@ -61,6 +63,7 @@ def test_combined_bpms_stem_plot(file_path, bpms):
             combine_by=['bpms'],
         )
         _, filename = list(get_unique_filenames([file_path]))[0]
+        filename = "_".join(filename)
         assert len(listdir(_get_output_dir(out_dir, file_path))) == 1
         assert len(waterfall) == 0
         assert len(stem) == 1
