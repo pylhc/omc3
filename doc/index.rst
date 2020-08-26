@@ -1,8 +1,3 @@
-.. omc3 documentation master file, created by
-   sphinx-quickstart on Tue Oct  8 13:32:26 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to omc3's documentation!
 =====================================
 
@@ -12,13 +7,13 @@ Contents:
    :maxdepth: 2
 
    entrypoints/index
+   definitions/index
    harpy/index
    model/index
    optics_measurements/index
-   generic_parser/index
-   sdds/index
+   plotting/index
    tbt/index
-   tfs/index
+   tune_analysis/index
    utils/index
 
 

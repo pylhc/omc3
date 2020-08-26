@@ -1,0 +1,120 @@
+/******************************************************************************************
+*
+* MAD-X File for PS  optics calculations
+*
+*
+*
+******************************************************************************************/
+
+title, "PS Ring lattice";
+
+/******************************************************************************************
+ * beam, use
+ ******************************************************************************************/
+
+beam_Ek=%(KINETICENERGY)s;
+beam_Etot = beam_Ek + pmass;
+beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+
+BEAM, PARTICLE=PROTON, PC = beam_pc;
+BRHO      := BEAM->PC * 3.3356;
+
+/******************************************************************************************
+ * PS 
+ ******************************************************************************************/
+ call, file = '%(FILES_DIR)s/elements/PS.ele';
+ call, file = '%(FILES_DIR)s/sequence/PS.seq';
+ call, file = '%(FILES_DIR)s/strength/elements.str';
+ call, file = '%(FILES_DIR)s/cmd/macros.ptc';
+
+ /*Strength files*/
+ call, file = "%(OPTICS_PATH)s";
+
+/******************************************************************************************
+ * Install AC dipole
+ ******************************************************************************************/
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+ Qxd = %(DRV_TUNE_X)s;
+ Qyd = %(DRV_TUNE_Y)s;
+
+ 
+ hacmap21 = 0;
+ vacmap43 = 0;
+ hacmap: matrix, l=0, rm21 := hacmap21;
+ vacmap: matrix, l=0, rm43 := vacmap43;
+
+ seqedit, sequence=PS;
+  flatten;
+
+  install, element=hacmap, at=0.5, from=PR.KFB97;
+  install, element=vacmap, at=0.5, from=PR.KFB97;
+
+  cycle, start=PS43$START;
+ endedit;
+ 
+ use, sequence=PS;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+
+
+match, use_macro;
+  vary,   name=kf, step=1.0E-6 ;
+  vary,   name=kd, step=1.0E-6 ;
+  
+  !USE_MACRO, name=ptc_twiss_tune_macro;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu1)= Qx;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu2)= Qy;
+  
+  mq: macro
+   {
+     twiss;
+   }
+  CONSTRAINT, expr=  table(summ , q1)= Qx; 
+  CONSTRAINT, expr=  table(summ , q2)= Qy;
+  
+  lmdif,calls=1000,TOLERANCE=1.0E-21;
+ENDMATCH;
+
+
+
+/******************************************************************************************
+ * TWISS
+ ******************************************************************************************/
+
+
+/************************************************************
+ * MAD uses pt as the 5th variable NOT delta-p.
+ * The result is that all derivatives are with repect to pt.
+ * This is the reason for the non-standard dispersion values
+ * for non-relativistic machines, like the PSB
+ ************************************************************/
+ select, flag=twiss, clear;
+ select, flag=twiss, pattern="^PR.*BPM",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ twiss, chrom, DELTAP = %(DPP)s , sequence=PS, file="%(OUTPUT)s/twiss.dat";
+
+ select, flag=twiss, clear;
+ select, flag=twiss,column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ twiss, chrom, DELTAP = %(DPP)s , sequence=PS, file="%(OUTPUT)s/twiss_elements.dat";
+
+!  AC Dipole i
+ ac_s = %(USE_ACD)s;
+ 
+ if (ac_s == 1) {
+
+      betxac = table(twiss, hacmap, betx);
+      betyac = table(twiss, vacmap, bety);
+     
+      hacmap21 := ac_s * (2*(cos(2*pi*Qxd)-cos(2*pi*Qx))/(betxac*sin(2*pi*Qx)));
+      vacmap43 := 2*(cos(2*pi*Qyd)-cos(2*pi*Qy))/(betyac*sin(2*pi*Qy));
+
+      value, betxac, betyac;
+      
+      select, flag=twiss, clear;
+      select, flag=twiss, pattern="^PR.*BPM",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+      twiss, centre, DELTAP = 0, sequence=PS, file="%(OUTPUT)s/twiss_ac.dat";
+ }

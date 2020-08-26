@@ -2,42 +2,48 @@
 PS
 -------------------
 """
-import os
-import datetime as dt
-from model.accelerators.accelerator import Accelerator
 import logging
+import os
 
+from generic_parser import EntryPoint
+
+from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.constants import PLANE_TO_HV
 LOGGER = logging.getLogger(__name__)
-
 CURRENT_DIR = os.path.dirname(__file__)
-CURRENT_YEAR = dt.datetime.now().year
-PS_DIR = os.path.join(CURRENT_DIR, "ps")
 
 
 class Ps(Accelerator):
     """ Parent Class for Ps-Types. """
     NAME = "ps"
-    MACROS_NAME = "ps"
     YEAR = 2018
 
     # Public Methods ##########################################################
+
+    def __init__(self, *args, **kwargs):
+        parser = EntryPoint(self.get_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
+        super().__init__(opt)
 
     def verify_object(self):
         pass
 
     @classmethod
-    def get_ps_dir(cls):
-        return os.path.join(PS_DIR, str(cls.YEAR))
-
-    @classmethod
-    def get_segment_tmpl(cls):
-        return cls.get_file("segment.madx")
+    def get_dir(cls):
+        return os.path.join(CURRENT_DIR, cls.NAME, str(cls.YEAR))
 
     @classmethod
     def get_file(cls, filename):
-        return os.path.join(CURRENT_DIR, "ps", filename)
+        return os.path.join(CURRENT_DIR, cls.NAME, filename)
 
-    # Private Methods ##########################################################
+    def get_exciter_bpm(self, plane, bpms):
+        if not self.excitation:
+            return None
+        bpms_to_find = ["PR.BPM00", "PR.BPM03"]
+        found_bpms = [bpm for bpm in bpms_to_find if bpm in bpms]
+        if not len(found_bpms):
+            raise KeyError
+        return (list(bpms).index(found_bpms[0]), found_bpms[0]), f"{PLANE_TO_HV[plane]}ACMAP"
 
 
 class _PsSegmentMixin(object):

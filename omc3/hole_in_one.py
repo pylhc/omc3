@@ -22,16 +22,21 @@ To run either of the two or both steps, use options:
 """
 import os
 from collections import OrderedDict
-from datetime import datetime
-from os.path import join, dirname, basename, abspath
 from copy import deepcopy
-from utils import logging_tools, iotools
-from definitions import formats
-from tbt import lhc_handler, iota_handler, TbtData
+from datetime import datetime
+from os.path import abspath, basename, dirname, join
 
-from generic_parser.entrypoint import (entrypoint, EntryPoint, EntryPointParameters,
-                                       add_to_arguments, save_options_to_config)
-from utils.contexts import timeit
+from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters,
+                                              add_to_arguments, entrypoint,
+                                              save_options_to_config)
+
+from omc3 import tbt
+from omc3.definitions import formats
+from omc3.harpy import handler
+from omc3.model import manager
+from omc3.optics_measurements import measure_optics
+from omc3.utils import iotools, logging_tools
+from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -40,10 +45,8 @@ DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
 
 def hole_in_one_params():
     params = EntryPointParameters()
-    params.add_parameter(flags="--harpy", name="harpy", action="store_true",
-                         help="Runs frequency analysis")
-    params.add_parameter(flags="--optics", name="optics", action="store_true",
-                         help="Measures the lattice optics")
+    params.add_parameter(name="harpy", action="store_true", help="Runs frequency analysis")
+    params.add_parameter(name="optics", action="store_true", help="Measures the lattice optics")
     return params
 
 
@@ -51,6 +54,7 @@ def hole_in_one_params():
 def hole_in_one_entrypoint(opt, rest):
     """
     Runs frequency analysis and measures lattice optics.
+
 
     Hole_in_one Kwargs:
       - **harpy**: Runs frequency analysis
@@ -61,6 +65,7 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--optics**
         Action: ``store_true``
+
 
     Harpy Kwargs:
       - **files**: TbT files to analyse
@@ -114,6 +119,12 @@ def hole_in_one_entrypoint(opt, rest):
       - **model**: Model for BPM locations
 
         Flags: **--model**
+      - **num_svd_iterations** *(int)*: Maximal number of iterations of U matrix elements removal
+        and renormalisation in iterative SVD cleaning of dominant BPMs.
+        This is also equal to maximal number of BPMs removed per SVD mode.
+
+        Flags: **--num_svd_iterations**
+        Default: ``3``
       - **opposite_direction**: If present, beam in the opposite direction to model
         is assumed for resynchronisation of BPMs.
 
@@ -199,20 +210,15 @@ def hole_in_one_entrypoint(opt, rest):
       - **calibrationdir** *(str)*: Path to calibration files directory.
 
         Flags: **--calibrationdir**
+      - **chromatic_beating**: Calculate chromatic beatings: W, PHI and coupling
+
+        Flags: **--chromatic_beating**
+        Action: ``store_true``
       - **coupling_method** *(int)*: Coupling analysis option: disabled, 1 BPM or 2 BPMs method
 
         Flags: **--coupling_method**
         Choices: ``(0, 1, 2)``
         Default: ``2``
-      - **max_beta_beating** *(float)*: Maximal beta-beating allowed for action calculation.
-
-        Flags: **--max_beta_beating**
-        Default: ``0.15``
-      - **max_closed_orbit** *(float)*: Maximal closed orbit in 'm'
-        allowed for dispersion measurement
-
-        Flags: **--max_closed_orbit**
-        Default: ``0.004``
       - **nonlinear**: Calculate higher order RDTs
 
         Flags: **--nonlinear**
@@ -237,7 +243,18 @@ def hole_in_one_entrypoint(opt, rest):
         Action: ``store_true``
 
 
-    Accelerator Kwargs:  TODO
+    Accelerator Kwargs:
+      - **accel**: Choose the accelerator to use. More details can be found in omc3/model/manager.py
+
+        Flags: **--accel**
+        Required: ``True``
+      - **model_dir**: Model directory, specify if ``--model`` option is not used.
+
+        Flags: **--model_dir**
+
+      - For the rest, please see get_parameters() methods in child Accelerator classes,
+        which are declared in ``omc3/model/accelerators/*.py``.
+
 
     """
     if not opt.harpy and not opt.optics:
@@ -261,16 +278,16 @@ def _get_suboptions(opt, rest):
                                     files=harpy_opt.files,
                                     outputdir=harpy_opt.outputdir)
             harpy_opt.outputdir = join(harpy_opt.outputdir, 'lin_files')
-            rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
-                                    model_dir=dirname(abspath(harpy_opt.model)))
+            if harpy_opt.model is not None:
+                rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
+                                        model_dir=dirname(abspath(harpy_opt.model)))
     else:
         harpy_opt = None
 
     if opt.optics:
         optics_opt, rest = _optics_entrypoint(rest)
-        from model import manager
         accel_opt = manager.get_parsed_opt(rest)
-        optics_opt.accelerator = manager.get_accel_instance(rest)
+        optics_opt.accelerator = manager.get_accelerator(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
             raise AttributeError("Compensation requested and no driven model was provided.")
     else:
@@ -302,13 +319,11 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
 
 
 def _run_harpy(harpy_options):
-    from harpy import handler
-    tbt_reader = DATA_HANDLERS[harpy_options.tbt_datatype]
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
         all_options = _replicate_harpy_options_per_file(harpy_options)
-        tbt_datas = [(tbt_reader.read_tbt(option.files), option) for option in all_options]
+        tbt_datas = [(tbt.read_tbt(option.files, datatype=option.tbt_datatype), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
                          for bunch_data, bunch_options in _multibunch(tbt_data, option)])
@@ -332,12 +347,11 @@ def _multibunch(tbt_datas, options):
         new_options = deepcopy(options)
         new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
         new_options.files = join(dirname(options.files), new_file_name)
-        yield TbtData([tbt_datas.matrices[index]], tbt_datas.date,
-                      [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
+        yield tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
+                               [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
 
 
 def _measure_optics(lins, optics_opt):
-    from optics_measurements import measure_optics
     if len(lins) == 0:
         lins = optics_opt.files
     inputs = measure_optics.InputFiles(lins, optics_opt)
@@ -357,6 +371,8 @@ def _harpy_entrypoint(params):
         raise AttributeError("Colliding options found: --tunes and --autotunes. Choose only one")
     if options.tunes is None and options.autotunes is None:
         raise AttributeError("One of the options --tunes and --autotunes has to be used.")
+    if options.svd_dominance_limit <= 0.0:
+        raise AttributeError("SVD dominance limit should be positive")
     if options.bad_bpms is None:
         options.bad_bpms = []
     if options.wrong_polarity_bpms is None:
@@ -368,88 +384,82 @@ def _harpy_entrypoint(params):
 
 def harpy_params():
     params = EntryPointParameters()
-    params.add_parameter(flags="--files", name="files", required=True, nargs='+',
-                         help="TbT files to analyse")
-    params.add_parameter(flags="--outputdir", name="outputdir", required=True,
-                         help="Output directory.")
-    params.add_parameter(flags="--model", name="model", help="Model for BPM locations")
-    params.add_parameter(flags="--unit", name="unit", type=str, choices=("m", "cm", "mm", "um"),
-                         default=HARPY_DEFAULTS["unit"],
+    params.add_parameter(name="files", required=True, nargs='+', help="TbT files to analyse")
+    params.add_parameter(name="outputdir", required=True, help="Output directory.")
+    params.add_parameter(name="model", help="Model for BPM locations")
+    params.add_parameter(name="unit", type=str, default=HARPY_DEFAULTS["unit"],
+                         choices=("m", "cm", "mm", "um"),
                          help=f"A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
-    params.add_parameter(flags="--turns", name="turns", type=int, nargs=2,
-                         default=HARPY_DEFAULTS["turns"],
+    params.add_parameter(name="turns", type=int, nargs=2, default=HARPY_DEFAULTS["turns"],
                          help="Turn index to start and first turn index to be ignored.")
-    params.add_parameter(flags="--to_write", name="to_write", nargs='+',
-                         default=HARPY_DEFAULTS["to_write"],
+    params.add_parameter(name="to_write", nargs='+', default=HARPY_DEFAULTS["to_write"],
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
-                         help="Choose the type of output. ")
-    params.add_parameter(flags="--tbt_datatype", name="tbt_datatype",
-                         default=HARPY_DEFAULTS["tbt_datatype"],
+                         help="Choose the type of output.")
+    params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],
+                         choices=list(tbt.handler.DATA_READERS.keys()),
                          help="Choose the datatype from which to import. ")
 
     # Cleaning parameters
-    params.add_parameter(flags="--clean", name="clean", action="store_true",
+    params.add_parameter(name="clean", action="store_true",
                          help="If present, the data are first cleaned.")
-    params.add_parameter(flags="--sing_val", name="sing_val", type=int,
-                         default=HARPY_DEFAULTS["sing_val"],
+    params.add_parameter(name="sing_val", type=int, default=HARPY_DEFAULTS["sing_val"],
                          help="Keep this amount of largest singular values.")
-    params.add_parameter(flags="--peak_to_peak", name="peak_to_peak", type=float,
-                         default=HARPY_DEFAULTS["peak_to_peak"],
+    params.add_parameter(name="peak_to_peak", type=float, default=HARPY_DEFAULTS["peak_to_peak"],
                          help="Peak to peak amplitude cut. This removes BPMs, "
                               "where abs(max(turn values) - min(turn values)) <= threshold.")
-    params.add_parameter(flags="--max_peak", name="max_peak", type=float,
-                         default=HARPY_DEFAULTS["max_peak"],
+    params.add_parameter(name="max_peak", type=float, default=HARPY_DEFAULTS["max_peak"],
                          help="Removes BPMs where the maximum orbit > limit.")
-    params.add_parameter(flags="--svd_dominance_limit", name="svd_dominance_limit",
-                         type=float, default=HARPY_DEFAULTS["svd_dominance_limit"],
+    params.add_parameter(name="svd_dominance_limit", type=float,
+                         default=HARPY_DEFAULTS["svd_dominance_limit"],
                          help="Limit for single BPM dominating a mode.")
-    params.add_parameter(flags="--bad_bpms", name="bad_bpms", nargs='*', help="Bad BPMs to clean.")
-    params.add_parameter(flags="--wrong_polarity_bpms", name="wrong_polarity_bpms", nargs='*',
+    params.add_parameter(name="num_svd_iterations", type=int,
+                         default=HARPY_DEFAULTS["num_svd_iterations"],
+                         help="Maximal number of iterations of U matrix elements removal "
+                              "and renormalisation in iterative SVD cleaning of dominant BPMs."
+                              " This is also equal to maximal number of BPMs removed per SVD mode.")
+    params.add_parameter(name="bad_bpms", nargs='*', help="Bad BPMs to clean.")
+    params.add_parameter(name="wrong_polarity_bpms", nargs='*',
                          help="BPMs with swapped polarity in both planes.")
-    params.add_parameter(flags="--keep_exact_zeros", name="keep_exact_zeros", action="store_true",
+    params.add_parameter(name="keep_exact_zeros", action="store_true",
                          help="If present, will not remove BPMs with exact zeros in TbT data.")
-    params.add_parameter(flags="--first_bpm", name="first_bpm", type=str,
+    params.add_parameter(name="first_bpm", type=str,
                          help="First BPM in the measurement. "
                               "Used to resynchronise the TbT data with model.")
-    params.add_parameter(flags="--opposite_direction", name="opposite_direction",
-                         action="store_true",
+    params.add_parameter(name="opposite_direction", action="store_true",
                          help="If present, beam in the opposite direction to model"
                               " is assumed for resynchronisation of BPMs.")
 
     # Harmonic analysis parameters
-    params.add_parameter(flags="--tunes", name="tunes", type=float, nargs=3,
+    params.add_parameter(name="tunes", type=float, nargs=3,
                          help="Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0")
-    params.add_parameter(flags="--nattunes", name="nattunes", type=float, nargs=3,
+    params.add_parameter(name="nattunes", type=float, nargs=3,
                          help="Guess for the natural tunes (x, y, z).  Disabled when set to 0.")
-    params.add_parameter(flags="--natdeltas", name="natdeltas", type=float, nargs=3,
+    params.add_parameter(name="natdeltas", type=float, nargs=3,
                          help="Guess for the offsets of natural tunes from the driven tunes"
                               " (x, y, z). Disabled when set to 0.")
-    params.add_parameter(flags="--autotunes", name="autotunes", type=str,
-                         choices=("all", "transverse"),
+    params.add_parameter(name="autotunes", type=str, choices=("all", "transverse"),
                          help="The main tunes are guessed as "
                               "the strongest line in SV^T matrix frequency spectrum: "
                               "Synchrotron tune below ~0.03, betatron tunes above ~0.03.")
-    params.add_parameter(flags="--tune_clean_limit", name="tune_clean_limit", type=float,
+    params.add_parameter(name="tune_clean_limit", type=float,
                          default=HARPY_DEFAULTS["tune_clean_limit"],
                          help="The tune cleaning wont remove BPMs because of measured tune outliers"
                               " closer to the average tune than this limit.")
-    params.add_parameter(flags="--tolerance", name="tolerance", type=float,
+    params.add_parameter(name="tolerance", type=float,
                          default=HARPY_DEFAULTS["tolerance"],
                          help="Tolerance specifying an interval in frequency domain, where to look "
                               "for the tunes.")
-    params.add_parameter(flags="--free_kick", name="is_free_kick", action="store_true",
+    params.add_parameter(name="is_free_kick", action="store_true",
                          help="If present, it will perform the free kick phase correction")
-    params.add_parameter(flags="--window", name="window", type=str,
+    params.add_parameter(name="window", type=str, default=HARPY_DEFAULTS["window"],
                          choices=("rectangle", "hann", "triangle", "welch", "hamming", "nuttal3",
-                                  "nuttal4"), default=HARPY_DEFAULTS["window"],
+                                  "nuttal4"),
                          help="Windowing function to be used for frequency analysis.")
-    params.add_parameter(flags="--turn_bits", name="turn_bits", type=int,
-                         default=HARPY_DEFAULTS["turn_bits"],
+    params.add_parameter(name="turn_bits", type=int, default=HARPY_DEFAULTS["turn_bits"],
                          help="Number (frequency, complex coefficient) pairs in the calculation"
                               " is 2 ** turn_bits, i.e. the difference between "
                               "two neighbouring frequencies is 2 ** (- turn_bits - 1).")
-    params.add_parameter(flags="--output_bits", name="output_bits", type=int,
-                         default=HARPY_DEFAULTS["output_bits"],
+    params.add_parameter(name="output_bits", type=int, default=HARPY_DEFAULTS["output_bits"],
                          help="Number (frequency, complex coefficient) pairs in the output "
                               "is up to 2 ** output_bits (maximal in case full spectra is output). "
                               "There is one pair (with maximal amplitude of complex coefficient) "
@@ -463,44 +473,36 @@ def _optics_entrypoint(params):
 
 def optics_params():
     params = EntryPointParameters()
-    params.add_parameter(flags="--files", name="files",  required=True, nargs='+',
+    params.add_parameter(name="files",  required=True, nargs='+',
                          help="Files for analysis")
-    params.add_parameter(flags="--outputdir", name="outputdir", required=True,
+    params.add_parameter(name="outputdir", required=True,
                          help="Output directory")
-    params.add_parameter(flags="--calibrationdir", name="calibrationdir", type=str,
+    params.add_parameter(name="calibrationdir", type=str,
                          help="Path to calibration files directory.")
-    params.add_parameter(flags="--coupling_method", name="coupling_method", type=int,
+    params.add_parameter(name="coupling_method", type=int,
                          choices=(0, 1, 2), default=OPTICS_DEFAULTS["coupling_method"],
                          help="Analysis option for coupling: disabled, 1 BPM or 2 BPMs method")
-    params.add_parameter(flags="--range_of_bpms", name="range_of_bpms", type=int,
+    params.add_parameter(name="range_of_bpms", type=int,
                          choices=(5, 7, 9, 11, 13, 15),  default=OPTICS_DEFAULTS["range_of_bpms"],
                          help="Range of BPMs for beta from phase calculation")
-    params.add_parameter(flags="--max_beta_beating", name="max_beta_beating", type=float,
-                         default=OPTICS_DEFAULTS["max_beta_beating"],
-                         help="Maximal beta-beating allowed for action calculation.")
-    params.add_parameter(flags="--max_closed_orbit", name="max_closed_orbit", type=float,
-                         default=OPTICS_DEFAULTS["max_closed_orbit"],
-                         help="Maximal closed orbit in 'mm' allowed for dispersion measurement")
-    params.add_parameter(flags="--union", name="union", action="store_true",
+    params.add_parameter(name="union", action="store_true",
                          help="If present, the phase advances are calculate for union of BPMs "
                               "with at least 3 valid measurements, instead of intersection .")
-    params.add_parameter(flags="--nonlinear", name="nonlinear", action="store_true",
-                         help="Calculate higher order RDTs")
-    params.add_parameter(flags="--three_bpm_method", name="three_bpm_method", action="store_true",
+    params.add_parameter(name="nonlinear", action="store_true", help="Calculate higher order RDTs")
+    params.add_parameter(name="three_bpm_method", action="store_true",
                          help="Use 3 BPM method in beta from phase")
-    params.add_parameter(flags="--only_coupling", name="only_coupling", action="store_true",
-                         help="Calculate only coupling. ")
-    params.add_parameter(flags="--compensation", name="compensation", type=str,
-                         choices=("model", "equation", "none"), default=OPTICS_DEFAULTS["compensation"],
+    params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")
+    params.add_parameter(name="compensation", type=str, default=OPTICS_DEFAULTS["compensation"],
+                         choices=("model", "equation", "none"),
                          help="Mode of compensation for the analysis after driven beam excitation")
-    params.add_parameter(flags="--three_d_excitation", name="three_d_excitation",
-                         action="store_true", help="Use 3D kicks to calculate dispersion")
-    params.add_parameter(flags="--isolation_forest", name="isolation_forest", action="store_true",
+    params.add_parameter(name="three_d_excitation", action="store_true",
+                         help="Use 3D kicks to calculate dispersion")
+    params.add_parameter(name="isolation_forest", action="store_true",
                          help="Remove outlying BPMs with isolation forest")
-    params.add_parameter(flags="--second_order_dispersion", name="second_order_dispersion",
-                         action="store_true", help="Calculate second order dispersion")
-    params.add_parameter(flags="--chromatic_beating", name="chromatic_beating",
-                         action="store_true", help="Calculate chromatic beatings: W, PHI and coupling")
+    params.add_parameter(name="second_order_dispersion", action="store_true",
+                         help="Calculate second order dispersion")
+    params.add_parameter(name="chromatic_beating", action="store_true",
+                         help="Calculate chromatic beatings: W, PHI and coupling")
     return params
 
 
@@ -511,6 +513,7 @@ HARPY_DEFAULTS = {
     "peak_to_peak": 1e-8,
     "max_peak": 0.02,
     "svd_dominance_limit": 0.925,
+    "num_svd_iterations": 3,
     "tolerance": 0.01,
     "tune_clean_limit": 1e-5,
     "window": "hann",
@@ -521,18 +524,9 @@ HARPY_DEFAULTS = {
 }
 
 OPTICS_DEFAULTS = {
-        "max_closed_orbit": 0.004,
         "coupling_method": 2,
         "range_of_bpms": 11,
-        "max_beta_beating": 0.15,
         "compensation": "model",
-}
-
-
-DATA_HANDLERS = {
-      "lhc": lhc_handler,
-      "iota": iota_handler,
-      # TODO add handlers for mad-x/ptc tracking (use methods from tbt.trackone), make accel indepent defaults
 }
 
 

@@ -8,12 +8,14 @@ IP
 Computes beta* from phase.
 """
 from os.path import join
+
 import numpy as np
 import pandas as pd
 import tfs
-from utils import logging_tools
-from optics_measurements.constants import IP_NAME, EXT, PI2
 
+from omc3.definitions.constants import PI2
+from omc3.optics_measurements.constants import EXT, IP_NAME, S
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 COLUMNS = ("IP", "BETASTAR", "ERRBETASTAR", "PHASEADV", "ERRPHASEADV", "PHASEDVMDL", "LSTAR")
@@ -30,7 +32,7 @@ def betastar_from_phase(meas_input, phase_d):
         A nested dict with the same structure as the phase_d dict.
     """
     accel = meas_input.accelerator
-    model = accel.get_model_tfs()
+    model = accel.model
     try:
         ips = list(accel.get_ips())
     except AttributeError:
@@ -87,4 +89,4 @@ def _get_meas_phase(bpml, bpmr, phases_df):
 
 
 def _get_lstar(bpml, bpmr, model):
-    return abs(model.S[model.indx[bpml]] - model.S[model.indx[bpmr]]) / 2.
+    return abs(model.loc[bpml, S] - model.loc[bpmr, S]) / 2.

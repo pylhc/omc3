@@ -1,0 +1,40 @@
+{
+  "MQX": [
+    "kqx.r1", 
+    "kqx.l2", 
+    "kqx.r2", 
+    "kqx.l5", 
+    "kqx.r5", 
+    "kqx.l8", 
+    "kqx.r8", 
+    "kqx.l1"
+  ], 
+  "MQXT": [
+    "ktqx1.r1", 
+    "ktqx2.r1", 
+    "ktqx2.l2", 
+    "ktqx1.l2", 
+    "ktqx1.r2", 
+    "ktqx2.r2", 
+    "ktqx2.l5", 
+    "ktqx1.l5", 
+    "ktqx1.r5", 
+    "ktqx2.r5", 
+    "ktqx2.l8", 
+    "ktqx1.l8", 
+    "ktqx1.r8", 
+    "ktqx2.r8", 
+    "ktqx2.l1", 
+    "ktqx1.l1"
+  ],
+  "MQSX": [
+    "kqsx3.r1", 
+    "kqsx3.l2", 
+    "kqsx3.r2", 
+    "kqsx3.l5", 
+    "kqsx3.r5", 
+    "kqsx3.l8", 
+    "kqsx3.r8", 
+    "kqsx3.l1"
+  ]
+}

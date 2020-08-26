@@ -1,14 +1,17 @@
-import scipy.optimize
-from os.path import join
-import os
-import numpy as np
-import tfs
+
 import datetime
+
+import numpy as np
+import scipy.optimize
+import tfs
 from tfs import tools as tfstools
-from utils import logging_tools
-from kmod import helper
-from kmod.constants import CLEANED, PLANES, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
-from definitions import formats
+
+from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
+from omc3.kmod import helper
+from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from omc3.utils import logging_tools
+
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -38,7 +41,9 @@ def propagate_beta_in_drift(beta_waist, drift):
 
 
 def calc_betastar(kmod_input_params, results_df, l_star):
+
     sign = return_sign_for_err(2)      
+
     for plane in PLANES:
         betastar = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].values + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values),
                                            (results_df.loc[:, f"{WAIST}{plane}"].values + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
@@ -47,7 +52,8 @@ def calc_betastar(kmod_input_params, results_df, l_star):
         if kmod_input_params.no_sig_digits:
             results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = (betastar[0], betastar_err)
         else:
-            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_numbers(betastar[0], betastar_err)
+            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_digits(betastar[0], betastar_err)
+
 
     # reindex df to put betastar first
     cols = results_df.columns.tolist()
@@ -97,7 +103,8 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df, kmod_inpu
         if kmod_input_params.no_sig_digits:
             betas[i, 0], betas[i, 1] = beta[0], beta_err
         else:
-            betas[i, 0], betas[i, 1] = tfstools.significant_numbers(beta[0], beta_err)
+            betas[i, 0], betas[i, 1] = tfstools.significant_digits(beta[0], beta_err)
+
     return name, betas[0, 0], betas[0, 1], betas[1, 0], betas[1, 1]
 
 
@@ -113,13 +120,14 @@ def calc_beta_at_instruments(kmod_input_params, results_df, magnet1_df, magnet2_
                 name, position, results_df, magnet1_df, magnet2_df, kmod_input_params))
 
     instrument_beta_df = tfs.TfsDataFrame(
-        columns=['INSTRUMENT',
+        columns=['NAME',
                  f"{BETA}{'X'}",
                  f"{ERR}{BETA}{'X'}",
                  f"{BETA}{'Y'}",
                  f"{ERR}{BETA}{'Y'}",
                  ],
         data=beta_instr)
+
     return instrument_beta_df
 
 
@@ -208,14 +216,10 @@ def do_fit(magnet_df, plane, use_approx=False):
         fun = fit_prec
     elif use_approx:
         fun = fit_approx
-
-    if not np.any(magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()):
-        sigma = None
-        absolute_sigma = False
-    else:
-        sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
-            f"{ERR}{TUNE}{plane}"].dropna()
-        absolute_sigma = True
+    
+    sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()
+    if not np.any(sigma):
+        sigma = 1.E-22*np.ones(len(sigma))
 
     av_beta, av_beta_err = scipy.optimize.curve_fit(
         fun,
@@ -223,7 +227,7 @@ def do_fit(magnet_df, plane, use_approx=False):
         ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
             f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
         sigma=sigma,
-        absolute_sigma=absolute_sigma,
+        absolute_sigma=True,
         p0=1
     )
     return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
@@ -249,6 +253,7 @@ def return_df(magnet1_df, magnet2_df, plane):
     elif check_polarity(magnet1_df, magnet2_df, -sign[plane]):
         return magnet2_df, magnet1_df
 
+      
 def get_BPM(kmod_input_params):
 
     # listing the BPMs of the last quadrupole BPMs
@@ -340,6 +345,7 @@ def phase_constraint(kmod_input_params,plane):
 
 def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_distance, phase_adv_constraint):
 
+
     b = x[0]
     w = x[1]
 
@@ -362,10 +368,12 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
         def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
          sign[7] * def_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"])/def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) ** 2) + weight*(((phase_adv - (phase_adv_constraint[0]+sign[8]*phase_adv_constraint[1]))/phase_adv_constraint[0])**2)
 
+
     return c2
 
 
 def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
+
     n = 9
     sign = return_sign_for_err(n)
     foc_magnet_df, def_magnet_df = return_df(magnet1_df, magnet2_df, plane)
@@ -383,6 +391,7 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
                                              x0=kmod_input_params.betastar_and_waist[plane],
                                              method='nelder-mead',
                                              tol=1E-9)
+
         results[i, :] = fitresults.x[0], fitresults.x[1]
 
     beta_waist_err = get_err(results[1::2, 0]-results[0, 0])
@@ -426,6 +435,7 @@ def analyse(magnet1_df, magnet2_df, opt, betastar_required):
 
     LOG.info('Calculate beta at instruments')
     if opt.instruments_found:
-        instrument_beta_df = calc_beta_at_instruments(opt, results_df, magnet1_df, magnet2_df)    
+        instrument_beta_df = calc_beta_at_instruments(opt, results_df, magnet1_df, magnet2_df)
+
 
     return magnet1_df, magnet2_df, results_df, instrument_beta_df

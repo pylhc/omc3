@@ -8,22 +8,23 @@ Tune
 Computes betatron tunes and provides structures to store them.
 """
 import numpy as np
-from utils import stats
-from optics_measurements.constants import PLANES, PLANE_TO_NUM
+
+from omc3.definitions.constants import PLANES, PLANE_TO_NUM
+from omc3.utils import stats
 
 
 def calculate(measure_input, input_files):
     tune_d = TuneDict()
     accelerator = measure_input.accelerator
     for plane in PLANES:
-        tune_d[plane]["QM"] = accelerator.get_model_tfs().headers[f"Q{PLANE_TO_NUM[plane]}"]
+        tune_d[plane]["QM"] = accelerator.model.headers[f"Q{PLANE_TO_NUM[plane]}"]
         tune_list = [df.headers[f"Q{PLANE_TO_NUM[plane]}"] for df in input_files.dpp_frames(plane, 0)]
         tune_rms_list = [df.headers[f"Q{PLANE_TO_NUM[plane]}RMS"] for df in input_files.dpp_frames(plane, 0)]
         measured_tune = stats.weighted_mean(np.array(tune_list), errors=np.array(tune_rms_list))
         tune_d[plane]["Q"], tune_d[plane]["QF"] = measured_tune, measured_tune
-        tune_d[plane]["QFM"] = accelerator.nat_tune_x if plane is "X" else accelerator.nat_tune_y
+        tune_d[plane]["QFM"] = accelerator.nat_tunes[PLANE_TO_NUM[plane] - 1]
         if accelerator.excitation:
-            tune_d[plane]["QM"] = accelerator.drv_tune_x if plane is "X" else accelerator.drv_tune_y
+            tune_d[plane]["QM"] = accelerator.drv_tunes[PLANE_TO_NUM[plane] - 1]
             tune_d[plane]["QF"] = tune_d[plane]["Q"] - tune_d[plane]["QM"] + tune_d[plane]["QFM"]
             tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
             input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0, how='inner'),
@@ -68,7 +69,7 @@ class TuneDict(dict):
             c (int): k of the nearest BPM.
             d (string): name of the exciter element.
         """
-        model = accelerator.get_elements_tfs()
+        model = accelerator.elements
         r = self.get_lambda(plane)
         [k, bpmac1], exciter = accelerator.get_exciter_bpm(plane, df_idx_by_bpms.index)
         psi = model.loc[bpmac1, f"MU{plane}"] - model.loc[exciter, f"MU{plane}"]

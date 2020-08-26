@@ -16,7 +16,15 @@ Feel free to use and extend this module.
 import json
 import os
 import shutil
-from utils import logging_tools
+from collections import OrderedDict
+from contextlib import suppress
+from pathlib import Path
+
+from generic_parser.entry_datatypes import get_instance_faker_meta
+from generic_parser.entrypoint_parser import save_options_to_config
+
+from omc3.definitions import formats
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -45,8 +53,6 @@ def delete_item(path_to_item):
             shutil.rmtree(path_to_item)
         elif os.path.islink(path_to_item):
             os.unlink(path_to_item)
-    except IOError:
-        LOG.error("Could not delete item because of IOError. Item: '{}'".format(path_to_item))
     except OSError:
         LOG.error("Could not delete item because of OSError. Item: '{}'".format(path_to_item))
 
@@ -109,12 +115,6 @@ def exists_directory(path_to_dir):
 
 def not_exists_directory(path_to_dir):
     return not exists_directory(path_to_dir)
-
-
-def get_absolute_path_to_betabeat_root():
-    return os.path.abspath(
-                    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
-                    )
 
 
 def no_dirs_exist(*dirs):
@@ -221,17 +221,67 @@ def replace_keywords_in_textfile(path_to_textfile, dict_for_replacing, new_outpu
     write_string_into_new_file(destination_file, lines_with_replaced_keys)
 
 
-def json_dumps_readable(json_outfile, object):
+def json_dumps_readable(json_outfile, object_to_dump):
     """ This is how you write a beautiful json file
     
     Args:
         json_outfile: File to write
-        object: object to dump
+        object_to_dump: object to dump to json format
     """
-    object = json.dumps(object).replace(", ", ",\n    "
-                              ).replace("[", "[\n    "
+    object_to_dump = json.dumps(object_to_dump).replace(", ", ",\n    "
+                                                        ).replace("[", "[\n    "
                               ).replace("],\n    ", "],\n\n"
                               ).replace("{", "{\n"
                               ).replace("}", "\n}")
     with open(json_outfile, "w") as json_file:
-        json_file.write(object)
+        json_file.write(object_to_dump)
+
+
+class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
+    """ A class that behaves like a Path when possible, otherwise like a string."""
+    def __new__(cls, value):
+        if isinstance(value, str):
+            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+        return Path(value)
+
+
+def convert_paths_in_dict_to_strings(dict_):
+    """ Converts all Paths in the dict to strings. """
+    for key, value in dict_.items():
+        if isinstance(value, Path):
+            dict_[key] = str(value)
+        else:
+            try:
+                list_ = list(value)
+            except TypeError:
+                pass
+            else:
+                has_changed = False
+                for idx, item in enumerate(list_):
+                    if isinstance(item, Path):
+                        list_[idx] = str(item)
+                        has_changed = True
+                if has_changed:
+                    dict_[key] = list_
+    return dict_
+
+
+def remove_none_dict_entries(dict_):
+    """ Removes None entries from dict.
+    This can be used as a workaround to
+    https://github.com/pylhc/generic_parser/issues/26 """
+    for key, value in list(dict_.items()):
+        if value is None:
+            del dict_[key]
+    return dict_
+
+
+def save_config(output_dir, opt, script):
+    """ Quick wrapper for save_options_to_config. """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    opt = opt.copy()
+    opt = remove_none_dict_entries(opt)  # temporary fix
+    opt = convert_paths_in_dict_to_strings(opt)
+    save_options_to_config(output_dir / formats.get_config_filename(script),
+                           OrderedDict(sorted(opt.items()))
+                           )

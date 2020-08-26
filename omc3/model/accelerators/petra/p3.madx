@@ -1,0 +1,121 @@
+! ----------------------------------------------------------------------------------------------
+! ---- macro defs ------------------------------------------------------------------------------
+! ----------------------------------------------------------------------------------------------
+
+install_errors() : macro = {
+  ! install errors
+
+  USE, sequence=ring;
+
+    Rr=1.000;
+  ON_B2R=1;
+  GCUTR=3;
+  eoption, seed= 4687;
+
+
+  select flag = error, clear; select flag=error;
+  esave file='./models/errors.dat';
+
+};
+
+install_adt_ac_dipole(natural_qx, natural_qy, driven_qx, driven_qy): macro = {
+
+
+        betxac=table(twiss,kifbhn,betx);
+        betyac=table(twiss,kifbvn,bety);
+        hacmap21 = 2 * (cos(2 * pi * driven_qx) - cos(2 * pi * natural_qx)) / (betxac * sin(2 * pi * natural_qx));
+        vacmap43 = 2 * (cos(2 * pi * driven_qy) - cos(2 * pi * natural_qy)) / (betyac * sin(2 * pi * natural_qy));
+        hacmap: matrix, l=0, rm21=hacmap21;
+        vacmap: matrix, l=0, rm43=vacmap43;
+        seqedit, sequence=ring;
+            flatten;
+            install, element=hacmap, at=0.512, from=kifbhn;
+            install, element=vacmap, at=0.512, from=kifbvn;
+        endedit;
+
+
+
+    use, sequence=ring;
+}
+
+do_twiss(filename) : macro = {
+    select, flag=twiss, clear;
+
+    select, flag=twiss,
+        column=name, s, betx, alfx, bety, alfy,
+        mux, muy, dx, dy, dpx, dpy, x, y,
+        k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
+        phiy, dmux, dmuy, keyword, dbx, dby,
+        r11, r12, r21, r22,
+        pattern="^BPM";
+    twiss, chrom, sequence=ring, file=filename;
+
+}
+
+do_twiss_elements(filename) : macro = {
+    select, flag=twiss,
+        column=name, s, betx, alfx, bety, alfy,
+        mux, muy, dx, dy, dpx, dpy, x, y,
+        k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
+        phiy, dmux, dmuy, keyword, dbx, dby,
+        r11, r12, r21, r22,
+        pattern="^BPM";
+    select, flag=twiss, class=monitor;
+    select, flag=twiss, class=quadrupole;
+    select, flag=twiss, class=skewquadrupole;
+    select, flag=twiss, class=sextupole;
+    select, flag=twiss, class=octupole;
+    select, flag=twiss, class=tkicker;
+    select, flag=twiss, class=rcollimator;
+    select, flag=twiss, class=collimator;
+    select, flag=twiss, class=rbend;
+    select, flag=twiss, class=instrument;
+    !select, flag=twiss, class=drift;
+    select, flag=twiss, pattern="^IP";
+    twiss, chrom, sequence=ring, file=filename;
+}
+
+match_tunes(nqx, nqy): macro = {
+    match;
+    vary, name=qd->k1;
+    vary, name=qf->k1;
+    constraint, range=#E, mux=nqx, muy=nqy;
+    lmdif;
+    endmatch;
+};
+
+! ----------------------------------------------------------------------------------------------
+! ---- main part -------------------------------------------------------------------------------
+! ----------------------------------------------------------------------------------------------
+
+ACD = 1;  ! install ac dipole into model?
+
+call, file='p3x_v23.seq';
+BEAM, PARTICLE=POSITRON, ENERGY=6.0,bunched, RADIATE, sequence=RING;
+if (1 == 0) {
+  makethin, sequence=ring;
+};
+use, sequence=ring;
+
+integer_Qx = 37;
+integer_Qy = 30;
+
+! natural tunes
+Qx = 0.135258786345 + integer_Qx;
+Qy = 0.309711880097 + integer_Qy;
+
+! driven tunes
+dQx = 0.1122033114 + integer_Qx;
+dQy = 0.303563753445 + integer_Qy;
+
+
+select, flag=twiss, clear;
+exec, match_tunes(Qx, Qy);
+exec, do_twiss('twiss.dat');
+exec, do_twiss_elements('twiss_elements.dat');
+!exec, install_errors();
+if (ACD == 1) {
+    exec, install_adt_ac_dipole(Qx, Qy, dQx, dQy);
+    exec, do_twiss('twiss_adt.dat');
+    exec, do_twiss_elements('twiss_elements_adt.dat');
+};

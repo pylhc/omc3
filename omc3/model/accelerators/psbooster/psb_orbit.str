@@ -1,0 +1,91 @@
+  /**********************************************************************************
+  *
+  * PS Booster version STUDY in MAD X SEQUENCE format
+  * Generated the 11-MAY-2017 17:56:21 from LHCLAYOUT@EDMSDB Database
+  *
+  * It consists of 16 identical periods, apart from the equipment
+  * in the straight sections.
+  * The BOOSTER has an average radius of 25m and a circonference of 157.08m
+  * The 4 rings are numbered 1,2,3,4 from the bottom,
+  * with ring 3 at the CPS beam level.
+  * 2.654 + 3.928077 + 1.6177*2 = 9.81748 =period length
+  * Length of straight section L1: 2.654
+  * Length of triplets path: 3.928077
+  * Length of bending magnets: 1.6177
+  *
+  * Converted from MAD8 to MADX                           21/07/2006 O.Berrig
+  * Generated from LHCLAYOUT@EDMSDB since                 04/02/2009 P.Le Roux
+  * BR.BHZ11 etc. defined separately to avoid warnings    16/01/2010 O.Berrig
+  ************************************************************************************/
+
+
+
+/************************************************************************************/
+/*                       STRENGTH FILE FOR CLOSED ORBIT                             */
+/************************************************************************************/
+
+
+! The angle is negative because the protons
+! have opposite direction compared to the PS.
+! When combining the files from the BOOSTER
+! to the PS, the angle must be negative.
+
+ kB1=-0.19634954;
+
+ kKF=+0.7284993289;   ! QX = 4.172
+ kKD=-0.7432321804;   ! QY = 4.23
+
+
+
+!knob BR?.QNO311L1 
+k1lBR1QNO311L1 := 0 ;
+k1lBR2QNO311L1 := 0 ;
+k1lBR3QNO311L1 := 0 ;
+k1lBR4QNO311L1 := 0 ;
+
+!knob BR?.QNO412L3
+
+k1lBR1QNO412L3 := 0 ;
+k1lBR2QNO412L3 := 0 ;
+k1lBR3QNO412L3 := 0 ;
+k1lBR4QNO412L3 := 0 ;
+
+!knob BR?.QNO816L1
+
+k1lBR1QNO816L1 := 0 ;
+k1lBR2QNO816L1 := 0 ;
+k1lBR3QNO816L1 := 0 ;
+k1lBR4QNO816L1 := 0 ;
+
+!knob BR?.QNO816L3
+
+k1lBR1QNO816L3 := 0 ;
+k1lBR2QNO816L3 := 0 ;
+k1lBR3QNO816L3 := 0 ;
+k1lBR4QNO816L3 := 0 ;
+
+
+!knob BR?.QSK210L3
+
+k1lBR1QSK210L3 := 0 ;
+k1lBR2QSK210L3 := 0 ;
+k1lBR3QSK210L3 := 0 ;
+k1lBR4QSK210L3 := 0 ;
+
+!knob BR?.QSK614L3
+
+k1lBR1QSK614L3 := 0 ;
+k1lBR2QSK614L3 := 0 ;
+k1lBR3QSK614L3 := 0 ;
+k1lBR4QSK614L3 := 0 ;
+
+! Knob BR?.QSKH0 (all odd sectors)
+
+k1lBR1QSKH0    := 0 ;
+k1lBR2QSKH0    := 0 ;
+k1lBR3QSKH0    := 0 ;
+k1lBR4QSKH0    := 0 ;
+
+
+
+return;

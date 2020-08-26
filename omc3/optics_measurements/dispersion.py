@@ -8,12 +8,16 @@ Dispersion
 Computes orbit, dispersion and normalised dispersion.
 """
 from os.path import join
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 import tfs
-from utils import stats
-from optics_measurements.constants import EXT, ERR, DELTA, MDL, PI2I
-from optics_measurements.constants import ORBIT_NAME, NORM_DISP_NAME, DISPERSION_NAME
+
+from omc3.definitions.constants import PI2I
+from omc3.optics_measurements.constants import (DELTA, DISPERSION_NAME, ERR,
+                                                EXT, MDL, NORM_DISP_NAME,
+                                                ORBIT_NAME)
+from omc3.utils import stats
 
 
 def calculate_orbit(meas_input, input_files, header, plane):
@@ -76,7 +80,7 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
     dpps = input_files.dpps(plane)
     if np.max(dpps) - np.min(dpps) == 0.0:
         return  # temporary solution
-    model = meas_input.accelerator.get_model_tfs()
+    model = meas_input.accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS'])
     fit = np.polyfit(dpps, input_files.get_data(df_orbit, 'CO').T, order, cov=True)
     # in the fit results the coefficients are sorted by power in decreasing order
@@ -88,7 +92,6 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
     df_orbit[plane] = fit[0][-1, :].T
     df_orbit[f"{ERR}{plane}"] = np.sqrt(fit[1][-1, -1, :].T)
     # since we get variances from the fit, maybe we can include the variances of fitted points
-    df_orbit = df_orbit.loc[np.abs(df_orbit.loc[:, plane]) < meas_input.max_closed_orbit, :]
     df_orbit[f"DP{plane}"] = _calculate_dp(model,
                                            df_orbit.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], plane)
     df_orbit = _get_delta_columns(df_orbit, plane)
@@ -100,7 +103,7 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
 def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
     """It computes  dispersion from 3 D kicks"""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
-    model = accelerator.get_model_tfs()
+    model = accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['AMPZ', 'MUZ', f"AMP{plane}"])
     # work around due to scaling to main line in lin files
     unscaled_amps = (df_orbit.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].values *
@@ -121,7 +124,7 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
     # TODO there are no errors from orbit
     order = 2 if meas_input.second_order_dispersion else 1
     plane = "X"
-    model = meas_input.accelerator.get_model_tfs()
+    model = meas_input.accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS', f"AMP{plane}"])
     df_orbit[f"ND{plane}{MDL}"] = df_orbit.loc[:, f"D{plane}{MDL}"] / np.sqrt(
         df_orbit.loc[:, f"BET{plane}{MDL}"])
@@ -140,7 +143,6 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
         df_orbit['STDND2X_unscaled'] = np.sqrt(fit[1][-3, -3, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
     df_orbit['NDX_unscaled'] = fit[0][-2, :].T / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)  # TODO there is no error from AMPX
     df_orbit['STDNDX_unscaled'] = np.sqrt(fit[1][-2, -2, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
-    df_orbit = df_orbit.loc[np.abs(fit[0][-1, :].T) < meas_input.max_closed_orbit, :]
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     global_factor = np.sum(df_orbit.loc[mask, f"ND{plane}{MDL}"].values) / np.sum(df_orbit.loc[mask, 'NDX_unscaled'].values)
     if order > 1:
@@ -158,8 +160,8 @@ def _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header):
     """It computes horizontal normalised dispersion from 3 D kicks,
     it performs model based compensation, i.e. as in _free2 files"""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
-    model = accelerator.get_model_tfs()
-    driven_model = accelerator.get_driven_tfs() if accelerator.excitation else model
+    model = accelerator.model
+    driven_model = accelerator.model_driven if accelerator.excitation else model
     plane = "X"
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['AMPZ', 'MUZ'])
     df_orbit[f"ND{plane}{MDL}"] = df_orbit.loc[:, f"D{plane}{MDL}"] / np.sqrt(df_orbit.loc[:, f"BET{plane}{MDL}"])
@@ -197,7 +199,7 @@ def _calculate_dp(model, disp, plane):
 
 
 def _get_merged_df(meas_input, input_files, plane, meas_columns):
-    model = meas_input.accelerator.get_model_tfs()
+    model = meas_input.accelerator.model
     df = pd.DataFrame(model).loc[:, ["S", plane, f"D{plane}", f"DP{plane}", f"MU{plane}", f"BET{plane}", f"DD{plane}"]]
     # TODO often missing second order dispersion causes FutureWarning in future will be KeyError
     df.rename(columns={plane: f"{plane}{MDL}", f"D{plane}": f"D{plane}{MDL}", f"DP{plane}": f"DP{plane}{MDL}",

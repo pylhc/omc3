@@ -9,8 +9,9 @@ Computes various chromatic beam properties
 """
 import numpy as np
 import pandas as pd
-from optics_measurements.constants import ERR, DELTA, MDL
-from optics_measurements.toolbox import df_prod, df_ratio
+
+from omc3.optics_measurements.constants import DELTA, ERR, MDL
+from omc3.optics_measurements.toolbox import df_prod, df_ratio
 
 
 def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):
@@ -31,10 +32,10 @@ def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):
                                    axis=0), 1, cov=True)
         joined[f"D{col}{plane}"] = fit[0][-2, :].T
         joined[f"{ERR}D{col}{plane}"] = np.sqrt(fit[1][-2, -2, :].T)
-    a = joined.loc[:, f"DBET{plane}"].values
-    aerr = joined.loc[:, f"{ERR}DBET{plane}"].values
-    b = joined.loc[:, f"DALF{plane}"].values - joined.loc[:, f"ALF{plane}"].values * joined.loc[:,
-                                                                                     f"DBET{plane}"].values
+    a = joined.loc[:, f"DBET{plane}"].to_numpy()
+    aerr = joined.loc[:, f"{ERR}DBET{plane}"].to_numpy()
+    b = joined.loc[:, f"DALF{plane}"].to_numpy() - joined.loc[:, f"ALF{plane}"].to_numpy() * joined.loc[:,
+                                                                                     f"DBET{plane}"].to_numpy()
     berr = np.sqrt(df_prod(joined, f"{ERR}DALF{plane}", f"{ERR}DALF{plane}") +
                    np.square(df_prod(joined, f"{ERR}ALF{plane}", f"DBET{plane}")) +
                    np.square(df_prod(joined, f"ALF{plane}", f"{ERR}DBET{plane}")))
@@ -44,7 +45,7 @@ def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):
     joined[f"PHI{plane}"] = np.arctan2(b, a) / (2 * np.pi)
     joined[f"{ERR}PHI{plane}"] = 1 / (1 + np.square(a / b)) * np.sqrt(
         np.square(aerr / b) + np.square(berr * a / np.square(b))) / (2 * np.pi)
-    output_df = pd.merge(measure_input.accelerator.get_model_tfs().loc[:,
+    output_df = pd.merge(measure_input.accelerator.model.loc[:,
                          ["S", f"MU{plane}", f"BET{plane}", f"ALF{plane}", f"W{plane}",
                           f"PHI{plane}"]],
                          joined.loc[:,
@@ -72,10 +73,10 @@ def calculate_chromatic_coupling(couplings, dpps, input_files, measure_input):
                                        axis=0), 1, cov=True)
             joined[f"D{col}{part}"] = fit[0][-2, :].T
             joined[f"{ERR}D{col}{part}"] = np.sqrt(fit[1][-2, -2, :].T)
-        joined[f"D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].values) + np.square(joined.loc[:, f"D{col}IM"].values))
-        joined[f"{ERR}D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].values * df_ratio(joined, f"{ERR}D{col}RE", f"D{col}")) +
-                                         np.square(joined.loc[:, f"D{col}IM"].values * df_ratio(joined, f"{ERR}D{col}IM", f"D{col}")))
-    output_df = pd.merge(measure_input.accelerator.get_model_tfs().loc[:, ["S"]], joined.loc[:,
+        joined[f"D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].to_numpy()) + np.square(joined.loc[:, f"D{col}IM"].to_numpy()))
+        joined[f"{ERR}D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].to_numpy() * df_ratio(joined, f"{ERR}D{col}RE", f"D{col}")) +
+                                         np.square(joined.loc[:, f"D{col}IM"].to_numpy() * df_ratio(joined, f"{ERR}D{col}IM", f"D{col}")))
+    output_df = pd.merge(measure_input.accelerator.model.loc[:, ["S"]], joined.loc[:,
                          [f"{pref}{col}{part}" for pref in ("", ERR) for col in ("F1001", "F1010") for part in ("", "RE", "IM")]],
                          how="inner", left_index=True,
                          right_index=True)

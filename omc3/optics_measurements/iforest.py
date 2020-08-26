@@ -7,8 +7,10 @@ Detects and excludes BPMs with anomalies.
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
-from utils import logging_tools
-from optics_measurements.constants import PLANE_TO_NUM
+
+from omc3.definitions.constants import PLANE_TO_NUM
+from omc3.utils import logging_tools
+
 LOGGER = logging_tools.get_logger(__name__)
 ARCS_CONT = 0.01
 IRS_CONT = 0.025
