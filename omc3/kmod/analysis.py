@@ -270,14 +270,14 @@ def get_BPM(kmod_input_params):
     }
 
     # Selecting BPMs
-    BPML = BPM_dict[kmod_input_params.ip][0] + '.' + kmod_input_params.beam
-    BPMR = BPM_dict[kmod_input_params.ip][1] + '.' + kmod_input_params.beam
+    BPML = BPM_dict[kmod_input_params.ip.upper()][0] + '.' + kmod_input_params.beam.upper()
+    BPMR = BPM_dict[kmod_input_params.ip.upper()][1] + '.' + kmod_input_params.beam.upper()
 
     return BPML, BPMR
 
 def get_BPM_distance(kmod_input_params,BPML,BPMR):
 
-    model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
+    model_filename = 'twiss_' + kmod_input_params.beam.lower() + '.dat'
 
     # Position s of BPML
     if (os.path.exists(os.path.join(f'{kmod_input_params.twiss_model_dir}', f'{model_filename}'))): # distance between actual BPMs if model is provided (more precise)
@@ -344,7 +344,7 @@ def phase_constraint(kmod_input_params,plane):
     return phase_adv_constraint
     
 
-def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_distance, phase_adv_constraint):
+def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_distance, phase_adv_constraint, betastar_required):
 
 
     b = x[0]
@@ -353,6 +353,8 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
     phase_adv = phase_adv_from_kmod(BPM_distance,b,0.0,w,0.0)[0]
 
     weight = phase_adv_constraint[2]
+    if not betastar_required:
+        weight=0
 
     c2 = (1-weight)*(((average_beta_focussing_quadrupole(b, w, foc_magnet_df.headers['LENGTH'] +
         sign[0] * kmod_input_params.errorL, foc_magnet_df.headers[K] +
@@ -373,7 +375,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
     return c2
 
 
-def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
+def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane, betastar_required):
 
     n = 9
     sign = return_sign_for_err(n)
@@ -387,7 +389,7 @@ def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
 
     for i, s in enumerate(sign):
 
-        def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s, BPM_distance, phase_adv_constraint)
+        def fun(x): return chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, s, BPM_distance, phase_adv_constraint, betastar_required)
         fitresults = scipy.optimize.minimize(fun=fun,
                                              x0=kmod_input_params.betastar_and_waist[plane],
                                              method='nelder-mead',
@@ -416,7 +418,7 @@ def analyse(magnet1_df, magnet2_df, opt, betastar_required):
         magnet_df = get_av_beta(magnet_df)
 
     LOG.info('Simplex to determine beta waist')
-    results = {plane: get_beta_waist(magnet1_df, magnet2_df, opt, plane) for plane in PLANES}
+    results = {plane: get_beta_waist(magnet1_df, magnet2_df, opt, plane, betastar_required) for plane in PLANES}
 
     results_df = tfs.TfsDataFrame(
         columns=['LABEL',
