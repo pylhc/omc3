@@ -194,7 +194,7 @@ def hole_in_one_entrypoint(opt, rest):
       - **window** *(str)*: Windowing function to be used for frequency analysis.
 
         Flags: **--window**
-        Choices: ``('rectangle', , 'hann', 'hamming', 'nuttal3', 'nuttal4')``
+        Choices: ``('rectangle', 'welch', 'triangle', 'hann', 'hamming', 'nuttal3', 'nuttal4')``
         Default: ``hann``
 
 
