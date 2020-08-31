@@ -32,10 +32,10 @@ MEASURE_OPTICS_SETTINGS = dict(
 )
 
 ACCURACY_LIMIT = dict(
-    Coupling=0.01,
-    Sextupole=0.01,
-    SkewSextupole=0.01,
-    Octupole=0.14,
+    coupling=0.01,
+    sextupole=0.01,
+    skewsextupole=0.01,
+    octupole=0.14,
 )
 
 class BasicTests:
@@ -60,7 +60,7 @@ class BasicTests:
 
 class ExtendedTests:
     @staticmethod
-    @pytest.mark.parametrize("order", ['Coupling', 'Sextupole', 'SkewSextupole', 'Octupole'])
+    @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole', 'octupole'])
     def test_crdt(order):
         path_to_lin = join(dirname(__file__), "..", "inputs", "crdt", order)
         optics_opt = MEASURE_OPTICS_SETTINGS.copy()

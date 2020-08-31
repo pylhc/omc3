@@ -26,25 +26,25 @@ CRDT_COLUMNS = [AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}']
 
 
 CRDTS = [
-    {'order':"Coupling", 'term': "F_XY", 'line': ['X', 0, 1]},
-    {'order':"Coupling", 'term': "F_YX", 'line': ['Y', 1, 0]},
+    {'order':"coupling", 'term': "F_XY", 'line': ['X', 0, 1]},
+    {'order':"coupling", 'term': "F_YX", 'line': ['Y', 1, 0]},
 
-    {'order':"Sextupole", 'term': "F_NS3", 'line': ['X', -2, 0]},
-    {'order':"Sextupole", 'term': "F_NS2", 'line': ['X', 0, -2]},
-    {'order':"Sextupole", 'term': "F_NS1", 'line': ['Y', -1, -1]},
-    {'order':"Sextupole", 'term': "F_NS0", 'line': ['Y', 1, -1]},
+    {'order':"sextupole", 'term': "F_NS3", 'line': ['X', -2, 0]},
+    {'order':"sextupole", 'term': "F_NS2", 'line': ['X', 0, -2]},
+    {'order':"sextupole", 'term': "F_NS1", 'line': ['Y', -1, -1]},
+    {'order':"sextupole", 'term': "F_NS0", 'line': ['Y', 1, -1]},
 
-    {'order':"SkewSextupole", 'term': "F_SS3", 'line': ['Y', 0, -2]},
-    {'order':"SkewSextupole", 'term': "F_SS2", 'line': ['Y', -2, 0]},
-    {'order':"SkewSextupole", 'term': "F_SS1", 'line': ['X', -1, -1]},
-    {'order':"SkewSextupole", 'term': "F_SS0", 'line': ['X', 1, -1]},
+    {'order':"skewsextupole", 'term': "F_SS3", 'line': ['Y', 0, -2]},
+    {'order':"skewsextupole", 'term': "F_SS2", 'line': ['Y', -2, 0]},
+    {'order':"skewsextupole", 'term': "F_SS1", 'line': ['X', -1, -1]},
+    {'order':"skewsextupole", 'term': "F_SS0", 'line': ['X', 1, -1]},
 
-    {'order':"Octupole", 'term': "F_NO5", 'line': ['Y', 0, 3]},
-    {'order':"Octupole", 'term': "F_NO4", 'line': ['X', 1, 2]},
-    {'order':"Octupole", 'term': "F_NO3", 'line': ['X', 3, 0]},
-    {'order':"Octupole", 'term': "F_NO2", 'line': ['X', -1, 2]},
-    {'order':"Octupole", 'term': "F_NO1", 'line': ['Y', 2, -1]},
-    {'order':"Octupole", 'term': "F_NO0", 'line': ['Y', 2, 1]},
+    {'order':"octupole", 'term': "F_NO5", 'line': ['Y', 0, 3]},
+    {'order':"octupole", 'term': "F_NO4", 'line': ['X', 1, 2]},
+    {'order':"octupole", 'term': "F_NO3", 'line': ['X', 3, 0]},
+    {'order':"octupole", 'term': "F_NO2", 'line': ['X', -1, 2]},
+    {'order':"octupole", 'term': "F_NO1", 'line': ['Y', 2, -1]},
+    {'order':"octupole", 'term': "F_NO0", 'line': ['Y', 2, 1]},
 ]
 
 
