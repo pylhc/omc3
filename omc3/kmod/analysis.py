@@ -358,14 +358,14 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, betast
         foc_magnet_df.headers['LSTAR'] +
         sign[2] * kmod_input_params.misalignment) -
         foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"])/foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) ** 2 +
+        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"])/(def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] + foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"])/2.0) ** 2 +
         ((average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
         sign[4] * kmod_input_params.errorL, def_magnet_df.headers[K] +
         sign[5] * kmod_input_params.errorK * def_magnet_df.headers[K],
         def_magnet_df.headers['LSTAR'] +
         sign[6] * kmod_input_params.misalignment) -
         def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[7] * def_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"])/def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) ** 2) + \
+        sign[7] * def_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"])/(foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] + def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"])/2.0) ** 2) + \
         weight*(((phase_adv - (phase_adv_constraint[0]+sign[8]*phase_adv_constraint[1]))/phase_adv_constraint[0])**2)
 
     return c2
