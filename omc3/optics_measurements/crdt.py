@@ -76,7 +76,16 @@ def calculate(measure_input, input_files, invariants, header):
                                                                        lines_and_phases,
                                                                        phase_sign)
 
-        write(result_df, header, measure_input, crdt['order'], crdt['term'])
+        write(result_df, add_line_and_freq_to_header(header, crdt), measure_input, crdt['order'], crdt['term'])
+
+
+def add_line_and_freq_to_header(header, crdt):
+    mod_header = header.copy()
+    
+    mod_header["LINE"] = f"{crdt['plane']}({crdt['line'][0]}, {crdt['line'][1]})"
+    freq = np.mod(crdt['line']@np.array([header['Q1'], header['Q2']]), 1)
+    mod_header["FREQ"] = freq if freq <= 0.5 else 1 - freq
+    return mod_header
 
 
 def write(df, header, meas_input, order, crdt):
