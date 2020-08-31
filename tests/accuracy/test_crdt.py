@@ -8,6 +8,9 @@ from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements import crdt
 
+# Level below which CRDT are not used for test comparison
+NOISELEVEL = 1E-2
+
 MEASURE_OPTICS_SETTINGS = dict(
     harpy=False,
     optics=True,
@@ -77,7 +80,7 @@ class ExtendedTests:
                                     index="NAME")
                 assert _max_dev(hio_crdt["AMP"].to_numpy(),
                                 ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(),
-                                1E-2) < ACCURACY_LIMIT[order]
+                                NOISELEVEL) < ACCURACY_LIMIT[order]
 
         _clean_up(optics_opt["outputdir"])
 
