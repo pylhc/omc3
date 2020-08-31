@@ -26,25 +26,25 @@ CRDT_COLUMNS = [AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}']
 
 
 CRDTS = [
-    {'order':"coupling", 'term': "F_XY", 'line': ['X', 0, 1]},
-    {'order':"coupling", 'term': "F_YX", 'line': ['Y', 1, 0]},
+    {'order':"coupling", 'term': "F_XY", 'plane': 'X', 'line': [0, 1]},
+    {'order':"coupling", 'term': "F_YX", 'plane': 'Y', 'line': [1, 0]},
 
-    {'order':"sextupole", 'term': "F_NS3", 'line': ['X', -2, 0]},
-    {'order':"sextupole", 'term': "F_NS2", 'line': ['X', 0, -2]},
-    {'order':"sextupole", 'term': "F_NS1", 'line': ['Y', -1, -1]},
-    {'order':"sextupole", 'term': "F_NS0", 'line': ['Y', 1, -1]},
+    {'order':"sextupole", 'term': "F_NS3", 'plane': 'X', 'line': [-2, 0]},
+    {'order':"sextupole", 'term': "F_NS2", 'plane': 'X', 'line': [0, -2]},
+    {'order':"sextupole", 'term': "F_NS1", 'plane': 'Y', 'line': [-1, -1]},
+    {'order':"sextupole", 'term': "F_NS0", 'plane': 'Y', 'line': [1, -1]},
 
-    {'order':"skewsextupole", 'term': "F_SS3", 'line': ['Y', 0, -2]},
-    {'order':"skewsextupole", 'term': "F_SS2", 'line': ['Y', -2, 0]},
-    {'order':"skewsextupole", 'term': "F_SS1", 'line': ['X', -1, -1]},
-    {'order':"skewsextupole", 'term': "F_SS0", 'line': ['X', 1, -1]},
+    {'order':"skewsextupole", 'term': "F_SS3", 'plane': 'Y', 'line': [0, -2]},
+    {'order':"skewsextupole", 'term': "F_SS2", 'plane': 'Y', 'line': [-2, 0]},
+    {'order':"skewsextupole", 'term': "F_SS1", 'plane': 'X', 'line': [-1, -1]},
+    {'order':"skewsextupole", 'term': "F_SS0", 'plane': 'X', 'line': [1, -1]},
 
-    {'order':"octupole", 'term': "F_NO5", 'line': ['Y', 0, 3]},
-    {'order':"octupole", 'term': "F_NO4", 'line': ['X', 1, 2]},
-    {'order':"octupole", 'term': "F_NO3", 'line': ['X', 3, 0]},
-    {'order':"octupole", 'term': "F_NO2", 'line': ['X', -1, 2]},
-    {'order':"octupole", 'term': "F_NO1", 'line': ['Y', 2, -1]},
-    {'order':"octupole", 'term': "F_NO0", 'line': ['Y', 2, 1]},
+    {'order':"octupole", 'term': "F_NO5", 'plane': 'Y', 'line': [0, 3]},
+    {'order':"octupole", 'term': "F_NO4", 'plane': 'X', 'line': [1, 2]},
+    {'order':"octupole", 'term': "F_NO3", 'plane': 'X', 'line': [3, 0]},
+    {'order':"octupole", 'term': "F_NO2", 'plane': 'X', 'line': [-1, 2]},
+    {'order':"octupole", 'term': "F_NO1", 'plane': 'Y', 'line': [2, -1]},
+    {'order':"octupole", 'term': "F_NO0", 'plane': 'Y', 'line': [2, 1]},
 ]
 
 
@@ -87,20 +87,20 @@ def write(df, header, meas_input, order, crdt):
 
 def get_line_and_phase(crdt, joined_df):
     line = deepcopy(crdt['line'])
-    translate_line = translate_line_to_col(line)
-    line[1], line[2] = -crdt['line'][1], -crdt['line'][2]
-    conj_translate_line = translate_line_to_col(line)
+    translate_line = translate_line_to_col(line, crdt['plane'])
+    line[0], line[1] = -crdt['line'][0], -crdt['line'][1]
+    conj_translate_line = translate_line_to_col(line, crdt['plane'])
 
     if all(elem in joined_df[0].columns for elem in [translate_line[AMPLITUDE], translate_line[PHASE]]):
         return translate_line, 1
     if all(elem in joined_df[0].columns for elem in [conj_translate_line[AMPLITUDE], conj_translate_line[PHASE]]):
         return conj_translate_line, -1
-    raise ValueError(f"No data for line {crdt['line']} found.")
+    raise ValueError(f"No data for line {crdt['line']} in plane {crdt['plane']} found.")
 
 
-def translate_line_to_col(line):
-    plane = line[0]
-    line = f"{line[1]}{line[2]}".replace('-', '_')
+def translate_line_to_col(line, plane):
+    
+    line = f"{line[0]}{line[1]}".replace('-', '_')
 
     return dict(zip(CRDT_COLUMNS, [f'{COL_AMP}{line}_{plane}',
                                    f'{COL_ERR}{COL_AMP}{line}_{plane}',
@@ -148,21 +148,21 @@ def get_crdt_phases(joined_dfs, crdt, lines_and_phases, phase_sign):
 
     for idx, joined_df in enumerate(joined_dfs):
         phases[idx, :] = (phase_sign*joined_df[lines_and_phases[PHASE]] -
-                          crdt['line'][1]*joined_df['MUX'] -
-                          crdt['line'][2]*joined_df['MUY'] -
-                          (3 - (np.abs(crdt['line'][1])+np.abs(crdt['line'][2])-1)//2)/2*np.pi)
+                          crdt['line'][0]*joined_df['MUX'] -
+                          crdt['line'][1]*joined_df['MUY'] -
+                          (3 - (np.abs(crdt['line'][0])+np.abs(crdt['line'][1])-1)//2)/2*np.pi)
         try:
             err_phases[idx, :] = np.sqrt(joined_df[lines_and_phases[f'{ERR}{PHASE}']]**2+
-                                         (crdt['line'][1]*joined_df['ERRMUX'])**2+
-                                         (crdt['line'][2]*joined_df['ERRMUY'])**2)
+                                         (crdt['line'][0]*joined_df['ERRMUX'])**2+
+                                         (crdt['line'][1]*joined_df['ERRMUY'])**2)
         except KeyError:
             err_phases[idx, :] = np.NaN
 
     return np.mean(phases, axis=0), np.nanmean(err_phases, axis=0)
 
 def get_crdt_invariant(crdt, invariants):
-    exp = {'X': np.abs(crdt['line'][1]), 'Y': np.abs(crdt['line'][2])}
-    exp[crdt['line'][0]] = exp[crdt['line'][0]] - 1 # to compensate for the normalization with tune line
+    exp = {'X': np.abs(crdt['line'][0]), 'Y': np.abs(crdt['line'][1])}
+    exp[crdt['plane']] = exp[crdt['plane']] - 1 # to compensate for the normalization with tune line
 
     crdt_invariant = invariants['X'].T[0]**exp['X']*invariants['Y'].T[0]**exp['Y']
     err_crdt_invariant = np.sqrt((exp['X']*crdt_invariant/invariants['X'].T[0])**2*
