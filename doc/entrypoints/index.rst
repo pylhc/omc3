@@ -30,6 +30,12 @@ Converter
 Plotting
 =======================
 
+.. automodule:: omc3.plotting.plot_optics_measurements
+    :members:
+
+.. automodule:: omc3.plotting.plot_tfs
+    :members:
+
 .. automodule:: omc3.plotting.plot_spectrum
     :members:
 

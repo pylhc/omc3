@@ -55,6 +55,7 @@ def hole_in_one_entrypoint(opt, rest):
     """
     Runs frequency analysis and measures lattice optics.
 
+
     Hole_in_one Kwargs:
       - **harpy**: Runs frequency analysis
 
@@ -64,6 +65,7 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--optics**
         Action: ``store_true``
+
 
     Harpy Kwargs:
       - **files**: TbT files to analyse
@@ -251,7 +253,7 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--model_dir**
 
       - For the rest, please see get_parameters() methods in child Accelerator classes,
-      which are declared in ``omc3/model/accelerators/*.py``.
+        which are declared in ``omc3/model/accelerators/*.py``.
 
 
     """

@@ -1,0 +1,14 @@
+@ Measure_optics:version %s "0.4.0"
+@ Command %s "/afs/cern.ch/work/o/omc/anaconda3/bin/python /afs/cern.ch/user/l/lmalina/public/omc3/omc3/hole_in_one.py --optics --accel=lhc --lhcmode=lhc_runII_2018 --beam=1 --model_dir /afs/cern.ch/work/l/lmalina/2019-01-10/models/LHCB1/b1_inj/ --files /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid0_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid550_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid650_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds --outputdir=/afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/optics93 --nonlinear"
+@ CWD %s "/afs/cern.ch/user/l/lmalina/public/omc3"
+@ Date %s "14. May 2019, 12:18:02"
+@ Model_directory %s "/afs/cern.ch/work/l/lmalina/2019-01-10/models/LHCB1/b1_inj/"
+@ Compensation %s "by model"
+@ Q1 %le 0.2731720602787391
+@ Q2 %le 0.29294607681438123
+@ RescalingFactor %le 0.9999393149763375
+*                  DPP               DPPAMP                   QY                ERRQY                NATQY             ERRNATQY              sqrt2JY           ERRsqrt2JY                  2JY               ERR2JY           sqrt2JYRES        ERRsqrt2JYRES               2JYRES            ERR2JYRES
+$                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le
+                     0    0.000101062663994       0.307946208821    9.81999942462e-08       0.291885329029    0.000489158434066       0.105498100757     0.00274888182853      0.0111374056145    0.000579528028828       0.105491698602     0.00274871501258      0.0111367297408    0.000579492860156
+                     0     0.00010532112523       0.307946213376    1.46002131388e-07       0.291840563351    0.000475621260596       0.105564353939     0.00280899036111      0.0111517232493    0.000593076094817       0.105557947763     0.00280881989746      0.0111510465068     0.00059304010398
+                     0    9.87983617933e-05       0.307946238407    1.47671546902e-07       0.291848872059    0.000630765747399       0.105480715084     0.00270426702359      0.0111334943148    0.000570162087778       0.105474313984     0.00270410291508      0.0111328186784    0.000570127487478

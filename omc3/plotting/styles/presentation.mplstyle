@@ -1,0 +1,91 @@
+# axes.autolimit_mode: data
+backend: pdf
+axes.edgecolor: k
+axes.facecolor: w
+axes.grid: True
+axes.grid.axis: both
+axes.grid.which: major
+axes.labelcolor: k
+# axes.labelpad: 4.0
+axes.labelsize: 22
+axes.labelweight: normal
+axes.linewidth: 1.8
+# axes.titlepad: 16.0
+axes.titlesize: xx-large
+axes.titleweight: bold
+figure.edgecolor: w
+figure.facecolor: w
+figure.figsize: 10.24, 7.68
+figure.frameon: True
+figure.titlesize: xx-large
+figure.titleweight: normal
+font.size: 20.0
+font.stretch: normal
+font.weight: normal
+font.family:
+font.serif: Computer Modern Roman
+grid.alpha: .6
+grid.color: b0b0b0
+grid.linestyle: --
+grid.linewidth: 1
+legend.edgecolor: 0.8
+legend.facecolor: inherit
+legend.fancybox: True
+legend.fontsize: 20.0
+legend.framealpha: 0.9
+legend.frameon: False
+legend.handleheight: 0.7
+legend.handlelength: 2.0
+legend.handletextpad: 0.8
+legend.labelspacing: 0.5
+legend.loc: best
+legend.markerscale: 1.2
+legend.numpoints: 1
+legend.scatterpoints: 1
+legend.shadow: False
+lines.antialiased: True
+# lines.color: C0
+lines.linestyle: -
+lines.linewidth: 2
+lines.marker: o
+lines.markeredgewidth: 2
+lines.markersize: 14.0
+lines.solid_capstyle: projecting
+lines.solid_joinstyle: round
+markers.fillstyle: none
+savefig.format : pdf
+text.antialiased: True
+text.color: k
+xtick.alignment: center
+xtick.bottom: True
+xtick.color: k
+xtick.direction: out
+xtick.labelsize: medium
+xtick.major.bottom: True
+xtick.major.pad: 3.5
+xtick.major.size: 3.5
+xtick.major.top: True
+xtick.major.width: 1.2
+xtick.minor.bottom: True
+xtick.minor.pad: 3.4
+xtick.minor.size: 2.0
+xtick.minor.top: True
+xtick.minor.visible: False
+xtick.minor.width: 1
+xtick.top: False
+ytick.alignment: center_baseline
+ytick.color: k
+ytick.direction: out
+ytick.labelsize: medium
+ytick.left: True
+ytick.major.left: True
+ytick.major.pad: 3.5
+ytick.major.right: True
+ytick.major.size: 3.5
+ytick.major.width: 1.2
+ytick.minor.left: True
+ytick.minor.pad: 3.4
+ytick.minor.right: True
+ytick.minor.size: 2.0
+ytick.minor.visible: False
+ytick.minor.width: 1
