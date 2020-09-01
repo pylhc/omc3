@@ -16,6 +16,7 @@ import tfs
 import scipy.odr
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
+from omc3.utils.stats import circular_nanmean, circular_nanerror
 from omc3.definitions.constants import PLANES
 from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE, COL_ERR
 
@@ -167,7 +168,7 @@ def get_crdt_phases(joined_dfs, crdt, lines_and_phases, phase_sign):
         except KeyError:
             err_phases[idx, :] = np.NaN
 
-    return np.mean(phases, axis=0), np.nanmean(err_phases, axis=0)
+    return circular_nanmean(phases, axis=0, errors=err_phases), circular_nanerror(phases, axis=0, errors=err_phases)
 
 def get_crdt_invariant(crdt, invariants):
     exp = {'X': np.abs(crdt['line'][0]), 'Y': np.abs(crdt['line'][1])}
