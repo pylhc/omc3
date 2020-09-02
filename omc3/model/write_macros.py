@@ -1,6 +1,7 @@
 import os
-
+import tfs
 from omc3.model.constants import MACROS_DIR, OBS_POINTS
+from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
 
 
 def _call(path_to_call):
@@ -58,3 +59,17 @@ def tracking_macros(list_of_bpms, outdir):
     }
     """
     return track_macros
+
+
+def _get_params():
+    params = EntryPointParameters()
+    params.add_parameter(name="twissfile", required=True,
+                         help="Path to twissfile with observationspoint in the NAME column.")
+    params.add_parameter(name="outputdir", required=True,
+                         help=f"Directory where the {OBS_POINTS} will be put.")
+    return params
+
+
+@entrypoint(_get_params())
+def read_twiss_and_return_obs(opt):
+    tracking_macros(tfs.read(opt.twissfile, index='NAME').index.tolist(), opt.outputdir)

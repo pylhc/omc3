@@ -106,7 +106,7 @@ class ExtendedTests:
 
 
     @staticmethod
-    @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole'])
+    @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole']) 
     def test_crdt_complex(order, _precreated_input):
         (optics_opt, path_to_lin) = _precreated_input[order]
         ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
@@ -126,7 +126,7 @@ class ExtendedTests:
                 assert _max_dev(hio_crdt["IMAG"].to_numpy(),
                                 ptc_crdt[f"{crdt_dict['term']}_IMAG"].to_numpy(),
                                 NOISELEVEL_COMPLEX[order]) < ACCURACY_LIMIT[order]
-   
+
 
     @classmethod
     def teardown_class(cls):
@@ -143,8 +143,10 @@ def _rel_dev(a, b, limit):
     b = b[np.abs(b) > limit]
     return np.abs((a-b)/b)
 
+
 def _max_dev(a, b, limit):
     return np.max(_rel_dev(a, b, limit))
+
 
 def _clean_up(path_dir):
     if isdir(path_dir):
