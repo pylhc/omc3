@@ -35,7 +35,7 @@ NOISELEVEL_COMPLEX = dict(
 MEASURE_OPTICS_SETTINGS = dict(
     harpy=False,
     optics=True,
-    nonlinear=['rdt', 'crdt'],
+    nonlinear=['crdt'],
     compensation="none",
     accel='lhc',
     ats=True,
@@ -54,16 +54,6 @@ MEASURE_OPTICS_SETTINGS = dict(
 
 LIN_DIR = join(dirname(__file__), "..", "inputs", "crdt")
 RESULTS_PATH = join(dirname(__file__), "..", "results", "crdt-test")
-
-def _create_input(order):
-    path_to_lin = join(LIN_DIR, order)
-    optics_opt = MEASURE_OPTICS_SETTINGS.copy()
-    optics_opt.update({
-        'files': [join(path_to_lin, f'{order}{idx}') for idx in range(1, 4)],
-        'outputdir': abspath(join(RESULTS_PATH, order)),
-    })
-    hole_in_one_entrypoint(**optics_opt)
-    return (optics_opt, path_to_lin)
 
 
 class BasicTests:
@@ -106,7 +96,7 @@ class ExtendedTests:
 
 
     @staticmethod
-    @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole']) 
+    @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole'])
     def test_crdt_complex(order, _precreated_input):
         (optics_opt, path_to_lin) = _precreated_input[order]
         ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
@@ -136,6 +126,17 @@ class ExtendedTests:
 @pytest.fixture()
 def _precreated_input():
     yield {order: _create_input(order) for order in ['coupling', 'sextupole', 'skewsextupole', 'octupole']}
+
+
+def _create_input(order):
+    path_to_lin = join(LIN_DIR, order)
+    optics_opt = MEASURE_OPTICS_SETTINGS.copy()
+    optics_opt.update({
+        'files': [join(path_to_lin, f'{order}{idx}') for idx in range(1, 4)],
+        'outputdir': abspath(join(RESULTS_PATH, order)),
+    })
+    hole_in_one_entrypoint(**optics_opt)
+    return (optics_opt, path_to_lin)
 
 
 def _rel_dev(a, b, limit):

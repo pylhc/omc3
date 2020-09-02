@@ -4,8 +4,7 @@ env:
 
 stages:
   - name: test-basic
-    if: branch != master
-  - name: test-full
+  - name: test-extended
     if: branch = master
   - name: documentation
     if: branch = master
@@ -24,14 +23,14 @@ email:
 jobs:
   include:
     # Tests ---
-    - &test-full
-      stage: test-full
+    - &test-extended
+      stage: test-extended
       before_script:
         - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         - chmod +x ./cc-test-reporter
         - ./cc-test-reporter before-build
       script:
-       - python setup.py test
+        - python setup.py test --pytest-args='-o python_classes=ExtendedTests'
       after_script:
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
@@ -43,10 +42,10 @@ jobs:
 
 
     # Define additional python versions for tests
-    - <<: *test-full
+    - <<: *test-extended
       python: 3.7
 
-    - <<: *test-full
+    - <<: *test-extended
       python: 3.8
 
     - <<: *test-basic
