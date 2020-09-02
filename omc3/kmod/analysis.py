@@ -302,9 +302,9 @@ def get_phase_from_model(kmod_input_params,plane):        # get phase from twiss
 
 def get_phase_from_measurement(kmod_input_params,plane):
     # get measured phase from getphase[x/y].out
-    phase_df = tfs.read( os.path.join(f'{kmod_input_params.measurement_dir}',f'getphase{plane.lower()}.out'), index='NAME')
+    # phase_df = tfs.read( os.path.join(f'{kmod_input_params.measurement_dir}',f'getphase{plane.lower()}.out'), index='NAME')
     ## get measured phase from phase_{x/y}.out
-    # phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out'), index='NAME')
+    phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out'), index='NAME')
     BPML,BPMR = get_BPM(kmod_input_params)[0], get_BPM(kmod_input_params)[1]
     phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
     phase_adv_err = phase_df.loc[BPML,'STDPH'+plane]
@@ -322,13 +322,13 @@ def phase_constraint(kmod_input_params,plane):
     if os.path.exists(os.path.join(f'{kmod_input_params.measurement_dir}',f'getphase{plane.lower()}.out')):
         #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
         phase_adv_model, phase_adv_err = get_phase_from_measurement(kmod_input_params,plane)
-        LOG.info('Phase from measurement. Weight = %1.3f' % weight)
+        #LOG.info('Phase from measurement. Weight = %1.3f' % weight)
     # model is taken (if exists) in case no measurement data is provided
     elif (os.path.exists(os.path.join(f'{kmod_input_params.model_dir}', f'{model_filename}'))):
         phase_adv_model, phase_adv_err = get_phase_from_model(kmod_input_params,plane)
-        LOG.info('Phase from model. Weight = %1.3f' % weight)
+        #LOG.info('Phase from model. Weight = %1.3f' % weight)
     else:
-        LOG.info('Phase is not used as a constraint')
+        #LOG.info('Phase is not used as a constraint')
         weight = 0
         phase_adv_model = 1.0 # nonzero number to avoid divergences in c2
         phase_adv_err = 1.0

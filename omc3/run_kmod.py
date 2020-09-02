@@ -10,7 +10,7 @@ from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH, BETA, ERR, 
 from omc3.optics_measurements.constants import EXT
 from omc3.utils import logging_tools, iotools
 
-LOG = logging_tools.get_logger(__name__)
+LOG = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
 
 LSA_COLUMNS = ['NAME', f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
 RESULTS_FILE_NAME = 'results'
@@ -70,11 +70,11 @@ def kmod_params():
                          name='ip', choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'],
                          help='define interaction point')
     parser.add_parameter(flags='--measurement_dir', type=str,
-                         name='measurement_dir', 
+                         name='measurement_dir',
                          help='give an optics measurement directory to include phase constraint in penalty function')
     parser.add_parameter(flags='--phase_weight', type=float,
                          name='phase_weight', default=0, help='weight between 0 and 1 in penalty function between phase and beta. If weight=0 phase is not used as a constraint.')
-    parser.add_parameter(flags='--model_dir', type=str, 
+    parser.add_parameter(flags='--model_dir', type=str,
                          name='model_dir', help='twiss model that contains phase')
 
 
@@ -221,5 +221,4 @@ MAGNETS_IP = {
 
 
 if __name__ == '__main__':
-    with logging_tools.DebugMode(active=True, log_file=""):
-        analyse_kmod()
+    analyse_kmod()
