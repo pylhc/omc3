@@ -63,6 +63,7 @@ This is the new repository ([old one](https://github.com/pylhc/Beta-Beat.src)) o
 are in [`/omc3/scripts`](https://github.com/pylhc/omc3/tree/master/omc3/scripts)
 - `update_nattune_in_linfile.py` to update the natural tune columns in the lin files by finding the highest
 peak in the spectrum in a given interval
+- `write_madx_macros.py` to generate madx tracking macros with observation points from a twissfile
 
 #### Examples
 can be found in the [`tests`](https://github.com/pylhc/omc3/tree/master/tests) files.
