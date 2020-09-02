@@ -319,8 +319,8 @@ def phase_constraint(kmod_input_params,plane):
     model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
 
     # if measured data exists
-    if os.path.exists(os.path.join(f'{kmod_input_params.measurement_dir}',f'getphase{plane.lower()}.out')):
-        #if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')): # this is for python3 phase output
+    #if os.path.exists(os.path.join(f'{kmod_input_params.measurement_dir}',f'getphase{plane.lower()}.out')):
+    if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')):
         phase_adv_model, phase_adv_err = get_phase_from_measurement(kmod_input_params,plane)
         #LOG.info('Phase from measurement. Weight = %1.3f' % weight)
     # model is taken (if exists) in case no measurement data is provided
