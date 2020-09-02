@@ -56,6 +56,20 @@ LIN_DIR = join(dirname(__file__), "..", "inputs", "crdt")
 RESULTS_PATH = join(dirname(__file__), "..", "results", "crdt-test")
 
 
+def _create_input(order):
+    path_to_lin = join(LIN_DIR, order)
+    optics_opt = MEASURE_OPTICS_SETTINGS.copy()
+    optics_opt.update({
+        'files': [join(path_to_lin, f'{order}{idx}') for idx in range(1, 4)],
+        'outputdir': abspath(join(RESULTS_PATH, order)),
+    })
+    hole_in_one_entrypoint(**optics_opt)
+    return (optics_opt, path_to_lin)
+
+
+PRECREATED_INPUT = {order: _create_input(order) for order in ['coupling', 'sextupole', 'skewsextupole', 'octupole']}
+
+
 class BasicTests:
     @staticmethod
     def test_joined_planes():
@@ -79,8 +93,8 @@ class BasicTests:
 class ExtendedTests:
     @staticmethod
     @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole', 'octupole'])
-    def test_crdt_amp(order, _precreated_input):
-        (optics_opt, path_to_lin) = _precreated_input[order]
+    def test_crdt_amp(order):
+        (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
         ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
 
         for crdt_dict in crdt.CRDTS:
@@ -97,8 +111,8 @@ class ExtendedTests:
 
     @staticmethod
     @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole'])
-    def test_crdt_complex(order, _precreated_input):
-        (optics_opt, path_to_lin) = _precreated_input[order]
+    def test_crdt_complex(order):
+        (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
         ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
 
         for crdt_dict in crdt.CRDTS:
@@ -121,22 +135,6 @@ class ExtendedTests:
     @classmethod
     def teardown_class(cls):
         _clean_up(RESULTS_PATH)
-
-
-@pytest.fixture()
-def _precreated_input():
-    yield {order: _create_input(order) for order in ['coupling', 'sextupole', 'skewsextupole', 'octupole']}
-
-
-def _create_input(order):
-    path_to_lin = join(LIN_DIR, order)
-    optics_opt = MEASURE_OPTICS_SETTINGS.copy()
-    optics_opt.update({
-        'files': [join(path_to_lin, f'{order}{idx}') for idx in range(1, 4)],
-        'outputdir': abspath(join(RESULTS_PATH, order)),
-    })
-    hole_in_one_entrypoint(**optics_opt)
-    return (optics_opt, path_to_lin)
 
 
 def _rel_dev(a, b, limit):
