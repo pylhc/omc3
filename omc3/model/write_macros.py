@@ -12,7 +12,7 @@ def define_observation_points_macros(list_of_bpms):
     for tracker, prefix in (("ptc", "ptc_"), ("madx", "")):
         macro += f"define_{tracker}_observation_points(): macro = {{\n"
         macro += "".join([f"    {prefix}observe, place='{bpm}';\n" for bpm in list_of_bpms])
-        macro += "}:\n"
+        macro += "};\n"
     return macro
 
 
