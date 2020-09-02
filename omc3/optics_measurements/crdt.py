@@ -17,11 +17,13 @@ import scipy.odr
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.utils import iotools, logging_tools
 from omc3.utils.stats import circular_nanmean, circular_nanerror
-from omc3.definitions.constants import PLANES
+from omc3.definitions.constants import PLANES, PI2
 from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE, COL_ERR
 
 LOGGER = logging_tools.get_logger(__name__)
 PHASE = 'PHASE'
+REAL = 'REAL'
+IMAG = 'IMAG'
 
 CRDT_COLUMNS = [AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}']
 
@@ -77,12 +79,15 @@ def calculate(measure_input, input_files, invariants, header):
                                                                        lines_and_phases,
                                                                        phase_sign)
 
+        result_df[REAL] = np.cos(PI2 * result_df[PHASE].to_numpy()) * result_df[AMPLITUDE].to_numpy()
+        result_df[IMAG] = np.sin(PI2 * result_df[PHASE].to_numpy()) * result_df[AMPLITUDE].to_numpy()
+
         write(result_df, add_line_and_freq_to_header(header, crdt), measure_input, crdt['order'], crdt['term'])
 
 
 def add_line_and_freq_to_header(header, crdt):
     mod_header = header.copy()
-    
+
     mod_header["LINE"] = f"{crdt['plane']}({crdt['line'][0]}, {crdt['line'][1]})"
     freq = np.mod(crdt['line']@np.array([header['Q1'], header['Q2']]), 1)
     mod_header["FREQ"] = freq if freq <= 0.5 else 1 - freq
@@ -156,11 +161,17 @@ def rename_cols(df, suffix, exceptions=['']):
 def get_crdt_phases(joined_dfs, crdt, lines_and_phases, phase_sign):
     phases, err_phases = np.zeros((len(joined_dfs), len(joined_dfs[0]))), np.zeros((len(joined_dfs), len(joined_dfs[0])))
 
+    # don't know the exact way to get to this via line indices so for now only via hacky way
+    signflip = 1
+    if crdt['term'] in ["F_NO2", "F_NO1"]:
+        signflip = -1
     for idx, joined_df in enumerate(joined_dfs):
         phases[idx, :] = (phase_sign*joined_df[lines_and_phases[PHASE]] -
                           crdt['line'][0]*joined_df['MUX'] -
                           crdt['line'][1]*joined_df['MUY'] -
-                          (3 - (np.abs(crdt['line'][0])+np.abs(crdt['line'][1])-1)//2)/2*np.pi)
+                          signflip*0.75 -
+                          0.5*((np.abs(crdt['line'][0])+np.abs(crdt['line'][1]))//3)
+                          ) % 1
         try:
             err_phases[idx, :] = np.sqrt(joined_df[lines_and_phases[f'{ERR}{PHASE}']]**2+
                                          (crdt['line'][0]*joined_df['ERRMUX'])**2+
@@ -169,6 +180,7 @@ def get_crdt_phases(joined_dfs, crdt, lines_and_phases, phase_sign):
             err_phases[idx, :] = np.NaN
 
     return circular_nanmean(phases, axis=0, errors=err_phases), circular_nanerror(phases, axis=0, errors=err_phases)
+
 
 def get_crdt_invariant(crdt, invariants):
     exp = {'X': np.abs(crdt['line'][0]), 'Y': np.abs(crdt['line'][1])}
