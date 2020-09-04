@@ -73,7 +73,8 @@ def kmod_params():
                          name='measurement_dir',
                          help='give an optics measurement directory to include phase constraint in penalty function')
     parser.add_parameter(flags='--phase_weight', type=float,
-                         name='phase_weight', default=0, help='weight between 0 and 1 in penalty function between phase and beta. If weight=0 phase is not used as a constraint.')
+                         name='phase_weight', default=0, help='weight in penalty function between phase and beta.'
+                         'If weight=0 phase is not used as a constraint.')
     parser.add_parameter(flags='--model_dir', type=str,
                          name='model_dir', help='twiss model that contains phase')
 

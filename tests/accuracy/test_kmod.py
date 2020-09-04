@@ -41,32 +41,57 @@ class ExtendedTests:
             beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
             assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
-    class ExtendedTests:
-        @staticmethod
-        def test_kmod_phase_simulation_ip1b1(_workdir_path):
-            analyse_kmod(betastar_and_waist=[0.25, 0.0],
-                         working_directory=_workdir_path,
-                         beam='B1',
-                         simulation=True,
-                         no_sig_digits=True,
-                         no_plots=False,
-                         ip='ip1',
-                         cminus=0.0,
-                         misalignment=0.0,
-                         errorK=0.0,
-                         errorL=0.0,
-                         tune_uncertainty=0.0E-5,
-                         phase_weight=0.0,
-                         model_dir='/inputs/kmod/')
-            results = tfs.read(join(_workdir_path, "ip1B1", f"{RESULTS_FILE_NAME}{EXT}"))
-            beta_twiss = {'X': 0.25, 'Y': 0.25}
+    @staticmethod
+    def test_kmod_phase_simulation_ip5b1(_workdir_path):
+        analyse_kmod(betastar_and_waist=[19.2, 0.0],
+                     working_directory=_workdir_path,
+                     beam='B1',
+                     simulation=True,
+                     no_sig_digits=True,
+                     no_plots=False,
+                     ip='ip5',
+                     cminus=0.0,
+                     misalignment=0.0,
+                     errorK=0.0,
+                     errorL=0.0,
+                     tune_uncertainty=0.0E-5,
+                     phase_weight=0.5,
+                     model_dir=_workdir_path)
+        results = tfs.read(join(_workdir_path, "ip5B1", f"{RESULTS_FILE_NAME}{EXT}"))
+        beta_twiss = {'X': 19.2, 'Y': 19.2}
 
-            for plane in PLANES:
-                beta_sim = beta_twiss[plane]
-                beta_meas = results[f"{BETA}{STAR}{plane}"].loc[0]
-                assert (np.abs(beta_meas - beta_sim)) / beta_sim < LIMITS['Accuracy']
-                beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
-                assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+        for plane in PLANES:
+            beta_sim = beta_twiss[plane]
+            beta_meas = results[f"{BETA}{STAR}{plane}"].loc[0]
+            assert (np.abs(beta_meas - beta_sim)) / beta_sim < LIMITS['Accuracy']
+            beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
+            assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+
+    @staticmethod
+    def test_kmod_phase_measured_ip5b1(_workdir_path):
+        analyse_kmod(betastar_and_waist=[19.2, 0.0],
+                     working_directory=_workdir_path,
+                     beam='B1',
+                     simulation=True,
+                     no_sig_digits=True,
+                     no_plots=False,
+                     ip='ip5',
+                     cminus=0.0,
+                     misalignment=0.0,
+                     errorK=0.0,
+                     errorL=0.0,
+                     tune_uncertainty=0.0E-5,
+                     phase_weight=0.5,
+                     measurement_dir=_workdir_path)
+        results = tfs.read(join(_workdir_path, "ip5B1", f"{RESULTS_FILE_NAME}{EXT}"))
+        beta_twiss = {'X': 19.2, 'Y': 19.2}
+
+        for plane in PLANES:
+            beta_sim = beta_twiss[plane]
+            beta_meas = results[f"{BETA}{STAR}{plane}"].loc[0]
+            assert (np.abs(beta_meas - beta_sim)) / beta_sim < LIMITS['Accuracy']
+            beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
+            assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
     @staticmethod
     def test_kmod_simulation_ip1b2(_workdir_path):

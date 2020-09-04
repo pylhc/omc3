@@ -304,7 +304,7 @@ def get_phase_from_measurement(kmod_input_params,plane):
     # get measured phase from getphase[x/y].out
     # phase_df = tfs.read( os.path.join(f'{kmod_input_params.measurement_dir}',f'getphase{plane.lower()}.out'), index='NAME')
     ## get measured phase from phase_{x/y}.out
-    phase_df = tfs.read( os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out'), index='NAME')
+    phase_df = tfs.read( os.path.join(f'{kmod_input_params.measurement_dir}',f'phase_{plane.lower()}.out'), index='NAME')
     BPML,BPMR = get_BPM(kmod_input_params)[0], get_BPM(kmod_input_params)[1]
     phase_adv_model = phase_df.loc[BPML,'PHASE'+plane]
     phase_adv_err = phase_df.loc[BPML,'STDPH'+plane]
@@ -316,11 +316,11 @@ def phase_constraint(kmod_input_params,plane):
     # weight given to phase
     weight = kmod_input_params.phase_weight
 
-    model_filename = 'twiss_' + kmod_input_params.beam + '.dat'
+    model_filename = 'twiss_' + kmod_input_params.beam + '.tfs'
 
     # if measured data exists
     #if os.path.exists(os.path.join(f'{kmod_input_params.measurement_dir}',f'getphase{plane.lower()}.out')):
-    if os.path.exists(os.path.join(f'{kmod_input_params.meas_directory}',f'phase_{plane.lower()}.out')):
+    if os.path.exists(os.path.join(f'{kmod_input_params.measurement_dir}',f'phase_{plane.lower()}.out')):
         phase_adv_model, phase_adv_err = get_phase_from_measurement(kmod_input_params,plane)
         #LOG.info('Phase from measurement. Weight = %1.3f' % weight)
     # model is taken (if exists) in case no measurement data is provided
