@@ -1,10 +1,8 @@
 from os.path import abspath, dirname, isdir, join
 from shutil import rmtree
 import numpy as np
-import pandas as pd
 import pytest
 import tfs
-from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements import crdt
 
@@ -68,26 +66,6 @@ def _create_input(order):
 
 
 PRECREATED_INPUT = {order: _create_input(order) for order in ['coupling', 'sextupole', 'skewsextupole', 'octupole']}
-
-
-class BasicTests:
-    @staticmethod
-    def test_joined_planes():
-        lin_files = {}
-        for plane in PLANES:
-            lin_files[plane] = [pd.DataFrame(data={'NAME':['A', 'B'],
-                                                   'S':[1, 2],
-                                                   f'TUNE{plane}':[0.28, 0.28],
-                                                   f'AMP{plane}':[1, 1],
-                                                   f'AMP20':[1, 1],
-                                                   f'FREQ20':[0.31, 0.31],
-                                                   })]
-        result_df = crdt.joined_planes(lin_files)
-        assert set(result_df[0].columns) == set(['S',
-                                                 'TUNEX', 'AMPX',
-                                                 'TUNEY', 'AMPY',
-                                                 'AMP20_X', 'FREQ20_X',
-                                                 'AMP20_Y', 'FREQ20_Y'])
 
 
 class ExtendedTests:
