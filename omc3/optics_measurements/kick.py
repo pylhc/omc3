@@ -80,6 +80,7 @@ def _getkick(measure_input, files, plane):
 def _gen_kick_calc(meas_input, lin, plane, coupling=None):
     """
     Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation
+    The formula for correction to coupling can be found here: https://indico.cern.ch/event/817713/
     """
     frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin.loc[:, [f"{AMPLITUDE}{plane}", PEAK2PEAK]],
                      how='inner', left_index=True, right_index=True)
