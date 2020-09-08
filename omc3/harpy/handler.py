@@ -13,15 +13,15 @@ import pandas as pd
 import tfs
 
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES, PLANE_TO_NUM as P2N
 from omc3.harpy import clean, frequency, kicker
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
-PLANES = ("X", "Y")
-ALL_PLANES = ("X", "Y", "Z")
-PLANE_TO_NUM = {"X": 1, "Y": 2, "Z": 3}
+ALL_PLANES = (*PLANES, "Z")
+PLANE_TO_NUM = {**P2N, "Z": 3}
 ERR = "ERR"
 
 
@@ -88,7 +88,8 @@ def _get_cut_tbt_matrix(tbt_data, turn_indices, plane):
 
 def _scale_to_meters(bpm_data, unit):
     scales_to_meters = {'um': 1e-6, 'mm': 0.001, 'cm': 0.01, 'm': 1}
-    return bpm_data * scales_to_meters[unit]
+    bpm_data.iloc[:,:] = bpm_data.iloc[:,:].to_numpy() * scales_to_meters[unit]
+    return bpm_data
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):

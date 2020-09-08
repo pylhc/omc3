@@ -7,11 +7,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from omc3.definitions.constants import PLANES
 from omc3.tbt import handler, reader_iota, reader_ptc, reader_trackone
 from omc3.tbt_converter import converter_entrypoint
 
 CURRENT_DIR = os.path.dirname(__file__)
-PLANES = ('X', 'Y')
+ASCII_PRECISION = 0.5 / np.power(10, handler.PRINT_PRECISION)
 
 
 def test_converter_one_file(_sdds_file, _test_file):
@@ -21,6 +22,15 @@ def test_converter_one_file(_sdds_file, _test_file):
     _compare_tbt(origin, new, False)
 
 
+def test_converter_one_file_with_noise(_sdds_file, _test_file):
+    np.random.seed(2019)
+    noiselevel = 0.0005
+    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), noise_levels=[noiselevel])
+    origin = handler.read_tbt(_sdds_file)
+    new = handler.read_tbt(f'{_test_file}_n{noiselevel}.sdds')
+    _compare_tbt(origin, new, True, noiselevel*10)
+
+
 def test_converter_more_files(_sdds_file, _test_file):
     rep = 2
     converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep)
@@ -28,6 +38,16 @@ def test_converter_more_files(_sdds_file, _test_file):
     for i in range(rep):
         new = handler.read_tbt(f'{_test_file}_r{i}.sdds')
         _compare_tbt(origin, new, False)
+
+def test_converter_more_files_with_noise(_sdds_file, _test_file):
+    np.random.seed(2019)
+    rep = 2
+    noiselevel = 0.0005
+    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep, noise_levels=[noiselevel])
+    origin = handler.read_tbt(_sdds_file)
+    for i in range(rep):
+        new = handler.read_tbt(f'{_test_file}_n{noiselevel}_r{i}.sdds')
+        _compare_tbt(origin, new, True, noiselevel*10)
 
 
 def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):
@@ -163,7 +183,7 @@ def test_tbt_write_read_ascii(_sdds_file, _test_file):
     _compare_tbt(origin, new, True)
 
 
-def _compare_tbt(origin, new, no_binary):
+def _compare_tbt(origin, new, no_binary, max_deviation=ASCII_PRECISION):
     assert new.nturns == origin.nturns
     assert new.nbunches == origin.nbunches
     assert new.bunch_ids == origin.bunch_ids
@@ -173,8 +193,7 @@ def _compare_tbt(origin, new, no_binary):
             origin_mat = origin.matrices[index][plane].to_numpy()
             new_mat = new.matrices[index][plane].to_numpy()
             if no_binary:
-                ascii_precision = 0.5 / np.power(10, handler.PRINT_PRECISION)
-                assert np.max(np.abs(origin_mat - new_mat)) < ascii_precision
+                assert np.max(np.abs(origin_mat - new_mat)) < max_deviation
             else:
                 assert np.all(origin_mat == new_mat)
 

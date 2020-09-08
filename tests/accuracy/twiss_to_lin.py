@@ -19,20 +19,19 @@ import pandas as pd
 import tfs
 
 from omc3.definitions import formats
+from omc3.definitions.constants import PLANES
 
-PLANES = ('X', 'Y')
 MOTION = dict(free="_f", driven="_d")
 PLANE_TO_NUM = dict(X=1, Y=2)
 COUP = dict(X="01", Y="10")
 OTHER = dict(X="Y", Y="X")
-NOISE=1e-4
-NTURNS=6600
+NOISE = 1e-4
+NTURNS = 6600
 ACTION = 5e-9
 ERRTUNE = 3e-7
 NAT_OVER_DRV = 0.01
 MAGIC_NUMBER = 6   # SVD cleaning effect + main lobe size effect
 COUPLING = 0.1
-
 
 def optics_measurement_test_files(modeldir, dpps, motion):
     """
@@ -46,6 +45,7 @@ def optics_measurement_test_files(modeldir, dpps, motion):
     """
     model, tune, nattune = get_combined_model_and_tunes(modeldir)
     lins = []
+    np.random.seed(12345678)
     for dpp_value in dpps:
         lins.append(generate_lin_files(model, tune, nattune, MOTION[motion], dpp=dpp_value))
     return lins
@@ -53,7 +53,6 @@ def optics_measurement_test_files(modeldir, dpps, motion):
 
 def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0):
     nbpms = len(model.index.to_numpy())
-
     lins = {}
     for plane in PLANES:
         lin = model.loc[:, ['NAME', 'S']]

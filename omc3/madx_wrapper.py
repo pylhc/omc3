@@ -23,10 +23,10 @@ from omc3.utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 LIB = abspath(join(dirname(__file__), "lib"))
-_LOCAL_PATH = join(dirname(__file__), pardir, "bin")
+_LOCAL_PATH = join(dirname(__file__), "bin")
 
 if "darwin" in sys.platform:
-    _MADX_BIN = "madx-macosx64-intel"
+    _MADX_BIN = "madx-macosx64-gnu"
 elif "win" in sys.platform:
     _MADX_BIN = "madx-win64-gnu.exe"
 else:
@@ -78,11 +78,12 @@ def run_string(input_string, output_file=None, log_file=None,
                madx_path=MADX_PATH, cwd=None):
     """Runs MADX in a subprocess.
 
-    Attributes:
+    Arguments:
         input_string: MADX input string
         output_file: If given writes MADX script.
         log_file: If given writes MADX logging output.
         madx_path: Path to MADX executable
+
     """
     _check_log_and_output_files(output_file, log_file)
     _run(input_string, log_file, output_file, madx_path, cwd)
