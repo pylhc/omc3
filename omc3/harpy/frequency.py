@@ -78,8 +78,8 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
                                                 plane, harpy_input.tolerance, panda)
     cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"TUNE{plane}"], harpy_input.tune_clean_limit)
     panda = panda.loc[panda.index.difference(cleaned_by_tune_bpms)]
-    panda[f"MU{plane}"] = _realign_phases(panda.loc[:, f"MU{plane}"].values,
-                                          panda.loc[:, f"TUNE{plane}"].values, bpm_matrix.shape[1])
+    panda[f"MU{plane}"] = _realign_phases(panda.loc[:, f"MU{plane}"].to_numpy(),
+                                          panda.loc[:, f"TUNE{plane}"].to_numpy(), bpm_matrix.shape[1])
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
     bpm_matrix = bpm_matrix.loc[panda.index]
     spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
@@ -87,11 +87,14 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     if _get_natural_tunes(harpy_input, tunes) is not None:
         panda = panda.join(_calculate_natural_tunes(spectra, _get_natural_tunes(harpy_input, tunes),
                                                     harpy_input.tolerance, plane))
-        panda[f"NATMU{plane}"] = _realign_phases(panda.loc[:, f"NATMU{plane}"].values,
-                                                 panda.loc[:, f"NATTUNE{plane}"].values,
+        panda[f"NATMU{plane}"] = _realign_phases(panda.loc[:, f"NATMU{plane}"].to_numpy(),
+                                                 panda.loc[:, f"NATTUNE{plane}"].to_numpy(),
                                                  bpm_matrix.shape[1])
     if tunes[2] > 0:
         panda, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, panda)
+        panda[f"MUZ"] = _realign_phases(panda.loc[:, f"MUZ"].to_numpy(),
+                                              panda.loc[:, f"TUNEZ"].to_numpy(),
+                                              bpm_matrix.shape[1])
     return panda, spectra, bad_bpms_summaries
 
 
@@ -119,8 +122,8 @@ def find_resonances(tunes, nturns, plane, spectra):
         resstr = _get_resonance_suffix(resonance)
         df[f"FREQ{resstr}"], df[f"AMP{resstr}"], df[f"PHASE{resstr}"] = _get_freqs_amps_phases(
             max_freqs, max_coefs, resonances_freqs[resonance])
-        df[f"PHASE{resstr}"] = _realign_phases(df.loc[:, f"PHASE{resstr}"].values,
-                                               df.loc[:, f"FREQ{resstr}"].values, nturns)
+        df[f"PHASE{resstr}"] = _realign_phases(df.loc[:, f"PHASE{resstr}"].to_numpy(),
+                                               df.loc[:, f"FREQ{resstr}"].to_numpy(), nturns)
     return df
 
 
@@ -194,8 +197,8 @@ def _search_highest_coefs(freq, tolerance, frequencies, coefficients):
     """
     p_freq = freq if freq < 0.5 else 1 - freq
     min_val, max_val = p_freq - tolerance, p_freq + tolerance
-    freq_vals = frequencies.values
-    coefs_vals = coefficients.values
+    freq_vals = frequencies.to_numpy()
+    coefs_vals = coefficients.to_numpy()
     on_window_mask = (freq_vals >= min_val) & (freq_vals <= max_val)
     filtered_coefs = np.where(on_window_mask, coefs_vals, 0)
     filtered_amps = np.abs(filtered_coefs)
@@ -251,7 +254,7 @@ def windowed_padded_rfft(harpy_input, matrix, tunes, svd=None):
     n_bins = int(np.sum(mask) / sub_bins)
     n_bpms = len(matrix.index)
     if svd is None:
-        tbt_matrix = matrix.loc[:, :].values
+        tbt_matrix = matrix.loc[:, :].to_numpy()
         coefs = np.fft.rfft(tbt_matrix * windowing(tbt_matrix.shape[1], window=harpy_input.window),
                             n=padded_len * 2)[:, mask]
     else:
