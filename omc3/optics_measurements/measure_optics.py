@@ -196,10 +196,11 @@ class InputFiles(dict):
             frames_to_join = [df for df in frames_to_join if df.DPPAMP > 0]
         if len(frames_to_join) == 0:
             raise ValueError(f"No data found for non-zero |dp/p|")
-        joined_frame = pd.DataFrame(frames_to_join[0]).loc[:, columns]
+        joined_frame = pd.DataFrame(frames_to_join[0]).reindex(columns=columns, fill_value=np.nan)
         if len(frames_to_join) > 1:
             for i, df in enumerate(frames_to_join[1:]):
-                joined_frame = pd.merge(joined_frame, df.loc[:, columns], how=how, left_index=True,
+                joined_frame = pd.merge(joined_frame, df.reindex(columns=columns, fill_value=np.nan),
+                                        how=how, left_index=True,
                                         right_index=True, suffixes=('', '__' + str(i + 1)))
         for column in columns:
             joined_frame.rename(columns={column: column + '__0'}, inplace=True)
