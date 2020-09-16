@@ -43,7 +43,7 @@ jobs:
       install:
         - pip install '.[test]'
       script:
-        - python -m pytest -m basic
+        - python -m pytest -m 'not extended'
 
 
     # Define additional python versions for tests

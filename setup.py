@@ -36,9 +36,6 @@ DEPENDENCIES = [
 
 # Extra dependencies
 EXTRA_DEPENDENCIES = {
-    "setup": [
-        "pytest-runner"
-    ],
     "test": [
         "pytest>=5.2",
         "pytest-cov>=2.7",
@@ -83,6 +80,5 @@ setuptools.setup(
     ],
     install_requires=DEPENDENCIES,
     tests_require=EXTRA_DEPENDENCIES['test'],
-    setup_requires=EXTRA_DEPENDENCIES['setup'],
     extras_require=EXTRA_DEPENDENCIES,
 )
