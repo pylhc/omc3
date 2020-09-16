@@ -6,33 +6,6 @@ import setuptools
 from setuptools.command.test import test as TestCommand
 
 
-class PyTest(TestCommand):
-    """ Allows passing commandline arguments to pytest.
-
-        e.g. `python setup.py test -a='-o python_classes=BasicTests'`
-        or   `python setup.py pytest -a '-o python_classes="BasicTests ExtendedTests"'
-        or   `python setup.py test --pytest-args='--collect-only'`
-
-    """
-    user_options = [('pytest-args=', 'a', "Arguments to pass into pytest")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = ''
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-
-        # shlex.split() preserves quotes
-        errno = pytest.main(shlex.split(self.pytest_args))
-        sys.exit(errno)
-
-
 # The directory containing this file
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.absolute()
 ABOUT_FILE = TOPLEVEL_DIR / "omc3" / "__init__.py"
@@ -96,7 +69,6 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests*", "doc"]),
     python_requires=">=3.6",
     license=ABOUT_OMC3["__license__"],
-    cmdclass={'pytest': PyTest},  # pass test arguments
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
