@@ -1,3 +1,4 @@
 include omc3/bin/madx*
-recursive-include omc3/model/accelerators
-recursive-include omc3/model/madx_macros
+graft omc3/model/accelerators 
+graft omc3/model/model_creators 
+graft omc3/model/madx_macros 
