@@ -5,7 +5,7 @@ import pytest
 from omc3 import madx_wrapper
 from omc3.utils.contexts import silence, temporary_dir
 
-
+@pytest.mark.basic
 def test_with_macro():
     """ Checks:
          - Output_file is created.
@@ -22,7 +22,7 @@ def test_with_macro():
             out_lines = of.read()
         assert out_lines == content
 
-
+@pytest.mark.basic
 def test_with_nonexistent_file():
     """ Checks:
          - Madx crashes when tries to call a non-existent file

@@ -11,7 +11,7 @@ from matplotlib.figure import Figure
 from omc3.plotting.plot_spectrum import main as plot_spectrum
 from omc3.plotting.spectrum.utils import get_unique_filenames, PLANES
 
-
+@pytest.mark.basic
 def test_unique_filenames():
     def _test_list(list_of_paths):
         paths, names = zip(*get_unique_filenames(list_of_paths))
@@ -29,7 +29,7 @@ def test_unique_filenames():
     assert "wolfgang" in names
     assert "max" in names
 
-
+@pytest.mark.basic
 def test_basic_functionality(file_path, bpms):
     with tempfile.TemporaryDirectory() as out_dir:
         stem, waterfall = plot_spectrum(
@@ -52,7 +52,7 @@ def test_basic_functionality(file_path, bpms):
         assert all((bpm in stem) and (stem[bpm] is not None)
                    for bpm in bpm_ids)
 
-
+@pytest.mark.basic
 def test_combined_bpms_stem_plot(file_path, bpms):
     with tempfile.TemporaryDirectory() as out_dir:
         stem, waterfall = plot_spectrum(
@@ -69,7 +69,7 @@ def test_combined_bpms_stem_plot(file_path, bpms):
         assert len(stem) == 1
         assert (filename in stem) and isinstance(stem[filename], Figure)
 
-
+@pytest.mark.basic
 def test_no_tunes_in_files_plot(file_path, bpms):
     with tempfile.TemporaryDirectory() as out_dir:
         for f in glob(f'{file_path}*'):
@@ -87,7 +87,7 @@ def test_no_tunes_in_files_plot(file_path, bpms):
             combine_by=['files', 'bpms'],
         )
 
-
+@pytest.mark.basic
 def test_crash_too_low_amplimit():
     with pytest.raises(ValueError):
         with tempfile.TemporaryDirectory() as out_dir:
@@ -97,7 +97,7 @@ def test_crash_too_low_amplimit():
                 amp_limit=-1.,
             )
 
-
+@pytest.mark.basic
 def test_crash_file_not_found_amplimit():
     with pytest.raises(FileNotFoundError):
         with tempfile.TemporaryDirectory() as out_dir:

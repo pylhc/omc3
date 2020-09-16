@@ -43,7 +43,7 @@ jobs:
       install:
         - pip install '.[test]'
       script:
-        - python -m pytest -o python_classes=BasicTests
+        - python -m pytest -m basic
 
 
     # Define additional python versions for tests

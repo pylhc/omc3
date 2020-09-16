@@ -6,47 +6,47 @@ from omc3.optics_measurements import toolbox
 
 ARRAY_LENGTH = 10
 
-
+@pytest.mark.basic
 def test_df_diff_zero(random, zeros):
     assert all(random == toolbox.df_diff(*_df(random, zeros)))
 
-
+@pytest.mark.basic
 def test_df_sum_zero(random, zeros):
     assert all(random == toolbox.df_sum(*_df(random, zeros)))
 
-
+@pytest.mark.basic
 def test_df_sum_diff():
     a, b = _arand(), _arand()
     sum_of_columns = toolbox.df_sum(*_df(a, b))
     diff = toolbox.df_diff(*_df(sum_of_columns, b))
     assert _numerically_equal(a, diff)
 
-
+@pytest.mark.basic
 def test_df_ratio_one(random, ones):
     assert all(random == toolbox.df_ratio(*_df(random, ones)))
 
-
+@pytest.mark.basic
 def test_df_ratio_zero(random, zeros):
     assert not sum(toolbox.df_ratio(*_df(zeros, random)))
     with pytest.warns(RuntimeWarning):
         toolbox.df_ratio(*_df(random, zeros))
 
-
+@pytest.mark.basic
 def test_df_prod_zero(random, zeros):
     assert not sum(toolbox.df_prod(*_df(random, zeros)))
 
-
+@pytest.mark.basic
 def test_df_prod_one(random, ones):
     assert all(random == toolbox.df_prod(*_df(random, ones)))
 
-
+@pytest.mark.basic
 def test_df_prod_ratio():
     a, b = _arand(), _arand()
     prod = toolbox.df_prod(*_df(a, b))
     ratio = toolbox.df_ratio(*_df(prod, b))
     assert _numerically_equal(a, ratio)
 
-
+@pytest.mark.basic
 def test_df_rel_diff(random, zeros, ones):
     assert all(-toolbox.df_rel_diff(*_df(zeros, random)) == ones)
     with pytest.warns(RuntimeWarning):
@@ -54,7 +54,7 @@ def test_df_rel_diff(random, zeros, ones):
 
 
 # Test with errors ---
-
+@pytest.mark.basic
 def test_df_err_sum():
     a, b = _erand(), _erand()
     err_sum = toolbox.df_err_sum(*_df(a, b))
@@ -62,13 +62,13 @@ def test_df_err_sum():
     assert all(err_sum > 0)
     assert all(sum_of_columns >= err_sum)
 
-
+@pytest.mark.basic
 def test_df_rel_err_sum():
     a, b, aerr, berr = _arand(), _arand(), _erand(), _erand()
     err_sum = toolbox.df_rel_err_sum(*_df(a, b, aerr, berr))
     assert all(err_sum > 0)
 
-
+@pytest.mark.basic
 def test_df_other():
     # basic functionality is tested, just check that these run
     a, b, aerr, berr = _arand(), _arand(), _erand(), _erand()
@@ -87,7 +87,7 @@ def test_df_other():
 
 # Angular tests
 
-
+@pytest.mark.basic
 def test_ang():
     a, b = _arand(), _arand()
     diff = toolbox.df_ang_diff(*_df(a, b))
