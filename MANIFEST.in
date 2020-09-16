@@ -1,3 +1,4 @@
 include omc3/bin/madx*
 graft omc3/model/accelerators 
 graft omc3/model/madx_macros 
+graft omc3/plotting/styles
