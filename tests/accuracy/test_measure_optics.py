@@ -48,11 +48,11 @@ MEASURE_OPTICS_INPUT = list(itertools.product(*MEASURE_OPTICS_SETTINGS.values())
 
 @pytest.mark.basic
 def test_single_file():
-    ExtendedTests.test_single_file(*MEASURE_OPTICS_INPUT[0])
+    test_single_file(*MEASURE_OPTICS_INPUT[0])
 
 @pytest.mark.basic
 def test_3_onmom_files():
-    ExtendedTests.test_3_onmom_files(*MEASURE_OPTICS_INPUT[1])
+    test_3_onmom_files(*MEASURE_OPTICS_INPUT[1])
 
 
 @pytest.mark.extended
