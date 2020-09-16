@@ -22,11 +22,11 @@ with README.open("r") as docs:
 DEPENDENCIES = [
     "matplotlib>=3.2.0",
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
-    "numpy>=1.18.0",
-    "pandas==0.25.*",
-    "scipy>=1.4.0",
+    "numpy>=1.19.0",
+    "pandas>=1.0",
+    "scipy>=1.5.0",
     "scikit-learn>=0.22.0",
-    "tfs-pandas>=1.0.3",
+    "tfs-pandas>=2.0",
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
     "pytz>=2018.9",
@@ -64,7 +64,7 @@ setuptools.setup(
     url=ABOUT_OMC3["__url__"],
     packages=setuptools.find_packages(exclude=["tests*", "doc"]),
     include_package_data=True,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     license=ABOUT_OMC3["__license__"],
     classifiers=[
         "Intended Audience :: Science/Research",
@@ -72,7 +72,6 @@ setuptools.setup(
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Physics",
