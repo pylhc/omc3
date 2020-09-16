@@ -13,15 +13,14 @@ RENAME_SUFFIX = '_mytest'
 
 
 def runclean(func):
-    @staticmethod
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
         _clean_output_files()  # comment for debugging single tests
     return wrapper
 
 
-@pytest.mark.basic
 @runclean
+@pytest.mark.basic
 def test_all_planes_update():
     update_nattune(
         files=[str(_get_input_file())],
@@ -33,8 +32,8 @@ def test_all_planes_update():
         assert np.allclose(new[f'{COL_NATTUNE}{plane}'], new[f'{COL_TUNE}{plane}'], atol=1e-7)
         assert np.allclose(new[f'{COL_NATAMP}{plane}'], new[f'{COL_AMP}{plane}'], atol=1e-5)
 
-@pytest.mark.basic
 @runclean
+@pytest.mark.basic
 def test_error_in_interval():
     with pytest.raises(ValueError):
         update_nattune(
@@ -44,8 +43,8 @@ def test_error_in_interval():
         )
 
 
-@pytest.mark.extended
 @runclean
+@pytest.mark.extended
 def test_single_plane_update():
     update_nattune(
         files=[str(_get_input_file())],
@@ -57,8 +56,8 @@ def test_single_plane_update():
     assert (_get_input_dir() / f'spec_test.sdds{RENAME_SUFFIX}.linx').exists()
 
 
-@pytest.mark.extended
 @runclean
+@pytest.mark.extended
 def test_keep_not_found():
     update_nattune(
         files=[str(_get_input_file())],
@@ -72,8 +71,8 @@ def test_keep_not_found():
         assert np.allclose(old[f'{COL_NATTUNE}{plane}'], new[f'{COL_NATTUNE}{plane}'], atol=1e-17)
         assert np.allclose(old[f'{COL_NATAMP}{plane}'], new[f'{COL_NATAMP}{plane}'], atol=1e-17)
 
-@pytest.mark.extended
 @runclean
+@pytest.mark.extended
 def test_remove_not_found():
     update_nattune(
         files=[str(_get_input_file())],
@@ -86,8 +85,8 @@ def test_remove_not_found():
         assert len(new.index) == 0
 
 
-@pytest.mark.extended
 @runclean
+@pytest.mark.extended
 def test_remove_some_not_found():
     update_nattune(
         files=[str(_get_input_file())],
