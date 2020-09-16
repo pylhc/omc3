@@ -52,15 +52,7 @@ CRDTS = [
 
 
 def calculate(measure_input, input_files, invariants, header):
-    """
 
-    Args:
-        measure_input:
-        input_files:
-        header:
-    Returns:
-
-    """
     LOGGER.info("Start of CRDT analysis")
     assert len(input_files['X']) == len(input_files['Y'])
     bpm_names = input_files.bpms(dpp_value=0)
@@ -79,7 +71,7 @@ def calculate(measure_input, input_files, invariants, header):
 
         amplitudes = input_files.get_data(result_df, lines_and_phases[AMPLITUDE])
         err_amplitudes = input_files.get_data(result_df, lines_and_phases[f"{ERR}{AMPLITUDE}"])
-        result_df[AMPLITUDE], result_df[f'{ERR}{AMPLITUDE}'] = get_crdt_amplitude(crdt,invariants, amplitudes, err_amplitudes)
+        result_df[AMPLITUDE], result_df[f'{ERR}{AMPLITUDE}'] = get_crdt_amplitude(crdt, invariants, amplitudes, err_amplitudes)
 
         phases = ((phase_sign * input_files.get_data(result_df, lines_and_phases[PHASE]) -
                   nqx * input_files.get_data(result_df, "MUX") -

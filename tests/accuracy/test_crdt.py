@@ -1,3 +1,4 @@
+import os
 from os.path import abspath, dirname, isdir, join
 from shutil import rmtree
 import numpy as np
@@ -39,19 +40,12 @@ MEASURE_OPTICS_SETTINGS = dict(
     ats=True,
     beam=1,
     dpp=0.0,
-    driven_excitation=None,
-    drv_tunes=None,
-    energy=None,
-    fullresponse=False,
-    model_dir=join(dirname(__file__), "..", "inputs", "models", "inj_beam1"),
-    modifiers=None,
-    nat_tunes=None,
-    xing=False,
+    model_dir=join(dirname(__file__), os.pardir, "inputs", "models", "inj_beam1"),
     year="2018",
 )
 
-LIN_DIR = join(dirname(__file__), "..", "inputs", "crdt")
-RESULTS_PATH = join(dirname(__file__), "..", "results", "crdt-test")
+LIN_DIR = join(dirname(__file__), os.pardir, "inputs", "crdt")
+RESULTS_PATH = join(dirname(__file__), os.pardir, "results", "crdt-test")
 
 
 def _create_input(order):

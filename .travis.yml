@@ -30,7 +30,7 @@ jobs:
         - chmod +x ./cc-test-reporter
         - ./cc-test-reporter before-build
       script:
-        - python setup.py test --pytest-args='-o python_classes=ExtendedTests'
+        - python -m pytest -o python_classes=ExtendedTests
       after_script:
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
@@ -38,7 +38,7 @@ jobs:
     - &test-basic
       stage: test-basic
       script:
-        - python setup.py test --pytest-args='-o python_classes=BasicTests'
+        - python -m pytest -o python_classes=BasicTests
 
 
     # Define additional python versions for tests
