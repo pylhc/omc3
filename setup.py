@@ -1,6 +1,4 @@
 import pathlib
-import shlex
-import sys
 
 import setuptools
 
