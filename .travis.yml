@@ -15,7 +15,7 @@ stages:
 # Default python version that will be inherited
 # Additional ones can be defined later
 language: python
-python: 3.6
+python: 3.7
 
 email:
   on_success: always
@@ -47,14 +47,9 @@ jobs:
 
 
     # Define additional python versions for tests
-    - <<: *test-full
-      python: 3.7
 
     - <<: *test-full
       python: 3.8
-
-    - <<: *test-basic
-      python: 3.7
 
     - <<: *test-basic
       python: 3.8
