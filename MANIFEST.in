@@ -1,0 +1,3 @@
+include omc3/bin/madx*
+recursive-include omc3/model/accelerators
+recursive-include omc3/model/madx_macros
