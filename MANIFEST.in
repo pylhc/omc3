@@ -1,4 +1,3 @@
 include omc3/bin/madx*
 graft omc3/model/accelerators 
-graft omc3/model/model_creators 
 graft omc3/model/madx_macros 
