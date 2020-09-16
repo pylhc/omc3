@@ -20,7 +20,6 @@ NBPMS = 100
 BASEAMP = 0.001
 AMPZ, MUZ, TUNEZ = 0.01, 0.3, 0.008
 
-np.random.seed(1234567)
 
 
 @pytest.mark.basic
@@ -134,6 +133,7 @@ def _assert_spectra(lin, model):
 
 
 def _get_model_dataframe():
+    np.random.seed(1234567)
     return pd.DataFrame(data=dict(S=np.arange(NBPMS, dtype=float),
                                   AMPX=(np.random.rand(NBPMS) + 1) * BASEAMP,
                                   AMPY=(np.random.rand(NBPMS) + 1) * BASEAMP,
