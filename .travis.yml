@@ -29,6 +29,8 @@ jobs:
         - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         - chmod +x ./cc-test-reporter
         - ./cc-test-reporter before-build
+      install:
+        - pip install '.[test]'
       script:
         - python -m pytest -o python_classes=ExtendedTests
       after_script:
@@ -37,6 +39,8 @@ jobs:
     # Test only basic test classes
     - &test-basic
       stage: test-basic
+      install:
+        - pip install '.[test]'
       script:
         - python -m pytest -o python_classes=BasicTests
 
