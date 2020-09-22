@@ -29,7 +29,7 @@ def _create_input(motion):
                     outputdir=BASE_PATH)
     optics_opt, rest = _optics_entrypoint(opt_dict)
     optics_opt.accelerator = manager.get_accelerator(rest)
-    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion)
+    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion, 1)
     return lins, optics_opt
 
 
