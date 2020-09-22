@@ -1,15 +1,15 @@
-# Runs all tests
-name: Extended Tests
+# Runs all tests on master everyday at 10 am (UTC time)
+name: Cron Testing
 
 defaults:
   run:
     shell: bash
 
-on:  # Runs on all push events to master branch and any push related to a pull request
-  push:
-    branches:
-      - master
-  pull_request:
+on:  # Runs on master branch at 10am UTC time
+  branches:
+    - master
+  schedule:
+    - cron:  '* 10 * * *'
 
 jobs:
   tests:

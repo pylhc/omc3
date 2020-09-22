@@ -50,6 +50,7 @@ jobs:
       - name: Install package
         run: pip install '.[doc]'
 
+      # TODO: find a proper action setup for building and pushing doc
       - name: Build and deploy documentation
         run: |
           travis-sphinx build --source=doc/ --nowarn
