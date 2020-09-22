@@ -9,6 +9,8 @@ import pytest
 
 from omc3.plotting.plot_optics_measurements import plot
 
+# Figure (capital F) does not handle the canvas for us so we need to force the backend to make sure
+# tests know what to do on every platform
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
 matplotlib.use("Agg")
 

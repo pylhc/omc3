@@ -6,8 +6,6 @@ defaults:
     shell: bash
 
 on:  # Runs on master branch at 10am UTC time
-  branches:
-    - master
   schedule:
     - cron:  '* 10 * * *'
 

@@ -70,6 +70,7 @@ def test_kmod_simulation_ip1b2(_workdir_path):
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
+
 @pytest.mark.extended
 def test_kmod_meas_ip1b1(_workdir_path):
 
@@ -94,6 +95,7 @@ def test_kmod_meas_ip1b1(_workdir_path):
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
+
 @pytest.mark.extended
 def test_kmod_meas_ip1b2(_workdir_path):
 
@@ -117,6 +119,7 @@ def test_kmod_meas_ip1b2(_workdir_path):
         assert (np.abs(beta_meas-beta_prev[plane]))/beta_prev[plane] < LIMITS['Meas Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
+
 
 @pytest.mark.extended
 def test_kmod_meas_ip4b1(_workdir_path):
@@ -150,6 +153,7 @@ def test_kmod_meas_ip4b1(_workdir_path):
             assert (np.abs(beta_meas-betas[plane]))/betas[plane] < LIMITS['Meas Accuracy']
             beta_err_meas = results[f"{ERR}{BETA}{plane}"].loc[inst]
             assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
+
 
 @pytest.mark.extended
 def test_kmod_meas_ip4b2(_workdir_path):

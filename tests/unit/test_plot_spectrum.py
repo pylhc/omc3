@@ -12,6 +12,8 @@ from matplotlib.figure import Figure
 from omc3.plotting.plot_spectrum import main as plot_spectrum
 from omc3.plotting.spectrum.utils import PLANES, get_unique_filenames
 
+# Figure (capital F) does not handle the canvas for us so we need to force the backend to make sure
+# tests know what to do on every platform
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
 matplotlib.use("Agg")
 

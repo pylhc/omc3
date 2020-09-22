@@ -6,6 +6,8 @@ from omc3.tune_analysis.bbq_tools import (clean_outliers_moving_average,
                                           get_moving_average)
 from omc3.tune_analysis.fitting_tools import get_poly_fun
 
+# Figure (capital F) does not handle the canvas for us so we need to force the backend to make sure
+# tests know what to do on every platform
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
 matplotlib.use("Agg")
 
