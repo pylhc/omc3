@@ -21,7 +21,7 @@ DEPENDENCIES = [
     "matplotlib>=3.2.0",
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
     "numpy>=1.19.0",
-    "pandas>=0.25",
+    "pandas==0.25.*",
     "scipy>=1.5.0",
     "scikit-learn>=0.22.0",
     "tfs-pandas>=1.0",
