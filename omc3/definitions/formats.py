@@ -10,11 +10,11 @@ Recurring formats are defined here.
 from pathlib import Path
 from datetime import datetime
 
-TIME = "%Y_%m_%d@%H_%M_%S_%f"  # CERN default
-CONFIG_FILENAME = "{script:s}_{time:s}.ini"
+TIME: str = "%Y_%m_%d@%H_%M_%S_%f"  # CERN default
+CONFIG_FILENAME: str = "{script:s}_{time:s}.ini"
 
 
-def get_config_filename(script):
+def get_config_filename(script) -> str:
     """ Default Filename for config-files. Call from script with '__file__'."""
     return CONFIG_FILENAME.format(
         script=Path(script).name.split('.')[0],
