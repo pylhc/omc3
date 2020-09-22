@@ -78,7 +78,7 @@ def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_met
 @pytest.mark.extended
 @pytest.mark.parametrize(
     "compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-    drop_item(1, MEASURE_OPTICS_INPUT)
+    _drop_item(1, MEASURE_OPTICS_INPUT)
 )
 def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
     _test_prototype(slice(None, 3),
