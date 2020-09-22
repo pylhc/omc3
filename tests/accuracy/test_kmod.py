@@ -1,14 +1,16 @@
-import pytest
-from os.path import dirname, join, isdir, pardir
-import tfs
 import shutil
+from os.path import dirname, isdir, join, pardir
+
 import numpy as np
 import pytest
-from omc3.run_kmod import analyse_kmod
-from omc3.kmod.constants import BETA, ERR, STAR
+import tfs
+
 from omc3.definitions.constants import PLANES
+from omc3.kmod.constants import BETA, ERR, STAR
 from omc3.optics_measurements.constants import EXT
-from omc3.run_kmod import RESULTS_FILE_NAME, INSTRUMENTS_FILE_NAME, LSA_FILE_NAME 
+from omc3.run_kmod import (INSTRUMENTS_FILE_NAME, LSA_FILE_NAME,
+                           RESULTS_FILE_NAME, analyse_kmod)
+
 CURRENT_DIR = dirname(__file__)
 LIMITS = {'Accuracy': 1E-5,
           'Meas Accuracy': 0.05,

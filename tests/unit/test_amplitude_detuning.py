@@ -1,16 +1,21 @@
 import tempfile
 from pathlib import Path
 
+import matplotlib
 import pytest
 
 from omc3.amplitude_detuning_analysis import analyse_with_bbq_corrections
 from omc3.plotting.plot_amplitude_detuning import main as pltampdet
 from omc3.plotting.plot_bbq import main as pltbbq
 
+# Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
+matplotlib.use("Agg")
+
 
 @pytest.mark.basic
 def test_amplitude_detuning_outliers_filter():
     test_amplitude_detuning_full(method='outliers')
+
 
 @pytest.mark.basic
 def test_bbq_plot():
@@ -21,6 +26,7 @@ def test_bbq_plot():
         )
         assert fig is not None
         assert len(list(Path(out).glob("*.pdf"))) == 1
+
 
 @pytest.mark.basic
 def test_ampdet_plot():
@@ -61,6 +67,7 @@ def test_amplitude_detuning_full(method):
 
         assert len(list(Path(out).glob("*.tfs"))) == 2
         assert len([k for k, v in kick_df.headers.items() if k.startswith("ODR") and v != 0]) == 16
+
 
 @pytest.mark.extended
 def test_no_bbq_input():

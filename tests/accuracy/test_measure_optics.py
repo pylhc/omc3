@@ -1,10 +1,13 @@
+import itertools
 from os import listdir
 from os.path import abspath, dirname, isdir, isfile, join
 from shutil import rmtree
-import itertools
-import tfs
+
 import pytest
-from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
+import tfs
+
+from omc3.hole_in_one import \
+    _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.utils import stats

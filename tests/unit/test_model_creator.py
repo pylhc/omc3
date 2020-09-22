@@ -1,5 +1,6 @@
-from os.path import join, isdir, abspath, dirname, pardir
+from os.path import abspath, dirname, isdir, join, pardir
 from shutil import rmtree
+
 import pytest
 
 from omc3.model.constants import MODIFIERS_MADX
