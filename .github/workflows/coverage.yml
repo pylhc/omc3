@@ -1,0 +1,59 @@
+# Runs all tests and pushes coverage report to codeclimate
+name: Coverage
+
+defaults:
+  run:
+    shell: bash
+
+on: [push, pull_request]
+
+jobs:
+  coverage:
+    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:  # only latest python 3 on latest ubuntu
+        os: [ubuntu-latest]
+        python-version: [3.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Get full Python version
+        id: full-python-version
+        run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
+      - name: Set up cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Ensure cache is healthy
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: pip --version >/dev/null 2>&1 || rm -rf .venv
+
+      - name: Upgrade pip, setuptools and wheel
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+
+      - name: Install package
+        run: pip install '.[test]'
+
+      - name: Run all tests
+        run: python -m pytest -v
+
+      - name: Push Coverage to CodeClimate
+        if: ${{ success() }}  # only if tests were successful
+        uses: paambaati/codeclimate-action@v2.5.3
+        env:
+          CC_TEST_REPORTER_ID: ddd9a311ee312287c63200b8ab887053bb39bae63f4cc15b1a873f9ac3fee7cf
+        with:
+          coverageCommand: coverage xml
