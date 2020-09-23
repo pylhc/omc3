@@ -15,7 +15,7 @@ from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import phase
-from omc3.optics_measurements.constants import ERR, EXT
+from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
 
@@ -119,10 +119,11 @@ def _determine_line(rdt, plane):
 
 
 def add_freq_to_header(header, plane, rdt):
+    mod_header = header.copy()
     line = _determine_line(rdt, plane)
     freq = np.mod(line@np.array([header['Q1'], header['Q2'], 0]), 1)
-    header["FREQ"] = freq if freq <= 0.5 else 1 - freq
-    return header
+    mod_header["FREQ"] = freq if freq <= 0.5 else 1 - freq
+    return mod_header
 
 
 def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
@@ -148,11 +149,11 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
     df[f"PHASE"] = rdt_angles
     df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
-    df["AMP"], df[f"{ERR}AMP"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].to_numpy()
-    df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, "AMP"].to_numpy()
+    df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
+    df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
     # in old files there was "EAMP" and "PHASE_STD"
-    return df.loc[:, ["S", "COUNT", "AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
+    return df.loc[:, ["S", "COUNT", AMPLITUDE, f"{ERR}{AMPLITUDE}", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 
 
 def _add_tunes_if_in_second_turn(df, input_files, line, phase2):
