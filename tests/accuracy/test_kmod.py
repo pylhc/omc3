@@ -25,7 +25,7 @@ class ExtendedTests:
                      simulation=True,
                      no_sig_digits=True,
                      no_plots=False,
-                     ip='ip1',
+                     interaction_point='ip1',
                      cminus=0.0,
                      misalignment=0.0,
                      errorK=0.0,
@@ -49,7 +49,7 @@ class ExtendedTests:
                      simulation=True,
                      no_sig_digits=True,
                      no_plots=False,
-                     ip='ip5',
+                     interaction_point='ip5',
                      cminus=0.0,
                      misalignment=0.0,
                      errorK=0.0,
@@ -75,7 +75,7 @@ class ExtendedTests:
                      simulation=True,
                      no_sig_digits=True,
                      no_plots=False,
-                     ip='ip5',
+                     interaction_point='ip5',
                      cminus=0.0,
                      misalignment=0.0,
                      errorK=0.0,
@@ -103,7 +103,7 @@ class ExtendedTests:
                      no_sig_digits=True,
                      no_plots=False,
                      no_autoclean=True,
-                     ip='ip1',
+                     interaction_point='ip1',
                      cminus=0.0,
                      misalignment=0.0,
                      errorK=0.0,
@@ -128,7 +128,7 @@ class ExtendedTests:
                      simulation=False,
                      no_sig_digits=True,
                      no_plots=False,
-                     ip='ip1',
+                     interaction_point='ip1',
                      cminus=0.0,
                      misalignment=0.0,
                      errorK=0.0,
@@ -152,7 +152,7 @@ class ExtendedTests:
                      simulation=False,
                      no_sig_digits=True,
                      no_plots=False,
-                     ip='ip1',
+                     interaction_point='ip1',
                      cminus=0.0,
                      misalignment=0.0,
                      errorK=0.0,
@@ -277,6 +277,12 @@ def _workdir_path():
 
         if isdir(join(workdir, 'ip1B2')):
             shutil.rmtree(join(workdir, 'ip1B2'))
+
+        if isdir(join(workdir, 'ip5B1')):
+            shutil.rmtree(join(workdir, 'ip5B1'))
+
+        if isdir(join(workdir, 'ip5B2')):
+            shutil.rmtree(join(workdir, 'ip5B2'))
 
         if isdir(join(workdir, 'MQY.6R4.B1-MQM.7R4.B1')):
             shutil.rmtree(join(workdir, 'MQY.6R4.B1-MQM.7R4.B1'))

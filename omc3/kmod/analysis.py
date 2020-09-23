@@ -269,8 +269,8 @@ def get_BPM(kmod_input_params):
     }
 
     # Selecting BPMs
-    BPML = BPM_dict[kmod_input_params.ip.upper()][0] + '.' + kmod_input_params.beam.upper()
-    BPMR = BPM_dict[kmod_input_params.ip.upper()][1] + '.' + kmod_input_params.beam.upper()
+    BPML = BPM_dict[kmod_input_params.interaction_point.upper()][0] + '.' + kmod_input_params.beam.upper()
+    BPMR = BPM_dict[kmod_input_params.interaction_point.upper()][1] + '.' + kmod_input_params.beam.upper()
 
     return BPML, BPMR
 
@@ -343,7 +343,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, betast
     w = x[1]
 
     phase_adv_constraint = phase_constraint(kmod_input_params, plane)
-    if kmod_input_params.ip:
+    if kmod_input_params.interaction_point:
         BPML,BPMR = get_BPM(kmod_input_params)
         BPM_distance = get_BPM_distance(kmod_input_params,BPML,BPMR)
         phase_adv = phase_adv_from_kmod(BPM_distance, b, 0.0, w, 0.0)[0]
