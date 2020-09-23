@@ -66,7 +66,7 @@ def test_wrong_label(_tfs_wrong_label):
         luminosity_imbalance.main({'tfs': _tfs_wrong_label})
 
     msg = "The following required labels are not found in dataframe: "\
-          "IP5B1"
+          "ip5B1"
     assert msg in str(error.value)
 
 
@@ -74,7 +74,7 @@ def test_twice_label(_tfs_twice_label):
     with pytest.raises(KeyError) as error:
         luminosity_imbalance.main({'tfs': _tfs_twice_label})
 
-    msg = 'Found label IP1B1 several times. Expected only once'
+    msg = 'Found label ip1B1 several times. Expected only once'
     assert msg in str(error.value)
 
 
