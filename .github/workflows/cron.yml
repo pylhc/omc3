@@ -5,9 +5,9 @@ defaults:
   run:
     shell: bash
 
-on:  # Runs on master branch at 10am UTC time
+on:  # Runs on master branch on Mondays at 3am UTC time
   schedule:
-    - cron:  '* 10 * * *'
+    - cron:  '* 3 * * mon'
 
 jobs:
   tests:
