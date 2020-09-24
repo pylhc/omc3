@@ -1,6 +1,8 @@
 from math import sqrt
 from functools import reduce
 from operator import mul
+import pathlib
+import re
 
 import tfs
 from tfs.tools import significant_digits
@@ -17,23 +19,6 @@ LABEL = 'LABEL'  # Column containing the IP/Beam names
 BEAMS = ('B1', 'B2')
 IPS = ('ip1', 'ip5')
 LABELS = [f'{i}{b}' for i in IPS for b in BEAMS]
-
-
-def get_params():
-    return EntryPointParameters(
-            tfs=dict(
-                required=True,
-                type=str,
-                help="TFS file containing the β* and error for "
-                     "B{1,2}{H,V}IP{1,5}"
-            ),
-            inplace=dict(
-                required=False,
-                action='store_true',
-                help="Add the luminosity imbalance in the source TFS file as a"
-                     "header"
-            )
-    )
 
 
 def _validate_tfs(df):
@@ -77,7 +62,7 @@ def get_imbalance(df):
         average_beta = {}
         error = {}
         for p in PLANES:
-            average_beta[p] = row.sum(axis=0)[f'{BETASTAR}{p}'] / 2
+            average_beta[p] = 0.5 * row[f'{BETASTAR}{p}'].sum(axis=0)
             error[p] = 0.5 * sqrt((row[f'{ERR}{BETASTAR}{p}'] ** 2).sum(axis=0))
 
         # Compute the relative error for this IP
@@ -85,7 +70,7 @@ def get_imbalance(df):
           sqrt(sum([(error[p] ** 2) / (average_beta[p] ** 2) for p in PLANES]))
 
         # Get the effective beta
-        eff_beta[ip] = 1 / sqrt(1 / (reduce(mul, average_beta.values())))
+        eff_beta[ip] = sqrt(reduce(mul, average_beta.values()))
 
     # Compute the whole relative error
     relative_error = sum(rel_error.values())
@@ -111,36 +96,71 @@ def print_luminosity(res):
     LOG.info(f'{"Rel error IP5":22s}: {res["rel_error_ip5"]}')
 
 
-@entrypoint(get_params(), strict=True)
-def main(opt):
-    df = tfs.read_tfs(opt['tfs'])
-    _validate_tfs(df)
-
-    res = get_imbalance(df)
-
+def get_significant_digits(res):
     res['imbalance'], res['relative_error'] = significant_digits(
             res['imbalance'], res['relative_error'])
     res['eff_beta_ip1'], res['rel_error_ip1'] = significant_digits(
             res['eff_beta_ip1'], res['rel_error_ip1'])
     res['eff_beta_ip5'], res['rel_error_ip5'] = significant_digits(
             res['eff_beta_ip5'], res['rel_error_ip5'])
-
-    print_luminosity(res)
-
-    # Write to the source TFS file if asked
-    if opt['inplace']:
-        df.headers.update({"LUMINOSITY_IMBALANCE": res['imbalance'],
-                           "RELATIVE_ERROR": res['relative_error'],
-                           "EFF_BETA_IP1": res['eff_beta_ip1'],
-                           "REL_ERROR_IP1": res['rel_error_ip1'],
-                           "EFF_BETA_IP5": res['eff_beta_ip5'],
-                           "REL_ERROR_IP5": res['rel_error_ip5']
-                           })
-
-        tfs.write_tfs(opt['tfs'], df)
-
     return res
 
 
-if __name__ == "__main__":
-    main()
+def merge_tfs(directories, filename):
+    # Combine the data into one tfs
+    new_tfs = tfs.TfsDataFrame()
+    for d in directories:
+        path = d / filename
+        data = tfs.read_tfs(path)
+
+        new_tfs = new_tfs.append(data, ignore_index=True)
+
+    return new_tfs
+
+
+def loader_params():
+    params = EntryPointParameters()
+    params.add_parameter(name="kmod_dirs", type=pathlib.Path,
+                         nargs='+', required=True,
+                         help="Path to kmod directories with stored KMOD "
+                              "measurement files")
+    params.add_parameter(name="res_dir", type=pathlib.Path, required=True,
+                         help="Output directory where to write the result tfs")
+    return params
+
+
+@entrypoint(loader_params(), strict=True)
+def merge_and_copy_kmod_output(opt):
+    pattern = re.compile(".*ip[0-9]B[1-2]")
+
+    # Get the directories we need where the tfs are stored
+    ip_dir_names = [d for kmod in opt.kmod_dirs
+                    for d in kmod.glob('**/*')
+                    if pattern.match(d.name) and d.is_dir()]
+
+    # Combine the data into one tfs
+    new_data = merge_tfs(ip_dir_names, 'result.tfs')
+    
+    # Get the imbalance
+    _validate_tfs(new_data)
+    res = get_imbalance(new_data)
+    res = get_significant_digits(res)
+    print_luminosity(res)
+
+    # Combine the lsa data
+    lsa_tfs = merge_tfs(ip_dir_names, 'lsa_reuslts.tfs')
+
+    lsa_tfs.headers.update({"LUMINOSITY_IMBALANCE": res['imbalance'],
+                            "RELATIVE_ERROR": res['relative_error'],
+                            "EFF_BETA_IP1": res['eff_beta_ip1'],
+                            "REL_ERROR_IP1": res['rel_error_ip1'],
+                            "EFF_BETA_IP5": res['eff_beta_ip5'],
+                            "REL_ERROR_IP5": res['rel_error_ip5']
+                             })
+
+    # and write the resulting tfs
+    tfs.write(opt.res_dir / 'lsa_results.tfs', lsa_tfs)
+
+
+if __name__ == '__main__':
+    merge_and_copy_kmod_output()
