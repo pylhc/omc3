@@ -1,10 +1,11 @@
-from os.path import exists, isfile, join
+from os.path import exists, isfile, join, dirname, pardir, abspath
 
 import pytest
 
 from omc3 import madx_wrapper
 from omc3.utils.contexts import silence, temporary_dir
 
+LIB = abspath(join(dirname(__file__), pardir, pardir, "omc3", "model", "madx_macros"))
 
 @pytest.mark.basic
 def test_with_macro():
@@ -12,7 +13,7 @@ def test_with_macro():
          - Output_file is created.
     """
     content = "call,file='{}';\ncall,file='{}';\n".format(
-        join(madx_wrapper.LIB, "lhc.macros.madx"), join(madx_wrapper.LIB, "general.macros.madx"))
+        join(LIB, "lhc.macros.madx"), join(LIB, "general.macros.madx"))
 
     with temporary_dir() as tmpdir:
         outfile = join(tmpdir, "job.with_macro.madx")

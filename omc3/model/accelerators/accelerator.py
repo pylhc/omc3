@@ -126,7 +126,7 @@ class Accelerator(object):
         try:
             self.model = tfs.read(join(model_dir, TWISS_DAT), index="NAME")
         except IOError:
-            bpm_index = [idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)]  # <-- shouldnt startswith have an option which is the initial letter of BPM
+            bpm_index = [idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)]
             self.model = self.elements.loc[bpm_index, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
 

@@ -4,15 +4,9 @@ import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 
-import matplotlib
 import pytest
 
 from omc3.plotting.plot_tfs import plot
-
-# Figure (capital F) does not handle the canvas for us so we need to force the backend to make sure
-# tests know what to do on every platform
-# Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
-matplotlib.use("Agg")
 
 INPUT = Path(__file__).parent.parent / 'inputs' / 'optics_measurement' / 'example_output'
 DEBUG = False  # switch to local output instead of temp
@@ -20,7 +14,8 @@ DEBUG = False  # switch to local output instead of temp
 
 # Basic Tests are tested with plot_optics_measurements
 
-@pytest.mark.extended  # Usage Examples
+# Usage Examples ---
+@pytest.mark.extended
 def test_simple_plot_manual_planes_same_file():
     with _output_dir() as output_dir:
         figs = plot(
@@ -44,7 +39,6 @@ def test_simple_plot_manual_planes_same_file():
     assert len(figs) == 1
     for fig in figs.values():
         assert len(fig.axes) == 2
-
 
 @pytest.mark.extended
 def test_simple_plot_manual_planes_two_files():
@@ -70,15 +64,13 @@ def test_simple_plot_manual_planes_two_files():
     for fig in figs.values():
         assert len(fig.axes) == 1
 
-
-# Simple Tests ---
+    # Simple Tests ---
 @pytest.mark.extended
 def test_simple_plot():
     figs = simple_plot_tfs()
     assert len(figs) == 2
     for fig in figs.values():
         assert len(fig.axes) == 1
-
 
 @pytest.mark.extended
 def test_simple_plot_same_figure():
@@ -87,7 +79,6 @@ def test_simple_plot_same_figure():
     for fig in figs.values():
         assert len(fig.axes) == 2
 
-
 @pytest.mark.extended
 def test_simple_plot_same_axes():
     figs = simple_plot_tfs(same_axes=['planes'])
@@ -95,31 +86,26 @@ def test_simple_plot_same_axes():
     for fig in figs.values():
         assert len(fig.axes) == 1
 
-
-# check for wrong input ---
+    # check for wrong input ---
 @pytest.mark.extended
 def test_errors_too_many_filelabels():
     with pytest.raises(AttributeError):
         simple_plot_tfs(file_labels=['label1', 'label2'])
-
 
 @pytest.mark.extended
 def test_errors_too_many_xcolumns():
     with pytest.raises(AttributeError):
         simple_plot_tfs(x_columns=['A', 'B'])
 
-
 @pytest.mark.extended
 def test_errors_too_many_errorcolumns():
     with pytest.raises(AttributeError):
         simple_plot_tfs(error_columns=['A', 'B'])
 
-
 @pytest.mark.extended
 def test_errors_too_many_columnlabels():
     with pytest.raises(AttributeError):
         simple_plot_tfs(column_labels=['label1', 'label2'])
-
 
 @pytest.mark.extended
 def test_errors_same_options_same():
@@ -128,6 +114,7 @@ def test_errors_same_options_same():
 
 
 # Main plot (can be also used as example) ---
+
 def simple_plot_tfs(**kwargs):
     with _output_dir() as output_dir:
         default_args = dict(
@@ -149,6 +136,7 @@ def simple_plot_tfs(**kwargs):
 
 # Helper -----------------------------------------------------------------------
 
+
 @contextmanager
 def _output_dir():
     if DEBUG:
@@ -167,3 +155,4 @@ def _get_test_name():
         if s.function.startswith('test_'):
             return s.function
     raise AttributeError('Needs to be called downstream of a "test_" function')
+
