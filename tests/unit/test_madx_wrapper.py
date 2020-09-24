@@ -5,7 +5,7 @@ import pytest
 from omc3 import madx_wrapper
 from omc3.utils.contexts import silence, temporary_dir
 
-LIB = abspath(join(dirname(__file__), pardir, pardir, "model", "madx_macros"))
+LIB = abspath(join(dirname(__file__), pardir, pardir, "omc3", "model", "madx_macros"))
 
 @pytest.mark.basic
 def test_with_macro():
