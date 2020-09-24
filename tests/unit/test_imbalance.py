@@ -11,6 +11,8 @@ from omc3.scripts import luminosity_imbalance
 from omc3.scripts.luminosity_imbalance import BETASTAR, ERR
 
 CURRENT_DIR = Path(__file__).parent
+RESULTS = 'results.tfs'
+LSA_RESULTS = 'lsa_results.tfs'
 
 
 def test_result_tfs(_tfs_file):
@@ -25,43 +27,26 @@ def test_result_tfs(_tfs_file):
 
 
 def test_wrong_columns(_tfs_wrong_columns):
-    with pytest.raises(KeyError) as error:
-        luminosity_imbalance._validate_tfs(_tfs_wrong_columns)
-
-    msg = 'Expected columns in the TFS file not found. Expected columns: '
-    assert msg in str(error.value)
-
-    columns = [f'{BETASTAR}{p}' for p in PLANES] + \
-              [f'{ERR}{BETASTAR}{p}' for p in PLANES]
-    for column in columns:
-        assert column in str(error.value)
-
-
-def test_wrong_label(_tfs_wrong_label):
-    with pytest.raises(KeyError) as error:
-        luminosity_imbalance._validate_tfs(_tfs_wrong_label)
-
-    msg = "The following required labels are not found in dataframe: "\
-          "ip5B1"
-    assert msg in str(error.value)
+    res = luminosity_imbalance._validate_for_imbalance(_tfs_wrong_columns)
+    assert res == False
 
 
 def test_twice_label(_tfs_twice_label):
     with pytest.raises(KeyError) as error:
-        luminosity_imbalance._validate_tfs(_tfs_twice_label)
+        luminosity_imbalance._validate_for_imbalance(_tfs_twice_label)
 
     msg = 'Found label ip1B1 several times. Expected only once'
     assert msg in str(error.value)
 
 
 def test_incorrect_paths():
-    paths = [Path('IchBinAntonAusTirol'), Path('Pizza4Fromages')]
+    paths = [Path('IchBinDerAntonAusTirol'), Path('Pizza4Fromages')]
 
     with pytest.raises(Exception) as error:
         luminosity_imbalance.merge_and_copy_kmod_output({'kmod_dirs': paths,
                                                          'res_dir': Path('.')})
 
-    msg = 'All directories should account for a total of 4 ipBx directories inside'
+    msg = 'Directory IchBinDerAntonAusTirol does not exist'
     assert msg in str(error.value)
 
 
@@ -72,8 +57,8 @@ def test_lsa_merge(_tmp_dir):
     luminosity_imbalance.merge_and_copy_kmod_output({'kmod_dirs': paths,
                                                      'res_dir': _tmp_dir})
 
-    res_lsa_tfs = tfs.read_tfs(_tmp_dir / 'lsa_results.tfs')
-    control_tfs = tfs.read_tfs(base / 'lsa_results.tfs')
+    res_lsa_tfs = tfs.read_tfs(_tmp_dir / LSA_RESULTS)
+    control_tfs = tfs.read_tfs(base / LSA_RESULTS)
 
     assert res_lsa_tfs.equals(control_tfs)
 

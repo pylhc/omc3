@@ -11,6 +11,10 @@ from omc3.utils.logging_tools import get_logger
 from omc3.definitions.constants import PLANES
 from generic_parser import entrypoint, EntryPointParameters
 
+from omc3.run_kmod import LSA_FILE_NAME as LSA_RESULTS
+from omc3.run_kmod import RESULTS_FILE_NAME as RESULTS
+from omc3.run_kmod import EXT
+
 LOG = get_logger(__name__)
 
 BETASTAR = 'BETSTAR'
@@ -21,17 +25,18 @@ IPS = ('ip1', 'ip5')
 LABELS = [f'{i}{b}' for i in IPS for b in BEAMS]
 
 
-def _validate_tfs(df):
+def _validate_for_imbalance(df):
     # First validate the labels, which correspond to the IP and Beam
     expected_labels = set(LABELS)
     not_found_labels = [label for label in expected_labels
                         if not df[LABEL].str.contains(label).any()]
 
     if any(not_found_labels):
-        msg = 'The following required labels are not found in dataframe:' \
-              f' {", ".join(not_found_labels)}'
-        LOG.error(msg)
-        raise KeyError(msg)
+        #msg = 'The following required labels are not found in dataframe:' \
+        #      f' {", ".join(not_found_labels)}'
+        #LOG.error(msg)
+        #raise KeyError(msg)
+        return False
 
     # Check if we got several times the same labels
     for label in LABELS:
@@ -44,10 +49,13 @@ def _validate_tfs(df):
     expected_columns = [f'{BETASTAR}{p}' for p in PLANES] + \
                        [f'{ERR}{BETASTAR}{p}' for p in PLANES]
     if not all([column in df.columns for column in expected_columns]):
-        msg = 'Expected columns in the TFS file not found. Expected ' \
-              f'columns: {expected_columns}'
-        LOG.error(msg)
-        raise KeyError(msg)
+        #msg = 'Expected columns in the TFS file not found. Expected ' \
+        #      f'columns: {expected_columns}'
+        #LOG.error(msg)
+        #raise KeyError(msg)
+        return False
+    
+    return True
 
 
 def get_imbalance(df):
@@ -119,14 +127,18 @@ def merge_tfs(directories, filename):
 
 
 def get_ip_dir_names(kmod_dirs):
+    # Check directories first
+    for d in kmod_dirs:
+        print(d)
+        if not d.exists():
+            msg = f'Directory {d} does not exist'
+            LOG.error(msg)
+            raise Exception(msg)
+
     pattern = re.compile(".*ip[0-9]B[1-2]")
     ip_dir_names = [d for kmod in kmod_dirs
                     for d in kmod.glob('**/*')
                     if pattern.match(d.name) and d.is_dir()]
-
-    if len(ip_dir_names) != 4:
-        raise Exception('All directories should account for a total of 4 ipBx '
-                        'directories inside')
 
     return ip_dir_names
 
@@ -148,27 +160,27 @@ def merge_and_copy_kmod_output(opt):
     ip_dir_names = get_ip_dir_names(opt.kmod_dirs)
 
     # Combine the data into one tfs
-    new_data = merge_tfs(ip_dir_names, 'results.tfs')
-
-    # Get the imbalance
-    _validate_tfs(new_data)
-    res = get_imbalance(new_data)
-    res = get_significant_digits(res)
-    print_luminosity(res)
+    new_data = merge_tfs(ip_dir_names, f'{RESULTS}{EXT}')
 
     # Combine the lsa data
-    lsa_tfs = merge_tfs(ip_dir_names, 'lsa_results.tfs')
+    lsa_tfs = merge_tfs(ip_dir_names, f'{LSA_RESULTS}{EXT}')
 
-    lsa_tfs.headers.update({"LUMINOSITY_IMBALANCE": res['imbalance'],
-                            "RELATIVE_ERROR": res['relative_error'],
-                            "EFF_BETA_IP1": res['eff_beta_ip1'],
-                            "REL_ERROR_IP1": res['rel_error_ip1'],
-                            "EFF_BETA_IP5": res['eff_beta_ip5'],
-                            "REL_ERROR_IP5": res['rel_error_ip5']
-                            })
+    # If the TFS data contains everything we need: get the imbalance
+    if _validate_for_imbalance(new_data):
+        res = get_imbalance(new_data)
+        res = get_significant_digits(res)
+        print_luminosity(res)
+
+        lsa_tfs.headers.update({"LUMINOSITY_IMBALANCE": res['imbalance'],
+                                "RELATIVE_ERROR": res['relative_error'],
+                                "EFF_BETA_IP1": res['eff_beta_ip1'],
+                                "REL_ERROR_IP1": res['rel_error_ip1'],
+                                "EFF_BETA_IP5": res['eff_beta_ip5'],
+                                "REL_ERROR_IP5": res['rel_error_ip5']
+                                })
 
     # and write the resulting tfs
-    tfs.write(opt.res_dir / 'lsa_results.tfs', lsa_tfs)
+    tfs.write(opt.res_dir / f'{LSA_RESULTS}{EXT}', lsa_tfs)
 
 
 if __name__ == '__main__':
