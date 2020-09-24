@@ -57,6 +57,8 @@ from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
+# Registering converters for datetime plotting as pandas won't do it for us automatically anymore
+register_matplotlib_converters()
 
 def get_params():
     params = EntryPointParameters()
