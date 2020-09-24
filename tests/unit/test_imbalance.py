@@ -65,6 +65,19 @@ def test_incorrect_paths():
     assert msg in str(error.value)
 
 
+def test_lsa_merge(_tmp_dir):
+    base =  CURRENT_DIR.parent / 'inputs' / 'lumi_imbalance'
+    paths = [base / 'kmod_ip1', base / 'kmod_ip5']
+
+    luminosity_imbalance.merge_and_copy_kmod_output({'kmod_dirs': paths,
+                                                     'res_dir': _tmp_dir})
+
+    res_lsa_tfs = tfs.read_tfs(_tmp_dir / 'lsa_results.tfs')
+    control_tfs = tfs.read_tfs(base / 'lsa_results.tfs')
+
+    assert res_lsa_tfs.equals(control_tfs)
+
+
 def _get_file(tmp_path, path):
     # Copy the file to a temp directory so that we don't modify the source
     src = CURRENT_DIR.parent / 'inputs' / 'lumi_imbalance' / path
@@ -75,6 +88,14 @@ def _get_file(tmp_path, path):
 
     shutil.copyfile(src, dst)
     return tfs.read_tfs(dst)
+
+
+@pytest.fixture()
+def _tmp_dir(tmp_path):
+    d = tmp_path / 'imbalance'
+    d.mkdir()
+
+    return d
 
 
 @pytest.fixture()
