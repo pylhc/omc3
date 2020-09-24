@@ -109,7 +109,7 @@ def get_significant_digits(res):
 def merge_tfs(directories, filename):
     # Combine the data into one tfs
     new_tfs = tfs.TfsDataFrame()
-    for d in directories:
+    for d in sorted(directories):
         path = d / filename
         data = tfs.read_tfs(path)
 

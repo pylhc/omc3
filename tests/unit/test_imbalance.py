@@ -75,13 +75,6 @@ def test_lsa_merge(_tmp_dir):
     res_lsa_tfs = tfs.read_tfs(_tmp_dir / 'lsa_results.tfs')
     control_tfs = tfs.read_tfs(base / 'lsa_results.tfs')
 
-    from omc3.utils.logging_tools import get_logger
-    LOG = get_logger(__name__)
-    LOG.error(str(res_lsa_tfs))
-    LOG.error(str(control_tfs))
-
-    assert False
-
     assert res_lsa_tfs.equals(control_tfs)
 
 
