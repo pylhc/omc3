@@ -1,4 +1,4 @@
-from os.path import exists, isfile, join, dirname, pardir
+from os.path import exists, isfile, join, dirname, pardir, abspath
 
 import pytest
 
