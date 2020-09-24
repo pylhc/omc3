@@ -22,7 +22,6 @@ from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
-LIB = abspath(join(dirname(__file__), "lib"))
 _LOCAL_PATH = join(dirname(__file__), "bin")
 
 if "darwin" in sys.platform:

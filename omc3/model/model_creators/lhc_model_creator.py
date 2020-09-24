@@ -65,7 +65,7 @@ class LhcModelCreator(object):
             cls._prepare_fullresponse(lhc_instance, output_path)
         macros_path = join(output_path, MACROS_DIR)
         iotools.create_dirs(macros_path)
-        lib_path = join(os.path.dirname(__file__), os.pardir, os.pardir, "lib")
+        lib_path = join(os.path.dirname(__file__), os.pardir, "madx_macros")
         shutil.copy(join(lib_path, GENERAL_MACROS), join(macros_path, GENERAL_MACROS))
         shutil.copy(join(lib_path, LHC_MACROS), join(macros_path, LHC_MACROS))
         if lhc_instance.energy is not None:

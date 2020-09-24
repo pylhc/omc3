@@ -1,0 +1,629 @@
+/*
+* Macros for runI and runII of the LHC
+*/
+
+!requires general.macros.madx
+
+/*
+* Sets the sequences as cycles at their injection point
+*/
+cycle_sequences(): macro = {
+    seqedit, sequence=LHCB1;
+    flatten;               
+    cycle, start=MSIA.EXIT.B1;
+    endedit;
+    
+    seqedit, sequence=LHCB2;
+    flatten;
+    cycle, start=MKI.A5R8.B2;
+    endedit;
+};
+
+
+/*
+* Define the default nominal beams for the LHC beam1 and beam2.
+*/
+define_nominal_beams(): macro = {
+    beam, sequence=LHCB1, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;
+    beam, sequence=LHCB2, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=-1;
+};
+
+
+/*
+* Sets the default crossing scheme
+*/
+set_default_crossing_scheme(): macro = {
+    !*** IP orbit settings ***
+    on_x1    := 0;
+    on_sep1  := 0;
+    on_o1    := 0;
+    on_oh1   := 0;
+    on_ov1   := 0;
+    on_ssep1 := on_sep1;
+    on_xx1   := on_x1 ;
+
+    on_x2   := 0;
+    on_sep2 := 0;
+    on_o2   := 0;
+    on_a2   := 0;
+    on_oe2  := 0;
+    on_oh2  := 0;
+    on_ov2  := 0;
+
+    on_x5  := 0;
+    on_sep5:= 0;
+    on_o5  := 0;
+    on_oh5 := 0;
+    on_ov5 := 0;
+
+    on_ssep5 := on_sep5;
+    on_xx5  := on_x5;
+
+    on_x8   := 0;
+    on_sep8 := 0;
+    on_o8   := 0;
+    on_a8   := 0;
+    on_oh8  := 0;
+    on_ov8  := 0;
+
+    !*** Experiment state ***
+    on_alice:=0;
+    on_lhcb:=0;
+    on_sol_atlas:=0;
+    on_sol_alice:=0;
+    on_sol_cms:=0;
+};
+
+/*
+* Sets the Crossing Scheme ON
+*/
+set_crossing_scheme_ON(): macro = {
+!*** IP orbit settings ***
+    on_x1    := 145;
+    on_sep1  := 0;
+    on_o1    := 0;
+    on_oh1   := 0;
+    on_ov1   := 0;
+    on_ssep1 := on_sep1;
+    on_xx1   := on_x1 ;
+
+    on_x2   := 0;
+    on_sep2 := 0;
+    on_o2   := 0;
+    on_oe2  := 0;
+    on_a2   := 0;
+
+    on_x5  := 145;
+    on_sep5:= 0;
+    on_o5  := 0;
+    on_oh5 := 0;
+    on_ov5 := -1.8;
+
+    on_ssep5 := on_sep5;
+    on_xx5  := on_x5;
+
+    on_x8   := 0;
+    on_sep8 := 0;
+    on_o8   := 0;
+    on_a8   := 0;
+
+    !*** Experiment state ***
+    on_alice:=0;
+    on_lhcb:=0;
+    on_sol_atlas:=0;
+    on_sol_alice:=0;
+    on_sol_cms:=0;
+
+    on_disp = 1;
+};
+
+
+
+/*
+* Searches for the tunes with integer part and writes them to 
+* total_qx and total_qy.
+* If the integer part is already given then: total_qz = qz.
+* If qxb1, qyb1, qxb2 and qyb2 are defined it will use their integer part.
+* In the last case it will launch a twiss command and get the integer
+* part of the tunes from the summary tables.
+* @param nqx: The horizontal tune to use.
+* @param nqy: The vertical tune to use.
+* @param beam_number: The beam to use either 1 or 2.
+*/
+find_complete_tunes(nqx, nqy, beam_number): macro = {
+    int_qx = floor(nqx);
+    int_qy = floor(nqy);
+    if(int_qx == 0 || int_qx == 0){
+        if(qxbbeam_number <> 0 && qybbeam_number <> 0 ){
+            int_qx = floor(qxbbeam_number);
+            int_qy = floor(qybbeam_number);
+        }else{
+            use, sequence=LHCBbeam_number;
+            twiss;
+            int_qx = floor(table(summ, q1));
+            int_qy = floor(table(summ, q2));
+        }
+    }
+    total_qx = int_qx + frac(nqx);
+    total_qy = int_qy + frac(nqy);
+};
+
+
+/*
+* Performs the matching of the LHC tunes.
+* @param nqx: The horizontal tune to match to.
+* @param nqy: The vertical tune to match to.
+* @param beam_number: The beam to use either 1 or 2.
+*/
+match_tunes(nqx, nqy, beam_number): macro = {
+    exec, find_complete_tunes(nqx, nqy, beam_number);
+    match;
+    vary, name=KQTD.Bbeam_number;
+    vary, name=KQTF.Bbeam_number;
+    constraint, range=#E, mux=total_qx, muy=total_qy;
+    lmdif;
+    endmatch;
+};
+
+
+/*
+* Performs the matching of the LHC tunes, adapted to ATS optics.
+* @param qx: The horizontal tune to match to.
+* @param qy: The vertical tune to match to.
+* @param beam_number: The beam to use either 1 or 2.
+*/
+match_tunes_ats(nqx, nqy, beam_number): macro = {
+    exec, find_complete_tunes(nqx, nqy, beam_number);
+    if (ARC_SQUEEZE == 1.0){
+        match;
+        vary, name=dQx.bbeam_number_sq;
+        vary, name=dQy.bbeam_number_sq;
+        constraint, range=#E, mux=total_qx, muy=total_qy;
+        lmdif;
+        endmatch;
+
+    } else {
+        match;
+        vary, name=dQx.bbeam_number;
+        vary, name=dQy.bbeam_number;
+        constraint, range=#E, mux=total_qx, muy=total_qy;
+        lmdif;
+        endmatch;
+    }
+};
+
+/*
+* Installs the AC dipole into the LHC sequence, subsequent twiss calls
+* will take the AC dipoles effects into account.
+* @param natural_qx: Fractional part of the natural horizontal tune.
+* @param natural_qy: Fractional part of the natural vertical tune.
+* @param driven_qx: Fractional part of the driven horizontal tune.
+* @param driven_qy: Fractional part of the driven vertical tune.
+* @param beam_number: LHC beam number, either 1 or 2.
+*/
+install_ac_dipole(natural_qx, natural_qy, driven_qx, driven_qy, beam_number): macro = {
+    Qx = natural_qx;
+    Qxd = driven_qx;
+    
+    Qy = natural_qy;
+    Qyd = driven_qy;
+    
+    betxac=table(twiss, MKQA.6L4.Bbeam_number, BEAM, betx);
+    betyac=table(twiss, MKQA.6L4.Bbeam_number, BEAM, bety);
+
+    hacmap21=2*(cos(2*pi*Qxd)-cos(2*pi*Qx))/(betxac*sin(2*pi*Qx));
+    vacmap43=2*(cos(2*pi*Qyd)-cos(2*pi*Qy))/(betyac*sin(2*pi*Qy));
+    
+    hacmap: matrix, l=0, rm21=hacmap21;
+    vacmap: matrix, l=0, rm43=vacmap43;
+    
+    seqedit, sequence=LHCBbeam_number;
+        flatten;
+        install, element=hacmap, at=1.583/2, from=MKQA.6L4.Bbeam_number;
+        install, element=vacmap, at=1.583/2, from=MKQA.6L4.Bbeam_number;
+    endedit;
+
+    use, period=LHCBbeam_number;
+}
+
+
+/*
+* Installs the AC dipole as an element to use with MAD-X track 
+* into the LHC sequence.
+* @param n_qx: Fractional part of the natural horizontal tune.
+* @param n_qy: Fractional part of the natural vertical tune.
+* @param d_qx: Fractional part of the driven horizontal tune.
+* @param d_qy: Fractional part of the driven vertical tune.
+* @param beam_number: LHC beam number, either 1 or 2.
+*/
+install_acd_as_element(n_qx, n_qy, d_qx, d_qy, beam_number, r1, r2, r3, r4): macro = {
+    pbeam = beam%lhcbbeam_number->pc;
+    betxac=table(twiss, MKQA.6L4.Bbeam_number, BEAM, betx);
+    betyac=table(twiss, MKQA.6L4.Bbeam_number, BEAM, bety);
+
+    Qx = n_qx;
+    Qy = n_qy;
+
+    Qxd = d_qx;
+    Qyd = d_qy;
+
+    ampx = 1;    !-- unit: [mm]
+    ampy = 1;    !-- unit: [mm]
+    MKACH.6L4.Bbeam_number: hacdipole, l=0, freq=Qxd, lag=0,
+        volt=0.042*pbeam*abs(Qxd-Qx)/sqrt(180.0*betxac)*ampx,
+        ramp1=r1, ramp2=r2, ramp3=r3, ramp4=r4;
+    MKACV.6L4.Bbeam_number: vacdipole, l=0, freq=Qyd, lag=0,
+        volt=0.042*pbeam*abs(Qyd-Qy)/sqrt(177.0*betyac)*ampy,
+        ramp1=r1, ramp2=r2, ramp3=r3, ramp4=r4;
+
+    seqedit, sequence=LHCBbeam_number;
+        flatten;
+        install, element=MKACH.6L4.Bbeam_number, at=0.0, from=MKQA.6L4.Bbeam_number;
+        install, element=MKACV.6L4.Bbeam_number, at=0.0, from=MKQA.6L4.Bbeam_number;
+    endedit;
+
+    use, period=LHCBbeam_number;
+}
+
+install_adt_as_element(n_qx, n_qy, d_qx, d_qy, beam_number, r_1, r_2, r_3, r_4): MACRO = {
+	if(beam_number == 1){
+		exec, install_adt_as_element_b1(n_qx, n_qy, d_qx, d_qy, r_1, r_2, r_3, r_4);
+	}else if(beam_number == 2){
+		exec, install_adt_as_element_b2(n_qx, n_qy, d_qx, d_qy, r_1, r_2, r_3, r_4);
+	}
+}
+
+install_adt_as_element_b1(n_qx, n_qy, d_qx, d_qy, r_1, r_2, r_3, r_4): MACRO = {
+	USE, sequence=LHCB1;
+     s_of_ADTH = (table(twiss,ADTKH.B5L4.B1,s) - table(twiss,ADTKH.C5L4.B1,s))/2;
+     s_of_ADTV = (table(twiss,ADTKV.B5R4.B1,s) - table(twiss,ADTKV.C5R4.B1,s))/2;
+     ADTHm.B1: MARKER;
+     ADTVm.B1: MARKER;
+
+
+     SEQEDIT, sequence=LHCB1;
+         FLATTEN;
+         INSTALL, element=ADTHm.B1, at=s_of_ADTH, from=ADTKH.C5L4.B1;
+         INSTALL, element=ADTVm.B1, at=s_of_ADTV, from=ADTKV.C5R4.B1;
+     ENDEDIT;
+     
+     USE, sequence=lhcB1;
+
+     TWISS;
+
+     pbeam = beam%lhcb1->pc;
+     betxac=table(twiss,ADTHm.B1,betx);
+     betyac=table(twiss,ADTVm.B1,bety);
+
+
+
+     Qx = n_qx;
+     Qy = n_qy;
+
+     Qxd = d_qx;
+     Qyd = d_qy;
+
+     ampx=1;    !-- unit: [mm]
+     ampy=1;    !-- unit: [mm]
+     ADTHor.C5L4.B1: hacdipole, l=0, freq=Qxd, lag=0, volt=0.042*pbeam*abs(Qxd-Qx)/sqrt(180.0*betxac)*ampx,
+         ramp1=r_1, ramp2=r_2, ramp3=r_3, ramp4=r_4;
+     ADTVert.C5R4.B1: vacdipole, l=0, freq=Qyd, lag=0, volt=0.042*pbeam*abs(Qyd-Qy)/sqrt(177.0*betyac)*ampy,
+         ramp1=r_1, ramp2=r_2, ramp3=r_3, ramp4=r_4;
+
+     SEQEDIT, sequence=lhcB1; FLATTEN;
+       INSTALL, element=ADTHor.C5L4.B1, at=0.0, from=ADTHm.B1;
+       INSTALL, element=ADTVert.C5R4.B1, at=0.0, from=ADTVm.B1;
+     ENDEDIT;
+
+     USE, sequence=lhcB1;
+}
+
+install_adt_as_element_b2(n_qx, n_qy, d_qx, d_qy, r_1, r_2, r_3, r_4): MACRO = {
+	USE, sequence=LHCB2;
+     s_of_ADTH = (table(twiss,ADTKH.B5R4.B2,s) - table(twiss,ADTKH.C5R4.B2,s))/2;
+     s_of_ADTV = (table(twiss,ADTKV.B5L4.B2,s) - table(twiss,ADTKV.C5L4.B2,s))/2;
+     ADTHm.B2: MARKER;
+     ADTVm.B2: MARKER;
+
+
+     SEQEDIT, sequence=LHCB2;
+         FLATTEN;
+         INSTALL, element=ADTHm.B2, at=s_of_ADTH, from=ADTKH.C5R4.B2;
+         INSTALL, element=ADTVm.B2, at=s_of_ADTV, from=ADTKV.C5L4.B2;
+     ENDEDIT;
+     
+     USE, sequence=lhcB2;
+
+     TWISS;
+
+     pbeam = beam%lhcb2->pc;
+     betxac=table(twiss,ADTHm.B2,betx);
+     betyac=table(twiss,ADTVm.B2,bety);
+
+
+
+     Qx = n_qx;
+     Qy = n_qy;
+
+     Qxd = d_qx;
+     Qyd = d_qy;
+
+     ampx=1;    !-- unit: [mm]
+     ampy=1;    !-- unit: [mm]
+     ADTHor.C5R4.B2: hacdipole, l=0, freq=Qxd, lag=0, volt=0.042*pbeam*abs(Qxd-Qx)/sqrt(180.0*betxac)*ampx,
+         ramp1=r_1, ramp2=r_2, ramp3=r_3, ramp4=r_4;
+     ADTVert.C5L4.B2: vacdipole, l=0, freq=Qyd, lag=0, volt=0.042*pbeam*abs(Qyd-Qy)/sqrt(177.0*betyac)*ampy,
+         ramp1=r_1, ramp2=r_2, ramp3=r_3, ramp4=r_4;
+
+     SEQEDIT, sequence=lhcB2; FLATTEN;
+       INSTALL, element=ADTHor.C5R4.B2, at=0.0, from=ADTHm.B2;
+       INSTALL, element=ADTVert.C5L4.B2, at=0.0, from=ADTVm.B2;
+     ENDEDIT;
+
+     USE, sequence=lhcB2;
+}
+
+install_adt_ac_dipole(natural_qx, natural_qy, driven_qx, driven_qy, beam_number): macro = {
+
+    if (beam_number == 1) {
+        betxac=table(twiss,ADTKH.C5L4.B1,betx);
+        betyac=table(twiss,ADTKV.C5R4.B1,bety);
+        hacmap21 = 2 * (cos(2 * pi * driven_qx) - cos(2 * pi * natural_qx)) / (betxac * sin(2 * pi * natural_qx));
+        vacmap43 = 2 * (cos(2 * pi * driven_qy) - cos(2 * pi * natural_qy)) / (betyac * sin(2 * pi * natural_qy));
+        hacmap: matrix, l=0, rm21=hacmap21;
+        vacmap: matrix, l=0, rm43=vacmap43;
+        seqedit, sequence=LHCBbeam_number;
+            flatten;
+            install, element=hacmap, at=0, from=ADTKH.C5L4.B1;
+            install, element=vacmap, at=0, from=ADTKV.C5R4.B1;
+        endedit;
+    }
+    else if (beam_number == 2) {
+        betxac=table(twiss,ADTKH.C5R4.B2,betx);
+        betyac=table(twiss,ADTKV.C5L4.B2,bety);
+        hacmap21 = 2 * (cos(2 * pi * driven_qx) - cos(2 * pi * natural_qx)) / (betxac * sin(2 * pi * natural_qx));
+        vacmap43 = 2 * (cos(2 * pi * driven_qy) - cos(2 * pi * natural_qy)) / (betyac * sin(2 * pi * natural_qy));
+        hacmap: matrix, l=0, rm21=hacmap21;
+        vacmap: matrix, l=0, rm43=vacmap43;
+        seqedit, sequence=LHCBbeam_number;
+            flatten;
+            install, element=hacmap, at=0, from=ADTKH.C5R4.B2;
+            install, element=vacmap, at=0, from=ADTKV.C5L4.B2;
+        endedit;
+    }
+     
+  
+    use, period=LHCBbeam_number;
+}
+                                 
+
+/*
+* Computes the twiss file affected by the AC dipole.
+* @param natural_qx: Fractional part of the natural horizontal tune.
+* @param natural_qy: Fractional part of the natural vertical tune.
+* @param driven_qx: Fractional part of the driven horizontal tune.
+* @param driven_qy: Fractional part of the driven vertical tune.
+* @param beam_number: LHC beam number, either 1 or 2.
+* @param output_file: path to the file to write, it has to be input in "" to
+* preserve upper case characters.
+* @param dpp: delta p / p to use in the twiss command.
+*/
+twiss_ac_dipole(natural_qx, natural_qy, driven_qx, driven_qy, beam_number, output_file, dpp): macro = {
+    exec, install_ac_dipole(natural_qx, natural_qy, driven_qx, driven_qy, beam_number);
+    exec, do_twiss_monitors(LHCBbeam_number, output_file, dpp);
+};
+
+twiss_adt(natural_qx, natural_qy, driven_qx, driven_qy, beam_number, output_file, dpp): macro = {
+    exec, install_adt_ac_dipole(natural_qx, natural_qy, driven_qx, driven_qy, beam_number);
+    exec, do_twiss_monitors(LHCBbeam_number, output_file, dpp);
+};
+
+
+
+/*
+* Special for TOTEM Optics.
+* Match Tune to collision values using main quads.
+* Match Chromaticity to nominal 2.0 values.
+*/
+high_beta_matcher(): macro = {
+    use, sequence=lhcb1;
+    use, sequence=lhcb2;
+    
+    match,sequence=lhcb1, lhcb2;
+    global, q1=64.31, q2=59.32;
+    vary, name=KQF,step=0.000001;
+    vary, name=KQD,step=0.000001;
+    lmdif,calls=500,tolerance=1.0e-20;
+    endmatch;
+    
+    match,sequence=lhcb1, lhcb2;
+    global, dq1=2.0, dq2=2.0;
+    vary, name=KSF.B1,step=0.000001;
+    vary, name=KSD.B1,step=0.000001;
+    vary, name=KSF.B2,step=0.000001;
+    vary, name=KSD.B2,step=0.000001;
+    lmdif,calls=500,tolerance=1.0e-20;
+    endmatch;
+    
+    match,sequence=lhcb1, lhcb2;
+    global, q1=64.31, q2=59.32;
+    vary, name=KQF,step=0.000001;
+    vary, name=KQD,step=0.000001;
+    lmdif,calls=500,tolerance=1.0e-20;
+    endmatch;
+    
+    return;
+}
+
+
+/*
+* Selects the LHC IPs only.
+*/
+select_lhc_ips(): macro = {
+    select, flag=twiss, clear;
+    select, flag=twiss, pattern = "^IP[1-8]$";
+}
+
+
+/*
+* Simple twiss file output with only the LHC IPs.
+* @param sequence: name of the sequence to use.
+* @param output_file: path to the file to write, it has to be input in "" to
+* preserve upper case characters.
+* @param dpp: delta p / p to use in the twiss command.
+*/
+do_twiss_lhc_ips(use_sequence, output_file, dpp): macro = {
+    exec, select_lhc_ips();
+    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+};
+
+
+/*
+* Redefining skew quads l,r from arc for ATS MD
+*/
+full_response_ats(): macro = {
+    
+    !!!!!!!!!!!!!!!!!!!!
+    ! b1
+    !!!!!!!!!!!!!!!!!!!!
+    
+    kqs.r1l2b1=0;
+    kqs.r5l6b1=0;
+    kqs.r7l8b1=0;
+    
+    kqs.r1b1:=kqs.r1l2b1;
+    kqs.l2b1:=kqs.r1l2b1;
+    
+    kqs.r5b1:=kqs.r5l6b1;
+    kqs.l6b1:=kqs.r5l6b1;
+    
+    
+    kqs.r7b1:=kqs.r7l8b1;
+    kqs.l8b1:=kqs.r7l8b1;
+    
+    
+    !!!!!!!!!!!!!!!!!!!!
+    ! b2
+    !!!!!!!!!!!!!!!!!!!!
+    
+    kqs.r2l3b2=0;
+    kqs.r4l5b2=0;
+    kqs.r6l7b2=0;
+    kqs.r8l1b2=0;
+    
+    kqs.r2b2:=kqs.r2l3b2;
+    kqs.l3b2:=kqs.r2l3b2;
+    
+    kqs.r4b2:=kqs.r4l5b2;
+    kqs.l5b2:=kqs.r4l5b2;
+    
+    kqs.r6b2:=kqs.r6l7b2;
+    kqs.l7b2:=kqs.r6l7b2;
+    
+    kqs.r8b2:=kqs.r8l1b2;
+    kqs.l1b2:=kqs.r8l1b2;
+}
+
+/*
+* Coupling knob for both beams, evaluated at IP7. 
+* @param beam_number: The beam to use either 1 or 2.
+*/
+coupling_knob(beam_number): macro = {
+    if(beam_number == 1){
+        startVal_kqs.r7b1=kqs.r7b1;
+        kqs.r7b1:=startVal_kqs.r7b1 - b1_re_ip7_knob * 0.02014185827   + b1_im_ip7_knob *   0.01620130394 ;
+        
+        startVal_kqs.r5b1=kqs.r5b1;
+        kqs.r5b1:=startVal_kqs.r5b1 - b1_re_ip7_knob * 0.02499588911    - b1_im_ip7_knob *  0.02934398871 ;
+        
+        startVal_kqs.r3b1=kqs.r3b1;
+        kqs.r3b1:=startVal_kqs.r3b1 - b1_re_ip7_knob * 0.02168476823    - b1_im_ip7_knob *  0.02294503443 ;
+        
+        startVal_kqs.r1b1=kqs.r1b1;
+        kqs.r1b1:=startVal_kqs.r1b1 - b1_re_ip7_knob * 0.01546232447    - b1_im_ip7_knob * 0.002517989547 ;
+        
+        startVal_kqs.l8b1=kqs.l8b1;
+        kqs.l8b1:=startVal_kqs.l8b1 - b1_re_ip7_knob * 0.02014185827    + b1_im_ip7_knob *   0.01620130394 ;
+        
+        startVal_kqs.l6b1=kqs.l6b1;
+        kqs.l6b1:=startVal_kqs.l6b1 - b1_re_ip7_knob * 0.02499588911    - b1_im_ip7_knob *  0.02934398871 ;
+        
+        startVal_kqs.l4b1=kqs.l4b1;
+        kqs.l4b1:=startVal_kqs.l4b1 - b1_re_ip7_knob * 0.02168476823    - b1_im_ip7_knob *  0.02294503443 ;
+        
+        startVal_kqs.l2b1 =kqs.l2b1;
+        kqs.l2b1:=startVal_kqs.l2b1 - b1_re_ip7_knob * 0.01546232447    - b1_im_ip7_knob * 0.002517989547 ;
+        
+        startVal_kqs.a81b1 =kqs.a81b1;
+        kqs.a81b1:=startVal_kqs.a81b1 + b1_re_ip7_knob *  0.02831612456   - b1_im_ip7_knob *   0.01300153444;
+        
+        startVal_kqs.a67b1 =kqs.a67b1;
+        kqs.a67b1:=startVal_kqs.a67b1 - b1_re_ip7_knob * 0.004969661125   + b1_im_ip7_knob *   0.009335016552;
+        
+        startVal_kqs.a45b1 = kqs.a45b1;
+        kqs.a45b1:=startVal_kqs.a45b1 + b1_re_ip7_knob *  0.02070614029   - b1_im_ip7_knob *  0.002069719464;
+        
+        startVal_kqs.a23b1 = kqs.a23b1;
+        kqs.a23b1:=startVal_kqs.a23b1 + b1_re_ip7_knob *  0.02602337014   - b1_im_ip7_knob *  0.003672896065;
+    }elseif(beam_number == 2){
+        startVal_kqs.r2b2 = kqs.r2b2;
+        kqs.r2b2:=startVal_kqs.r2b2 + b2_im_ip7_knob * 0.001827918176  + b2_re_ip7_knob *   0.01534010755; 
+        
+        startVal_kqs.r4b2 = kqs.r4b2;
+        kqs.r4b2:=startVal_kqs.r4b2 + b2_im_ip7_knob *  0.01112179805  + b2_re_ip7_knob *   0.01203980682; 
+        
+        startVal_kqs.r6b2 = kqs.r6b2;
+        kqs.r6b2:=startVal_kqs.r6b2 + b2_im_ip7_knob *  0.02535517273  + b2_re_ip7_knob *  0.001176507532; 
+        
+        startVal_kqs.r8b2 = kqs.r8b2;
+        kqs.r8b2:=startVal_kqs.r8b2 - b2_im_ip7_knob * 0.0255466789  + b2_re_ip7_knob *   0.01724080586; 
+        
+        startVal_kqs.l1b2 = kqs.l1b2;
+        kqs.l1b2:=startVal_kqs.l1b2 - b2_im_ip7_knob * 0.0255466789  + b2_re_ip7_knob *   0.01724080586; 
+        
+        startVal_kqs.l3b2 = kqs.l3b2;
+        kqs.l3b2:=startVal_kqs.l3b2 + b2_im_ip7_knob * 0.001827918176  + b2_re_ip7_knob *   0.01534010755; 
+        
+        startVal_kqs.l5b2 = kqs.l5b2;
+        kqs.l5b2:=startVal_kqs.l5b2 + b2_im_ip7_knob *  0.01112179805  + b2_re_ip7_knob *   0.01203980682; 
+        
+        startVal_kqs.l7b2 = kqs.l7b2;
+        kqs.l7b2:=startVal_kqs.l7b2 + b2_im_ip7_knob *  0.02535517273  + b2_re_ip7_knob * 0.001176507532;
+        
+        startVal_kqs.a12b2 =kqs.a12b2;
+        kqs.a12b2:=startVal_kqs.a12b2 + b2_im_ip7_knob *   0.01053252495 - b2_re_ip7_knob * 0.002613242711;
+        
+        startVal_kqs.a78b2 =kqs.a78b2;
+        kqs.a78b2:=startVal_kqs.a78b2 + b2_im_ip7_knob *   0.02043337213 + b2_re_ip7_knob *  0.01408233751;
+        
+        startVal_kqs.a56b2 =kqs.a56b2;
+        kqs.a56b2:=startVal_kqs.a56b2 - b2_im_ip7_knob * 0.004807311266 - b2_re_ip7_knob *  0.02152571928;
+        
+        startVal_kqs.a34b2 =kqs.a34b2;
+        kqs.a34b2:=startVal_kqs.a34b2 + b2_im_ip7_knob *   0.01390953298 - b2_re_ip7_knob *  0.02452644363;
+    }
+}
+
+/*
+* Coupling knobs convention for 2016 ATS optics
+*/
+coupling_knob_ats(beam_number): macro = {
+    if (ARC_SQUEEZE == 1.0){
+    /*This correct but the knob was not implemented by in LSA
+        Cmrs.b1_sq := b1_re_ip7_knob;
+        Cmrs.b2_sq := b2_re_ip7_knob;
+        Cmis.b1_sq := b1_im_ip7_knob;
+        Cmis.b2_sq := b2_im_ip7_knob;
+        */
+        Cmrs.b1 := b1_re_ip7_knob;
+        Cmrs.b2 := b2_re_ip7_knob;
+        Cmis.b1 := b1_im_ip7_knob;
+        Cmis.b2 := b2_im_ip7_knob;
+    } else {
+        Cmrs.b1 := b1_re_ip7_knob;
+        Cmrs.b2 := b2_re_ip7_knob;
+        Cmis.b1 := b1_im_ip7_knob;
+        Cmis.b2 := b2_im_ip7_knob;
+    }
+};
+

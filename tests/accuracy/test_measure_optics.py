@@ -21,15 +21,16 @@ def _drop_item(idx_drop, lst):
     return [item for idx, item in enumerate(lst) if idx != idx_drop]
 
 
-def _create_input(motion):
+def _create_input(motion, beam=1):
     dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
     print(f"\nInput creation: {dpps}")
-    opt_dict = dict(accel="lhc", year="2018", ats=True, beam=1, files=[""],
-                    model_dir=join(dirname(__file__), "..", "inputs", "models", "25cm_beam1"),
+    opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
+                    model_dir=join(dirname(__file__), "..", "inputs", "models", f"25cm_beam{beam}"),
                     outputdir=BASE_PATH)
     optics_opt, rest = _optics_entrypoint(opt_dict)
     optics_opt.accelerator = manager.get_accelerator(rest)
-    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion)
+    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion,
+                                         beam_direction=(1 if beam == 1 else -1))
     return lins, optics_opt
 
 
@@ -44,71 +45,70 @@ MEASURE_OPTICS_SETTINGS = dict(
 
 PRE_CREATED_INPUT = dict(free=_create_input("free"), driven=_create_input("driven"))
 MEASURE_OPTICS_INPUT = list(itertools.product(*MEASURE_OPTICS_SETTINGS.values()))
+INPUT_OPPOSITE_DIRECTION=_create_input("driven", beam=2)
+
+@pytest.mark.basic
+def test_single_file():
+    test_single_file(*MEASURE_OPTICS_INPUT[0])
+
+@pytest.mark.basic
+def test_3_onmom_files():
+    test_3_onmom_files(*MEASURE_OPTICS_INPUT[1])
 
 
-class BasicTests:
-    @staticmethod
-    def test_single_file():
-        ExtendedTests.test_single_file(*MEASURE_OPTICS_INPUT[0])
+@pytest.mark.extended
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
+                            _drop_item(0, MEASURE_OPTICS_INPUT))
+def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    _test_prototype(slice(0, 1),
+                    outputdir=join(BASE_PATH, "single"),
+                    compensation=compensation,
+                    coupling_method=coupling_method,
+                    range_of_bpms=range_of_bpms,
+                    three_bpm_method=three_bpm_method,
+                    second_order_disp=second_order_disp,
+                    )
 
-    @staticmethod
-    def test_3_onmom_files():
-        ExtendedTests.test_3_onmom_files(*MEASURE_OPTICS_INPUT[1])
+@pytest.mark.extended
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
+                            _drop_item(1, MEASURE_OPTICS_INPUT))
+def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    _test_prototype(slice(None, 3),
+                    outputdir=join(BASE_PATH, "onmom"),
+                    compensation=compensation,
+                    coupling_method=coupling_method,
+                    range_of_bpms=range_of_bpms,
+                    three_bpm_method=three_bpm_method,
+                    second_order_disp=second_order_disp,
+                    )
 
 
-class ExtendedTests:
-    @staticmethod
-    @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                             _drop_item(0, MEASURE_OPTICS_INPUT))
-    def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-        _test_prototype(slice(0, 1),
-                        outputdir=join(BASE_PATH, "single"),
-                        compensation=compensation,
-                        coupling_method=coupling_method,
-                        range_of_bpms=range_of_bpms,
-                        three_bpm_method=three_bpm_method,
-                        second_order_disp=second_order_disp,
-                        )
+@pytest.mark.extended
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
+                            MEASURE_OPTICS_INPUT)
+def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    _test_prototype(slice(-3, None),
+                    outputdir=join(BASE_PATH, "pseudo_onmom"),
+                    compensation=compensation,
+                    coupling_method=coupling_method,
+                    range_of_bpms=range_of_bpms,
+                    three_bpm_method=three_bpm_method,
+                    second_order_disp=second_order_disp,
+                    )
 
-    @staticmethod
-    @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                             _drop_item(1, MEASURE_OPTICS_INPUT))
-    def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-        _test_prototype(slice(None, 3),
-                        outputdir=join(BASE_PATH, "onmom"),
-                        compensation=compensation,
-                        coupling_method=coupling_method,
-                        range_of_bpms=range_of_bpms,
-                        three_bpm_method=three_bpm_method,
-                        second_order_disp=second_order_disp,
-                        )
-
-    @staticmethod
-    @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                             MEASURE_OPTICS_INPUT)
-    def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-        _test_prototype(slice(-3, None),
-                        outputdir=join(BASE_PATH, "pseudo_onmom"),
-                        compensation=compensation,
-                        coupling_method=coupling_method,
-                        range_of_bpms=range_of_bpms,
-                        three_bpm_method=three_bpm_method,
-                        second_order_disp=second_order_disp,
-                        )
-
-    @staticmethod
-    @pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                             MEASURE_OPTICS_INPUT)
-    def test_offmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-        _test_prototype(slice(None, 7),
-                        chromatic_beating=True,
-                        outputdir=join(BASE_PATH, "offmom"),
-                        compensation=compensation,
-                        coupling_method=coupling_method,
-                        range_of_bpms=range_of_bpms,
-                        three_bpm_method=three_bpm_method,
-                        second_order_disp=second_order_disp,
-                        )
+@pytest.mark.extended
+@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
+                            MEASURE_OPTICS_INPUT)
+def test_offmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    _test_prototype(slice(None, 7),
+                    chromatic_beating=True,
+                    outputdir=join(BASE_PATH, "offmom"),
+                    compensation=compensation,
+                    coupling_method=coupling_method,
+                    range_of_bpms=range_of_bpms,
+                    three_bpm_method=three_bpm_method,
+                    second_order_disp=second_order_disp,
+                    )
 
 
 # Helper ---
