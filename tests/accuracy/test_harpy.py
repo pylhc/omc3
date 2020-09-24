@@ -20,98 +20,95 @@ NBPMS = 100
 BASEAMP = 0.001
 AMPZ, MUZ, TUNEZ = 0.01, 0.3, 0.008
 
-np.random.seed(1234567)
 
 
-class BasicTests:
-    @staticmethod
-    def test_harpy(_test_file, _model_file):
-        model = _get_model_dataframe()
-        tfs.write(_model_file, model, save_index="NAME")
-        _write_tbt_file(model, os.path.dirname(_test_file))
-        hole_in_one_entrypoint(harpy=True,
-                               clean=True,
-                               autotunes="transverse",
-                               outputdir=os.path.dirname(_test_file),
-                               files=[_test_file],
-                               model=_model_file,
-                               to_write=["lin"],
-                               turn_bits=18,
-                               unit="m")
-        lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
-        model = tfs.read(_model_file)
-        _assert_spectra(lin, model)
+@pytest.mark.basic
+def test_harpy(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                            clean=True,
+                            autotunes="transverse",
+                            outputdir=os.path.dirname(_test_file),
+                            files=[_test_file],
+                            model=_model_file,
+                            to_write=["lin"],
+                            turn_bits=18,
+                            unit="m")
+    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    _assert_spectra(lin, model)
 
-    @staticmethod
-    def test_harpy_without_model(_test_file, _model_file):
-        model = _get_model_dataframe()
-        tfs.write(_model_file, model, save_index="NAME")
-        _write_tbt_file(model, os.path.dirname(_test_file))
-        hole_in_one_entrypoint(harpy=True,
-                               clean=True,
-                               autotunes="transverse",
-                               outputdir=os.path.dirname(_test_file),
-                               files=[_test_file],
-                               to_write=["lin"],
-                               turn_bits=18,
-                               unit="m")
-        lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
-        model = tfs.read(_model_file)
-        _assert_spectra(lin, model)
+@pytest.mark.basic
+def test_harpy_without_model(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                            clean=True,
+                            autotunes="transverse",
+                            outputdir=os.path.dirname(_test_file),
+                            files=[_test_file],
+                            to_write=["lin"],
+                            turn_bits=18,
+                            unit="m")
+    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    _assert_spectra(lin, model)
 
 
-class ExtendedTests:
-    @staticmethod
-    def test_freekick_harpy(_test_file, _model_file):
-        model = _get_model_dataframe()
-        tfs.write(_model_file, model, save_index="NAME")
-        _write_tbt_file(model, os.path.dirname(_test_file))
-        hole_in_one_entrypoint(harpy=True,
-                               clean=True,
-                               autotunes="transverse",
-                               is_free_kick=True,
-                               outputdir=os.path.dirname(_test_file),
-                               files=[_test_file],
-                               model=_model_file,
-                               to_write=["lin"],
-                               unit='m',
-                               turn_bits=18)
-        lin = dict(X=tfs.read(f"{_test_file}.linx"),
-                   Y=tfs.read(f"{_test_file}.liny"))
-        model = tfs.read(_model_file)
-        for plane in PLANES:
-            # main and secondary frequencies
-            assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].to_numpy(),
-                              model.loc[:, f"TUNE{plane}"].to_numpy())) < LIMITS["F1"]
-            # main and secondary amplitudes
-            # TODO remove factor 2 - only for backwards compatibility with Drive
-            assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
-                                  model.loc[:, f"AMP{plane}"].to_numpy())) < LIMITS["A1"]
-            # main and secondary phases
-            assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].to_numpy(),
-                                    model.loc[:, f"MU{plane}"].to_numpy())) < LIMITS["P1"]
+@pytest.mark.extended
+def test_freekick_harpy(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                            clean=True,
+                            autotunes="transverse",
+                            is_free_kick=True,
+                            outputdir=os.path.dirname(_test_file),
+                            files=[_test_file],
+                            model=_model_file,
+                            to_write=["lin"],
+                            unit='m',
+                            turn_bits=18)
+    lin = dict(X=tfs.read(f"{_test_file}.linx"),
+                Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    for plane in PLANES:
+        # main and secondary frequencies
+        assert _rms(_diff(lin[plane].loc[:, f"TUNE{plane}"].to_numpy(),
+                            model.loc[:, f"TUNE{plane}"].to_numpy())) < LIMITS["F1"]
+        # main and secondary amplitudes
+        # TODO remove factor 2 - only for backwards compatibility with Drive
+        assert _rms(_rel_diff(lin[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
+                                model.loc[:, f"AMP{plane}"].to_numpy())) < LIMITS["A1"]
+        # main and secondary phases
+        assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].to_numpy(),
+                                model.loc[:, f"MU{plane}"].to_numpy())) < LIMITS["P1"]
 
-    @staticmethod
-    def test_harpy_3d(_test_file, _model_file):
-        model = _get_model_dataframe()
-        tfs.write(_model_file, model, save_index="NAME")
-        _write_tbt_file(model, os.path.dirname(_test_file))
-        hole_in_one_entrypoint(harpy=True,
-                               clean=True,
-                               autotunes="all",
-                               outputdir=os.path.dirname(_test_file),
-                               files=[_test_file],
-                               model=_model_file,
-                               to_write=["lin"],
-                               turn_bits=18,
-                               unit="m")
-        lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
-        model = tfs.read(_model_file)
-        _assert_spectra(lin, model)
-        assert _rms(_diff(lin["X"].loc[:, "TUNEZ"].to_numpy(), TUNEZ)) < LIMITS["F2"]
-        assert _rms(_rel_diff(lin["X"].loc[:, f"AMPZ"].to_numpy() *
-                              lin["X"].loc[:, f"AMPX"].to_numpy() * 2, AMPZ * BASEAMP)) < LIMITS["A2"]
-        assert _rms(_angle_diff(lin["X"].loc[:, f"MUZ"].to_numpy(), MUZ)) < LIMITS["P2"]
+@pytest.mark.extended
+def test_harpy_3d(_test_file, _model_file):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                            clean=True,
+                            autotunes="all",
+                            outputdir=os.path.dirname(_test_file),
+                            files=[_test_file],
+                            model=_model_file,
+                            to_write=["lin"],
+                            turn_bits=18,
+                            unit="m")
+    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
+    model = tfs.read(_model_file)
+    _assert_spectra(lin, model)
+    assert _rms(_diff(lin["X"].loc[:, "TUNEZ"].to_numpy(), TUNEZ)) < LIMITS["F2"]
+    assert _rms(_rel_diff(lin["X"].loc[:, f"AMPZ"].to_numpy() *
+                            lin["X"].loc[:, f"AMPX"].to_numpy() * 2, AMPZ * BASEAMP)) < LIMITS["A2"]
+    assert _rms(_angle_diff(lin["X"].loc[:, f"MUZ"].to_numpy(), MUZ)) < LIMITS["P2"]
 
 
 def _assert_spectra(lin, model):
@@ -136,6 +133,7 @@ def _assert_spectra(lin, model):
 
 
 def _get_model_dataframe():
+    np.random.seed(1234567)
     return pd.DataFrame(data=dict(S=np.arange(NBPMS, dtype=float),
                                   AMPX=(np.random.rand(NBPMS) + 1) * BASEAMP,
                                   AMPY=(np.random.rand(NBPMS) + 1) * BASEAMP,
