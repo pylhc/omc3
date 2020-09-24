@@ -78,7 +78,7 @@ def get_params():
 
 
 @entrypoint(get_params(), strict=True)
-def merge_and_copy_kmod_output(opt) -> tfs.TfsDataFrame:
+def merge_kmod_results(opt) -> tfs.TfsDataFrame:
     """ Main function to merge K-Mod output.
     See :mod:`omc3.scripts.merge_kmod_results`.
     """
@@ -264,4 +264,4 @@ def get_ip_dir_names(kmod_dirs: List[pathlib.Path]) -> List[pathlib.Path]:
 
 
 if __name__ == "__main__":
-    merge_and_copy_kmod_output()
+    merge_kmod_results()
