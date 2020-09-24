@@ -14,6 +14,7 @@ def test_circular_nans(a_nan):
     assert stats.circular_nanmean(a_nan) == 0.
 
 
+@pytest.mark.basic
 def test_nanhandling():
     vector = np.array([355., 0., 5., np.nan])
     assert stats.circular_nanmean(vector) == stats.circular_mean(vector[:-1])

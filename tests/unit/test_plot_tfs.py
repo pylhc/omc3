@@ -14,8 +14,8 @@ DEBUG = False  # switch to local output instead of temp
 
 # Basic Tests are tested with plot_optics_measurements
 
+# Usage Examples ---
 @pytest.mark.extended
-    # Usage Examples ---
 def test_simple_plot_manual_planes_same_file():
     with _output_dir() as output_dir:
         figs = plot(

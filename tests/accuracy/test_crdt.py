@@ -62,46 +62,45 @@ def _create_input(order):
 PRECREATED_INPUT = {order: _create_input(order) for order in ['coupling', 'sextupole', 'skewsextupole', 'octupole']}
 
 
-class ExtendedTests:
-    @staticmethod
-    @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole', 'octupole'])
-    def test_crdt_amp(order):
-        (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
-        ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
+@pytest.mark.extended
+@pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole', 'octupole'])
+def test_crdt_amp(order):
+    (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
+    ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
 
-        for crdt_dict in crdt.CRDTS:
-            if order == crdt_dict["order"]:
-                hio_crdt = tfs.read(join(optics_opt["outputdir"],
-                                         "crdt",
-                                         order,
-                                         f'{crdt_dict["term"]}.tfs'),
-                                    index="NAME")
-                assert _max_dev(hio_crdt["AMP"].to_numpy(),
-                                ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(),
-                                NOISELEVEL_AMP[order]) < ACCURACY_LIMIT[order]
+    for crdt_dict in crdt.CRDTS:
+        if order == crdt_dict["order"]:
+            hio_crdt = tfs.read(join(optics_opt["outputdir"],
+                                        "crdt",
+                                        order,
+                                        f'{crdt_dict["term"]}.tfs'),
+                                index="NAME")
+            assert _max_dev(hio_crdt["AMP"].to_numpy(),
+                            ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(),
+                            NOISELEVEL_AMP[order]) < ACCURACY_LIMIT[order]
 
 
-    @staticmethod
-    @pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole'])
-    def test_crdt_complex(order):
-        (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
-        ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
+@pytest.mark.extended
+@pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole'])
+def test_crdt_complex(order):
+    (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
+    ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
 
-        for crdt_dict in crdt.CRDTS:
-            if order == crdt_dict["order"]:
-                hio_crdt = tfs.read(join(optics_opt["outputdir"],
-                                         "crdt",
-                                         order,
-                                         f'{crdt_dict["term"]}.tfs'),
-                                    index="NAME")
+    for crdt_dict in crdt.CRDTS:
+        if order == crdt_dict["order"]:
+            hio_crdt = tfs.read(join(optics_opt["outputdir"],
+                                        "crdt",
+                                        order,
+                                        f'{crdt_dict["term"]}.tfs'),
+                                index="NAME")
 
-                assert _max_dev(hio_crdt["REAL"].to_numpy(),
-                                ptc_crdt[f"{crdt_dict['term']}_REAL"].to_numpy(),
-                                NOISELEVEL_COMPLEX[order]) < ACCURACY_LIMIT[order]
+            assert _max_dev(hio_crdt["REAL"].to_numpy(),
+                            ptc_crdt[f"{crdt_dict['term']}_REAL"].to_numpy(),
+                            NOISELEVEL_COMPLEX[order]) < ACCURACY_LIMIT[order]
 
-                assert _max_dev(hio_crdt["IMAG"].to_numpy(),
-                                ptc_crdt[f"{crdt_dict['term']}_IMAG"].to_numpy(),
-                                NOISELEVEL_COMPLEX[order]) < ACCURACY_LIMIT[order]
+            assert _max_dev(hio_crdt["IMAG"].to_numpy(),
+                            ptc_crdt[f"{crdt_dict['term']}_IMAG"].to_numpy(),
+                            NOISELEVEL_COMPLEX[order]) < ACCURACY_LIMIT[order]
 
 
     @classmethod
