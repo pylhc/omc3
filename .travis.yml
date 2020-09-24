@@ -14,7 +14,7 @@ stages:
 # Default python version that will be inherited
 # Additional ones can be defined later
 language: python
-python: 3.6
+python: 3.7
 
 email:
   on_success: always
@@ -32,7 +32,8 @@ jobs:
       install:
         - pip install '.[test]'
       script:
-        - python -m pytest -o python_classes=ExtendedTests
+
+       - python -m pytest
       after_script:
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
@@ -42,18 +43,12 @@ jobs:
       install:
         - pip install '.[test]'
       script:
-        - python -m pytest -o python_classes=BasicTests
-
+        - python -m pytest -m 'not extended'
 
     # Define additional python versions for tests
-    - <<: *test-extended
-      python: 3.7
 
     - <<: *test-extended
       python: 3.8
-
-    - <<: *test-basic
-      python: 3.7
 
     - <<: *test-basic
       python: 3.8
