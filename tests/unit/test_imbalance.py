@@ -14,43 +14,19 @@ CURRENT_DIR = Path(__file__).parent
 
 
 def test_result_tfs(_tfs_file):
-    res = luminosity_imbalance.main({'tfs': _tfs_file})
+    res = luminosity_imbalance.get_imbalance(_tfs_file)
 
-    assert res['imbalance'] == '0.974'
-    assert res['relative_error'] == '0.004'
-    assert res['eff_beta_ip1'] == '0.3980'
-    assert res['rel_error_ip1'] == '0.0015'
-    assert res['eff_beta_ip5'] == '0.409'
-    assert res['rel_error_ip5'] == '0.002'
-
-
-def test_inplace_tfs(_tfs_file):
-    res = luminosity_imbalance.main({'tfs': _tfs_file, 'inplace': True})
-
-    assert res['imbalance'] == '0.974'
-    assert res['relative_error'] == '0.004'
-    assert res['eff_beta_ip1'] == '0.3980'
-    assert res['rel_error_ip1'] == '0.0015'
-    assert res['eff_beta_ip5'] == '0.409'
-    assert res['rel_error_ip5'] == '0.002'
-
-    t = tfs.read_tfs(_tfs_file)
-    assert t.headers['LUMINOSITY_IMBALANCE'] == '0.974'
-    assert t.headers['RELATIVE_ERROR'] == '0.004'
-    assert t.headers['EFF_BETA_IP1'] == '0.3980'
-    assert t.headers['REL_ERROR_IP1'] == '0.0015'
-    assert t.headers['EFF_BETA_IP5'] == '0.409'
-    assert t.headers['REL_ERROR_IP5'] == '0.002'
-
-
-def test_wrong_path(_tfs_file):
-    with pytest.raises(FileNotFoundError):
-        luminosity_imbalance.main({'tfs': 'nanananananaBATMAN'})
+    assert res['imbalance'] == 0.974139299943968
+    assert res['relative_error'] == 0.003859317636164786
+    assert res['eff_beta_ip1'] == 0.39800399369855577
+    assert res['rel_error_ip1'] == 0.0015434779687894644
+    assert res['eff_beta_ip5'] == 0.4085698972636139
+    assert res['rel_error_ip5'] == 0.0023158396673753213
 
 
 def test_wrong_columns(_tfs_wrong_columns):
     with pytest.raises(KeyError) as error:
-        luminosity_imbalance.main({'tfs': _tfs_wrong_columns})
+        luminosity_imbalance._validate_tfs(_tfs_wrong_columns)
 
     msg = 'Expected columns in the TFS file not found. Expected columns: '
     assert msg in str(error.value)
@@ -63,7 +39,7 @@ def test_wrong_columns(_tfs_wrong_columns):
 
 def test_wrong_label(_tfs_wrong_label):
     with pytest.raises(KeyError) as error:
-        luminosity_imbalance.main({'tfs': _tfs_wrong_label})
+        luminosity_imbalance._validate_tfs(_tfs_wrong_label)
 
     msg = "The following required labels are not found in dataframe: "\
           "ip5B1"
@@ -72,9 +48,20 @@ def test_wrong_label(_tfs_wrong_label):
 
 def test_twice_label(_tfs_twice_label):
     with pytest.raises(KeyError) as error:
-        luminosity_imbalance.main({'tfs': _tfs_twice_label})
+        luminosity_imbalance._validate_tfs(_tfs_twice_label)
 
     msg = 'Found label ip1B1 several times. Expected only once'
+    assert msg in str(error.value)
+
+
+def test_incorrect_paths():
+    paths = [Path('IchBinAntonAusTirol'), Path('Pizza4Fromages')]
+
+    with pytest.raises(Exception) as error:
+        luminosity_imbalance.merge_and_copy_kmod_output({'kmod_dirs': paths,
+                                                         'res_dir': Path('.')})
+
+    msg = 'All directories should account for a total of 4 ipBx directories inside'
     assert msg in str(error.value)
 
 
@@ -87,7 +74,7 @@ def _get_file(tmp_path, path):
     dst = d / path
 
     shutil.copyfile(src, dst)
-    return str(dst)
+    return tfs.read_tfs(dst)
 
 
 @pytest.fixture()

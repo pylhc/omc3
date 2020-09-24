@@ -118,6 +118,19 @@ def merge_tfs(directories, filename):
     return new_tfs
 
 
+def get_ip_dir_names(kmod_dirs):
+    pattern = re.compile(".*ip[0-9]B[1-2]")
+    ip_dir_names = [d for kmod in kmod_dirs
+                    for d in kmod.glob('**/*')
+                    if pattern.match(d.name) and d.is_dir()]
+
+    if len(ip_dir_names) != 4:
+        raise Exception('All directories should account for a total of 4 ipBx '
+                        'directories inside')
+
+    return ip_dir_names
+
+
 def loader_params():
     params = EntryPointParameters()
     params.add_parameter(name="kmod_dirs", type=pathlib.Path,
@@ -131,15 +144,11 @@ def loader_params():
 
 @entrypoint(loader_params(), strict=True)
 def merge_and_copy_kmod_output(opt):
-    pattern = re.compile(".*ip[0-9]B[1-2]")
-
     # Get the directories we need where the tfs are stored
-    ip_dir_names = [d for kmod in opt.kmod_dirs
-                    for d in kmod.glob('**/*')
-                    if pattern.match(d.name) and d.is_dir()]
+    ip_dir_names = get_ip_dir_names(opt.kmod_dirs)
 
     # Combine the data into one tfs
-    new_data = merge_tfs(ip_dir_names, 'result.tfs')
+    new_data = merge_tfs(ip_dir_names, 'results.tfs')
     
     # Get the imbalance
     _validate_tfs(new_data)
@@ -148,7 +157,7 @@ def merge_and_copy_kmod_output(opt):
     print_luminosity(res)
 
     # Combine the lsa data
-    lsa_tfs = merge_tfs(ip_dir_names, 'lsa_reuslts.tfs')
+    lsa_tfs = merge_tfs(ip_dir_names, 'lsa_results.tfs')
 
     lsa_tfs.headers.update({"LUMINOSITY_IMBALANCE": res['imbalance'],
                             "RELATIVE_ERROR": res['relative_error'],
