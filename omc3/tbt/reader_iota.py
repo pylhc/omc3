@@ -49,7 +49,8 @@ def read_tbt(file_path):
 
         except TypeError:
             pass
-
+        except KeyError:
+            pass
 
 def _get_turn_by_turn_data_v1(hd5, plane, version):
 

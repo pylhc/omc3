@@ -11,6 +11,18 @@ def test_circular_zeros(zeros):
 @pytest.mark.basic
 def test_circular_nans(a_nan):
     assert np.isnan(stats.circular_mean(a_nan))
+    assert stats.circular_nanmean(a_nan) == 0.
+
+
+def test_nanhandling():
+    vector = np.array([355., 0., 5., np.nan])
+    assert stats.circular_nanmean(vector) == stats.circular_mean(vector[:-1])
+    assert stats.weighted_nanmean(vector) == stats.weighted_mean(vector[:-1])
+    assert stats.weighted_nanrms(vector) == stats.weighted_rms(vector[:-1])
+    vector = np.array([[355., 0., 5., 0.],
+                       [355., 0., 5., 0.],
+                       [355., 0., 5., np.nan]])
+    assert np.all(stats.circular_nanerror(vector, axis=1) == stats.circular_error(vector[:, :-1], axis=1))
 
 @pytest.mark.basic
 def test_circular_empties():
