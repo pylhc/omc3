@@ -45,6 +45,7 @@ from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, gridspec
 from matplotlib.ticker import FormatStrFormatter
+from pandas.plotting import register_matplotlib_converters
 
 from omc3 import amplitude_detuning_analysis as ad_ana
 from omc3.definitions import formats
