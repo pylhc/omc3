@@ -24,8 +24,8 @@ LABELS = [f'{i}{b}' for i in IPS for b in BEAMS]
 def _validate_tfs(df):
     # First validate the labels, which correspond to the IP and Beam
     expected_labels = set(LABELS)
-    not_found_labels = [l for l in expected_labels \
-                        if not df[LABEL].str.contains(l).any()]
+    not_found_labels = [label for label in expected_labels
+                        if not df[LABEL].str.contains(label).any()]
 
     if any(not_found_labels):
         msg = 'The following required labels are not found in dataframe:' \
@@ -67,7 +67,7 @@ def get_imbalance(df):
 
         # Compute the relative error for this IP
         rel_error[ip] = 0.5 * \
-          sqrt(sum([(error[p] ** 2) / (average_beta[p] ** 2) for p in PLANES]))
+            sqrt(sum([(error[p] ** 2) / (average_beta[p] ** 2) for p in PLANES]))
 
         # Get the effective beta
         eff_beta[ip] = sqrt(reduce(mul, average_beta.values()))
@@ -149,7 +149,7 @@ def merge_and_copy_kmod_output(opt):
 
     # Combine the data into one tfs
     new_data = merge_tfs(ip_dir_names, 'results.tfs')
-    
+
     # Get the imbalance
     _validate_tfs(new_data)
     res = get_imbalance(new_data)
@@ -165,7 +165,7 @@ def merge_and_copy_kmod_output(opt):
                             "REL_ERROR_IP1": res['rel_error_ip1'],
                             "EFF_BETA_IP5": res['eff_beta_ip5'],
                             "REL_ERROR_IP5": res['rel_error_ip5']
-                             })
+                            })
 
     # and write the resulting tfs
     tfs.write(opt.res_dir / 'lsa_results.tfs', lsa_tfs)
