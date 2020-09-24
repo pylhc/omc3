@@ -8,8 +8,7 @@ import numpy as np
 
 from tests.conftest import cli_args
 
-CURRENT_DIR = Path(__file__).parent
-INPUT_DIR = CURRENT_DIR.parent / "inputs" / "merge_kmod"
+INPUT_DIR = Path(__file__).parent.parent / "inputs" / "merge_kmod"
 DEBUG = False
 
 
@@ -18,7 +17,7 @@ DEBUG = False
 def test_merge_kmod_results(tmp_output_dir):
     paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip5"]
 
-    res_tfs_passed = merge_kmod_results.merge_and_copy_kmod_output({"kmod_dirs": paths, "outputdir": tmp_output_dir})
+    res_tfs_passed = merge_kmod_results.merge_kmod_results({"kmod_dirs": paths, "outputdir": tmp_output_dir})
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
     res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename)
     control_tfs = tfs.read_tfs(INPUT_DIR / 'control.tfs')
@@ -32,7 +31,7 @@ def test_merge_kmod_results_commandline(tmp_ouput_dir):
     paths = [str(INPUT_DIR / "kmod_ip1"), str(INPUT_DIR / "kmod_ip5")]
 
     with cli_args("--kmod_dirs", *paths, "--outputdir", str(tmp_ouput_dir)):
-        merge_kmod_results.merge_and_copy_kmod_output()
+        merge_kmod_results.merge_kmod_results()
 
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
     res_lsa_tfs = tfs.read_tfs(tmp_ouput_dir / filename)
@@ -91,7 +90,7 @@ def test_incorrect_paths():
     paths = [Path("IchBinDerAntonAusTirol"), Path("Pizza4Fromages")]
 
     with pytest.raises(Exception) as error:
-        merge_kmod_results.merge_and_copy_kmod_output({"kmod_dirs": paths, "outputdir": Path(".")})
+        merge_kmod_results.merge_kmod_results({"kmod_dirs": paths, "outputdir": Path(".")})
 
     assert "Directory IchBinDerAntonAusTirol does not exist" in str(error.value)
 
