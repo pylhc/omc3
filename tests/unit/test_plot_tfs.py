@@ -40,6 +40,7 @@ def test_simple_plot_manual_planes_same_file():
     for fig in figs.values():
         assert len(fig.axes) == 2
 
+
 @pytest.mark.extended
 def test_simple_plot_manual_planes_two_files():
     with _output_dir() as output_dir:
@@ -64,13 +65,15 @@ def test_simple_plot_manual_planes_two_files():
     for fig in figs.values():
         assert len(fig.axes) == 1
 
-    # Simple Tests ---
+
+# Simple Tests ---
 @pytest.mark.extended
 def test_simple_plot():
     figs = simple_plot_tfs()
     assert len(figs) == 2
     for fig in figs.values():
         assert len(fig.axes) == 1
+
 
 @pytest.mark.extended
 def test_simple_plot_same_figure():
@@ -79,6 +82,7 @@ def test_simple_plot_same_figure():
     for fig in figs.values():
         assert len(fig.axes) == 2
 
+
 @pytest.mark.extended
 def test_simple_plot_same_axes():
     figs = simple_plot_tfs(same_axes=['planes'])
@@ -86,26 +90,31 @@ def test_simple_plot_same_axes():
     for fig in figs.values():
         assert len(fig.axes) == 1
 
-    # check for wrong input ---
+
+# check for wrong input ---
 @pytest.mark.extended
 def test_errors_too_many_filelabels():
     with pytest.raises(AttributeError):
         simple_plot_tfs(file_labels=['label1', 'label2'])
+
 
 @pytest.mark.extended
 def test_errors_too_many_xcolumns():
     with pytest.raises(AttributeError):
         simple_plot_tfs(x_columns=['A', 'B'])
 
+
 @pytest.mark.extended
 def test_errors_too_many_errorcolumns():
     with pytest.raises(AttributeError):
         simple_plot_tfs(error_columns=['A', 'B'])
 
+
 @pytest.mark.extended
 def test_errors_too_many_columnlabels():
     with pytest.raises(AttributeError):
         simple_plot_tfs(column_labels=['label1', 'label2'])
+
 
 @pytest.mark.extended
 def test_errors_same_options_same():

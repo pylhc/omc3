@@ -16,9 +16,11 @@ DEBUG = False  # switch to local output instead of temp
 def test_phase():
     _default_test('phase')
 
+
 @pytest.mark.basic
 def test_phase_delta():
     _default_test('phase', delta=True)
+
 
 @pytest.mark.basic
 def test_rdt_0040():
@@ -31,17 +33,20 @@ def test_orbit():
     for fig in figs.values():
         assert len(fig.axes) == 2
 
+
 @pytest.mark.extended
 def test_orbit_delta():
     figs = _default_test('orbit', delta=True)
     for fig in figs.values():
         assert len(fig.axes) == 2
 
+
 @pytest.mark.extended
 def test_orbit_combine_planes():
     figs = _default_test('orbit', combine_by=['planes'])
     for fig in figs.values():
         assert len(fig.axes) == 1
+
 
 @pytest.mark.extended
 def test_orbit_share_xaxis():
@@ -52,19 +57,23 @@ def test_orbit_share_xaxis():
         assert len(sharedx) == 1
         assert len(sharedx[0]) == 2
 
+
 @pytest.mark.extended
 def test_orbit_ip_positions_location():
     _default_test('orbit', x_axis='location', ip_positions='LHCB1')
+
 
 @pytest.mark.extended
 def test_orbit_ip_positions_location_manual():
     _default_test('orbit', x_axis='location',
                     ip_positions=INPUT.parent.parent / 'models' / '25cm_beam1' / 'twiss_elements.dat')
 
+
 @pytest.mark.extended
 def test_orbit_ip_positions_phase():
     with pytest.raises(NotImplementedError):  # remove once implemented
         _default_test('orbit', x_axis='phase-advance', ip_positions='LHCB1')
+
 
 @pytest.mark.extended
 def test_two_directories():
@@ -79,6 +88,7 @@ def test_two_directories():
         )
         assert len(list(out_dir.glob('*.pdf'))) == 4
         assert len(figs) == 4
+
 
 @pytest.mark.extended
 def test_two_directories_combined():
@@ -95,29 +105,36 @@ def test_two_directories_combined():
         assert len(list(out_dir.glob('*.pdf'))) == 2
         assert len(figs) == 2
 
+
 @pytest.mark.extended
 def test_beta_phase():
     _default_test('beta_phase')
+
 
 @pytest.mark.extended
 def test_beta_phase_delta():
     _default_test('beta_phase', delta=True)
 
+
 @pytest.mark.extended
 def test_beta_amplitude():
     _default_test('beta_amplitude')
+
 
 @pytest.mark.extended
 def test_beta_amplitude_delta():
     _default_test('beta_amplitude', delta=True)
 
+
 @pytest.mark.extended
 def test_total_phase():
     _default_test('total_phase')
 
+
 @pytest.mark.extended
 def test_total_phase_delta():
     _default_test('total_phase', delta=True)
+
 
 @pytest.mark.extended
 def test_rdt_1001():
@@ -125,19 +142,23 @@ def test_rdt_1001():
     for fig in figs.values():
         assert len(fig.axes) == 2
 
+
 @pytest.mark.extended
 def test_rdt_1001_combine_planes():
     figs = _default_test_rdt('f1001_x', combine_by=['planes'])
     for fig in figs.values():
         assert len(fig.axes) == 1
 
+
 @pytest.mark.extended
 def test_rdt_0030():
     _default_test_rdt('f0030_y')
 
+
 @pytest.mark.extended
 def test_rdt_1002():
     _default_test_rdt('f1002_x')
+
 
 @pytest.mark.extended
 def test_rdt_1001_skip_for_xaxis_option():

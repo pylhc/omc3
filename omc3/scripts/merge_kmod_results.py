@@ -1,24 +1,132 @@
+"""
+Merge KMOD Results
+-------------------
+
+Script to merge the results from KMOD into one TfsDataFrame.
+The script takes the kmod-results folders as input and merges the
+lsa-result tfs-files in these together.
+
+Some sanity checks are performed, e.g. that there is only one entry per element.
+If IP1 and IP5 results are given for both planes and beams, the luminosity
+imbalance between these IPs is also calculated and written into the header,
+as well as logged.
+
+The resulting TfsDataFrame is returned, but also written out if an `outputdir`
+is given.
+
+**Arguments:**
+
+*--Required--*
+
+- **kmod_dirs** *(Path)*:
+
+    Path to kmod directories with stored KMOD measurement files,in particular lsa_results.tfs
+
+
+*--Optional--*
+
+- **outputdir** *(Path)*:
+
+    Output directory where to write the result tfs
+
+"""
 import pathlib
 import re
-from typing import Dict, List
-import numpy as np
-from uncertainties import unumpy as up
+from typing import Dict, List, Tuple
 
+import numpy as np
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-from tfs.tools import significant_digits
+from uncertainties import ufloat, UFloat, unumpy as up
 
 from omc3.definitions.constants import PLANES
-from omc3.kmod.constants import  ERR, BETA, EXT
+from omc3.kmod.constants import ERR, BETA, EXT
 from omc3.kmod.constants import LSA_FILE_NAME as LSA_RESULTS
 from omc3.utils.logging_tools import get_logger
 
 LOG = get_logger(__name__)
 
-LABEL = "NAME"  # Column containing the IP/Beam names
+NAME = "NAME"  # Column containing the IP/Beam names
 BEAMS = ("B1", "B2")
 IPS = ("ip1", "ip5")
-LABELS = [f"{ip}{beam}" for ip in IPS for beam in BEAMS]
+IMBALANCE_NAMES = [f"{ip}{beam}" for ip in IPS for beam in BEAMS]
+
+HEADER_IMBALANCE = "LUMINOSITY_IMBALANCE"
+HEADER_REL_ERROR = "RELATIVE_ERROR"
+HEADER_EFF_BETA_IP1 = "EFFECTIVE_BETA_IP1"
+HEADER_REL_ERROR_IP1 = "RELATIVE_ERROR_IP1"
+HEADER_EFF_BETA_IP5 = "EFFECTIVE_BETA_IP5"
+HEADER_REL_ERROR_IP5 = "RELATIVE_ERROR_IP5"
+
+
+def get_params():
+    params = EntryPointParameters()
+    params.add_parameter(
+        name="kmod_dirs",
+        type=pathlib.Path,
+        nargs="+",
+        required=True,
+        help=f"Path to kmod directories with stored KMOD measurement files,"
+             f"in particular {LSA_RESULTS}{EXT}",
+    )
+    params.add_parameter(
+        name="outputdir",
+        type=pathlib.Path,
+        help="Output directory where to write the result tfs",
+    )
+    return params
+
+
+@entrypoint(get_params(), strict=True)
+def merge_and_copy_kmod_output(opt) -> tfs.TfsDataFrame:
+    """ Main function to merge K-Mod output.
+    See :mod:`omc3.scripts.merge_kmod_results`.
+    """
+    # Get the directories we need where the tfs are stored
+    ip_dir_names: List[pathlib.Path] = get_ip_dir_names(opt.kmod_dirs)
+
+    # Combine the lsa data
+    lsa_tfs = merge_tfs(ip_dir_names, f"{LSA_RESULTS}{EXT}")
+
+    # If the TFS data contains everything we need: get the imbalance
+    if _validate_for_imbalance(lsa_tfs):
+        imbalance_results = get_lumi_imbalance(lsa_tfs)
+        lsa_tfs = _add_imbalance_to_header(lsa_tfs, *imbalance_results)
+
+    if opt.outputdir:
+        output_path = opt.outputdir / f"{LSA_RESULTS}{EXT}"
+        LOG.info(f"Writing result TFS file to disk at: {str(output_path)}")
+        tfs.write(output_path, lsa_tfs)
+    return lsa_tfs
+
+
+def _check_tfs_sanity(data_frame: tfs.TfsDataFrame):
+    """
+    Checks that the merged `TfsDataFrame` has valid entries,
+    i.e. names are unique and max two entries per IP.
+
+    Args:
+        data_frame (tfs.TfsDataFrame): a loaded `TfsDataFrame` to validate.
+    """
+    # Check that both beams are there only once
+    multiple_names = [
+        name for name in data_frame[NAME] if len(data_frame.loc[data_frame[NAME] == name]) > 1
+    ]
+    if multiple_names:
+        msg = (f"Found entries '{', '.join(set(multiple_names))}' "
+               f"several times in merged DataFrame. "
+               "Expected only once")
+        LOG.error(msg)
+        raise KeyError(msg)
+
+    # check that there is no weird additional data
+    too_many_entries = [ip for ip in IPS if len(data_frame[NAME].str.startswith(ip)) > 2]
+    if too_many_entries:
+        msg = ("More than two entries found for ips "
+               f"{', '.join(too_many_entries)} in merged DataFrame. "
+               "Expected one for each beam.")
+        LOG.error(msg)
+        raise KeyError(msg)
 
 
 def _validate_for_imbalance(data_frame: tfs.TfsDataFrame) -> bool:
@@ -32,108 +140,83 @@ def _validate_for_imbalance(data_frame: tfs.TfsDataFrame) -> bool:
     Returns:
         ``True`` if the provided dataframe is valid, ``False`` otherwise.
     """
-    expected_labels = set(LABELS)
-    not_found_labels = [
-        label for label in expected_labels if not data_frame[LABEL].str.contains(label).any()
+    # check all required names are there
+    not_found_names = [
+        name for name in IMBALANCE_NAMES if not data_frame[NAME].str.startswith(name).any()
     ]
-    if any(not_found_labels):
+    if not_found_names:
         return False
-
-    for label in LABELS:
-        if len(data_frame.loc[data_frame[LABEL] == label]) > 1:
-            LOG.error(f"Found label '{label}' several times. Expected only once")
-            raise KeyError(f"Duplicate label '{label}' in dataframe's columns")
 
     # Validate the columns we need: BET{X,Y} and ERRBET{X,Y}
     expected_columns = [f"{BETA}{p}" for p in PLANES] + [f"{ERR}{BETA}{p}" for p in PLANES]
-    if not all([column in data_frame.columns for column in expected_columns]):
-        return False
-
-    return True
+    return all([column in data_frame.columns for column in expected_columns])
 
 
-def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Dict[str, float]:
+def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UFloat]:
     """
     Calculate the IP1 / IP5 luminosity imbalance. The luminosity is taken as defined in
     `Concept of luminosity`, Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf
 
     The calculation of the luminosity imbalance is then:
+
     .. math::
-    \\frac{L_{IP1}}{L_{IP5}}=\\frac{\\sqrt{\\beta_{x1,IP5}+\\beta_{x2,IP5}}\\cdot\\sqrt{\\beta_{y1,IP5}+\\beta_{y2,IP5}}}{\\sqrt{\\beta_{x1,IP1}+\\beta_{x2,IP1}}\\cdot\\sqrt{\\beta_{y1,IP1}+\\beta_{y2,IP1}}}
+
+        \\frac{L_{IP1}}{L_{IP5}}=\\frac{\\sqrt{\\beta_{x1,IP5}+\\beta_{x2,IP5}}\\cdot\\sqrt{\\beta_{y1,IP5}+\\beta_{y2,IP5}}}{\\sqrt{\\beta_{x1,IP1}+\\beta_{x2,IP1}}\\cdot\\sqrt{\\beta_{y1,IP1}+\\beta_{y2,IP1}}}
+
 
     Args:
         data_frame (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis.
 
     Returns:
-        A dictionary with the imbalance, the betas at IPs and their errors.
+         Tuple with the imbalance, the betas at IPs as ufloats.
     """
 
-    lumi_coefficient: Dict[str, float] = {}
+    lumi_coefficient: Dict[str, UFloat] = {}
 
     for ip in IPS:
         LOG.debug(
             f"Computing lumi contribution from optics for IP {ip}"
         )
-        ip_rows = data_frame.loc[data_frame[LABEL].str.startswith(ip)]
+        ip_rows = data_frame.loc[data_frame[NAME].str.startswith(ip)]
 
-        lumi_coefficient[ip] = 0.5*np.prod(
-                                          [up.sqrt(
-                                            up.uarray(ip_rows[f"{BETA}{plane}"].to_numpy(),
-                                                      ip_rows[f"{ERR}{BETA}{plane}"].to_numpy()
-                                                      ).sum()
-                                                   )
-                                            for plane in PLANES]
-                                           )
+        beta_sums = [up.uarray(ip_rows[f"{BETA}{plane}"].to_numpy(),
+                               ip_rows[f"{ERR}{BETA}{plane}"].to_numpy()
+                               ).sum()  # sum over beams
+                     for plane in PLANES]
+        lumi_coefficient[ip] = 0.5 * up.sqrt(np.prod(beta_sums))
 
     imbalance = lumi_coefficient[IPS[0]] / lumi_coefficient[IPS[1]]
+    LOG.info(f'{"Luminosity Imbalance":22s}: {imbalance:s}')
+    LOG.info(f'{"Effective beta IP1":22s}: {lumi_coefficient[IPS[0]]:s}')
+    LOG.info(f'{"Effective beta IP5":22s}: {lumi_coefficient[IPS[1]]:s}')
 
-    return {
-        "imbalance": imbalance.nominal_value,
-        "relative_error": imbalance.std_dev,
-        "eff_beta_ip1": lumi_coefficient[IPS[0]].nominal_value,
-        "rel_error_ip1": lumi_coefficient[IPS[0]].std_dev,
-        "eff_beta_ip5": lumi_coefficient[IPS[1]].nominal_value,
-        "rel_error_ip5": lumi_coefficient[IPS[1]].std_dev,
-    }
+    return imbalance, lumi_coefficient[IPS[0]], lumi_coefficient[IPS[1]]
 
 
-def print_luminosity(lumi_imbalance_results: Dict[str, float]) -> None:
+def _add_imbalance_to_header(tfs_df: tfs.TfsDataFrame,
+                             imbalance: UFloat, beta_ip1: UFloat, beta_ip5: UFloat) \
+        -> tfs.TfsDataFrame:
     """
-    Display the analysis results.
+    Function to add the calculated imablance and effective betas to the header
 
     Args:
-        lumi_imbalance_results (Dict[str, float]): a dictionary with the luminosity imbalance
-            results, as returned by ``get_lumi_imbalance``.
-    """
-    LOG.info(f'{"Luminosity Imbalance":22s}: {lumi_imbalance_results["imbalance"]}')
-    LOG.info(f'{"Relative error":22s}: {lumi_imbalance_results["relative_error"]}')
-    LOG.info(f'{"Effective beta IP1":22s}: {lumi_imbalance_results["eff_beta_ip1"]}')
-    LOG.info(f'{"Rel error IP1":22s}: {lumi_imbalance_results["rel_error_ip1"]}')
-    LOG.info(f'{"Effective beta IP5":22s}: {lumi_imbalance_results["eff_beta_ip5"]}')
-    LOG.info(f'{"Rel error IP5":22s}: {lumi_imbalance_results["rel_error_ip5"]}')
-
-
-def get_significant_digits(lumi_imbalance_res: Dict[str, float]) -> Dict[str, str]:
-    """
-    Update luminosity imbalance results for significant digits based on their errors.
-
-    Args:
-        lumi_imbalance_res (Dict[str, float]): a dictionary with the luminosity imbalance
-            results, as returned by ``get_lumi_imbalance``.
+        tfs_df (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis.
+        imbalance (UFloat): uncertain imbalance
+        beta_ip1 (UFloat): uncertain effective beta in ip1
+        beta_ip5 (UFloat): uncertain effective beta in ip5
 
     Returns:
-        The updated dictionary.
+        tfs.TfsDataFrame with added headers.
+
     """
-    lumi_imbalance_res["imbalance"], lumi_imbalance_res["relative_error"] = significant_digits(
-        lumi_imbalance_res["imbalance"], lumi_imbalance_res["relative_error"]
-    )
-    lumi_imbalance_res["eff_beta_ip1"], lumi_imbalance_res["rel_error_ip1"] = significant_digits(
-        lumi_imbalance_res["eff_beta_ip1"], lumi_imbalance_res["rel_error_ip1"]
-    )
-    lumi_imbalance_res["eff_beta_ip5"], lumi_imbalance_res["rel_error_ip5"] = significant_digits(
-        lumi_imbalance_res["eff_beta_ip5"], lumi_imbalance_res["rel_error_ip5"]
-    )
-    return lumi_imbalance_res
+    header_map = [(HEADER_IMBALANCE, HEADER_REL_ERROR, imbalance),
+                  (HEADER_EFF_BETA_IP1, HEADER_REL_ERROR_IP1, beta_ip1),
+                  (HEADER_EFF_BETA_IP5, HEADER_REL_ERROR_IP5, beta_ip5),
+    ]
+    for val_key, err_key, val in header_map:
+        tfs_df.headers[val_key], tfs_df.headers[err_key] = str(val).split('+/-')
+
+    return tfs_df
 
 
 def merge_tfs(directories: List[pathlib.Path], filename: str) -> tfs.TfsDataFrame:
@@ -160,6 +243,7 @@ def merge_tfs(directories: List[pathlib.Path], filename: str) -> tfs.TfsDataFram
         new_tfs_df.headers.update(old_headers)
         new_tfs_df.headers.update(loaded_tfs.headers)
 
+    _check_tfs_sanity(new_tfs_df)
     return new_tfs_df
 
 
@@ -177,55 +261,6 @@ def get_ip_dir_names(kmod_dirs: List[pathlib.Path]) -> List[pathlib.Path]:
     ]
 
     return ip_dir_names
-
-
-def loader_params():
-    params = EntryPointParameters()
-    params.add_parameter(
-        name="kmod_dirs",
-        type=pathlib.Path,
-        nargs="+",
-        required=True,
-        help=f"Path to kmod directories with stored KMOD measurement files,"
-             f"in particular {LSA_RESULTS}{EXT}",
-    )
-    params.add_parameter(
-        name="outputdir",
-        type=pathlib.Path,
-        required=True,
-        help="Output directory where to write the result tfs",
-    )
-    return params
-
-
-@entrypoint(loader_params(), strict=True)
-def merge_and_copy_kmod_output(opt):
-    output_path: pathlib.Path = opt.outputdir / f"{LSA_RESULTS}{EXT}"
-    # Get the directories we need where the tfs are stored
-    ip_dir_names: List[pathlib.Path] = get_ip_dir_names(opt.kmod_dirs)
-
-    # Combine the lsa data
-    lsa_tfs = merge_tfs(ip_dir_names, f"{LSA_RESULTS}{EXT}")
-
-    # If the TFS data contains everything we need: get the imbalance
-    if _validate_for_imbalance(lsa_tfs):
-        res = get_lumi_imbalance(lsa_tfs)
-        res = get_significant_digits(res)
-        print_luminosity(res)
-
-        lsa_tfs.headers.update(
-            {
-                "LUMINOSITY_IMBALANCE": res["imbalance"],
-                "RELATIVE_ERROR": res["relative_error"],
-                "EFF_BETA_IP1": res["eff_beta_ip1"],
-                "REL_ERROR_IP1": res["rel_error_ip1"],
-                "EFF_BETA_IP5": res["eff_beta_ip5"],
-                "REL_ERROR_IP5": res["rel_error_ip5"],
-            }
-        )
-
-    LOG.info(f"Writing result TFS file to disk at: {output_path}")
-    tfs.write(output_path, lsa_tfs)
 
 
 if __name__ == "__main__":

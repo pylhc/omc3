@@ -6,7 +6,6 @@ from omc3.tune_analysis.bbq_tools import get_moving_average, clean_outliers_movi
 from omc3.tune_analysis.fitting_tools import get_poly_fun
 
 
-
 @pytest.mark.basic
 def test_moving_average():
     np.random.seed(2020)
@@ -22,6 +21,7 @@ def test_moving_average():
     assert sum(np.abs(mav) > 1.2) == 0
     assert (sin_data - mav).std() < (sin_data - data).std()/5  # 5 is handwavingly choosen
     # _plot_helper(sin_data, data, mav)
+
 
 @pytest.mark.basic
 def test_get_poly_fun():
