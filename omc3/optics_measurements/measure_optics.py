@@ -23,7 +23,7 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       chromatic, dispersion, dpp, iforest,
                                       interaction_point, kick, phase, rdt,
-                                      tune)
+                                      tune, crdt)
 from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT)
 from omc3.utils import iotools, logging_tools
 
@@ -65,9 +65,12 @@ def measure_optics(input_files, measure_input):
         if plane == "X":
             dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
     # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
-    if measure_input.nonlinear:
+    if 'rdt' in measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))
         rdt.calculate(measure_input, input_files, tune_dict, invariants, common_header)
+    if 'crdt' in measure_input.nonlinear:
+        iotools.create_dirs(os.path.join(measure_input.outputdir, "crdt"))
+        crdt.calculate(measure_input, input_files, invariants, common_header)
     if measure_input.chromatic_beating:
         chromatic_beating(input_files, measure_input, tune_dict)
 
@@ -126,6 +129,7 @@ class InputFiles(dict):
             for plane in PLANES:
                 df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME", drop=False)
                               if read_files else file_in[plane])
+                df_to_load.index.name = None
                 self[plane].append(self._repair_backwards_compatible_frame(df_to_load, plane))
 
         if len(self['X']) + len(self['Y']) == 0:
@@ -192,10 +196,11 @@ class InputFiles(dict):
             frames_to_join = [df for df in frames_to_join if df.DPPAMP > 0]
         if len(frames_to_join) == 0:
             raise ValueError(f"No data found for non-zero |dp/p|")
-        joined_frame = pd.DataFrame(frames_to_join[0]).loc[:, columns]
+        joined_frame = pd.DataFrame(frames_to_join[0]).reindex(columns=columns, fill_value=np.nan)
         if len(frames_to_join) > 1:
             for i, df in enumerate(frames_to_join[1:]):
-                joined_frame = pd.merge(joined_frame, df.loc[:, columns], how=how, left_index=True,
+                joined_frame = pd.merge(joined_frame, df.reindex(columns=columns, fill_value=np.nan),
+                                        how=how, left_index=True,
                                         right_index=True, suffixes=('', '__' + str(i + 1)))
         for column in columns:
             joined_frame.rename(columns={column: column + '__0'}, inplace=True)

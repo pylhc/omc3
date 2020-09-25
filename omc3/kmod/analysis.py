@@ -52,7 +52,7 @@ def calc_betastar(kmod_input_params, results_df, l_star):
         if kmod_input_params.no_sig_digits:
             results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = (betastar[0], betastar_err)
         else:
-            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_digits(betastar[0], betastar_err)
+            results_df[f"{BETA}{STAR}{plane}"], results_df[f"{ERR}{BETA}{STAR}{plane}"] = tfstools.significant_digits(betastar[0], betastar_err, return_floats=True)
 
 
     # reindex df to put betastar first
@@ -103,7 +103,7 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df, kmod_inpu
         if kmod_input_params.no_sig_digits:
             betas[i, 0], betas[i, 1] = beta[0], beta_err
         else:
-            betas[i, 0], betas[i, 1] = tfstools.significant_digits(beta[0], beta_err)
+            betas[i, 0], betas[i, 1] = tfstools.significant_digits(beta[0], beta_err, return_floats=True)
 
     return name, betas[0, 0], betas[0, 1], betas[1, 0], betas[1, 1]
 
@@ -269,8 +269,8 @@ def get_BPM(kmod_input_params):
     }
 
     # Selecting BPMs
-    BPML = BPM_dict[kmod_input_params.ip.upper()][0] + '.' + kmod_input_params.beam.upper()
-    BPMR = BPM_dict[kmod_input_params.ip.upper()][1] + '.' + kmod_input_params.beam.upper()
+    BPML = BPM_dict[kmod_input_params.interaction_point.upper()][0] + '.' + kmod_input_params.beam.upper()
+    BPMR = BPM_dict[kmod_input_params.interaction_point.upper()][1] + '.' + kmod_input_params.beam.upper()
 
     return BPML, BPMR
 
@@ -342,7 +342,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, betast
     w = x[1]
 
     phase_adv_constraint = phase_constraint(kmod_input_params, plane)
-    if kmod_input_params.ip:
+    if kmod_input_params.interaction_point:
         BPML,BPMR = get_BPM(kmod_input_params)
         BPM_distance = get_BPM_distance(kmod_input_params,BPML,BPMR)
         phase_adv = phase_adv_from_kmod(BPM_distance, b, 0.0, w, 0.0)[0]

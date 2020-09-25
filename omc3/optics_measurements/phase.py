@@ -65,12 +65,14 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
+    df[input_files.get_columns(df, f"MU{plane}")] = (input_files.get_data(df, f"MU{plane}")
+                                                     * meas_input.accelerator.beam_direction)
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
     phase_advances = {"MODEL": _get_square_data_frame(
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
     if meas_input.compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
-    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
+    phases_meas = input_files.get_data(df, f"MU{plane}")
     if meas_input.compensation == "equation":
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
