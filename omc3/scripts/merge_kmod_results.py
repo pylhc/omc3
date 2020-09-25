@@ -46,11 +46,16 @@ def _validate_for_imbalance(df):
                        [f'{ERR}{BETASTAR}{p}' for p in PLANES]
     if not all([column in df.columns for column in expected_columns]):
         return False
-    
+
     return True
 
 
 def get_imbalance(df):
+    '''
+        For the equation, check out Lukas' comment on github:
+        https://github.com/pylhc/omc3/pull/225#issuecomment-698449939
+    '''
+
     rel_error = {}
     eff_beta = {}
     for ip in IPS:
