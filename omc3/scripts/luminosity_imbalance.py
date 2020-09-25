@@ -32,10 +32,6 @@ def _validate_for_imbalance(df):
                         if not df[LABEL].str.contains(label).any()]
 
     if any(not_found_labels):
-        #msg = 'The following required labels are not found in dataframe:' \
-        #      f' {", ".join(not_found_labels)}'
-        #LOG.error(msg)
-        #raise KeyError(msg)
         return False
 
     # Check if we got several times the same labels
@@ -49,10 +45,6 @@ def _validate_for_imbalance(df):
     expected_columns = [f'{BETASTAR}{p}' for p in PLANES] + \
                        [f'{ERR}{BETASTAR}{p}' for p in PLANES]
     if not all([column in df.columns for column in expected_columns]):
-        #msg = 'Expected columns in the TFS file not found. Expected ' \
-        #      f'columns: {expected_columns}'
-        #LOG.error(msg)
-        #raise KeyError(msg)
         return False
     
     return True
@@ -129,8 +121,7 @@ def merge_tfs(directories, filename):
 def get_ip_dir_names(kmod_dirs):
     # Check directories first
     for d in kmod_dirs:
-        print(d)
-        if not d.exists():
+        if not d.is_dir():
             msg = f'Directory {d} does not exist'
             LOG.error(msg)
             raise Exception(msg)
