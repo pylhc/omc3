@@ -176,7 +176,7 @@ def merge_and_copy_kmod_output(opt):
                                 })
 
     # and write the resulting tfs
-    tfs.write(opt.res_dir / f'{LSA_RESULTS}{EXT}', lsa_tfs)
+    tfs.write(opt.outputdir / f'{LSA_RESULTS}{EXT}', lsa_tfs)
 
 
 if __name__ == '__main__':
