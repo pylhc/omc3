@@ -44,7 +44,7 @@ def test_incorrect_paths():
 
     with pytest.raises(Exception) as error:
         luminosity_imbalance.merge_and_copy_kmod_output({'kmod_dirs': paths,
-                                                         'res_dir': Path('.')})
+                                                         'outputdir': Path('.')})
 
     msg = 'Directory IchBinDerAntonAusTirol does not exist'
     assert msg in str(error.value)
@@ -55,7 +55,7 @@ def test_lsa_merge(_tmp_dir):
     paths = [base / 'kmod_ip1', base / 'kmod_ip5']
 
     luminosity_imbalance.merge_and_copy_kmod_output({'kmod_dirs': paths,
-                                                     'res_dir': _tmp_dir})
+                                                     'outputdir': _tmp_dir})
 
     res_lsa_tfs = tfs.read_tfs(_tmp_dir / LSA_RESULTS)
     control_tfs = tfs.read_tfs(base / LSA_RESULTS)

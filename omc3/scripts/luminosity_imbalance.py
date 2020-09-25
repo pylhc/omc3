@@ -145,7 +145,7 @@ def loader_params():
                          nargs='+', required=True,
                          help="Path to kmod directories with stored KMOD "
                               "measurement files")
-    params.add_parameter(name="res_dir", type=pathlib.Path, required=True,
+    params.add_parameter(name="outputdir", type=pathlib.Path, required=True,
                          help="Output directory where to write the result tfs")
     return params
 
