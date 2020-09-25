@@ -113,7 +113,12 @@ def merge_tfs(directories, filename):
         path = d / filename
         data = tfs.read_tfs(path)
 
+        # Save old headers before merging so we don't lose them and then add all of them
+        old_headers = new_tfs.headers
         new_tfs = new_tfs.append(data, ignore_index=True)
+
+        new_tfs.headers.update(old_headers)
+        new_tfs.headers.update(data.headers)
 
     return new_tfs
 
