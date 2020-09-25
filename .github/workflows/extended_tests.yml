@@ -5,11 +5,7 @@ defaults:
   run:
     shell: bash
 
-on:  # Runs on all push events to master branch and any push related to a pull request
-  push:
-    branches:
-      - master
-  pull_request:
+on:  [pull_request]  # Runs on any push related to a pull request
 
 jobs:
   tests:
