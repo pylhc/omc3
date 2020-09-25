@@ -58,8 +58,12 @@ def _validate_for_imbalance(data_frame: tfs.TfsDataFrame) -> bool:
 
 def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Dict[str, float]:
     """
-    Calculate the IP1 / IP5 luminosity imbalance. The calculation implemented is detailed in
+    Calculate the IP1 / IP5 luminosity imbalance. The luminosity is taken as defined in
     `Concept of luminosity`, Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf
+
+    The calculation of the luminosity imbalance is then:
+    .. math::
+    \\frac{L_{IP1}}{L_{IP5}}=\\frac{\\sqrt{\\beta_{x1,IP5}+\\beta_{x2,IP5}}\\cdot\\sqrt{\\beta_{y1,IP5}+\\beta_{y2,IP5}}}{\\sqrt{\\beta_{x1,IP1}+\\beta_{x2,IP1}}\\cdot\\sqrt{\\beta_{y1,IP1}+\\beta_{y2,IP1}}}
 
     Args:
         data_frame (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis.
