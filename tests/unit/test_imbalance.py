@@ -28,7 +28,7 @@ def test_result_tfs(_tfs_file):
 
 def test_wrong_columns(_tfs_wrong_columns):
     res = merge_kmod_results._validate_for_imbalance(_tfs_wrong_columns)
-    assert res == False
+    assert not res
 
 
 def test_twice_label(_tfs_twice_label):
@@ -44,14 +44,14 @@ def test_incorrect_paths():
 
     with pytest.raises(Exception) as error:
         merge_kmod_results.merge_and_copy_kmod_output({'kmod_dirs': paths,
-                                                         'outputdir': Path('.')})
+                                                       'outputdir': Path('.')})
 
     msg = 'Directory IchBinDerAntonAusTirol does not exist'
     assert msg in str(error.value)
 
 
 def test_lsa_merge(_tmp_dir):
-    base =  CURRENT_DIR.parent / 'inputs' / 'merge_kmod'
+    base = CURRENT_DIR.parent / 'inputs' / 'merge_kmod'
     paths = [base / 'kmod_ip1', base / 'kmod_ip5']
 
     merge_kmod_results.merge_and_copy_kmod_output({'kmod_dirs': paths,
