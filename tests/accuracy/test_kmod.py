@@ -1,4 +1,3 @@
-import pytest
 from os.path import dirname, join, isdir, pardir
 
 import tfs
@@ -9,13 +8,12 @@ from omc3.run_kmod import analyse_kmod
 from omc3.kmod.constants import BETA, ERR, STAR
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
-from omc3.run_kmod import RESULTS_FILE_NAME, INSTRUMENTS_FILE_NAME, LSA_FILE_NAME 
+from omc3.run_kmod import RESULTS_FILE_NAME, INSTRUMENTS_FILE_NAME, LSA_FILE_NAME
 CURRENT_DIR = dirname(__file__)
 LIMITS = {'Accuracy': 1E-5,
           'Meas Accuracy': 0.05,
           'Num Precision': 1E-15,
           'Meas Precision': 0.1}
-
 
 
 @pytest.mark.extended
@@ -43,6 +41,7 @@ def test_kmod_phase_simulation_ip5b1(_workdir_path):
         assert (np.abs(beta_meas - beta_sim)) / beta_sim < LIMITS['Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
+
 
 @pytest.mark.extended
 def test_kmod_phase_measured_ip5b1(_workdir_path):
@@ -80,7 +79,7 @@ def test_kmod_simulation_ip1b1(_workdir_path):
                     simulation=True,
                     no_sig_digits=True,
                     no_plots=False,
-                    ip='ip1',
+                    interaction_point='ip1',
                     cminus=0.0,
                     misalignment=0.0,
                     errorK=0.0,
@@ -107,7 +106,7 @@ def test_kmod_simulation_ip1b2(_workdir_path):
                     no_sig_digits=True,
                     no_plots=False,
                     no_autoclean=True,
-                    ip='ip1',
+                    interaction_point='ip1',
                     cminus=0.0,
                     misalignment=0.0,
                     errorK=0.0,
@@ -123,6 +122,7 @@ def test_kmod_simulation_ip1b2(_workdir_path):
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
+
 @pytest.mark.extended
 def test_kmod_meas_ip1b1(_workdir_path):
 
@@ -132,7 +132,7 @@ def test_kmod_meas_ip1b1(_workdir_path):
                     simulation=False,
                     no_sig_digits=True,
                     no_plots=False,
-                    ip='ip1',
+                    interaction_point='ip1',
                     cminus=0.0,
                     misalignment=0.0,
                     errorK=0.0,
@@ -147,6 +147,7 @@ def test_kmod_meas_ip1b1(_workdir_path):
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
+
 @pytest.mark.extended
 def test_kmod_meas_ip1b2(_workdir_path):
 
@@ -156,7 +157,7 @@ def test_kmod_meas_ip1b2(_workdir_path):
                     simulation=False,
                     no_sig_digits=True,
                     no_plots=False,
-                    ip='ip1',
+                    interaction_point='ip1',
                     cminus=0.0,
                     misalignment=0.0,
                     errorK=0.0,
@@ -170,6 +171,7 @@ def test_kmod_meas_ip1b2(_workdir_path):
         assert (np.abs(beta_meas-beta_prev[plane]))/beta_prev[plane] < LIMITS['Meas Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
+
 
 @pytest.mark.extended
 def test_kmod_meas_ip4b1(_workdir_path):
@@ -205,9 +207,6 @@ def test_kmod_meas_ip4b1(_workdir_path):
             assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
 
-
-
-
 @pytest.mark.extended
 def test_kmod_simulation_ip4b1(_workdir_path):
 
@@ -240,21 +239,22 @@ def test_kmod_simulation_ip4b1(_workdir_path):
             beta_err_meas = results[f"{ERR}{BETA}{plane}"].loc[inst]
             assert (beta_err_meas / beta_meas) < LIMITS['Meas Precision']
 
+
 @pytest.mark.extended
 def test_kmod_meas_ip4b2(_workdir_path):
 
     analyse_kmod(betastar_and_waist=[200.0, -100.0],
-                    working_directory=_workdir_path,
-                    beam='B2',
-                    simulation=False,
-                    no_sig_digits=True,
-                    no_plots=False,
-                    circuits=['RQ7.L4B2', 'RQ6.L4B2'],
-                    cminus=0.0,
-                    misalignment=0.0,
-                    errorK=0.0,
-                    errorL=0.0,
-                    tune_uncertainty=0.5E-5)
+                 working_directory=_workdir_path,
+                 beam='B2',
+                 simulation=False,
+                 no_sig_digits=True,
+                 no_plots=False,
+                 circuits=['RQ7.L4B2', 'RQ6.L4B2'],
+                 cminus=0.0,
+                 misalignment=0.0,
+                 errorK=0.0,
+                 errorL=0.0,
+                 tune_uncertainty=0.5E-5)
     results = tfs.read(join(_workdir_path, "MQM.7L4.B2-MQY.6L4.B2", f"{INSTRUMENTS_FILE_NAME}{EXT}"), index='NAME')
 
     original = {

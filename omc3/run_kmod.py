@@ -107,6 +107,8 @@ def analyse_kmod(opt):
     opt.betastar_and_waist = convert_betastar_and_waist(opt.betastar_and_waist)
     for error in ("cminus", "errorK", "errorL", "misalignment"):
         opt = check_default_error(opt, error)
+    if opt.measurement_dir is None and opt.model_dir is None and opt.phase_weight:
+        raise AttributeError("Cannot use phase advance without measurement or model")
 
     LOG.info(f"{'IP trim' if opt.interaction_point is not None else 'Individual magnets'} analysis")
     opt['magnets'] = MAGNETS_IP[opt.interaction_point.upper()] if opt.interaction_point is not None else [
@@ -139,6 +141,7 @@ def analyse_kmod(opt):
 
     create_lsa_results_file(betastar_required, opt.instruments_found, results_df, instrument_beta_df, output_dir)
 
+
 def create_lsa_results_file(betastar_required, instruments_found, results_df, instrument_beta_df, output_dir):
     lsa_results_df = pd.DataFrame(columns=LSA_COLUMNS)
     if betastar_required:
@@ -149,6 +152,7 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
     
     if not lsa_results_df.empty:
         tfs.write(join(output_dir, f'{LSA_FILE_NAME}{EXT}'), lsa_results_df)
+
 
 def convert_betastar_and_waist(bs):
     if len(bs) == 2:
