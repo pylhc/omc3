@@ -1,13 +1,11 @@
-import os
 import shutil
 from pathlib import Path
 
 import pytest
 import tfs
 
-from omc3.definitions.constants import PLANES
 from omc3.scripts import merge_kmod_results
-from omc3.scripts.merge_kmod_results import BETASTAR, ERR
+
 
 CURRENT_DIR = Path(__file__).parent
 RESULTS = "results.tfs"

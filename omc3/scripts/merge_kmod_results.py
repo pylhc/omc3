@@ -10,16 +10,14 @@ from generic_parser import EntryPointParameters, entrypoint
 from tfs.tools import significant_digits
 
 from omc3.definitions.constants import PLANES
+from omc3.kmod.constants import  ERR, BETA
 from omc3.run_kmod import EXT
 from omc3.run_kmod import LSA_FILE_NAME as LSA_RESULTS
-from omc3.run_kmod import RESULTS_FILE_NAME as RESULTS
 from omc3.utils.logging_tools import get_logger
 
 LOG = get_logger(__name__)
 
-BETASTAR = "BETSTAR"
-ERR = "ERR"
-LABEL = "LABEL"  # Column containing the IP/Beam names
+LABEL = "NAME"  # Column containing the IP/Beam names
 BEAMS = ("B1", "B2")
 IPS = ("ip1", "ip5")
 LABELS = [f"{ip}{beam}" for ip in IPS for beam in BEAMS]
@@ -48,8 +46,8 @@ def _validate_for_imbalance(data_frame: tfs.TfsDataFrame) -> bool:
             LOG.error(f"Found label '{label}' several times. Expected only once")
             raise KeyError(f"Duplicate label '{label}' in dataframe's columns")
 
-    # Validate the columns we need: BETSTAR{X,Y} and ERRBETSTAR{X,Y}
-    expected_columns = [f"{BETASTAR}{p}" for p in PLANES] + [f"{ERR}{BETASTAR}{p}" for p in PLANES]
+    # Validate the columns we need: BET{X,Y} and ERRBET{X,Y}
+    expected_columns = [f"{BETA}{p}" for p in PLANES] + [f"{ERR}{BETA}{p}" for p in PLANES]
     if not all([column in data_frame.columns for column in expected_columns]):
         return False
 
@@ -82,8 +80,8 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Dict[str, float]:
 
         lumi_coefficient[ip] = 0.5*reduce(mul,
                                           [up.sqrt(
-                                            up.uarray(ip_row[f"{BETASTAR}{plane}"].values,
-                                                      ip_row[f"{ERR}{BETASTAR}{plane}"].values).sum()
+                                            up.uarray(ip_row[f"{BETA}{plane}"].values,
+                                                      ip_row[f"{ERR}{BETA}{plane}"].values).sum()
                                                    )
                                             for plane in PLANES]
                                            ) # at some point when omc3 is py>=3.8 this can be replaced by prod()
@@ -189,7 +187,8 @@ def loader_params():
         type=pathlib.Path,
         nargs="+",
         required=True,
-        help="Path to kmod directories with stored KMOD measurement files",
+        help=f"Path to kmod directories with stored KMOD measurement files,"
+             f"in particular {LSA_RESULTS}{EXT}",
     )
     params.add_parameter(
         name="outputdir",
@@ -206,15 +205,12 @@ def merge_and_copy_kmod_output(opt):
     # Get the directories we need where the tfs are stored
     ip_dir_names: List[pathlib.Path] = get_ip_dir_names(opt.kmod_dirs)
 
-    # Combine the data into one tfs
-    new_data = merge_tfs(ip_dir_names, f"{RESULTS}{EXT}")
-
     # Combine the lsa data
     lsa_tfs = merge_tfs(ip_dir_names, f"{LSA_RESULTS}{EXT}")
 
     # If the TFS data contains everything we need: get the imbalance
-    if _validate_for_imbalance(new_data):
-        res = get_lumi_imbalance(new_data)
+    if _validate_for_imbalance(lsa_tfs):
+        res = get_lumi_imbalance(lsa_tfs)
         res = get_significant_digits(res)
         print_luminosity(res)
 

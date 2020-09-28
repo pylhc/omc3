@@ -7,13 +7,13 @@ from generic_parser import entrypoint, EntryPointParameters
 
 from omc3.kmod import analysis, helper
 from omc3.kmod.constants import (
-    EXT, 
-    FIT_PLOTS_NAME, 
-    SEQUENCES_PATH, 
-    BETA, 
-    ERR, 
-    STAR, 
-    LSA_FILE_NAME, 
+    EXT,
+    FIT_PLOTS_NAME,
+    SEQUENCES_PATH,
+    BETA,
+    ERR,
+    STAR,
+    LSA_FILE_NAME,
     RESULTS_FILE_NAME,
     INSTRUMENTS_FILE_NAME
 )
