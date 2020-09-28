@@ -30,6 +30,7 @@ DEPENDENCIES = [
     "pytz>=2018.9",
     "h5py>=2.9.0",
     "pytimber>=2.8.0",
+    "uncertainties>=3.1.4",
 ]
 
 # Extra dependencies

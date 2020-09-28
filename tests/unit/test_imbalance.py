@@ -19,11 +19,11 @@ def test_result_tfs(_tfs_file):
     res = merge_kmod_results.get_lumi_imbalance(_tfs_file)
 
     assert res["imbalance"] == 0.974139299943968
-    assert res["relative_error"] == 0.003859317636164786
-    assert res["eff_beta_ip1"] == 0.39800399369855577
-    assert res["rel_error_ip1"] == 0.0015434779687894644
-    assert res["eff_beta_ip5"] == 0.4085698972636139
-    assert res["rel_error_ip5"] == 0.0023158396673753213
+    assert res["relative_error"] == 0.0027110906825478205
+    assert res["eff_beta_ip1"] == 0.3980039936985557
+    assert res["rel_error_ip1"] == 0.0006143103957639417
+    assert res["eff_beta_ip5"] == 0.40856989726361387
+    assert res["rel_error_ip5"] == 0.0009461823749785368
 
 
 @pytest.mark.basic

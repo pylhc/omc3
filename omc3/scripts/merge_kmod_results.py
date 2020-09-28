@@ -1,9 +1,9 @@
 import pathlib
 import re
 from functools import reduce
-from math import sqrt
 from operator import mul
 from typing import Dict, List
+from uncertainties import unumpy as up
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
@@ -71,39 +71,32 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Dict[str, float]:
     Returns:
         A dictionary with the imbalance, the betas at IPs and their errors.
     """
-    relative_errors: Dict[str, float] = {}
-    effective_betas: Dict[str, float] = {}
+
+    lumi_coefficient: Dict[str, float] = {}
 
     for ip in IPS:
         LOG.debug(
-            f"Computing average betastars and absolute errors for IP {ip}, for both planes "
-            f"and beams"
+            f"Computing lumi contribution from optics for IP {ip}"
         )
         ip_row = data_frame.loc[data_frame[LABEL].str.startswith(ip)]
-        average_beta = {}
-        error = {}
 
-        for plane in PLANES:
-            average_beta[plane] = 0.5 * ip_row[f"{BETASTAR}{plane}"].sum(axis=0)
-            error[plane] = 0.5 * sqrt((ip_row[f"{ERR}{BETASTAR}{plane}"] ** 2).sum(axis=0))
+        lumi_coefficient[ip] = 0.5*reduce(mul,
+                                          [up.sqrt(
+                                            up.uarray(ip_row[f"{BETASTAR}{plane}"].values,
+                                                      ip_row[f"{ERR}{BETASTAR}{plane}"].values).sum()
+                                                   )
+                                            for plane in PLANES]
+                                           ) # at some point when omc3 is py>=3.8 this can be replaced by prod()
 
-        # Compute the relative error and effective beta for this IP
-        relative_errors[ip] = 0.5 * sqrt(
-            sum([(error[p] ** 2) / (average_beta[p] ** 2) for p in PLANES])
-        )
-        effective_betas[ip] = sqrt(reduce(mul, average_beta.values()))
-
-    # Compute the whole relative error and get the imbalance
-    relative_error = sum(relative_errors.values())
-    imbalance = effective_betas[IPS[0]] / effective_betas[IPS[1]]
+    imbalance = lumi_coefficient[IPS[0]] / lumi_coefficient[IPS[1]]
 
     return {
-        "imbalance": imbalance,
-        "relative_error": relative_error,
-        "eff_beta_ip1": effective_betas[IPS[0]],
-        "rel_error_ip1": relative_errors[IPS[0]],
-        "eff_beta_ip5": effective_betas[IPS[1]],
-        "rel_error_ip5": relative_errors[IPS[1]],
+        "imbalance": imbalance.nominal_value,
+        "relative_error": imbalance.std_dev,
+        "eff_beta_ip1": lumi_coefficient[IPS[0]].nominal_value,
+        "rel_error_ip1": lumi_coefficient[IPS[0]].std_dev,
+        "eff_beta_ip5": lumi_coefficient[IPS[1]].nominal_value,
+        "rel_error_ip5": lumi_coefficient[IPS[1]].std_dev,
     }
 
 
