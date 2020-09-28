@@ -1,8 +1,7 @@
 import pathlib
 import re
-from functools import reduce
-from operator import mul
 from typing import Dict, List
+import numpy as np
 from uncertainties import unumpy as up
 
 import tfs
@@ -10,9 +9,8 @@ from generic_parser import EntryPointParameters, entrypoint
 from tfs.tools import significant_digits
 
 from omc3.definitions.constants import PLANES
-from omc3.kmod.constants import  ERR, BETA
-from omc3.run_kmod import EXT
-from omc3.run_kmod import LSA_FILE_NAME as LSA_RESULTS
+from omc3.kmod.constants import  ERR, BETA, EXT
+from omc3.kmod.constants import LSA_FILE_NAME as LSA_RESULTS
 from omc3.utils.logging_tools import get_logger
 
 LOG = get_logger(__name__)
@@ -76,15 +74,16 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Dict[str, float]:
         LOG.debug(
             f"Computing lumi contribution from optics for IP {ip}"
         )
-        ip_row = data_frame.loc[data_frame[LABEL].str.startswith(ip)]
+        ip_rows = data_frame.loc[data_frame[LABEL].str.startswith(ip)]
 
-        lumi_coefficient[ip] = 0.5*reduce(mul,
+        lumi_coefficient[ip] = 0.5*np.prod(
                                           [up.sqrt(
-                                            up.uarray(ip_row[f"{BETA}{plane}"].values,
-                                                      ip_row[f"{ERR}{BETA}{plane}"].values).sum()
+                                            up.uarray(ip_rows[f"{BETA}{plane}"].to_numpy(),
+                                                      ip_rows[f"{ERR}{BETA}{plane}"].to_numpy()
+                                                      ).sum()
                                                    )
                                             for plane in PLANES]
-                                           ) # at some point when omc3 is py>=3.8 this can be replaced by prod()
+                                           )
 
     imbalance = lumi_coefficient[IPS[0]] / lumi_coefficient[IPS[1]]
 

@@ -17,7 +17,6 @@ from omc3.kmod.constants import (
     RESULTS_FILE_NAME,
     INSTRUMENTS_FILE_NAME
 )
-from omc3.optics_measurements.constants import EXT
 from omc3.utils import logging_tools, iotools
 
 LOG = logging_tools.get_logger(__name__)

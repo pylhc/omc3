@@ -5,15 +5,13 @@ import pytest
 import tfs
 
 from omc3.scripts import merge_kmod_results
-
+from omc3.kmod.constants import LSA_FILE_NAME as LSA_RESULTS
+from omc3.kmod.constants import EXT
 
 CURRENT_DIR = Path(__file__).parent
-RESULTS = "results.tfs"
-LSA_RESULTS = "lsa_results.tfs"
 
 
-@pytest.mark.basic
-def test_result_tfs(_tfs_file):
+def test_calc_lumi_imbalance(_tfs_file):
     res = merge_kmod_results.get_lumi_imbalance(_tfs_file)
 
     assert res["imbalance"] == 0.974139299943968
@@ -48,14 +46,14 @@ def test_incorrect_paths():
 
 
 @pytest.mark.basic
-def test_lsa_merge(_tmp_dir):
+def test_merge_kmod_results(_tmp_dir):
     base = CURRENT_DIR.parent / "inputs" / "merge_kmod"
     paths = [base / "kmod_ip1", base / "kmod_ip5"]
 
     merge_kmod_results.merge_and_copy_kmod_output({"kmod_dirs": paths, "outputdir": _tmp_dir})
 
-    res_lsa_tfs = tfs.read_tfs(_tmp_dir / LSA_RESULTS)
-    control_tfs = tfs.read_tfs(base / LSA_RESULTS)
+    res_lsa_tfs = tfs.read_tfs(_tmp_dir / f"{LSA_RESULTS}{EXT}")
+    control_tfs = tfs.read_tfs(base / f"{LSA_RESULTS}{EXT}")
 
     assert res_lsa_tfs.equals(control_tfs)
 
