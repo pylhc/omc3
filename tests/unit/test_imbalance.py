@@ -14,6 +14,7 @@ RESULTS = "results.tfs"
 LSA_RESULTS = "lsa_results.tfs"
 
 
+@pytest.mark.basic
 def test_result_tfs(_tfs_file):
     res = merge_kmod_results.get_lumi_imbalance(_tfs_file)
 
@@ -25,17 +26,20 @@ def test_result_tfs(_tfs_file):
     assert res["rel_error_ip5"] == 0.0023158396673753213
 
 
+@pytest.mark.basic
 def test_wrong_columns(_tfs_wrong_columns):
     res = merge_kmod_results._validate_for_imbalance(_tfs_wrong_columns)
     assert not res
 
 
+@pytest.mark.basic
 def test_twice_label(_tfs_twice_label):
     with pytest.raises(KeyError) as error:
         merge_kmod_results._validate_for_imbalance(_tfs_twice_label)
     assert "Duplicate label 'ip1B1' in dataframe's columns" in str(error.value)
 
 
+@pytest.mark.basic
 def test_incorrect_paths():
     paths = [Path("IchBinDerAntonAusTirol"), Path("Pizza4Fromages")]
 
@@ -45,6 +49,7 @@ def test_incorrect_paths():
     assert "Directory IchBinDerAntonAusTirol does not exist" in str(error.value)
 
 
+@pytest.mark.basic
 def test_lsa_merge(_tmp_dir):
     base = CURRENT_DIR.parent / "inputs" / "merge_kmod"
     paths = [base / "kmod_ip1", base / "kmod_ip5"]
