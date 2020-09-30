@@ -245,8 +245,12 @@ class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
         return Path(value)
 
 
-def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
-    """ Converts all Paths in the dict to strings. """
+def convert_paths_in_dict_to_strings(dict_: dict) -> None:
+    """ Converts all Paths in the dict to strings.
+
+    .. warning::
+        Changes dict in-place!
+    """
     for key, value in dict_.items():
         if isinstance(value, Path):
             dict_[key] = str(value)
@@ -263,17 +267,19 @@ def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
                         has_changed = True
                 if has_changed:
                     dict_[key] = list_
-    return dict_
 
 
-def remove_none_dict_entries(dict_: dict) -> dict:
+def remove_none_dict_entries(dict_: dict) -> None:
     """ Removes None entries from dict.
     This can be used as a workaround to
-    https://github.com/pylhc/generic_parser/issues/26 """
+    https://github.com/pylhc/generic_parser/issues/26.
+
+    .. warning::
+        Changes dict in-place!
+    """
     for key, value in list(dict_.items()):
         if value is None:
             del dict_[key]
-    return dict_
 
 
 def save_config(output_dir: Path, opt: dict, script: str):
@@ -287,8 +293,8 @@ def save_config(output_dir: Path, opt: dict, script: str):
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     opt = opt.copy()
-    opt = remove_none_dict_entries(opt)  # temporary fix
-    opt = convert_paths_in_dict_to_strings(opt)
+    remove_none_dict_entries(opt)  # temporary fix
+    convert_paths_in_dict_to_strings(opt)
     save_options_to_config(output_dir / formats.get_config_filename(script),
                            OrderedDict(sorted(opt.items()))
                            )
