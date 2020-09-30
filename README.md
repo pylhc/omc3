@@ -69,6 +69,13 @@ can be found in the [`tests`](https://github.com/pylhc/omc3/tree/master/tests) f
 
 ### Changelog
 
+#### 2020-09-30
+
+- Added:
+  - script to merge kmod results and calculate imbalance
+  - fixture for temporary/non-temporary test output folder
+  - scripts to documentation
+
 #### 2020-07-27
 
 - Added:
