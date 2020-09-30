@@ -57,7 +57,6 @@ LOG = get_logger(__name__)
 NAME = "NAME"  # Column containing the IP/Beam names
 BEAMS = ("B1", "B2")
 IPS = ("ip1", "ip5")
-IMBALANCE_NAMES = [f"{ip}{beam}" for ip in IPS for beam in BEAMS]
 
 HEADER_IMBALANCE = "LUMINOSITY_IMBALANCE"
 HEADER_REL_ERROR = "RELATIVE_ERROR"
@@ -151,16 +150,14 @@ def _validate_for_imbalance(data_frame: tfs.TfsDataFrame) -> bool:
     Returns:
         ``True`` if the provided dataframe is valid, ``False`` otherwise.
     """
-    # check all required names are there
-    not_found_names = [
-        name for name in IMBALANCE_NAMES if not data_frame.index.str.startswith(name).any()
-    ]
-    if not_found_names:
+    # check all required entries are there
+    imbalance_names = [f"{ip}{beam}" for ip in IPS for beam in BEAMS]
+    imbalance_columns = [f"{err}{BETA}{p}" for p in PLANES for err in ('', ERR)]
+    try:
+        data_frame.loc[imbalance_names, imbalance_columns]
+    except KeyError:
         return False
-
-    # Validate the columns we need: BET{X,Y} and ERRBET{X,Y}
-    expected_columns = [f"{BETA}{p}" for p in PLANES] + [f"{ERR}{BETA}{p}" for p in PLANES]
-    return all([column in data_frame.columns for column in expected_columns])
+    return True
 
 
 def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UFloat]:
