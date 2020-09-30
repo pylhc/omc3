@@ -18,7 +18,7 @@ DEBUG = False
 def test_merge_kmod_results(tmp_output_dir):
     paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip5"]
 
-    res_tfs_passed = merge_kmod_results.merge_kmod_results({"kmod_dirs": paths, "outputdir": tmp_output_dir})
+    res_tfs_passed = merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
     res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename, index=merge_kmod_results.NAME)
     control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
@@ -73,20 +73,11 @@ def test_wrong_names(_tfs_file):
 
 
 @pytest.mark.basic
-def test_twice_label(_tfs_file):
-    tfs_twice_label = _tfs_file.append(_tfs_file.iloc[0, :])
+def test_twice_label(tmp_output_dir):
+    paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip1"]
     with pytest.raises(KeyError) as error:
-        merge_kmod_results._check_tfs_sanity(tfs_twice_label)
-    assert tfs_twice_label.index[0] in str(error.value)
-
-
-@pytest.mark.basic
-def test_too_many_entries(_tfs_file):
-    tfs_df = _tfs_file.append(_tfs_file.iloc[0, :])
-    tfs_df.index.array[-1] = 'ip1B3'
-    with pytest.raises(KeyError) as error:
-        merge_kmod_results._check_tfs_sanity(tfs_df)
-    assert 'ip1' in str(error.value)
+        merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
+        assert 'ip1B1' in str(error.value)
 
 
 @pytest.mark.basic
@@ -94,7 +85,7 @@ def test_incorrect_paths():
     paths = [Path("IchBinDerAntonAusTirol"), Path("Pizza4Fromages")]
 
     with pytest.raises(Exception) as error:
-        merge_kmod_results.merge_kmod_results({"kmod_dirs": paths, "outputdir": Path(".")})
+        merge_kmod_results.merge_kmod_results(kmod_dirs=paths)
 
     assert "Directory IchBinDerAntonAusTirol does not exist" in str(error.value)
 

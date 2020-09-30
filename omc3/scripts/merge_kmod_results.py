@@ -5,6 +5,10 @@ Merge KMOD Results
 Script to merge the results from KMOD into one TfsDataFrame.
 The script takes the kmod-results folders as input and merges the
 lsa-result tfs-files in these together.
+
+The resulting TfsDataFrame is returned, but also written out if an `outputdir`
+is given.
+
 BPMWKs (common for both beams) are hereby dropped, to avoid duplicated elements.
 
 Headers of the same name will be overwritten (depending on the alphabetical
@@ -14,9 +18,6 @@ Some sanity checks are performed, e.g. that there is only one entry per element.
 If IP1 and IP5 results are given for both planes and beams, the luminosity
 imbalance between these IPs is also calculated and written into the header,
 as well as logged.
-
-The resulting TfsDataFrame is returned, but also written out if an `outputdir`
-is given.
 
 **Arguments:**
 
@@ -36,16 +37,13 @@ is given.
 """
 import pathlib
 import re
-from collections import OrderedDict
 from typing import Dict, List, Tuple
 
 import numpy as np
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-from generic_parser.entrypoint_parser import save_options_to_config
-from uncertainties import ufloat, UFloat, unumpy as up
+from uncertainties import UFloat, unumpy as up
 
-from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.kmod.constants import ERR, BETA, EXT
 from omc3.kmod.constants import LSA_FILE_NAME as LSA_RESULTS
@@ -95,7 +93,7 @@ def merge_kmod_results(opt) -> tfs.TfsDataFrame:
         save_config(opt.outputdir, opt, script=__file__)  # creates outputdir
 
     # Get the directories we need where the tfs are stored
-    ip_dir_names: List[pathlib.Path] = get_ip_dir_names(opt.kmod_dirs)
+    ip_dir_names: List[pathlib.Path] = get_kmod_ip_subdirs(opt.kmod_dirs)
 
     # Combine the lsa data
     lsa_tfs = merge_tfs(ip_dir_names, f"{LSA_RESULTS}{EXT}")
@@ -110,33 +108,6 @@ def merge_kmod_results(opt) -> tfs.TfsDataFrame:
         LOG.info(f"Writing result TFS file to disk at: {str(output_path)}")
         tfs.write(output_path, lsa_tfs, save_index=NAME)
     return lsa_tfs
-
-
-def _check_tfs_sanity(data_frame: tfs.TfsDataFrame):
-    """
-    Checks that the merged `TfsDataFrame` has valid entries,
-    i.e. names are unique and max two entries per IP.
-
-    Args:
-        data_frame (tfs.TfsDataFrame): a loaded `TfsDataFrame` to validate.
-    """
-    # Check that both beams are there only once
-    multiple_names = [name for name in data_frame.index if (data_frame.index == name).sum() > 1]
-    if multiple_names:
-        msg = (f"Found entries '{', '.join(set(multiple_names))}' "
-               f"several times in merged DataFrame. "
-               "Expected only once")
-        LOG.error(msg)
-        raise KeyError(msg)
-
-    # check that there is no weird additional data
-    too_many_entries = [ip for ip in IPS if data_frame.index.str.startswith(ip).sum() > 2]
-    if too_many_entries:
-        msg = ("More than two entries found for ips "
-               f"{', '.join(too_many_entries)} in merged DataFrame. "
-               "Expected one for each beam.")
-        LOG.error(msg)
-        raise KeyError(msg)
 
 
 def _validate_for_imbalance(data_frame: tfs.TfsDataFrame) -> bool:
@@ -169,8 +140,17 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UF
 
     .. math::
 
-        \\frac{L_{IP1}}{L_{IP5}}=\\frac{\\sqrt{\\beta_{x1,IP5}+\\beta_{x2,IP5}}\\cdot\\sqrt{\\beta_{y1,IP5}+\\beta_{y2,IP5}}}{\\sqrt{\\beta_{x1,IP1}+\\beta_{x2,IP1}}\\cdot\\sqrt{\\beta_{y1,IP1}+\\beta_{y2,IP1}}}
+        \\frac{L_{IP1}}{L_{IP5}}=\\frac{\\sqrt{\\beta_{x1,IP5}+\\beta_{x2,IP5}}
+        \\cdot\\sqrt{\\beta_{y1,IP5}+\\beta_{y2,IP5}}}
+        {\\sqrt{\\beta_{x1,IP1}+\\beta_{x2,IP1}}\\cdot\\sqrt{\\beta_{y1,IP1}+\\beta_{y2,IP1}}}
 
+    and the error:
+
+    .. math::
+
+        \\sigma_{\\frac{L_{IP1}}{L_{IP5}}} = \\frac{1}{2}\\frac{L_{IP1}}{L_{IP5}}
+        \\cdot \\sqrt{\\sum_{\substack{z \\in (x,y) \\\\ i \\in (IP1, IP5) }}
+        {\\frac{\\sigma^2_{\\beta_{z1,i}} + \\sigma^2_{\\beta_{z2,i}}} {(\\beta_{z1,i}+\\beta_{z2,i})^2}}}
 
     Args:
         data_frame (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis.
@@ -182,10 +162,8 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UF
     lumi_coefficient: Dict[str, UFloat] = {}
 
     for ip in IPS:
-        LOG.debug(
-            f"Computing lumi contribution from optics for IP {ip}"
-        )
-        ip_rows = data_frame.loc[data_frame.index.str.startswith(ip)]
+        LOG.debug(f"Computing luminosity contribution from optics for IP {ip}")
+        ip_rows = data_frame.loc[[f"{ip}{beam}" for beam in BEAMS], :]
 
         beta_sums = [up.uarray(ip_rows[f"{BETA}{plane}"].to_numpy(),
                                ip_rows[f"{ERR}{BETA}{plane}"].to_numpy()
@@ -194,6 +172,7 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UF
         lumi_coefficient[ip] = 0.5 * up.sqrt(np.prod(beta_sums))
 
     imbalance = lumi_coefficient[IPS[0]] / lumi_coefficient[IPS[1]]
+
     LOG.info(f'{"Luminosity Imbalance":22s}: {imbalance:s}')
     LOG.info(f'{"Effective beta IP1":22s}: {lumi_coefficient[IPS[0]]:s}')
     LOG.info(f'{"Effective beta IP5":22s}: {lumi_coefficient[IPS[1]]:s}')
@@ -241,7 +220,7 @@ def merge_tfs(directories: List[pathlib.Path], filename: str) -> tfs.TfsDataFram
     """
     # Combine the data into one tfs
     new_tfs = tfs.TfsDataFrame()
-    headers = OrderedDict()
+    headers = {}
     for d in sorted(directories):
         loaded_tfs = tfs.read_tfs(d / filename)
         headers.update(loaded_tfs.headers)  # old headers are lost in `append`
@@ -251,24 +230,31 @@ def merge_tfs(directories: List[pathlib.Path], filename: str) -> tfs.TfsDataFram
 
     # drop BPMWK and check tfs
     new_tfs = new_tfs.loc[~new_tfs.index.str.startswith(BPMWK), :]
-    _check_tfs_sanity(new_tfs)
+    if not new_tfs.index.is_unique:
+        raise KeyError("Found duplicated entries "
+                       f"{', '.join(set(new_tfs.index[new_tfs.index.duplicated()]))}'.")
     return new_tfs
 
 
-def get_ip_dir_names(kmod_dirs: List[pathlib.Path]) -> List[pathlib.Path]:
+def get_kmod_ip_subdirs(kmod_dirs: List[pathlib.Path]) -> List[pathlib.Path]:
+    """ Returns the paths to the ip-subdirectories in the kmod result directories.
+
+    Args:
+        kmod_dirs (List[Path]): Main kmod result directories with IP-subdirectories
+
+    Returns:
+        (List[Path]) Paths to all subdirectories.
+    """
     # Check directories first
-    for d in kmod_dirs:
-        if not d.is_dir():
-            msg = f"Directory {d} does not exist"
-            LOG.error(msg)
-            raise NotADirectoryError(msg)
+    for main_dir in kmod_dirs:
+        if not main_dir.is_dir():
+            raise NotADirectoryError(f"Directory {main_dir} does not exist")
 
     pattern = re.compile(".*ip[0-9]B[1-2]")
-    ip_dir_names = [
-        d for kmod in kmod_dirs for d in kmod.glob("**/*") if pattern.match(d.name) and d.is_dir()
+    return [
+        sub_dir for main_dir in kmod_dirs for sub_dir in main_dir.glob("**/*")
+        if pattern.match(sub_dir.name) and sub_dir.is_dir()
     ]
-
-    return ip_dir_names
 
 
 if __name__ == "__main__":

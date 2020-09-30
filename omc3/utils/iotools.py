@@ -12,12 +12,9 @@ Feel free to use and extend this module.
 .. moduleauthor:: vimaier
 
 """
-
 import json
 import os
 import shutil
-from collections import OrderedDict
-from contextlib import suppress
 from pathlib import Path
 
 from generic_parser.entry_datatypes import get_instance_faker_meta
@@ -296,5 +293,5 @@ def save_config(output_dir: Path, opt: dict, script: str):
     remove_none_dict_entries(opt)  # temporary fix
     convert_paths_in_dict_to_strings(opt)
     save_options_to_config(output_dir / formats.get_config_filename(script),
-                           OrderedDict(sorted(opt.items()))
+                           dict(sorted(opt.items()))
                            )
