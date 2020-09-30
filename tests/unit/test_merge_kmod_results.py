@@ -1,11 +1,12 @@
 from pathlib import Path
 
+import numpy as np
 import pytest
 import tfs
+from pandas._testing import assert_dict_equal
+from pandas.testing import assert_frame_equal
 
 from omc3.scripts import merge_kmod_results
-import numpy as np
-
 from tests.conftest import cli_args
 
 INPUT_DIR = Path(__file__).parent.parent / "inputs" / "merge_kmod"
@@ -19,25 +20,28 @@ def test_merge_kmod_results(tmp_output_dir):
 
     res_tfs_passed = merge_kmod_results.merge_kmod_results({"kmod_dirs": paths, "outputdir": tmp_output_dir})
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
-    res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename)
-    control_tfs = tfs.read_tfs(INPUT_DIR / 'control.tfs')
+    res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename, index=merge_kmod_results.NAME)
+    control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
 
-    assert res_lsa_tfs.equals(control_tfs)
-    assert res_tfs_passed.equals(control_tfs)
+    assert_frame_equal(res_lsa_tfs, control_tfs)
+    assert_dict_equal(res_lsa_tfs.headers, control_tfs.headers, compare_keys=True)
+    assert_frame_equal(res_tfs_passed, control_tfs, check_exact=False)
+    assert_dict_equal(res_tfs_passed.headers, control_tfs.headers, compare_keys=True)
 
 
 @pytest.mark.extended
-def test_merge_kmod_results_commandline(tmp_ouput_dir):
+def test_merge_kmod_results_commandline(tmp_output_dir):
     paths = [str(INPUT_DIR / "kmod_ip1"), str(INPUT_DIR / "kmod_ip5")]
 
-    with cli_args("--kmod_dirs", *paths, "--outputdir", str(tmp_ouput_dir)):
+    with cli_args("--kmod_dirs", *paths, "--outputdir", str(tmp_output_dir)):
         merge_kmod_results.merge_kmod_results()
 
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
-    res_lsa_tfs = tfs.read_tfs(tmp_ouput_dir / filename)
-    control_tfs = tfs.read_tfs(INPUT_DIR / 'control.tfs')
+    res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename, index=merge_kmod_results.NAME)
+    control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
 
-    assert res_lsa_tfs.equals(control_tfs)
+    assert_frame_equal(res_lsa_tfs, control_tfs)
+    assert_dict_equal(res_lsa_tfs.headers, control_tfs.headers, compare_keys=True)
 
 
 # Units ------------------------------------------------------------------------
@@ -63,7 +67,7 @@ def test_wrong_columns(_tfs_file):
 
 @pytest.mark.basic
 def test_wrong_names(_tfs_file):
-    tfs_wrong_names = _tfs_file.drop(index=[0])
+    tfs_wrong_names = _tfs_file.drop(index=[_tfs_file.index[0]])
     res = merge_kmod_results._validate_for_imbalance(tfs_wrong_names)
     assert not res
 
@@ -73,13 +77,13 @@ def test_twice_label(_tfs_file):
     tfs_twice_label = _tfs_file.append(_tfs_file.iloc[0, :])
     with pytest.raises(KeyError) as error:
         merge_kmod_results._check_tfs_sanity(tfs_twice_label)
-    assert tfs_twice_label[merge_kmod_results.NAME].iloc[0] in str(error.value)
+    assert tfs_twice_label.index[0] in str(error.value)
 
 
 @pytest.mark.basic
 def test_too_many_entries(_tfs_file):
     tfs_df = _tfs_file.append(_tfs_file.iloc[0, :])
-    tfs_df.iloc[-1, 0] = 'ip1B3'
+    tfs_df.index.array[-1] = 'ip1B3'
     with pytest.raises(KeyError) as error:
         merge_kmod_results._check_tfs_sanity(tfs_df)
     assert 'ip1' in str(error.value)
@@ -100,4 +104,4 @@ def test_incorrect_paths():
 
 @pytest.fixture
 def _tfs_file():
-    return tfs.read_tfs(INPUT_DIR / "test_imbalance.tfs")
+    return tfs.read_tfs(INPUT_DIR / "test_imbalance.tfs", index=merge_kmod_results.NAME)

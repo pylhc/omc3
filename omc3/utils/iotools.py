@@ -245,7 +245,7 @@ class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
         return Path(value)
 
 
-def convert_paths_in_dict_to_strings(dict_):
+def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
     """ Converts all Paths in the dict to strings. """
     for key, value in dict_.items():
         if isinstance(value, Path):
@@ -266,7 +266,7 @@ def convert_paths_in_dict_to_strings(dict_):
     return dict_
 
 
-def remove_none_dict_entries(dict_):
+def remove_none_dict_entries(dict_: dict) -> dict:
     """ Removes None entries from dict.
     This can be used as a workaround to
     https://github.com/pylhc/generic_parser/issues/26 """
@@ -276,8 +276,15 @@ def remove_none_dict_entries(dict_):
     return dict_
 
 
-def save_config(output_dir, opt, script):
-    """ Quick wrapper for save_options_to_config. """
+def save_config(output_dir: Path, opt: dict, script: str):
+    """  Quick wrapper for save_options_to_config.
+
+    Args:
+        output_dir (Path): Path to the output directory (does not need to exist)
+        opt (dict): opt-structure to be saved
+        script (str): path/name of the invoking script (becomes name of the .ini)
+                      usually ``__file__``
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
     opt = opt.copy()
     opt = remove_none_dict_entries(opt)  # temporary fix

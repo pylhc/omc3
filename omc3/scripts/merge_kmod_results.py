@@ -5,6 +5,10 @@ Merge KMOD Results
 Script to merge the results from KMOD into one TfsDataFrame.
 The script takes the kmod-results folders as input and merges the
 lsa-result tfs-files in these together.
+BPMWKs (common for both beams) are hereby dropped, to avoid duplicated elements.
+
+Headers of the same name will be overwritten (depending on the alphabetical
+order of the directory names).
 
 Some sanity checks are performed, e.g. that there is only one entry per element.
 If IP1 and IP5 results are given for both planes and beams, the luminosity
@@ -32,16 +36,20 @@ is given.
 """
 import pathlib
 import re
+from collections import OrderedDict
 from typing import Dict, List, Tuple
 
 import numpy as np
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
+from generic_parser.entrypoint_parser import save_options_to_config
 from uncertainties import ufloat, UFloat, unumpy as up
 
+from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.kmod.constants import ERR, BETA, EXT
 from omc3.kmod.constants import LSA_FILE_NAME as LSA_RESULTS
+from omc3.utils.iotools import save_config
 from omc3.utils.logging_tools import get_logger
 
 LOG = get_logger(__name__)
@@ -57,6 +65,8 @@ HEADER_EFF_BETA_IP1 = "EFFECTIVE_BETA_IP1"
 HEADER_REL_ERROR_IP1 = "RELATIVE_ERROR_IP1"
 HEADER_EFF_BETA_IP5 = "EFFECTIVE_BETA_IP5"
 HEADER_REL_ERROR_IP5 = "RELATIVE_ERROR_IP5"
+
+BPMWK = "BPMWK."  # elements starting with this are dropped
 
 
 def get_params():
@@ -82,6 +92,9 @@ def merge_kmod_results(opt) -> tfs.TfsDataFrame:
     """ Main function to merge K-Mod output.
     See :mod:`omc3.scripts.merge_kmod_results`.
     """
+    if opt.outputdir:
+        save_config(opt.outputdir, opt, script=__file__)  # creates outputdir
+
     # Get the directories we need where the tfs are stored
     ip_dir_names: List[pathlib.Path] = get_ip_dir_names(opt.kmod_dirs)
 
@@ -96,7 +109,7 @@ def merge_kmod_results(opt) -> tfs.TfsDataFrame:
     if opt.outputdir:
         output_path = opt.outputdir / f"{LSA_RESULTS}{EXT}"
         LOG.info(f"Writing result TFS file to disk at: {str(output_path)}")
-        tfs.write(output_path, lsa_tfs)
+        tfs.write(output_path, lsa_tfs, save_index=NAME)
     return lsa_tfs
 
 
@@ -109,9 +122,7 @@ def _check_tfs_sanity(data_frame: tfs.TfsDataFrame):
         data_frame (tfs.TfsDataFrame): a loaded `TfsDataFrame` to validate.
     """
     # Check that both beams are there only once
-    multiple_names = [
-        name for name in data_frame[NAME] if len(data_frame.loc[data_frame[NAME] == name]) > 1
-    ]
+    multiple_names = [name for name in data_frame.index if sum(data_frame.index == name) > 1]
     if multiple_names:
         msg = (f"Found entries '{', '.join(set(multiple_names))}' "
                f"several times in merged DataFrame. "
@@ -120,7 +131,7 @@ def _check_tfs_sanity(data_frame: tfs.TfsDataFrame):
         raise KeyError(msg)
 
     # check that there is no weird additional data
-    too_many_entries = [ip for ip in IPS if len(data_frame[NAME].str.startswith(ip)) > 2]
+    too_many_entries = [ip for ip in IPS if sum(data_frame.index.str.startswith(ip)) > 2]
     if too_many_entries:
         msg = ("More than two entries found for ips "
                f"{', '.join(too_many_entries)} in merged DataFrame. "
@@ -142,7 +153,7 @@ def _validate_for_imbalance(data_frame: tfs.TfsDataFrame) -> bool:
     """
     # check all required names are there
     not_found_names = [
-        name for name in IMBALANCE_NAMES if not data_frame[NAME].str.startswith(name).any()
+        name for name in IMBALANCE_NAMES if not data_frame.index.str.startswith(name).any()
     ]
     if not_found_names:
         return False
@@ -177,7 +188,7 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UF
         LOG.debug(
             f"Computing lumi contribution from optics for IP {ip}"
         )
-        ip_rows = data_frame.loc[data_frame[NAME].str.startswith(ip)]
+        ip_rows = data_frame.loc[data_frame.index.str.startswith(ip)]
 
         beta_sums = [up.uarray(ip_rows[f"{BETA}{plane}"].to_numpy(),
                                ip_rows[f"{ERR}{BETA}{plane}"].to_numpy()
@@ -232,19 +243,19 @@ def merge_tfs(directories: List[pathlib.Path], filename: str) -> tfs.TfsDataFram
         A `TfsDataFrame` combining all the loaded files from the provided directories.
     """
     # Combine the data into one tfs
-    new_tfs_df = tfs.TfsDataFrame()
+    new_tfs = tfs.TfsDataFrame()
+    headers = OrderedDict()
     for d in sorted(directories):
         loaded_tfs = tfs.read_tfs(d / filename)
+        headers.update(loaded_tfs.headers)  # old headers are lost in `append`
+        new_tfs = new_tfs.append(loaded_tfs, ignore_index=True)
+    new_tfs.headers = headers
+    new_tfs = new_tfs.set_index(NAME)
 
-        # Save old headers before merging so we don't lose them and then add all of them
-        old_headers = new_tfs_df.headers
-        new_tfs_df = new_tfs_df.append(loaded_tfs, ignore_index=True)
-
-        new_tfs_df.headers.update(old_headers)
-        new_tfs_df.headers.update(loaded_tfs.headers)
-
-    _check_tfs_sanity(new_tfs_df)
-    return new_tfs_df
+    # drop BPMWK and check tfs
+    new_tfs = new_tfs.loc[~new_tfs.index.str.startswith(BPMWK), :]
+    _check_tfs_sanity(new_tfs)
+    return new_tfs
 
 
 def get_ip_dir_names(kmod_dirs: List[pathlib.Path]) -> List[pathlib.Path]:
