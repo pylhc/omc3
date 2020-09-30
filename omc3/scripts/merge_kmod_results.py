@@ -121,7 +121,7 @@ def _check_tfs_sanity(data_frame: tfs.TfsDataFrame):
         data_frame (tfs.TfsDataFrame): a loaded `TfsDataFrame` to validate.
     """
     # Check that both beams are there only once
-    multiple_names = [name for name in data_frame.index if sum(data_frame.index == name) > 1]
+    multiple_names = [name for name in data_frame.index if (data_frame.index == name).sum() > 1]
     if multiple_names:
         msg = (f"Found entries '{', '.join(set(multiple_names))}' "
                f"several times in merged DataFrame. "
@@ -130,7 +130,7 @@ def _check_tfs_sanity(data_frame: tfs.TfsDataFrame):
         raise KeyError(msg)
 
     # check that there is no weird additional data
-    too_many_entries = [ip for ip in IPS if sum(data_frame.index.str.startswith(ip)) > 2]
+    too_many_entries = [ip for ip in IPS if data_frame.index.str.startswith(ip).sum() > 2]
     if too_many_entries:
         msg = ("More than two entries found for ips "
                f"{', '.join(too_many_entries)} in merged DataFrame. "
