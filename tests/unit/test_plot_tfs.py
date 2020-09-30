@@ -67,7 +67,7 @@ def test_simple_plot_manual_planes_two_files(tmp_output_dir):
 # Simple Tests ---
 @pytest.mark.extended
 def test_simple_plot(tmp_output_dir):
-    figs = simple_plot_tfs()
+    figs = simple_plot_tfs(output=tmp_output_dir)
     assert len(figs) == 2
     for fig in figs.values():
         assert len(fig.axes) == 1
