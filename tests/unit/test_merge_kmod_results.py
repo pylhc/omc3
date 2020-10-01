@@ -44,6 +44,19 @@ def test_merge_kmod_results_commandline(tmp_output_dir):
     assert_dict_equal(res_lsa_tfs.headers, control_tfs.headers, compare_keys=True)
 
 
+@pytest.mark.extended
+def test_merge_kmod_results_ini(tmp_output_dir):
+    paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip5"]
+
+    res_tfs_args = merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
+
+    ini = next(tmp_output_dir.glob('*.ini'))
+    res_tfs_ini = merge_kmod_results.merge_kmod_results(entry_cfg=ini)
+
+    assert_frame_equal(res_tfs_args, res_tfs_ini)
+    assert_dict_equal(res_tfs_args.headers, res_tfs_ini.headers, compare_keys=True)
+
+
 # Units ------------------------------------------------------------------------
 
 @pytest.mark.basic
