@@ -1,6 +1,6 @@
 import os
-from os.path import abspath, dirname, isdir, join
-from shutil import rmtree
+from os.path import abspath, dirname, join
+import tempfile
 import numpy as np
 import pytest
 import tfs
@@ -45,35 +45,40 @@ MEASURE_OPTICS_SETTINGS = dict(
 )
 
 LIN_DIR = join(dirname(__file__), os.pardir, "inputs", "crdt")
-RESULTS_PATH = join(dirname(__file__), os.pardir, "results", "crdt-test")
+
+ORDERS = ['coupling', 'sextupole', 'skewsextupole', 'octupole']
 
 
-def _create_input(order):
-    path_to_lin = join(LIN_DIR, order)
-    optics_opt = MEASURE_OPTICS_SETTINGS.copy()
-    optics_opt.update({
-        'files': [join(path_to_lin, f'{order}{idx}') for idx in range(1, 4)],
-        'outputdir': abspath(join(RESULTS_PATH, order)),
-    })
-    hole_in_one_entrypoint(**optics_opt)
-    return (optics_opt, path_to_lin)
+@pytest.fixture(scope='module')
+def _create_input():
+    omc3_input = {}
+    with tempfile.TemporaryDirectory() as cwd:
+        for order in ORDERS:
+            path_to_lin = join(LIN_DIR, order)
+            optics_opt = MEASURE_OPTICS_SETTINGS.copy()
+            optics_opt.update({
+                'files': [join(path_to_lin, f'{order}{idx}') for idx in range(1, 4)],
+                'outputdir': abspath(join(cwd, order)),
+                })
+            hole_in_one_entrypoint(**optics_opt)
+            omc3_input[order] = (optics_opt, path_to_lin)
+        yield omc3_input
 
-
-PRECREATED_INPUT = {order: _create_input(order) for order in ['coupling', 'sextupole', 'skewsextupole', 'octupole']}
 
 
 @pytest.mark.extended
-@pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole', 'octupole'])
-def test_crdt_amp(order):
-    (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
+@pytest.mark.parametrize("order", ORDERS)
+def test_crdt_amp(order, _create_input):
+    omc3_input = _create_input
+    (optics_opt, path_to_lin) = omc3_input[order]
     ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
 
     for crdt_dict in crdt.CRDTS:
         if order == crdt_dict["order"]:
             hio_crdt = tfs.read(join(optics_opt["outputdir"],
-                                        "crdt",
-                                        order,
-                                        f'{crdt_dict["term"]}.tfs'),
+                                     "crdt",
+                                     order,
+                                     f'{crdt_dict["term"]}.tfs'),
                                 index="NAME")
             assert _max_dev(hio_crdt["AMP"].to_numpy(),
                             ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(),
@@ -81,17 +86,18 @@ def test_crdt_amp(order):
 
 
 @pytest.mark.extended
-@pytest.mark.parametrize("order", ['coupling', 'sextupole', 'skewsextupole'])
-def test_crdt_complex(order):
-    (optics_opt, path_to_lin) = PRECREATED_INPUT[order]
+@pytest.mark.parametrize("order", ORDERS[:3])
+def test_crdt_complex(order, _create_input):
+    omc3_input = _create_input
+    (optics_opt, path_to_lin) = omc3_input[order]
     ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
 
     for crdt_dict in crdt.CRDTS:
         if order == crdt_dict["order"]:
             hio_crdt = tfs.read(join(optics_opt["outputdir"],
-                                        "crdt",
-                                        order,
-                                        f'{crdt_dict["term"]}.tfs'),
+                                     "crdt",
+                                     order,
+                                     f'{crdt_dict["term"]}.tfs'),
                                 index="NAME")
 
             assert _max_dev(hio_crdt["REAL"].to_numpy(),
@@ -103,11 +109,6 @@ def test_crdt_complex(order):
                             NOISELEVEL_COMPLEX[order]) < ACCURACY_LIMIT[order]
 
 
-    @classmethod
-    def teardown_class(cls):
-        _clean_up(RESULTS_PATH)
-
-
 def _rel_dev(a, b, limit):
     a = a[np.abs(b) > limit]
     b = b[np.abs(b) > limit]
@@ -116,8 +117,3 @@ def _rel_dev(a, b, limit):
 
 def _max_dev(a, b, limit):
     return np.max(_rel_dev(a, b, limit))
-
-
-def _clean_up(path_dir):
-    if isdir(path_dir):
-        rmtree(path_dir, ignore_errors=True)
