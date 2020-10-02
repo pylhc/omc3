@@ -306,15 +306,8 @@ def get_phase_from_measurement(kmod_input_params,plane):
 
 
 def phase_constraint(kmod_input_params, plane):
-    # if measured data exists
-<<<<<<< HEAD
-    if os.path.exists(os.path.join(f'{kmod_input_params.measurement_dir}',f'phase_{plane.lower()}.out')):
-        phase_adv_model, phase_adv_err = get_phase_from_measurement(kmod_input_params,plane)
-        #LOG.info('Phase from measurement. Weight = %1.3f' % weight)
-=======
     if kmod_input_params.measurement_dir:
         return get_phase_from_measurement(kmod_input_params, plane)
->>>>>>> 895112edafae003764eb927f33bcca1c8f2a6301
     # model is taken (if exists) in case no measurement data is provided
     if kmod_input_params.model_dir:
         return get_phase_from_model(kmod_input_params, plane)
@@ -325,7 +318,6 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
 
     b = x[0]
     w = x[1]
-
 
     if kmod_input_params.interaction_point:
 
