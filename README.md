@@ -61,11 +61,20 @@ are in [`/omc3/scripts`](https://github.com/pylhc/omc3/tree/master/omc3/scripts)
 - `update_nattune_in_linfile.py` to update the natural tune columns in the lin files by finding the highest
 peak in the spectrum in a given interval
 - `write_madx_macros.py` to generate madx tracking macros with observation points from a twissfile
+- `merge_kmod_results.py` to merge lsa_results files created by kmod. Adds the luminosity imbalance if
+the 4 needed IP/Beam files combination are present.
 
 #### Examples
 can be found in the [`tests`](https://github.com/pylhc/omc3/tree/master/tests) files.
 
 ### Changelog
+
+#### 2020-09-30
+
+- Added:
+  - script to merge kmod results and calculate imbalance
+  - fixture for temporary/non-temporary test output folder
+  - scripts to documentation
 
 #### 2020-07-27
 

@@ -6,17 +6,22 @@ import tfs
 from generic_parser import entrypoint, EntryPointParameters
 
 from omc3.kmod import analysis, helper
-from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH, BETA, ERR, STAR
-from omc3.optics_measurements.constants import EXT
+from omc3.kmod.constants import (
+    EXT,
+    FIT_PLOTS_NAME,
+    SEQUENCES_PATH,
+    BETA,
+    ERR,
+    STAR,
+    LSA_FILE_NAME,
+    RESULTS_FILE_NAME,
+    INSTRUMENTS_FILE_NAME
+)
 from omc3.utils import logging_tools, iotools
 
 LOG = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
 
 LSA_COLUMNS = ['NAME', f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
-RESULTS_FILE_NAME = 'results'
-INSTRUMENTS_FILE_NAME = 'beta_instrument'
-LSA_FILE_NAME = 'lsa_results'
-
 
 def kmod_params():
     parser = EntryPointParameters()

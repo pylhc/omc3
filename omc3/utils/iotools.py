@@ -12,12 +12,9 @@ Feel free to use and extend this module.
 .. moduleauthor:: vimaier
 
 """
-
 import json
 import os
 import shutil
-from collections import OrderedDict
-from contextlib import suppress
 from pathlib import Path
 
 from generic_parser.entry_datatypes import get_instance_faker_meta
@@ -245,8 +242,10 @@ class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
         return Path(value)
 
 
-def convert_paths_in_dict_to_strings(dict_):
-    """ Converts all Paths in the dict to strings. """
+def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
+    """ Converts all Paths in the dict to strings,
+     including those in iterables. """
+    dict_ = dict_.copy()
     for key, value in dict_.items():
         if isinstance(value, Path):
             dict_[key] = str(value)
@@ -266,22 +265,26 @@ def convert_paths_in_dict_to_strings(dict_):
     return dict_
 
 
-def remove_none_dict_entries(dict_):
+def remove_none_dict_entries(dict_: dict) -> dict:
     """ Removes None entries from dict.
     This can be used as a workaround to
-    https://github.com/pylhc/generic_parser/issues/26 """
-    for key, value in list(dict_.items()):
-        if value is None:
-            del dict_[key]
-    return dict_
+    https://github.com/pylhc/generic_parser/issues/26.
+    """
+    return {key: value for key, value in dict_.items() if value is not None}
 
 
-def save_config(output_dir, opt, script):
-    """ Quick wrapper for save_options_to_config. """
+def save_config(output_dir: Path, opt: dict, script: str):
+    """  Quick wrapper for save_options_to_config.
+
+    Args:
+        output_dir (Path): Path to the output directory (does not need to exist)
+        opt (dict): opt-structure to be saved
+        script (str): path/name of the invoking script (becomes name of the .ini)
+                      usually ``__file__``
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
-    opt = opt.copy()
-    opt = remove_none_dict_entries(opt)  # temporary fix
+    opt = remove_none_dict_entries(opt)  # temporary fix (see docstring)
     opt = convert_paths_in_dict_to_strings(opt)
     save_options_to_config(output_dir / formats.get_config_filename(script),
-                           OrderedDict(sorted(opt.items()))
+                           dict(sorted(opt.items()))
                            )
