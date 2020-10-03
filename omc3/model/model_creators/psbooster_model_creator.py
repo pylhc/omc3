@@ -5,7 +5,7 @@ from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
 
 
-class PsboosterModelCreator(object):
+class PsboosterModelCreator:
 
     @classmethod
     def get_madx_script(cls, instance, output_path):

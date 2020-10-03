@@ -100,7 +100,7 @@ def deleteFilesWithoutGitignore(pathToDirectory):
     filenames_list = os.listdir(pathToDirectory)
 
     for filename in filenames_list:
-        if ".gitignore" != filename:
+        if filename != ".gitignore":
             os.remove( os.path.join(pathToDirectory,filename) )
 
     return True
@@ -172,7 +172,7 @@ def get_all_dir_names_in_dir(path_to_dir):
 
 
 def is_empty_dir(directory):
-    return 0 == os.listdir(directory)
+    return os.listdir(directory) == 0
 
 
 def is_not_empty_dir(directory):
@@ -220,7 +220,7 @@ def replace_keywords_in_textfile(path_to_textfile, dict_for_replacing, new_outpu
 
 def json_dumps_readable(json_outfile, object_to_dump):
     """ This is how you write a beautiful json file
-    
+
     Args:
         json_outfile: File to write
         object_to_dump: object to dump to json format

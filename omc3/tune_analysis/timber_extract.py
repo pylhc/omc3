@@ -108,4 +108,3 @@ def get_fill_times(db, fill_number):
     """
     fill = db.getLHCFillData(fill_number)
     return fill['startTime'], fill['endTime']
-

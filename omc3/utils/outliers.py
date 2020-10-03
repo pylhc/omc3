@@ -20,7 +20,7 @@ def get_filter_mask(data, x_data=None, limit=0.0, niter=20, nsig=None, mask=None
     if x_data is not None:
         if not len(data) == len(x_data):
             raise ValueError("Datasets are not equally long.")
-    
+
     # To fulfill the condition for the first iteration:
     if mask is not None:
         if not len(data) == len(mask):

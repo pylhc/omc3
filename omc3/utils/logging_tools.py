@@ -44,7 +44,7 @@ FATAL = logging.FATAL
 # Classes and Contexts #########################################################
 
 
-class MaxFilter(object):
+class MaxFilter:
     """ To get messages only up to a certain level """
     def __init__(self, level):
         self.__level = level
@@ -53,7 +53,7 @@ class MaxFilter(object):
         return log_record.levelno <= self.__level
 
 
-class DebugMode(object):
+class DebugMode:
     """ Context Manager for the debug mode.
 
     Hint: Does not work with @contextmanager from contextlib (even though nicer code),
@@ -112,7 +112,7 @@ class DebugMode(object):
             self.mod_logger.removeHandler(self.console_h)
 
 
-class TempFile(object):
+class TempFile:
         """ Context Manager.
         Lets another function write into a temporary file and logs its contents.
 
@@ -226,7 +226,7 @@ def odr_pprint(printer, odr_out):
     if hasattr(odr_out, 'info'):
         printer(f'  Residual Variance: {odr_out.res_var}')
         printer(f'  Inverse Condition #: {odr_out.inv_condnum}')
-        printer(f'  Reason(s) for Halting:')
+        printer('  Reason(s) for Halting:')
         for r in odr_out.stopreason:
             printer(f'    {r}')
 
@@ -377,7 +377,7 @@ def _bring_color(format_string, colorlevel=INFO):
     message = "%(message)"
     name = "%(name)"
     format_string = format_string.replace(level, COLOR_LEVEL + level)
-    
+
     if colorlevel <= INFO:
         format_string = format_string.replace(message, COLOR_MESSAGE + message)
     elif colorlevel <= WARNING:

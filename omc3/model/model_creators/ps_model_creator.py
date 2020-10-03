@@ -8,7 +8,7 @@ from omc3.model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
 LOGGER = logging.getLogger(__name__)
 
 
-class PsModelCreator(object):
+class PsModelCreator:
 
     @classmethod
     def get_madx_script(cls, instance, output_path):
@@ -67,6 +67,3 @@ class PsModelCreator(object):
         src_path = instance.get_file("error_deff.txt")
         dest_path = os.path.join(output_path, ERROR_DEFFS_TXT)
         shutil.copy(src_path, dest_path)
-
-
-

@@ -52,9 +52,9 @@ def read_tbt(file_path):
         except KeyError:
             pass
 
-def _get_turn_by_turn_data_v1(hd5, plane, version):
 
-    keys = [key for key in hd5.keys() if (key.endswith(PLANES_CONV[version][plane]))]
+def _get_turn_by_turn_data_v1(hd5, plane, version):
+    keys = [key for key in hd5.keys() if key.endswith(PLANES_CONV[version][plane])]
     nbpm = len(keys)
     nturn = FUNCTIONS[version]['get_nturns'](hd5, version)
     data = np.zeros((nbpm, nturn))
@@ -77,7 +77,7 @@ def _get_number_of_turns_v1(hd5, version):
 def _get_turn_by_turn_data_v2(hd5, plane, version):
 
     keys = [key for key in hd5.keys() if not key.startswith('N:')]
-    if keys == []:
+    if not keys:
         raise TypeError('Wrong version of converter was used.')
     nbpm = len(keys)
     nturn = FUNCTIONS[version]['get_nturns'](hd5, version)
@@ -90,7 +90,7 @@ def _get_turn_by_turn_data_v2(hd5, plane, version):
 
 def _get_list_of_bpmnames_v2(hd5):
     bpms = [f'IBPM{key}' for key in list(hd5.keys()) if check_key_v2(key)]
-    if bpms == []:
+    if not bpms:
         raise TypeError('Wrong version of converter was used.')
     return np.unique(bpms)
 

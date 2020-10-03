@@ -19,6 +19,7 @@ TODO if zeros or nans occur in errors, fallback to uniform weights only in affec
 import numpy as np
 from scipy.special import erf
 from scipy.stats import t
+
 from omc3.definitions.constants import PI2, PI2I
 
 CONFIDENCE_LEVEL = (1 + erf(1 / np.sqrt(2))) / 2

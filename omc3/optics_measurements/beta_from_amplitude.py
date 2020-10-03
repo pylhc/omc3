@@ -33,7 +33,7 @@ def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane
 
     Returns:
 
-        
+
     """
     beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
@@ -47,7 +47,7 @@ def phase_to_amp_ratio(measure_input, beta_phase, beta_amp, plane):
     ratio = pd.merge(beta_phase.loc[:, [f"BET{plane}"]], beta_amp.loc[:, [f"BET{plane}"]],
                      how='inner', left_index=True, right_index=True, suffixes=("ph", "amp"))
     ph_over_amp = df_ratio(ratio, f"BET{plane}ph", f"BET{plane}amp")
-    mask = (np.array(0.1 < np.abs(ph_over_amp)) & np.array(np.abs(ph_over_amp) < 10.0) &
+    mask = (np.array(np.abs(ph_over_amp) > 0.1) & np.array(np.abs(ph_over_amp) < 10.0) &
             np.array(measure_input.accelerator.get_element_types_mask(ratio.index, ["arc_bpm"])))
     x_ratio = np.mean(ph_over_amp[mask])
     return x_ratio

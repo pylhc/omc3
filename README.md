@@ -1,5 +1,5 @@
 # <img src="https://twiki.cern.ch/twiki/pub/BEABP/Logos/OMC_logo.png" height="28"> 3
-TODO: Use Github Badge 
+
 [![Cron Testing](https://github.com/pylhc/omc3/workflows/Cron%20Testing/badge.svg)](https://github.com/pylhc/omc3/actions?query=workflow%3A%22Cron+Testing%22)
 [![Code Climate coverage](https://img.shields.io/codeclimate/coverage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)
 [![Code Climate maintainability (percentage)](https://img.shields.io/codeclimate/maintainability-percentage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)

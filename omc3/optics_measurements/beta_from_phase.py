@@ -172,7 +172,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
 
 def get_elements_with_errors(meas_input, plane):
     if meas_input.accelerator.error_defs_file is None:
-        raise IOError(f"Error definition file could not be found")
+        raise IOError("Error definition file could not be found")
     elements = meas_input.accelerator.elements.loc[:, ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
     LOGGER.debug("Accelerator Error Definition")
     elements = _assign_uncertainties(elements, meas_input.accelerator.error_defs_file)

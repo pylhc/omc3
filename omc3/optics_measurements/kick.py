@@ -17,12 +17,9 @@ import tfs
 
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.model.accelerators.accelerator import AccElementTypes
-from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
-                                                DPPAMP, ERR, EXT, KICK_NAME,
-                                                NAT_TUNE, PEAK2PEAK,
-                                                RES,
-                                                RESCALE_FACTOR, RMS,
-                                                SQRT_ACTION, TIME, TUNE, S)
+from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP, DPPAMP, ERR, EXT,
+                                                KICK_NAME, NAT_TUNE, PEAK2PEAK, RES, RESCALE_FACTOR,
+                                                RMS, S, SQRT_ACTION, TIME, TUNE)
 
 
 def calculate(measure_input, input_files, scale, header_dict, plane):

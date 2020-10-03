@@ -20,10 +20,9 @@ import tfs
 
 from omc3 import __version__ as VERSION
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
-                                      chromatic, dispersion, dpp, iforest,
-                                      interaction_point, kick, phase, rdt,
-                                      tune, crdt)
+from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase, chromatic, crdt,
+                                      dispersion, dpp, iforest, interaction_point, kick, phase, rdt,
+                                      tune)
 from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT)
 from omc3.utils import iotools, logging_tools
 
@@ -123,7 +122,7 @@ class InputFiles(dict):
         get_data(frame, column)
     """
     def __init__(self, files_to_analyse, optics_opt):
-        super(InputFiles, self).__init__(zip(PLANES, ([], [])))
+        super().__init__(zip(PLANES, ([], [])))
         read_files = isinstance(files_to_analyse[0], str)
         for file_in in files_to_analyse:
             for plane in PLANES:
@@ -195,7 +194,7 @@ class InputFiles(dict):
         if dpp_amp:
             frames_to_join = [df for df in frames_to_join if df.DPPAMP > 0]
         if len(frames_to_join) == 0:
-            raise ValueError(f"No data found for non-zero |dp/p|")
+            raise ValueError("No data found for non-zero |dp/p|")
         joined_frame = pd.DataFrame(frames_to_join[0]).reindex(columns=columns, fill_value=np.nan)
         if len(frames_to_join) > 1:
             for i, df in enumerate(frames_to_join[1:]):

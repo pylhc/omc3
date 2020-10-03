@@ -13,7 +13,6 @@ import numpy as np
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
 
-
 LOG = logging_tools.get_logger(__name__)
 
 

@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.kmod import analysis
-from omc3.kmod.constants import SIDES, ERR, TUNE, EXT, CLEANED, K, AVERAGE, BETA
+from omc3.kmod.constants import AVERAGE, BETA, CLEANED, ERR, EXT, K, SIDES, TUNE
 from omc3.utils import logging_tools, outliers
 
 LOG = logging_tools.get_logger(__name__)
@@ -128,7 +128,6 @@ def plot_cleaned_data(magnet_dfs, plot_name, interactive_plot=False):
     plt.savefig(plot_name)
     if interactive_plot:
         plt.show()
-    return
 
 
 def ax_plot(ax, magnet_df, plane):
@@ -144,7 +143,6 @@ def ax_plot(ax, magnet_df, plane):
             color='red', label='Fit', zorder=3)
     ax.set_xlabel(r'$ \Delta K $', fontsize=15)
     ax.set_ylabel(r'$ Q_{{{:s}}} $'.format(plane), fontsize=15)
-    return
 
 
 def ax_errorbar_plot(ax, magnet_df, plane, clean, plot_settings):

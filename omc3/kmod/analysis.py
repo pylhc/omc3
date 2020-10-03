@@ -8,7 +8,7 @@ from tfs import tools as tfstools
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE
+from omc3.kmod.constants import AVERAGE, BETA, CLEANED, ERR, K, PHASEADV, STAR, TUNE, WAIST
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -210,7 +210,7 @@ def do_fit(magnet_df, plane, use_approx=False):
         fun = fit_prec
     elif use_approx:
         fun = fit_approx
-    
+
     sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()
     if not np.any(sigma):
         sigma = 1.E-22*np.ones(len(sigma))

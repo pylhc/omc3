@@ -3,21 +3,12 @@ from os.path import join
 import numpy as np
 import pandas as pd
 import tfs
-from generic_parser import entrypoint, EntryPointParameters
+from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.kmod import analysis, helper
-from omc3.kmod.constants import (
-    EXT,
-    FIT_PLOTS_NAME,
-    SEQUENCES_PATH,
-    BETA,
-    ERR,
-    STAR,
-    LSA_FILE_NAME,
-    RESULTS_FILE_NAME,
-    INSTRUMENTS_FILE_NAME
-)
-from omc3.utils import logging_tools, iotools
+from omc3.kmod.constants import (BETA, ERR, EXT, FIT_PLOTS_NAME, INSTRUMENTS_FILE_NAME,
+                                 LSA_FILE_NAME, RESULTS_FILE_NAME, SEQUENCES_PATH, STAR)
+from omc3.utils import iotools, logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -129,8 +120,8 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
         exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
         lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
     if instruments_found:
-        lsa_results_df=lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
-    
+        lsa_results_df = lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
+
     if not lsa_results_df.empty:
         tfs.write(join(output_dir, f'{LSA_FILE_NAME}{EXT}'), lsa_results_df)
 

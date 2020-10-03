@@ -18,9 +18,11 @@ Write out madx scripts for the tracking macros.
 
 """
 import os
+
 import tfs
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+
 from omc3.model.constants import MACROS_DIR, OBS_POINTS
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
 
 
 def _call(path_to_call):

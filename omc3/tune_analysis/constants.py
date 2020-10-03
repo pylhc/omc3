@@ -6,8 +6,8 @@ Module tune_analysis.constants
 :author: jdilly
 
 """
-from omc3.optics_measurements.constants import (ERR, RES, EXT, KICK_NAME, ACTION, TIME, NAT_TUNE)
 from omc3.definitions.constants import PLANE_TO_NUM
+from omc3.optics_measurements.constants import (ACTION, ERR, EXT, KICK_NAME, NAT_TUNE, RES, TIME)
 
 # Global 'Parameters' for easy editing #########################################
 
@@ -29,7 +29,7 @@ def get_kick_out_name():
 
 
 def get_bbq_out_name():
-    return f"bbq_ampdet.tfs"
+    return "bbq_ampdet.tfs"
 
 
 # Kick File Headers ###########################################################
@@ -147,5 +147,3 @@ def get_paired_lables(tune_plane, action_plane, tune_scale=None):
 def get_detuning_exponent_for_order(order):
     """ Returns the default exponent for detuning orders. Highly Empirical. """
     return {1: 3, 2: 9, 3: 15}[order]
-
-

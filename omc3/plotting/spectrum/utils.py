@@ -18,11 +18,11 @@ import numpy as np
 import pandas as pd
 import tfs
 from generic_parser import DotDict
-from matplotlib import transforms, axes, pyplot as plt
+from matplotlib import axes, pyplot as plt, transforms
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
+from omc3.harpy.constants import COL_NAME, FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools
 
@@ -44,7 +44,7 @@ LIN = FILE_LIN_EXT.format(plane='')
 # Collector Classes ------------------------------------------------------------
 
 
-class FigureContainer(object):
+class FigureContainer:
     """ Container for attaching additional information to one figure. """
     def __init__(self, path: str) -> None:
         self.fig, self.axes = plt.subplots(nrows=len(PLANES), ncols=1)
@@ -136,7 +136,7 @@ def _plot_tune_lines(ax, transform, label_size, q_string, tunes, resonances, lin
                     "as no tunes were found in files.")
         return
 
-    pref = q_string[0] if len(q_string) else ""
+    pref = q_string[0] if q_string else ""
     q_mean = _get_evaluated_tune_array(np.mean, tunes)
     q_min = _get_evaluated_tune_array(np.min, tunes)
     q_max = _get_evaluated_tune_array(np.max, tunes)
@@ -186,7 +186,7 @@ def _get_evaluated_tune_array(fun, tunes):
     """ Array of tunes per plane that evaluates the tunes by fun,
     returns 0 where no tunes are present.
     """
-    return np.array([fun(tunes[p]) if len(tunes[p]) else 0 for p in PLANES])
+    return np.array([fun(tunes[p]) if tunes[p] else 0 for p in PLANES])
 
 
 # ID Finder --------------------------------------------------------------------
@@ -373,7 +373,7 @@ def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Itera
 def _get_only_given_bpms(found_bpms, given_bpms, plane, file_path):
     found_bpms = [bpm for bpm in found_bpms if bpm in given_bpms]
     missing_bpms = [bpm for bpm in given_bpms if bpm not in found_bpms]
-    if len(missing_bpms):
+    if missing_bpms:
         LOG.warning(
             f"({file_path}) The following BPMs are not present or not present in plane {plane}:"
             f" {list2str(missing_bpms)}"
