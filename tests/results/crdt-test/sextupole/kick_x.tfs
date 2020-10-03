@@ -1,0 +1,14 @@
+@ Measure_optics:version %s              "0.2.0"
+@ Command              %s "/Users/felixsoubelet/anaconda3/envs/OMC/bin/python /Users/felixsoubelet/anaconda3/envs/OMC/bin/pytest -m not extended"
+@ CWD                  %s "/Users/felixsoubelet/Repositories/Work/omc3"
+@ Date                 %s "03. October 2020, 13:18:00"
+@ Model_directory      %s "/Users/felixsoubelet/Repositories/Work/omc3/tests/accuracy/../inputs/models/inj_beam1"
+@ Compensation         %s               "None"
+@ Q1                   %le    0.279998779296875
+@ Q2                   %le     0.30999755859375
+@ RescalingFactorX     %le   1.0000000152916009
+*                 TIME                  DPP               DPPAMP                   QX                ERRQX                NATQX             ERRNATQX              sqrt2JX           ERRsqrt2JX                  2JX               ERR2JX           sqrt2JXRES        ERRsqrt2JXRES               2JXRES            ERR2JXRES
+$                   %s                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le
+  "2020_04_14@19_52_09_341612"                    0                    0       0.279998779297                    0                    0                    0    0.000932924782621    1.72494183455e-06    8.70351625453e-07    3.22803329494e-09    0.000932924796887    1.72494186093e-06    8.70351638763e-07    3.22803334431e-09
+  "2020_04_14@19_52_26_272828"                    0                    0       0.279998779297                    0                    0                    0     0.00111968027231    2.66703585134e-06    1.25369102528e-06    5.99900600929e-09     0.00111968028943    2.66703589212e-06    1.25369104445e-06    5.99900610103e-09
+  "2020_04_14@19_52_43_341759"                    0                    0       0.279998779297                    0                    0                    0     0.00130651091835    3.86159609124e-06     1.7069856917e-06    1.01494718593e-08     0.00130651093833    3.86159615029e-06     1.7069857178e-06    1.01494720145e-08

@@ -25,7 +25,7 @@ def cli_args(*args, **kwargs):
         script: script-name. Used as first commandline-arg.
                 Otherwise it's 'somescript.py'
     """
-    script = kwargs.get('script', 'somescript.py')
+    script = kwargs.get("script", "somescript.py")
     args_save = sys.argv.copy()
     sys.argv = [script] + list(args)
     yield
@@ -41,7 +41,7 @@ def tmp_output_dir(tmp_path, request):
     # init ---
     debug = getattr(request.module, "DEBUG", False)
     test_name = request.node.name
-    module_name = request.module.__name__.split('.')[-1]
+    module_name = request.module.__name__.split(".")[-1]
 
     path = tmp_path
     if debug:

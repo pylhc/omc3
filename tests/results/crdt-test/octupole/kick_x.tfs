@@ -1,0 +1,14 @@
+@ Measure_optics:version %s              "0.2.0"
+@ Command              %s "/Users/felixsoubelet/anaconda3/envs/OMC/bin/python /Users/felixsoubelet/anaconda3/envs/OMC/bin/pytest -m not extended"
+@ CWD                  %s "/Users/felixsoubelet/Repositories/Work/omc3"
+@ Date                 %s "03. October 2020, 13:19:12"
+@ Model_directory      %s "/Users/felixsoubelet/Repositories/Work/omc3/tests/accuracy/../inputs/models/inj_beam1"
+@ Compensation         %s               "None"
+@ Q1                   %le   0.2799886067708333
+@ Q2                   %le   0.3100229899088542
+@ RescalingFactorX     %le   1.0000059795936886
+*                 TIME                  DPP               DPPAMP                   QX                ERRQX                NATQX             ERRNATQX              sqrt2JX           ERRsqrt2JX                  2JX               ERR2JX           sqrt2JXRES        ERRsqrt2JXRES               2JXRES            ERR2JXRES
+$                   %s                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le
+  "2020_04_14@20_02_55_198845"                    0                    0       0.279991149902                    0                    0                    0    0.000933821167796    3.45654668464e-07    8.72022092901e-07    6.45550140976e-10    0.000933826751667    3.45656735338e-07    8.72027307239e-07    6.45554001103e-10
+  "2020_04_14@20_03_41_284406"                    0                    0       0.279991149902                    0                    0                    0     0.00112096306155    5.50731476533e-07    1.25655848867e-06    1.23456281542e-09     0.00112096976446    5.50734769683e-07    1.25656600238e-06     1.2345701976e-09
+  "2020_04_14@20_04_27_436465"                    0                    0       0.279983520508                    0                    0                    0     0.00130827332014    6.32742142124e-07    1.71157948056e-06    1.65558634326e-09     0.00130828114309    6.32745925665e-07    1.71158971511e-06      1.655596243e-09

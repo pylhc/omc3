@@ -18,7 +18,9 @@ DEBUG = False
 def test_merge_kmod_results(tmp_output_dir):
     paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip5"]
 
-    res_tfs_passed = merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
+    res_tfs_passed = merge_kmod_results.merge_kmod_results(
+        kmod_dirs=paths, outputdir=tmp_output_dir
+    )
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
     res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename, index=merge_kmod_results.NAME)
     control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
@@ -50,7 +52,7 @@ def test_merge_kmod_results_ini(tmp_output_dir):
 
     res_tfs_args = merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
 
-    ini = next(tmp_output_dir.glob('*.ini'))
+    ini = next(tmp_output_dir.glob("*.ini"))
     res_tfs_ini = merge_kmod_results.merge_kmod_results(entry_cfg=ini)
 
     assert_frame_equal(res_tfs_args, res_tfs_ini)
@@ -58,6 +60,7 @@ def test_merge_kmod_results_ini(tmp_output_dir):
 
 
 # Units ------------------------------------------------------------------------
+
 
 @pytest.mark.basic
 def test_calc_lumi_imbalance(_tfs_file):
@@ -90,7 +93,7 @@ def test_twice_label(tmp_output_dir):
     paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip1"]
     with pytest.raises(KeyError) as error:
         merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
-        assert 'ip1B1' in str(error.value)
+        assert "ip1B1" in str(error.value)
 
 
 @pytest.mark.basic
