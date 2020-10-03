@@ -32,6 +32,7 @@ def test_all_planes_update():
         assert np.allclose(new[f'{COL_NATTUNE}{plane}'], new[f'{COL_TUNE}{plane}'], atol=1e-7)
         assert np.allclose(new[f'{COL_NATAMP}{plane}'], new[f'{COL_AMP}{plane}'], atol=1e-5)
 
+
 @pytest.mark.basic
 @runclean
 def test_error_in_interval():
@@ -70,6 +71,7 @@ def test_keep_not_found():
         new = tfs.read(str(_get_input_dir() / f'spec_test.sdds{RENAME_SUFFIX}.lin{plane.lower()}'))
         assert np.allclose(old[f'{COL_NATTUNE}{plane}'], new[f'{COL_NATTUNE}{plane}'], atol=1e-17)
         assert np.allclose(old[f'{COL_NATAMP}{plane}'], new[f'{COL_NATAMP}{plane}'], atol=1e-17)
+
 
 @pytest.mark.extended
 @runclean

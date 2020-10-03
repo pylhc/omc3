@@ -104,7 +104,7 @@ def test_tbt_read_hdf5_v2(_hdf5_file_v2):
 
 
 @pytest.mark.basic
-def test_compare_average_tbtdata():
+def test_compare_average_Tbtdata():
     npart = 10
     data = {plane: np.concatenate(
                                   [[_create_data(np.linspace(1, 10, 10, endpoint=False, dtype=int), 2, (lambda x: np.random.randn(len(x))))]

@@ -21,6 +21,7 @@ BASEAMP = 0.001
 AMPZ, MUZ, TUNEZ = 0.01, 0.3, 0.008
 
 
+
 @pytest.mark.basic
 def test_harpy(_test_file, _model_file):
     model = _get_model_dataframe()
@@ -38,7 +39,6 @@ def test_harpy(_test_file, _model_file):
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
     _assert_spectra(lin, model)
-
 
 @pytest.mark.basic
 def test_harpy_without_model(_test_file, _model_file):
@@ -87,7 +87,6 @@ def test_freekick_harpy(_test_file, _model_file):
         # main and secondary phases
         assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].to_numpy(),
                                 model.loc[:, f"MU{plane}"].to_numpy())) < LIMITS["P1"]
-
 
 @pytest.mark.extended
 def test_harpy_3d(_test_file, _model_file):

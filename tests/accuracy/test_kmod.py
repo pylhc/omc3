@@ -1,16 +1,14 @@
+import pytest
+from os.path import dirname, join, isdir, pardir
+import tfs
 import shutil
-from os.path import dirname, isdir, join, pardir
-
 import numpy as np
 import pytest
-import tfs
-
-from omc3.definitions.constants import PLANES
+from omc3.run_kmod import analyse_kmod
 from omc3.kmod.constants import BETA, ERR, STAR
+from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
-from omc3.run_kmod import (INSTRUMENTS_FILE_NAME, LSA_FILE_NAME,
-                           RESULTS_FILE_NAME, analyse_kmod)
-
+from omc3.run_kmod import RESULTS_FILE_NAME, INSTRUMENTS_FILE_NAME, LSA_FILE_NAME 
 CURRENT_DIR = dirname(__file__)
 LIMITS = {'Accuracy': 1E-5,
           'Meas Accuracy': 0.05,
@@ -70,7 +68,6 @@ def test_kmod_simulation_ip1b2(_workdir_path):
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (np.abs(beta_err_meas)) < LIMITS['Num Precision']
 
-
 @pytest.mark.extended
 def test_kmod_meas_ip1b1(_workdir_path):
 
@@ -95,7 +92,6 @@ def test_kmod_meas_ip1b1(_workdir_path):
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
 
-
 @pytest.mark.extended
 def test_kmod_meas_ip1b2(_workdir_path):
 
@@ -119,7 +115,6 @@ def test_kmod_meas_ip1b2(_workdir_path):
         assert (np.abs(beta_meas-beta_prev[plane]))/beta_prev[plane] < LIMITS['Meas Accuracy']
         beta_err_meas = results[f"{ERR}{BETA}{STAR}{plane}"].loc[0]
         assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
-
 
 @pytest.mark.extended
 def test_kmod_meas_ip4b1(_workdir_path):
@@ -153,7 +148,6 @@ def test_kmod_meas_ip4b1(_workdir_path):
             assert (np.abs(beta_meas-betas[plane]))/betas[plane] < LIMITS['Meas Accuracy']
             beta_err_meas = results[f"{ERR}{BETA}{plane}"].loc[inst]
             assert (beta_err_meas/beta_meas) < LIMITS['Meas Precision']
-
 
 @pytest.mark.extended
 def test_kmod_meas_ip4b2(_workdir_path):

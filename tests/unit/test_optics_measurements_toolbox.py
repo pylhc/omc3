@@ -97,6 +97,7 @@ def test_df_other():
 
 
 # Angular tests
+
 @pytest.mark.basic
 def test_ang():
     a, b = _arand(), _arand()

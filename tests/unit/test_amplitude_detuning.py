@@ -1,17 +1,11 @@
 import tempfile
 from pathlib import Path
 
-import matplotlib
 import pytest
 
 from omc3.amplitude_detuning_analysis import analyse_with_bbq_corrections
 from omc3.plotting.plot_amplitude_detuning import main as pltampdet
 from omc3.plotting.plot_bbq import main as pltbbq
-
-# Figure (capital F) does not handle the canvas for us so we need to force the backend to make sure
-# tests know what to do on every platform
-# Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
-matplotlib.use("Agg")
 
 
 @pytest.mark.basic

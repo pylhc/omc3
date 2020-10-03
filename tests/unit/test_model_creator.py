@@ -1,6 +1,5 @@
-from os.path import abspath, dirname, isdir, join, pardir
+from os.path import join, isdir, abspath, dirname, pardir
 from shutil import rmtree
-
 import pytest
 
 from omc3.model.constants import MODIFIERS_MADX
@@ -29,6 +28,7 @@ def _create_input_ps():
                                        f"call, file='{join(BASE_OUTPUT, 'elements.str')}';\n"
                                        f"call, file='{join(BASE_OUTPUT, 'strengths.madx')}';\n")
 
+
 @pytest.mark.basic
 def test_booster_creation_nominal():
     iotools.create_dirs(BASE_OUTPUT)
@@ -42,6 +42,7 @@ def test_booster_creation_nominal():
     create_instance_and_model(opt_dict)
     _clean_up(BASE_OUTPUT)
 
+
 @pytest.mark.basic
 def test_ps_creation_nominal():
     _create_input_ps()
@@ -54,6 +55,7 @@ def test_ps_creation_nominal():
     create_instance_and_model(opt_dict)
     _clean_up(BASE_OUTPUT)
 
+
 @pytest.mark.basic
 def test_lhc_creation_nominal():
     _create_input_lhc()
@@ -65,6 +67,7 @@ def test_lhc_creation_nominal():
                     logfile=join(BASE_OUTPUT, "madx_log.txt"))
     create_instance_and_model(opt_dict)
     _clean_up(BASE_OUTPUT)
+
 
 @pytest.mark.basic
 def test_lhc_creation_best_knowledge():
