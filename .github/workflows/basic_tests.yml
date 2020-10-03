@@ -8,7 +8,7 @@ defaults:
 on:  # Runs on all push events to any branch that isn't master
   pull_request:
     branches-ignore:
-      - '*'
+      - '**'
   push:
     branches-ignore:
       - 'master'
