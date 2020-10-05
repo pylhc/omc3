@@ -38,7 +38,7 @@ MEASURE_OPTICS_SETTINGS = dict(
     ats=True,
     beam=1,
     dpp=0.0,
-    model_dir=Path(__file__).parent / "inputs" / "models" / "inj_beam1",
+    model_dir=str(Path(__file__).parent / "inputs" / "models" / "inj_beam1"),
     year="2018",
 )
 
@@ -56,7 +56,7 @@ def _create_input(tmp_path_factory):
         optics_opt = MEASURE_OPTICS_SETTINGS.copy()
         optics_opt.update({
             'files': [path_to_lin / f'{order}{idx}' for idx in range(1, 4)],
-            'outputdir': (tmp_path_factory/ order).resolve(),
+            'outputdir': tmp_path_factory.mktemp(order).resolve(),
             })
         hole_in_one_entrypoint(**optics_opt)
         omc3_input[order] = (optics_opt, path_to_lin)
