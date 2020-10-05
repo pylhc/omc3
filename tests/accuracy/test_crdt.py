@@ -1,6 +1,4 @@
-import os
-from os.path import abspath, dirname, join
-import tempfile
+from pathlib import Path
 import numpy as np
 import pytest
 import tfs
@@ -40,29 +38,29 @@ MEASURE_OPTICS_SETTINGS = dict(
     ats=True,
     beam=1,
     dpp=0.0,
-    model_dir=join(dirname(__file__), os.pardir, "inputs", "models", "inj_beam1"),
+    model_dir=Path(__file__).parent / "inputs" / "models" / "inj_beam1",
     year="2018",
 )
 
-LIN_DIR = join(dirname(__file__), os.pardir, "inputs", "crdt")
+LIN_DIR = Path(__file__).parent / "inputs" / "crdt"
 
 ORDERS = ['coupling', 'sextupole', 'skewsextupole', 'octupole']
 
 
 @pytest.fixture(scope='module')
-def _create_input():
+def _create_input(tmp_path_factory):
     omc3_input = {}
-    with tempfile.TemporaryDirectory() as cwd:
-        for order in ORDERS:
-            path_to_lin = join(LIN_DIR, order)
-            optics_opt = MEASURE_OPTICS_SETTINGS.copy()
-            optics_opt.update({
-                'files': [join(path_to_lin, f'{order}{idx}') for idx in range(1, 4)],
-                'outputdir': abspath(join(cwd, order)),
-                })
-            hole_in_one_entrypoint(**optics_opt)
-            omc3_input[order] = (optics_opt, path_to_lin)
-        yield omc3_input
+
+    for order in ORDERS:
+        path_to_lin = LIN_DIR / order
+        optics_opt = MEASURE_OPTICS_SETTINGS.copy()
+        optics_opt.update({
+            'files': [path_to_lin / f'{order}{idx}' for idx in range(1, 4)],
+            'outputdir': (tmp_path_factory/ order).resolve(),
+            })
+        hole_in_one_entrypoint(**optics_opt)
+        omc3_input[order] = (optics_opt, path_to_lin)
+    yield omc3_input
 
 
 
@@ -71,14 +69,11 @@ def _create_input():
 def test_crdt_amp(order, _create_input):
     omc3_input = _create_input
     (optics_opt, path_to_lin) = omc3_input[order]
-    ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
+    ptc_crdt = tfs.read(path_to_lin / 'ptc_crdt.tfs', index="NAME")
 
     for crdt_dict in crdt.CRDTS:
         if order == crdt_dict["order"]:
-            hio_crdt = tfs.read(join(optics_opt["outputdir"],
-                                     "crdt",
-                                     order,
-                                     f'{crdt_dict["term"]}.tfs'),
+            hio_crdt = tfs.read(optics_opt["outputdir"] / "crdt" / order /  f'{crdt_dict["term"]}.tfs',
                                 index="NAME")
             assert _max_dev(hio_crdt["AMP"].to_numpy(),
                             ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(),
@@ -90,14 +85,11 @@ def test_crdt_amp(order, _create_input):
 def test_crdt_complex(order, _create_input):
     omc3_input = _create_input
     (optics_opt, path_to_lin) = omc3_input[order]
-    ptc_crdt = tfs.read(join(path_to_lin, 'ptc_crdt.tfs'), index="NAME")
+    ptc_crdt = tfs.read(path_to_lin / 'ptc_crdt.tfs', index="NAME")
 
     for crdt_dict in crdt.CRDTS:
         if order == crdt_dict["order"]:
-            hio_crdt = tfs.read(join(optics_opt["outputdir"],
-                                     "crdt",
-                                     order,
-                                     f'{crdt_dict["term"]}.tfs'),
+            hio_crdt = tfs.read(optics_opt["outputdir"] / "crdt" /  order / f'{crdt_dict["term"]}.tfs',
                                 index="NAME")
 
             assert _max_dev(hio_crdt["REAL"].to_numpy(),
