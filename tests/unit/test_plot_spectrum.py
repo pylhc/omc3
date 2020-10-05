@@ -37,11 +37,11 @@ def test_unique_filenames():
 
 
 @pytest.mark.basic
-def test_basic_functionality(tmp_output_dir, file_path, bpms):
+def test_basic_functionality(tmp_path, file_path, bpms):
     stem, waterfall = plot_spectrum(
         plot_type=["stem", "waterfall"],
         files=[file_path],
-        output_dir=str(tmp_output_dir),
+        output_dir=str(tmp_path),
         bpms=bpms + ["unknown_bpm"],
         lines_manual=[dict(x=0.3, label="myline")],
         lines_nattunes=None,
@@ -51,7 +51,7 @@ def test_basic_functionality(tmp_output_dir, file_path, bpms):
     _, filename = list(get_unique_filenames([file_path]))[0]
     filename = "_".join(filename)
     bpm_ids = (f"{filename}_{bpm}" for bpm in bpms)
-    assert len(list(_get_output_dir(tmp_output_dir, file_path).iterdir())) == 3
+    assert len(list(_get_output_dir(tmp_path, file_path).iterdir())) == 3
     assert len(waterfall) == 1
     assert (filename in waterfall) and (waterfall[filename] is not None)
     assert len(stem) == len(bpms)
@@ -59,31 +59,31 @@ def test_basic_functionality(tmp_output_dir, file_path, bpms):
 
 
 @pytest.mark.basic
-def test_combined_bpms_stem_plot(tmp_output_dir, file_path, bpms):
+def test_combined_bpms_stem_plot(tmp_path, file_path, bpms):
     stem, waterfall = plot_spectrum(
         files=[file_path],
-        output_dir=str(tmp_output_dir),
+        output_dir=str(tmp_path),
         bpms=bpms + ["unknown_bpm"],
         lines_manual=[{"x": 0.44, "loc": "top"}],
         combine_by=["bpms"],
     )
     _, filename = list(get_unique_filenames([file_path]))[0]
     filename = "_".join(filename)
-    assert len(list(_get_output_dir(tmp_output_dir, file_path).iterdir())) == 1
+    assert len(list(_get_output_dir(tmp_path, file_path).iterdir())) == 1
     assert len(waterfall) == 0
     assert len(stem) == 1
     assert (filename in stem) and isinstance(stem[filename], Figure)
 
 
 @pytest.mark.basic
-def test_no_tunes_in_files_plot(tmp_output_dir, file_path, bpms):
+def test_no_tunes_in_files_plot(tmp_path, file_path, bpms):
     from glob import glob
 
     for f in glob(f"{file_path}*"):
         print(f)
     for f in INPUT_DIR.glob(f"{file_path.name}*"):
-        copy(f, tmp_output_dir)
-    file_path = tmp_output_dir / file_path.name
+        copy(f, tmp_path)
+    file_path = tmp_path / file_path.name
     for p in PLANES:
         fname = file_path.with_suffix(f"{file_path.suffix}.lin{p.lower()}")
         df = tfs.read(fname)
@@ -94,23 +94,23 @@ def test_no_tunes_in_files_plot(tmp_output_dir, file_path, bpms):
 
 
 @pytest.mark.basic
-def test_crash_too_low_amplimit(tmp_output_dir):
+def test_crash_too_low_amplimit(tmp_path):
     with pytest.raises(ValueError):
         plot_spectrum(
-            files=["test"], output_dir=str(tmp_output_dir), amp_limit=-1.0,
+            files=["test"], output_dir=str(tmp_path), amp_limit=-1.0,
         )
 
 
 @pytest.mark.basic
-def test_crash_file_not_found_amplimit(tmp_output_dir):
+def test_crash_file_not_found_amplimit(tmp_path):
     with pytest.raises(FileNotFoundError):
         plot_spectrum(
-            files=["test"], output_dir=str(tmp_output_dir),
+            files=["test"], output_dir=str(tmp_path),
         )
 
 
-def _get_output_dir(tmp_output_dir, file_path):
-    return tmp_output_dir / file_path.with_suffix("").name
+def _get_output_dir(tmp_path, file_path):
+    return tmp_path / file_path.with_suffix("").name
 
 
 @pytest.fixture
