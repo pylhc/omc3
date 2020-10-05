@@ -38,11 +38,11 @@ MEASURE_OPTICS_SETTINGS = dict(
     ats=True,
     beam=1,
     dpp=0.0,
-    model_dir=str(Path(__file__).parent / "inputs" / "models" / "inj_beam1"),
+    model_dir=str(Path(__file__).parent.parent / "inputs" / "models" / "inj_beam1"),
     year="2018",
 )
 
-LIN_DIR = Path(__file__).parent / "inputs" / "crdt"
+LIN_DIR = Path(__file__).parent.parent / "inputs" / "crdt"
 
 ORDERS = ['coupling', 'sextupole', 'skewsextupole', 'octupole']
 
@@ -55,13 +55,12 @@ def _create_input(tmp_path_factory):
         path_to_lin = LIN_DIR / order
         optics_opt = MEASURE_OPTICS_SETTINGS.copy()
         optics_opt.update({
-            'files': [path_to_lin / f'{order}{idx}' for idx in range(1, 4)],
+            'files': [str(path_to_lin / f'{order}{idx}') for idx in range(1, 4)],
             'outputdir': tmp_path_factory.mktemp(order).resolve(),
             })
         hole_in_one_entrypoint(**optics_opt)
         omc3_input[order] = (optics_opt, path_to_lin)
     yield omc3_input
-
 
 
 @pytest.mark.extended
