@@ -51,7 +51,7 @@ def get_simulation_files(working_directory, beam, magnets):
 def merge_data(kmod_input_params):
     magnet_df = []
     work_dir = kmod_input_params.working_directory
-    ip = kmod_input_params.ip
+    ip = kmod_input_params.interaction_point
     beam = kmod_input_params.beam
     for (filepaths, magnet) in zip(
             return_ip_filename(work_dir, ip, beam) if ip is not None
