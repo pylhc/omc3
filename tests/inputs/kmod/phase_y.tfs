@@ -1,5 +1,6 @@
 @ Q1 %le 0.30996255281512985
 @ Q2 %le 0.31995523228419426
-*                    S               MUXMDL                 NAME                   S2                NAME2               PHASEY            ERRPHASEY            PHASEYMDL          DELTAPHASEY       ERRDELTAPHASEY
+*                    S               MUYMDL                 NAME                   S2                NAME2               PHASEY            ERRPHASEY            PHASEYMDL          DELTAPHASEY       ERRDELTAPHASEY
 $                  %le                  %le                   %s                  %le                   %s                  %le                  %le                  %le                  %le                  %le
-	   10168.21165  	  22.45249306	  "BPMSW.1L5.B1"	  10211.33965	     "BPMSW.1R5.B1"    0.2643604480255   0.0003554173757423     	   0.26854106		    -0.004	 0.0003554173757423
+	   10168.21165  	22.45249306	  "BPMSW.1L5.B1"	  10211.33965	     "BPMSW.1R5.B1"     0.2643604480255   0.0003554173757423           0.26854106               -0.004	 0.0003554173757423
+	   10211.33965		22.72103412	  "BPMSW.1R5.B1"	  10221.30465         "BPMS.2R5.B1"    0.02373595043384   0.0003803549952149		0.02553711		-0.001   0.0003803549952149
