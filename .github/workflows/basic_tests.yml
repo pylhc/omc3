@@ -9,9 +9,6 @@ on:  # Runs on all push events to any branch that isn't master
   push:
     branches-ignore:
       - 'master'
-  pull_request:  # dirty trick to not trigger on PRs since the extended tests workflows cover that
-    branches:
-      - 'dummybranch'
 
 jobs:
   tests:
