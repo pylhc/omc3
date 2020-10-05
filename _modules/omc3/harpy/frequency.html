@@ -1,0 +1,578 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.harpy.frequency &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.harpy.frequency</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.harpy.frequency</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">frequency</span>
+<span class="sd">---------------------------</span>
+
+<span class="sd">Calculates the frequency spectra of turn-by-turn data.</span>
+<span class="sd">Uses a combination of SVD decomposition zero_padded fft to speed up the analysis</span>
+<span class="sd">Also searches of resonances in the calculated spectra.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">outliers</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">PI2</span>
+<span class="kn">from</span> <span class="nn">omc3.harpy.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">COL_TUNE</span><span class="p">,</span> <span class="n">COL_AMP</span><span class="p">,</span> <span class="n">COL_MU</span><span class="p">,</span>
+                                  <span class="n">COL_NATTUNE</span><span class="p">,</span> <span class="n">COL_NATAMP</span><span class="p">,</span> <span class="n">COL_NATMU</span><span class="p">,</span>
+                                  <span class="n">COL_FREQ</span><span class="p">,</span> <span class="n">COL_PHASE</span><span class="p">)</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">RESONANCES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+          <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+          <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+          <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+    <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+          <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+          <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+          <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+    <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="n">MAIN_LINES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)}</span>
+<span class="n">Z_TOLERANCE</span> <span class="o">=</span> <span class="mf">0.0003</span>
+
+
+<div class="viewcode-block" id="estimate_tunes"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.frequency.estimate_tunes">[docs]</a><span class="k">def</span> <span class="nf">estimate_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">usvs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates the tunes from FFT of decomposed data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        harpy_input: Analysis settings</span>
+<span class="sd">        usvs: dictionary per plane of (U and SV^T matrices)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list of estimated tunes [x, y, z]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tunex</span> <span class="o">=</span> <span class="n">_estimate_tune</span><span class="p">(</span><span class="n">usvs</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="n">q_s</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tuney</span> <span class="o">=</span> <span class="n">_estimate_tune</span><span class="p">(</span><span class="n">usvs</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="n">q_s</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">autotunes</span> <span class="o">==</span> <span class="s2">&quot;transverse&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tunex</span><span class="p">,</span> <span class="n">tuney</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">tunez</span> <span class="o">=</span> <span class="n">_estimate_tune</span><span class="p">(</span><span class="n">usvs</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="n">q_s</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tunex</span><span class="p">,</span> <span class="n">tuney</span><span class="p">,</span> <span class="n">tunez</span><span class="p">]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_estimate_tune</span><span class="p">(</span><span class="n">sv_mat</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">q_s</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">upper_power</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">sv_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))))</span>
+    <span class="n">synchro_limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">upper_power</span> <span class="o">/</span> <span class="mi">16</span><span class="p">)</span>  <span class="c1"># 0.03125: synchrotron tunes are lower, betatron higher</span>
+    <span class="n">coefs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sv_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">windowing</span><span class="p">(</span><span class="n">sv_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">window</span><span class="p">),</span>
+                               <span class="n">n</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">upper_power</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">q_s</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">upper_power</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">coefs</span><span class="p">[:</span><span class="n">synchro_limit</span><span class="p">])]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">upper_power</span><span class="p">)[</span><span class="n">synchro_limit</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">coefs</span><span class="p">[</span><span class="n">synchro_limit</span><span class="p">:])]</span>
+
+
+<div class="viewcode-block" id="harpy_per_plane"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.frequency.harpy_per_plane">[docs]</a><span class="k">def</span> <span class="nf">harpy_per_plane</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_matrix</span><span class="p">,</span> <span class="n">usv</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates spectra of TbT data, finds the main lines and cleans the BPMs,</span>
+<span class="sd">    for which the main line hasn&#39;t been found or is too far from its average over BPMs</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        harpy_input: Analysis settings</span>
+<span class="sd">        bpm_matrix: TbT BPM matrix</span>
+<span class="sd">        usv: U and SV^T matrices decomposed matrices, can be None</span>
+<span class="sd">        tunes: list of tunes [x, y, z]</span>
+<span class="sd">        plane: &quot;X&quot; or &quot;Y&quot; marking the horizontal or vertical plane</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame, Spectra, Bad BPMs summary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">panda</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">bpm_matrix</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">())</span>
+    <span class="n">frequencies</span><span class="p">,</span> <span class="n">coefficients</span> <span class="o">=</span> <span class="n">windowed_padded_rfft</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_matrix</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">usv</span><span class="p">)</span>
+    <span class="n">panda</span><span class="p">,</span> <span class="n">not_tune_bpms</span> <span class="o">=</span> <span class="n">_get_main_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">FREQS</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">COEFFS</span><span class="o">=</span><span class="n">coefficients</span><span class="p">),</span>
+                                                <span class="n">plane</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span> <span class="n">panda</span><span class="p">)</span>
+    <span class="n">cleaned_by_tune_bpms</span> <span class="o">=</span> <span class="n">clean_by_tune</span><span class="p">(</span><span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">tune_clean_limit</span><span class="p">)</span>
+    <span class="n">panda</span> <span class="o">=</span> <span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">panda</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">cleaned_by_tune_bpms</span><span class="p">)]</span>
+
+    <span class="n">panda</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_realign_phases</span><span class="p">(</span><span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                                          <span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">bpm_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">bad_bpms_summaries</span> <span class="o">=</span> <span class="n">_get_bad_bpms_summary</span><span class="p">(</span><span class="n">not_tune_bpms</span><span class="p">,</span> <span class="n">cleaned_by_tune_bpms</span><span class="p">)</span>
+    <span class="n">bpm_matrix</span> <span class="o">=</span> <span class="n">bpm_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">panda</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">spectra</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">FREQS</span><span class="o">=</span><span class="n">frequencies</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">panda</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">COEFFS</span><span class="o">=</span><span class="n">coefficients</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">panda</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">_get_natural_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">panda</span> <span class="o">=</span> <span class="n">panda</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_calculate_natural_tunes</span><span class="p">(</span><span class="n">spectra</span><span class="p">,</span> <span class="n">_get_natural_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">),</span>
+                                                    <span class="n">harpy_input</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span> <span class="n">plane</span><span class="p">))</span>
+
+        <span class="n">panda</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_NATMU</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_realign_phases</span><span class="p">(</span><span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_NATMU</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                                                 <span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_NATTUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+
+                                                 <span class="n">bpm_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">tunes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">panda</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_main_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">Z_TOLERANCE</span><span class="p">,</span> <span class="n">panda</span><span class="p">)</span>
+        <span class="n">panda</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;MUZ&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_realign_phases</span><span class="p">(</span><span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;MUZ&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                                              <span class="n">panda</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;TUNEZ&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                                              <span class="n">bpm_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">panda</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="n">bad_bpms_summaries</span></div>
+
+
+<div class="viewcode-block" id="find_resonances"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.frequency.find_resonances">[docs]</a><span class="k">def</span> <span class="nf">find_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">nturns</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">spectra</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds higher order lines in the spectra</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tunes: list of tunes [x, y, z]</span>
+<span class="sd">        nturns: length of analysed data</span>
+<span class="sd">        plane: &quot;X&quot; or &quot;Y&quot; marking the horizontal or vertical plane</span>
+<span class="sd">        spectra: frequencies and complex coefficients</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;FREQS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">())</span>
+    <span class="n">resonances_freqs</span> <span class="o">=</span> <span class="n">_compute_resonances_with_freqs</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tunes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">resonances_freqs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_compute_resonances_with_freqs</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">tunes</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">resonance</span> <span class="ow">in</span> <span class="n">resonances_freqs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">tolerance</span> <span class="o">=</span> <span class="n">_get_resonance_tolerance</span><span class="p">(</span><span class="n">resonance</span><span class="p">,</span> <span class="n">nturns</span><span class="p">)</span>
+        <span class="n">max_coefs</span><span class="p">,</span> <span class="n">max_freqs</span> <span class="o">=</span> <span class="n">_search_highest_coefs</span><span class="p">(</span><span class="n">resonances_freqs</span><span class="p">[</span><span class="n">resonance</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">,</span>
+                                                     <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;FREQS&quot;</span><span class="p">],</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;COEFFS&quot;</span><span class="p">])</span>
+        <span class="n">resstr</span> <span class="o">=</span> <span class="n">_get_resonance_suffix</span><span class="p">(</span><span class="n">resonance</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_FREQ</span><span class="si">}{</span><span class="n">resstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">resstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">resstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_freqs_amps_phases</span><span class="p">(</span>
+            <span class="n">max_freqs</span><span class="p">,</span> <span class="n">max_coefs</span><span class="p">,</span> <span class="n">resonances_freqs</span><span class="p">[</span><span class="n">resonance</span><span class="p">])</span>
+
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">resstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_realign_phases</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">resstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                                               <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_FREQ</span><span class="si">}{</span><span class="n">resstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">nturns</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_main_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">MAIN_LINES</span><span class="p">[</span><span class="n">plane</span><span class="p">]))</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="n">max_coefs</span><span class="p">,</span> <span class="n">max_freqs</span> <span class="o">=</span> <span class="n">_search_highest_coefs</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;FREQS&quot;</span><span class="p">],</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;COEFFS&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">max_coefs</span><span class="p">)</span> <span class="ow">and</span> <span class="n">plane</span> <span class="o">!=</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No main </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2"> resonances found, &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;try to increase the tolerance or adjust the tunes&quot;</span><span class="p">)</span>
+    <span class="n">bad_bpms_by_tune</span> <span class="o">=</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;COEFFS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">max_coefs</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_freqs_amps_phases</span><span class="p">(</span>
+        <span class="n">max_freqs</span><span class="p">,</span> <span class="n">max_coefs</span><span class="p">,</span> <span class="n">freq</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plane</span> <span class="o">!=</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">bad_bpms_by_tune</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">bad_bpms_by_tune</span>
+
+
+<span class="k">def</span> <span class="nf">_calculate_natural_tunes</span><span class="p">(</span><span class="n">spectra</span><span class="p">,</span> <span class="n">nattunes</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;FREQS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">())</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nattunes</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="n">y</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="n">max_coefs</span><span class="p">,</span> <span class="n">max_freqs</span> <span class="o">=</span> <span class="n">_search_highest_coefs</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;FREQS&quot;</span><span class="p">],</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;COEFFS&quot;</span><span class="p">])</span>
+    <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_NATTUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_NATAMP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_NATMU</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_freqs_amps_phases</span><span class="p">(</span>
+        <span class="n">max_freqs</span><span class="p">,</span> <span class="n">max_coefs</span><span class="p">,</span> <span class="n">freq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+
+<span class="k">def</span> <span class="nf">_get_freqs_amps_phases</span><span class="p">(</span><span class="n">max_freqs</span><span class="p">,</span> <span class="n">max_coefs</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">max_freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">max_coefs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">freq</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">max_coefs</span><span class="p">)</span> <span class="o">/</span> <span class="n">PI2</span>
+
+
+<span class="k">def</span> <span class="nf">_realign_phases</span><span class="p">(</span><span class="n">phase_data</span><span class="p">,</span> <span class="n">freq_data</span><span class="p">,</span> <span class="n">nturns</span><span class="p">):</span>
+    <span class="n">mid_phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase_data</span> <span class="o">+</span> <span class="n">freq_data</span> <span class="o">*</span> <span class="n">nturns</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">mid_phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">),</span> <span class="n">mid_phase</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="clean_by_tune"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.frequency.clean_by_tune">[docs]</a><span class="k">def</span> <span class="nf">clean_by_tune</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">tune_clean_limit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function looks for outliers in the tunes pandas Series and returns</span>
+<span class="sd">    their indices.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tunes: Pandas series with the tunes per BPM and the BPM names as</span>
+<span class="sd">            index.</span>
+<span class="sd">        tune_clean_limit: No BPM will find as outlier if its distance to the</span>
+<span class="sd">            average is lower than this limit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bad_bpms_mask</span> <span class="o">=</span> <span class="n">outliers</span><span class="o">.</span><span class="n">get_filter_mask</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">tune_clean_limit</span><span class="p">)</span>
+    <span class="n">bad_bpms_names</span> <span class="o">=</span> <span class="n">tunes</span><span class="p">[</span><span class="o">~</span><span class="n">bad_bpms_mask</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+    <span class="k">return</span> <span class="n">bad_bpms_names</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_bad_bpms_summary</span><span class="p">(</span><span class="n">not_tune_bpms</span><span class="p">,</span> <span class="n">cleaned_by_tune_bpms</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> The main resonance has not been found&quot;</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">not_tune_bpms</span><span class="p">]</span> <span class="o">+</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> tune is too far from average&quot;</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">cleaned_by_tune_bpms</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_search_highest_coefs</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds highest coefficients in frequencies/coefficients in freq +- tolerance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        freq: frequency from interval (0, 1)</span>
+<span class="sd">        tolerance:</span>
+<span class="sd">        frequencies:</span>
+<span class="sd">        coefficients:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tupel of maximum coefficients and corresponding frequencies</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p_freq</span> <span class="o">=</span> <span class="n">freq</span> <span class="k">if</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">freq</span>
+    <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">p_freq</span> <span class="o">-</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">p_freq</span> <span class="o">+</span> <span class="n">tolerance</span>
+    <span class="n">freq_vals</span> <span class="o">=</span> <span class="n">frequencies</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">coefs_vals</span> <span class="o">=</span> <span class="n">coefficients</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">on_window_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_vals</span> <span class="o">&gt;=</span> <span class="n">min_val</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freq_vals</span> <span class="o">&lt;=</span> <span class="n">max_val</span><span class="p">)</span>
+    <span class="n">filtered_coefs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">on_window_mask</span><span class="p">,</span> <span class="n">coefs_vals</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">filtered_amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">filtered_coefs</span><span class="p">)</span>
+    <span class="n">max_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">filtered_amps</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">max_coefs</span> <span class="o">=</span> <span class="n">filtered_coefs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">coefs_vals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">max_indices</span><span class="p">]</span>
+    <span class="n">max_coefs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">coefficients</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">max_coefs</span><span class="p">)</span>
+    <span class="n">max_pfreqs</span> <span class="o">=</span> <span class="n">freq_vals</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">freq_vals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">max_indices</span><span class="p">]</span>
+    <span class="n">max_freqs</span> <span class="o">=</span> <span class="n">max_pfreqs</span> <span class="k">if</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">max_pfreqs</span>
+    <span class="n">max_freqs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">coefficients</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">max_coefs</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_freqs</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">max_coefs</span><span class="p">,</span> <span class="n">max_freqs</span>
+
+
+<span class="k">def</span> <span class="nf">_get_resonance_suffix</span><span class="p">(</span><span class="n">resonance</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">resonance</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}{</span><span class="n">y</span><span class="si">}{</span><span class="n">z</span> <span class="k">if</span> <span class="n">z</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_resonances_with_freqs</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the frequencies in [0, 1) for all the resonances listed in the RESONANCE_LISTS,</span>
+<span class="sd">    together with the natural tunes frequencies if given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">resonance</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">resonance</span> <span class="ow">in</span> <span class="n">RESONANCES</span><span class="p">[</span><span class="n">plane</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">RESONANCES</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">freqs</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_resonance_freqs</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">resonance</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">resonance</span> <span class="ow">in</span> <span class="n">RESONANCES</span><span class="p">[</span><span class="n">plane</span><span class="p">]]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_resonance_tolerance</span><span class="p">(</span><span class="n">resonance</span><span class="p">,</span> <span class="n">n_turns</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">resonance</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="nb">bool</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">n_turns</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="windowed_padded_rfft"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.frequency.windowed_padded_rfft">[docs]</a><span class="k">def</span> <span class="nf">windowed_padded_rfft</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">svd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the spectra using specified windowing function and zero-padding</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        harpy_input: HarpyInput object</span>
+<span class="sd">        matrix: pd.DataFrame of TbT matrix (BPMs x turns)</span>
+<span class="sd">        tunes: list of tunes [x, y, z]</span>
+<span class="sd">        svd: reduced (U_matrix, np.dot(S_matrix, V_matrix)) of original TbT matrix, default None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrames (tupel): frequencies, coefficients</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">padded_len</span><span class="p">,</span> <span class="n">output_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">turn_bits</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">output_bits</span><span class="p">)</span>
+    <span class="n">sub_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">padded_len</span> <span class="o">/</span> <span class="n">output_len</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">get_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">n_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">/</span> <span class="n">sub_bins</span><span class="p">)</span>
+    <span class="n">n_bpms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">svd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tbt_matrix</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">coefs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">tbt_matrix</span> <span class="o">*</span> <span class="n">windowing</span><span class="p">(</span><span class="n">tbt_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">window</span><span class="p">),</span>
+                            <span class="n">n</span><span class="o">=</span><span class="n">padded_len</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)[:,</span> <span class="n">mask</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">sv</span> <span class="o">=</span> <span class="n">svd</span>
+        <span class="n">s_vt_freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">sv</span> <span class="o">*</span> <span class="n">windowing</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">window</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">window</span><span class="p">),</span>
+                                <span class="n">n</span><span class="o">=</span><span class="n">padded_len</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">coefs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">s_vt_freq</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">])</span>
+    <span class="n">argsmax</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="n">n_bpms</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sub_bins</span> <span class="o">+</span>
+               <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="p">(</span><span class="n">n_bpms</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">,</span> <span class="n">sub_bins</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="c1"># two 2 in following line is because we have just half of spectra</span>
+    <span class="n">coefficients</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">coefs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_bpms</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">argsmax</span><span class="p">])</span>
+    <span class="k">del</span> <span class="n">coefs</span>
+    <span class="n">frequencies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_bpms</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span>
+            <span class="n">padded_len</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)[</span><span class="n">mask</span><span class="p">])[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_bpms</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">argsmax</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">coefficients</span></div>
+
+
+<div class="viewcode-block" id="windowing"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.frequency.windowing">[docs]</a><span class="k">def</span> <span class="nf">windowing</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hamming&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides specified windowing function of given length.</span>
+
+<span class="sd">    Currently, the following windowing functions are implemented</span>
+<span class="sd">    (sorted by increasing width of main lobe, also decreasing spectral leakage in closest lobes):</span>
+<span class="sd">    ``rectangle``, ``welch``, ``triangle``, ``hann``, ``hamming``, ``nuttal3``, ``nuttal4``</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        length: length of the window</span>
+<span class="sd">        window: type of the windowing function</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Normalised windowing function of specified type and length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ints2pi</span> <span class="o">=</span> <span class="n">PI2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">length</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">windows</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;nuttal4&quot;</span><span class="p">:</span> <span class="mf">0.3125</span> <span class="o">-</span> <span class="mf">0.46875</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ints2pi</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1875</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ints2pi</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.03125</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">ints2pi</span><span class="p">),</span>
+        <span class="s2">&quot;nuttal3&quot;</span><span class="p">:</span> <span class="mf">0.375</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ints2pi</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.125</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ints2pi</span><span class="p">),</span>
+        <span class="s2">&quot;hamming&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">25</span> <span class="o">/</span> <span class="mi">46</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">21</span> <span class="o">/</span> <span class="mi">46</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ints2pi</span><span class="p">),</span>
+        <span class="s2">&quot;hann&quot;</span><span class="p">:</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ints2pi</span><span class="p">),</span>
+        <span class="s2">&quot;welch&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">((</span><span class="n">ints2pi</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;triangle&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">ints2pi</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;rectangle&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">window</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">windows</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown windowing function </span><span class="si">{</span><span class="n">window</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">windows</span><span class="p">[</span><span class="n">window</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">windows</span><span class="p">[</span><span class="n">window</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="get_freq_mask"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.frequency.get_freq_mask">[docs]</a><span class="k">def</span> <span class="nf">get_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">auto_tol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes mask to get intervals around resonances in frequency domain</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        harpy_input: HarpyInput object</span>
+<span class="sd">        tunes: list of tunes [x, y, z]</span>
+<span class="sd">        auto_tol: automatically calculated tolerance</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Boolean array</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;full_spectra&quot;</span> <span class="ow">in</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">to_write</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">turn_bits</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">mask</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">turn_bits</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">nattunes</span> <span class="o">=</span> <span class="n">_get_natural_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nattunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">_get_partial_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">nattunes</span><span class="p">),</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">tolerance</span><span class="p">)</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">tolerance</span> <span class="k">if</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">autotunes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">auto_tol</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tunes</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">freqs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_compute_resonance_freqs</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">tunes</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="n">freqs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_compute_resonance_freqs</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">tunes</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_get_partial_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_natural_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">natdeltas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="o">+</span> <span class="n">t</span> <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">natdeltas</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">nattunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">nattunes</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">_get_partial_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">start_mask</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+    <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">output_bits</span><span class="p">)</span>
+    <span class="n">sub_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">turn_bits</span> <span class="o">-</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">output_bits</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">start_mask</span><span class="p">[:]</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">frequencies</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">freqs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">freq</span> <span class="ow">in</span> <span class="n">freqs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">mask</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">freq</span> <span class="o">-</span> <span class="n">tolerance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">bins</span><span class="p">)</span> <span class="o">*</span> <span class="n">sub_bins</span><span class="p">):</span>
+             <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">freq</span> <span class="o">+</span> <span class="n">tolerance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">bins</span><span class="p">)</span> <span class="o">*</span> <span class="n">sub_bins</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># 2^n + 1 is undesired</span>
+    <span class="k">return</span> <span class="n">mask</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

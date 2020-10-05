@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.plotting.utils.style &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.plotting.utils.style</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.plotting.utils.style</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plotting Utilities: Style</span>
+<span class="sd">-----------------------------------</span>
+
+<span class="sd">Helper functions to make the most awesome* plots out there.</span>
+
+<span class="sd">* please feel free to add more stuff</span>
+
+<span class="sd">:module: omc3.plotting.utils.style</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+
+<span class="n">REMOVE_ENTRY</span> <span class="o">=</span> <span class="s2">&quot;REMOVE ENTRY&quot;</span>  <span class="c1"># id to remove entries in manual style</span>
+
+<span class="n">STYLES_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;styles&#39;</span>
+
+
+<span class="c1"># Style ######################################################################</span>
+
+
+<span class="k">def</span> <span class="nf">omc3_styles</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">STYLES_DIR</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.mplstyle&#39;</span><span class="p">)}</span>
+
+
+<div class="viewcode-block" id="set_style"><a class="viewcode-back" href="../../../../plotting/index.html#omc3.plotting.utils.style.set_style">[docs]</a><span class="k">def</span> <span class="nf">set_style</span><span class="p">(</span><span class="n">styles</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">,),</span> <span class="n">manual</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the style for all following plots.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        styles: List of styles (or single string), either path to style-file, name of style in styles or from the mpl styles</span>
+<span class="sd">        manual: Dict of manual parameters to update. Convention: &quot;REMOVE_ENTRY&quot; removes entry</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">styles</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="p">(</span><span class="n">styles</span><span class="p">,)</span>
+
+    <span class="n">local_styles</span> <span class="o">=</span> <span class="n">omc3_styles</span><span class="p">()</span>
+    <span class="n">styles</span> <span class="o">=</span> <span class="p">[</span><span class="n">local_styles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span> <span class="k">for</span> <span class="n">style</span> <span class="ow">in</span> <span class="n">styles</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">manual</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">manual</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">REMOVE_ENTRY</span><span class="p">:</span>
+                <span class="n">manual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">manual</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">styles</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

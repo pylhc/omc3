@@ -1,0 +1,471 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.scripts.merge_kmod_results &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.scripts.merge_kmod_results</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.scripts.merge_kmod_results</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Merge KMOD Results</span>
+<span class="sd">-------------------</span>
+
+<span class="sd">Script to merge the results from KMOD into one TfsDataFrame.</span>
+<span class="sd">The script takes the kmod-results folders as input and merges the</span>
+<span class="sd">lsa-result tfs-files in these together.</span>
+
+<span class="sd">The resulting TfsDataFrame is returned, but also written out if an `outputdir`</span>
+<span class="sd">is given.</span>
+
+<span class="sd">BPMWKs (common for both beams) are hereby dropped, to avoid duplicated elements.</span>
+
+<span class="sd">Headers of the same name will be overwritten (depending on the alphabetical</span>
+<span class="sd">order of the directory names).</span>
+
+<span class="sd">Some sanity checks are performed, e.g. that there is only one entry per element.</span>
+<span class="sd">If IP1 and IP5 results are given for both planes and beams, the luminosity</span>
+<span class="sd">imbalance between these IPs is also calculated and written into the header,</span>
+<span class="sd">as well as logged.</span>
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Required--*</span>
+
+<span class="sd">- **kmod_dirs** *(Path)*:</span>
+
+<span class="sd">    Path to kmod directories with stored KMOD measurement files,in particular lsa_results.tfs</span>
+
+
+<span class="sd">*--Optional--*</span>
+
+<span class="sd">- **outputdir** *(Path)*:</span>
+
+<span class="sd">    Output directory where to write the result tfs</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+<span class="kn">from</span> <span class="nn">uncertainties</span> <span class="kn">import</span> <span class="n">UFloat</span><span class="p">,</span> <span class="n">unumpy</span> <span class="k">as</span> <span class="n">up</span>
+
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span> <span class="nn">omc3.kmod.constants</span> <span class="kn">import</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">EXT</span>
+<span class="kn">from</span> <span class="nn">omc3.kmod.constants</span> <span class="kn">import</span> <span class="n">LSA_FILE_NAME</span> <span class="k">as</span> <span class="n">LSA_RESULTS</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">save_config</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.logging_tools</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;NAME&quot;</span>  <span class="c1"># Column containing the IP/Beam names</span>
+<span class="n">BEAMS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;B1&quot;</span><span class="p">,</span> <span class="s2">&quot;B2&quot;</span><span class="p">)</span>
+<span class="n">IPS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ip1&quot;</span><span class="p">,</span> <span class="s2">&quot;ip5&quot;</span><span class="p">)</span>
+
+<span class="n">HEADER_IMBALANCE</span> <span class="o">=</span> <span class="s2">&quot;LUMINOSITY_IMBALANCE&quot;</span>
+<span class="n">HEADER_REL_ERROR</span> <span class="o">=</span> <span class="s2">&quot;RELATIVE_ERROR&quot;</span>
+<span class="n">HEADER_EFF_BETA_IP1</span> <span class="o">=</span> <span class="s2">&quot;EFFECTIVE_BETA_IP1&quot;</span>
+<span class="n">HEADER_REL_ERROR_IP1</span> <span class="o">=</span> <span class="s2">&quot;RELATIVE_ERROR_IP1&quot;</span>
+<span class="n">HEADER_EFF_BETA_IP5</span> <span class="o">=</span> <span class="s2">&quot;EFFECTIVE_BETA_IP5&quot;</span>
+<span class="n">HEADER_REL_ERROR_IP5</span> <span class="o">=</span> <span class="s2">&quot;RELATIVE_ERROR_IP5&quot;</span>
+
+<span class="n">BPMWK</span> <span class="o">=</span> <span class="s2">&quot;BPMWK.&quot;</span>  <span class="c1"># elements starting with this are dropped</span>
+
+
+<span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;kmod_dirs&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Path to kmod directories with stored KMOD measurement files,&quot;</span>
+             <span class="sa">f</span><span class="s2">&quot;in particular </span><span class="si">{</span><span class="n">LSA_RESULTS</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory where to write the result tfs&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<div class="viewcode-block" id="merge_kmod_results"><a class="viewcode-back" href="../../../entrypoints/index.html#omc3.scripts.merge_kmod_results.merge_kmod_results">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">merge_kmod_results</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Main function to merge K-Mod output.</span>
+<span class="sd">    See :mod:`omc3.scripts.merge_kmod_results`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">:</span>
+        <span class="n">save_config</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="vm">__file__</span><span class="p">)</span>  <span class="c1"># creates outputdir</span>
+
+    <span class="c1"># Get the directories we need where the tfs are stored</span>
+    <span class="n">ip_dir_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_kmod_ip_subdirs</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">kmod_dirs</span><span class="p">)</span>
+
+    <span class="c1"># Combine the lsa data</span>
+    <span class="n">lsa_tfs</span> <span class="o">=</span> <span class="n">merge_tfs</span><span class="p">(</span><span class="n">ip_dir_names</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LSA_RESULTS</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># If the TFS data contains everything we need: get the imbalance</span>
+    <span class="k">if</span> <span class="n">_validate_for_imbalance</span><span class="p">(</span><span class="n">lsa_tfs</span><span class="p">):</span>
+        <span class="n">imbalance_results</span> <span class="o">=</span> <span class="n">get_lumi_imbalance</span><span class="p">(</span><span class="n">lsa_tfs</span><span class="p">)</span>
+        <span class="n">lsa_tfs</span> <span class="o">=</span> <span class="n">_add_imbalance_to_header</span><span class="p">(</span><span class="n">lsa_tfs</span><span class="p">,</span> <span class="o">*</span><span class="n">imbalance_results</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LSA_RESULTS</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing result TFS file to disk at: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">lsa_tfs</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lsa_tfs</span></div>
+
+
+<span class="k">def</span> <span class="nf">_validate_for_imbalance</span><span class="p">(</span><span class="n">data_frame</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks that the provided `TfsDataFrame` contains the expected labels and columns for a</span>
+<span class="sd">    luminosity imbalance calculation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data_frame (tfs.TfsDataFrame): a loaded `TfsDataFrame` to validate.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``True`` if the provided dataframe is valid, ``False`` otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check all required entries are there</span>
+    <span class="n">imbalance_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ip</span><span class="si">}{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">IPS</span> <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="n">BEAMS</span><span class="p">]</span>
+    <span class="n">imbalance_columns</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">p</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PLANES</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">ERR</span><span class="p">)]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">imbalance_names</span><span class="p">,</span> <span class="n">imbalance_columns</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="get_lumi_imbalance"><a class="viewcode-back" href="../../../entrypoints/index.html#omc3.scripts.merge_kmod_results.get_lumi_imbalance">[docs]</a><span class="k">def</span> <span class="nf">get_lumi_imbalance</span><span class="p">(</span><span class="n">data_frame</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">UFloat</span><span class="p">,</span> <span class="n">UFloat</span><span class="p">,</span> <span class="n">UFloat</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the IP1 / IP5 luminosity imbalance. The luminosity is taken as defined in</span>
+<span class="sd">    `Concept of luminosity`, Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf</span>
+
+<span class="sd">    The calculation of the luminosity imbalance is then:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\frac{L_{IP1}}{L_{IP5}}=\\frac{\\sqrt{\\beta_{x1,IP5}+\\beta_{x2,IP5}}</span>
+<span class="sd">        \\cdot\\sqrt{\\beta_{y1,IP5}+\\beta_{y2,IP5}}}</span>
+<span class="sd">        {\\sqrt{\\beta_{x1,IP1}+\\beta_{x2,IP1}}\\cdot\\sqrt{\\beta_{y1,IP1}+\\beta_{y2,IP1}}}</span>
+
+<span class="sd">    and the error:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\sigma_{\\frac{L_{IP1}}{L_{IP5}}} = \\frac{1}{2}\\frac{L_{IP1}}{L_{IP5}}</span>
+<span class="sd">        \\cdot \\sqrt{\\sum_{\substack{z \\in (x,y) \\\\ i \\in (IP1, IP5) }}</span>
+<span class="sd">        {\\frac{\\sigma^2_{\\beta_{z1,i}} + \\sigma^2_{\\beta_{z2,i}}} {(\\beta_{z1,i}+\\beta_{z2,i})^2}}}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data_frame (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">         Tuple with the imbalance, the betas at IPs as ufloats.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lumi_coefficient</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UFloat</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">IPS</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing luminosity contribution from optics for IP </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ip_rows</span> <span class="o">=</span> <span class="n">data_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ip</span><span class="si">}{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="n">BEAMS</span><span class="p">],</span> <span class="p">:]</span>
+
+        <span class="n">beta_sums</span> <span class="o">=</span> <span class="p">[</span><span class="n">up</span><span class="o">.</span><span class="n">uarray</span><span class="p">(</span><span class="n">ip_rows</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                               <span class="n">ip_rows</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+                               <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># sum over beams</span>
+                     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">]</span>
+        <span class="n">lumi_coefficient</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">up</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">beta_sums</span><span class="p">))</span>
+
+    <span class="n">imbalance</span> <span class="o">=</span> <span class="n">lumi_coefficient</span><span class="p">[</span><span class="n">IPS</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">/</span> <span class="n">lumi_coefficient</span><span class="p">[</span><span class="n">IPS</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;Luminosity Imbalance&quot;</span><span class="si">:</span><span class="s1">22s</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">imbalance</span><span class="si">:</span><span class="s1">s</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;Effective beta IP1&quot;</span><span class="si">:</span><span class="s1">22s</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">lumi_coefficient</span><span class="p">[</span><span class="n">IPS</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="si">:</span><span class="s1">s</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;Effective beta IP5&quot;</span><span class="si">:</span><span class="s1">22s</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">lumi_coefficient</span><span class="p">[</span><span class="n">IPS</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="si">:</span><span class="s1">s</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">imbalance</span><span class="p">,</span> <span class="n">lumi_coefficient</span><span class="p">[</span><span class="n">IPS</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">lumi_coefficient</span><span class="p">[</span><span class="n">IPS</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_add_imbalance_to_header</span><span class="p">(</span><span class="n">tfs_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
+                             <span class="n">imbalance</span><span class="p">:</span> <span class="n">UFloat</span><span class="p">,</span> <span class="n">beta_ip1</span><span class="p">:</span> <span class="n">UFloat</span><span class="p">,</span> <span class="n">beta_ip5</span><span class="p">:</span> <span class="n">UFloat</span><span class="p">)</span> \
+        <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to add the calculated imablance and effective betas to the header</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tfs_df (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis.</span>
+<span class="sd">        imbalance (UFloat): uncertain imbalance</span>
+<span class="sd">        beta_ip1 (UFloat): uncertain effective beta in ip1</span>
+<span class="sd">        beta_ip5 (UFloat): uncertain effective beta in ip5</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.TfsDataFrame with added headers.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">header_map</span> <span class="o">=</span> <span class="p">[(</span><span class="n">HEADER_IMBALANCE</span><span class="p">,</span> <span class="n">HEADER_REL_ERROR</span><span class="p">,</span> <span class="n">imbalance</span><span class="p">),</span>
+                  <span class="p">(</span><span class="n">HEADER_EFF_BETA_IP1</span><span class="p">,</span> <span class="n">HEADER_REL_ERROR_IP1</span><span class="p">,</span> <span class="n">beta_ip1</span><span class="p">),</span>
+                  <span class="p">(</span><span class="n">HEADER_EFF_BETA_IP5</span><span class="p">,</span> <span class="n">HEADER_REL_ERROR_IP5</span><span class="p">,</span> <span class="n">beta_ip5</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">val_key</span><span class="p">,</span> <span class="n">err_key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">header_map</span><span class="p">:</span>
+        <span class="n">tfs_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">val_key</span><span class="p">],</span> <span class="n">tfs_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">err_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+/-&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tfs_df</span>
+
+
+<div class="viewcode-block" id="merge_tfs"><a class="viewcode-back" href="../../../entrypoints/index.html#omc3.scripts.merge_kmod_results.merge_tfs">[docs]</a><span class="k">def</span> <span class="nf">merge_tfs</span><span class="p">(</span><span class="n">directories</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">],</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merge different kmod analysis results from a list of directories into a single `TfsDataFrame`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        directories (List[pathlib.Path]): list of PosixPath objects to directories holding TFS</span>
+<span class="sd">            files with the results of kmod analysis.</span>
+<span class="sd">        filename (str): name of the TFS files to look for in the provided directories</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `TfsDataFrame` combining all the loaded files from the provided directories.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Combine the data into one tfs</span>
+    <span class="n">new_tfs</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">()</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">directories</span><span class="p">):</span>
+        <span class="n">loaded_tfs</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read_tfs</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">loaded_tfs</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>  <span class="c1"># old headers are lost in `append`</span>
+        <span class="n">new_tfs</span> <span class="o">=</span> <span class="n">new_tfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loaded_tfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">new_tfs</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+    <span class="n">new_tfs</span> <span class="o">=</span> <span class="n">new_tfs</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">NAME</span><span class="p">)</span>
+
+    <span class="c1"># drop BPMWK and check tfs</span>
+    <span class="n">new_tfs</span> <span class="o">=</span> <span class="n">new_tfs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">new_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">BPMWK</span><span class="p">),</span> <span class="p">:]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">new_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">is_unique</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Found duplicated entries &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_tfs</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">new_tfs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()]))</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_tfs</span></div>
+
+
+<div class="viewcode-block" id="get_kmod_ip_subdirs"><a class="viewcode-back" href="../../../entrypoints/index.html#omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs">[docs]</a><span class="k">def</span> <span class="nf">get_kmod_ip_subdirs</span><span class="p">(</span><span class="n">kmod_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; Returns the paths to the ip-subdirectories in the kmod result directories.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        kmod_dirs (List[Path]): Main kmod result directories with IP-subdirectories</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (List[Path]) Paths to all subdirectories.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check directories first</span>
+    <span class="k">for</span> <span class="n">main_dir</span> <span class="ow">in</span> <span class="n">kmod_dirs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">main_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">NotADirectoryError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory </span><span class="si">{</span><span class="n">main_dir</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
+
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.*ip[0-9]B[1-2]&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">sub_dir</span> <span class="k">for</span> <span class="n">main_dir</span> <span class="ow">in</span> <span class="n">kmod_dirs</span> <span class="k">for</span> <span class="n">sub_dir</span> <span class="ow">in</span> <span class="n">main_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;**/*&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">sub_dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sub_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+    <span class="p">]</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">merge_kmod_results</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

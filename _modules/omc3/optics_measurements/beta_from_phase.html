@@ -1,0 +1,707 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.optics_measurements.beta_from_phase &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.optics_measurements.beta_from_phase</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.optics_measurements.beta_from_phase</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Beta from phase</span>
+<span class="sd">-----------------</span>
+
+<span class="sd">:module: optics_measurements.beta_from_phase</span>
+<span class="sd">:author: Viktor Maier, Andreas Wegscheider, Lukas Malina</span>
+
+<span class="sd">Computes betas and alphas from phase advances.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">circulant</span>
+
+<span class="kn">from</span> <span class="nn">omc3</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">VERSION</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PI2</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span>
+                                                <span class="n">MDL</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.toolbox</span> <span class="kn">import</span> <span class="n">df_diff</span><span class="p">,</span> <span class="n">df_ratio</span><span class="p">,</span> <span class="n">df_rel_diff</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">stats</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1.0E-16</span>
+<span class="n">ZERO_THRESHOLD</span> <span class="o">=</span> <span class="mf">1e-2</span>
+<span class="n">COT_THRESHOLD</span> <span class="o">=</span> <span class="mf">15.9</span>
+<span class="n">RCOND</span> <span class="o">=</span> <span class="mf">1.0e-14</span>
+
+<span class="n">METH_3BPM</span> <span class="o">=</span> <span class="s2">&quot;3BPM method&quot;</span>
+<span class="n">METH_A_NBPM</span> <span class="o">=</span> <span class="s2">&quot;Analytical N-BPM method&quot;</span>
+<span class="n">METH_NO_ERR</span> <span class="o">=</span> <span class="s2">&quot;No Errors&quot;</span>
+
+
+<div class="viewcode-block" id="calculate"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.beta_from_phase.calculate">[docs]</a><span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates betas and alphas from phase advances</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        meas_input: OpticsInput object</span>
+<span class="sd">        tunes: TuneDict contains measured tunes</span>
+<span class="sd">        phase_dict: contains measured phase advances</span>
+<span class="sd">        header_dict:  dictionary of header items common for all output files</span>
+<span class="sd">        plane: plane</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        BetaDict object containing specific TfsDataFrames with results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">meas_and_model_tunes</span> <span class="o">=</span> <span class="p">(</span><span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;Q&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QM&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span><span class="p">)</span> \
+        <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">compensation</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span> <span class="k">else</span> <span class="p">(</span><span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QFM&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">three_bpm_method</span><span class="p">:</span>
+        <span class="n">beta_df</span> <span class="o">=</span> <span class="n">three_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_model_tunes</span><span class="p">)</span>
+        <span class="n">error_method</span> <span class="o">=</span> <span class="n">METH_3BPM</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">beta_df</span><span class="p">,</span> <span class="n">error_method</span> <span class="o">=</span> <span class="n">n_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_model_tunes</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Errors from </span><span class="si">{</span><span class="n">error_method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">rmsbb</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">weighted_rms</span><span class="p">(</span><span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">errors</span><span class="o">=</span><span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - RMS beta beat: </span><span class="si">{</span><span class="n">rmsbb</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">_get_header</span><span class="p">(</span><span class="n">header_dict</span><span class="p">,</span> <span class="n">error_method</span><span class="p">,</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">range_of_bpms</span><span class="p">,</span> <span class="n">rmsbb</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">header</span></div>
+
+
+<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">beta_df</span><span class="p">,</span>
+              <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="n_bpm_method"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.beta_from_phase.n_bpm_method">[docs]</a><span class="k">def</span> <span class="nf">n_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_mdl_tunes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates betas and alphas from using all BPM combination within range_of_bpms,</span>
+<span class="sd">    it also accounts for systematic errors</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        meas_input: Optics measurement configuration object</span>
+<span class="sd">        phase: phase matrices of measurement with errors and model tfs (bpm x bpm)</span>
+<span class="sd">        plane: plane either X or Y</span>
+<span class="sd">        meas_and_mdl_tunes: measured and model tunes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.DataFrame containing betas and alfas from phase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">elements</span><span class="p">,</span> <span class="n">error_method</span> <span class="o">=</span> <span class="n">get_elements_with_errors</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+    <span class="n">beta_df</span> <span class="o">=</span> <span class="n">_get_filtered_model_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+    <span class="n">bk_model</span> <span class="o">=</span> <span class="n">_get_filtered_model_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">best</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tune</span><span class="p">,</span> <span class="n">mdltune</span> <span class="o">=</span> <span class="n">meas_and_mdl_tunes</span>
+    <span class="n">betas_alfas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">nbpms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bk_model</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">n_comb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nbpms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">range_of_bpms</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">loc_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">phases_meas</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">phases_err</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">phases_err</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">phases_err</span><span class="o">.</span><span class="n">notnull</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">indx</span><span class="p">,</span> <span class="n">probed_bpm_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bk_model</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+        <span class="n">indx_el_first</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bk_model</span><span class="o">.</span><span class="n">index</span><span class="p">[(</span><span class="n">indx</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">%</span> <span class="n">nbpms</span><span class="p">])</span>
+        <span class="n">indx_el_last</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bk_model</span><span class="o">.</span><span class="n">index</span><span class="p">[(</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span><span class="p">)</span> <span class="o">%</span> <span class="n">nbpms</span><span class="p">])</span>
+        <span class="n">mu_column</span> <span class="o">=</span> <span class="s2">&quot;MU&quot;</span> <span class="o">+</span> <span class="n">plane</span>
+        <span class="k">if</span> <span class="n">indx</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">outer_meas_phase_adv</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">phases_meas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="n">nbpms</span> <span class="o">+</span> <span class="n">indx</span> <span class="o">-</span> <span class="n">m</span><span class="p">:]</span> <span class="o">-</span> <span class="n">tune</span> <span class="o">*</span> <span class="n">PI2</span><span class="p">,</span> <span class="n">phases_meas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="p">:</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="n">outer_meas_err</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">phases_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="n">nbpms</span> <span class="o">+</span> <span class="n">indx</span> <span class="o">-</span> <span class="n">m</span><span class="p">:],</span> <span class="n">phases_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="p">:</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="n">outer_mdl_ph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">bk_model</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">nbpms</span> <span class="o">+</span> <span class="n">indx</span> <span class="o">-</span> <span class="n">m</span><span class="p">:][</span><span class="n">mu_column</span><span class="p">]</span> <span class="o">-</span> <span class="n">mdltune</span><span class="p">,</span> <span class="n">bk_model</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">mu_column</span><span class="p">]))</span> <span class="o">*</span> <span class="n">PI2</span>
+            <span class="n">outer_elmts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx_el_first</span><span class="p">:],</span> <span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">indx_el_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="n">outer_elmts_ph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx_el_first</span><span class="p">:][</span><span class="n">mu_column</span><span class="p">]</span> <span class="o">-</span> <span class="n">mdltune</span><span class="p">,</span> <span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">indx_el_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">mu_column</span><span class="p">]))</span> <span class="o">*</span> <span class="n">PI2</span>
+        <span class="k">elif</span> <span class="n">indx</span> <span class="o">+</span> <span class="n">m</span> <span class="o">&gt;=</span> <span class="n">nbpms</span><span class="p">:</span>
+            <span class="n">outer_meas_phase_adv</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">phases_meas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="n">indx</span> <span class="o">-</span> <span class="n">m</span><span class="p">:],</span> <span class="n">phases_meas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="p">:</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">nbpms</span><span class="p">]</span> <span class="o">+</span> <span class="n">tune</span> <span class="o">*</span> <span class="n">PI2</span><span class="p">))</span>
+            <span class="n">outer_meas_err</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">phases_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="n">indx</span> <span class="o">-</span> <span class="n">m</span><span class="p">:],</span> <span class="n">phases_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="p">:</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">nbpms</span><span class="p">]))</span>
+            <span class="n">outer_mdl_ph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">bk_model</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span> <span class="o">-</span> <span class="n">m</span><span class="p">:][</span><span class="n">mu_column</span><span class="p">],</span> <span class="n">bk_model</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">nbpms</span><span class="p">][</span><span class="n">mu_column</span><span class="p">]</span> <span class="o">+</span> <span class="n">mdltune</span><span class="p">))</span> <span class="o">*</span> <span class="n">PI2</span>
+            <span class="n">outer_elmts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx_el_first</span><span class="p">:],</span> <span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">indx_el_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="n">outer_elmts_ph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx_el_first</span><span class="p">:][</span><span class="n">mu_column</span><span class="p">],</span> <span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">indx_el_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">mu_column</span><span class="p">]</span> <span class="o">+</span> <span class="n">mdltune</span><span class="p">))</span> <span class="o">*</span> <span class="n">PI2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">outer_meas_phase_adv</span> <span class="o">=</span> <span class="n">phases_meas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="n">indx</span> <span class="o">+</span> <span class="n">loc_range</span><span class="p">]</span>
+            <span class="n">outer_meas_err</span> <span class="o">=</span> <span class="n">phases_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="n">indx</span> <span class="o">+</span> <span class="n">loc_range</span><span class="p">]</span>
+            <span class="n">outer_mdl_ph</span> <span class="o">=</span> <span class="n">bk_model</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx</span> <span class="o">+</span> <span class="n">loc_range</span><span class="p">][</span><span class="n">mu_column</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">PI2</span>
+            <span class="n">outer_elmts</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx_el_first</span><span class="p">:</span><span class="n">indx_el_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">outer_elmts_ph</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indx_el_first</span><span class="p">:</span><span class="n">indx_el_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">mu_column</span><span class="p">]</span> <span class="o">*</span> <span class="n">PI2</span>
+        <span class="n">bpms_inds_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">outer_elmts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bpm_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">outer_meas_phase_adv</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()]</span>
+        <span class="n">sin_squared_elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">outer_elmts_ph</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">-</span> <span class="n">outer_mdl_ph</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]))</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+            <span class="n">cot_meas</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">outer_meas_phase_adv</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+            <span class="n">cot_model</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">((</span><span class="n">outer_mdl_ph</span> <span class="o">-</span> <span class="n">outer_mdl_ph</span><span class="p">[</span><span class="n">m</span><span class="p">]))</span>
+        <span class="n">patter</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cot_meas</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">COT_THRESHOLD</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cot_model</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">COT_THRESHOLD</span><span class="p">)</span>
+        <span class="n">diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">outer_meas_err</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()),</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:][</span><span class="s2">&quot;dK1&quot;</span><span class="p">],</span>
+                               <span class="n">outer_elmts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:][</span><span class="s2">&quot;dX&quot;</span><span class="p">],</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:][</span><span class="s2">&quot;KdS&quot;</span><span class="p">],</span>
+                               <span class="n">outer_elmts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:][</span><span class="s2">&quot;mKdS&quot;</span><span class="p">]))</span>
+        <span class="n">outer_elmts</span> <span class="o">=</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;BET&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">:</span> <span class="s2">&quot;BETA&quot;</span><span class="p">})</span>
+        <span class="n">index_tuples</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">loc_range</span><span class="p">[</span><span class="n">patter</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">loc_range</span><span class="p">[</span><span class="n">patter</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">cot_model</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="n">cot_model</span><span class="p">[</span><span class="n">y</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">ZERO_THRESHOLD</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">cot_model</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="n">cot_model</span><span class="p">[</span><span class="n">y</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">cot_meas</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="n">cot_meas</span><span class="p">[</span><span class="n">y</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="n">mat_t_beta</span><span class="p">,</span> <span class="n">mat_t_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">index_tuples</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">diag</span><span class="p">))),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">index_tuples</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">diag</span><span class="p">)))</span>
+        <span class="n">betas</span><span class="p">,</span> <span class="n">alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">index_tuples</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">index_tuples</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">index_tuples</span><span class="p">):</span>
+            <span class="n">betas</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alphas</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mat_t_beta</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mat_t_alpha</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">calculate_beta_alpha_from_single_combination</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sin_squared_elements</span><span class="p">,</span> <span class="n">outer_elmts</span><span class="p">,</span> <span class="n">cot_model</span><span class="p">,</span>
+                                                             <span class="n">cot_meas</span><span class="p">,</span> <span class="n">outer_meas_phase_adv</span><span class="p">,</span> <span class="n">probed_bpm_name</span><span class="p">,</span>
+                                                             <span class="n">bk_model</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">probed_bpm_name</span><span class="p">,</span> <span class="s2">&quot;BET&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">],</span>
+                                                             <span class="n">bk_model</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">probed_bpm_name</span><span class="p">,</span> <span class="s2">&quot;ALF&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">],</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">range_of_bpms</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">diag</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="n">mat_diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">diag</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+        <span class="n">mat_v_beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat_t_beta</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat_diag</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">mat_t_beta</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">])))</span>
+        <span class="n">mat_v_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat_t_alpha</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat_diag</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">mat_t_alpha</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">])))</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mat_v_beta</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mat_v_alpha</span><span class="p">):</span>
+            <span class="n">beti</span><span class="p">,</span> <span class="n">beterr</span> <span class="o">=</span> <span class="n">_covariant_weighting</span><span class="p">(</span><span class="n">mat_v_beta</span><span class="p">,</span> <span class="n">betas</span><span class="p">)</span>
+            <span class="n">alfi</span><span class="p">,</span> <span class="n">alferr</span> <span class="o">=</span> <span class="n">_covariant_weighting</span><span class="p">(</span><span class="n">mat_v_alpha</span><span class="p">,</span> <span class="n">alphas</span><span class="p">)</span>
+            <span class="n">n_comb</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">betas</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ValueError or no combinations left at </span><span class="si">{</span><span class="n">probed_bpm_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;betas:</span><span class="se">\n</span><span class="si">{</span><span class="n">betas</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;alphas:</span><span class="se">\n</span><span class="si">{</span><span class="n">alphas</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">betas_alfas</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">beti</span><span class="p">,</span> <span class="n">beterr</span><span class="p">,</span> <span class="n">alfi</span><span class="p">,</span> <span class="n">alferr</span><span class="p">])</span>
+
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betas_alfas</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betas_alfas</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betas_alfas</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betas_alfas</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="s2">&quot;NCOMB&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_comb</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No valid combinations for BPMs: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">beta_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">beta_df</span><span class="p">[</span><span class="s1">&#39;NCOMB&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">beta_df</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beta_df</span><span class="p">[</span><span class="s2">&quot;NCOMB&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">beta_df</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">too_high_error_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                                        <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+    <span class="n">beta_df</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">too_high_error_mask</span><span class="p">]</span>
+    <span class="n">beta_df</span> <span class="o">=</span> <span class="n">_get_delta_columns</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">error_method</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_elements_with_errors</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">error_defs_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error definition file could not be found&quot;</span><span class="p">)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">,</span> <span class="s2">&quot;K2L&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Accelerator Error Definition&quot;</span><span class="p">)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">_assign_uncertainties</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">error_defs_file</span><span class="p">)</span>
+    <span class="n">errors_assigned</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="s2">&quot;dK1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">elements</span><span class="p">[</span><span class="s2">&quot;dX&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="s2">&quot;KdS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">errors_assigned</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No systematic errors were given or no element was found for the given &quot;</span>
+                       <span class="s2">&quot;error definitions. The systematic lattice errors are not used.&quot;</span><span class="p">)</span>
+    <span class="n">error_method</span> <span class="o">=</span> <span class="n">METH_A_NBPM</span> <span class="k">if</span> <span class="n">errors_assigned</span> <span class="k">else</span> <span class="n">METH_NO_ERR</span>
+    <span class="k">return</span> <span class="n">elements</span><span class="p">,</span> <span class="n">error_method</span>
+
+
+<div class="viewcode-block" id="calculate_beta_alpha_from_single_combination"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination">[docs]</a><span class="k">def</span> <span class="nf">calculate_beta_alpha_from_single_combination</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sin_squared_elements</span><span class="p">,</span> <span class="n">outer_elmts</span><span class="p">,</span> <span class="n">cot_model</span><span class="p">,</span>
+                                                 <span class="n">cot_meas</span><span class="p">,</span> <span class="n">outer_meas_phase_adv</span><span class="p">,</span> <span class="n">probed_bpm_name</span><span class="p">,</span>
+                                                 <span class="n">betmdl1</span><span class="p">,</span> <span class="n">alfmdl1</span><span class="p">,</span> <span class="n">range_of_bpms</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates beta and alpha function as well as the respective covariance matrix lines for the</span>
+<span class="sd">    given BPM combination (triplet)</span>
+<span class="sd">    Args:</span>
+<span class="sd">        c: relative indices of other two BPMs wrt probed one</span>
+<span class="sd">        sin_squared_elements:</span>
+<span class="sd">        outer_elmts:</span>
+<span class="sd">        cot_model:</span>
+<span class="sd">        cot_meas:</span>
+<span class="sd">        outer_meas_phase_adv:</span>
+<span class="sd">        probed_bpm_name:</span>
+<span class="sd">        betmdl1:</span>
+<span class="sd">        alfmdl1:</span>
+<span class="sd">        range_of_bpms:</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">range_of_bpms</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ix</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">iy</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">fac1</span><span class="p">,</span> <span class="n">fac2</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">m</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">dif_cot_model</span> <span class="o">=</span> <span class="n">cot_model</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">-</span> <span class="n">cot_model</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span>
+    <span class="c1"># calculate beta</span>
+    <span class="n">dif_cot_meas</span> <span class="o">=</span> <span class="n">cot_meas</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">-</span> <span class="n">cot_meas</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="n">dif_cot_model</span> <span class="o">/</span> <span class="n">betmdl1</span>
+    <span class="n">beta_i</span> <span class="o">=</span> <span class="n">dif_cot_meas</span> <span class="o">/</span> <span class="n">denom</span>
+    <span class="n">avg_cot_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">cot_model</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">+</span> <span class="n">cot_model</span><span class="p">[</span><span class="n">iy</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">denomalf</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">avg_cot_model</span> <span class="o">+</span> <span class="n">alfmdl1</span><span class="p">)</span>
+    <span class="n">avg_cot_meas</span> <span class="o">=</span> <span class="p">(</span><span class="n">cot_meas</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">+</span> <span class="n">cot_meas</span><span class="p">[</span><span class="n">iy</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">alfa_i</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">denomalf</span> <span class="o">*</span> <span class="n">dif_cot_meas</span> <span class="o">/</span> <span class="n">dif_cot_model</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">avg_cot_meas</span><span class="p">)</span>
+
+    <span class="n">lng</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">outer_elmts</span><span class="p">)</span>
+    <span class="n">line_length</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">outer_elmts</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">outer_elmts_bet</span> <span class="o">=</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;BETA&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">outer_el_k2</span> <span class="o">=</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;K2L&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">betaline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_length</span><span class="p">)</span>
+    <span class="n">alfaline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_length</span><span class="p">)</span>
+
+    <span class="c1"># slice</span>
+    <span class="n">mloc</span> <span class="o">=</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">probed_bpm_name</span><span class="p">)</span>
+    <span class="n">xloc_r</span> <span class="o">=</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">outer_meas_phase_adv</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">ix</span><span class="p">])</span>
+    <span class="n">yloc_r</span> <span class="o">=</span> <span class="n">outer_elmts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">outer_meas_phase_adv</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">iy</span><span class="p">])</span>
+    <span class="n">denom_sinx</span> <span class="o">=</span> <span class="n">sin_squared_elements</span><span class="p">[</span><span class="n">xloc_r</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+    <span class="n">denom_siny</span> <span class="o">=</span> <span class="n">sin_squared_elements</span><span class="p">[</span><span class="n">yloc_r</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+    <span class="n">xmloc1</span><span class="p">,</span> <span class="n">xmloc2</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">xloc_r</span><span class="p">,</span> <span class="n">mloc</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">xloc_r</span><span class="p">,</span> <span class="n">mloc</span><span class="p">)</span>
+    <span class="n">ymloc1</span><span class="p">,</span> <span class="n">ymloc2</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">yloc_r</span><span class="p">,</span> <span class="n">mloc</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">yloc_r</span><span class="p">,</span> <span class="n">mloc</span><span class="p">)</span>
+
+    <span class="c1"># get betas and sin for the elements in the slice</span>
+    <span class="n">elem_ph_xa</span> <span class="o">=</span> <span class="n">sin_squared_elements</span><span class="p">[</span><span class="n">xmloc1</span><span class="p">:</span><span class="n">xmloc2</span><span class="p">,</span> <span class="n">ix</span><span class="p">]</span>
+    <span class="n">elem_ph_ya</span> <span class="o">=</span> <span class="n">sin_squared_elements</span><span class="p">[</span><span class="n">ymloc1</span><span class="p">:</span><span class="n">ymloc2</span><span class="p">,</span> <span class="n">iy</span><span class="p">]</span>
+    <span class="n">elem_beta_xa</span> <span class="o">=</span> <span class="n">outer_elmts_bet</span><span class="p">[</span><span class="n">xmloc1</span><span class="p">:</span><span class="n">xmloc2</span><span class="p">]</span>
+    <span class="n">elem_beta_ya</span> <span class="o">=</span> <span class="n">outer_elmts_bet</span><span class="p">[</span><span class="n">ymloc1</span><span class="p">:</span><span class="n">ymloc2</span><span class="p">]</span>
+    <span class="n">elem_k2_xa</span> <span class="o">=</span> <span class="n">outer_el_k2</span><span class="p">[</span><span class="n">xmloc1</span><span class="p">:</span><span class="n">xmloc2</span><span class="p">]</span>
+    <span class="n">elem_k2_ya</span> <span class="o">=</span> <span class="n">outer_el_k2</span><span class="p">[</span><span class="n">ymloc1</span><span class="p">:</span><span class="n">ymloc2</span><span class="p">]</span>
+
+    <span class="n">bet_sin_ix</span> <span class="o">=</span> <span class="n">elem_ph_xa</span> <span class="o">*</span> <span class="n">elem_beta_xa</span> <span class="o">/</span> <span class="p">(</span><span class="n">denom_sinx</span> <span class="o">*</span> <span class="n">denom</span><span class="p">)</span>
+    <span class="n">bet_sin_iy</span> <span class="o">=</span> <span class="n">elem_ph_ya</span> <span class="o">*</span> <span class="n">elem_beta_ya</span> <span class="o">/</span> <span class="p">(</span><span class="n">denom_siny</span> <span class="o">*</span> <span class="n">denom</span><span class="p">)</span>
+
+    <span class="n">off1</span> <span class="o">=</span> <span class="n">range_of_bpms</span>
+    <span class="n">off2</span> <span class="o">=</span> <span class="n">range_of_bpms</span> <span class="o">+</span> <span class="n">lng</span>
+    <span class="n">off3</span> <span class="o">=</span> <span class="n">range_of_bpms</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">lng</span>
+    <span class="n">off4</span> <span class="o">=</span> <span class="n">range_of_bpms</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">lng</span>
+
+    <span class="c1"># apply phase uncertainty</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">denom_sinx</span> <span class="o">*</span> <span class="n">denom</span><span class="p">)</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">denom_siny</span> <span class="o">*</span> <span class="n">denom</span><span class="p">)</span>
+    <span class="c1"># apply quadrupolar field uncertainty (quadrupole longitudinal misalignment already included)</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off1</span><span class="p">:</span><span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="n">bet_sin_ix</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off1</span><span class="p">:</span><span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="n">bet_sin_iy</span>
+    <span class="c1"># apply sextupole transverse misalignment</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off2</span><span class="p">:</span> <span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="n">elem_k2_xa</span> <span class="o">*</span> <span class="n">bet_sin_ix</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off2</span><span class="p">:</span> <span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="n">elem_k2_ya</span> <span class="o">*</span> <span class="n">bet_sin_iy</span>
+    <span class="c1"># apply quadrupole longitudinal misalignments</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off3</span><span class="p">:</span> <span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="n">bet_sin_ix</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off3</span><span class="p">:</span> <span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="n">bet_sin_iy</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off4</span><span class="p">:</span> <span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off4</span><span class="p">]</span> <span class="o">-=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="n">bet_sin_ix</span>
+    <span class="n">betaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off4</span><span class="p">:</span> <span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off4</span><span class="p">]</span> <span class="o">-=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="n">bet_sin_iy</span>
+    <span class="c1"># apply phase uncertainty</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">denom_sinx</span> <span class="o">*</span> <span class="n">denom</span> <span class="o">*</span> <span class="n">betmdl1</span><span class="p">)</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">denom_sinx</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">denom_siny</span> <span class="o">*</span> <span class="n">denom</span> <span class="o">*</span> <span class="n">betmdl1</span><span class="p">)</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">denom_siny</span>
+    <span class="c1"># apply quadrupolar field uncertainty (quadrupole longitudinal misalignment already included)</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off1</span><span class="p">:</span><span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="p">(</span><span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">bet_sin_ix</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="n">bet_sin_ix</span> <span class="o">/</span> <span class="n">betmdl1</span> <span class="o">*</span> <span class="n">dif_cot_meas</span><span class="p">))</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off1</span><span class="p">:</span><span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="p">(</span><span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">bet_sin_iy</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="n">bet_sin_iy</span> <span class="o">/</span> <span class="n">betmdl1</span> <span class="o">*</span> <span class="n">dif_cot_meas</span><span class="p">))</span>
+    <span class="c1"># apply sextupole transverse misalignment</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off2</span><span class="p">:</span> <span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="n">elem_k2_xa</span> <span class="o">*</span> <span class="n">bet_sin_ix</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off2</span><span class="p">:</span> <span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="n">elem_k2_ya</span> <span class="o">*</span> <span class="n">bet_sin_iy</span>
+    <span class="c1"># apply quadrupole longitudinal misalignments</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off3</span><span class="p">:</span> <span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="p">(</span><span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="n">elem_k2_xa</span> <span class="o">*</span> <span class="p">(</span><span class="n">bet_sin_ix</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="n">bet_sin_ix</span> <span class="o">/</span> <span class="n">betmdl1</span> <span class="o">*</span> <span class="n">dif_cot_meas</span><span class="p">))</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off3</span><span class="p">:</span> <span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="p">(</span><span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="n">elem_k2_ya</span> <span class="o">*</span> <span class="p">(</span><span class="n">bet_sin_iy</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="n">bet_sin_iy</span> <span class="o">/</span> <span class="n">betmdl1</span> <span class="o">*</span> <span class="n">dif_cot_meas</span><span class="p">))</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">xmloc1</span> <span class="o">+</span> <span class="n">off4</span><span class="p">:</span> <span class="n">xmloc2</span> <span class="o">+</span> <span class="n">off4</span><span class="p">]</span> <span class="o">-=</span> <span class="n">fac1</span> <span class="o">*</span> <span class="p">(</span><span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">bet_sin_ix</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="n">bet_sin_ix</span> <span class="o">/</span> <span class="n">betmdl1</span> <span class="o">*</span> <span class="n">dif_cot_meas</span><span class="p">))</span>
+    <span class="n">alfaline</span><span class="p">[</span><span class="n">ymloc1</span> <span class="o">+</span> <span class="n">off4</span><span class="p">:</span> <span class="n">ymloc2</span> <span class="o">+</span> <span class="n">off4</span><span class="p">]</span> <span class="o">-=</span> <span class="n">fac2</span> <span class="o">*</span> <span class="p">(</span><span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">bet_sin_iy</span> <span class="o">*</span> <span class="n">denomalf</span> <span class="o">+</span> <span class="n">bet_sin_iy</span> <span class="o">/</span> <span class="n">betmdl1</span> <span class="o">*</span> <span class="n">dif_cot_meas</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">beta_i</span><span class="p">,</span> <span class="n">alfa_i</span><span class="p">,</span> <span class="n">betaline</span><span class="p">,</span> <span class="n">alfaline</span></div>
+
+
+<span class="k">def</span> <span class="nf">_covariant_weighting</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+    <span class="n">mat_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">RCOND</span><span class="p">)</span>
+    <span class="n">wb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mat_inv</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">mat_inv_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mat_inv_sum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="c1"># returns value and error</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">wb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="o">/</span> <span class="n">mat_inv_sum</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">wb</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">wb</span><span class="p">))</span> <span class="o">/</span> <span class="n">mat_inv_sum</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_assign_uncertainties</span><span class="p">(</span><span class="n">twiss_full</span><span class="p">,</span> <span class="n">errordefspath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adds uncertainty information to twiss_full.</span>
+
+<span class="sd">    Sources of Errors:</span>
+<span class="sd">        dK1:    quadrupolar field errors</span>
+<span class="sd">        dS:     quadrupole longitudinal misalignments</span>
+<span class="sd">        dX:     sextupole transverse misalignments</span>
+<span class="sd">        BPMdS:  BPM longitudinal misalignments</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Start creating uncertainty information&quot;</span><span class="p">)</span>
+    <span class="n">errdefs</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">errordefspath</span><span class="p">)</span>
+    <span class="n">twiss_full</span> <span class="o">=</span> <span class="n">twiss_full</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">UNC</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dK1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">KdS</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mKdS</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dX</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">BPMdS</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># loop over uncertainty definitions, fill the respective columns, set UNC to true</span>
+    <span class="k">for</span> <span class="n">indx</span> <span class="ow">in</span> <span class="n">errdefs</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="n">patt</span> <span class="o">=</span> <span class="n">errdefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="s2">&quot;PATTERN&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">patt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;key:&quot;</span><span class="p">):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;creating uncertainty information for </span><span class="si">{</span><span class="n">patt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">patt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">patt</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;creating uncertainty information for RegEx </span><span class="si">{</span><span class="n">patt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">twiss_full</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
+
+        <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;dK1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">errdefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="s2">&quot;dK1&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;dX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">errdefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="s2">&quot;dX&quot;</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">errdefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="s2">&quot;MAINFIELD&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;BPM&quot;</span><span class="p">:</span>
+            <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;BPMdS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">errdefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="s2">&quot;dS&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;KdS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">errdefs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indx</span><span class="p">,</span> <span class="s2">&quot;dS&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;UNC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># in case of quadrupole longitudinal misalignments, the element (DRIFT) in front of the</span>
+    <span class="c1"># misaligned quadrupole will be used for the thin lens approximation of the misalignment</span>
+    <span class="n">twiss_full</span><span class="p">[</span><span class="s2">&quot;mKdS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[:][</span><span class="s2">&quot;KdS&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;UNC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;dK1&quot;</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1.0e-12</span><span class="p">,</span>
+                                             <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;UNC&quot;</span><span class="p">])</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DONE creating uncertainty information&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">twiss_full</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">twiss_full</span><span class="p">[</span><span class="s2">&quot;UNC&quot;</span><span class="p">]]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_header</span><span class="p">(</span><span class="n">header_dict</span><span class="p">,</span> <span class="n">error_method</span><span class="p">,</span> <span class="n">range_of_bpms</span><span class="p">,</span> <span class="n">rmsbb</span><span class="p">):</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">header_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">header</span><span class="p">[</span><span class="s1">&#39;BetaAlgorithmVersion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">VERSION</span>
+    <span class="n">header</span><span class="p">[</span><span class="s1">&#39;RCond&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RCOND</span>
+    <span class="n">header</span><span class="p">[</span><span class="s1">&#39;RangeOfBPMs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Adjacent&quot;</span> <span class="k">if</span> <span class="n">error_method</span> <span class="o">==</span> <span class="n">METH_3BPM</span> <span class="k">else</span> <span class="n">range_of_bpms</span>
+    <span class="n">header</span><span class="p">[</span><span class="s1">&#39;ErrorsFrom:&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">error_method</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;RMS_BETABEAT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rmsbb</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> %&quot;</span>
+    <span class="k">return</span> <span class="n">header</span>
+
+
+<div class="viewcode-block" id="three_bpm_method"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.beta_from_phase.three_bpm_method">[docs]</a><span class="k">def</span> <span class="nf">three_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_mdl_tunes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates betas and alphas from using adjacent BPMs (3 combiantion)</span>
+
+<span class="sd">    ``phase[&quot;MEAS&quot;]``, ``phase[&quot;MODEL&quot;]``, ``phase[&quot;ERRMEAS&quot;]`` (from ``get_phases``) are of the</span>
+<span class="sd">    form:</span>
+
+<span class="sd">    +----------+----------+----------+----------+----------+</span>
+<span class="sd">    |          |   BPM1   |   BPM2   |   BPM3   |   BPM4   |</span>
+<span class="sd">    +----------+----------+----------+----------+----------+</span>
+<span class="sd">    |   BPM1   |    0     |  phi_21  |  phi_31  |  phi_41  |</span>
+<span class="sd">    +----------+----------+----------+----------+----------+</span>
+<span class="sd">    |   BPM2   |  phi_12  |     0    |  phi_32  |  phi_42  |</span>
+<span class="sd">    +----------+----------+----------+----------+----------+</span>
+<span class="sd">    |   BPM3   |  phi_13  |  phi_23  |    0     |  phi_43  |</span>
+<span class="sd">    +----------+----------+----------+----------+----------+</span>
+
+<span class="sd">    aa ``tilt_slice_matrix(matrix, shift, slice, tune)`` brings it into the form:</span>
+
+<span class="sd">    +-----------+--------+--------+--------+--------+</span>
+<span class="sd">    |           |  BPM1  |  BPM2  |  BPM3  |  BPM4  |</span>
+<span class="sd">    +-----------+--------+--------+--------+--------+</span>
+<span class="sd">    | BPM_(i-1) | phi_1n | phi_21 | phi_32 | phi_43 |</span>
+<span class="sd">    +-----------+--------+--------+--------+--------+</span>
+<span class="sd">    | BPM_i     |    0   |    0   |    0   |    0   |</span>
+<span class="sd">    +-----------+--------+--------+--------+--------+</span>
+<span class="sd">    | BPM_(i+1) | phi_12 | phi_23 | phi_34 | phi_45 |</span>
+<span class="sd">    +-----------+--------+--------+--------+--------+</span>
+
+<span class="sd">    ``cot_phase_*_shift1``:</span>
+
+<span class="sd">    +-----------------------------+-----------------------------+-----------------------------+</span>
+<span class="sd">    | cot(phi_1n) - cot(phi_1n-1) |  cot(phi_21) - cot(phi_2n)  |   cot(phi_32) - cot(phi_31) |</span>
+<span class="sd">    +-----------------------------+-----------------------------+-----------------------------+</span>
+<span class="sd">    |         NaN                 |         NaN                 |         NaN                 |</span>
+<span class="sd">    +-----------------------------+-----------------------------+-----------------------------+</span>
+<span class="sd">    |         NaN                 |         NaN                 |         NaN                 |</span>
+<span class="sd">    +-----------------------------+-----------------------------+-----------------------------+</span>
+<span class="sd">    |  cot(phi_13) - cot(phi_12)  |  cot(phi_24) - cot(phi_23)  |   cot(phi_35) - cot(phi_34) |</span>
+<span class="sd">    +-----------------------------+-----------------------------+-----------------------------+</span>
+
+<span class="sd">    for the combination xxxABBx: first row</span>
+<span class="sd">    for the combinstion xBBAxxx: fourth row and</span>
+<span class="sd">    for the combination xxBABxx: second row of ``cot_phase_*_shift2``</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        meas_input: Optics measurement configuration object</span>
+<span class="sd">        phase: phase matrices of measurement with errors and model tfs (bpm x bpm)</span>
+<span class="sd">        plane: plane either X or Y</span>
+<span class="sd">        meas_and_mdl_tunes: measured  and model tunes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.DataFrame containing betas and alfas from phase</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="n">tune</span><span class="p">,</span> <span class="n">mdltune</span> <span class="o">=</span> <span class="n">meas_and_mdl_tunes</span>
+    <span class="n">beta_df</span> <span class="o">=</span> <span class="n">_get_filtered_model_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+    <span class="c1"># tilt phase advances in order to have the phase advances in a neighbourhood</span>
+    <span class="n">tilted_meas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">tune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">tilted_model</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">mdltune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">tilted_errmeas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">mdltune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">betmdl</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">alfmdl</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+        <span class="n">cot_phase_meas</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">tilted_meas</span><span class="p">)</span>
+        <span class="n">cot_phase_model</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">tilted_model</span><span class="p">)</span>
+    <span class="c1"># calculate enumerators and denominators for far more cases than needed</span>
+    <span class="c1"># shift1 are the cases BBA, ABB, AxBB, AxxBB etc. (the used BPMs are adjacent)</span>
+    <span class="c1"># shift2 are the cases where the used BPMs are separated by one. only BAB is used for  3-BPM</span>
+    <span class="n">cot_phase_meas_shift1</span> <span class="o">=</span> <span class="n">cot_phase_meas</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_meas</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">cot_phase_model_shift1</span> <span class="o">=</span> <span class="n">cot_phase_model</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">EPSILON</span>
+    <span class="n">cot_phase_meas_shift2</span> <span class="o">=</span> <span class="n">cot_phase_meas</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_meas</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">cot_phase_model_shift2</span> <span class="o">=</span> <span class="n">cot_phase_model</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">EPSILON</span>
+    <span class="c1"># calculate the sum of the fractions</span>
+    <span class="n">bet_frac</span> <span class="o">=</span> <span class="p">(</span><span class="n">cot_phase_meas_shift1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">cot_phase_model_shift1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
+                <span class="n">cot_phase_meas_shift1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">/</span><span class="n">cot_phase_model_shift1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span>
+                <span class="n">cot_phase_meas_shift2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">cot_phase_model_shift2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3</span>
+
+    <span class="n">alf_mdl_term</span> <span class="o">=</span> <span class="p">(((</span><span class="n">cot_phase_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">alfmdl</span><span class="p">)</span>
+                <span class="o">+</span> <span class="p">((</span><span class="n">cot_phase_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">alfmdl</span><span class="p">)</span>
+                <span class="o">+</span> <span class="p">((</span><span class="n">cot_phase_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">alfmdl</span><span class="p">))</span> <span class="o">/</span> <span class="mf">6.0</span>
+    <span class="n">alf_meas_term</span> <span class="o">=</span> <span class="p">(((</span><span class="n">cot_phase_meas</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_meas</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="o">+</span> <span class="p">((</span><span class="n">cot_phase_meas</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_meas</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="o">+</span> <span class="p">((</span><span class="n">cot_phase_meas</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cot_phase_meas</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">/</span> <span class="mf">6.0</span>
+
+    <span class="c1"># multiply the fractions by betmdl and calculate the arithmetic mean</span>
+    <span class="n">beti</span> <span class="o">=</span> <span class="n">bet_frac</span> <span class="o">*</span> <span class="n">betmdl</span>
+    <span class="n">alfi</span> <span class="o">=</span> <span class="n">bet_frac</span> <span class="o">*</span> <span class="n">alf_mdl_term</span> <span class="o">+</span> <span class="n">alf_meas_term</span>
+    <span class="c1"># calculate errphi_ij^2 / sin^2 phimdl_ij * beta</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+        <span class="n">sin_squared_model</span> <span class="o">=</span> <span class="n">tilted_errmeas</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">tilted_model</span><span class="p">))</span> <span class="o">*</span> <span class="n">betmdl</span>
+        <span class="n">sin_quadrup_model</span> <span class="o">=</span> <span class="n">tilted_errmeas</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">tilted_model</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">betmdl</span>
+    <span class="c1"># square it again beacause it&#39;s used in a vector length</span>
+    <span class="n">sin_squared_model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">)</span>
+    <span class="n">sin_squ_model_shift1</span> <span class="o">=</span> <span class="n">sin_squared_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift1</span><span class="p">)</span>
+    <span class="n">sin_squ_model_shift2</span> <span class="o">=</span> <span class="n">sin_squared_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift2</span><span class="p">)</span>
+    <span class="n">sin_quad_model_shift1</span> <span class="o">=</span> <span class="n">sin_quadrup_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_quadrup_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift1</span><span class="p">)</span>
+    <span class="n">sin_quad_model_shift2</span> <span class="o">=</span> <span class="n">sin_quadrup_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_quadrup_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift2</span><span class="p">)</span>
+    <span class="n">beterr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sin_squ_model_shift1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_squ_model_shift1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_squ_model_shift2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="s2">&quot;BET&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">beti</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="s2">&quot;ERRBET&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">beterr</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="s2">&quot;ALF&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">alfi</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="s2">&quot;ERRALF&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">alf_mdl_term</span> <span class="o">*</span> <span class="n">beterr</span> <span class="o">/</span> <span class="n">betmdl</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="n">sin_quad_model_shift1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_quad_model_shift1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_quad_model_shift2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">beta_df</span> <span class="o">=</span> <span class="n">_get_delta_columns</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">beta_df</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_delta_columns</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_rel_diff</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ratio</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_diff</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">beta_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">beta_df</span>
+
+
+<span class="k">def</span> <span class="nf">_tilt_slice_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">slice_shift</span><span class="p">,</span> <span class="n">slice_width</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tilts and slices the ``matrix``</span>
+<span class="sd">    Tilting means shifting each column upwards one step more than the previous columnns, i.e.</span>
+
+<span class="sd">    a a a a a       a b c d</span>
+<span class="sd">    b b b b b       b c d e</span>
+<span class="sd">    c c c c c  --&gt;  c d e f</span>
+<span class="sd">    ...             ...</span>
+<span class="sd">    y y y y y       y z a b</span>
+<span class="sd">    z z z z z       z a b c</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">invrange</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">matrix</span><span class="p">[</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">slice_shift</span><span class="p">:,</span> <span class="p">:</span><span class="n">slice_shift</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tune</span>
+    <span class="n">matrix</span><span class="p">[:</span><span class="n">slice_shift</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">slice_shift</span><span class="p">:]</span> <span class="o">-=</span> <span class="n">tune</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">circulant</span><span class="p">(</span><span class="n">invrange</span><span class="p">)[</span><span class="n">invrange</span><span class="p">]],</span>
+                   <span class="n">slice_shift</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:</span><span class="n">slice_width</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_filtered_model_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">best</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">_try_best_model</span><span class="p">(</span><span class="n">meas_input</span><span class="p">)</span> <span class="k">if</span> <span class="n">best</span> <span class="k">else</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">best</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+
+<span class="k">def</span> <span class="nf">_try_best_model</span><span class="p">(</span><span class="n">meas_input</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_best_knowledge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No best knowledge model - using the normal one.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span>
+    <span class="k">return</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_best_knowledge</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

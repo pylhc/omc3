@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.optics_measurements.measure_optics &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.optics_measurements.measure_optics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.optics_measurements.measure_optics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Measure optics</span>
+<span class="sd">----------------</span>
+
+<span class="sd">:module: optics_measurements.measure_optics</span>
+<span class="sd">:author: Lukas Malina</span>
+
+<span class="sd">Computes various lattice optics parameters from frequency spectra</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+
+<span class="kn">from</span> <span class="nn">omc3</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">VERSION</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="p">(</span><span class="n">beta_from_amplitude</span><span class="p">,</span> <span class="n">beta_from_phase</span><span class="p">,</span>
+                                      <span class="n">chromatic</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">,</span> <span class="n">dpp</span><span class="p">,</span> <span class="n">iforest</span><span class="p">,</span>
+                                      <span class="n">interaction_point</span><span class="p">,</span> <span class="n">kick</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">rdt</span><span class="p">,</span>
+                                      <span class="n">tune</span><span class="p">,</span> <span class="n">crdt</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CHROM_BETA_NAME</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">level_console</span><span class="o">=</span><span class="n">logging_tools</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">LOG_FILE</span> <span class="o">=</span> <span class="s2">&quot;measure_optics.log&quot;</span>
+
+
+<div class="viewcode-block" id="measure_optics"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.measure_optics.measure_optics">[docs]</a><span class="k">def</span> <span class="nf">measure_optics</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function to compute various lattice optics parameters from frequency spectra</span>
+<span class="sd">    Args:</span>
+<span class="sd">        input_files: InputFiles object containing frequency spectra files (linx/y)</span>
+<span class="sd">        measure_input: OpticsInput object containing analysis settings</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculating optics parameters - code version </span><span class="si">{</span><span class="n">VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+    <span class="n">logging_tools</span><span class="o">.</span><span class="n">add_module_handler</span><span class="p">(</span><span class="n">logging_tools</span><span class="o">.</span><span class="n">file_handler</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">LOG_FILE</span><span class="p">)))</span>
+    <span class="n">tune_dict</span> <span class="o">=</span> <span class="n">tune</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">)</span>
+    <span class="n">common_header</span> <span class="o">=</span> <span class="n">_get_header</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">)</span>
+    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">phase_dict</span><span class="p">,</span> <span class="n">out_dfs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">phase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_dfs</span><span class="p">,</span> <span class="p">[</span><span class="n">common_header</span><span class="p">,</span> <span class="n">common_header</span><span class="p">],</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">phase</span><span class="o">.</span><span class="n">write_special</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">only_coupling</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">beta_df</span><span class="p">,</span> <span class="n">beta_header</span> <span class="o">=</span> <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">beta_header</span><span class="p">,</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">beta_from_amplitude</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">invariants</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">kick</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">ip_df</span> <span class="o">=</span> <span class="n">interaction_point</span><span class="o">.</span><span class="n">betastar_from_phase</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">)</span>
+        <span class="n">interaction_point</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ip_df</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">dispersion</span><span class="o">.</span><span class="n">calculate_orbit</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">dispersion</span><span class="o">.</span><span class="n">calculate_dispersion</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span>
+            <span class="n">dispersion</span><span class="o">.</span><span class="n">calculate_normalised_dispersion</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
+    <span class="c1"># coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)</span>
+    <span class="k">if</span> <span class="s1">&#39;rdt&#39;</span> <span class="ow">in</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">nonlinear</span><span class="p">:</span>
+        <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s2">&quot;rdt&quot;</span><span class="p">))</span>
+        <span class="n">rdt</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;crdt&#39;</span> <span class="ow">in</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">nonlinear</span><span class="p">:</span>
+        <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s2">&quot;crdt&quot;</span><span class="p">))</span>
+        <span class="n">crdt</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">chromatic_beating</span><span class="p">:</span>
+        <span class="n">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="chromatic_beating"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.measure_optics.chromatic_beating">[docs]</a><span class="k">def</span> <span class="nf">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function to compute chromatic optics beating</span>
+<span class="sd">    Args:</span>
+<span class="sd">        tune_dict:</span>
+<span class="sd">        input_files: InputFiles object containing frequency spectra files (linx/y)</span>
+<span class="sd">        measure_input: OpticsInput object containing analysis settings</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dpps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dpp_val</span> <span class="k">for</span> <span class="n">dpp_val</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">))])</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">betas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dpp_val</span> <span class="ow">in</span> <span class="n">dpps</span><span class="p">:</span>
+            <span class="n">dpp_meas_input</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">measure_input</span><span class="p">)</span>
+            <span class="n">dpp_meas_input</span><span class="p">[</span><span class="s2">&quot;dpp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp_val</span>
+            <span class="n">phase_dict</span><span class="p">,</span> <span class="n">out_dfs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">dpp_meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">beta_df</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">dpp_meas_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">(),</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">betas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beta_df</span><span class="p">)</span>
+        <span class="n">output_df</span> <span class="o">=</span> <span class="n">chromatic</span><span class="o">.</span><span class="n">calculate_w_and_phi</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">dpps</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CHROM_BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">output_df</span><span class="p">,</span> <span class="p">{},</span> <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_header</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">):</span>
+    <span class="n">compensation</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s2">&quot;by model&quot;</span><span class="p">,</span> <span class="s1">&#39;equation&#39;</span><span class="p">:</span> <span class="s2">&quot;by equation&quot;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Measure_optics:version&#39;</span><span class="p">,</span> <span class="n">VERSION</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;Command&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;CWD&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
+                        <span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">. %B %Y, %H:%M:%S&quot;</span><span class="p">)),</span>
+                        <span class="p">(</span><span class="s1">&#39;Model_directory&#39;</span><span class="p">,</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_dir</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;Compensation&#39;</span><span class="p">,</span> <span class="n">compensation</span><span class="p">[</span><span class="n">meas_input</span><span class="o">.</span><span class="n">compensation</span><span class="p">]),</span>
+                        <span class="p">(</span><span class="s1">&#39;Q1&#39;</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">]),</span>
+                        <span class="p">(</span><span class="s1">&#39;Q2&#39;</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">])])</span>
+
+
+<div class="viewcode-block" id="InputFiles"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.measure_optics.InputFiles">[docs]</a><span class="k">class</span> <span class="nc">InputFiles</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores the input files, provides methods to gather quantity specific data</span>
+
+<span class="sd">    Public methods:</span>
+<span class="sd">        get_dpps(plane)</span>
+<span class="sd">        get_joined_frame(plane, columns, zero_dpp=False, how=&#39;inner&#39;)</span>
+<span class="sd">        get_columns(frame, column)</span>
+<span class="sd">        get_data(frame, column)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files_to_analyse</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InputFiles</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">PLANES</span><span class="p">,</span> <span class="p">([],</span> <span class="p">[])))</span>
+        <span class="n">read_files</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">files_to_analyse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">file_in</span> <span class="ow">in</span> <span class="n">files_to_analyse</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+                <span class="n">df_to_load</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_in</span><span class="si">}</span><span class="s2">.lin</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                              <span class="k">if</span> <span class="n">read_files</span> <span class="k">else</span> <span class="n">file_in</span><span class="p">[</span><span class="n">plane</span><span class="p">])</span>
+                <span class="n">df_to_load</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_repair_backwards_compatible_frame</span><span class="p">(</span><span class="n">df_to_load</span><span class="p">,</span> <span class="n">plane</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;No valid input files&quot;</span><span class="p">)</span>
+        <span class="n">dpp_values</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">calculate_dpoverp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPPS: </span><span class="si">{</span><span class="n">dpp_values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">amp_dpp_values</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">calculate_amp_dpoverp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPP_AMPS: </span><span class="si">{</span><span class="n">amp_dpp_values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">isolation_forest</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">iforest</span><span class="o">.</span><span class="n">clean_with_isolation_forest</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">optics_opt</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">append_dpp</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">dpp</span><span class="o">.</span><span class="n">arrange_dpps</span><span class="p">(</span><span class="n">dpp_values</span><span class="p">))</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">append_amp_dpp</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">amp_dpp_values</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>  <span class="c1"># TODO later remove</span>
+    <span class="k">def</span> <span class="nf">_repair_backwards_compatible_frame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones</span>
+<span class="sd">        This is for backwards compatibility with Drive</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;NATAMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;NATAMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;NATAMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+<div class="viewcode-block" id="InputFiles.dpps"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.measure_optics.InputFiles.dpps">[docs]</a>    <span class="k">def</span> <span class="nf">dpps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gathers measured DPPs from input files corresponding to given plane</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            plane: &quot;X&quot; or &quot;Y&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy array of DPPs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">DPP</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]])</span></div>
+
+    <span class="k">def</span> <span class="nf">dpp_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">):</span>
+        <span class="n">dpp_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="o">-</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">dpp_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dpp_dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found for dp/p </span><span class="si">{</span><span class="n">dpp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpp_dfs</span>
+
+    <span class="k">def</span> <span class="nf">_all_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
+
+<div class="viewcode-block" id="InputFiles.joined_frame"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.measure_optics.InputFiles.joined_frame">[docs]</a>    <span class="k">def</span> <span class="nf">joined_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpp_amp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs merged DataFrame from InputFiles</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            plane:  &quot;X&quot; or &quot;Y&quot;</span>
+<span class="sd">            columns: list of columns from input files</span>
+<span class="sd">            dpp_value: merges only files with given dpp_value</span>
+<span class="sd">            dpp_amp: merges only files with non-zero dpp amplitude (i.e. 3Dkicks)</span>
+<span class="sd">            how: way of merging:  &#39;inner&#39; (intersection) or &#39;outer&#39; (union), default is &#39;inner&#39;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            merged DataFrame from InputFiles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">how</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="s1">&#39;outer&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeWarning</span><span class="p">(</span><span class="s2">&quot;&#39;how&#39; should be either &#39;inner&#39; or &#39;outer&#39;, &#39;inner&#39; will be used.&quot;</span><span class="p">)</span>
+        <span class="n">frames_to_join</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpp_amp</span><span class="p">:</span>
+            <span class="n">frames_to_join</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">frames_to_join</span> <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">DPPAMP</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found for non-zero |dp/p|&quot;</span><span class="p">)</span>
+        <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+                <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">joined_frame</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+                                        <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;__&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+            <span class="n">joined_frame</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">column</span><span class="p">:</span> <span class="n">column</span> <span class="o">+</span> <span class="s1">&#39;__0&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">joined_frame</span></div>
+
+    <span class="k">def</span> <span class="nf">bpms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">plane</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpms</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpms</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">))</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calibs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">calibs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">])):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;AMP&quot;</span> <span class="o">+</span> <span class="n">plane</span><span class="p">]],</span> <span class="n">calibs</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                                <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
+                    <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;CALIBRATION&quot;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">&quot;ERROR_CALIBRATION&quot;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">})</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;CALIBRATION&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;ERROR_CALIBRATION&quot;</span><span class="p">]</span>  <span class="c1"># TODO</span>
+
+<div class="viewcode-block" id="InputFiles.get_columns"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.measure_optics.InputFiles.get_columns">[docs]</a>    <span class="o">@</span> <span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of columns of frame corresponding to column in original files</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            frame:  joined frame</span>
+<span class="sd">            column: name of column in original files</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of columns</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">str_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">column</span> <span class="o">+</span> <span class="s1">&#39;__&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+        <span class="n">new_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">):],</span> <span class="n">str_list</span><span class="p">))</span>
+        <span class="n">new_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">new_list</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="InputFiles.get_data"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.measure_optics.InputFiles.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns data in columns of frame corresponding to column in original files</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            frame:  joined frame</span>
+<span class="sd">            column: name of column in original files</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            data in numpy array corresponding to column in original files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">copy_calibration_files</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">calibrationdir</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">calibrationdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">calibs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">cal_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;calibration_</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.out&quot;</span>
+        <span class="n">iotools</span><span class="o">.</span><span class="n">copy_item</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">calibrationdir</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">))</span>
+        <span class="n">calibs</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">))</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">calibs</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

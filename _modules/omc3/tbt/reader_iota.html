@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.tbt.reader_iota &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.tbt.reader_iota</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.tbt.reader_iota</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Iota data handler</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">Takes Hdf5 file path containing the TbT data and returns a TbtData class to be read and processed by harpy</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span> <span class="nn">omc3.tbt</span> <span class="kn">import</span> <span class="n">handler</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">VERSIONS</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">PLANES_CONV</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">},</span>
+               <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;Horizontal&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;Vertical&#39;</span><span class="p">}}</span>
+
+
+<div class="viewcode-block" id="read_tbt"><a class="viewcode-back" href="../../../tbt/index.html#omc3.tbt.reader_iota.read_tbt">[docs]</a><span class="k">def</span> <span class="nf">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads TbTData object from provided file_path</span>
+<span class="sd">    Args:</span>
+<span class="sd">        file_path: path to a file containing TbtData</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TbtData</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">hdf_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">bunch_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">vers</span> <span class="ow">in</span> <span class="n">VERSIONS</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bpm_names</span> <span class="o">=</span> <span class="n">FUNCTIONS</span><span class="p">[</span><span class="n">vers</span><span class="p">][</span><span class="s1">&#39;get_bpm_names&#39;</span><span class="p">](</span><span class="n">hdf_file</span><span class="p">)</span>
+            <span class="n">nturns</span> <span class="o">=</span> <span class="n">FUNCTIONS</span><span class="p">[</span><span class="n">vers</span><span class="p">][</span><span class="s1">&#39;get_nturns&#39;</span><span class="p">](</span><span class="n">hdf_file</span><span class="p">,</span> <span class="n">vers</span><span class="p">)</span>
+            <span class="n">matrices</span> <span class="o">=</span> <span class="p">[{</span><span class="n">k</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">bpm_names</span><span class="p">,</span>
+                                         <span class="n">data</span><span class="o">=</span><span class="n">FUNCTIONS</span><span class="p">[</span><span class="n">vers</span><span class="p">][</span><span class="s1">&#39;get_tbtdata&#39;</span><span class="p">](</span><span class="n">hdf_file</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">vers</span><span class="p">),</span>
+                                         <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">}]</span>
+
+            <span class="k">return</span> <span class="n">handler</span><span class="o">.</span><span class="n">TbtData</span><span class="p">(</span><span class="n">matrices</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">bunch_ids</span><span class="p">,</span> <span class="n">nturns</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<span class="k">def</span> <span class="nf">_get_turn_by_turn_data_v1</span><span class="p">(</span><span class="n">hd5</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">hd5</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">PLANES_CONV</span><span class="p">[</span><span class="n">version</span><span class="p">][</span><span class="n">plane</span><span class="p">]))]</span>
+    <span class="n">nbpm</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+    <span class="n">nturn</span> <span class="o">=</span> <span class="n">FUNCTIONS</span><span class="p">[</span><span class="n">version</span><span class="p">][</span><span class="s1">&#39;get_nturns&#39;</span><span class="p">](</span><span class="n">hd5</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbpm</span><span class="p">,</span> <span class="n">nturn</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">hd5</span><span class="p">[</span><span class="n">key</span><span class="p">][:</span> <span class="n">nturn</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="k">def</span> <span class="nf">_get_list_of_bpmnames_v1</span><span class="p">(</span><span class="n">hd5</span><span class="p">):</span>
+    <span class="n">bpms</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;IBPM</span><span class="si">{</span><span class="n">key</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">hd5</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">check_key_v1</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_number_of_turns_v1</span><span class="p">(</span><span class="n">hd5</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">hd5</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">hd5</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">check_key_v1</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_turn_by_turn_data_v2</span><span class="p">(</span><span class="n">hd5</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">hd5</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N:&#39;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">keys</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Wrong version of converter was used.&#39;</span><span class="p">)</span>
+    <span class="n">nbpm</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+    <span class="n">nturn</span> <span class="o">=</span> <span class="n">FUNCTIONS</span><span class="p">[</span><span class="n">version</span><span class="p">][</span><span class="s1">&#39;get_nturns&#39;</span><span class="p">](</span><span class="n">hd5</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbpm</span><span class="p">,</span> <span class="n">nturn</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">hd5</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">PLANES_CONV</span><span class="p">[</span><span class="n">version</span><span class="p">][</span><span class="n">plane</span><span class="p">]][:</span><span class="n">nturn</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="k">def</span> <span class="nf">_get_list_of_bpmnames_v2</span><span class="p">(</span><span class="n">hd5</span><span class="p">):</span>
+    <span class="n">bpms</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;IBPM</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">hd5</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">check_key_v2</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">bpms</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Wrong version of converter was used.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_number_of_turns_v2</span><span class="p">(</span><span class="n">hd5</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="nb">len</span><span class="p">(</span><span class="n">hd5</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">PLANES_CONV</span><span class="p">[</span><span class="n">version</span><span class="p">][</span><span class="s1">&#39;X&#39;</span><span class="p">]]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">hd5</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">PLANES_CONV</span><span class="p">[</span><span class="n">version</span><span class="p">][</span><span class="s1">&#39;Y&#39;</span><span class="p">]]))</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">hd5</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">check_key_v2</span><span class="p">(</span><span class="n">key</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">check_key_v2</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="p">((</span><span class="s1">&#39;NL&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N:&#39;</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">check_key_v1</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;state&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N:&#39;</span><span class="p">)</span>
+
+
+<span class="n">FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;get_bpm_names&#39;</span><span class="p">:</span> <span class="n">_get_list_of_bpmnames_v1</span><span class="p">,</span>
+                 <span class="s1">&#39;get_nturns&#39;</span><span class="p">:</span> <span class="n">_get_number_of_turns_v1</span><span class="p">,</span>
+                 <span class="s1">&#39;get_tbtdata&#39;</span><span class="p">:</span> <span class="n">_get_turn_by_turn_data_v1</span><span class="p">},</span>
+             <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;get_bpm_names&#39;</span><span class="p">:</span> <span class="n">_get_list_of_bpmnames_v2</span><span class="p">,</span>
+                 <span class="s1">&#39;get_nturns&#39;</span><span class="p">:</span> <span class="n">_get_number_of_turns_v2</span><span class="p">,</span>
+                 <span class="s1">&#39;get_tbtdata&#39;</span><span class="p">:</span> <span class="n">_get_turn_by_turn_data_v2</span><span class="p">}}</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

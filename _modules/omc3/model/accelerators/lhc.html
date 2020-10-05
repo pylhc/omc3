@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.model.accelerators.lhc &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.model.accelerators.lhc</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.model.accelerators.lhc</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">LHC</span>
+<span class="sd">-------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPoint</span>
+
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AccElementTypes</span><span class="p">,</span> <span class="n">Accelerator</span><span class="p">,</span>
+                                                 <span class="n">AcceleratorDefinitionError</span><span class="p">,</span>
+                                                 <span class="n">AccExcitationMode</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">B2_ERRORS_TFS</span><span class="p">,</span> <span class="n">B2_SETTINGS_MADX</span><span class="p">,</span>
+                                  <span class="n">GENERAL_MACROS</span><span class="p">,</span> <span class="n">LHC_MACROS</span><span class="p">,</span> <span class="n">MACROS_DIR</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">LHC_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CURRENT_DIR</span><span class="p">,</span> <span class="s2">&quot;lhc&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Lhc"><a class="viewcode-back" href="../../../../model/index.html#omc3.model.accelerators.lhc.Lhc">[docs]</a><span class="k">class</span> <span class="nc">Lhc</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Parent Class for Lhc-Types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span>
+    <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BPM&quot;</span><span class="p">,</span>
+               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;M&quot;</span><span class="p">,</span>
+               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]&quot;</span><span class="p">}</span>  <span class="c1"># bpms &gt; 14 L or R of IP</span>
+
+    <span class="n">LHC_IPS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;8&quot;</span><span class="p">)</span>
+    <span class="n">NORMAL_IP_BPMS</span> <span class="o">=</span> <span class="s2">&quot;BPMSW.1</span><span class="si">{side}{ip}</span><span class="s2">.B</span><span class="si">{beam}</span><span class="s2">&quot;</span>
+    <span class="n">DOROS_IP_BPMS</span> <span class="o">=</span> <span class="s2">&quot;LHC.BPM.1</span><span class="si">{side}{ip}</span><span class="s2">.B</span><span class="si">{beam}</span><span class="s2">_DOROS&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">():</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Lhc</span><span class="p">,</span> <span class="n">Lhc</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beam&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Beam to use.&quot;</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;2012&quot;</span><span class="p">,</span> <span class="s2">&quot;2015&quot;</span><span class="p">,</span> <span class="s2">&quot;2016&quot;</span><span class="p">,</span> <span class="s2">&quot;2017&quot;</span><span class="p">,</span> <span class="s2">&quot;2018&quot;</span><span class="p">,</span> <span class="s2">&quot;hllhc1.3&quot;</span><span class="p">),</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Year of the optics (or hllhc1.3).&quot;</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ats&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Marks ATS optics&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correctors_dir</span> <span class="o">=</span> <span class="s2">&quot;2012&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">year</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ats</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">ats</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;hllhc1.3&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">correctors_dir</span> <span class="o">=</span> <span class="s2">&quot;hllhc1.3&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">beam</span>
+        <span class="n">beam_to_beam_direction</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beam_direction</span> <span class="o">=</span> <span class="n">beam_to_beam_direction</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verify_object</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Lhc.verify_object"><a class="viewcode-back" href="../../../../model/index.html#omc3.model.accelerators.lhc.Lhc.verify_object">[docs]</a>    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># TODO: Maybe more checks?</span>
+        <span class="sd">&quot;&quot;&quot;Verifies if everything is defined which should be defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Accelerator class verification&quot;</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># is the class is used to create full response?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                    <span class="s2">&quot;The accelerator definition is incomplete, optics &quot;</span>
+                    <span class="s2">&quot;file or model directory has not been specified.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Crossing on or off not set.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Excitation mode not set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Driven tunes not set.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optics file &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># print info about the accelerator</span>
+        <span class="c1"># TODO: write more output prints</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;... verification passed. </span><span class="se">\n</span><span class="s2">Some information about the accelerator:&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class name       </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beam             </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beam direction   </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam_direction</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">beam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beam</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;The accelerator definition is incomplete, beam &quot;</span>
+                                             <span class="s2">&quot;has to be specified (--beam option missing?).&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beam</span>
+
+    <span class="nd">@beam</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">beam</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Beam parameter has to be one of (1, 2)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beam</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CURRENT_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_lhc_error_dir</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LHC_DIR</span><span class="p">,</span> <span class="s2">&quot;systematic_errors&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Lhc.get_variables"><a class="viewcode-back" href="../../../../model/index.html#omc3.model.accelerators.lhc.Lhc.get_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">correctors_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LHC_DIR</span><span class="p">,</span> <span class="s2">&quot;2012&quot;</span><span class="p">,</span> <span class="s2">&quot;correctors&quot;</span><span class="p">)</span>  <span class="c1"># not a bug</span>
+        <span class="n">all_corrs</span> <span class="o">=</span> <span class="n">_merge_jsons</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">correctors_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;correctors_b</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;beta_correctors.json&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">correctors_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;correctors_b</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;coupling_correctors.json&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_triplet_correctors_file</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">my_classes</span> <span class="o">=</span> <span class="n">classes</span>
+        <span class="k">if</span> <span class="n">my_classes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">my_classes</span> <span class="o">=</span> <span class="n">all_corrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">vars_by_class</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">all_corrs</span><span class="p">[</span><span class="n">corr_cls</span><span class="p">]</span> <span class="k">for</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">my_classes</span> <span class="k">if</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">all_corrs</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">frm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">to</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">vars_by_class</span><span class="p">)</span>
+        <span class="n">elems_matrix</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_corrector_elems</span><span class="p">())</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">frm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">frm</span> <span class="o">&gt;</span> <span class="n">to</span><span class="p">:</span>
+                <span class="n">elems_matrix</span> <span class="o">=</span> <span class="n">elems_matrix</span><span class="p">[(</span><span class="n">elems_matrix</span><span class="o">.</span><span class="n">S</span> <span class="o">&gt;=</span> <span class="n">frm</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">elems_matrix</span><span class="o">.</span><span class="n">S</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">elems_matrix</span> <span class="o">=</span> <span class="n">elems_matrix</span><span class="p">[(</span><span class="n">elems_matrix</span><span class="o">.</span><span class="n">S</span> <span class="o">&gt;=</span> <span class="n">frm</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">elems_matrix</span><span class="o">.</span><span class="n">S</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="n">frm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">elems_matrix</span> <span class="o">=</span> <span class="n">elems_matrix</span><span class="p">[</span><span class="n">elems_matrix</span><span class="o">.</span><span class="n">S</span> <span class="o">&gt;=</span> <span class="n">frm</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">elems_matrix</span> <span class="o">=</span> <span class="n">elems_matrix</span><span class="p">[</span><span class="n">elems_matrix</span><span class="o">.</span><span class="n">S</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">]</span>
+
+        <span class="n">vars_by_position</span> <span class="o">=</span> <span class="n">_remove_dups_keep_order</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">raw_vars</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_vars</span> <span class="ow">in</span> <span class="n">elems_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;VARS&quot;</span><span class="p">]]</span>
+        <span class="p">))</span>
+        <span class="k">return</span> <span class="n">_list_intersect_keep_order</span><span class="p">(</span><span class="n">vars_by_position</span><span class="p">,</span> <span class="n">vars_by_class</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Lhc.get_ips"><a class="viewcode-back" href="../../../../model/index.html#omc3.model.accelerators.lhc.Lhc.get_ips">[docs]</a>    <span class="k">def</span> <span class="nf">get_ips</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterable with this accelerator IPs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An iterator returning tuples with:</span>
+<span class="sd">                (&quot;ip name&quot;, &quot;left BPM name&quot;, &quot;right BPM name&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">Lhc</span><span class="o">.</span><span class="n">LHC_IPS</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s2">&quot;IP</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span>
+                   <span class="n">Lhc</span><span class="o">.</span><span class="n">NORMAL_IP_BPMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span> <span class="n">beam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">),</span>
+                   <span class="n">Lhc</span><span class="o">.</span><span class="n">NORMAL_IP_BPMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span> <span class="n">beam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">))</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s2">&quot;IP</span><span class="si">{}</span><span class="s2">_DOROS&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span>
+                   <span class="n">Lhc</span><span class="o">.</span><span class="n">DOROS_IP_BPMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span> <span class="n">beam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">),</span>
+                   <span class="n">Lhc</span><span class="o">.</span><span class="n">DOROS_IP_BPMS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span> <span class="n">beam</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">log_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  model dir = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Natural Tune X      [</span><span class="si">{:10.3f}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Natural Tune Y      [</span><span class="si">{:10.3f}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Best Knowledge Model     [</span><span class="si">{:&gt;10s}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;NO&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_best_knowledge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;OK&quot;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Excitation          [</span><span class="si">{:&gt;10s}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;NO&quot;</span><span class="p">))</span>
+            <span class="k">return</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Excitation          [</span><span class="si">{:&gt;10s}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;ACD&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span> <span class="k">else</span> <span class="s2">&quot;ADT&quot;</span><span class="p">))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;&gt; Driven Tune X     [</span><span class="si">{:10.3f}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;&gt; Driven Tune Y     [</span><span class="si">{:10.3f}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">load_main_seq_madx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_get_call_main_for_year</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="s2">&quot;The accelerator definition is incomplete, mode &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;has to be specified (--lhcmode option missing?).&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Private Methods ##########################################################</span>
+
+    <span class="k">def</span> <span class="nf">_get_triplet_correctors_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">correctors_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LHC_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">correctors_dir</span><span class="p">,</span> <span class="s2">&quot;correctors&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">correctors_dir</span><span class="p">,</span> <span class="s2">&quot;triplet_correctors.json&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_corrector_elems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">correctors_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LHC_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">correctors_dir</span><span class="p">,</span> <span class="s2">&quot;correctors&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">correctors_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;corrector_elems_b</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">.tfs&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Lhc.get_exciter_bpm"><a class="viewcode-back" href="../../../../model/index.html#omc3.model.accelerators.lhc.Lhc.get_exciter_bpm">[docs]</a>    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">commonbpms</span><span class="p">):</span>
+        <span class="n">beam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span>
+        <span class="n">adt</span> <span class="o">=</span> <span class="s1">&#39;H.C&#39;</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="s1">&#39;V.B&#39;</span>
+        <span class="n">l_r</span> <span class="o">=</span> <span class="s1">&#39;L&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">!=</span> <span class="n">plane</span> <span class="o">==</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;R&#39;</span>
+        <span class="n">a_b</span> <span class="o">=</span> <span class="s1">&#39;B&#39;</span> <span class="k">if</span> <span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;A&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_one_of_in</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;BPMY</span><span class="si">{</span><span class="n">a_b</span><span class="si">}</span><span class="s2">.6L4.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BPM.7L4.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                                      <span class="n">commonbpms</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;MKQA.6L4.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ADT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_one_of_in</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;BPMWA.B5</span><span class="si">{</span><span class="n">l_r</span><span class="si">}</span><span class="s2">4.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BPMWA.A5</span><span class="si">{</span><span class="n">l_r</span><span class="si">}</span><span class="s2">4.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                                          <span class="n">commonbpms</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;ADTK</span><span class="si">{</span><span class="n">adt</span><span class="si">}</span><span class="s2">5</span><span class="si">{</span><span class="n">l_r</span><span class="si">}</span><span class="s2">4.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_is_one_of_in</span><span class="p">(</span><span class="n">bpms_to_find</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
+        <span class="n">found_bpms</span> <span class="o">=</span> <span class="p">[</span><span class="n">bpm</span> <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms_to_find</span> <span class="k">if</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span>
+
+    <span class="k">def</span> <span class="nf">important_phase_advances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span><span class="p">[[</span><span class="s2">&quot;MKD.O5R6.B2&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4R1.B2&quot;</span><span class="p">],</span>
+                   <span class="p">[</span><span class="s2">&quot;MKD.O5R6.B2&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4R5.B2&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[[</span><span class="s2">&quot;MKD.O5L6.B1&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4L1.B1&quot;</span><span class="p">],</span>
+                    <span class="p">[</span><span class="s2">&quot;MKD.O5L6.B1&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4L5.B1&quot;</span><span class="p">]]</span>
+
+    <span class="k">def</span> <span class="nf">get_synch_BPMs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="c1"># expect passing index.to_numpy()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="ow">in</span> <span class="n">index</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;BPMSW.33L2.B1&quot;</span><span class="p">:]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="ow">in</span> <span class="n">index</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;BPMSW.33R8.B2&quot;</span><span class="p">:]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Lhc.get_base_madx_script"><a class="viewcode-back" href="../../../../model/index.html#omc3.model.accelerators.lhc.Lhc.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">ats_md</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">high_beta</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">ats_suffix</span> <span class="o">=</span> <span class="s1">&#39;_ats&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ats</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;option, -echo;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_call_in_madx</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">MACROS_DIR</span><span class="p">,</span> <span class="n">GENERAL_MACROS</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_call_in_madx</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">MACROS_DIR</span><span class="p">,</span> <span class="n">LHC_MACROS</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;title, &quot;Model from Lukas :-)&quot;;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">load_main_seq_madx</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, define_nominal_beams();</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_call_in_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, cycle_sequences();</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;xing_angles = </span><span class="si">{</span><span class="s1">&#39;1&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xing</span> <span class="k">else</span> <span class="s1">&#39;0&#39;</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;if(xing_angles==1)</span><span class="se">{{\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    exec, set_crossing_scheme_ON();</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}</span><span class="s2">else</span><span class="se">{{\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    exec, set_default_crossing_scheme();</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;use, sequence = LHCB</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;option, echo;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
+            <span class="c1"># madx_script += f&quot;exec, load_average_error_table({self.energy}, {self.beam});\n&quot;</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;readmytable, file = &#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">B2_ERRORS_TFS</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;seterr, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_call_in_madx</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">B2_SETTINGS_MADX</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">high_beta</span><span class="p">:</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;exec, high_beta_matcher();</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes</span><span class="si">{</span><span class="n">ats_suffix</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">ats_md</span><span class="p">:</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;exec, full_response_ats();</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, coupling_knob</span><span class="si">{</span><span class="n">ats_suffix</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
+
+<div class="viewcode-block" id="Lhc.get_update_correction_script"><a class="viewcode-back" href="../../../../model/index.html#omc3.model.accelerators.lhc.Lhc.get_update_correction_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_correction_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">):</span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">corr_file</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">outpath</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div></div>
+
+
+<span class="c1"># General functions ##########################################################</span>
+
+
+<span class="k">def</span> <span class="nf">_get_call_main_for_year</span><span class="p">(</span><span class="n">year</span><span class="p">):</span>
+    <span class="n">call_main</span> <span class="o">=</span> <span class="n">_call_in_madx</span><span class="p">(</span><span class="n">_get_file_for_year</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="s2">&quot;main.seq&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;2012&quot;</span><span class="p">:</span>
+        <span class="n">call_main</span> <span class="o">+=</span> <span class="n">_call_in_madx</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LHC_DIR</span><span class="p">,</span> <span class="s2">&quot;2012&quot;</span><span class="p">,</span> <span class="s2">&quot;install_additional_elements.madx&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;hllhc1.3&quot;</span><span class="p">:</span>
+        <span class="n">call_main</span> <span class="o">+=</span> <span class="n">_call_in_madx</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LHC_DIR</span><span class="p">,</span> <span class="s2">&quot;hllhc1.3&quot;</span><span class="p">,</span> <span class="s2">&quot;main_update.seq&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">call_main</span>
+
+
+<span class="k">def</span> <span class="nf">_call_in_madx</span><span class="p">(</span><span class="n">path_to_call</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">path_to_call</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_get_file_for_year</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LHC_DIR</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_merge_jsons</span><span class="p">(</span><span class="o">*</span><span class="n">files</span><span class="p">):</span>
+    <span class="n">full_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">json_file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
+            <span class="n">json_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">full_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">json_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">full_dict</span>
+
+
+<span class="k">def</span> <span class="nf">_flatten_list</span><span class="p">(</span><span class="n">my_list</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">my_list</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_remove_dups_keep_order</span><span class="p">(</span><span class="n">my_list</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">my_list</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_list_intersect_keep_order</span><span class="p">(</span><span class="n">primary_list</span><span class="p">,</span> <span class="n">secondary_list</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">primary_list</span> <span class="k">if</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">secondary_list</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">_LhcSegmentMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_segment_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variables</span><span class="p">(</span><span class="n">frm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beam</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="s2">&quot;The accelerator definition is incomplete, beam &quot;</span>
+                <span class="s2">&quot;has to be specified (--beam option missing?).&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="s2">&quot;The accelerator definition is incomplete, optics &quot;</span>
+                <span class="s2">&quot;file has not been specified.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Crossing on or off not set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Segment label not set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Segment start not set.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Segment end not set.&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.optics_measurements.interaction_point &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.optics_measurements.interaction_point</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.optics_measurements.interaction_point</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">IP</span>
+<span class="sd">----------------</span>
+
+<span class="sd">:module: optics_measurements.interaction_point</span>
+<span class="sd">:author: Jaime Coello de Portugal</span>
+
+<span class="sd">Computes beta* from phase.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PI2</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">IP_NAME</span><span class="p">,</span> <span class="n">S</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">COLUMNS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;IP&quot;</span><span class="p">,</span> <span class="s2">&quot;BETASTAR&quot;</span><span class="p">,</span> <span class="s2">&quot;ERRBETASTAR&quot;</span><span class="p">,</span> <span class="s2">&quot;PHASEADV&quot;</span><span class="p">,</span> <span class="s2">&quot;ERRPHASEADV&quot;</span><span class="p">,</span> <span class="s2">&quot;PHASEDVMDL&quot;</span><span class="p">,</span> <span class="s2">&quot;LSTAR&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="betastar_from_phase"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.interaction_point.betastar_from_phase">[docs]</a><span class="k">def</span> <span class="nf">betastar_from_phase</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase_d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Writes the getIP files with the betastar computed using phase advance.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        meas_input: Measurement_input object</span>
+<span class="sd">        phase_d: Output of calculation</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A nested dict with the same structure as the phase_d dict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">accel</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">model</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ips</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_ips</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> has not get_ips method.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ip_name</span><span class="p">,</span> <span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span> <span class="ow">in</span> <span class="n">ips</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">phaseadv</span><span class="p">,</span> <span class="n">ephaseadv</span><span class="p">,</span> <span class="n">mdlphadv</span> <span class="o">=</span> <span class="n">_get_meas_phase</span><span class="p">(</span><span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span><span class="p">,</span> <span class="n">phase_d</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpml</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bpmr</span><span class="si">}</span><span class="s2"> not in phases dataframe.&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>  <span class="c1"># Measurement on one of the BPMs not present.</span>
+        <span class="n">lstar</span> <span class="o">=</span> <span class="n">_get_lstar</span><span class="p">(</span><span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+        <span class="n">betastar</span><span class="p">,</span> <span class="n">ebestar</span> <span class="o">=</span> <span class="n">phase_to_betastar</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">PI2</span> <span class="o">*</span> <span class="n">phaseadv</span><span class="p">,</span> <span class="n">PI2</span> <span class="o">*</span> <span class="n">ephaseadv</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ip_name</span><span class="p">,</span> <span class="n">betastar</span><span class="p">,</span> <span class="n">ebestar</span><span class="p">,</span> <span class="n">phaseadv</span><span class="p">,</span> <span class="n">ephaseadv</span><span class="p">,</span> <span class="n">mdlphadv</span><span class="p">,</span> <span class="n">lstar</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">COLUMNS</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">ips_d</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ips_d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">IP_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">ips_d</span><span class="p">,</span> <span class="n">headers_dict</span><span class="o">=</span><span class="n">headers</span><span class="p">,)</span>
+
+
+<div class="viewcode-block" id="phase_to_betastar"><a class="viewcode-back" href="../../../optics_measurements/index.html#omc3.optics_measurements.interaction_point.phase_to_betastar">[docs]</a><span class="k">def</span> <span class="nf">phase_to_betastar</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">errphase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the betastar and its error given the phase advance across the IP.</span>
+
+<span class="sd">    This function computes the betastar using the phase advance between the</span>
+<span class="sd">    BPMs around the IP and their distance (lstar). The phase and error in the</span>
+<span class="sd">    phase must be given in radians.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        lstar: The distance between the BPMs and the IR.</span>
+<span class="sd">        phase: The phase advance between the BPMs at each side of the IP. Must</span>
+<span class="sd">            be given in radians.</span>
+<span class="sd">        errphase: The error in phase. Must be given in radians.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">_phase_to_betastar_value</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">),</span>
+            <span class="n">_phase_to_betastar_error</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">errphase</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_phase_to_betastar_value</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">ph</span><span class="p">):</span>
+    <span class="n">tph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">ph</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tph</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">/</span> <span class="n">tph</span>
+
+
+<span class="k">def</span> <span class="nf">_phase_to_betastar_error</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">ph</span><span class="p">,</span> <span class="n">eph</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">((</span><span class="n">eph</span> <span class="o">*</span> <span class="n">l</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ph</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ph</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_get_meas_phase</span><span class="p">(</span><span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span><span class="p">,</span> <span class="n">phases_df</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">phases_df</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span><span class="p">],</span>
+            <span class="n">phases_df</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span><span class="p">],</span>
+            <span class="n">phases_df</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_get_lstar</span><span class="p">(</span><span class="n">bpml</span><span class="p">,</span> <span class="n">bpmr</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpml</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpmr</span><span class="p">,</span> <span class="n">S</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,604 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.plotting.plot_spectrum &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.plotting.plot_spectrum</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.plotting.plot_spectrum</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plot Spectrum</span>
+<span class="sd">--------------------</span>
+
+<span class="sd">Spectrum plotter for frequency analysis output-data (supports also DRIVE output).</span>
+
+<span class="sd">The spectra can be either plotted as `stem`-plots or as `waterfall`-plots.</span>
+<span class="sd">The stem-plots can be in any combination: split by given files, split by given</span>
+<span class="sd">bpms or combined in any way (by usage of the `combine_by` option).</span>
+<span class="sd">Note that if both of those are false (as is default)</span>
+<span class="sd">there will anyway be only one waterfall plot per given input file.</span>
+
+
+<span class="sd">In case of split-by-file, plots are saved in a sub-directory of</span>
+<span class="sd">the given `output_dir` with the name of the original TbT file.</span>
+<span class="sd">In case of split by bpm the plots will have the bpm-name in their filename.</span>
+
+
+<span class="sd">The `lines_tunes` and `lines_nattunes` lists accept tuples of multipliers for</span>
+<span class="sd">the respective tunes, which define the resonance lines plotted into the</span>
+<span class="sd">spectrum as well. A dashed line will indicate the average of all tunes</span>
+<span class="sd">given in the data of one figure, while a semi-transparent area will indicate</span>
+<span class="sd">min- and max- values of this line.</span>
+
+<span class="sd">With `lines_manual`, one can plot vertical lines at manual locations (see</span>
+<span class="sd">parameter specs below).</span>
+
+<span class="sd">The function returns two dictionaries, where the first dictionary contains the</span>
+<span class="sd">stem plots and the second one the waterfall plots. They are identifyable</span>
+<span class="sd">by unique id&#39;s which depend on which combination of merging the spectra into</span>
+<span class="sd">one figure is used.</span>
+
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Required--*</span>
+
+<span class="sd">- **files**: List of paths to the spectrum files. The files need to be given</span>
+<span class="sd">  without their &#39;.lin&#39;/&#39;.amps[xy]&#39;,&#39;.freqs[xy]&#39; endings. (So usually the path</span>
+<span class="sd">  of the TbT-Data file.)</span>
+
+
+<span class="sd">*--Optional--*</span>
+
+<span class="sd">- **amp_limit** *(float)*: All amplitudes &lt;= limit are filtered.</span>
+<span class="sd">  This value needs to be at least 0 to filter non-found frequencies.</span>
+
+<span class="sd">  Default: ``0.0``</span>
+<span class="sd">- **bpms**: List of BPMs for which spectra will be plotted. If not given all BPMs are used.</span>
+
+<span class="sd">- **combine_by**: Choose how to combine the data into figures.</span>
+
+<span class="sd">  Choices: ``[&#39;bpms&#39;, &#39;files&#39;]``</span>
+<span class="sd">  Default: ``[]``</span>
+<span class="sd">- **filetype** *(str)*: Filetype to save plots as (i.e. extension without &quot;.&quot;)</span>
+
+<span class="sd">  Default: ``pdf``</span>
+<span class="sd">- **lines_manual** *(DictAsString)*: List of manual lines to plot. Need to contain arguments for axvline,</span>
+<span class="sd">  and may contain the additional key &quot;loc&quot; which is one of [&#39;bottom&#39;, &#39;top&#39;, &#39;line bottom&#39;, &#39;line top&#39;]</span>
+<span class="sd">  and places the label as text at the given location.</span>
+
+<span class="sd">  Default: ``[]``</span>
+<span class="sd">- **lines_nattunes** *(tuple)*: List of natural tune lines to plot</span>
+
+<span class="sd">  Default: ``[(1, 0), (0, 1)]``</span>
+<span class="sd">- **lines_tunes** *(tuple)*: list of tune lines to plot</span>
+
+<span class="sd">  Default: ``[(1, 0), (0, 1)]``</span>
+<span class="sd">- **manual_style** *(DictAsString)*: Additional Style parameters which update the set of predefined ones.</span>
+
+<span class="sd">  Default: ``{}``</span>
+<span class="sd">- **ncol_legend** *(int)*: Number of bpm legend-columns. If &lt; 1 no legend is shown.</span>
+
+<span class="sd">  Default: ``5``</span>
+<span class="sd">- **output_dir** *(str)*: Directory to write results to. If no option is given, plots will not be saved.</span>
+
+<span class="sd">- **plot_type**: Choose plot type (Multiple choices possible).</span>
+
+<span class="sd">  Choices: ``[&#39;stem&#39;, &#39;waterfall&#39;]``</span>
+<span class="sd">  Default: ``[&#39;stem&#39;]``</span>
+<span class="sd">- **rescale**: Flag to rescale plots amplitude to max-line = 1</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **show_plots**: Flag to show plots</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **waterfall_cmap** *(str)*: Colormap to use for waterfall plot.</span>
+
+<span class="sd">  Default: ``inferno``</span>
+<span class="sd">- **waterfall_common_plane_colors**: Same colorbar scale for both planes in waterfall plots.</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **waterfall_line_width**: Line width of the waterfall frequency lines. &quot;auto&quot; fills them up until the next one.</span>
+
+<span class="sd">  Default: ``2``</span>
+<span class="sd">- **xlim** *(float)*: Limits on the x axis (Tupel)</span>
+
+<span class="sd">  Default: ``[0, 0.5]``</span>
+<span class="sd">- **ylim** *(float)*: Limits on the y axis (Tupel)</span>
+
+<span class="sd">  Default: ``[1e-09, 1.0]``</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">from</span> <span class="nn">cycler</span> <span class="kn">import</span> <span class="n">cycler</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entry_datatypes</span> <span class="kn">import</span> <span class="n">DictAsString</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="p">(</span><span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span>
+                                              <span class="n">save_options_to_config</span><span class="p">,</span> <span class="n">DotDict</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
+
+<span class="kn">from</span> <span class="nn">omc3.definitions</span> <span class="kn">import</span> <span class="n">formats</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.spectrum.stem</span> <span class="kn">import</span> <span class="n">create_stem_plots</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.spectrum.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">NCOL_LEGEND</span><span class="p">,</span> <span class="n">LIN</span><span class="p">,</span>
+                                          <span class="n">LOG</span><span class="p">,</span>
+                                          <span class="n">FigureCollector</span><span class="p">,</span> <span class="n">get_unique_filenames</span><span class="p">,</span>
+                                          <span class="n">filter_amps</span><span class="p">,</span> <span class="n">get_bpms</span><span class="p">,</span> <span class="n">get_stem_id</span><span class="p">,</span>
+                                          <span class="n">get_waterfall_id</span><span class="p">,</span> <span class="n">get_data_for_bpm</span><span class="p">,</span>
+                                          <span class="n">load_spectrum_data</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.utils.lines</span> <span class="kn">import</span> <span class="n">VERTICAL_LINES_TEXT_LOCATIONS</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.spectrum.waterfall</span> <span class="kn">import</span> <span class="n">create_waterfall_plots</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_reshuffled_tab20c"><a class="viewcode-back" href="../../../entrypoints/index.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c">[docs]</a><span class="k">def</span> <span class="nf">get_reshuffled_tab20c</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Reshuffel tab20c so that the colors change between next lines.</span>
+<span class="sd">    Needs to be up here as it is used in DEFAULTS which is loaded early.&quot;&quot;&quot;</span>
+    <span class="n">tab20c</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;tab20c&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">colors</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">20</span>
+    <span class="n">step</span><span class="p">,</span> <span class="n">chunk</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">*</span> <span class="n">chunk</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">chunk</span><span class="p">]</span> <span class="o">=</span> <span class="n">tab20c</span><span class="p">[</span><span class="n">idx</span><span class="p">::</span><span class="n">step</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">cycler</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
+
+<span class="n">DEFAULTS</span> <span class="o">=</span> <span class="n">DotDict</span><span class="p">(</span>
+    <span class="n">waterfall_cmap</span><span class="o">=</span><span class="s1">&#39;inferno&#39;</span><span class="p">,</span>
+    <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mi">1</span> <span class="o">**</span> <span class="o">.</span><span class="mi">2</span><span class="p">],</span>
+    <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">],</span>
+    <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span>
+    <span class="n">waterfall_line_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">manual_style</span><span class="o">=</span><span class="p">{</span>
+        <span class="sa">u</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+        <span class="sa">u</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">:</span> <span class="n">get_reshuffled_tab20c</span><span class="p">(),</span>
+        <span class="sa">u</span><span class="s1">&#39;lines.linestyle&#39;</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s1">&#39;lines.marker&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s1">&#39;lines.markersize&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s1">&#39;markers.fillstyle&#39;</span><span class="p">:</span> <span class="sa">u</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
+        <span class="sa">u</span><span class="s1">&#39;figure.subplot.hspace&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>  <span class="c1"># space between subplots</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span>
+                         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;List of paths to the spectrum files. The files need to be given&quot;</span>
+                               <span class="s2">&quot; without their &#39;.lin&#39;/&#39;.amps[xy]&#39;,&#39;.freqs[xy]&#39; endings. &quot;</span>
+                               <span class="s2">&quot; (So usually the path of the TbT-Data file.)&quot;</span><span class="p">))</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_dir&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Directory to write results to. If no option is given, plots will not be saved.&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bpms&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List of BPMs for which spectra will be plotted. If not given all BPMs are used.&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;amp_limit&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;All amplitudes &lt;= limit are filtered. &#39;</span>
+                              <span class="s1">&#39;This value needs to be at least 0 to filter non-found frequencies.&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;rescale&quot;</span><span class="p">,</span>
+                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to rescale plots amplitude to max-line = 1&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;plot_type&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;stem&#39;</span><span class="p">,</span> <span class="s1">&#39;waterfall&#39;</span><span class="p">],</span>
+                         <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;stem&#39;</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Choose plot type (Multiple choices possible).&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;combine_by&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;bpms&#39;</span><span class="p">,</span> <span class="s1">&#39;files&#39;</span><span class="p">],</span>
+                         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Choose how to combine the data into figures.&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;waterfall_line_width&quot;</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">waterfall_line_width</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Line width of the waterfall frequency lines. &quot;auto&quot; fills them up until the next one.&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;waterfall_cmap&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">waterfall_cmap</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Colormap to use for waterfall plot.&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;waterfall_common_plane_colors&quot;</span><span class="p">,</span>
+                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Same colorbar scale for both planes in waterfall plots.&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;show_plots&quot;</span><span class="p">,</span>
+                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to show plots&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;lines_tunes&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;list of tune lines to plot&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;lines_nattunes&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List of natural tune lines to plot&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;lines_manual&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="n">DictAsString</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List of manual lines to plot. Need to contain arguments for axvline, and may contain &#39;</span>
+                              <span class="s1">&#39;the additional keys &quot;text&quot; and &quot;loc&quot; which is one of &#39;</span>
+                              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">VERTICAL_LINES_TEXT_LOCATIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s1"> and places the text at the given location.&#39;</span>
+                         <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;xlim&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">xlim</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Limits on the x axis (Tupel)&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ylim&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">ylim</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Limits on the y axis (Tupel)&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ncol_legend&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">NCOL_LEGEND</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of bpm legend-columns. If &lt; 1 no legend is shown.&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;filetype&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">filetype</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Filetype to save plots as (i.e. extension without &quot;.&quot;)&#39;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;manual_style&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="n">DictAsString</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional Style parameters which update the set of predefined ones.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<span class="c1"># Main -------------------------------------------------------------------------</span>
+
+
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting spectrum plots.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_save_options_to_config</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">manual_style</span><span class="p">)</span>
+    <span class="n">stem_opt</span><span class="p">,</span> <span class="n">waterfall_opt</span><span class="p">,</span> <span class="n">sorting_opt</span> <span class="o">=</span> <span class="n">_sort_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+    <span class="n">stem</span><span class="p">,</span> <span class="n">waterfall</span> <span class="o">=</span> <span class="n">_sort_input_data</span><span class="p">(</span><span class="n">sorting_opt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">stem_opt</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
+        <span class="n">create_stem_plots</span><span class="p">(</span><span class="n">stem</span><span class="o">.</span><span class="n">figs</span><span class="p">,</span> <span class="n">stem_opt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">waterfall_opt</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
+        <span class="n">create_waterfall_plots</span><span class="p">(</span><span class="n">waterfall</span><span class="o">.</span><span class="n">figs</span><span class="p">,</span> <span class="n">waterfall_opt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stem</span><span class="o">.</span><span class="n">fig_dict</span><span class="p">,</span> <span class="n">waterfall</span><span class="o">.</span><span class="n">fig_dict</span>
+
+
+<span class="c1"># Input ------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">waterfall_line_width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">opt</span><span class="o">.</span><span class="n">waterfall_line_width</span> <span class="o">!=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">waterfall_line_width</span>
+            <span class="ow">and</span> <span class="s1">&#39;waterfall&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">plot_type</span><span class="p">):</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Setting &#39;waterfall_line_width&#39; option has no effect, &quot;</span>
+                    <span class="s2">&quot;when waterfall plots are deactivated!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">waterfall_cmap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">opt</span><span class="o">.</span><span class="n">waterfall_cmap</span> <span class="o">!=</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">waterfall_cmap</span>
+            <span class="ow">and</span> <span class="s1">&#39;waterfall&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">plot_type</span><span class="p">):</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Setting &#39;waterfall_cmap&#39; option has no effect, &quot;</span>
+                    <span class="s2">&quot;when waterfall plots are deactivated!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">amp_limit</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The amplitude limit needs to be at least &#39;0&#39; &quot;</span>
+                         <span class="s2">&quot;to filter for non-found frequencies.&quot;</span><span class="p">)</span>
+
+    <span class="n">style_dict</span> <span class="o">=</span> <span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;manual_style&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">manual_style</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">style_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">manual_style</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">manual_style</span> <span class="o">=</span> <span class="n">style_dict</span>
+
+    <span class="k">return</span> <span class="n">opt</span>
+
+
+<span class="k">def</span> <span class="nf">_sort_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+    <span class="c1"># lines structure</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">((</span><span class="s1">&#39;lines_tunes&#39;</span><span class="p">,</span> <span class="s1">&#39;lines_nattunes&#39;</span><span class="p">,</span> <span class="s1">&#39;lines_manual&#39;</span><span class="p">))</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">_rename_dict_keys</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">to_remove</span><span class="o">=</span><span class="s2">&quot;lines_&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">lines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lines</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># limits structure</span>
+    <span class="n">limits</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">((</span><span class="s2">&quot;xlim&quot;</span><span class="p">,</span> <span class="s2">&quot;ylim&quot;</span><span class="p">))</span>
+
+    <span class="c1"># stem-plot options</span>
+    <span class="n">stem</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">((</span><span class="s1">&#39;ncol_legend&#39;</span><span class="p">,))</span>
+    <span class="n">stem</span><span class="p">[</span><span class="s1">&#39;plot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;stem&#39;</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">plot_type</span>
+
+    <span class="c1"># waterfall-plot options</span>
+    <span class="n">waterfall</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">((</span><span class="s1">&#39;waterfall_line_width&#39;</span><span class="p">,</span> <span class="s1">&#39;waterfall_cmap&#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;waterfall_common_plane_colors&#39;</span><span class="p">,</span> <span class="s1">&#39;ncol_legend&#39;</span><span class="p">))</span>
+    <span class="n">waterfall</span> <span class="o">=</span> <span class="n">_rename_dict_keys</span><span class="p">(</span><span class="n">waterfall</span><span class="p">,</span> <span class="n">to_remove</span><span class="o">=</span><span class="s2">&quot;waterfall_&quot;</span><span class="p">)</span>
+    <span class="n">waterfall</span><span class="p">[</span><span class="s1">&#39;plot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;waterfall&#39;</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">plot_type</span>
+
+    <span class="c1"># needed in both</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">stem</span><span class="p">,</span> <span class="n">waterfall</span><span class="p">):</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;show&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s1">&#39;show_plots&#39;</span><span class="p">]</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;limits&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">limits</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span>
+
+    <span class="c1"># sorting options</span>
+    <span class="n">sort</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">((</span><span class="s1">&#39;filetype&#39;</span><span class="p">,</span> <span class="s1">&#39;files&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;bpms&#39;</span><span class="p">,</span> <span class="s1">&#39;output_dir&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;amp_limit&#39;</span><span class="p">,</span> <span class="s1">&#39;rescale&#39;</span><span class="p">))</span>
+    <span class="n">sort</span><span class="o">.</span><span class="n">plot_stem</span> <span class="o">=</span> <span class="n">stem</span><span class="o">.</span><span class="n">plot</span>
+    <span class="n">sort</span><span class="o">.</span><span class="n">plot_waterfall</span> <span class="o">=</span> <span class="n">waterfall</span><span class="o">.</span><span class="n">plot</span>
+    <span class="n">sort</span><span class="o">.</span><span class="n">combine_by</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stem</span><span class="p">,</span> <span class="n">waterfall</span><span class="p">,</span> <span class="n">sort</span>
+
+
+<span class="c1"># Output ---</span>
+
+<span class="k">def</span> <span class="nf">_save_options_to_config</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">save_options_to_config</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">formats</span><span class="o">.</span><span class="n">get_config_filename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span>
+                           <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+                           <span class="p">)</span>
+
+
+<span class="c1"># Load Data --------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_sort_input_data</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">FigureCollector</span><span class="p">,</span> <span class="n">FigureCollector</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; Load and sort input data by file and bpm and assign correct figure-containers. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sorting input data.&quot;</span><span class="p">)</span>
+
+    <span class="n">stem_figs</span> <span class="o">=</span> <span class="n">FigureCollector</span><span class="p">()</span>
+    <span class="n">waterfall_figs</span> <span class="o">=</span> <span class="n">FigureCollector</span><span class="p">()</span>
+
+    <span class="c1"># Data Sorting</span>
+    <span class="k">for</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">get_unique_filenames</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading data for file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">load_spectrum_data</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">bpms</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">filter_amps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">amp_limit</span><span class="p">)</span>
+        <span class="n">bpms</span> <span class="o">=</span> <span class="n">_get_all_bpms</span><span class="p">(</span><span class="n">get_bpms</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">],</span> <span class="n">opt</span><span class="o">.</span><span class="n">bpms</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">collector</span><span class="p">,</span> <span class="n">get_id_fun</span><span class="p">,</span> <span class="n">active</span> <span class="ow">in</span> <span class="p">((</span><span class="n">stem_figs</span><span class="p">,</span> <span class="n">get_stem_id</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">plot_stem</span><span class="p">),</span>
+                                              <span class="p">(</span><span class="n">waterfall_figs</span><span class="p">,</span> <span class="n">get_waterfall_id</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">plot_waterfall</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">:</span>
+                <span class="n">the_id</span> <span class="o">=</span> <span class="n">get_id_fun</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">bpm</span><span class="p">,</span>
+                                    <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">filetype</span><span class="p">)</span>
+                <span class="n">collector</span><span class="o">.</span><span class="n">add_data_for_id</span><span class="p">(</span><span class="n">the_id</span><span class="p">,</span> <span class="n">get_data_for_bpm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bpm</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">rescale</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">stem_figs</span><span class="p">,</span> <span class="n">waterfall_figs</span>
+
+
+<span class="c1"># Helper -----------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_get_all_bpms</span><span class="p">(</span><span class="n">bpms_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a union of all bpms for both planes &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bpms_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+
+
+<span class="k">def</span> <span class="nf">_rename_dict_keys</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">to_remove</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>  <span class="c1"># using list to copy keys</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">to_remove</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

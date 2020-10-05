@@ -1,0 +1,681 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.plotting.plot_optics_measurements &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.plotting.plot_optics_measurements</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.plotting.plot_optics_measurements</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plot Optics Measurements</span>
+<span class="sd">--------------------------</span>
+
+<span class="sd">Wrapper for `plot_tfs` to easily plot the results from optics measurements.</span>
+
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from omc3.plotting.plot_optics_measurements import plot</span>
+
+<span class="sd">    figs = plot(</span>
+<span class="sd">        folders=[&#39;folder1&#39;, &#39;folder2&#39;],</span>
+<span class="sd">        combine_by=[&#39;files&#39;],  # to compare folder1 and folder2</span>
+<span class="sd">        output=&#39;output_directory&#39;,</span>
+<span class="sd">        delta=True,  # delta from reference</span>
+<span class="sd">        optics_parameters=[&#39;orbit&#39;, &#39;beta_phase&#39;, &#39;beta_amplitude&#39;,</span>
+<span class="sd">                           &#39;phase&#39;, &#39;total_phase&#39;,</span>
+<span class="sd">                           &#39;f1001_x&#39;, &#39;f1010_x&#39;],</span>
+<span class="sd">        x_axis=&#39;location&#39;,  # or &#39;phase-advance&#39;</span>
+<span class="sd">        ip_positions=&#39;LHCB1&#39;,</span>
+<span class="sd">        suppress_column_legend=True,</span>
+<span class="sd">        show=True,</span>
+<span class="sd">        ncol_legend=2,</span>
+<span class="sd">    )</span>
+
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Required--*</span>
+
+<span class="sd">- **folders** *(MultiClass)*: Optics Measurements folders containing the analysed data.</span>
+
+<span class="sd">- **optics_parameters** *(str)*: Optics parameters to plot, e.g. &#39;beta_amplitude&#39;.</span>
+<span class="sd">  RDTs need to be specified with plane, e.g. &#39;f1001_x&#39;</span>
+
+
+<span class="sd">*--Optional--*</span>
+
+<span class="sd">- **change_marker**: Changes marker for each line in the plot.</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **combine_by**: Combine plots into one. Either files, planes (not separated into two axes) or both.</span>
+
+<span class="sd">  Choices: ``[&#39;files&#39;, &#39;planes&#39;]``</span>
+<span class="sd">- **delta**: Plot the difference to model instead of the parameter.</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **errorbar_alpha** *(float)*: Alpha value for error bars</span>
+
+<span class="sd">  Default: ``0.6``</span>
+<span class="sd">- **ip_positions**: Input to plot IP-Positions into the plots. Either &#39;LHCB1&#39;</span>
+<span class="sd">  or &#39;LHCB2&#39; for LHC defaults, a dictionary of labels and positions or path to TFS file of a model.</span>
+
+<span class="sd">- **ip_search_pattern**: In case your IPs have a weird name. Specify regex pattern.</span>
+
+<span class="sd">  Default: ``IP\d$``</span>
+<span class="sd">- **lines_manual** *(DictAsString)*: List of manual lines to plot.</span>
+<span class="sd">  Need to contain arguments for axvline, and may contain the additional keys &quot;text&quot;</span>
+<span class="sd">  and &quot;loc&quot; which is one of [&#39;bottom&#39;, &#39;top&#39;, &#39;line bottom&#39;, &#39;line top&#39;]</span>
+<span class="sd">  and places the text at the given location.</span>
+
+<span class="sd">  Default: ``[]``</span>
+<span class="sd">- **manual_style** *(DictAsString)*: Additional style rcParameters which</span>
+<span class="sd">  update the set of predefined ones.</span>
+
+<span class="sd">  Default: ``{}``</span>
+<span class="sd">- **ncol_legend** *(int)*: Number of bpm legend-columns. If &lt; 1 no legend is shown.</span>
+
+<span class="sd">  Default: ``3``</span>
+<span class="sd">- **output** *(MultiClass)*: Folder to output the results to.</span>
+
+<span class="sd">- **plot_styles** *(str)*: Which plotting styles to use,</span>
+<span class="sd">  either from plotting.styles.*.mplstyles or default mpl.</span>
+
+<span class="sd">  Default: ``[&#39;standard&#39;]``</span>
+<span class="sd">- **share_xaxis**: In case of multiple axes per figure, share x-axis.</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **show**: Shows plots.</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **suppress_column_legend**: Does not show column name in legend</span>
+<span class="sd">  e.g. when combining by files (see also `ncol_legend`).</span>
+
+<span class="sd">  Action: ``store_true``</span>
+<span class="sd">- **x_axis**: Which parameter to use for the x axis.</span>
+
+<span class="sd">  Choices: ``[&#39;location&#39;, &#39;phase-advance&#39;]``</span>
+<span class="sd">  Default: ``location``</span>
+<span class="sd">- **x_lim** *(float, int, None)*: Limits on the x axis (Tupel)</span>
+
+<span class="sd">- **y_lim** *(float, int, None)*: Limits on the y axis (Tupel)</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entry_datatypes</span> <span class="kn">import</span> <span class="n">DictAsString</span>
+
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">EXT</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.rdt</span> <span class="kn">import</span> <span class="n">_rdt_to_order_and_type</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DEFAULTS</span><span class="p">,</span>
+                                                         <span class="n">XAXIS</span><span class="p">,</span> <span class="n">YAXIS</span><span class="p">,</span>
+                                                         <span class="n">IP_POS_DEFAULT</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.plot_tfs</span> <span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">plot_tfs</span><span class="p">,</span> <span class="n">float_or_none</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.spectrum.utils</span> <span class="kn">import</span> <span class="n">get_unique_filenames</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.utils.lines</span> <span class="kn">import</span> <span class="n">VERTICAL_LINES_TEXT_LOCATIONS</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.logging_tools</span> <span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">list2str</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;folders&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optics Measurements folders containing the analysed data.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;optics_parameters&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Optics parameters to plot, e.g. &#39;beta_amplitude&#39;. &quot;</span>
+              <span class="s2">&quot;RDTs need to be specified with plane, e.g. &#39;f1001_x&#39;&quot;</span><span class="p">),</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plot the difference to model instead of the parameter.&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ip_positions&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Input to plot IP-Positions into the plots. &quot;</span>
+              <span class="s2">&quot;Either &#39;LHCB1&#39; or &#39;LHCB2&#39; for LHC defaults, &quot;</span>
+              <span class="s2">&quot;a dictionary of labels and positions &quot;</span>
+              <span class="s2">&quot;or path to TFS file of a model.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;lines_manual&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="n">DictAsString</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;List of manual lines to plot. Need to contain arguments for axvline, and may contain &#39;</span>
+                              <span class="s1">&#39;the additional keys &quot;text&quot; and &quot;loc&quot; which is one of &#39;</span>
+                              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">VERTICAL_LINES_TEXT_LOCATIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s1"> and places the text at the given location.&#39;</span>
+                         <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ip_search_pattern&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;IP\d$&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;In case your IPs have a weird name. Specify regex pattern.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x_axis&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Which parameter to use for the x axis.&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">XAXIS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;location&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Parameters that are only passed on ---</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;combine_by&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Combine plots into one. Either files, planes (not separated into two axes) or both.&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">,</span> <span class="s1">&#39;planes&#39;</span><span class="p">],</span>  <span class="c1"># combine by columns does not really make sense</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Folder to output the results to.&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;show&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Shows plots.&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;plot_styles&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;manual_style&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">DictAsString</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional style rcParameters which update the set of predefined ones.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;change_marker&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Changes marker for each line in the plot.&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ncol_legend&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;ncol_legend&#39;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of bpm legend-columns. If &lt; 1 no legend is shown.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;suppress_column_legend&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Does not show column name in legend &quot;</span>
+              <span class="s2">&quot;e.g. when combining by files (see also `ncol_legend`).&quot;</span><span class="p">),</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;errorbar_alpha&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Alpha value for error bars&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;errorbar_alpha&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x_lim&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">float_or_none</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Limits on the x axis (Tupel)&#39;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_lim&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">float_or_none</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Limits on the y axis (Tupel)&#39;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;share_xaxis&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;In case of multiple axes per figure, share x-axis.&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../../entrypoints/index.html#omc3.plotting.plot_optics_measurements.plot">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Main plotting function. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting plotting of optics measurement data: &quot;</span>
+             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_parameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">folders</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">),</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
+
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+
+    <span class="n">ip_positions</span> <span class="o">=</span> <span class="n">_get_ip_positions</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">x_axis</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ip_search_pattern</span><span class="p">)</span>
+    <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span> <span class="o">=</span> <span class="n">_get_x_options</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">x_axis</span><span class="p">)</span>
+
+    <span class="n">fig_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">optics_parameter</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_parameters</span><span class="p">:</span>
+
+        <span class="n">is_rdt</span> <span class="o">=</span> <span class="n">optics_parameter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+        <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">get_unique_filenames</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">folders</span><span class="p">))</span>
+        <span class="n">file_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flabels</span><span class="p">)</span> <span class="k">for</span> <span class="n">flabels</span> <span class="ow">in</span> <span class="n">file_labels</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">is_rdt</span><span class="p">:</span>
+            <span class="n">fig_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_plot_rdt</span><span class="p">(</span>
+                <span class="n">optics_parameter</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span><span class="p">,</span> <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span><span class="p">,</span>
+                <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">,)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">optics_parameter</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+                <span class="n">optics_parameter</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span>
+
+            <span class="n">fig_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_plot_param</span><span class="p">(</span>
+                <span class="n">optics_parameter</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span><span class="p">,</span> <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span><span class="p">,</span>
+                <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">,)</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig_dict</span></div>
+
+
+<span class="k">def</span> <span class="nf">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">opt</span>
+
+
+<span class="c1"># Plot RDTs --------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_plot_rdt</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span><span class="p">,</span> <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span><span class="p">,</span> <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Main plotting function for RDTs. &quot;&quot;&quot;</span>
+    <span class="n">fig_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">x_axis</span> <span class="o">!=</span> <span class="s1">&#39;location&#39;</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Phase advance not yet implemented in RDT-files. Skipping.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fig_dict</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">delta</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Delta Columns for RDTs not implemented. Using normal columns.&#39;</span><span class="p">)</span>
+
+    <span class="n">subfolder</span> <span class="o">=</span> <span class="n">_rdt_to_order_and_type</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">optics_parameter</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]])</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">/</span><span class="s1">&#39;rdt&#39;</span><span class="o">/</span><span class="n">subfolder</span><span class="o">/</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">optics_parameter</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="n">_get_rdt_columns</span><span class="p">()</span>
+
+    <span class="n">combine_by</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">combine_by</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span><span class="p">)</span>
+
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">if</span> <span class="s2">&quot;files&quot;</span> <span class="ow">in</span> <span class="n">combine_by</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">optics_parameter</span><span class="si">}</span><span class="s1">_&#39;</span>
+
+    <span class="n">combine_planes</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="s2">&quot;planes&quot;</span> <span class="ow">in</span> <span class="n">combine_by</span><span class="p">:</span>
+        <span class="n">combine_by</span><span class="p">[</span><span class="n">combine_by</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;planes&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;columns&quot;</span>
+        <span class="n">combine_planes</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">for</span> <span class="n">idxs</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">((</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;amplitude&quot;</span><span class="p">),</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;complex&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">combine_planes</span><span class="p">:</span>
+            <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">optics_parameter</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">suppress_column_legend</span><span class="p">:</span>
+                <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">][</span><span class="n">idxs</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">optics_parameter</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">][</span><span class="n">idxs</span><span class="p">]]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">optics_parameter</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">][</span><span class="n">idxs</span><span class="p">]]</span>
+            <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">optics_parameter</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">suppress_column_legend</span><span class="p">:</span>
+                <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+
+        <span class="n">fig_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">plot_tfs</span><span class="p">(</span>
+                <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span>
+                <span class="n">file_labels</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">file_labels</span><span class="p">),</span>
+                <span class="n">y_columns</span><span class="o">=</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;y_columns&#39;</span><span class="p">][</span><span class="n">idxs</span><span class="p">],</span>
+                <span class="n">column_labels</span><span class="o">=</span><span class="n">column_labels</span><span class="p">,</span>
+                <span class="n">y_labels</span><span class="o">=</span><span class="p">[</span><span class="n">y_labels</span><span class="p">],</span>
+                <span class="n">error_columns</span><span class="o">=</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;error_columns&#39;</span><span class="p">][</span><span class="n">idxs</span><span class="p">],</span>
+                <span class="n">x_columns</span><span class="o">=</span><span class="p">[</span><span class="n">x_column</span><span class="p">],</span>
+                <span class="n">x_labels</span><span class="o">=</span><span class="p">[</span><span class="n">x_label</span><span class="p">],</span>
+                <span class="n">vertical_lines</span><span class="o">=</span><span class="n">ip_positions</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">lines_manual</span><span class="p">,</span>
+                <span class="n">same_figure</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span> <span class="k">if</span> <span class="s2">&quot;columns&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">combine_by</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">same_axes</span><span class="o">=</span><span class="n">combine_by</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">combine_by</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">single_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">output_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;plot_</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;plot_styles&#39;</span><span class="p">,</span> <span class="s1">&#39;manual_style&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;change_marker&#39;</span><span class="p">,</span> <span class="s1">&#39;errorbar_alpha&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;ncol_legend&#39;</span><span class="p">,</span> <span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="s1">&#39;y_lim&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;share_xaxis&#39;</span><span class="p">])</span>
+            <span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">fig_dict</span>
+
+
+<span class="k">def</span> <span class="nf">_get_rdt_columns</span><span class="p">():</span>
+    <span class="n">rdt_measures</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rdt_amp&#39;</span><span class="p">,</span> <span class="s1">&#39;rdt_phase&#39;</span><span class="p">,</span> <span class="s1">&#39;rdt_real&#39;</span><span class="p">,</span> <span class="s1">&#39;rdt_imag&#39;</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">rdt_measures</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;y_columns&#39;</span><span class="p">,</span> <span class="s1">&#39;y_labels&#39;</span><span class="p">,</span> <span class="s1">&#39;error_columns&#39;</span><span class="p">]}</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">meas</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rdt_measures</span><span class="p">):</span>
+        <span class="n">column</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">YAXIS</span><span class="p">[</span><span class="n">meas</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;y_columns&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">column</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;error_columns&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># replaced for phase below</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;y_labels&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+    <span class="n">result</span><span class="p">[</span><span class="s1">&#39;error_columns&#39;</span><span class="p">][</span><span class="n">rdt_measures</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;rdt_phase&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="c1"># Plot Other Parameter ---------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_plot_param</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span><span class="p">,</span> <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span><span class="p">,</span> <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Main plotting function for all parameters but RDTs. &quot;&quot;&quot;</span>
+    <span class="n">y_column</span><span class="p">,</span> <span class="n">error_column</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">y_label</span> <span class="o">=</span> <span class="n">_get_columns_and_label</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+
+    <span class="n">same_fig</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">column_label</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s1">&#39;planes&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span><span class="p">:</span>
+        <span class="n">same_fig</span> <span class="o">=</span> <span class="s1">&#39;planes&#39;</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;planes&quot;</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span><span class="p">:</span>  <span class="c1"># not else!</span>
+        <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">column_label</span><span class="si">}</span><span class="s1"> </span><span class="se">{{</span><span class="s1">0</span><span class="se">}}</span><span class="s1">&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">suppress_column_legend</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">same_fig</span> <span class="o">==</span> <span class="s1">&#39;planes&#39;</span><span class="p">:</span>
+            <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">]</span>   <span class="c1">#  show planes in labels as all are in same axes</span>
+
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">delta</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;delta_&#39;</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span> <span class="ow">and</span> <span class="s2">&quot;files&quot;</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">optics_parameter</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="k">return</span> <span class="n">plot_tfs</span><span class="p">(</span>
+        <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">/</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">optics_parameter</span><span class="si">}</span><span class="se">{{</span><span class="s1">0</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">],</span>
+        <span class="n">file_labels</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">file_labels</span><span class="p">),</span>
+        <span class="n">y_columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">y_column</span><span class="si">}</span><span class="se">{{</span><span class="s1">0</span><span class="se">}}</span><span class="s1">&#39;</span><span class="p">],</span>
+        <span class="n">y_labels</span><span class="o">=</span><span class="p">[[</span><span class="n">y_label</span><span class="p">]],</span>
+        <span class="n">column_labels</span><span class="o">=</span><span class="n">column_labels</span><span class="p">,</span>
+        <span class="n">error_columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">error_column</span><span class="si">}</span><span class="se">{{</span><span class="s1">0</span><span class="se">}}</span><span class="s1">&#39;</span><span class="p">],</span>
+        <span class="n">x_columns</span><span class="o">=</span><span class="p">[</span><span class="n">x_column</span><span class="p">],</span>
+        <span class="n">x_labels</span><span class="o">=</span><span class="p">[</span><span class="n">x_label</span><span class="p">],</span>
+        <span class="n">planes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">PLANES</span><span class="p">),</span>
+        <span class="n">vertical_lines</span><span class="o">=</span><span class="n">ip_positions</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">lines_manual</span><span class="p">,</span>
+        <span class="n">same_figure</span><span class="o">=</span><span class="n">same_fig</span><span class="p">,</span>
+        <span class="n">same_axes</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">combine_by</span><span class="p">,</span>
+        <span class="n">single_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">output_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;plot_</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;plot_styles&#39;</span><span class="p">,</span> <span class="s1">&#39;manual_style&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;change_marker&#39;</span><span class="p">,</span> <span class="s1">&#39;errorbar_alpha&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;ncol_legend&#39;</span><span class="p">,</span> <span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="s1">&#39;y_lim&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;share_xaxis&#39;</span><span class="p">])</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_columns_and_label</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+    <span class="n">column_and_label</span> <span class="o">=</span> <span class="n">YAXIS</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span>
+    <span class="n">column</span> <span class="o">=</span> <span class="n">column_and_label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">column_label</span> <span class="o">=</span> <span class="n">column_and_label</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">y_label</span> <span class="o">=</span> <span class="n">column_and_label</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">delta</span><span class="p">:</span>
+        <span class="n">column</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="n">column_and_label</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;$\Delta </span><span class="si">{</span><span class="n">y_label</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="k">return</span> <span class="n">column</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">y_label</span>
+
+
+<span class="c1"># IP-Positions -----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_get_ip_positions</span><span class="p">(</span><span class="n">ip_positions</span><span class="p">,</span> <span class="n">xaxis</span><span class="p">,</span> <span class="n">ip_pattern</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip_positions</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="n">IP_POS_DEFAULT</span><span class="p">[</span><span class="n">ip_positions</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_get_ip_positions_from_file</span><span class="p">(</span><span class="n">ip_positions</span><span class="p">,</span> <span class="n">xaxis</span><span class="p">,</span> <span class="n">ip_pattern</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">xaxis</span> <span class="o">!=</span> <span class="s1">&#39;location&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;No default IP positions for &quot;</span>
+                                          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xaxis</span><span class="si">}</span><span class="s2"> implemented.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_create_ip_list</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ip_positions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="n">ip_positions</span>
+
+
+<span class="k">def</span> <span class="nf">_get_ip_positions_from_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+    <span class="n">ip_mask</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+    <span class="n">column</span> <span class="o">=</span> <span class="n">XAXIS</span><span class="p">[</span><span class="n">axis</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">_create_ip_list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_mask</span><span class="p">,</span> <span class="n">column</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_create_ip_list</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ip_dict can be series as well. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+             <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;k&#39;</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ip_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+
+
+<span class="c1"># Other ------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_get_x_options</span><span class="p">(</span><span class="n">x_axis</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">XAXIS</span><span class="p">[</span><span class="n">x_axis</span><span class="p">]</span>
+
+
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">plot</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

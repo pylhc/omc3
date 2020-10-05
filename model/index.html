@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Model &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Optics Measurements" href="../optics_measurements/index.html" />
+    <link rel="prev" title="Harpy" href="../harpy/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ps-booster">PS BOOSTER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#super-kek-b">Super KEK-B</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/model/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-omc3.model.manager">
+<span id="model"></span><h1>Model<a class="headerlink" href="#module-omc3.model.manager" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="manager">
+<h2>Manager<a class="headerlink" href="#manager" title="Permalink to this headline">¶</a></h2>
+<p>Contains entrypoint wrappers to get accelerator classes or their instances</p>
+<dl class="py function">
+<dt id="omc3.model.manager.get_accelerator">
+<code class="sig-prename descclassname">omc3.model.manager.</code><code class="sig-name descname">get_accelerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em>, <em class="sig-param"><span class="n">other_opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_accelerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.manager.get_accelerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns accelerator instance.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.model.manager.get_parsed_opt">
+<code class="sig-prename descclassname">omc3.model.manager.</code><code class="sig-name descname">get_parsed_opt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em>, <em class="sig-param"><span class="n">other_opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_parsed_opt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.manager.get_parsed_opt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all accelerator related options as a nice dict.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.accelerator"></span><div class="section" id="accelerator">
+<h2>Accelerator<a class="headerlink" href="#accelerator" title="Permalink to this headline">¶</a></h2>
+<p>Contains parent accelerator class and other support classes</p>
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.AccElementTypes">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">AccElementTypes</code><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AccElementTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the strings for the element types BPMS, MAGNETS and ARC_BPMS.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.Accelerator">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">Accelerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class to serve as an interface to implement the rest of the accelerators.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script">
+<code class="sig-name descname">get_base_madx_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_directory</span></em>, <em class="sig-param"><span class="n">best_knowledge</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_base_madx_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create the basic accelerator sequence.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables">
+<em class="property">classmethod </em><code class="sig-name descname">get_correctors_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">classes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_correctors_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the set of corrector variables between frm and to, with classes
+in classes. None means select all.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask">
+<em class="property">classmethod </em><code class="sig-name descname">get_element_types_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_of_elements</span></em>, <em class="sig-param"><span class="n">types</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_element_types_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return boolean mask for elements in list_of_elements that belong
+to any of the specified types.
+Needs to handle: “bpm”, “magnet”, “arc_bpm” (see <a class="reference internal" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="omc3.model.accelerators.accelerator.AccElementTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccElementTypes</span></code></a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_of_elements</strong> -- List of elements</p></li>
+<li><p><strong>types</strong> -- Kinds of elements to look for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boolean array of elements of specified kinds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">distance</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The accelerator instance knows already which excitation method is used.
+distance: 1=nearest bpm 2=next to nearest bpm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_update_correction_script">
+<code class="sig-name descname">get_update_correction_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tiwss_out_path</span></em>, <em class="sig-param"><span class="n">corrections_file_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_update_correction_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_update_correction_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create an updated model from changeparameters input
+(used in iterative correction).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_variables">
+<em class="property">classmethod </em><code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">classes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the variables with elements in the given range and the given
+classes. None means everything.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an accelerator is properly
+instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="omc3.model.accelerators.accelerator.AcceleratorDefinitionError">
+<em class="property">exception </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">AcceleratorDefinitionError</code><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AcceleratorDefinitionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AcceleratorDefinitionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an accelerator instance is wrongly used, for
+example by calling a method that should have been overwritten.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.Element">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">Element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic corrector element class that holds name and position (s)
+of the corrector. This element should represent a physical element of the
+accelerator.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.Variable">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">Variable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">elements</span></em>, <em class="sig-param"><span class="n">classes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic corrector variable class that holds name, position (s) and
+physical elements it affectes. This variables should be logical variables
+that should have and effect in the model if modified.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.esrf"></span><div class="section" id="esrf">
+<h2>ESRF<a class="headerlink" href="#esrf" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="omc3.model.accelerators.esrf.Esrf">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.esrf.</code><code class="sig-name descname">Esrf</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/esrf.html#Esrf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.esrf.Esrf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.lhc"></span><div class="section" id="lhc">
+<h2>LHC<a class="headerlink" href="#lhc" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="omc3.model.accelerators.lhc.Lhc">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.lhc.</code><code class="sig-name descname">Lhc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent Class for Lhc-Types.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_base_madx_script">
+<code class="sig-name descname">get_base_madx_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outdir</span></em>, <em class="sig-param"><span class="n">best_knowledge</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create the basic accelerator sequence.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">commonbpms</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The accelerator instance knows already which excitation method is used.
+distance: 1=nearest bpm 2=next to nearest bpm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_ips">
+<code class="sig-name descname">get_ips</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_ips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_ips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterable with this accelerator IPs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(“ip name”, “left BPM name”, “right BPM name”)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>An iterator returning tuples with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_update_correction_script">
+<code class="sig-name descname">get_update_correction_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outpath</span></em>, <em class="sig-param"><span class="n">corr_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_update_correction_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_update_correction_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create an updated model from changeparameters input
+(used in iterative correction).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">classes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the variables with elements in the given range and the given
+classes. None means everything.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies if everything is defined which should be defined</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.ps"></span><div class="section" id="ps">
+<h2>PS<a class="headerlink" href="#ps" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="omc3.model.accelerators.ps.Ps">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.ps.</code><code class="sig-name descname">Ps</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent Class for Ps-Types.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.ps.Ps.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">bpms</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The accelerator instance knows already which excitation method is used.
+distance: 1=nearest bpm 2=next to nearest bpm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.ps.Ps.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an accelerator is properly
+instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.psbooster"></span><div class="section" id="ps-booster">
+<h2>PS BOOSTER<a class="headerlink" href="#ps-booster" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="omc3.model.accelerators.psbooster.Psbooster">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.psbooster.</code><code class="sig-name descname">Psbooster</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent Class for Psbooster-Types.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.psbooster.Psbooster.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">bpms</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The accelerator instance knows already which excitation method is used.
+distance: 1=nearest bpm 2=next to nearest bpm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.psbooster.Psbooster.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an accelerator is properly
+instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.skekb"></span><div class="section" id="super-kek-b">
+<h2>Super KEK-B<a class="headerlink" href="#super-kek-b" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="omc3.model.accelerators.skekb.SKekB">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.skekb.</code><code class="sig-name descname">SKekB</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB" title="Permalink to this definition">¶</a></dt>
+<dd><p>KEK’s SuperKEKB accelerator.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.skekb.SKekB.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an accelerator is properly
+instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../optics_measurements/index.html" class="btn btn-neutral float-right" title="Optics Measurements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../harpy/index.html" class="btn btn-neutral float-left" title="Harpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

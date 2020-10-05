@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.plotting.spectrum.stem &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> omc3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/index.html">Main Entrypoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../definitions/index.html">Definitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../harpy/index.html">Harpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../model/index.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../optics_measurements/index.html">Optics Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plotting/index.html">Plot-Subfunctions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tbt/index.html">Turn-by-Turn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tune_analysis/index.html">Tune Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/index.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.plotting.spectrum.stem</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.plotting.spectrum.stem</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plot Spectrum - Stem Plotter</span>
+<span class="sd">-----------------------------</span>
+
+<span class="sd">Stem plotting functionality for spectrum plotter.</span>
+
+<span class="sd">:module: omc3.plotting.spectrum.stem</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span><span class="p">,</span> <span class="n">lines</span> <span class="k">as</span> <span class="n">mlines</span>
+
+<span class="kn">from</span> <span class="nn">omc3.plotting.spectrum.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">plot_lines</span><span class="p">,</span> <span class="n">FigureContainer</span><span class="p">,</span> <span class="n">get_cycled_color</span><span class="p">,</span>
+                                          <span class="n">get_approx_size_in_axes_coordinates</span><span class="p">,</span>
+                                          <span class="n">PLANES</span><span class="p">,</span> <span class="n">STEM_LINES_ALPHA</span><span class="p">,</span> <span class="n">LABEL_Y_SPECTRUM</span><span class="p">,</span>
+                                          <span class="n">LABEL_X</span><span class="p">,</span> <span class="n">AMPS</span><span class="p">,</span> <span class="n">FREQS</span><span class="p">,</span> <span class="n">output_plot</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_stem_plots"><a class="viewcode-back" href="../../../../plotting/index.html#omc3.plotting.spectrum.stem.create_stem_plots">[docs]</a><span class="k">def</span> <span class="nf">create_stem_plots</span><span class="p">(</span><span class="n">figures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Main loop for stem-plot creation. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ...creating Stem Plots&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">fig_id</span><span class="p">,</span> <span class="n">fig_cont</span> <span class="ow">in</span> <span class="n">figures</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;   Plotting Figure: </span><span class="si">{</span><span class="n">fig_id</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="n">fig_cont</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">fig_id</span><span class="p">)</span>
+
+        <span class="n">_plot_stems</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">)</span>
+        <span class="n">plot_lines</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">_format_axes</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">limits</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">ncol_legend</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_create_legend</span><span class="p">(</span><span class="n">fig_cont</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fig_cont</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">opt</span><span class="o">.</span><span class="n">lines</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ncol_legend</span><span class="p">)</span>
+        <span class="n">output_plot</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">_plot_stems</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">:</span> <span class="n">FigureContainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Plot the spectrum stems for this figure container. &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">idx_plane</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PLANES</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig_cont</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">idx_plane</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">idx_data</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fig_cont</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># plot</span>
+            <span class="n">markers</span><span class="p">,</span> <span class="n">stems</span><span class="p">,</span> <span class="n">base</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">FREQS</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">AMPS</span><span class="p">],</span>
+                                           <span class="n">use_line_collection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basefmt</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+            <span class="c1"># Set appropriate colors</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">get_cycled_color</span><span class="p">(</span><span class="n">idx_data</span><span class="p">)</span>
+            <span class="n">markers</span><span class="o">.</span><span class="n">set_markeredgecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+            <span class="n">stems</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+            <span class="n">stems</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">STEM_LINES_ALPHA</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">: color=</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">, nstems=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">FREQS</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_format_axes</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">:</span> <span class="n">FigureContainer</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">idx_plane</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PLANES</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig_cont</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">idx_plane</span><span class="p">]</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">limits</span><span class="o">.</span><span class="n">xlim</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">limits</span><span class="o">.</span><span class="n">ylim</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">LABEL_Y_SPECTRUM</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">LABEL_X</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">ncol</span><span class="p">):</span>
+    <span class="n">lines_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">marker</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;lines.marker&#39;</span><span class="p">],</span>
+        <span class="n">markersize</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">legend_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span>
+        <span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">,</span>
+        <span class="n">fancybox</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">handles</span> <span class="o">=</span> <span class="p">[</span><span class="n">mlines</span><span class="o">.</span><span class="n">Line2D</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="n">get_cycled_color</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">bpm</span><span class="p">,</span> <span class="o">**</span><span class="n">lines_params</span><span class="p">)</span>
+               <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">)]</span>
+    <span class="n">leg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="o">**</span><span class="n">legend_params</span><span class="p">)</span>
+
+    <span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>  <span class="c1"># to get the legend extend</span>
+
+    <span class="c1"># check if it is wider than the axes</span>
+    <span class="n">legend_width</span> <span class="o">=</span> <span class="n">leg</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">inverse_transformed</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>
+    <span class="n">x_shift</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">legend_width</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">x_shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">legend_width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>  <span class="c1"># shift more into center</span>
+
+    <span class="c1"># move above line-labels</span>
+    <span class="n">nlines</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">line</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="mf">0.05</span>
+    <span class="n">y_shift</span> <span class="o">=</span> <span class="n">get_approx_size_in_axes_coordinates</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="n">label_size</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">nlines</span>
+    <span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">x_shift</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">y_shift</span><span class="p">),</span> <span class="o">**</span><span class="n">legend_params</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
