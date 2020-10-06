@@ -14,6 +14,7 @@ LOG = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
 
 LSA_COLUMNS = ['NAME', f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
 
+
 def kmod_params():
     parser = EntryPointParameters()
     parser.add_parameter(name='betastar_and_waist',
@@ -83,7 +84,7 @@ def kmod_params():
     parser.add_parameter(name='model_dir',
                          type=str,
                          help='twiss model that contains phase')
-
+    parser.add_parameter(name="outputdir", required=True, help="Output directory.")
 
     return parser
 
@@ -112,7 +113,7 @@ def analyse_kmod(opt):
     opt['label'] = f'{opt.interaction_point}{opt.beam}' if opt.interaction_point is not None else f'{opt.magnets[0]}-{opt.magnets[1]}'
     opt['instruments'] = list(map(str.upper, opt.instruments.split(",")))
 
-    output_dir = join(opt.working_directory, opt.label)
+    output_dir = join(opt.outputdir, opt.label)
     iotools.create_dirs(output_dir)
 
     LOG.info('Get inputfiles')
