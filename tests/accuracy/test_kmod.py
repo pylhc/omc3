@@ -1,6 +1,6 @@
 from pathlib import Path
-import tfs
 import shutil
+import tfs
 import numpy as np
 import pytest
 from omc3.run_kmod import analyse_kmod
@@ -281,6 +281,25 @@ def test_kmod_meas_ip4b2(_workdir_path, tmp_path):
             assert (np.abs(beta_meas - betas[plane])) / betas[plane] < LIMITS['Meas Accuracy']
             beta_err_meas = results[f"{ERR}{BETA}{plane}"].loc[inst]
             assert (beta_err_meas / beta_meas) < LIMITS['Meas Precision']
+
+
+@pytest.mark.extended
+def test_kmod_outputdir(_workdir_path, tmp_path):
+
+    [shutil.copy(kmod_file, tmp_path) for kmod_file in _workdir_path.glob("*L4B2*")]
+    analyse_kmod(betastar_and_waist=[200.0, -100.0],
+                 working_directory=str(tmp_path),
+                 beam='B2',
+                 simulation=False,
+                 no_sig_digits=True,
+                 no_plots=False,
+                 circuits=['RQ7.L4B2', 'RQ6.L4B2'],
+                 cminus=0.0,
+                 misalignment=0.0,
+                 errorK=0.0,
+                 errorL=0.0,
+                 tune_uncertainty=0.5E-5)
+    assert (tmp_path / "MQM.7L4.B2-MQY.6L4.B2").exists()
 
 
 @pytest.fixture()
