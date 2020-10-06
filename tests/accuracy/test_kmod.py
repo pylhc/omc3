@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -294,6 +295,30 @@ def test_kmod_meas_ip4b2(tmp_path, _kmod_inputs_path):
             assert (np.abs(beta_meas - betas[plane])) / betas[plane] < LIMITS["Meas Accuracy"]
             beta_err_meas = results[f"{ERR}{BETA}{plane}"].loc[inst]
             assert (beta_err_meas / beta_meas) < LIMITS["Meas Precision"]
+
+
+@pytest.mark.extended
+def test_kmod_outputdir_default(tmp_path, _kmod_inputs_path):
+    """
+    Copy input files to tmp_path, use it as working_directory and assert the results go there when
+    no outputdir is specified.
+    """
+    [shutil.copy(kmod_input, tmp_path) for kmod_input in _kmod_inputs_path.glob("*L4B2*")]
+    analyse_kmod(
+        betastar_and_waist=[200.0, -100.0],
+        working_directory=str(tmp_path),
+        beam="B2",
+        simulation=False,
+        no_sig_digits=True,
+        no_plots=False,
+        circuits=["RQ7.L4B2", "RQ6.L4B2"],
+        cminus=0.0,
+        misalignment=0.0,
+        errorK=0.0,
+        errorL=0.0,
+        tune_uncertainty=0.5e-5,
+    )
+    assert (tmp_path / "MQM.7L4.B2-MQY.6L4.B2").exists()
 
 
 @pytest.fixture()

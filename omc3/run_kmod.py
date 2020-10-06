@@ -84,7 +84,8 @@ def kmod_params():
     parser.add_parameter(name='model_dir',
                          type=str,
                          help='twiss model that contains phase')
-    parser.add_parameter(name="outputdir", required=True, help="Output directory.")
+    parser.add_parameter(name="outputdir", help="Path where outputfiles will be stored, defaults "
+                                                "to the given working_directory")
 
     return parser
 
@@ -106,6 +107,8 @@ def analyse_kmod(opt):
         opt = check_default_error(opt, error)
     if opt.measurement_dir is None and opt.model_dir is None and opt.phase_weight:
         raise AttributeError("Cannot use phase advance without measurement or model")
+    if opt.outputdir is None:
+        opt.outputdir = opt.working_directory
 
     LOG.info(f"{'IP trim' if opt.interaction_point is not None else 'Individual magnets'} analysis")
     opt['magnets'] = MAGNETS_IP[opt.interaction_point.upper()] if opt.interaction_point is not None else [
