@@ -33,6 +33,9 @@ def kmod_params():
                          type=str,
                          required=True,
                          help='path to working directory with stored KMOD measurement files',)
+    parser.add_parameter(name='output_directory',
+                         type=str,
+                         help='path where outputfiles will be stored, defaults to working_directory',)
     parser.add_parameter(name='beam',
                          type=str,
                          choices=['B1', 'B2'], required=True,
@@ -114,6 +117,8 @@ def analyse_kmod(opt):
         opt = check_default_error(opt, error)
     if opt.measurement_dir is None and opt.model_dir is None and opt.phase_weight:
         raise AttributeError("Cannot use phase advance without measurement or model")
+    if opt.output_directory is None:
+        opt.output_directory = opt.working_directory
 
     LOG.info(f"{'IP trim' if opt.interaction_point is not None else 'Individual magnets'} analysis")
     opt['magnets'] = MAGNETS_IP[opt.interaction_point.upper()] if opt.interaction_point is not None else [
@@ -121,7 +126,7 @@ def analyse_kmod(opt):
     opt['label'] = f'{opt.interaction_point}{opt.beam}' if opt.interaction_point is not None else f'{opt.magnets[0]}-{opt.magnets[1]}'
     opt['instruments'] = list(map(str.upper, opt.instruments.split(",")))
 
-    output_dir = join(opt.working_directory, opt.label)
+    output_dir = join(opt.output_directory, opt.label)
     iotools.create_dirs(output_dir)
 
     LOG.info('Get inputfiles')
