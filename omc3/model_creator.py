@@ -55,7 +55,7 @@ def create_instance_and_model(opt, accel_opt):
         ch.setFormatter(formatter)
         logging.getLogger().addHandler(ch)
         logging.getLogger().setLevel(numeric_level)
-
+        
     else:
         numeric_level = getattr(logging, "WARNING", None)
         logging.basicConfig(level=numeric_level) # warning level to stderr

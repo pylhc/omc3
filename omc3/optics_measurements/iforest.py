@@ -90,7 +90,7 @@ def _normalize_parameter(column_data):
 
 
 def remove_bad_bpms(tfs_dfs, bad_bpm_names, plane):
-    for i, _ in enumerate(tfs_dfs):
+    for i in range(len(tfs_dfs)):
         tfs_dfs[i] = tfs_dfs[i].loc[~tfs_dfs[i].index.isin(bad_bpm_names)]
         tfs_dfs[i].headers[f"Q{PLANE_TO_NUM[plane]}"] = np.mean(tfs_dfs[i][f"TUNE{plane}"])
         tfs_dfs[i].headers[f"Q{PLANE_TO_NUM[plane]}RMS"] = np.std(tfs_dfs[i][f"TUNE{plane}"])

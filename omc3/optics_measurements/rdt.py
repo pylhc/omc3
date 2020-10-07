@@ -15,7 +15,7 @@ from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import phase
-from omc3.optics_measurements.constants import AMPLITUDE, ERR, EXT
+from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
 
@@ -51,7 +51,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
     Returns:
 
     """
-    LOGGER.info("Start of RDT analysis")
+    LOGGER.info(f"Start of RDT analysis")
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
     phases = {}
@@ -147,11 +147,11 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
         df.loc[:, "ERRMEAS"].to_numpy()[:, np.newaxis], comp_coeffs1, comp_coeffs2)
     rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase)
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
-    df["PHASE"] = rdt_angles
+    df[f"PHASE"] = rdt_angles
     df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
     df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    df["REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
-    df["IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
     # in old files there was "EAMP" and "PHASE_STD"
     return df.loc[:, ["S", "COUNT", AMPLITUDE, f"{ERR}{AMPLITUDE}", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 
@@ -185,7 +185,7 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
         return f * x
 
     for i, bpm_rdt_data in enumerate(line_amp):
-        popt, *pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
+        popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
         amps[i], err_amps[i] = popt[0], np.sqrt(pcov)[0]
     return amps, err_amps
 

@@ -8,13 +8,12 @@ Phase advance
 Computes betatron phase advances and provides structures to store them.
 """
 from os.path import join
-
 import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME,
-                                                SPECIAL_PHASE_NAME, TOTAL_PHASE_NAME)
+from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL,
+                                                PHASE_NAME, TOTAL_PHASE_NAME, SPECIAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
@@ -180,7 +179,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                              f'BPM_PHASE{plane}',
                              f'BPM_{ERR}PHASE{plane}',]
     special_phase_df = pd.DataFrame(columns=special_phase_columns)
-
+    
     for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
@@ -211,8 +210,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         ])), ignore_index=True)
 
     tfs.write(join(meas_input.outputdir, f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}"), special_phase_df)
-
-
+    
 def _to_deg(phase):  # -90 to 90 degrees
     phase = phase % 0.5 * 360
     if phase < 90:
