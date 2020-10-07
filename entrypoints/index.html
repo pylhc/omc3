@@ -512,7 +512,7 @@ If defined, writes the processed MADX script and logging output into files.</p>
 
 <dl class="py function">
 <dt id="omc3.madx_wrapper.run_file">
-<code class="sig-prename descclassname">omc3.madx_wrapper.</code><code class="sig-name descname">run_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_file</span></em>, <em class="sig-param"><span class="n">output_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">log_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">madx_path</span><span class="o">=</span><span class="default_value">'/home/travis/build/pylhc/omc3/omc3/bin/madx-linux64-gnu'</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.madx_wrapper.run_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">omc3.madx_wrapper.</code><code class="sig-name descname">run_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_file</span></em>, <em class="sig-param"><span class="n">output_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">log_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">madx_path</span><span class="o">=</span><span class="default_value">'/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu'</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.madx_wrapper.run_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs MADX in a subprocess.</p>
 <dl class="py attribute">
 <dt id="omc3.madx_wrapper.input_file">
@@ -542,7 +542,7 @@ If defined, writes the processed MADX script and logging output into files.</p>
 
 <dl class="py function">
 <dt id="omc3.madx_wrapper.run_string">
-<code class="sig-prename descclassname">omc3.madx_wrapper.</code><code class="sig-name descname">run_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_string</span></em>, <em class="sig-param"><span class="n">output_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">log_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">madx_path</span><span class="o">=</span><span class="default_value">'/home/travis/build/pylhc/omc3/omc3/bin/madx-linux64-gnu'</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.madx_wrapper.run_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">omc3.madx_wrapper.</code><code class="sig-name descname">run_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_string</span></em>, <em class="sig-param"><span class="n">output_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">log_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">madx_path</span><span class="o">=</span><span class="default_value">'/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu'</span></em>, <em class="sig-param"><span class="n">cwd</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.madx_wrapper.run_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs MADX in a subprocess.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1097,50 +1097,29 @@ files with the results of kmod analysis.</p></li>
 (amps and freqs) and a given frequency interval.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
-<ul>
-<li><p><strong>files</strong>:</p>
-<blockquote>
-<div><p>List of paths to the spectrum files.
+<ul class="simple">
+<li><p><strong>files</strong>: List of paths to the spectrum files.
 The files need to be given without their ‘.lin’/’.amps[xy]’,’.freqs[xy]’ endings.
-(So usually the path of the TbT-Data file.)</p>
-</div></blockquote>
-</li>
-<li><p><strong>interval</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Frequency interval in which the highest peak should be found.</p>
-</div></blockquote>
-</li>
+(So usually the path of the TbT-Data file.)</p></li>
+<li><p><strong>interval</strong> <em>(float)</em>: Frequency interval in which the highest peak should be found.</p></li>
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>bpms</strong>:</p>
-<blockquote>
-<div><p>List of BPMs which need to be updated. If not given it will be all of them.</p>
-</div></blockquote>
-</li>
-<li><p><strong>not_found_action</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Defines what to do, if no line was found in given interval.
+<li><p><strong>bpms</strong>: List of BPMs which need to be updated. If not given it will be all of them.</p></li>
+<li><p><strong>not_found_action</strong> <em>(str)</em>: Defines what to do, if no line was found in given interval.
 ‘error’: throws a ValueError; ‘remove’: removes the bpm; ‘ignore’: keeps the old values.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['error',</span> <span class="pre">'remove',</span> <span class="pre">'ignore']</span></code></p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">error</span></code></p>
-</div></blockquote>
+<p>Choices: <code class="docutils literal notranslate"><span class="pre">['error',</span> <span class="pre">'remove',</span> <span class="pre">'ignore']</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">error</span></code></p>
 </li>
-<li><p><strong>planes</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Which planes.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">('X',</span> <span class="pre">'Y')</span></code></p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">['X',</span> <span class="pre">'Y']</span></code></p>
-</div></blockquote>
+<li><p><strong>planes</strong> <em>(str)</em>: Which planes.</p>
+<p>Choices: <code class="docutils literal notranslate"><span class="pre">('X',</span> <span class="pre">'Y')</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">['X',</span> <span class="pre">'Y']</span></code></p>
 </li>
-<li><p><strong>rename_suffix</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Additional suffix for output lin-file.
+<li><p><strong>rename_suffix</strong> <em>(str)</em>: Additional suffix for output lin-file.
 Will be inserted between filename and extension.
 If empty, the original file is overwritten - unless they are old files,
 then the omc3 filename convention will be used.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">(empty</span> <span class="pre">string)</span></code></p>
-</div></blockquote>
+<p>Default: <a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">``</span></a></p>
 </li>
 </ul>
 </div>
