@@ -218,7 +218,8 @@ def get_annotation(ax=None, by_reference=True):
         if c.get_label() == 'plot_style_annotation':
             if by_reference:
                 return c
-            return c.get_text()
+            else:
+                return c.get_text()
     return None
 
 
@@ -308,10 +309,10 @@ class OOMFormatter(matplotlib.ticker.ScalarFormatter):
         self.fformat = fformat
         matplotlib.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=mathText)
 
-    def _set_orderOfMagnitude(self):
+    def _set_orderOfMagnitude(self, nothing):
         self.orderOfMagnitude = self.oom
 
-    def _set_format(self):
+    def _set_format(self, vmin, vmax):
         self.format = self.fformat
         if self._useMathText:
             self.format = '$%s$' % matplotlib.ticker._mathdefault(self.format)
@@ -330,10 +331,10 @@ def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, ma
     """
     oomf = OOMFormatter(order=order, fformat=fformat, offset=offset, mathText=math_text)
 
-    if axis in ("x", "both"):
+    if axis == "x" or axis == "both":
         ax.xaxis.set_major_formatter(oomf)
 
-    if axis in ("y", "both"):
+    if axis == "y" or axis == "both":
         ax.yaxis.set_major_formatter(oomf)
 
     ax.ticklabel_format(axis=axis, style="sci", scilimits=(order, order), useMathText=math_text)

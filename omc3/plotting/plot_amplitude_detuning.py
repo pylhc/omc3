@@ -55,16 +55,17 @@ from functools import partial
 from pathlib import Path
 
 import numpy as np
-from generic_parser import EntryPointParameters, entrypoint
+from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import save_options_to_config
-from matplotlib import colors as mcolors, pyplot as plt
+from matplotlib import colors as mcolors
+from matplotlib import pyplot as plt
 from tfs.tools import significant_digits
 
 from omc3.definitions import formats
-from omc3.definitions.constants import PLANES, UNIT_IN_METERS
-from omc3.plotting.utils import annotations as pannot, colors as pcolors, style as pstyle
-from omc3.tune_analysis import constants as const, fitting_tools, kick_file_modifiers as kick_mod
+from omc3.definitions.constants import UNIT_IN_METERS, PLANES
+from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
+from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -349,3 +350,4 @@ def _correct_and_scale(data, odr_fit, action_unit, action_plot_unit, tune_scale,
 
 if __name__ == '__main__':
     main()
+

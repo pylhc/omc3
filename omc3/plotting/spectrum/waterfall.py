@@ -10,10 +10,10 @@ Waterfall plotting functionality for spectrum plotter.
 import matplotlib
 import numpy as np
 from generic_parser import DotDict
-from matplotlib import colors, pyplot as plt
+from matplotlib import pyplot as plt, colors
 
-from omc3.plotting.spectrum.utils import (AMPS, FREQS, LABEL_X, LABEL_Y_WATERFALL, PLANES,
-                                          output_plot, plot_lines)
+from omc3.plotting.spectrum.utils import (plot_lines, PLANES, LABEL_Y_WATERFALL,
+                                          LABEL_X, AMPS, FREQS, output_plot)
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
@@ -21,7 +21,7 @@ LOG = logging_tools.getLogger(__name__)
 
 def create_waterfall_plots(figures: dict, opt: DotDict) -> None:
     """ Main loop for waterfall plot creation. """
-    LOG.debug("Creating Waterfall Plot")
+    LOG.debug(f"  ...creating Waterfall Plot")
 
     for fig_id, fig_cont in figures.items():
         LOG.debug(f'   Plotting Figure: {fig_id}.')

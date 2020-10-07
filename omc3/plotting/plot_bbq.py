@@ -41,25 +41,25 @@ from pathlib import Path
 
 import matplotlib.dates as mdates
 import numpy as np
-from generic_parser import EntryPointParameters, entrypoint
+from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entrypoint_parser import save_options_to_config
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, gridspec
 from matplotlib.ticker import FormatStrFormatter
-from pandas.plotting import register_matplotlib_converters
 
 from omc3 import amplitude_detuning_analysis as ad_ana
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.plotting.utils import colors as pcolors, style as pstyle
 from omc3.tune_analysis import kick_file_modifiers as kick_mod
-from omc3.tune_analysis.constants import (get_bbq_col, get_mav_col, get_mav_window_header,
-                                          get_used_in_mav_col)
+from omc3.tune_analysis.constants import (get_mav_window_header, get_used_in_mav_col,
+                                          get_bbq_col, get_mav_col)
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
 # Registering converters for datetime plotting as pandas won't do it for us automatically anymore
 register_matplotlib_converters()
+
 
 def get_params():
     params = EntryPointParameters()

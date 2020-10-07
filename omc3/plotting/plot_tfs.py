@@ -112,7 +112,7 @@ from pathlib import Path
 
 import matplotlib
 import tfs
-from generic_parser import DotDict, EntryPointParameters, entrypoint
+from generic_parser import EntryPointParameters, entrypoint, DotDict
 from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from matplotlib import pyplot as plt, rcParams
 
@@ -121,8 +121,8 @@ from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import FigureCollector
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
-from omc3.plotting.utils import (annotations as pannot, colors as pcolors, lines as plines,
-                                 style as pstyle)
+from omc3.plotting.utils import (annotations as pannot, lines as plines,
+                                 style as pstyle, colors as pcolors)
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
@@ -392,14 +392,13 @@ def sort_data(opt):
     return collector
 
 
-def get_id(filename_parts, column, file_label, column_label, same_axes, same_figure, prefix,
-           plane='', planes: list = None) :
+def get_id(filename_parts, column, file_label, column_label, same_axes, same_figure, prefix, plane='', planes=[]):
     """ Get the right IDs for the current sorting way.
 
     This is where the actual sorting happens, by mapping the right IDs according
     to the chosen options.
     """
-    planes = "".join(planes) if planes else ""
+    planes = "".join(planes)
 
     file_last = filename_parts[-1].replace(EXT, "").strip("_")
     file_output = "_".join(filename_parts).replace(EXT, "").strip("_")
@@ -429,13 +428,13 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
             figure_id=f'{prefix}{planes}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
-            ylabel='',
+            ylabel=f'',
         ),
         frozenset(['files', 'columns']): dict(
             figure_id=f'{prefix}{plane.lower()}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
-            ylabel='',
+            ylabel=f'',
         ),
         frozenset(['planes', 'columns']): dict(
             figure_id=f'{prefix}{file_output_planes}',
@@ -470,7 +469,7 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
         frozenset([]): dict(
             figure_id=f'{prefix}{file_output}_{column}',
             axes_id=axes_id,
-            legend_label='',
+            legend_label=f'',
             ylabel=column_label,
         ),
     }[key]

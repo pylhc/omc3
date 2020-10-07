@@ -52,9 +52,9 @@ def change_color_brightness(color, amount=0.5):
     By Ian Hincks
     Source: https://stackoverflow.com/questions/37765197/darken-or-lighten-a-color-in-matplotlib
     """
-    if not 0 <= amount <= 2:
-        raise ValueError("The brightness change has to be between 0 and 2. "
-                         f"Instead it was {amount}")
+    if not (0<=amount<=2):
+        raise ValueError("The brightness change has to be between 0 and 2."
+                         " Instead it was {}".format(amount))
     try:
         c = mc.cnames[color]
     except KeyError:

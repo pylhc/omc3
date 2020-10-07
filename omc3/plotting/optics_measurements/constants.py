@@ -8,9 +8,12 @@ Constants and definitions for the tfs plotter.
 :author: jdilly
 
 """
-from omc3.optics_measurements.constants import (AMPLITUDE, AMP_BETA_NAME, BETA, BETA_NAME, IMAG,
-                                                MDL, ORBIT_NAME, PHASE, PHASE_ADV, PHASE_NAME, REAL,
-                                                S, TOTAL_PHASE_NAME)
+from omc3.optics_measurements.constants import (
+    S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
+    AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,
+    SPECIAL_PHASE_NAME, TOTAL_PHASE_NAME, DISPERSION_NAME,
+    NORM_DISP_NAME, ORBIT_NAME, KICK_NAME, IP_NAME, PHASE_ADV, MDL
+)
 from omc3.plotting.utils.annotations import ylabels
 
 IP_POS_DEFAULT = {

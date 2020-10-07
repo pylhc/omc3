@@ -101,10 +101,12 @@ from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import AMPLITUDE, DELTA, ERR, EXT, PHASE
+from omc3.optics_measurements.constants import ERR, DELTA, AMPLITUDE, PHASE, EXT
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
-from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT, XAXIS, YAXIS)
-from omc3.plotting.plot_tfs import float_or_none, plot as plot_tfs
+from omc3.plotting.optics_measurements.constants import (DEFAULTS,
+                                                         XAXIS, YAXIS,
+                                                         IP_POS_DEFAULT)
+from omc3.plotting.plot_tfs import plot as plot_tfs, float_or_none
 from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.iotools import PathOrStr, save_config
@@ -331,7 +333,7 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
                 x_labels=[x_label],
                 vertical_lines=ip_positions + opt.lines_manual,
                 same_figure="columns" if "columns" not in combine_by else None,
-                same_axes=combine_by if combine_by else None,
+                same_axes=combine_by if len(combine_by) else None,
                 single_legend=True,
                 output_prefix=f"plot_{mode}_{prefix}",
                 **opt.get_subdict(['show', 'output',
@@ -379,7 +381,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
 
     prefix = ''
     if opt.delta:
-        prefix += 'delta_'
+        prefix += f'delta_'
     if opt.combine_by and "files" in opt.combine_by:
         prefix += f'{optics_parameter}'
 

@@ -9,12 +9,12 @@ Stem plotting functionality for spectrum plotter.
 """
 import matplotlib
 from generic_parser import DotDict
-from matplotlib import lines as mlines, pyplot as plt
+from matplotlib import pyplot as plt, lines as mlines
 
-from omc3.plotting.spectrum.utils import (AMPS, FREQS, FigureContainer, LABEL_X, LABEL_Y_SPECTRUM,
-                                          PLANES, STEM_LINES_ALPHA,
-                                          get_approx_size_in_axes_coordinates, get_cycled_color,
-                                          output_plot, plot_lines)
+from omc3.plotting.spectrum.utils import (plot_lines, FigureContainer, get_cycled_color,
+                                          get_approx_size_in_axes_coordinates,
+                                          PLANES, STEM_LINES_ALPHA, LABEL_Y_SPECTRUM,
+                                          LABEL_X, AMPS, FREQS, output_plot)
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
@@ -22,7 +22,7 @@ LOG = logging_tools.getLogger(__name__)
 
 def create_stem_plots(figures: dict, opt: DotDict) -> None:
     """ Main loop for stem-plot creation. """
-    LOG.debug("Creating Stem Plots")
+    LOG.debug(f"  ...creating Stem Plots")
     for fig_id, fig_cont in figures.items():
         LOG.debug(f'   Plotting Figure: {fig_id}.')
         fig_cont.fig.canvas.set_window_title(fig_id)

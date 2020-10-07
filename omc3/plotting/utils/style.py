@@ -9,10 +9,10 @@ Helper functions to make the most awesome* plots out there.
 :module: omc3.plotting.utils.style
 
 """
-from pathlib import Path
-
 import matplotlib
 from matplotlib import pyplot as plt
+from pathlib import Path
+
 
 REMOVE_ENTRY = "REMOVE ENTRY"  # id to remove entries in manual style
 
