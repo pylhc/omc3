@@ -18,13 +18,14 @@ from generic_parser.dict_parser import DotDict
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import KICK_NAME
 from omc3.tune_analysis import bbq_tools
-from omc3.tune_analysis.constants import (get_action_col, get_action_err_col, get_bbq_col,
-                                          get_corr_natq_err_col, get_mav_col, get_mav_err_col,
-                                          get_natq_col, get_natq_corr_col, get_natq_err_col,
-                                          get_odr_header_coeff, get_odr_header_coeff_corrected,
-                                          get_odr_header_err_coeff,
-                                          get_odr_header_err_coeff_corrected, get_time_col,
-                                          get_used_in_mav_col)
+from omc3.tune_analysis.constants import (get_odr_header_coeff_corrected,
+                                          get_odr_header_err_coeff_corrected,
+                                          get_odr_header_err_coeff, get_odr_header_coeff,
+                                          get_natq_corr_col, get_corr_natq_err_col,
+                                          get_natq_err_col, get_natq_col, get_bbq_col,
+                                          get_mav_col, get_mav_err_col, get_used_in_mav_col,
+                                          get_time_col, get_action_col, get_action_err_col
+                                          )
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
 
@@ -206,7 +207,7 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
     data.columns = columns.keys()
 
     if data.isna().any().any():
-        LOG.warning(
+        LOG.warn(
             f"Amplitude Detuning data for Q{tune_plane} and J{action_plane} contains NaNs"
         )
         data = data.dropna(axis=0)

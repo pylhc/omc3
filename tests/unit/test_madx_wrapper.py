@@ -1,4 +1,4 @@
-from os.path import abspath, dirname, exists, isfile, join, pardir
+from os.path import exists, isfile, join, dirname, pardir, abspath
 
 import pytest
 
@@ -14,8 +14,7 @@ def test_with_macro():
          - Output_file is created.
     """
     content = "call,file='{}';\ncall,file='{}';\n".format(
-        join(LIB, "lhc.macros.madx"), join(LIB, "general.macros.madx")
-    )
+        join(LIB, "lhc.macros.madx"), join(LIB, "general.macros.madx"))
 
     with temporary_dir() as tmpdir:
         outfile = join(tmpdir, "job.with_macro.madx")

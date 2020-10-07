@@ -16,7 +16,7 @@ Important Convention:
 
 """
 import numpy as np
-from scipy.odr import Model, ODR, RealData
+from scipy.odr import RealData, Model, ODR
 
 from omc3.utils import logging_tools
 
@@ -54,3 +54,4 @@ def do_odr(x, y, xerr, yerr, order):
     odr_fit = odr.run()
     logging_tools.odr_pprint(LOG.info, odr_fit)
     return odr_fit
+

@@ -22,7 +22,7 @@ DATA_READERS = dict(lhc=reader_lhc,
                     trackone=reader_trackone)
 
 
-class TbtData:
+class TbtData(object):
     """
     Object holding a representation of a Turn-by-Turn Data
 
