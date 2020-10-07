@@ -27,7 +27,7 @@ def _b2_columns():
     return cols_outer[:42] + cols_middle + cols_outer[42:]
 
 
-class LhcModelCreator:
+class LhcModelCreator(object):
 
     @classmethod
     def get_correction_check_script(cls, accel, outdir, corr_file="changeparameters_couple.madx", chrom=False):
@@ -111,3 +111,5 @@ class LhcCouplingCreator(LhcModelCreator):
     @classmethod
     def get_madx_script(cls, lhc_instance, output_path):
         return cls.get_correction_check_script(lhc_instance, output_path)
+
+

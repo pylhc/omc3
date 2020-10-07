@@ -7,16 +7,17 @@ Recurring formats are defined here.
 :module: omc3.definitions.formats
 
 """
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
-TIME: str = "%Y_%m_%d@%H_%M_%S_%f"  # CERN default
-CONFIG_FILENAME: str = "{script:s}_{time:s}.ini"
+TIME = "%Y_%m_%d@%H_%M_%S_%f"  # CERN default
+CONFIG_FILENAME = "{script:s}_{time:s}.ini"
 
 
-def get_config_filename(script) -> str:
+def get_config_filename(script):
     """ Default Filename for config-files. Call from script with '__file__'."""
     return CONFIG_FILENAME.format(
         script=Path(script).name.split('.')[0],
         time=datetime.utcnow().strftime(TIME)
     )
+

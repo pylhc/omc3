@@ -10,7 +10,6 @@ from generic_parser import EntryPoint
 from omc3.model.accelerators.accelerator import (Accelerator,
                                                  AcceleratorDefinitionError)
 from omc3.model.constants import PLANE_TO_HV
-
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
 
@@ -60,12 +59,12 @@ class Psbooster(Accelerator):
             return None
         bpms_to_find = [f"BR{self.ring}.BPM3L3", f"BR{self.ring}.BPM4L3"]
         found_bpms = [bpm for bpm in bpms_to_find if bpm in bpms]
-        if not found_bpms:
+        if not len(found_bpms):
             raise KeyError
         return (list(bpms).index(found_bpms[0]), found_bpms[0]), f"{PLANE_TO_HV[plane]}ACMAP"
 
 
-class _PsboosterSegmentMixin:
+class _PsboosterSegmentMixin(object):
 
     def __init__(self):
         self._start = None

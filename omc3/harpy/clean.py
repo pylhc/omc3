@@ -214,7 +214,7 @@ def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=3):
     if dominance_limit < 1 / np.sqrt(2):
         LOGGER.warning(f"The svd_dominance_limit looks too low: {dominance_limit}")
 
-    for _ in range(num_iter):
+    for i in range(num_iter):
         if np.all(np.abs(u_mat) <= dominance_limit):
             break
         condition = np.logical_and(np.abs(u_mat) > dominance_limit,

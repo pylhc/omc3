@@ -9,8 +9,9 @@ from collections import OrderedDict
 import tfs
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import (AccElementTypes, AccExcitationMode, Accelerator,
-                                                 AcceleratorDefinitionError)
+from omc3.model.accelerators.accelerator import (AccElementTypes, Accelerator,
+                                                 AcceleratorDefinitionError,
+                                                 AccExcitationMode)
 from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
                                   GENERAL_MACROS, LHC_MACROS, MACROS_DIR)
 from omc3.utils import logging_tools
@@ -206,7 +207,7 @@ class Lhc(Accelerator):
     @staticmethod
     def _is_one_of_in(bpms_to_find, bpms):
         found_bpms = [bpm for bpm in bpms_to_find if bpm in bpms]
-        if found_bpms:
+        if len(found_bpms):
             return list(bpms).index(found_bpms[0]), found_bpms[0]
         raise KeyError
 
@@ -310,7 +311,7 @@ def _list_intersect_keep_order(primary_list, secondary_list):
     return [elem for elem in primary_list if elem in secondary_list]
 
 
-class _LhcSegmentMixin:
+class _LhcSegmentMixin(object):
 
     def __init__(self):
         self._start = None

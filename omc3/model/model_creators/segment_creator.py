@@ -1,20 +1,21 @@
 import shutil
-from os.path import dirname, join, pardir
+from os.path import join, dirname, pardir
 
-from omc3.model.constants import GENERAL_MACROS, MACROS_DIR
+from omc3.model.constants import MACROS_DIR, GENERAL_MACROS
 from omc3.utils import logging_tools
-from omc3.utils.iotools import create_dirs, read_all_lines_in_textfile
+from omc3.utils.iotools import read_all_lines_in_textfile, create_dirs
 
 LOGGER = logging_tools.get_logger(__name__)
 
 
-class SegmentCreator:
+class SegmentCreator(object):
     @classmethod
-    def prepare_run(cls, output_path):
+    def prepare_run(cls, instance, output_path):
         macros_path = join(output_path, MACROS_DIR)
         create_dirs(macros_path)
         lib_path = join(dirname(__file__), pardir, pardir, "lib")
         shutil.copy(join(lib_path, GENERAL_MACROS), join(macros_path, GENERAL_MACROS))
+
 
     @classmethod
     def get_madx_script(cls, instance, output_path):

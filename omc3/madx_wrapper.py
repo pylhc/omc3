@@ -13,7 +13,7 @@ import os
 import subprocess
 import sys
 import warnings
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname, join, pardir
 from tempfile import mkstemp
 
 from generic_parser import EntryPointParameters, entrypoint
@@ -122,7 +122,7 @@ def _logfile_wrapper(file_path=None):
     if file_path is None:
         def log_handler(line):
             line = line.rstrip()
-            if line:
+            if len(line):
                 LOG.info(line)
         yield log_handler
     else:
@@ -130,7 +130,7 @@ def _logfile_wrapper(file_path=None):
             def log_handler(line):
                 log_file.write(line)
                 line = line.rstrip()
-                if line:
+                if len(line):
                     LOG.debug(line)
             yield log_handler
 

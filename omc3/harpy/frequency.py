@@ -11,10 +11,11 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 
-from omc3.definitions.constants import PI2, PLANES
-from omc3.harpy.constants import (COL_AMP, COL_FREQ, COL_MU, COL_NATAMP, COL_NATMU, COL_NATTUNE,
-                                  COL_PHASE, COL_TUNE)
 from omc3.utils import logging_tools, outliers
+from omc3.definitions.constants import PLANES, PI2
+from omc3.harpy.constants import (COL_TUNE, COL_AMP, COL_MU,
+                                  COL_NATTUNE, COL_NATAMP, COL_NATMU,
+                                  COL_FREQ, COL_PHASE)
 
 LOGGER = logging_tools.getLogger(__name__)
 
@@ -102,9 +103,9 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
                                                  bpm_matrix.shape[1])
     if tunes[2] > 0:
         panda, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, panda)
-        panda["MUZ"] = _realign_phases(panda.loc[:, "MUZ"].to_numpy(),
-                                       panda.loc[:, "TUNEZ"].to_numpy(),
-                                       bpm_matrix.shape[1])
+        panda[f"MUZ"] = _realign_phases(panda.loc[:, f"MUZ"].to_numpy(),
+                                              panda.loc[:, f"TUNEZ"].to_numpy(),
+                                              bpm_matrix.shape[1])
     return panda, spectra, bad_bpms_summaries
 
 

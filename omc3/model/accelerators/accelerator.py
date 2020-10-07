@@ -20,7 +20,7 @@ from omc3.utils import logging_tools
 LOGGER = logging_tools.get_logger(__name__)
 
 
-class AccExcitationMode:
+class AccExcitationMode(object):
     # it is very important that FREE = 0
     FREE, ACD, ADT = range(3)
 
@@ -28,14 +28,14 @@ class AccExcitationMode:
 DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
 
 
-class AccElementTypes:
+class AccElementTypes(object):
     """ Defines the strings for the element types BPMS, MAGNETS and ARC_BPMS. """
     BPMS = "bpm"
     MAGNETS = "magnet"
     ARC_BPMS = "arc_bpm"
 
 
-class Accelerator:
+class Accelerator(object):
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
@@ -135,9 +135,9 @@ class Accelerator:
                                 adt=join(model_dir, TWISS_ADT_DAT))
         if isfile(driven_filenames["acd"]) and isfile(driven_filenames["adt"]):
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
-        for key, filename in driven_filenames.items():
-            if isfile(filename):
-                self._model_driven = tfs.read(filename, index="NAME")
+        for key in driven_filenames.keys():
+            if isfile(driven_filenames[key]):
+                self._model_driven = tfs.read(driven_filenames[key], index="NAME")
                 self.excitation = DRIVEN_EXCITATIONS[key]
 
         if not self.excitation == AccExcitationMode.FREE:
@@ -176,7 +176,7 @@ class Accelerator:
 
         """
         unknown_elements = [ty for ty in types if ty not in cls.RE_DICT]
-        if unknown_elements:
+        if len(unknown_elements):
             raise TypeError(f"Unknown element(s): '{unknown_elements}'")
         series = pd.Series(list_of_elements)
         mask = series.str.match(cls.RE_DICT[types[0]], case=False)
@@ -256,7 +256,7 @@ class Accelerator:
     ##########################################################################
 
 
-class Variable:
+class Variable(object):
     """
     Generic corrector variable class that holds name, position (s) and
     physical elements it affectes. This variables should be logical variables
@@ -268,7 +268,7 @@ class Variable:
         self.classes = classes
 
 
-class Element:
+class Element(object):
     """
     Generic corrector element class that holds name and position (s)
     of the corrector. This element should represent a physical element of the
@@ -284,3 +284,4 @@ class AcceleratorDefinitionError(Exception):
     Raised when an accelerator instance is wrongly used, for
     example by calling a method that should have been overwritten.
     """
+    pass

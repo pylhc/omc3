@@ -389,7 +389,7 @@ def harpy_params():
     params.add_parameter(name="model", help="Model for BPM locations")
     params.add_parameter(name="unit", type=str, default=HARPY_DEFAULTS["unit"],
                          choices=("m", "cm", "mm", "um"),
-                         help="A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
+                         help=f"A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
     params.add_parameter(name="turns", type=int, nargs=2, default=HARPY_DEFAULTS["turns"],
                          help="Turn index to start and first turn index to be ignored.")
     params.add_parameter(name="to_write", nargs='+', default=HARPY_DEFAULTS["to_write"],
