@@ -98,6 +98,7 @@ def test_df_other():
 
 # Angular tests
 
+
 @pytest.mark.basic
 def test_ang():
     a, b = _arand(), _arand()
@@ -123,7 +124,7 @@ def _numerically_equal(a, b):
 def _arand():
     array = np.zeros(ARRAY_LENGTH)
     while any(array == 0):
-        array = np.random.rand(ARRAY_LENGTH) - .5
+        array = np.random.rand(ARRAY_LENGTH) - 0.5
     return array
 
 

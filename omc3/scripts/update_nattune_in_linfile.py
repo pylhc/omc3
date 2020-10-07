@@ -10,53 +10,35 @@ Script to update the natural tune in lin files, based on the spectrum data
 
 *--Required--*
 
-- **files**:
+- **files**: List of paths to the spectrum files.
+  The files need to be given without their '.lin'/'.amps[xy]','.freqs[xy]' endings.
+  (So usually the path of the TbT-Data file.)
 
-    List of paths to the spectrum files.
-    The files need to be given without their '.lin'/'.amps[xy]','.freqs[xy]' endings.
-    (So usually the path of the TbT-Data file.)
-
-
-- **interval** *(float)*:
-
-    Frequency interval in which the highest peak should be found.
+- **interval** *(float)*: Frequency interval in which the highest peak should be found.
 
 
 *--Optional--*
 
-- **bpms**:
+- **bpms**: List of BPMs which need to be updated. If not given it will be all of them.
 
-    List of BPMs which need to be updated. If not given it will be all of them.
+- **not_found_action** *(str)*: Defines what to do, if no line was found in given interval.
+  'error': throws a ValueError; 'remove': removes the bpm; 'ignore': keeps the old values.
 
-- **not_found_action** *(str)*:
+  Choices: ``['error', 'remove', 'ignore']``
+  Default: ``error``
+- **planes** *(str)*: Which planes.
 
-    Defines what to do, if no line was found in given interval.
-    'error': throws a ValueError; 'remove': removes the bpm; 'ignore': keeps the old values.
+  Choices: ``('X', 'Y')``
+  Default: ``['X', 'Y']``
+- **rename_suffix** *(str)*: Additional suffix for output lin-file.
+  Will be inserted between filename and extension.
+  If empty, the original file is overwritten - unless they are old files,
+  then the omc3 filename convention will be used.
 
-    Choices: ``['error', 'remove', 'ignore']``
-
-    Default: ``error``
-
-
-- **planes** *(str)*:
-
-    Which planes.
-
-    Choices: ``('X', 'Y')``
-
-    Default: ``['X', 'Y']``
-
-
-- **rename_suffix** *(str)*:
-
-    Additional suffix for output lin-file.
-    Will be inserted between filename and extension.
-    If empty, the original file is overwritten - unless they are old files,
-    then the omc3 filename convention will be used.
-
-    Default: ``(empty string)``
+  Default: ````
 
 """
+
 from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path

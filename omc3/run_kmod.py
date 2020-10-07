@@ -3,25 +3,17 @@ from os.path import join
 import numpy as np
 import pandas as pd
 import tfs
-from generic_parser import entrypoint, EntryPointParameters
+from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.kmod import analysis, helper
-from omc3.kmod.constants import (
-    EXT,
-    FIT_PLOTS_NAME,
-    SEQUENCES_PATH,
-    BETA,
-    ERR,
-    STAR,
-    LSA_FILE_NAME,
-    RESULTS_FILE_NAME,
-    INSTRUMENTS_FILE_NAME
-)
-from omc3.utils import logging_tools, iotools
+from omc3.kmod.constants import (BETA, ERR, EXT, FIT_PLOTS_NAME, INSTRUMENTS_FILE_NAME,
+                                 LSA_FILE_NAME, RESULTS_FILE_NAME, SEQUENCES_PATH, STAR)
+from omc3.utils import iotools, logging_tools
 
 LOG = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
 
 LSA_COLUMNS = ['NAME', f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
+
 
 def kmod_params():
     parser = EntryPointParameters()
@@ -92,7 +84,8 @@ def kmod_params():
     parser.add_parameter(name='model_dir',
                          type=str,
                          help='twiss model that contains phase')
-
+    parser.add_parameter(name="outputdir", help="Path where outputfiles will be stored, defaults "
+                                                "to the given working_directory")
 
     return parser
 
@@ -114,6 +107,8 @@ def analyse_kmod(opt):
         opt = check_default_error(opt, error)
     if opt.measurement_dir is None and opt.model_dir is None and opt.phase_weight:
         raise AttributeError("Cannot use phase advance without measurement or model")
+    if opt.outputdir is None:
+        opt.outputdir = opt.working_directory
 
     LOG.info(f"{'IP trim' if opt.interaction_point is not None else 'Individual magnets'} analysis")
     opt['magnets'] = MAGNETS_IP[opt.interaction_point.upper()] if opt.interaction_point is not None else [
@@ -121,7 +116,7 @@ def analyse_kmod(opt):
     opt['label'] = f'{opt.interaction_point}{opt.beam}' if opt.interaction_point is not None else f'{opt.magnets[0]}-{opt.magnets[1]}'
     opt['instruments'] = list(map(str.upper, opt.instruments.split(",")))
 
-    output_dir = join(opt.working_directory, opt.label)
+    output_dir = join(opt.outputdir, opt.label)
     iotools.create_dirs(output_dir)
 
     LOG.info('Get inputfiles')
@@ -153,8 +148,8 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
         exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
         lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
     if instruments_found:
-        lsa_results_df=lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
-    
+        lsa_results_df = lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
+
     if not lsa_results_df.empty:
         tfs.write(join(output_dir, f'{LSA_FILE_NAME}{EXT}'), lsa_results_df)
 

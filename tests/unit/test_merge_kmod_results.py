@@ -15,12 +15,14 @@ DEBUG = False
 
 # Full test --------------------------------------------------------------------
 @pytest.mark.basic
-def test_merge_kmod_results(tmp_output_dir):
+def test_merge_kmod_results(tmp_path):
     paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip5"]
 
-    res_tfs_passed = merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
+    res_tfs_passed = merge_kmod_results.merge_kmod_results(
+        kmod_dirs=paths, outputdir=tmp_path
+    )
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
-    res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename, index=merge_kmod_results.NAME)
+    res_lsa_tfs = tfs.read_tfs(tmp_path / filename, index=merge_kmod_results.NAME)
     control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
 
     assert_frame_equal(res_lsa_tfs, control_tfs)
@@ -30,14 +32,14 @@ def test_merge_kmod_results(tmp_output_dir):
 
 
 @pytest.mark.extended
-def test_merge_kmod_results_commandline(tmp_output_dir):
+def test_merge_kmod_results_commandline(tmp_path):
     paths = [str(INPUT_DIR / "kmod_ip1"), str(INPUT_DIR / "kmod_ip5")]
 
-    with cli_args("--kmod_dirs", *paths, "--outputdir", str(tmp_output_dir)):
+    with cli_args("--kmod_dirs", *paths, "--outputdir", str(tmp_path)):
         merge_kmod_results.merge_kmod_results()
 
     filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
-    res_lsa_tfs = tfs.read_tfs(tmp_output_dir / filename, index=merge_kmod_results.NAME)
+    res_lsa_tfs = tfs.read_tfs(tmp_path / filename, index=merge_kmod_results.NAME)
     control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
 
     assert_frame_equal(res_lsa_tfs, control_tfs)
@@ -45,12 +47,12 @@ def test_merge_kmod_results_commandline(tmp_output_dir):
 
 
 @pytest.mark.extended
-def test_merge_kmod_results_ini(tmp_output_dir):
+def test_merge_kmod_results_ini(tmp_path):
     paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip5"]
 
-    res_tfs_args = merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
+    res_tfs_args = merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_path)
 
-    ini = next(tmp_output_dir.glob('*.ini'))
+    ini = next(tmp_path.glob("*.ini"))
     res_tfs_ini = merge_kmod_results.merge_kmod_results(entry_cfg=ini)
 
     assert_frame_equal(res_tfs_args, res_tfs_ini)
@@ -58,6 +60,7 @@ def test_merge_kmod_results_ini(tmp_output_dir):
 
 
 # Units ------------------------------------------------------------------------
+
 
 @pytest.mark.basic
 def test_calc_lumi_imbalance(_tfs_file):
@@ -86,11 +89,11 @@ def test_wrong_names(_tfs_file):
 
 
 @pytest.mark.basic
-def test_twice_label(tmp_output_dir):
+def test_twice_label(tmp_path):
     paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip1"]
     with pytest.raises(KeyError) as error:
-        merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_output_dir)
-        assert 'ip1B1' in str(error.value)
+        merge_kmod_results.merge_kmod_results(kmod_dirs=paths, outputdir=tmp_path)
+        assert "ip1B1" in str(error.value)
 
 
 @pytest.mark.basic
