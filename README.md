@@ -8,8 +8,8 @@
 
 This is the python-tool package of the optics measurements and corrections team (OMC) at CERN.
 
-If you are not part of that group, you will most likely have no use for the codes provided here, unless you have a 9km wide accelerator at home.
-Feel free to use them anyway, if you wish!
+Most of the codes are generic and not limited to CERN accelerators. You can use it easily for your favourite
+circular accelerator, for installation, see Hints for Developers.
 
 ## Documentation
 
