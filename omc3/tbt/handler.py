@@ -84,7 +84,7 @@ def write_tbt(output_path, tbt_data, noise=None):
         tbt_data.nbunches,
         tbt_data.nturns,
         tbt_data.bunch_ids,
-        tbt_data.matrices[0]["X"].index,
+        tbt_data.matrices[0]["X"].index.to_numpy(),
         np.ravel(data[PLANE_TO_NUM['X']]),
         np.ravel(data[PLANE_TO_NUM['Y']])
     ]
