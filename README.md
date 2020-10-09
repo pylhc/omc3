@@ -8,8 +8,9 @@
 
 This is the python-tool package of the optics measurements and corrections team (OMC) at CERN.
 
-Most of the codes are generic and not limited to CERN accelerators. You can use it easily for your favourite
-circular accelerator, for installation, see Hints for Developers.
+Most of the codes are generic and not limited to CERN accelerators. You can use it easily for your favourite circular accelerator.
+To see how to adapt this for your accelerator, see our [documentation](https://pylhc.github.io/omc3/), `Model` section. 
+To contribute, see the **Hints for Developers** section below.
 
 ## Documentation
 
