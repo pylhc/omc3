@@ -12,6 +12,7 @@ in particular to switch easily between local time and utc.
 from datetime import datetime, timedelta
 
 import pytz
+import dateutil.tz as tz
 
 from omc3.definitions.formats import TIME
 
@@ -21,12 +22,12 @@ from omc3.definitions.formats import TIME
 
 def utc_now():
     """ Get utc now as time """
-    return datetime.now(pytz.utc)
+    return datetime.now(tz.tzutc())
 
 
 def get_cern_timezone():
     """ Get time zone for cern measurement data. """
-    return pytz.timezone("Europe/Zurich")
+    return tz.gettz('Europe/Zurich')
 
 
 def get_cern_time_format():
@@ -41,43 +42,48 @@ def get_readable_time_format():
 
 def local_to_utc(dt_local, timezone):
     """ Convert local datetime object to utc datetime object. """
-    try:
-        return timezone.localize(dt_local).astimezone(pytz.utc)
-    except ValueError:
-        check_tz(dt_local, timezone)
-        return dt_local.astimezone(pytz.utc)
+    check_tz(dt_local, timezone)
+
+    dt_utc = dt_local.astimezone(tz.tzutc())
+    return dt_utc
 
 
 def utc_to_local(dt_utc, timezone):
     """ Convert utc datetime object to local datetime object. """
-    try:
-        return pytz.utc.localize(dt_utc).astimezone(timezone)
-    except ValueError:
-        check_tz(dt_utc, pytz.utc)
-        return dt_utc.astimezone(timezone)
+    check_tz(dt_utc, tz.tzutc())
+
+    dt_local = dt_utc.astimezone(timezone)
+    return dt_local
 
 
 def local_string_to_utc(local_string, timezone):
     """ Converts a time string in local time to UTC time. """
-    return local_to_utc(datetime.strptime(local_string, get_readable_time_format()), timezone)
+    dt = datetime.strptime(local_string, get_readable_time_format())
+    dt = dt.replace(tzinfo=timezone)
+    return local_to_utc(dt, timezone)
 
 
 def utc_string_to_utc(utc_string):
     """ Convert a time string in utc to a utc datetime object """
-    return pytz.utc.localize(datetime.strptime(utc_string, get_readable_time_format()))
+    dt = datetime.strptime(utc_string, get_readable_time_format())
+    dt = dt.replace(tzinfo=tz.tzutc())
+    return dt
 
 
 def cern_utc_string_to_utc(utc_string):
     """ Convert a time string in cern-utc to a utc datetime object """
-    return pytz.utc.localize(datetime.strptime(utc_string, get_cern_time_format()))
+    dt = datetime.strptime(utc_string, get_cern_time_format())
+    dt = dt.replace(tzinfo=tz.tzutc())
+    return dt
 
 
 def check_tz(localized_dt, timezone):
     """ Checks if timezone is correct. """
+    
     if localized_dt.tzinfo is None or localized_dt.tzinfo.utcoffset(localized_dt) is None:
         raise AssertionError("Datetime object needs to be localized!")
 
-    if not str(localized_dt.tzinfo) == str(timezone):
+    if not localized_dt.tzname() == datetime.now(timezone).tzname():
         raise AssertionError(
             f"Datetime Timezone should be '{timezone}' "
             f"but was '{localized_dt.tzinfo}'"
@@ -101,17 +107,20 @@ class AccDatetime(datetime):
             dt = args[0]
         else:
             dt = datetime.__new__(cls, *args, **kwargs)
-        dt = utc_to_local(dt, pytz.utc)  # does not convert, but checks tz
+
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=tz.tzutc())
+
         return datetime.__new__(cls, dt.year, dt.month, dt.day,
                                 dt.hour, dt.minute, dt.second, dt.microsecond,
-                                tzinfo=pytz.utc)
+                                tzinfo=dt.tzinfo)
 
     @property
     def datetime(self):
         """ Return normal datetime object (in case ducktyping does not work. Looking at you, mpl!). """
         return datetime(self.year, self.month, self.day,
                         self.hour, self.minute, self.second, self.microsecond,
-                        tzinfo=pytz.utc)
+                        tzinfo=tz.tzutc())
 
     @property
     def local_timezone(self):
