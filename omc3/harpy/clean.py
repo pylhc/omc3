@@ -121,7 +121,7 @@ def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
     """  Detects BPMs with exact zeros due to OP workaround  """
     if keep_exact_zeros:
         LOGGER.debug("Skipped exact zero check")
-        return pd.DataFrame()
+        return pd.Index([])
     exact_zeros = bpm_data[~np.all(bpm_data, axis=1)].index
     if exact_zeros.size:
         LOGGER.debug(f"Exact zeros detected. BPMs removed: {exact_zeros.size}")
