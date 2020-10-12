@@ -1,7 +1,5 @@
-import pytest
-import pytz
-
 import dateutil.tz as tz
+import pytest
 
 from datetime import datetime
 
@@ -10,7 +8,6 @@ from omc3.utils import time_tools as tt
 
 @pytest.mark.basic
 def test_tz_check_succeed(now):
-    #tt.check_tz(now, pytz.utc)
     tt.check_tz(now, tz.tzutc())
 
 
