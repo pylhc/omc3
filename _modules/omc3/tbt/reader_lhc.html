@@ -171,8 +171,9 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">pytz</span>
 <span class="kn">import</span> <span class="nn">sdds</span>
+
+<span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">tz</span>
 
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
 <span class="kn">from</span> <span class="nn">omc3.tbt</span> <span class="kn">import</span> <span class="n">handler</span>
@@ -219,7 +220,7 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bunch_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">nbunches</span><span class="p">:</span>
         <span class="n">bunch_ids</span> <span class="o">=</span> <span class="n">bunch_ids</span><span class="p">[:</span><span class="n">nbunches</span><span class="p">]</span>
     <span class="n">nturns</span> <span class="o">=</span> <span class="n">sdds_file</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">N_TURNS</span><span class="p">]</span>
-    <span class="n">date</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">sdds_file</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">ACQ_STAMP</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">))</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">sdds_file</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">ACQ_STAMP</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e9</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
     <span class="n">bpm_names</span> <span class="o">=</span> <span class="n">sdds_file</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">BPM_NAMES</span><span class="p">]</span>
     <span class="n">nbpms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bpm_names</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">sdds_file</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">POSITIONS</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">nbpms</span><span class="p">,</span> <span class="n">nbunches</span><span class="p">,</span> <span class="n">nturns</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">}</span>
