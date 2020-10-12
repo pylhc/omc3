@@ -173,6 +173,7 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 
 <span class="kn">import</span> <span class="nn">pytz</span>
+<span class="kn">import</span> <span class="nn">dateutil.tz</span> <span class="k">as</span> <span class="nn">tz</span>
 
 <span class="kn">from</span> <span class="nn">omc3.definitions.formats</span> <span class="kn">import</span> <span class="n">TIME</span>
 
@@ -182,12 +183,12 @@
 
 <div class="viewcode-block" id="utc_now"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.utc_now">[docs]</a><span class="k">def</span> <span class="nf">utc_now</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Get utc now as time &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="get_cern_timezone"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.get_cern_timezone">[docs]</a><span class="k">def</span> <span class="nf">get_cern_timezone</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Get time zone for cern measurement data. &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s2">&quot;Europe/Zurich&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;Europe/Zurich&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_cern_time_format"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.get_cern_time_format">[docs]</a><span class="k">def</span> <span class="nf">get_cern_time_format</span><span class="p">():</span>
@@ -202,43 +203,48 @@
 
 <div class="viewcode-block" id="local_to_utc"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.local_to_utc">[docs]</a><span class="k">def</span> <span class="nf">local_to_utc</span><span class="p">(</span><span class="n">dt_local</span><span class="p">,</span> <span class="n">timezone</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert local datetime object to utc datetime object. &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">timezone</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">dt_local</span><span class="p">)</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="n">check_tz</span><span class="p">(</span><span class="n">dt_local</span><span class="p">,</span> <span class="n">timezone</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dt_local</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span></div>
+    <span class="n">check_tz</span><span class="p">(</span><span class="n">dt_local</span><span class="p">,</span> <span class="n">timezone</span><span class="p">)</span>
+
+    <span class="n">dt_utc</span> <span class="o">=</span> <span class="n">dt_local</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">dt_utc</span></div>
 
 
 <div class="viewcode-block" id="utc_to_local"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.utc_to_local">[docs]</a><span class="k">def</span> <span class="nf">utc_to_local</span><span class="p">(</span><span class="n">dt_utc</span><span class="p">,</span> <span class="n">timezone</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert utc datetime object to local datetime object. &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">dt_utc</span><span class="p">)</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="n">check_tz</span><span class="p">(</span><span class="n">dt_utc</span><span class="p">,</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dt_utc</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="p">)</span></div>
+    <span class="n">check_tz</span><span class="p">(</span><span class="n">dt_utc</span><span class="p">,</span> <span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
+
+    <span class="n">dt_local</span> <span class="o">=</span> <span class="n">dt_utc</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dt_local</span></div>
 
 
 <div class="viewcode-block" id="local_string_to_utc"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.local_string_to_utc">[docs]</a><span class="k">def</span> <span class="nf">local_string_to_utc</span><span class="p">(</span><span class="n">local_string</span><span class="p">,</span> <span class="n">timezone</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Converts a time string in local time to UTC time. &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">local_to_utc</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">local_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">()),</span> <span class="n">timezone</span><span class="p">)</span></div>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">local_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">())</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">local_to_utc</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">timezone</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="utc_string_to_utc"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.utc_string_to_utc">[docs]</a><span class="k">def</span> <span class="nf">utc_string_to_utc</span><span class="p">(</span><span class="n">utc_string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert a time string in utc to a utc datetime object &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">()))</span></div>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">())</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">dt</span></div>
 
 
 <div class="viewcode-block" id="cern_utc_string_to_utc"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.cern_utc_string_to_utc">[docs]</a><span class="k">def</span> <span class="nf">cern_utc_string_to_utc</span><span class="p">(</span><span class="n">utc_string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Convert a time string in cern-utc to a utc datetime object &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_cern_time_format</span><span class="p">()))</span></div>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_cern_time_format</span><span class="p">())</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">dt</span></div>
 
 
 <div class="viewcode-block" id="check_tz"><a class="viewcode-back" href="../../../utils/index.html#omc3.utils.time_tools.check_tz">[docs]</a><span class="k">def</span> <span class="nf">check_tz</span><span class="p">(</span><span class="n">localized_dt</span><span class="p">,</span> <span class="n">timezone</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Checks if timezone is correct. &quot;&quot;&quot;</span>
+    
     <span class="k">if</span> <span class="n">localized_dt</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">localized_dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">(</span><span class="n">localized_dt</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Datetime object needs to be localized!&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">localized_dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">timezone</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">localized_dt</span><span class="o">.</span><span class="n">tzname</span><span class="p">()</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="p">)</span><span class="o">.</span><span class="n">tzname</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Datetime Timezone should be &#39;</span><span class="si">{</span><span class="n">timezone</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;but was &#39;</span><span class="si">{</span><span class="n">localized_dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
@@ -262,17 +268,20 @@
             <span class="n">dt</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">utc_to_local</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>  <span class="c1"># does not convert, but checks tz</span>
+
+        <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
+
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
                                 <span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
-                                <span class="n">tzinfo</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+                                <span class="n">tzinfo</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return normal datetime object (in case ducktyping does not work. Looking at you, mpl!). &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
-                        <span class="n">tzinfo</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+                        <span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">local_timezone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
