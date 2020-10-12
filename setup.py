@@ -27,7 +27,6 @@ DEPENDENCIES = [
     "tfs-pandas>=2.0",
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
-    "pytz>=2018.9",
     "h5py>=2.9.0",
     "pytimber>=2.8.0",
     "uncertainties>=3.1.4",

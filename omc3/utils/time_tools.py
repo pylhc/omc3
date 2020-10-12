@@ -10,8 +10,6 @@ in particular to switch easily between local time and utc.
 
 """
 from datetime import datetime, timedelta
-
-import pytz
 import dateutil.tz as tz
 
 from omc3.definitions.formats import TIME
