@@ -1,12 +1,17 @@
 import pytest
 import pytz
 
+import dateutil.tz as tz
+
+from datetime import datetime
+
 from omc3.utils import time_tools as tt
 
 
 @pytest.mark.basic
 def test_tz_check_succeed(now):
-    tt.check_tz(now, pytz.utc)
+    #tt.check_tz(now, pytz.utc)
+    tt.check_tz(now, tz.tzutc())
 
 
 @pytest.mark.basic
@@ -40,12 +45,25 @@ def test_strings(now):
 @pytest.mark.basic
 def test_accelerator_datetime(now):
     lhc = tt.AcceleratorDatetime['lhc'](now)
+
     ps = tt.AcceleratorDatetime['ps'](now)
     sps = tt.AcceleratorDatetime['sps'](now)
     assert lhc.local.time() == ps.local.time()
     assert lhc.local.time() == sps.local.time()
-    assert lhc.local.time != lhc.utc.time()
+    assert lhc.local.time() != lhc.utc.time()
 
+    assert lhc.utc.tzinfo == datetime.now(tz.tzutc()).tzinfo
+    assert lhc.local.tzinfo == tt.get_cern_timezone()
+
+
+@pytest.mark.basic
+def test_fold():
+    folded = tt.AcceleratorDatetime['lhc'](2020, 10, 25, 1, 0, 0)
+    no_fold = tt.AcceleratorDatetime['lhc'](2020, 10, 25, 0, 0, 0)
+    
+    assert folded.local.hour == no_fold.local.hour
+    assert folded.local.fold == 1
+    assert no_fold.local.fold == 0
 
 # Fixtures #####################################################################
 
