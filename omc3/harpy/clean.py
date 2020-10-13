@@ -148,7 +148,7 @@ def _report_clean_stats(n_total_bpms, n_good_bpms):
     if (n_good_bpms / n_total_bpms) < 0.5:
         raise ValueError("More than half of BPMs are bad. "
                          "This could be because a bunch not present in the machine has been "
-                         "selected or because a problem with the phasing of the BPMs.")
+                         "selected or because of a problem with the phasing of the BPMs.")
 
 
 def _index_union(*indices):
