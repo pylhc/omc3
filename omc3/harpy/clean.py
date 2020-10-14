@@ -32,7 +32,7 @@ def clean(harpy_input, bpm_data, model):
     """
     bpm_data, bpms_not_in_model = _get_only_model_bpms(bpm_data, model)
     if bpm_data.empty:
-        raise AssertionError("Check BPMs names! None of the BPMs was found in the model!")
+        raise AssertionError("Check BPMs names! None of the BPMs were found in the model!")
     if not harpy_input.clean:
         return bpm_data, None, bpms_not_in_model, None
     with timeit(lambda spanned: LOGGER.debug(f"Time for filtering: {spanned}")):
@@ -121,7 +121,7 @@ def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
     """  Detects BPMs with exact zeros due to OP workaround  """
     if keep_exact_zeros:
         LOGGER.debug("Skipped exact zero check")
-        return pd.DataFrame()
+        return pd.Index([])
     exact_zeros = bpm_data[~np.all(bpm_data, axis=1)].index
     if exact_zeros.size:
         LOGGER.debug(f"Exact zeros detected. BPMs removed: {exact_zeros.size}")
@@ -140,15 +140,15 @@ def _get_bad_bpms_summary(harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes,
 def _report_clean_stats(n_total_bpms, n_good_bpms):
     LOGGER.debug("Filtering done:")
     if n_total_bpms == 0:
-        raise ValueError("Total Number of BPMs after filtering is zero")
+        raise ValueError("Total Number of BPMs after filtering is zero.")
     n_bad_bpms = n_total_bpms - n_good_bpms
     LOGGER.debug(f"(Statistics for file reading) Total BPMs: {n_total_bpms}, "
                  f"Good BPMs: {n_good_bpms} ({(100 * n_good_bpms / n_total_bpms):2.2f}%), "
                  f"Bad BPMs: {n_bad_bpms} ({(100 * n_bad_bpms / n_total_bpms):2.2f}%)")
     if (n_good_bpms / n_total_bpms) < 0.5:
         raise ValueError("More than half of BPMs are bad. "
-                         "This could be cause a bunch not present in the machine has been "
-                         "selected or because a problem with the phasing of the BPMs.")
+                         "This could be because a bunch not present in the machine has been "
+                         "selected or because of a problem with the phasing of the BPMs.")
 
 
 def _index_union(*indices):
@@ -178,7 +178,7 @@ def _resync_bpms(harpy_input, bpm_data, model):
 
 def svd_decomposition(matrix, num_singular_values, dominance_limit=None, num_iter=None):
     """
-    Computes reduced (K largest values) singular value docomposition of a matrix
+    Computes reduced (K largest values) singular value decomposition of a matrix
     Requiring K singular values from MxN matrix results in matrices sized: ((M,K) x diag(K) x (K,N))
 
     Args:
