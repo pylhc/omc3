@@ -193,7 +193,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bpm_data</span><span class="p">,</span> <span class="n">bpms_not_in_model</span> <span class="o">=</span> <span class="n">_get_only_model_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Check BPMs names! None of the BPMs was found in the model!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Check BPMs names! None of the BPMs were found in the model!&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">clean</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bpms_not_in_model</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time for filtering: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
@@ -282,7 +282,7 @@
     <span class="sd">&quot;&quot;&quot;  Detects BPMs with exact zeros due to OP workaround  &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">keep_exact_zeros</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipped exact zero check&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([])</span>
     <span class="n">exact_zeros</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">if</span> <span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exact zeros detected. BPMs removed: </span><span class="si">{</span><span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -301,15 +301,15 @@
 <span class="k">def</span> <span class="nf">_report_clean_stats</span><span class="p">(</span><span class="n">n_total_bpms</span><span class="p">,</span> <span class="n">n_good_bpms</span><span class="p">):</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering done:&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n_total_bpms</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Total Number of BPMs after filtering is zero&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Total Number of BPMs after filtering is zero.&quot;</span><span class="p">)</span>
     <span class="n">n_bad_bpms</span> <span class="o">=</span> <span class="n">n_total_bpms</span> <span class="o">-</span> <span class="n">n_good_bpms</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(Statistics for file reading) Total BPMs: </span><span class="si">{</span><span class="n">n_total_bpms</span><span class="si">}</span><span class="s2">, &quot;</span>
                  <span class="sa">f</span><span class="s2">&quot;Good BPMs: </span><span class="si">{</span><span class="n">n_good_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">n_good_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%), &quot;</span>
                  <span class="sa">f</span><span class="s2">&quot;Bad BPMs: </span><span class="si">{</span><span class="n">n_bad_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">n_bad_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_good_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than half of BPMs are bad. &quot;</span>
-                         <span class="s2">&quot;This could be cause a bunch not present in the machine has been &quot;</span>
-                         <span class="s2">&quot;selected or because a problem with the phasing of the BPMs.&quot;</span><span class="p">)</span>
+                         <span class="s2">&quot;This could be because a bunch not present in the machine has been &quot;</span>
+                         <span class="s2">&quot;selected or because of a problem with the phasing of the BPMs.&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_index_union</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">):</span>
@@ -339,7 +339,7 @@
 
 <div class="viewcode-block" id="svd_decomposition"><a class="viewcode-back" href="../../../harpy/index.html#omc3.harpy.clean.svd_decomposition">[docs]</a><span class="k">def</span> <span class="nf">svd_decomposition</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">num_singular_values</span><span class="p">,</span> <span class="n">dominance_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes reduced (K largest values) singular value docomposition of a matrix</span>
+<span class="sd">    Computes reduced (K largest values) singular value decomposition of a matrix</span>
 <span class="sd">    Requiring K singular values from MxN matrix results in matrices sized: ((M,K) x diag(K) x (K,N))</span>
 
 <span class="sd">    Args:</span>
