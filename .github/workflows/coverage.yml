@@ -53,16 +53,16 @@ jobs:
 
       - name: Set up env for CodeClimate (push)
         run: |
-          echo "::set-env name=GIT_BRANCH::$GITHUB_REF"
-          echo "::set-env name=GIT_COMMIT_SHA::$GITHUB_SHA"
+          echo "GIT_BRANCH=$GITHUB_REF" >> $GITHUB_ENV
+          echo "GIT_COMMIT_SHA=$GITHUB_SHA" >> $GITHUB_ENV
         if: github.event_name == 'push'
 
       - name: Set up env for CodeClimate (pull_request)
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          echo "::set-env name=GIT_BRANCH::$GITHUB_HEAD_REF"
-          echo "::set-env name=GIT_COMMIT_SHA::$PR_HEAD_SHA"
+          echo "GIT_BRANCH=$GITHUB_HEAD_REF" >> $GITHUB_ENV
+          echo "GIT_COMMIT_SHA=$PR_HEAD_SHA" >> $GITHUB_ENV
         if: github.event_name == 'pull_request'
 
       - name: Prepare CodeClimate binary
