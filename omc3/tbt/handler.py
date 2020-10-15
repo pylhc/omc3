@@ -6,7 +6,7 @@ import sdds
 
 from omc3.definitions.constants import PLANES
 from omc3.tbt import (reader_esrf, reader_iota, reader_lhc, reader_ptc,
-                      reader_trackone)
+                      reader_trackone, reader_sps)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
@@ -16,6 +16,7 @@ PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
 FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
 DATA_READERS = dict(lhc=reader_lhc,
+                    sps=reader_sps,
                     iota=reader_iota,
                     esrf=reader_esrf,
                     ptc=reader_ptc,

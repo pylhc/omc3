@@ -1,6 +1,7 @@
 import os
 import tempfile
 from datetime import datetime
+from dateutil import tz
 
 import h5py
 import numpy as np
@@ -65,7 +66,6 @@ def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):
 
 @pytest.mark.basic
 def test_tbt_read_hdf5(_hdf5_file):
-
     origin = handler.TbtData(
         matrices=[
                   {'X': pd.DataFrame(
@@ -85,7 +85,6 @@ def test_tbt_read_hdf5(_hdf5_file):
 
 @pytest.mark.basic
 def test_tbt_read_hdf5_v2(_hdf5_file_v2):
-
     origin = handler.TbtData(
         matrices=[
                   {'X': pd.DataFrame(
@@ -199,6 +198,24 @@ def test_tbt_write_read_ascii(_sdds_file, _test_file):
     _compare_tbt(origin, new, True)
 
 
+@pytest.mark.basic
+def test_read_sps(_sps_file):
+    sps_sdds = handler.read_tbt(_sps_file, datatype='sps')
+    assert sps_sdds.nbunches == 1
+    assert sps_sdds.bunch_ids == [0]
+    assert sps_sdds.date == datetime(2011, 5, 4, 16, 31, 0, tzinfo=tz.tzutc())
+
+    print(sps_sdds.matrices)
+    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10208.H/H', 0] == -1780.0
+    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10208.H/H'].iloc[-1] == -1860.0
+    
+    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10408.H/H', 0] == -3610.0
+    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10408.H/H'].iloc[-1] == -3290.0
+
+    assert sps_sdds.matrices[0]['Y'].loc['SPS.BPH.10408.H/H', 0] == 0
+    assert sps_sdds.matrices[0]['Y'].loc['SPS.BPH.10408.H/H'].iloc[-1] == 0
+
+
 def _compare_tbt(origin, new, no_binary, max_deviation=ASCII_PRECISION):
     assert new.nturns == origin.nturns
     assert new.nbunches == origin.nbunches
@@ -288,3 +305,8 @@ def _ptc_file_losses():
 @pytest.fixture()
 def _ptc_file_sci():
     return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_sci")
+
+
+@pytest.fixture()
+def _sps_file():
+    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file_sps.sdds")
