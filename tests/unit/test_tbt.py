@@ -206,14 +206,14 @@ def test_read_sps(_sps_file):
     assert sps_sdds.date == datetime(2011, 5, 4, 16, 31, 0, tzinfo=tz.tzutc())
 
     print(sps_sdds.matrices)
-    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10208.H/H', 0] == -1780.0
-    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10208.H/H'].iloc[-1] == -1860.0
+    assert sps_sdds.matrices[0]['X'].loc['BPH.10208', 0] == -1780.0
+    assert sps_sdds.matrices[0]['X'].loc['BPH.10208'].iloc[-1] == -1860.0
     
-    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10408.H/H', 0] == -3610.0
-    assert sps_sdds.matrices[0]['X'].loc['SPS.BPH.10408.H/H'].iloc[-1] == -3290.0
+    assert sps_sdds.matrices[0]['X'].loc['BPH.10408', 0] == -3610.0
+    assert sps_sdds.matrices[0]['X'].loc['BPH.10408'].iloc[-1] == -3290.0
 
-    assert sps_sdds.matrices[0]['Y'].loc['SPS.BPH.10408.H/H', 0] == 0
-    assert sps_sdds.matrices[0]['Y'].loc['SPS.BPH.10408.H/H'].iloc[-1] == 0
+    assert sps_sdds.matrices[0]['Y'].loc['BPH.10408', 0] == 0
+    assert sps_sdds.matrices[0]['Y'].loc['BPH.10408'].iloc[-1] == 0
 
 
 def _compare_tbt(origin, new, no_binary, max_deviation=ASCII_PRECISION):

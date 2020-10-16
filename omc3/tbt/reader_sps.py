@@ -54,15 +54,19 @@ def read_tbt(file_path):
     data = {'X': [], 'Y': []}
     inverted_plane = {'X': 'Y', 'Y': 'X'}
     for channel in channel_names:
-        plane = PLANE_CORRES[channel[-1]]
+        # The last letter of a channel gives the plane, e.g. SPS.BPH.10208.H/H
+        plane = PLANE_CORRES[channel[-1]]  
 
+        # Both planes are filled here to have the same matrices sizes
         data[plane].extend(sdds_file.values[channel])
         data[inverted_plane[plane]].extend([0] * len(sdds_file.values[channel]))
 
     for plane in data.keys():
         data[plane] = np.reshape(data[plane], (nchannels, nbunches, nturns))
 
-    matrices = [{k: pd.DataFrame(index=channel_names,
+    # Remove the SPS. and .H/H or .V/V ad the end of the channel names
+    stripped_names = ['.'.join(s.split('.')[1:-1]) for s in channel_names]
+    matrices = [{k: pd.DataFrame(index=stripped_names,
                                  data=data[k][:, idx, :],
                                  dtype=float) for k in data} for idx in range(nbunches)]
 
