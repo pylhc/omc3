@@ -7,25 +7,25 @@ from omc3.optics_measurements import crdt
 
 # accuracy limits of crdt to ptc, octupole is relaxed as single octupole with a nonideal WP gives weak CRDT
 ACCURACY_LIMIT = dict(
-    coupling=0.01,
-    sextupole=0.01,
-    skewsextupole=0.03,
-    octupole=0.23,
+    skew_quadrupole=0.01,
+    normal_sextupole=0.01,
+    skew_sextupole=0.03,
+    normal_octupole=0.23,
 )
 
 
 # Levels below which CRDT are not used for test comparison
 NOISELEVEL_AMP = dict(
-    coupling=1E-2,
-    sextupole=1E-2,
-    skewsextupole=1E-2,
-    octupole=0.5,
+    skew_quadrupole=1E-2,
+    normal_sextupole=1E-2,
+    skew_sextupole=1E-2,
+    normal_octupole=0.5,
 )
 NOISELEVEL_COMPLEX = dict(
-    coupling=1E-3,
-    sextupole=1E-3,
-    skewsextupole=1E-3,
-    octupole=1.5,
+    skew_quadrupole=1E-3,
+    normal_sextupole=1E-3,
+    skew_sextupole=1E-3,
+    normal_octupole=1.5,
 )
 
 
@@ -44,7 +44,7 @@ MEASURE_OPTICS_SETTINGS = dict(
 
 LIN_DIR = Path(__file__).parent.parent / "inputs" / "crdt"
 
-ORDERS = ['coupling', 'sextupole', 'skewsextupole', 'octupole']
+ORDERS = ['skew_quadrupole', 'normal_sextupole', 'skew_sextupole', 'normal_octupole']
 
 
 @pytest.fixture(scope='module')
