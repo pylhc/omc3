@@ -380,10 +380,11 @@
 <span class="sd">        Flags: **--coupling_method**</span>
 <span class="sd">        Choices: ``(0, 1, 2)``</span>
 <span class="sd">        Default: ``2``</span>
-<span class="sd">      - **nonlinear**: Calculate higher order RDTs</span>
+<span class="sd">      - **nonlinear**: Calculate higher order RDTs or CRDT</span>
 
 <span class="sd">        Flags: **--nonlinear**</span>
-<span class="sd">        Action: ``store_true``</span>
+<span class="sd">        Choices: ``(rdt, crdt)``</span>
+<span class="sd">        Default: ``None``</span>
 <span class="sd">      - **only_coupling**: Calculate only coupling.</span>
 
 <span class="sd">        Flags: **--only_coupling**</span>
@@ -651,7 +652,7 @@
                               <span class="s2">&quot;with at least 3 valid measurements, instead of intersection .&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nonlinear&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
                          <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rdt&#39;</span><span class="p">,</span> <span class="s1">&#39;crdt&#39;</span><span class="p">),</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose which analysis is conducted.&quot;</span><span class="p">)</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose which rdt analysis is conducted.&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;three_bpm_method&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use 3 BPM method in beta from phase&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;only_coupling&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate only coupling. &quot;</span><span class="p">)</span>

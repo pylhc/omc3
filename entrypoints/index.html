@@ -387,9 +387,10 @@ Action: <code class="docutils literal notranslate"><span class="pre">store_true<
 Choices: <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></code>
 Default: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
 </li>
-<li><p><strong>nonlinear</strong>: Calculate higher order RDTs</p>
+<li><p><strong>nonlinear</strong>: Calculate higher order RDTs or CRDT</p>
 <p>Flags: <strong>--nonlinear</strong>
-Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+Choices: <code class="docutils literal notranslate"><span class="pre">(rdt,</span> <span class="pre">crdt)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </li>
 <li><p><strong>only_coupling</strong>: Calculate only coupling.</p>
 <p>Flags: <strong>--only_coupling</strong>
