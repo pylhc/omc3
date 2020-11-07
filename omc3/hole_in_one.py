@@ -219,10 +219,11 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--coupling_method**
         Choices: ``(0, 1, 2)``
         Default: ``2``
-      - **nonlinear**: Calculate higher order RDTs
+      - **nonlinear**: Calculate higher order RDTs or CRDT
 
         Flags: **--nonlinear**
-        Action: ``store_true``
+        Choices: ``(rdt, crdt)``
+        Default: ``None``
       - **only_coupling**: Calculate only coupling.
 
         Flags: **--only_coupling**
@@ -490,7 +491,7 @@ def optics_params():
                               "with at least 3 valid measurements, instead of intersection .")
     params.add_parameter(name="nonlinear", nargs='*', default=[],
                          choices=('rdt', 'crdt'),
-                         help="Choose which analysis is conducted.")
+                         help="Choose which rdt analysis is conducted.")
     params.add_parameter(name="three_bpm_method", action="store_true",
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")

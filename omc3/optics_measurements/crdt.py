@@ -29,25 +29,25 @@ CRDT_COLUMNS = [AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}']
 
 
 CRDTS = [
-    {'order': "coupling", 'term': "F_XY", 'plane': 'X', 'line': [0, 1]},
-    {'order': "coupling", 'term': "F_YX", 'plane': 'Y', 'line': [1, 0]},
+    {'order': "skew_quadrupole", 'term': "F_XY", 'plane': 'X', 'line': [0, 1]},
+    {'order': "skew_quadrupole", 'term': "F_YX", 'plane': 'Y', 'line': [1, 0]},
 
-    {'order': "sextupole", 'term': "F_NS3", 'plane': 'X', 'line': [-2, 0]},
-    {'order': "sextupole", 'term': "F_NS2", 'plane': 'X', 'line': [0, -2]},
-    {'order': "sextupole", 'term': "F_NS1", 'plane': 'Y', 'line': [-1, -1]},
-    {'order': "sextupole", 'term': "F_NS0", 'plane': 'Y', 'line': [1, -1]},
+    {'order': "normal_sextupole", 'term': "F_NS3", 'plane': 'X', 'line': [-2, 0]},
+    {'order': "normal_sextupole", 'term': "F_NS2", 'plane': 'X', 'line': [0, -2]},
+    {'order': "normal_sextupole", 'term': "F_NS1", 'plane': 'Y', 'line': [-1, -1]},
+    {'order': "normal_sextupole", 'term': "F_NS0", 'plane': 'Y', 'line': [1, -1]},
 
-    {'order': "skewsextupole", 'term': "F_SS3", 'plane': 'Y', 'line': [0, -2]},
-    {'order': "skewsextupole", 'term': "F_SS2", 'plane': 'Y', 'line': [-2, 0]},
-    {'order': "skewsextupole", 'term': "F_SS1", 'plane': 'X', 'line': [-1, -1]},
-    {'order': "skewsextupole", 'term': "F_SS0", 'plane': 'X', 'line': [1, -1]},
+    {'order': "skew_sextupole", 'term': "F_SS3", 'plane': 'Y', 'line': [0, -2]},
+    {'order': "skew_sextupole", 'term': "F_SS2", 'plane': 'Y', 'line': [-2, 0]},
+    {'order': "skew_sextupole", 'term': "F_SS1", 'plane': 'X', 'line': [-1, -1]},
+    {'order': "skew_sextupole", 'term': "F_SS0", 'plane': 'X', 'line': [1, -1]},
 
-    {'order': "octupole", 'term': "F_NO5", 'plane': 'Y', 'line': [0, 3]},
-    {'order': "octupole", 'term': "F_NO4", 'plane': 'X', 'line': [1, 2]},
-    {'order': "octupole", 'term': "F_NO3", 'plane': 'X', 'line': [3, 0]},
-    {'order': "octupole", 'term': "F_NO2", 'plane': 'X', 'line': [-1, 2]},
-    {'order': "octupole", 'term': "F_NO1", 'plane': 'Y', 'line': [2, -1]},
-    {'order': "octupole", 'term': "F_NO0", 'plane': 'Y', 'line': [2, 1]},
+    {'order': "normal_octupole", 'term': "F_NO5", 'plane': 'Y', 'line': [0, 3]},
+    {'order': "normal_octupole", 'term': "F_NO4", 'plane': 'X', 'line': [1, 2]},
+    {'order': "normal_octupole", 'term': "F_NO3", 'plane': 'X', 'line': [3, 0]},
+    {'order': "normal_octupole", 'term': "F_NO2", 'plane': 'X', 'line': [-1, 2]},
+    {'order': "normal_octupole", 'term': "F_NO1", 'plane': 'Y', 'line': [2, -1]},
+    {'order': "normal_octupole", 'term': "F_NO0", 'plane': 'Y', 'line': [2, 1]},
 ]
 
 
