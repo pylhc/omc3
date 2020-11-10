@@ -6,7 +6,7 @@ Accelerator-Class for the LHC.
 
 
 Model Creation Keyword Args:
-   *--Required--*
+    *--Required--*
 
     - **beam** *(int)*:
 

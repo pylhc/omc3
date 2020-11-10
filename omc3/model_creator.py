@@ -68,7 +68,7 @@ def create_instance_and_model(opt, accel_opt):
 
 
     Creator Keyword Args:
-       *--Required--*
+        *--Required--*
 
         - **outputdir** *(str)*:
 
