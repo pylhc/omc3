@@ -568,6 +568,8 @@ def _set_axes_layout(ax, x_lim, y_lim, ylabel, xlabel):
 
 
 def _get_full_output_path(folder, filename):
+    if folder is None or filename is None:
+        return None
     return Path(folder) / f"{filename}.{matplotlib.rcParams['savefig.format']}"
 
 
