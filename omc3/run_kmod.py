@@ -103,7 +103,7 @@ def analyse_kmod(opt):
     """
     Run Kmod analysis
 
-    Keyword Args:
+    Kmod Keyword Arguments:
         *--Required--*
 
         - **beam** *(str)*:
