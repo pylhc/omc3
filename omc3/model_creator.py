@@ -1,3 +1,10 @@
+"""
+Model Creator
+-----------------
+
+Entrypoint to run the model creator for lhc, psbooster and ps models.
+
+"""
 import logging
 import sys
 
@@ -48,6 +55,64 @@ def _get_params():
 
 @entrypoint(_get_params())
 def create_instance_and_model(opt, accel_opt):
+    """
+
+    Manager Keyword Args:
+        *--Required--*
+
+        - **accel**:
+
+            Choose the accelerator to use.Can be the class already.
+
+            choices: ``['lhc', 'ps', 'esrf', 'psbooster', 'skekb', 'JPARC', 'petra', 'iota']``
+
+
+    Creator Keyword Args:
+       *--Required--*
+
+        - **outputdir** *(str)*:
+
+            Output path for model, twiss files will be writen here.
+
+
+        *--Optional--*
+
+        - **logfile** *(str)*:
+
+            Path to the file where to write the MAD-X script output.If not
+            provided it will be written to sys.stdout.
+
+
+        - **type**:
+
+            Type of model to create, either nominal or best_knowledge
+
+            choices: ``('nominal', 'best_knowledge', 'coupling_correction')``
+
+
+        - **writeto** *(str)*:
+
+            Path to the file where to write the resulting MAD-X script.
+
+
+    Accelerator Keyword Args:
+        lhc: :mod:`omc3.model.accelerators.lhc`
+
+        ps: :mod:`omc3.model.accelerators.ps`
+
+        esrf: :mod:`omc3.model.accelerators.esrf`
+
+        psbooster: :mod:`omc3.model.accelerators.psbooster`
+
+        skekb: :mod:`omc3.model.accelerators.skekb`
+
+        iota: :mod:`omc3.model.accelerators.iota`
+
+        petra: :mod:`omc3.model.accelerators.petra` (not implemented)
+
+        JPARC: Not implemented
+
+    """
     if sys.flags.debug:
         numeric_level = getattr(logging, "DEBUG", None)
         ch = logging.StreamHandler(sys.stdout)

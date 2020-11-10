@@ -1,5 +1,5 @@
 """
-Entrypoint Amplitude Detuning Analysis
+Amplitude Detuning Analysis
 ------------------------------------------------
 
 Entrypoint for amplitude detuning analysis.

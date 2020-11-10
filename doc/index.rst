@@ -8,10 +8,18 @@ In addition, it consists of several easy-to-use entrypoint scripts for data anal
 
 Package Reference
 =================
+
 .. toctree::
+   :caption: Main Entrypoints
    :maxdepth: 1
 
    entrypoints/index
+
+
+.. toctree::
+   :caption: Modules
+   :maxdepth: 1
+
    definitions/index
    harpy/index
    model/index

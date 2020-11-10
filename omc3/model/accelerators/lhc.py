@@ -1,6 +1,89 @@
 """
 LHC
 -------------------
+
+Accelerator-Class for the LHC.
+
+
+Model Creation Keyword Args:
+   *--Required--*
+
+    - **beam** *(int)*:
+
+        Beam to use.
+
+        choices: ``(1, 2)``
+
+
+    - **year** *(str)*:
+
+        Year of the optics (or hllhc1.3).
+
+        choices: ``('2012', '2015', '2016', '2017', '2018', 'hllhc1.3')``
+
+
+    *--Optional--*
+
+    - **ats**:
+
+        Marks ATS optics
+
+        action: ``store_true``
+
+
+    - **dpp** *(float)*:
+
+        Delta p/p to use.
+
+        default: ``0.0``
+
+
+    - **driven_excitation** *(str)*:
+
+        Denotes driven excitation by AC-dipole (acd) or by ADT (adt)
+
+        choices: ``('acd', 'adt')``
+
+
+    - **drv_tunes** *(float)*:
+
+        Driven tunes without integer part.
+
+
+    - **energy** *(float)*:
+
+        Energy in Tev.
+
+
+    - **fullresponse**:
+
+        If True, outputs also fullresponse madx file.
+
+        action: ``store_true``
+
+
+    - **model_dir** *(str)*:
+
+        Path to model directory; loads tunes and excitation from model!
+
+
+    - **modifiers** *(str)*:
+
+        Path to the optics file to use (modifiers file).
+
+
+    - **nat_tunes** *(float)*:
+
+        Natural tunes without integer part.
+
+
+    - **xing**:
+
+        If True, x-ing angles will be applied to model
+
+        action: ``store_true``
+
+
 """
 import json
 import os

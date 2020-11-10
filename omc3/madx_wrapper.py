@@ -1,5 +1,5 @@
 """
-Entrypoint madx_wrapper
+MAD-X wrapper
 --------------------------
 
 Runs MADX with a file or a string as an input.

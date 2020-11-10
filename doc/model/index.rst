@@ -29,3 +29,10 @@ Model
     :members:
 
 
+.. automodule:: omc3.model.accelerators.iota
+    :members:
+
+
+.. automodule:: omc3.model.accelerators.petra
+    :members:
+

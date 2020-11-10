@@ -1,5 +1,5 @@
 """
-Entrypoint hole_in_one
+Hole in One
 ------------------------
 
 Created on 27/01/19

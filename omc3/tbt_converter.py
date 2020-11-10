@@ -1,5 +1,5 @@
 """
-Entrypoint tbt_converter
+TbT Converter
 -------------------------
 
 Created on 29/08/19
