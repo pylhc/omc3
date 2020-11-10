@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from omc3.plotting.plot_tfs import plot
+import matplotlib
 
 INPUT = Path(__file__).parent.parent / "inputs" / "optics_measurement" / "example_output"
 DEBUG = False  # switch to local output instead of temp
@@ -74,6 +75,7 @@ def test_simple_plot_manual_planes_two_files(tmp_path):
 def test_simple_plot(tmp_path):
     figs = simple_plot_tfs(output=tmp_path)
     assert len(figs) == 2
+    assert n_plots_in(tmp_path) == 2
     for fig in figs.values():
         assert len(fig.axes) == 1
 
@@ -82,6 +84,7 @@ def test_simple_plot(tmp_path):
 def test_simple_plot_same_figure(tmp_path):
     figs = simple_plot_tfs(output=tmp_path, same_figure="planes")
     assert len(figs) == 1
+    assert n_plots_in(tmp_path) == 1
     for fig in figs.values():
         assert len(fig.axes) == 2
 
@@ -90,6 +93,16 @@ def test_simple_plot_same_figure(tmp_path):
 def test_simple_plot_same_axes(tmp_path):
     figs = simple_plot_tfs(output=tmp_path, same_axes=["planes"])
     assert len(figs) == 1
+    assert n_plots_in(tmp_path) == 1
+    for fig in figs.values():
+        assert len(fig.axes) == 1
+
+
+@pytest.mark.extended
+def test_simple_plot_no_output(tmp_path):
+    figs = simple_plot_tfs()
+    assert len(figs) == 2
+    assert n_plots_in(tmp_path) == 0
     for fig in figs.values():
         assert len(fig.axes) == 1
 
@@ -124,6 +137,12 @@ def test_errors_same_options_same(tmp_path):
     with pytest.raises(AttributeError):
         simple_plot_tfs(output=tmp_path, same_axes=["planes"], same_figure="planes")
 
+
+# Helper ---
+
+def n_plots_in(path):
+    ext = matplotlib.rcParams['savefig.format']
+    return len(list(path.glob(f"*.{ext}")))
 
 # Main plot (can be also used as example) ---
 
