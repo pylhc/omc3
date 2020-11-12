@@ -1,11 +1,8 @@
 """
 Plotting Utilities: Annotations
-----------------------------------------
+-------------------------------
 
 Helper functions to create annotations as well as style labels in plots.
-
-:module: omc3.plotting.utils.annotations
-
 """
 import re
 from distutils.version import LooseVersion
@@ -41,13 +38,14 @@ ylabels = {
 
 
 def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plot x and plot y
-    """ Set y-axis labels.
+    """
+    Set y-axis labels.
 
     Args:
-        param: One of the y_labels above
-        plane: Usually x or y, but can be any string actually to be placed into the label ({0})
-        ax: Axes to put the label on (default: gca())
-        delta: If True adds a Delta before the label (default: False)
+        param: One of the labels defined in ``ylabel``in this module.
+        plane: Usually x or y, but can be any string actually to be placed into the label ({0}).
+        ax: Axes to put the label on. Defaults to `` gca()``.
+        delta: If True adds a Delta before the label. Defaults to ``False``.
     """
     if not ax:
         ax = plt.gca()
@@ -69,10 +67,11 @@ def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plo
 
 
 def set_xaxis_label(ax=None):
-    """ Sets the standard x-axis label
+    """
+    Sets the standard x-axis label
 
     Args:
-        ax: Axes to put the label on (default: gca())
+        ax: Axes to put the label on. Defaults to ``gca()``.
     """
     if not ax:
         ax = plt.gca()
@@ -80,12 +79,13 @@ def set_xaxis_label(ax=None):
 
 
 def show_ir(ip_dict, ax=None, mode='inside'):
-    """ Plots the interaction regions into the background of the plot.
+    """
+    Plots the interaction regions into the background of the plot.
 
     Args:
-        ip_dict: dict, dataframe or series containing "IPLABEL" : IP_POSITION
-        ax:  Axes to put the irs on (default: gca())
-        mode: 'inside', 'outside' + 'nolines' or just 'lines'
+        ip_dict: `dict`, `dataframe` or `series` containing ``IPLABEL`` : ``IP_POSITION``.
+        ax:  Axes to put the irs on. Defaults to gca()``.
+        mode: ``inside``, ``outside`` + ``nolines`` or just ``lines``.
     """
     if ax is None:
         ax = plt.gca()
@@ -122,7 +122,7 @@ def show_ir(ip_dict, ax=None, mode='inside'):
 
 
 def move_ip_labels(value, ax=None):
-    """ Moves IP labels according to max y * value."""
+    """Moves IP labels according to max y * value."""
     if ax is None:
         ax = plt.gca()
 
@@ -134,10 +134,11 @@ def move_ip_labels(value, ax=None):
 
 
 def get_ip_positions(path):
-    """ Returns a dict of IP positions from tfs-file of path.
+    """
+    Returns a `dict` of IP positions from tfs-file of path.
 
     Args:
-        path (str): Path to the tfs-file containing IP-positions
+        path (str): `Path` to the tfs-file containing IP-positions.
     """
     df = tfs.read_tfs(path).set_index('NAME')
     ip_names = [f"IP{i:d}" for i in range(1, 9)]
@@ -146,12 +147,13 @@ def get_ip_positions(path):
 
 
 def set_name(name, fig_or_ax=None):
-    """ Sets the name of the figure or axes
+    """
+    Sets the name of the figure or axes.
 
     Args:
-        name (str): Sting to set as name.
-        fig_or_ax: Figure or Axes to to use.
-            If 'None' takes current figure. (Default: None)
+        name (str): string to set as name.
+        fig_or_ax: `Figure` or `Axes` to to use. If ``None`` is given, takes the current figure.
+            Defaults to ``None``.
     """
     if not fig_or_ax:
         fig_or_ax = plt.gcf()
@@ -162,11 +164,12 @@ def set_name(name, fig_or_ax=None):
 
 
 def get_name(fig_or_ax=None):
-    """ Returns the name of the figure or axes
+    """
+    Returns the name of the figure or axes.
 
     Args:
-        fig_or_ax: Figure or Axes to to use.
-            If 'None' takes current figure. (Default: None)
+        fig_or_ax: `Figure` or `Axes` to to use.If ``None`` is given, takes the current figure.
+            Defaults to ``None``.
     """
     if not fig_or_ax:
         fig_or_ax = plt.gcf()
@@ -177,13 +180,15 @@ def get_name(fig_or_ax=None):
 
 
 def set_annotation(text, ax=None, position='right', pad=0.02):
-    """ Writes an annotation on the top right of the axes
+    """
+    Writes an annotation on the top right of the axes.
 
     Args:
-        text: The annotation
-        ax: Axes to set annotation on. If 'None' takes current Axes. (Default: None)
-        position: 'left' or 'right'
-        pad: padding to the axes
+        text: The annotation.
+        ax: `Axes` to set annotation on. If ``None`` is given, takes the current figure. Defaults
+            to ``None``.
+        position: ``left`` or ``right``.
+        pad: padding to the axes.
     """
     if ax is None:
         ax = plt.gca()
@@ -204,12 +209,14 @@ def set_annotation(text, ax=None, position='right', pad=0.02):
 
 
 def get_annotation(ax=None, by_reference=True):
-    """ Returns the annotation set by set_annotation()
+    """
+    Returns the annotation set by ``set_annotation()``.
 
     Args:
-        ax: Axes to get annotation from. If 'None' takes current Axes. (Default: None)
-        by_reference (bool): If true returns the reference to the annotation,
-            otherwise the text as string. (Default: True)
+        ax: `Axes` to get annotation from. If ``None`` is given, takes the current figure.
+            Defaults to ``None``.
+        by_reference (bool): If ``True``, returns the reference to the annotation, otherwise the
+            text as string. Defaults to ``True``.
     """
     if not ax:
         ax = plt.gca()
@@ -224,10 +231,11 @@ def get_annotation(ax=None, by_reference=True):
 
 
 def small_title(ax=None):
-    """ Alternative to annotation, which lets you use the title-functions
+    """
+    Alternative to annotation, which lets you use the title-functions.
 
     Args:
-        ax: Axes to use. If 'None' takes current Axes. (Default: None)
+        ax: `Axes` to use. If ``None`` is given, takes the current axes. Defaults to ``None``.
     """
     if not ax:
         ax = plt.gca()
@@ -242,13 +250,14 @@ def small_title(ax=None):
 
 
 def figure_title(text, ax=None, pad=0, **kwargs):
-    """ Set the title all the way to the top.
+    """
+    Set the title all the way to the top.
 
     Args:
-        text: Text for the title
-        ax: Axes to use. If 'None' takes current Axes. (Default: None)
-        pad: Padding from border
-        kwargs: passed on to fontdict
+        text: Text for the title.
+        ax: `Axes` to use. If ``None`` is given, takes the current axes. Defaults to ``None``.
+        pad: Padding from border.
+        kwargs: passed on to fontdict.
     """
     if not ax:
         ax = plt.gca()
@@ -264,12 +273,12 @@ def figure_title(text, ax=None, pad=0, **kwargs):
 
 
 def get_legend_ncols(labels, max_length=78):
-    """ Calculate the number of columns in legend dynamically """
+    """Calculate the number of columns in legend dynamically."""
     return max([max_length/max([len(l) for l in labels]), 1])
 
 
 def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
-    """ Create a legend on top of the plot. """
+    """Create a legend on top of the plot."""
     if ncol < 1:
         return
 
@@ -296,13 +305,13 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
 
 
 class OOMFormatter(matplotlib.ticker.ScalarFormatter):
-    """ Order of Magnitude Formatter.
+    """
+    Order of Magnitude Formatter.
 
     To set a fixed order of magnitude and fixed significant numbers.
     As seen on: https://stackoverflow.com/a/42658124/5609590
 
     See: set_sci_magnitude
-
     """
     def __init__(self, order=0, fformat="%1.1f", offset=True, mathText=True):
         self.oom = order
@@ -319,15 +328,16 @@ class OOMFormatter(matplotlib.ticker.ScalarFormatter):
 
 
 def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, math_text=True):
-    """ Uses the OMMFormatter to set the scientific limits on axes.
+    """
+    Uses the OMMFormatter to set the scientific limits on axes.
 
     Args:
-        ax: Plotting axes
-        axis (str): "x", "y" or "both"
-        order (int): Magnitude Order
-        fformat (str): Format to use
-        offset (bool): Formatter offset
-        math_text (bool): Whether to use mathText
+        ax: Plotting axes.
+        axis (str): **x**, **y** or **both**.
+        order (int): Magnitude Order.
+        fformat (str): Format to use.
+        offset (bool): Formatter offset.
+        math_text (bool): Whether to use mathText.
     """
     oomf = OOMFormatter(order=order, fformat=fformat, offset=offset, mathText=math_text)
 
