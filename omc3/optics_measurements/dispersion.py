@@ -1,11 +1,9 @@
 """
 Dispersion
-----------------
+----------
 
-:module: optics_measurements.dispersion
-:author: Lukas Malina
-
-Computes orbit, dispersion and normalised dispersion.
+This module contains dispersion calculations related functionality of ``optics_measurements``.
+It provides functions to compute orbit, dispersion and normalised dispersion.
 """
 from os.path import join
 
@@ -23,14 +21,15 @@ from omc3.utils import stats
 def calculate_orbit(meas_input, input_files, header, plane):
     """
     Calculates orbit.
+
     Args:
-        meas_input: Optics_input object
-        input_files: Stores the input files tfs
-        header: OrderedDict containing information about the analysis
-        plane: "X" or "Y"
+        meas_input: `OpticsInput` object
+        input_files: Stores the input files tfs.
+        header: `OrderedDict` containing information about the analysis.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        TfsDataFrame corresponding to output file
+        `TfsDataFrame` corresponding to output file.
     """
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS'])
     df_orbit[plane] = stats.weighted_mean(input_files.get_data(df_orbit, 'CO'), axis=1)
@@ -44,14 +43,15 @@ def calculate_orbit(meas_input, input_files, header, plane):
 def calculate_dispersion(meas_input, input_files, header_dict, plane):
     """
     Calculates dispersion.
+
     Args:
-        meas_input: Optics_input object
-        input_files: Stores the input files tfs
-        header_dict: OrderedDict containing information about the analysis
-        plane: "X" or "Y"
+        meas_input: `OpticsInput` object.
+        input_files: Stores the input files tfs.
+        header_dict: `OrderedDict` containing information about the analysis.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        TfsDataFrame corresponding to output file
+        `TfsDataFrame` corresponding to output file.
     """
     if meas_input.three_d_excitation:
         return _calculate_dispersion_3d(meas_input, input_files, header_dict, plane)
@@ -61,14 +61,15 @@ def calculate_dispersion(meas_input, input_files, header_dict, plane):
 def calculate_normalised_dispersion(meas_input, input_files, beta, header_dict):
     """
     Calculates normalised dispersion.
+
     Args:
-        meas_input: Optics_input object
-        input_files: Stores the input files tfs
-        beta: measured betas to get dispersion from normalised dispersion
-        header_dict: OrderedDict containing information about the analysis
+        meas_input: `OpticsInput` object.
+        input_files: Stores the input files tfs.
+        beta: measured betas to get dispersion from normalised dispersion.
+        header_dict: `OrderedDict` containing information about the analysis.
 
     Returns:
-        TfsDataFrame corresponding to output file
+        `TfsDataFrame` corresponding to output file.
     """
     if meas_input.three_d_excitation:
         return _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header_dict)
@@ -101,7 +102,7 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
 
 
 def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
-    """It computes  dispersion from 3 D kicks"""
+    """Computes dispersion from 3D kicks."""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['AMPZ', 'MUZ', f"AMP{plane}"])
@@ -157,8 +158,10 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
 
 
 def _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header):
-    """It computes horizontal normalised dispersion from 3 D kicks,
-    it performs model based compensation, i.e. as in _free2 files"""
+    """
+    Computes horizontal normalised dispersion from 3D kicks, and performs model-based
+    compensation, i.e. as in _free2 files.
+    """
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.model
     driven_model = accelerator.model_driven if accelerator.excitation else model

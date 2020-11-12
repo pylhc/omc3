@@ -1,11 +1,9 @@
 """
 Kick
-----------------
+----
 
-:module: optics_measurements.kick
-:author: Lukas Malina
-
-Computes kick actions.
+This module contains kick functionality of ``optics_measurements``.
+It provides functions to compute kick actions.
 """
 from collections import OrderedDict
 from contextlib import suppress
@@ -29,14 +27,14 @@ def calculate(measure_input, input_files, scale, header_dict, plane):
     """
 
     Args:
-        measure_input: Optics_input object
-        input_files: Stores the input files tfs
-        scale: measured beta functions
-        header_dict: OrderedDict containing information about the analysis
-        plane: "X" or "Y"
+        measure_input: `OpticsInput` object.
+        input_files: Stores the input files tfs.
+        scale: measured beta functions.
+        header_dict: `OrderedDict` containing information about the analysis.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        DataFrame containing actions and their errors
+        `TfsDataFrame` containing actions and their errors.
     """
     try:
         kick_frame = _getkick(measure_input, input_files, plane)

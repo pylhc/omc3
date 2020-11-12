@@ -35,7 +35,7 @@ Script to update the natural tune in lin files, based on the spectrum data
   If empty, the original file is overwritten - unless they are old files,
   then the omc3 filename convention will be used.
 
-  Default: ````
+  Default: ``None``
 
 """
 

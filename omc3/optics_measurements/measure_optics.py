@@ -1,13 +1,10 @@
 """
-Measure optics
-----------------
+Measure Optics
+--------------
 
-:module: optics_measurements.measure_optics
-:author: Lukas Malina
-
-Computes various lattice optics parameters from frequency spectra
+This module contains high-level functions to manage most functionality of ``optics_measurements``.
+It provides functions to compute various lattice optics parameters from frequency spectra.
 """
-
 import datetime
 import os
 import sys
@@ -33,10 +30,11 @@ LOG_FILE = "measure_optics.log"
 
 def measure_optics(input_files, measure_input):
     """
-    Main function to compute various lattice optics parameters from frequency spectra
+    Main function to compute various lattice optics parameters from frequency spectra.
+
     Args:
-        input_files: InputFiles object containing frequency spectra files (linx/y)
-        measure_input: OpticsInput object containing analysis settings
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
+        measure_input: `OpticsInput` object containing analysis settings.
 
     Returns:
     """
@@ -77,11 +75,12 @@ def measure_optics(input_files, measure_input):
 
 def chromatic_beating(input_files, measure_input, tune_dict):
     """
-    Main function to compute chromatic optics beating
+    Main function to compute chromatic optics beating.
+
     Args:
         tune_dict:
-        input_files: InputFiles object containing frequency spectra files (linx/y)
-        measure_input: OpticsInput object containing analysis settings
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
+        measure_input:` OpticsInput` object containing analysis settings.
 
     Returns:
     """
@@ -117,10 +116,10 @@ class InputFiles(dict):
     Stores the input files, provides methods to gather quantity specific data
 
     Public methods:
-        get_dpps(plane)
-        get_joined_frame(plane, columns, zero_dpp=False, how='inner')
-        get_columns(frame, column)
-        get_data(frame, column)
+        - ``get_dpps`` (plane)
+        - ``get_joined_frame`` (plane, columns, zero_dpp=False, how='inner')
+        - ``get_columns`` (frame, column)
+        - ``get_data`` (frame, column)
     """
     def __init__(self, files_to_analyse, optics_opt):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
@@ -147,22 +146,23 @@ class InputFiles(dict):
     @staticmethod  # TODO later remove
     def _repair_backwards_compatible_frame(df, plane):
         """
-        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones
-        This is for backwards compatibility with Drive
+        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones.
+        This is for backwards compatibility with Drive.
         """
         df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].to_numpy() * 2
         if f"NATAMP{plane}" in df.columns:
             df[f"NATAMP{plane}"] = df.loc[:, f"NATAMP{plane}"].to_numpy() * 2
         return df
 
-    def dpps(self, plane):
+    def dpps(self, plane: str) -> np.ndarray:
         """
         Gathers measured DPPs from input files corresponding to given plane
-        Parameters:
-            plane: "X" or "Y"
+
+        Args:
+            plane: marking the horizontal or vertical plane, **X** or **Y**.
 
         Returns:
-            numpy array of DPPs
+            A `np.ndarray` of DPPs.
         """
         return np.array([df.DPP for df in self[plane]])
 
@@ -179,15 +179,18 @@ class InputFiles(dict):
 
     def joined_frame(self, plane, columns, dpp_value=None, dpp_amp=False, how='inner'):
         """
-        Constructs merged DataFrame from InputFiles
-        Parameters:
-            plane:  "X" or "Y"
-            columns: list of columns from input files
-            dpp_value: merges only files with given dpp_value
-            dpp_amp: merges only files with non-zero dpp amplitude (i.e. 3Dkicks)
-            how: way of merging:  'inner' (intersection) or 'outer' (union), default is 'inner'
+        Constructs merged DataFrame from InputFiles.
+
+        Args:
+            plane: marking the horizontal or vertical plane, **X** or **Y**.
+            columns: list of columns from input files.
+            dpp_value: merges only files with given ``dpp_value``.
+            dpp_amp: merges only files with non-zero dpp amplitude (i.e. 3Dkicks).
+            how: whi way to use for merging: ``inner`` (intersection) or ``outer`` (union),
+                default is ``inner``.
+
         Returns:
-            merged DataFrame from InputFiles
+            A merged `DataFrame` from `InputFiles`.
         """
         if how not in ['inner', 'outer']:
             raise RuntimeWarning("'how' should be either 'inner' or 'outer', 'inner' will be used.")
@@ -228,26 +231,30 @@ class InputFiles(dict):
     @ staticmethod
     def get_columns(frame, column):
         """
-        Returns list of columns of frame corresponding to column in original files
-        Parameters:
-            frame:  joined frame
-            column: name of column in original files
+        Returns list of columns of frame corresponding to column in original files.
+
+        Args:
+            frame:  joined frame.
+            column: name of column in original files.
+
         Returns:
-            list of columns
+            list of columns.
         """
         str_list = list(frame.columns[frame.columns.str.startswith(column + '__')].to_numpy())
         new_list = list(map(lambda s: s[len(f"{column}__"):], str_list))
         new_list.sort(key=int)
         return [f"{column}__{x}" for x in new_list]
 
-    def get_data(self, frame, column):
+    def get_data(self, frame, column) -> np.ndarray:
         """
-        Returns data in columns of frame corresponding to column in original files
-        Parameters:
-            frame:  joined frame
-            column: name of column in original files
+        Returns data in columns of frame corresponding to column in original files.
+
+        Args:
+            frame:  joined frame.
+            column: name of column in original files.
+
         Returns:
-            data in numpy array corresponding to column in original files
+            A `np.narray` corresponding to column in original files.
         """
         columns = self.get_columns(frame, column)
         return frame.loc[:, columns].to_numpy()

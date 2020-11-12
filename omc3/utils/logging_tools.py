@@ -232,7 +232,7 @@ def odr_pprint(printer, odr_out):
 
 
 def list2str(list_: list) -> str:
-    """ Returns string representation of list_, but without brackets."""
+    """ Returns string representation of ``list_``, but without brackets."""
     return str(list_).lstrip("[").rstrip("]")
 
 # Public Methods ###############################################################
