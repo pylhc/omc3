@@ -17,6 +17,14 @@ Optics Measurements
     :members:
 
 
+.. automodule:: omc3.optics_measurements.constants
+    :members:
+
+
+.. automodule:: omc3.optics_measurements.crdt
+    :members:
+
+
 .. automodule:: omc3.optics_measurements.dispersion
     :members:
 
@@ -42,6 +50,10 @@ Optics Measurements
 
 
 .. automodule:: omc3.optics_measurements.rdt
+    :members:
+
+
+.. automodule:: omc3.optics_measurements.toolbox
     :members:
 
 
