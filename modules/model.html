@@ -1,0 +1,1050 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Model &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Optics Measurements" href="optics_measurements.html" />
+    <link rel="prev" title="Kmod" href="kmod.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/modules/model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-omc3.model.manager">
+<span id="model"></span><h1>Model<a class="headerlink" href="#module-omc3.model.manager" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="manager">
+<h2>Manager<a class="headerlink" href="#manager" title="Permalink to this headline">¶</a></h2>
+<p>This module provides high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">model</span></code>.
+It contains entrypoint wrappers to get accelerator classes or their instances.</p>
+<dl class="py function">
+<dt id="omc3.model.manager.get_accelerator">
+<code class="sig-prename descclassname">omc3.model.manager.</code><code class="sig-name descname">get_accelerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em>, <em class="sig-param"><span class="n">other_opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_accelerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.manager.get_accelerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <cite>Accelerator</cite> instance of the desired accelerator, as given at the commandline.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.model.manager.get_parsed_opt">
+<code class="sig-prename descclassname">omc3.model.manager.</code><code class="sig-name descname">get_parsed_opt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em>, <em class="sig-param"><span class="n">other_opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_parsed_opt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.manager.get_parsed_opt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all accelerator related options as a <cite>dict</cite>.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.constants"></span><div class="section" id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+<p>This module provides high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">model</span></code>.
+Specific constants to be used in <code class="docutils literal notranslate"><span class="pre">model</span></code>, to help with consistency.</p>
+</div>
+<span class="target" id="module-omc3.model.accelerators.accelerator"></span><div class="section" id="accelerator">
+<h2>Accelerator<a class="headerlink" href="#accelerator" title="Permalink to this headline">¶</a></h2>
+<p>This module provides high-level classes to define most functionality of <code class="docutils literal notranslate"><span class="pre">model.accelerators</span></code>.
+It contains entrypoint the parent <cite>Accelerator</cite> class as well as other support classes.</p>
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.AccElementTypes">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">AccElementTypes</code><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AccElementTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the strings for the element types <code class="docutils literal notranslate"><span class="pre">BPMS</span></code>, <code class="docutils literal notranslate"><span class="pre">MAGNETS</span></code> and <code class="docutils literal notranslate"><span class="pre">ARC_BPMS</span></code>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.Accelerator">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">Accelerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class to serve as an interface to implement the rest of the accelerators.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script">
+<code class="sig-name descname">get_base_madx_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_directory</span></em>, <em class="sig-param"><span class="n">best_knowledge</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_base_madx_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create the basic accelerator sequence.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables">
+<em class="property">classmethod </em><code class="sig-name descname">get_correctors_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">classes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_correctors_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the set of corrector variables between <code class="docutils literal notranslate"><span class="pre">frm</span></code> and <code class="docutils literal notranslate"><span class="pre">to</span></code>, with classes in
+classes. <code class="docutils literal notranslate"><span class="pre">None</span></code> means select all.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask">
+<em class="property">classmethod </em><code class="sig-name descname">get_element_types_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_of_elements</span></em>, <em class="sig-param"><span class="n">types</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_element_types_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean mask for elements in <code class="docutils literal notranslate"><span class="pre">list_of_elements</span></code> that belong to any of the
+specified types.
+Needs to handle: <cite>bpm</cite>, <cite>magnet</cite>, <cite>arc_bpm</cite> (see <a class="reference internal" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="omc3.model.accelerators.accelerator.AccElementTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccElementTypes</span></code></a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_of_elements</strong> -- list of elements.</p></li>
+<li><p><strong>types</strong> -- the kinds of elements to look for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A boolean array of elements of specified kinds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">distance</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_update_correction_script">
+<code class="sig-name descname">get_update_correction_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tiwss_out_path</span></em>, <em class="sig-param"><span class="n">corrections_file_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_update_correction_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_update_correction_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create an updated model from changeparameters input (used in
+iterative correction).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.get_variables">
+<em class="property">classmethod </em><code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">classes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the variables with elements in the given range and the given classes. <code class="docutils literal notranslate"><span class="pre">None</span></code> means
+everything.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.accelerator.Accelerator.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an <cite>Accelerator</cite> is properly instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="omc3.model.accelerators.accelerator.AcceleratorDefinitionError">
+<em class="property">exception </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">AcceleratorDefinitionError</code><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AcceleratorDefinitionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AcceleratorDefinitionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an <cite>Accelerator</cite> instance is wrongly used, for example by calling a method that
+should have been overwritten.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.Element">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">Element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic corrector element class that holds <cite>name</cite> and <cite>position (s)</cite> of the corrector. This
+element should represent a physical element of the accelerator.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="omc3.model.accelerators.accelerator.Variable">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.accelerator.</code><code class="sig-name descname">Variable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">elements</span></em>, <em class="sig-param"><span class="n">classes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic corrector variable class that holds <cite>name</cite>, <cite>position (s)</cite> and physical elements it
+affects. These variables should be logical variables that have and effect in the model if
+modified.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.esrf"></span><div class="section" id="esrf">
+<h2>ESRF<a class="headerlink" href="#esrf" title="Permalink to this headline">¶</a></h2>
+<p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">ESRF</span></code> machine.</p>
+<dl>
+<dt>Model Creation Keyword Args:</dt><dd><p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>dpp</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Deltap/p to use.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>driven_excitation</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Denotes driven excitation by <cite>AC-dipole</cite> (acd) or by <cite>ADT</cite> (adt)</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('acd',</span> <span class="pre">'adt')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>drv_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Driven tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>energy</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Energy in <strong>Tev</strong>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>fullresponse</strong>:</p>
+<blockquote>
+<div><p>If True, outputs also fullresponse madx file.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to model directory; loads tunes and excitation from model!</p>
+</div></blockquote>
+</li>
+<li><p><strong>modifiers</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to the optics file to use (modifiers file).</p>
+</div></blockquote>
+</li>
+<li><p><strong>nat_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Natural tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>xing</strong>:</p>
+<blockquote>
+<div><p>If True, x-ing angles will be applied to model</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="omc3.model.accelerators.esrf.Esrf">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.esrf.</code><code class="sig-name descname">Esrf</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/esrf.html#Esrf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.esrf.Esrf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.lhc"></span><div class="section" id="lhc">
+<h2>LHC<a class="headerlink" href="#lhc" title="Permalink to this headline">¶</a></h2>
+<p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> collider.</p>
+<dl>
+<dt>Model Creation Keyword Args:</dt><dd><p><em>--Required--</em></p>
+<ul>
+<li><p><strong>beam</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Beam to use.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2)</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>year</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Year of the optics (or hllhc1.3).</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('2012',</span> <span class="pre">'2015',</span> <span class="pre">'2016',</span> <span class="pre">'2017',</span> <span class="pre">'2018',</span> <span class="pre">'hllhc1.3')</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>ats</strong>:</p>
+<blockquote>
+<div><p>Marks ATS optics</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>dpp</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Delta p/p to use.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>driven_excitation</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Denotes driven excitation by AC-dipole (acd) or by ADT (adt)</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('acd',</span> <span class="pre">'adt')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>drv_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Driven tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>energy</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Energy in Tev.</p>
+</div></blockquote>
+</li>
+<li><p><strong>fullresponse</strong>:</p>
+<blockquote>
+<div><p>If True, outputs also fullresponse madx file.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to model directory; loads tunes and excitation from model!</p>
+</div></blockquote>
+</li>
+<li><p><strong>modifiers</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to the optics file to use (modifiers file).</p>
+</div></blockquote>
+</li>
+<li><p><strong>nat_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Natural tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>xing</strong>:</p>
+<blockquote>
+<div><p>If True, x-ing angles will be applied to model</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="omc3.model.accelerators.lhc.Lhc">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.lhc.</code><code class="sig-name descname">Lhc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent Class for LHC-types.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_base_madx_script">
+<code class="sig-name descname">get_base_madx_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outdir</span></em>, <em class="sig-param"><span class="n">best_knowledge</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create the basic accelerator sequence.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">commonbpms</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_ips">
+<code class="sig-name descname">get_ips</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_ips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_ips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterable with this accelerator’s IPs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(<code class="docutils literal notranslate"><span class="pre">ip</span> <span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span> <span class="pre">BPM</span> <span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span> <span class="pre">BPM</span> <span class="pre">name</span></code>)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>An iterator returning <cite>tuples</cite> with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_update_correction_script">
+<code class="sig-name descname">get_update_correction_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outpath</span></em>, <em class="sig-param"><span class="n">corr_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_update_correction_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_update_correction_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create an updated model from changeparameters input (used in
+iterative correction).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">classes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the variables with elements in the given range and the given classes. <code class="docutils literal notranslate"><span class="pre">None</span></code> means
+everything.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.lhc.Lhc.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies if everything is defined which should be defined.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.ps"></span><div class="section" id="ps">
+<h2>PS<a class="headerlink" href="#ps" title="Permalink to this headline">¶</a></h2>
+<p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PS</span></code> machine.</p>
+<dl>
+<dt>Model Creation Keyword Args:</dt><dd><p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>dpp</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Deltap/p to use.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>driven_excitation</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Denotes driven excitation by <cite>AC-dipole</cite> (acd) or by <cite>ADT</cite> (adt)</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('acd',</span> <span class="pre">'adt')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>drv_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Driven tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>energy</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Energy in <strong>Tev</strong>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>fullresponse</strong>:</p>
+<blockquote>
+<div><p>If True, outputs also fullresponse madx file.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to model directory; loads tunes and excitation from model!</p>
+</div></blockquote>
+</li>
+<li><p><strong>modifiers</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to the optics file to use (modifiers file).</p>
+</div></blockquote>
+</li>
+<li><p><strong>nat_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Natural tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>xing</strong>:</p>
+<blockquote>
+<div><p>If True, x-ing angles will be applied to model</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="omc3.model.accelerators.ps.Ps">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.ps.</code><code class="sig-name descname">Ps</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent Class for PS-types.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.ps.Ps.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">bpms</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.ps.Ps.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an <cite>Accelerator</cite> is properly instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.psbooster"></span><div class="section" id="ps-booster">
+<h2>PS Booster<a class="headerlink" href="#ps-booster" title="Permalink to this headline">¶</a></h2>
+<p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PSB</span></code> machine.</p>
+<dl>
+<dt>Model Creation Keyword Args:</dt><dd><p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>dpp</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Deltap/p to use.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>driven_excitation</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Denotes driven excitation by <cite>AC-dipole</cite> (acd) or by <cite>ADT</cite> (adt)</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('acd',</span> <span class="pre">'adt')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>drv_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Driven tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>energy</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Energy in <strong>Tev</strong>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>fullresponse</strong>:</p>
+<blockquote>
+<div><p>If True, outputs also fullresponse madx file.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to model directory; loads tunes and excitation from model!</p>
+</div></blockquote>
+</li>
+<li><p><strong>modifiers</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to the optics file to use (modifiers file).</p>
+</div></blockquote>
+</li>
+<li><p><strong>nat_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Natural tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ring</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Ring to use.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4)</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>xing</strong>:</p>
+<blockquote>
+<div><p>If True, x-ing angles will be applied to model</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="omc3.model.accelerators.psbooster.Psbooster">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.psbooster.</code><code class="sig-name descname">Psbooster</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parent Class for Psbooster-types.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.psbooster.Psbooster.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">bpms</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.psbooster.Psbooster.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an <cite>Accelerator</cite> is properly instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.skekb"></span><div class="section" id="superkekb">
+<h2>SuperKEKB<a class="headerlink" href="#superkekb" title="Permalink to this headline">¶</a></h2>
+<p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">SuperKEKB</span></code> machine.</p>
+<dl>
+<dt>Model Creation Keyword Args:</dt><dd><p><em>--Required--</em></p>
+<ul>
+<li><p><strong>ring</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>HER or LER ring.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('ler',</span> <span class="pre">'her')</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>dpp</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Deltap/p to use.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>driven_excitation</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Denotes driven excitation by <cite>AC-dipole</cite> (acd) or by <cite>ADT</cite> (adt)</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('acd',</span> <span class="pre">'adt')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>drv_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Driven tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>energy</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Energy in <strong>Tev</strong>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>fullresponse</strong>:</p>
+<blockquote>
+<div><p>If True, outputs also fullresponse madx file.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to model directory; loads tunes and excitation from model!</p>
+</div></blockquote>
+</li>
+<li><p><strong>modifiers</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to the optics file to use (modifiers file).</p>
+</div></blockquote>
+</li>
+<li><p><strong>nat_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Natural tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>xing</strong>:</p>
+<blockquote>
+<div><p>If True, x-ing angles will be applied to model</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="omc3.model.accelerators.skekb.SKekB">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.skekb.</code><code class="sig-name descname">SKekB</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB" title="Permalink to this definition">¶</a></dt>
+<dd><p>KEK’s SuperKEKB accelerator.</p>
+<dl class="py method">
+<dt id="omc3.model.accelerators.skekb.SKekB.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an <cite>Accelerator</cite> is properly instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.iota"></span><div class="section" id="iota">
+<h2>Iota<a class="headerlink" href="#iota" title="Permalink to this headline">¶</a></h2>
+<p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">Iota</span></code> machine.</p>
+<dl>
+<dt>Model Creation Keyword Args:</dt><dd><p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>dpp</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Deltap/p to use.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>driven_excitation</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Denotes driven excitation by <cite>AC-dipole</cite> (acd) or by <cite>ADT</cite> (adt)</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('acd',</span> <span class="pre">'adt')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>drv_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Driven tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>energy</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Energy in <strong>Tev</strong>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>fullresponse</strong>:</p>
+<blockquote>
+<div><p>If True, outputs also fullresponse madx file.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to model directory; loads tunes and excitation from model!</p>
+</div></blockquote>
+</li>
+<li><p><strong>modifiers</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Path to the optics file to use (modifiers file).</p>
+</div></blockquote>
+</li>
+<li><p><strong>nat_tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Natural tunes without integer part.</p>
+</div></blockquote>
+</li>
+<li><p><strong>particle</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Particle type.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('p',</span> <span class="pre">'e')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>xing</strong>:</p>
+<blockquote>
+<div><p>If True, x-ing angles will be applied to model</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="omc3.model.accelerators.iota.Iota">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.iota.</code><code class="sig-name descname">Iota</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/iota.html#Iota"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.iota.Iota" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="omc3.model.accelerators.iota.Iota.verify_object">
+<em class="property">classmethod </em><code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/iota.html#Iota.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.iota.Iota.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an <cite>Accelerator</cite> is properly instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.accelerators.petra"></span><div class="section" id="petra">
+<h2>PETRA<a class="headerlink" href="#petra" title="Permalink to this headline">¶</a></h2>
+<p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PETRA</span></code> machine.
+Model creation not implemented yet.</p>
+<dl class="py class">
+<dt id="omc3.model.accelerators.petra.Petra">
+<em class="property">class </em><code class="sig-prename descclassname">omc3.model.accelerators.petra.</code><code class="sig-name descname">Petra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="omc3.model.accelerators.petra.Petra.get_exciter_bpm">
+<code class="sig-name descname">get_exciter_bpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">commonbpms</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra.get_exciter_bpm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the BPM next to the exciter.
+The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="omc3.model.accelerators.petra.Petra.verify_object">
+<code class="sig-name descname">verify_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra.verify_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra.verify_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that this instance of an <cite>Accelerator</cite> is properly instantiated.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.model.model_creators.lhc_model_creator"></span><div class="section" id="lhc-model-creator">
+<h2>LHC Model Creator<a class="headerlink" href="#lhc-model-creator" title="Permalink to this headline">¶</a></h2>
+<p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">LHC</span></code>.</p>
+</div>
+<span class="target" id="module-omc3.model.model_creators.ps_model_creator"></span><div class="section" id="ps-model-creator">
+<h2>PS Model Creator<a class="headerlink" href="#ps-model-creator" title="Permalink to this headline">¶</a></h2>
+<p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PS</span></code>.</p>
+</div>
+<span class="target" id="module-omc3.model.model_creators.psbooster_model_creator"></span><div class="section" id="ps-booster-model-creator">
+<h2>PS Booster Model Creator<a class="headerlink" href="#ps-booster-model-creator" title="Permalink to this headline">¶</a></h2>
+<p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PSB</span></code>.</p>
+</div>
+<span class="target" id="module-omc3.model.model_creators.segment_creator"></span><div class="section" id="segment-creator">
+<h2>Segment Creator<a class="headerlink" href="#segment-creator" title="Permalink to this headline">¶</a></h2>
+<p>This module provides convenience functions for model creation of a <code class="docutils literal notranslate"><span class="pre">segment</span></code>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="optics_measurements.html" class="btn btn-neutral float-right" title="Optics Measurements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="kmod.html" class="btn btn-neutral float-left" title="Kmod" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

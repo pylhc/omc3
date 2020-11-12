@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>omc3.optics_measurements.toolbox &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.optics_measurements.toolbox</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.optics_measurements.toolbox</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Toolbox</span>
+<span class="sd">-------</span>
+
+<span class="sd">This module contains helper functionality for ``optics_measurements``.</span>
+<span class="sd">It provides functions to perform regularly used simple calculations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="df_diff"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_diff">[docs]</a><span class="k">def</span> <span class="nf">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the difference between a_col and b_col &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="df_sum"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum">[docs]</a><span class="k">def</span> <span class="nf">df_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the sum of a_col and b_col &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="df_ratio"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio">[docs]</a><span class="k">def</span> <span class="nf">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the ratio between a_col and b_col &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="df_prod"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_prod">[docs]</a><span class="k">def</span> <span class="nf">df_prod</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the product of a_col and b_col &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="df_rel_diff"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff">[docs]</a><span class="k">def</span> <span class="nf">df_rel_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the difference between a_col and b_col relative to b_col &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span></div>
+
+
+<span class="c1"># with Errors ---</span>
+
+
+<div class="viewcode-block" id="df_err_sum"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_err_sum">[docs]</a><span class="k">def</span> <span class="nf">df_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the root of the sum-of-squares of a_err_col and b_err_col &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_err_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_err_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="df_rel_err_sum"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_err_sum">[docs]</a><span class="k">def</span> <span class="nf">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the root of the relative sum-of-square of a_col/a_err_col and b_col/b_err_col &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">a_col</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="df_sum_with_err"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum_with_err">[docs]</a><span class="k">def</span> <span class="nf">df_sum_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns two columns containing the sum and the total errors of the given columns.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">df_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">),</span> <span class="n">df_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="df_diff_with_err"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_diff_with_err">[docs]</a><span class="k">def</span> <span class="nf">df_diff_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns two columns containing the difference and the total errors of the given columns.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">),</span> <span class="n">df_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="df_rel_diff_with_err"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff_with_err">[docs]</a><span class="k">def</span> <span class="nf">df_rel_diff_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns two columns containing the relative difference and the total errors of the given columns.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">df_rel_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">))</span> <span class="o">*</span> <span class="n">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="df_ratio_with_err"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio_with_err">[docs]</a><span class="k">def</span> <span class="nf">df_ratio_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns two columns containing the ratio and the total errors of the given columns.&quot;&quot;&quot;</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span> <span class="o">*</span> <span class="n">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="df_prod_with_err"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_prod_with_err">[docs]</a><span class="k">def</span> <span class="nf">df_prod_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns two columns containing the product and the total errors of the given columns.&quot;&quot;&quot;</span>
+    <span class="n">prod</span> <span class="o">=</span> <span class="n">df_prod</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prod</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">prod</span><span class="p">)</span> <span class="o">*</span> <span class="n">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
+
+
+<span class="c1"># Angular Calculations ---</span>
+
+
+<div class="viewcode-block" id="df_ang_diff"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ang_diff">[docs]</a><span class="k">def</span> <span class="nf">df_ang_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the angular difference between angles a and b in [-0.5 , 0.5] &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_ang_diff</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_ang_diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_interval_check</span><span class="p">(</span><span class="n">_interval_check</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="n">_interval_check</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="ang_sum"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.ang_sum">[docs]</a><span class="k">def</span> <span class="nf">ang_sum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a column containing the angular sum between angles a and b in [-0.5 , 0.5] &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_interval_check</span><span class="p">(</span><span class="n">_interval_check</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">_interval_check</span><span class="p">(</span><span class="n">b</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_interval_check</span><span class="p">(</span><span class="n">ang</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ang</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">ang</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">ang</span><span class="p">),</span> <span class="n">ang</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

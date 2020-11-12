@@ -1,0 +1,795 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Analysis &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Other" href="other.html" />
+    <link rel="prev" title="Welcome to omc3’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Main Entrypoints</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/entrypoints/analysis.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-omc3.hole_in_one">
+<span id="analysis"></span><h1>Analysis<a class="headerlink" href="#module-omc3.hole_in_one" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="hole-in-one">
+<h2>Hole in One<a class="headerlink" href="#hole-in-one" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">hole_in_one</span></code> is the top-level script of analysis functionality offered in <code class="docutils literal notranslate"><span class="pre">omc3</span></code>. In most of
+your use cases, this is the file you will want to call. It handles:
+- frequency spectra of Turn-by-Turn BPM data,
+- various lattice optics parameters from frequency spectra,
+- various lattice optics parameters from Turn-by-Turn BPM data,</p>
+<p>A general analysis workflow, from straight out turn-by-turn measurement or simulations files to
+results, goes as follows:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 9%" />
+<col style="width: 23%" />
+<col style="width: 6%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" colspan="5"><p>Analysis Workflow</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Turn-by-Turn BPM data</p></td>
+<td><p>---&gt;</p></td>
+<td><p>frequency spectra</p></td>
+<td><p>---&gt;</p></td>
+<td><p>various lattice optics parameters</p></td>
+</tr>
+</tbody>
+</table>
+<p>The first step above consists in frequency analysis performed by <code class="docutils literal notranslate"><span class="pre">harpy</span></code>, while the second
+one is optics analysis performed by <code class="docutils literal notranslate"><span class="pre">measure_optics</span></code>. Each corresponding stage is represented
+by a different set of files:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 9%" />
+<col style="width: 30%" />
+<col style="width: 7%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" colspan="5"><p>Corresponding Files</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SDDS file:  <strong>.sdds</strong></p></td>
+<td><p>---&gt;</p></td>
+<td><p>Tfs files: <strong>.lin[xy]</strong></p></td>
+<td><p>---&gt;</p></td>
+<td><p>Tfs files: <strong>.tfs</strong></p></td>
+</tr>
+</tbody>
+</table>
+<p>To run either of the two or both steps, see options <code class="docutils literal notranslate"><span class="pre">--harpy</span></code> and <code class="docutils literal notranslate"><span class="pre">--optics</span></code>.</p>
+<dl class="py function">
+<dt id="omc3.hole_in_one.hole_in_one_entrypoint">
+<code class="sig-prename descclassname">omc3.hole_in_one.</code><code class="sig-name descname">hole_in_one_entrypoint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em>, <em class="sig-param"><span class="n">rest</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/hole_in_one.html#hole_in_one_entrypoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.hole_in_one.hole_in_one_entrypoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs frequency analysis and measures lattice optics.</p>
+<dl>
+<dt>Hole_in_one Kwargs:</dt><dd><ul>
+<li><p><strong>harpy</strong>: Runs frequency analysis</p>
+<p>Flags: <strong>--harpy</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>optics</strong>: Measures the lattice optics</p>
+<p>Flags: <strong>--optics</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+</ul>
+</dd>
+<dt>Harpy Kwargs:</dt><dd><ul>
+<li><p><strong>files</strong>: TbT files to analyse</p>
+<p>Flags: <strong>--files</strong>
+Required: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</li>
+<li><p><strong>outputdir</strong>: Output directory.</p>
+<p>Flags: <strong>--outputdir</strong>
+Required: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</li>
+<li><p><strong>to_write</strong>: Choose the type of output.</p>
+<p>Flags: <strong>--to_write</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">('lin',</span> <span class="pre">'spectra',</span> <span class="pre">'full_spectra',</span> <span class="pre">'bpm_summary')</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">['lin',</span> <span class="pre">'bpm_summary']</span></code></p>
+</li>
+<li><p><strong>turns</strong> <em>(int)</em>: Turn index to start and first turn index to be ignored.</p>
+<p>Flags: <strong>--turns</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">50000]</span></code></p>
+</li>
+<li><p><strong>unit</strong> <em>(str)</em>: A unit of TbT BPM orbit data. All cuts and output are in ‘m’.</p>
+<p>Flags: <strong>--unit</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">('m',</span> <span class="pre">'cm',</span> <span class="pre">'mm',</span> <span class="pre">'um')</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">m</span></code></p>
+</li>
+<li><p><strong>tbt_datatype</strong> <em>(str)</em>: Choose datatype from which to import (e.g LHC binary SDDS, numpy npz).</p>
+<p>Flags: <strong>--tbt_datatype</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">LHC</span></code></p>
+</li>
+</ul>
+<p><em>--Cleaning--</em></p>
+<ul>
+<li><p><strong>clean</strong>: If present, the data are first cleaned.</p>
+<p>Flags: <strong>--clean</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>bad_bpms</strong>: Bad BPMs to clean.</p>
+<p>Flags: <strong>--bad_bpms</strong></p>
+</li>
+<li><p><strong>first_bpm</strong> <em>(str)</em>: First BPM in the measurement.
+Used to resynchronise the TbT data with model.</p>
+<p>Flags: <strong>--first_bpm</strong></p>
+</li>
+<li><p><strong>keep_exact_zeros</strong>: If present, will not remove BPMs with exact zeros in TbT data.</p>
+<p>Flags: <strong>--keep_exact_zeros</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>max_peak</strong> <em>(float)</em>: Removes BPMs where the maximum orbit &gt; limit.</p>
+<p>Flags: <strong>--max_peak</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">0.02</span></code></p>
+</li>
+<li><p><strong>model</strong>: Model for BPM locations</p>
+<p>Flags: <strong>--model</strong></p>
+</li>
+<li><p><strong>num_svd_iterations</strong> <em>(int)</em>: Maximal number of iterations of U matrix elements removal
+and renormalisation in iterative SVD cleaning of dominant BPMs.
+This is also equal to maximal number of BPMs removed per SVD mode.</p>
+<p>Flags: <strong>--num_svd_iterations</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</li>
+<li><p><strong>opposite_direction</strong>: If present, beam in the opposite direction to model
+is assumed for resynchronisation of BPMs.</p>
+<p>Flags: <strong>--opposite_direction</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>peak_to_peak</strong> <em>(float)</em>: Peak to peak amplitude cut. This removes BPMs,
+where abs(max(turn values) - min(turn values)) &lt;= threshold.</p>
+<p>Flags: <strong>--peak_to_peak</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code></p>
+</li>
+<li><p><strong>sing_val</strong> <em>(int)</em>: Keep this amount of largest singular values.</p>
+<p>Flags: <strong>--sing_val</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">12</span></code></p>
+</li>
+<li><p><strong>svd_dominance_limit</strong> <em>(float)</em>: Limit for single BPM dominating a mode.</p>
+<p>Flags: <strong>--svd_dominance_limit</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">0.925</span></code></p>
+</li>
+<li><p><strong>wrong_polarity_bpms</strong>: BPMs with swapped polarity in both planes.</p>
+<p>Flags: <strong>--wrong_polarity_bpms</strong></p>
+</li>
+</ul>
+<p><em>--Frequency Analysis--</em></p>
+<ul>
+<li><p><strong>autotunes</strong> <em>(str)</em>: The main tunes are guessed as the strongest line in SV^T matrix
+frequency spectrum: Synchrotron tune below ~0.03, betatron tunes above ~0.03.</p>
+<p>Flags: <strong>--autotunes</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">('all',</span> <span class="pre">'transverse')</span></code></p>
+</li>
+<li><p><strong>is_free_kick</strong>: If present, it will perform the free kick phase correction</p>
+<p>Flags: <strong>--free_kick</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>natdeltas</strong> <em>(float)</em>: Guess for the offsets of natural tunes from
+the driven tunes (x, y, z). Disabled when set to 0.</p>
+<p>Flags: <strong>--natdeltas</strong></p>
+</li>
+<li><p><strong>nattunes</strong> <em>(float)</em>: Guess for the natural tunes (x, y, z).  Disabled when set to 0.</p>
+<p>Flags: <strong>--nattunes</strong></p>
+</li>
+<li><p><strong>output_bits</strong> <em>(int)</em>: Number (frequency, complex coefficient) pairs in the output
+is up to 2 ** output_bits (maximal in case full spectra is output).
+There is one pair (with maximal amplitude of complex coefficient) per interval
+of size 2 ** (- output_bits - 1).</p>
+<p>Flags: <strong>--output_bits</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">12</span></code></p>
+</li>
+<li><p><strong>tolerance</strong> <em>(float)</em>: Tolerance specifying an interval in frequency domain,
+where to look for the tunes.</p>
+<p>Flags: <strong>--tolerance</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></p>
+</li>
+<li><p><strong>tune_clean_limit</strong> <em>(float)</em>: The tune cleaning wont remove BPMs because of measured
+tune outliers closer to the average tune than this limit.</p>
+<p>Flags: <strong>--tune_clean_limit</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code></p>
+</li>
+<li><p><strong>tunes</strong> <em>(float)</em>: Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0</p>
+<p>Flags: <strong>--tunes</strong></p>
+</li>
+<li><p><strong>turn_bits</strong> <em>(int)</em>: Number (frequency, complex coefficient) pairs in the calculation
+is 2 ** turn_bits, i.e. the difference between two neighbouring frequencies
+is 2 ** (- turn_bits - 1).</p>
+<p>Flags: <strong>--turn_bits</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">20</span></code></p>
+</li>
+<li><p><strong>window</strong> <em>(str)</em>: Windowing function to be used for frequency analysis.</p>
+<p>Flags: <strong>--window</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">('rectangle',</span> <span class="pre">'welch',</span> <span class="pre">'triangle',</span> <span class="pre">'hann',</span> <span class="pre">'hamming',</span> <span class="pre">'nuttal3',</span> <span class="pre">'nuttal4')</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">hann</span></code></p>
+</li>
+</ul>
+</dd>
+<dt>Optics Kwargs:</dt><dd><ul>
+<li><p><strong>files</strong>: Files for analysis</p>
+<p>Flags: <strong>--files</strong>
+Required: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</li>
+<li><p><strong>outputdir</strong>: Output directory</p>
+<p>Flags: <strong>--outputdir</strong>
+Required: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</li>
+<li><p><strong>calibrationdir</strong> <em>(str)</em>: Path to calibration files directory.</p>
+<p>Flags: <strong>--calibrationdir</strong></p>
+</li>
+<li><p><strong>chromatic_beating</strong>: Calculate chromatic beatings: W, PHI and coupling</p>
+<p>Flags: <strong>--chromatic_beating</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>coupling_method</strong> <em>(int)</em>: Coupling analysis option: disabled, 1 BPM or 2 BPMs method</p>
+<p>Flags: <strong>--coupling_method</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</li>
+<li><p><strong>nonlinear</strong>: Calculate higher order RDTs or CRDT</p>
+<p>Flags: <strong>--nonlinear</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">(rdt,</span> <span class="pre">crdt)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</li>
+<li><p><strong>only_coupling</strong>: Calculate only coupling.</p>
+<p>Flags: <strong>--only_coupling</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>range_of_bpms</strong> <em>(int)</em>: Range of BPMs for beta from phase calculation</p>
+<p>Flags: <strong>--range_of_bpms</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">(5,</span> <span class="pre">7,</span> <span class="pre">9,</span> <span class="pre">11,</span> <span class="pre">13,</span> <span class="pre">15)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">11</span></code></p>
+</li>
+<li><p><strong>three_bpm_method</strong>: Use 3 BPM method in beta from phase</p>
+<p>Flags: <strong>--three_bpm_method</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>union</strong>: If present, the phase advances are calculate for union of BPMs
+with at least 3 valid measurements, instead of intersection .</p>
+<p>Flags: <strong>--union</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+</ul>
+</dd>
+<dt>Accelerator Kwargs:</dt><dd><ul>
+<li><p><strong>accel</strong>: Choose the accelerator to use. More details can be found in omc3/model/manager.py</p>
+<p>Flags: <strong>--accel</strong>
+Required: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</li>
+<li><p><strong>model_dir</strong>: Model directory, specify if <code class="docutils literal notranslate"><span class="pre">--model</span></code> option is not used.</p>
+<p>Flags: <strong>--model_dir</strong></p>
+</li>
+<li><p>For the rest, please see get_parameters() methods in child Accelerator classes,
+which are declared in <code class="docutils literal notranslate"><span class="pre">omc3/model/accelerators/*.py</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.amplitude_detuning_analysis"></span><div class="section" id="amplitude-detuning-analysis">
+<h2>Amplitude Detuning Analysis<a class="headerlink" href="#amplitude-detuning-analysis" title="Permalink to this headline">¶</a></h2>
+<p>Entrypoint for amplitude detuning analysis.</p>
+<p>This module provides functionality to run amplitude detuning analysis with additionally getting
+BBQ data from timber, averaging and filtering this data and subtracting it from the measurement
+data.</p>
+<p>Furthermore, the orthogonal distance regression is utilized to get a linear or quadratic fit from
+the measurements.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>beam</strong> <em>(int)</em>: Which beam to use.</p></li>
+<li><p><strong>kick</strong> <em>(str)</em>: Location of the kick files (parent folder).</p></li>
+<li><p><strong>plane</strong> <em>(str)</em>: Plane of the kicks. ‘X’ or ‘Y’.</p>
+<p>Choices: <code class="docutils literal notranslate"><span class="pre">('X',</span> <span class="pre">'Y')</span></code></p>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>bbq_filtering_method</strong> <em>(str)</em>:Filtering method for the bbq to use. ‘cut’ cuts around a given tune,
+‘minmax’ lets you specify the limits and ‘outliers’ uses the outlier filtering from utils.</p>
+<p>Choices: <code class="docutils literal notranslate"><span class="pre">['cut',</span> <span class="pre">'minmax',</span> <span class="pre">'outliers']</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">outliers</span></code></p>
+</li>
+<li><p><strong>bbq_in</strong>: Fill number of desired data to extract from timber
+or path to presaved bbq-tfs-file. Use the string ‘kick’ to use the timestamps
+in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.</p></li>
+<li><p><strong>debug</strong>: Activates Debug mode</p>
+<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>detuning_order</strong> <em>(int)</em>: Order of the detuning as int. Basically just the order of the applied fit.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+</li>
+<li><p><strong>fine_cut</strong> <em>(float)</em>: Cut, i.e. tolerance, of the tune (fine cleaning for ‘minmax’ or ‘cut’).</p></li>
+<li><p><strong>fine_window</strong> <em>(int)</em>: Length of the moving average window, i.e # data points (fine cleaning for ‘minmax’ or ‘cut’).</p></li>
+<li><p><strong>label</strong> <em>(str)</em>: Label to identify this run.</p></li>
+<li><p><strong>logfile</strong> <em>(str)</em>: Logfile if debug mode is active.</p></li>
+<li><p><strong>outlier_limit</strong> <em>(float)</em>: Limit, i.e. cut, on outliers (Method ‘outliers’)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0.0002</span></code></p>
+</li>
+<li><p><strong>output</strong> <em>(str)</em>: Output directory for the modified kickfile and bbq data.</p></li>
+<li><p><strong>tune_cut</strong> <em>(float)</em>: Cuts for the tune. For BBQ cleaning (Method ‘cut’).</p></li>
+<li><p><strong>tunes</strong> <em>(float)</em>: Tunes for BBQ cleaning (Method ‘cut’).</p></li>
+<li><p><strong>tunes_minmax</strong> <em>(float)</em>: Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For BBQ cleaning (Method ‘minmax’).</p></li>
+<li><p><strong>window_length</strong> <em>(int)</em>: Length of the moving average window. (# data points)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">20</span></code></p>
+</li>
+</ul>
+<dl class="py function">
+<dt id="omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections">
+<code class="sig-prename descclassname">omc3.amplitude_detuning_analysis.</code><code class="sig-name descname">analyse_with_bbq_corrections</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#analyse_with_bbq_corrections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create amplitude detuning analysis with BBQ correction from timber data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.amplitude_detuning_analysis.get_approx_bbq_interval">
+<code class="sig-prename descclassname">omc3.amplitude_detuning_analysis.</code><code class="sig-name descname">get_approx_bbq_interval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bbq_df</span></em>, <em class="sig-param"><span class="n">time_array</span></em>, <em class="sig-param"><span class="n">window_length</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#get_approx_bbq_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.get_approx_bbq_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data in approximate time interval, for averaging based on window length and kick interval.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.run_kmod"></span><div class="section" id="run-kmod">
+<h2>Run Kmod<a class="headerlink" href="#run-kmod" title="Permalink to this headline">¶</a></h2>
+<p>Top-level script to analyse Kmod-results from the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> and creating files for GUI and plotting
+as well as returning beta-star and waist shift.</p>
+<dl class="py function">
+<dt id="omc3.run_kmod.analyse_kmod">
+<code class="sig-prename descclassname">omc3.run_kmod.</code><code class="sig-name descname">analyse_kmod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/run_kmod.html#analyse_kmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.run_kmod.analyse_kmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run Kmod analysis.</p>
+<dl>
+<dt>Kmod Keyword Arguments:</dt><dd><p><em>--Required--</em></p>
+<ul>
+<li><p><strong>beam</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>define beam used: B1 or B2</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['B1',</span> <span class="pre">'B2']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>betastar_and_waist</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Estimated beta star of measurements and waist shift</p>
+</div></blockquote>
+</li>
+<li><p><strong>working_directory</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>path to working directory with stored KMOD measurement files</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>circuits</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>circuit names of the modulated quadrupoles</p>
+</div></blockquote>
+</li>
+<li><p><strong>cminus</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>C Minus</p>
+</div></blockquote>
+</li>
+<li><p><strong>errorK</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>error in K of the modulated quadrupoles, relative to gradient</p>
+</div></blockquote>
+</li>
+<li><p><strong>errorL</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>error in length of the modulated quadrupoles, unit m</p>
+</div></blockquote>
+</li>
+<li><p><strong>instruments</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>define instruments (use keywords from twiss) at which beta should be
+calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">MONITOR,SBEND,TKICKER,INSTRUMENT</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>interaction_point</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>define interaction point</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['ip1',</span> <span class="pre">'ip2',</span> <span class="pre">'ip5',</span> <span class="pre">'ip8',</span> <span class="pre">'IP1',</span> <span class="pre">'IP2',</span> <span class="pre">'IP5',</span> <span class="pre">'IP8']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>log</strong>:</p>
+<blockquote>
+<div><p>flag for creating a log file</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>measurement_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>give an optics measurement directory to include phase constraint in
+penalty function</p>
+</div></blockquote>
+</li>
+<li><p><strong>misalignment</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>misalignment of the modulated quadrupoles in m</p>
+</div></blockquote>
+</li>
+<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>twiss model that contains phase</p>
+</div></blockquote>
+</li>
+<li><p><strong>no_autoclean</strong>:</p>
+<blockquote>
+<div><p>flag for manually cleaning data</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>no_plots</strong>:</p>
+<blockquote>
+<div><p>flag to not create any plots</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>no_sig_digits</strong>:</p>
+<blockquote>
+<div><p>flag to not use significant digits</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>outputdir</strong>:</p>
+<blockquote>
+<div><p>Path where outputfiles will be stored, defaults to the given
+working_directory</p>
+</div></blockquote>
+</li>
+<li><p><strong>phase_weight</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>weight in penalty function between phase and beta.If weight=0 phase is
+not used as a constraint.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>simulation</strong>:</p>
+<blockquote>
+<div><p>flag for enabling simulation mode</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>tune_uncertainty</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>tune measurement uncertainty</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">2.5e-05</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="other.html" class="btn btn-neutral float-right" title="Other" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to omc3’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

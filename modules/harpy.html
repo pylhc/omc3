@@ -1,0 +1,571 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Harpy &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Kmod" href="kmod.html" />
+    <link rel="prev" title="Definitions" href="definitions.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Harpy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/modules/harpy.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-omc3.harpy.clean">
+<span id="harpy"></span><h1>Harpy<a class="headerlink" href="#module-omc3.harpy.clean" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="clean">
+<h2>Clean<a class="headerlink" href="#clean" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the cleaning functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.</p>
+<dl class="py function">
+<dt id="omc3.harpy.clean.clean">
+<code class="sig-prename descclassname">omc3.harpy.clean.</code><code class="sig-name descname">clean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">harpy_input</span></em>, <em class="sig-param"><span class="n">bpm_data</span></em>, <em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/clean.html#clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.clean.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans BPM TbT matrix: removes BPMs not present in the model and based on specified cuts.
+Also cleans the noise using singular value decomposition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>harpy_input</strong> -- The input object containing the analysis settings.</p></li>
+<li><p><strong>bpm_data</strong> -- DataFrame of BPM TbT matrix indexed by BPM names.</p></li>
+<li><p><strong>model</strong> -- model containing BPMs longitudinal locations indexed by BPM names.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Clean BPM matrix, its decomposition, bad BPMs summary and estimated BPM resolutions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.harpy.clean.svd_decomposition">
+<code class="sig-prename descclassname">omc3.harpy.clean.</code><code class="sig-name descname">svd_decomposition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix</span></em>, <em class="sig-param"><span class="n">num_singular_values</span></em>, <em class="sig-param"><span class="n">dominance_limit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_iter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/clean.html#svd_decomposition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.clean.svd_decomposition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes reduced (K largest values) singular value decomposition of a matrix.
+Requiring K singular values from MxN matrix results in matrices sized:
+<cite>((M,K) x diag(K) x (K,N))</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix</strong> -- matrix to be decomposed.</p></li>
+<li><p><strong>num_singular_values</strong> -- Required number of singular values for reconstruction.</p></li>
+<li><p><strong>dominance_limit</strong> -- limit on SVD dominance.</p></li>
+<li><p><strong>num_iter</strong> -- maximal number of iteration to remove elements and renormalise matrices.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An indexed DataFrame of U matrix <cite>(M,K)</cite>,
+the product of S and V^T matrices <cite>(diag(K).x(K,N))</cite>,
+and the U matrix mask for cleaned elements.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.harpy.constants"></span><div class="section" id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+<p>Specific constants to be used in <code class="docutils literal notranslate"><span class="pre">harpy</span></code>, to help with consistency.</p>
+</div>
+<span class="target" id="module-omc3.harpy.frequency"></span><div class="section" id="frequency">
+<h2>Frequency<a class="headerlink" href="#frequency" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the frequency calculations related functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.</p>
+<p>It provides functions to calculate the frequency spectra of turn-by-turn data.
+This calculation is done using a combination of SVD decomposition zero_padded <cite>fft</cite> to speed up the
+analysis.
+Also searches for resonances in the calculated spectra.</p>
+<dl class="py function">
+<dt id="omc3.harpy.frequency.clean_by_tune">
+<code class="sig-prename descclassname">omc3.harpy.frequency.</code><code class="sig-name descname">clean_by_tune</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tunes</span><span class="p">:</span> <span class="n">pandas.core.series.Series</span></em>, <em class="sig-param"><span class="n">tune_clean_limit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#clean_by_tune"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.frequency.clean_by_tune" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks for outliers in the tunes pandas Series and returns their indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tunes</strong> (<em>pd.Series</em>) -- Pandas series with the tunes per BPM and the BPM names as index.</p></li>
+<li><p><strong>tune_clean_limit</strong> -- No BPM will find as outlier if its distance to the
+average is lower than this limit.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.harpy.frequency.estimate_tunes">
+<code class="sig-prename descclassname">omc3.harpy.frequency.</code><code class="sig-name descname">estimate_tunes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">harpy_input</span></em>, <em class="sig-param"><span class="n">usvs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#estimate_tunes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.frequency.estimate_tunes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the tunes from the <cite>FFT</cite> of decomposed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>harpy_input</strong> -- Analysis settings.</p></li>
+<li><p><strong>usvs</strong> -- dictionary per plane of (U and SV^T matrices).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of estimated tunes [x, y, z].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.harpy.frequency.find_resonances">
+<code class="sig-prename descclassname">omc3.harpy.frequency.</code><code class="sig-name descname">find_resonances</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tunes</span></em>, <em class="sig-param"><span class="n">nturns</span></em>, <em class="sig-param"><span class="n">plane</span></em>, <em class="sig-param"><span class="n">spectra</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#find_resonances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.frequency.find_resonances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds higher order lines in the spectra.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tunes</strong> -- list of tunes [x, y, z].</p></li>
+<li><p><strong>nturns</strong> -- length of analysed data.</p></li>
+<li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>spectra</strong> -- frequencies and complex coefficients.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A DataFrame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.harpy.frequency.get_freq_mask">
+<code class="sig-prename descclassname">omc3.harpy.frequency.</code><code class="sig-name descname">get_freq_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">harpy_input</span></em>, <em class="sig-param"><span class="n">tunes</span></em>, <em class="sig-param"><span class="n">auto_tol</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#get_freq_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.frequency.get_freq_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes mask to get intervals around resonances in frequency domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>harpy_input</strong> -- A <cite>HarpyInput</cite> object.</p></li>
+<li><p><strong>tunes</strong> -- list of tunes [x, y, z].</p></li>
+<li><p><strong>auto_tol</strong> -- automatically calculated tolerance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Boolean array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.harpy.frequency.harpy_per_plane">
+<code class="sig-prename descclassname">omc3.harpy.frequency.</code><code class="sig-name descname">harpy_per_plane</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">harpy_input</span></em>, <em class="sig-param"><span class="n">bpm_matrix</span></em>, <em class="sig-param"><span class="n">usv</span></em>, <em class="sig-param"><span class="n">tunes</span></em>, <em class="sig-param"><span class="n">plane</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#harpy_per_plane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.frequency.harpy_per_plane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the spectra of TbT data, finds the main lines and cleans the BPMs for which the
+main line hasn’t been found or is too far from its average over BPMs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>harpy_input</strong> -- Analysis settings.</p></li>
+<li><p><strong>bpm_matrix</strong> -- TbT BPM matrix.</p></li>
+<li><p><strong>usv</strong> -- U and SV^T matrices decomposed matrices, can be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>tunes</strong> -- list of tunes [x, y, z].</p></li>
+<li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of DataFrame, Spectra, and Bad BPMs summary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.harpy.frequency.windowed_padded_rfft">
+<code class="sig-prename descclassname">omc3.harpy.frequency.</code><code class="sig-name descname">windowed_padded_rfft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">harpy_input</span></em>, <em class="sig-param"><span class="n">matrix</span></em>, <em class="sig-param"><span class="n">tunes</span></em>, <em class="sig-param"><span class="n">svd</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#windowed_padded_rfft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.frequency.windowed_padded_rfft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the spectra using specified windowing function and zero-padding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>harpy_input</strong> -- A <cite>HarpyInput</cite> object.</p></li>
+<li><p><strong>matrix</strong> -- <cite>pd.DataFrame</cite> of TbT matrix (BPMs x turns).</p></li>
+<li><p><strong>tunes</strong> -- list of tunes [x, y, z].</p></li>
+<li><p><strong>svd</strong> -- reduced (U_matrix, np.dot(S_matrix, V_matrix)) of original TbT matrix, defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple of <cite>pd.DataFrames</cite>, for frequencies and coefficients.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.harpy.frequency.windowing">
+<code class="sig-prename descclassname">omc3.harpy.frequency.</code><code class="sig-name descname">windowing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">length</span></em>, <em class="sig-param"><span class="n">window</span><span class="o">=</span><span class="default_value">'hamming'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#windowing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.frequency.windowing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides specified windowing function of given length.</p>
+<p>Currently, the following windowing functions are implemented (sorted by increasing width of
+main lobe, also decreasing spectral leakage in closest lobes):
+<code class="docutils literal notranslate"><span class="pre">rectangle</span></code>, <code class="docutils literal notranslate"><span class="pre">welch</span></code>, <code class="docutils literal notranslate"><span class="pre">triangle</span></code>, <code class="docutils literal notranslate"><span class="pre">hann</span></code>, <code class="docutils literal notranslate"><span class="pre">hamming</span></code>, <code class="docutils literal notranslate"><span class="pre">nuttal3</span></code>, and <code class="docutils literal notranslate"><span class="pre">nuttal4</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> -- length of the window.</p></li>
+<li><p><strong>window</strong> -- type of the windowing function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Normalised windowing function of specified type and length.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.harpy.handler"></span><div class="section" id="handler">
+<h2>Handler<a class="headerlink" href="#handler" title="Permalink to this headline">¶</a></h2>
+<p>This module contains high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.
+Tools are provided to handle the cleaning, frequency analysis and resonance search for a
+single-bunch <cite>TbtData</cite>.</p>
+<dl class="py function">
+<dt id="omc3.harpy.handler.run_per_bunch">
+<code class="sig-prename descclassname">omc3.harpy.handler.</code><code class="sig-name descname">run_per_bunch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tbt_data</span></em>, <em class="sig-param"><span class="n">harpy_input</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/handler.html#run_per_bunch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.handler.run_per_bunch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans data, analyses frequencies and searches for resonances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tbt_data</strong> -- single bunch <cite>TbtData</cite>.</p></li>
+<li><p><strong>harpy_input</strong> -- Analysis settings taken from the commandline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary with a <cite>TfsDataFrame</cite> per plane.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.harpy.kicker"></span><div class="section" id="kicker">
+<h2>Kicker<a class="headerlink" href="#kicker" title="Permalink to this headline">¶</a></h2>
+<p>This module contains phase correction functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.
+It provides tools to correct phases of a main spectral line in a case where damped (exponentially
+decaying) oscillations are analysed.</p>
+<dl class="py function">
+<dt id="omc3.harpy.kicker.phase_correction">
+<code class="sig-prename descclassname">omc3.harpy.kicker.</code><code class="sig-name descname">phase_correction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bpm_data_orig</span></em>, <em class="sig-param"><span class="n">lin_frame</span></em>, <em class="sig-param"><span class="n">plane</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/kicker.html#phase_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.harpy.kicker.phase_correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Corrects phase of main spectral line assuming exponentially decaying oscillations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bpm_data_orig</strong> -- matrix of original <cite>TbtData</cite>.</p></li>
+<li><p><strong>lin_frame</strong> -- DataFrame in which to correct the results.</p></li>
+<li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>DataFrame</cite> with corrected phases.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="kmod.html" class="btn btn-neutral float-right" title="Kmod" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="definitions.html" class="btn btn-neutral float-left" title="Definitions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

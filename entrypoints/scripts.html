@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scripts &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Definitions" href="../modules/definitions.html" />
+    <link rel="prev" title="Plotting" href="plotting.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Main Entrypoints</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Scripts</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/entrypoints/scripts.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-omc3.scripts.merge_kmod_results">
+<span id="scripts"></span><h1>Scripts<a class="headerlink" href="#module-omc3.scripts.merge_kmod_results" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="merge-kmod-results">
+<h2>Merge KMOD Results<a class="headerlink" href="#merge-kmod-results" title="Permalink to this headline">¶</a></h2>
+<p>Script to merge the results from KMOD into one <cite>TfsDataFrame</cite>.
+The script takes the kmod-results folders as input and merges the lsa-result tfs-files in these
+together.
+The resulting <cite>TfsDataFrame</cite> is returned, but also written out if an <code class="docutils literal notranslate"><span class="pre">outputdir</span></code> is given.</p>
+<p><strong>BPMWKs</strong> (common for both beams) are hereby dropped, to avoid duplicated elements.</p>
+<p>Headers of the same name will be overwritten (depending on the alphabetical order of the
+directory names).</p>
+<p>Some sanity checks are performed, e.g. that there is only one entry per element. If IP1 and IP5
+results are given for both planes and beams, the luminosity imbalance between these IPs is also
+calculated and written into the header, as well as logged.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>kmod_dirs</strong> <em>(Path)</em>:</p>
+<blockquote>
+<div><p>Path to kmod directories with stored KMOD measurement files,in particular lsa_results.tfs</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>outputdir</strong> <em>(Path)</em>:</p>
+<blockquote>
+<div><p>Output directory where to write the result tfs</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="py function">
+<dt id="omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs">
+<code class="sig-prename descclassname">omc3.scripts.merge_kmod_results.</code><code class="sig-name descname">get_kmod_ip_subdirs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kmod_dirs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pathlib.Path<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>pathlib.Path<span class="p">]</span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_kmod_ip_subdirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the paths to the ip-subdirectories in the kmod result directories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kmod_dirs</strong> (<em>List</em><em>[</em><em>Path</em><em>]</em>) -- Main kmod result directories with IP-subdirectories.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(List[Path]) Paths to all subdirectories.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.scripts.merge_kmod_results.get_lumi_imbalance">
+<code class="sig-prename descclassname">omc3.scripts.merge_kmod_results.</code><code class="sig-name descname">get_lumi_imbalance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_frame</span><span class="p">:</span> <span class="n">tfs.handler.TfsDataFrame</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>uncertainties.core.AffineScalarFunc<span class="p">, </span>uncertainties.core.AffineScalarFunc<span class="p">, </span>uncertainties.core.AffineScalarFunc<span class="p">]</span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_lumi_imbalance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.get_lumi_imbalance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the IP1 / IP5 luminosity imbalance. The luminosity is taken as defined in
+<cite>Concept of luminosity</cite>, Eq(17): <a class="reference external" href="https://cds.cern.ch/record/941318/files/p361.pdf">https://cds.cern.ch/record/941318/files/p361.pdf</a></p>
+<p>The calculation of the luminosity imbalance is then:</p>
+<div class="math notranslate nohighlight">
+\[\frac{L_{IP1}}{L_{IP5}}=\frac{\sqrt{\beta_{x1,IP5}+\beta_{x2,IP5}}
+\cdot\sqrt{\beta_{y1,IP5}+\beta_{y2,IP5}}}
+{\sqrt{\beta_{x1,IP1}+\beta_{x2,IP1}}\cdot\sqrt{\beta_{y1,IP1}+\beta_{y2,IP1}}}\]</div>
+<p>and the error:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\sigma_{\frac{L_{IP1}}{L_{IP5}}} = \frac{1}{2}\frac{L_{IP1}}{L_{IP5}}
+\cdot \sqrt{\sum_{\substack{z \in (x,y) \\ i \in (IP1, IP5) }}
+{\frac{\sigma^2_{\beta_{z1,i}} + \sigma^2_{\beta_{z2,i}}} {(\beta_{z1,i}+\beta_{z2,i})^2}}}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_frame</strong> (<em>tfs.TfsDataFrame</em>) -- a <cite>TfsDataFrame</cite> with the results from a kmod analysis.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple with the imbalance, the betas at IPs as ufloats.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.scripts.merge_kmod_results.merge_kmod_results">
+<code class="sig-prename descclassname">omc3.scripts.merge_kmod_results.</code><code class="sig-name descname">merge_kmod_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">opt</span></em><span class="sig-paren">)</span> &#x2192; tfs.handler.TfsDataFrame<a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_kmod_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.merge_kmod_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function to merge K-Mod output.
+See <a class="reference internal" href="#module-omc3.scripts.merge_kmod_results" title="omc3.scripts.merge_kmod_results"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.scripts.merge_kmod_results</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.scripts.merge_kmod_results.merge_tfs">
+<code class="sig-prename descclassname">omc3.scripts.merge_kmod_results.</code><code class="sig-name descname">merge_tfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directories</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pathlib.Path<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; tfs.handler.TfsDataFrame<a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_tfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.merge_tfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge different kmod analysis results from a list of directories into a single <cite>TfsDataFrame</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directories</strong> (<em>List</em><em>[</em><em>pathlib.Path</em><em>]</em>) -- list of PosixPath objects to directories holding TFS
+files with the results of kmod analysis.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) -- name of the TFS files to look for in the provided directories.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>TfsDataFrame</cite> combining all the loaded files from the provided directories.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.scripts.update_nattune_in_linfile"></span><div class="section" id="update-natural-tune-in-lin-files">
+<h2>Update Natural Tune in Lin-Files<a class="headerlink" href="#update-natural-tune-in-lin-files" title="Permalink to this headline">¶</a></h2>
+<p>Script to update the natural tune in lin files, based on the spectrum data (amps and freqs) and a
+given frequency interval.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul class="simple">
+<li><p><strong>files</strong>: List of paths to the spectrum files.
+The files need to be given without their ‘.lin’/’.amps[xy]’,’.freqs[xy]’ endings.
+(So usually the path of the TbT-Data file.)</p></li>
+<li><p><strong>interval</strong> <em>(float)</em>: Frequency interval in which the highest peak should be found.</p></li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>bpms</strong>: List of BPMs which need to be updated. If not given it will be all of them.</p></li>
+<li><p><strong>not_found_action</strong> <em>(str)</em>: Defines what to do, if no line was found in given interval.
+‘error’: throws a ValueError; ‘remove’: removes the bpm; ‘ignore’: keeps the old values.</p>
+<p>Choices: <code class="docutils literal notranslate"><span class="pre">['error',</span> <span class="pre">'remove',</span> <span class="pre">'ignore']</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">error</span></code></p>
+</li>
+<li><p><strong>planes</strong> <em>(str)</em>: Which planes.</p>
+<p>Choices: <code class="docutils literal notranslate"><span class="pre">('X',</span> <span class="pre">'Y')</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">['X',</span> <span class="pre">'Y']</span></code></p>
+</li>
+<li><p><strong>rename_suffix</strong> <em>(str)</em>: Additional suffix for output lin-file.
+Will be inserted between filename and extension.
+If empty, the original file is overwritten - unless they are old files,
+then the omc3 filename convention will be used.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</li>
+</ul>
+</div>
+<span class="target" id="module-omc3.scripts.write_madx_macros"></span><div class="section" id="write-mad-x-macros">
+<h2>Write MAD-X Macros<a class="headerlink" href="#write-mad-x-macros" title="Permalink to this headline">¶</a></h2>
+<p>Write out madx scripts for the tracking macros.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>outputdir</strong>:</p>
+<blockquote>
+<div><p>Directory where the observation_points.def will be put.</p>
+</div></blockquote>
+</li>
+<li><p><strong>twissfile</strong>:</p>
+<blockquote>
+<div><p>Path to twissfile with observationspoint in the NAME column.</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../modules/definitions.html" class="btn btn-neutral float-right" title="Definitions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plotting.html" class="btn btn-neutral float-left" title="Plotting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
