@@ -1,9 +1,9 @@
 """
 Update Natural Tune in Lin-Files
-----------------------------------
+--------------------------------
 
-Script to update the natural tune in lin files, based on the spectrum data
-(amps and freqs) and a given frequency interval.
+Script to update the natural tune in lin files, based on the spectrum data (amps and freqs) and a
+given frequency interval.
 
 
 **Arguments:**
@@ -36,7 +36,6 @@ Script to update the natural tune in lin files, based on the spectrum data
   then the omc3 filename convention will be used.
 
   Default: ``None``
-
 """
 
 from collections import OrderedDict

@@ -1,6 +1,6 @@
 """
 Write MAD-X Macros
---------------------------
+------------------
 
 Write out madx scripts for the tracking macros.
 
@@ -15,7 +15,6 @@ Write out madx scripts for the tracking macros.
 - **twissfile**:
 
     Path to twissfile with observationspoint in the NAME column.
-
 """
 import os
 import tfs
