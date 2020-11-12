@@ -1,6 +1,6 @@
 """
-Analysis
---------
+Helper
+------
 
 This module contains helper functionality for ``kmod``.
 It provides functions to perform data cleaning, IO loading and plotting.
