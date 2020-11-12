@@ -13,22 +13,25 @@ Package Reference
    :caption: Main Entrypoints
    :maxdepth: 1
 
-   entrypoints/index
+   entrypoints/analysis
+   entrypoints/other
+   entrypoints/plotting
+   entrypoints/scripts
 
 
 .. toctree::
    :caption: Modules
    :maxdepth: 1
 
-   definitions/index
-   harpy/index
-   kmod/index
-   model/index
-   optics_measurements/index
-   plotting/index
-   tbt/index
-   tune_analysis/index
-   utils/index
+   modules/definitions
+   modules/harpy
+   modules/kmod
+   modules/model
+   modules/optics_measurements
+   modules/plotting
+   modules/tbt
+   modules/tune_analysis
+   modules/utils
 
 
 Indices and tables
