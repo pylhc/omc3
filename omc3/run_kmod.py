@@ -1,10 +1,9 @@
 """
 Run Kmod
---------------
+--------
 
-Top-level script to analyse kmod-results for LHC and creating files for
-gui and plotting as well as returning beta-star and waist shift.
-
+Top-level script to analyse Kmod-results from the ``LHC`` and creating files for GUI and plotting
+as well as returning beta-star and waist shift.
 """
 from os.path import join
 
@@ -101,7 +100,7 @@ def kmod_params():
 @entrypoint(kmod_params(), strict=True)
 def analyse_kmod(opt):
     """
-    Run Kmod analysis
+    Run Kmod analysis.
 
     Kmod Keyword Arguments:
         *--Required--*
@@ -230,7 +229,6 @@ def analyse_kmod(opt):
             tune measurement uncertainty
 
             default: ``2.5e-05``
-
     """
     LOG.info('Getting input parameter')
     if opt.interaction_point is None and opt.circuits is None:

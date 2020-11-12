@@ -1,15 +1,15 @@
 """
 Amplitude Detuning Analysis
-------------------------------------------------
+---------------------------
 
 Entrypoint for amplitude detuning analysis.
 
-This module provides functionality to run amplitude detuning analysis with
-additionally getting BBQ data from timber, averaging and filtering this data and
-subtracting it from the measurement data.
+This module provides functionality to run amplitude detuning analysis with additionally getting
+BBQ data from timber, averaging and filtering this data and subtracting it from the measurement
+data.
 
-Furthermore, the orthogonal distance regression is utilized to get a
-linear or quadratic fit from the measurements.
+Furthermore, the orthogonal distance regression is utilized to get a linear or quadratic fit from
+the measurements.
 
 
 **Arguments:**
@@ -63,9 +63,6 @@ linear or quadratic fit from the measurements.
 - **window_length** *(int)*: Length of the moving average window. (# data points)
 
   Default: ``20``
-
-
-:author: Joschua Dilly
 """
 import os
 from collections import OrderedDict
@@ -194,9 +191,7 @@ def _get_params():
 
 @entrypoint(_get_params(), strict=True)
 def analyse_with_bbq_corrections(opt):
-    """ Create amplitude detuning analysis with BBQ correction from timber data.
-
-     """
+    """Create amplitude detuning analysis with BBQ correction from timber data."""
     LOG.info("Starting Amplitude Detuning Analysis")
     _save_options(opt)
 
@@ -248,8 +243,9 @@ def analyse_with_bbq_corrections(opt):
 
 
 def get_approx_bbq_interval(bbq_df, time_array, window_length):
-    """ Get data in approximate time interval,
-    for averaging based on window length and kick interval """
+    """
+    Get data in approximate time interval, for averaging based on window length and kick interval.
+    """
     bbq_tmp = bbq_df.dropna()
 
     # convert to float to use math-comparisons
@@ -266,7 +262,7 @@ def get_approx_bbq_interval(bbq_df, time_array, window_length):
 
 
 def _check_analyse_opt(opt):
-    """ Perform manual checks on opt-sturcture """
+    """Perform manual checks on opt-sturcture."""
     LOG.debug("Checking Options.")
 
     # for label
@@ -316,7 +312,7 @@ def _check_analyse_opt(opt):
 
 
 def _get_bbq_data(beam, input_, kick_df):
-    """ Return bbq data from input, either file or timber fill """
+    """Return BBQ data from input, either file or timber fill."""
     try:
         fill_number = int(input_)
     except ValueError:

@@ -1,9 +1,8 @@
 """
 Model Creator
------------------
+-------------
 
-Entrypoint to run the model creator for lhc, psbooster and ps models.
-
+Entrypoint to run the model creator for LHC, PSBooster and PS models.
 """
 import logging
 import sys
@@ -56,7 +55,6 @@ def _get_params():
 @entrypoint(_get_params())
 def create_instance_and_model(opt, accel_opt):
     """
-
     Manager Keyword Args:
         *--Required--*
 
@@ -111,7 +109,6 @@ def create_instance_and_model(opt, accel_opt):
         petra: :mod:`omc3.model.accelerators.petra` (not implemented)
 
         JPARC: Not implemented
-
     """
     if sys.flags.debug:
         numeric_level = getattr(logging, "DEBUG", None)

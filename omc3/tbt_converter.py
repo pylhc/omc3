@@ -1,14 +1,9 @@
 """
 TbT Converter
--------------------------
+-------------
 
-Created on 29/08/19
-
-:author: Lukas Malina
-
-Top-level script, which converts turn-by-turn files from various formats to LHC binary SDDS files.
-    Optionally, it can replicate files with added noise.
-
+Top-level script to convert turn-by-turn files from various formats to ``LHC`` binary SDDS files.
+Optionally, it can replicate files with added noise.
 """
 from collections import OrderedDict
 from datetime import datetime
@@ -45,8 +40,8 @@ def converter_params():
 @entrypoint(converter_params(), strict=True)
 def converter_entrypoint(opt):
     """
-    Converts turn-by-turn files from various formats to LHC binary SDDS files.
-    Optionally can replicate files files with added noise.
+    Converts turn-by-turn files from various formats to ``LHC`` binary SDDS files.
+    Optionally can replicate files with added noise.
 
     Converter Kwargs:
       - **files**: TbT files to convert
