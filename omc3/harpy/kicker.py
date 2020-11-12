@@ -3,7 +3,6 @@ Kicker
 ------
 
 This module contains phase correction functionality of ``harpy``.
-
 It provides tools to correct phases of a main spectral line in a case where damped (exponentially
 decaying) oscillations are analysed.
 """

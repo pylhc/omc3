@@ -3,7 +3,6 @@ Analysis
 --------
 
 This module contains the analysis functionality of ``kmod``.
-
 It provides functions to calculate beta functions at different locations from K-modulation data.
 """
 import datetime
