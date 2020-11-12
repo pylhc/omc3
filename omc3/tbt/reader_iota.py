@@ -24,7 +24,7 @@ PLANES_CONV = {1: {'X': 'H', 'Y': 'V'},
                2: {'X': 'Horizontal', 'Y': 'Vertical'}}
 
 
-def read_tbt(file_path) -> handler.TbtData:
+def read_tbt(file_path):
     """
     Reads TbTData object from provided file_path.
 

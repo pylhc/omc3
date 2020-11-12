@@ -38,7 +38,7 @@ ACQ_STAMP = "acqStamp"
 BPM_NAMES = "bpmNames"
 
 
-def read_tbt(file_path) -> handler.TbtData:
+def read_tbt(file_path):
     """
     Reads TbTData object from provided file_path.
 

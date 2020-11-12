@@ -32,7 +32,7 @@ Segment = namedtuple("Segment", ["number", "turns", "particles", "element", "nam
 LOGGER = get_logger(__name__)
 
 
-def read_tbt(file_path) -> handler.TbtData:
+def read_tbt(file_path):
     """
     Reads TbtData object from ``PTC`` **trackone** output.
 

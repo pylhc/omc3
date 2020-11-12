@@ -11,7 +11,7 @@ import numpy as np
 from omc3.tbt import handler
 
 
-def read_tbt(infile) -> handler.TbtData:
+def read_tbt(infile):
     nturns, npart = get_trackone_stats(infile)
     names, matrix = get_structure_from_trackone(nturns, npart, infile)
     # matrix[0, 2] contains just (x, y) samples.
