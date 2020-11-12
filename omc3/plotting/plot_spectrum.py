@@ -1,26 +1,25 @@
 """
 Plot Spectrum
---------------------
+-------------
 
 Spectrum plotter for frequency analysis output-data (supports also DRIVE output).
 
 The spectra can be either plotted as `stem`-plots or as `waterfall`-plots.
-The stem-plots can be in any combination: split by given files, split by given
-bpms or combined in any way (by usage of the `combine_by` option).
-Note that if both of those are false (as is default)
-there will anyway be only one waterfall plot per given input file.
+The stem-plots can be in any combination: split by given files, split by given bpms or combined
+in any way (by usage of the `combine_by` option).
+Note that if both of those are false (as is default) there will anyway be only one waterfall plot
+per given input file.
 
 
-In case of split-by-file, plots are saved in a sub-directory of
-the given `output_dir` with the name of the original TbT file.
+In case of split-by-file, plots are saved in a sub-directory of the given `output_dir` with the
+name of the original TbT file.
 In case of split by bpm the plots will have the bpm-name in their filename.
 
 
-The `lines_tunes` and `lines_nattunes` lists accept tuples of multipliers for
-the respective tunes, which define the resonance lines plotted into the
-spectrum as well. A dashed line will indicate the average of all tunes
-given in the data of one figure, while a semi-transparent area will indicate
-min- and max- values of this line.
+The `lines_tunes` and `lines_nattunes` lists accept tuples of multipliers for the respective
+tunes, which define the resonance lines plotted into the spectrum as well. A dashed line will
+indicate the average of all tunes given in the data of one figure, while a semi-transparent area
+will indicate min- and max- values of this line.
 
 With `lines_manual`, one can plot vertical lines at manual locations (see
 parameter specs below).
@@ -99,7 +98,6 @@ one figure is used.
 - **ylim** *(float)*: Limits on the y axis (Tupel)
 
   Default: ``[1e-09, 1.0]``
-
 """
 import os
 from collections import OrderedDict
@@ -128,8 +126,10 @@ LOG = logging_tools.getLogger(__name__)
 
 
 def get_reshuffled_tab20c():
-    """ Reshuffel tab20c so that the colors change between next lines.
-    Needs to be up here as it is used in DEFAULTS which is loaded early."""
+    """
+    Reshuffel tab20c so that the colors change between next lines.
+    Needs to be up here as it is used in ``DEFAULTS`` which is loaded early.
+    """
     tab20c = cm.get_cmap('tab20c').colors
     out = [None] * 20
     step, chunk = 4, 5
@@ -346,7 +346,7 @@ def _save_options_to_config(opt):
 
 
 def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
-    """ Load and sort input data by file and bpm and assign correct figure-containers. """
+    """Load and sort input data by file and bpm and assign correct figure-containers."""
     LOG.debug("Sorting input data.")
 
     stem_figs = FigureCollector()
@@ -377,7 +377,7 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
 
 
 def _get_all_bpms(bpms_dict):
-    """ Returns a union of all bpms for both planes """
+    """Returns a union of all bpms for both planes."""
     return set.union(*[set(v) for v in bpms_dict.values()])
 
 

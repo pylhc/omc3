@@ -1,9 +1,8 @@
 """
 Plot Optics Measurements
---------------------------
+------------------------
 
 Wrapper for `plot_tfs` to easily plot the results from optics measurements.
-
 
 .. code-block:: python
 
@@ -23,7 +22,6 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
         show=True,
         ncol_legend=2,
     )
-
 
 **Arguments:**
 
@@ -91,8 +89,6 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 - **x_lim** *(float, int, None)*: Limits on the x axis (Tupel)
 
 - **y_lim** *(float, int, None)*: Limits on the y axis (Tupel)
-
-
 """
 from pathlib import Path
 
@@ -238,7 +234,7 @@ def get_params():
 
 @entrypoint(get_params(), strict=True)
 def plot(opt):
-    """ Main plotting function. """
+    """Main plotting function."""
     LOG.info("Starting plotting of optics measurement data: "
              f"{list2str(opt.optics_parameters)} in {list2str(opt.folders):s}")
 
@@ -281,7 +277,7 @@ def _check_opt(opt):
 
 
 def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
-    """ Main plotting function for RDTs. """
+    """Main plotting function for RDTs."""
     fig_dict = {}
     if opt.x_axis != 'location':
         LOG.error("Phase advance not yet implemented in RDT-files. Skipping.")
@@ -362,7 +358,7 @@ def _get_rdt_columns():
 
 
 def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
-    """ Main plotting function for all parameters but RDTs. """
+    """Main plotting function for all parameters but RDTs."""
     y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
 
     same_fig = None
@@ -452,7 +448,7 @@ def _get_ip_positions_from_file(path, axis, pattern):
 
 
 def _create_ip_list(ip_dict):
-    """ ip_dict can be series as well. """
+    """ip_dict can be series as well."""
     return [{'text': name, 'x': x,
              'loc': 'top', 'color': 'k'} for name, x in ip_dict.items()]
 

@@ -1,9 +1,8 @@
 """
 Plot Amplitude Detuning Results
-------------------------------------
+-------------------------------
 
 Provides the plotting function for amplitude detuning analysis
-
 
 **Arguments:**
 
@@ -47,8 +46,6 @@ Provides the plotting function for amplitude detuning analysis
 - **x_lim** *(float)*: Action limits in um (x-axis).
 
 - **y_lim** *(float)*: Tune limits in units of tune scale (y-axis).
-
-
 """
 from collections import OrderedDict
 from functools import partial
@@ -230,7 +227,7 @@ def _get_odr_label(odr_fit, action_unit, tune_scale):
 
 
 def plot_odr(ax, odr_fit, xmax, action_unit, tune_scale, color=None):
-    """ Adds a quadratic odr fit to axes. """
+    """Adds a quadratic odr fit to axes."""
 
     color = 'k' if color is None else color
     odr_fit.beta[0] = 0   # no need to remove offset, as it is removed from data
@@ -256,7 +253,7 @@ def plot_odr(ax, odr_fit, xmax, action_unit, tune_scale, color=None):
 
 
 def _plot_detuning(ax, data, label, action_unit, tune_scale, color=None, limits=None, odr_fit=None):
-    """ Plot the detuning and the ODR into axes. """
+    """Plot the detuning and the ODR into axes."""
     x_lim = _get_default(limits, 'x_lim', [0, max(data['action']+data['action_err'])])
 
     # Plot Fit
@@ -319,14 +316,14 @@ def _check_opt(opt):
 
 
 def _get_default(ddict, key, default):
-    """ Returns 'default' if either the dict itself or the entry is None. """
+    """Returns ``default`` if either the dict itself or the entry is ``None``."""
     if ddict is None or key not in ddict or ddict[key] is None:
         return default
     return ddict[key]
 
 
 def _correct_and_scale(data, odr_fit, action_unit, action_plot_unit, tune_scale, acd_corr):
-    """ Corrects data for AC-Dipole and scales to plot-units (y=tune_scale, x=um)"""
+    """Corrects data for AC-Dipole and scales to plot-units (y=tune_scale, x=um)."""
     # scale action units
     x_scale = UNIT_IN_METERS[action_unit] / UNIT_IN_METERS[action_plot_unit]
     data['action'] *= x_scale
