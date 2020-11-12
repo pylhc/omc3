@@ -1,8 +1,8 @@
 """
 PETRA
--------------------
-Accelerator-Class for Petra.
+-----
 
+Accelerator-Class for the ``PETRA`` machine.
 Model creation not implemented yet.
 """
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError

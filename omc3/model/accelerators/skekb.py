@@ -1,7 +1,8 @@
 """
-Super KEK-B
--------------------
-Accelerator-Class for the Super KEK-B.
+SuperKEKB
+---------
+
+Accelerator-Class for the ``SuperKEKB`` machine.
 
 
 Model Creation Keyword Args:
@@ -18,14 +19,14 @@ Model Creation Keyword Args:
 
     - **dpp** *(float)*:
 
-        Delta p/p to use.
+        Deltap/p to use.
 
         default: ``0.0``
 
 
     - **driven_excitation** *(str)*:
 
-        Denotes driven excitation by AC-dipole (acd) or by ADT (adt)
+        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)
 
         choices: ``('acd', 'adt')``
 
@@ -37,7 +38,7 @@ Model Creation Keyword Args:
 
     - **energy** *(float)*:
 
-        Energy in Tev.
+        Energy in **Tev**.
 
 
     - **fullresponse**:
@@ -67,8 +68,6 @@ Model Creation Keyword Args:
         If True, x-ing angles will be applied to model
 
         action: ``store_true``
-
-
 """
 from generic_parser import EntryPoint
 
@@ -81,9 +80,7 @@ RINGS = ("ler", "her")
 
 
 class SKekB(Accelerator):
-    """
-    KEK's SuperKEKB accelerator.
-    """
+    """KEK's SuperKEKB accelerator."""
     NAME = "skekb"
     RINGS = ("ler", "her")
 

@@ -1,22 +1,22 @@
 """
-IOTA
--------------------
-Accelerator-Class for Iota.
+Iota
+----
 
+Accelerator-Class for the ``Iota`` machine.
 
 Model Creation Keyword Args:
     *--Optional--*
 
     - **dpp** *(float)*:
 
-        Delta p/p to use.
+        Deltap/p to use.
 
         default: ``0.0``
 
 
     - **driven_excitation** *(str)*:
 
-        Denotes driven excitation by AC-dipole (acd) or by ADT (adt)
+        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)
 
         choices: ``('acd', 'adt')``
 
@@ -28,7 +28,7 @@ Model Creation Keyword Args:
 
     - **energy** *(float)*:
 
-        Energy in Tev.
+        Energy in **Tev**.
 
 
     - **fullresponse**:
@@ -65,8 +65,6 @@ Model Creation Keyword Args:
         If True, x-ing angles will be applied to model
 
         action: ``store_true``
-
-
 """
 import logging
 import os

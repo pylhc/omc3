@@ -1,9 +1,8 @@
 """
 LHC
--------------------
+---
 
-Accelerator-Class for the LHC.
-
+Accelerator-Class for the ``LHC`` collider.
 
 Model Creation Keyword Args:
     *--Required--*
@@ -105,7 +104,8 @@ LHC_DIR = os.path.join(CURRENT_DIR, "lhc")
 
 
 class Lhc(Accelerator):
-    """ Parent Class for Lhc-Types.
+    """
+    Parent Class for LHC-types.
     """
     NAME = "lhc"
     RE_DICT = {AccElementTypes.BPMS: r"BPM",
@@ -144,8 +144,7 @@ class Lhc(Accelerator):
         self.verify_object()
 
     def verify_object(self):  # TODO: Maybe more checks?
-        """Verifies if everything is defined which should be defined
-        """
+        """Verifies if everything is defined which should be defined."""
         LOGGER.debug("Accelerator class verification")
         _ = self.beam
 
@@ -225,11 +224,12 @@ class Lhc(Accelerator):
         return _list_intersect_keep_order(vars_by_position, vars_by_class)
 
     def get_ips(self):
-        """ Returns an iterable with this accelerator IPs.
+        """
+        Returns an iterable with this accelerator's IPs.
 
         Returns:
-            An iterator returning tuples with:
-                ("ip name", "left BPM name", "right BPM name")
+            An iterator returning `tuples` with:
+                (``ip name``, ``left BPM name``, ``right BPM name``)
         """
         for ip in Lhc.LHC_IPS:
             yield ("IP{}".format(ip),
