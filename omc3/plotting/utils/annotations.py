@@ -42,7 +42,7 @@ def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plo
     Set y-axis labels.
 
     Args:
-        param: One of the labels defined in ``ylabel``in this module.
+        param: One of the labels defined in ``ylabel`` in this module.
         plane: Usually x or y, but can be any string actually to be placed into the label ({0}).
         ax: Axes to put the label on. Defaults to `` gca()``.
         delta: If True adds a Delta before the label. Defaults to ``False``.
