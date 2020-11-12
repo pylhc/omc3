@@ -1,3 +1,9 @@
+"""
+Constants
+---------
+
+Specific constants to be used in ``harpy``, to help with consistency.
+"""
 # Output Fileextensions --------------------------------------------------------
 
 FILE_AMPS_EXT = ".amps{plane}"

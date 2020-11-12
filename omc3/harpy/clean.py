@@ -1,12 +1,9 @@
 """
-clean
---------------------
+Clean
+-----
 
-Cleaning functionality of harpy.
-
+This module contains the cleaning functionality of ``harpy``.
 """
-
-
 import numpy as np
 import pandas as pd
 
@@ -23,9 +20,9 @@ def clean(harpy_input, bpm_data, model):
     Also cleans the noise using singular value decomposition.
 
     Args:
-        harpy_input: The input object containing the analysis settings
-        bpm_data: DataFrame of BPM TbT matrix indexed by BPM names
-        model: model containing BPMs longitudinal locations indexed by BPM names
+        harpy_input: The input object containing the analysis settings.
+        bpm_data: DataFrame of BPM TbT matrix indexed by BPM names.
+        model: model containing BPMs longitudinal locations indexed by BPM names.
 
     Returns:
         Clean BPM matrix, its decomposition, bad BPMs summary and estimated BPM resolutions
@@ -93,12 +90,12 @@ def _svd_clean(bpm_data, harpy_input):
 
 
 def _detect_known_bad_bpms(bpm_data, list_of_bad_bpms):
-    """  Searches for known bad BPMs  """
+    """Searches for known bad BPMs."""
     return bpm_data.index.intersection(list_of_bad_bpms)
 
 
 def _detect_flat_bpms(bpm_data, min_peak_to_peak):
-    """  Detects BPMs with the same values for all turns  """
+    """Detects BPMs with the same values for all turns."""
     cond = ((bpm_data.max(axis=1) - bpm_data.min(axis=1)).abs() < min_peak_to_peak)
     bpm_flatness = bpm_data[cond].index
     if bpm_flatness.size:
@@ -108,7 +105,7 @@ def _detect_flat_bpms(bpm_data, min_peak_to_peak):
 
 
 def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
-    """  Detects BPMs with spikes > max_peak_cut  """
+    """Detects BPMs with spikes > `max_peak_cut`."""
     too_high = bpm_data[bpm_data.max(axis=1) > max_peak_cut].index
     too_low = bpm_data[bpm_data.min(axis=1) < -max_peak_cut].index
     bpm_spikes = too_high.union(too_low)
@@ -118,7 +115,7 @@ def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
 
 
 def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
-    """  Detects BPMs with exact zeros due to OP workaround  """
+    """Detects BPMs with exact zeros due to OP workaround."""
     if keep_exact_zeros:
         LOGGER.debug("Skipped exact zero check")
         return pd.Index([])
@@ -159,13 +156,13 @@ def _index_union(*indices):
 
 
 def _fix_polarity(wrong_polarity_names, bpm_data):
-    """  Fixes wrong polarity  """
+    """Fixes wrong polarity."""
     bpm_data.loc[wrong_polarity_names, :] = -1 * bpm_data.loc[wrong_polarity_names, :].to_numpy()
     return bpm_data
 
 
 def _resync_bpms(harpy_input, bpm_data, model):
-    """  Resynchronizes BPMs between the injection point and start of the lattice.  """
+    """Resynchronizes BPMs between the injection point and start of the lattice."""
     LOGGER.debug("Will resynchronize BPMs")
     bpm_pos = model.index.get_loc(harpy_input.first_bpm)
     if harpy_input.opposite_direction:
@@ -178,19 +175,20 @@ def _resync_bpms(harpy_input, bpm_data, model):
 
 def svd_decomposition(matrix, num_singular_values, dominance_limit=None, num_iter=None):
     """
-    Computes reduced (K largest values) singular value decomposition of a matrix
-    Requiring K singular values from MxN matrix results in matrices sized: ((M,K) x diag(K) x (K,N))
+    Computes reduced (K largest values) singular value decomposition of a matrix.
+    Requiring K singular values from MxN matrix results in matrices sized:
+    `((M,K) x diag(K) x (K,N))`
 
     Args:
-        matrix: matrix to be decomposed
-        num_singular_values: Required number of singular values for reconstruction
-        dominance_limit: limit on SVD dominance
-        num_iter: maximal number of iteration to remove elements and renormalise matrices
+        matrix: matrix to be decomposed.
+        num_singular_values: Required number of singular values for reconstruction.
+        dominance_limit: limit on SVD dominance.
+        num_iter: maximal number of iteration to remove elements and renormalise matrices.
 
     Returns:
-        An indexed DataFrame of U matrix (M,K),
-        product of S and V^T martices (diag(K).x(K,N)),
-        and U matrix mask for cleaned elements
+        An indexed DataFrame of U matrix `(M,K)`,
+        the product of S and V^T matrices `(diag(K).x(K,N))`,
+        and the U matrix mask for cleaned elements.
     """
     u_mat, s_mat, vt_mat = np.linalg.svd(matrix, full_matrices=False)
     u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=num_iter)

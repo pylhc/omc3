@@ -1,6 +1,71 @@
 """
-PS BOOSTER
--------------------
+PS Booster
+----------
+
+Accelerator-Class for the ``PSB`` machine.
+
+
+Model Creation Keyword Args:
+    *--Optional--*
+
+    - **dpp** *(float)*:
+
+        Deltap/p to use.
+
+        default: ``0.0``
+
+
+    - **driven_excitation** *(str)*:
+
+        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)
+
+        choices: ``('acd', 'adt')``
+
+
+    - **drv_tunes** *(float)*:
+
+        Driven tunes without integer part.
+
+
+    - **energy** *(float)*:
+
+        Energy in **Tev**.
+
+
+    - **fullresponse**:
+
+        If True, outputs also fullresponse madx file.
+
+        action: ``store_true``
+
+
+    - **model_dir** *(str)*:
+
+        Path to model directory; loads tunes and excitation from model!
+
+
+    - **modifiers** *(str)*:
+
+        Path to the optics file to use (modifiers file).
+
+
+    - **nat_tunes** *(float)*:
+
+        Natural tunes without integer part.
+
+
+    - **ring** *(int)*:
+
+        Ring to use.
+
+        choices: ``(1, 2, 3, 4)``
+
+
+    - **xing**:
+
+        If True, x-ing angles will be applied to model
+
+        action: ``store_true``
 """
 import logging
 import os
@@ -15,7 +80,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 
 
 class Psbooster(Accelerator):
-    """ Parent Class for Psbooster-Types.    """
+    """Parent Class for Psbooster-types."""
     NAME = "psbooster"
 
     @staticmethod

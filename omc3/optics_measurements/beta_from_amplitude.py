@@ -1,11 +1,9 @@
 """
-Beta from amplitude
+Beta from Amplitude
 --------------------
 
-:module: optics_measurements.beta_from_amplitude
-:author: Lukas Malina
-
-Computes beta from amplitude.
+This module contains some of the beta calculation related functionality of ``optics_measurements``.
+It provides functions to calculate beta functions from amplitude data.
 """
 from os.path import join
 
@@ -20,20 +18,17 @@ from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
 def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane):
     """
-    Calculates beta and fills the following TfsFiles:
-        f"{AMP_BETA_NAME}{plane.lower()}{EXT}"
+    Calculates beta and fills the following `TfsFiles`: ``f"{AMP_BETA_NAME}{plane.lower()}{EXT}"``
 
     Args:
-        meas_input: OpticsInput object
-        input_files: InputFiles object contains measurement files
-        tune_dict: TuneDict contains measured tunes
-        beta_phase: contains beta functions from measured from phase
-        header_dict: dictionary of header items common for all output files
-        plane: plane
+        meas_input: `OpticsInput` object.
+        input_files: `InputFiles` object contains measurement files.
+        tune_dict: `TuneDict` contains measured tunes.
+        beta_phase: contains beta functions from measured from phase.
+        header_dict: dictionary of header items common for all output files.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-
-        
     """
     beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)

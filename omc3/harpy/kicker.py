@@ -1,9 +1,10 @@
 """
-kicker
--------------------
+Kicker
+------
 
-Corrects phase of main spectral line in a case,
-when damped (exponentially decaying) oscillations are analysed.
+This module contains phase correction functionality of ``harpy``.
+It provides tools to correct phases of a main spectral line in a case where damped (exponentially
+decaying) oscillations are analysed.
 """
 import numpy as np
 
@@ -16,15 +17,15 @@ LOGGER = logging_tools.getLogger(__name__)
 
 def phase_correction(bpm_data_orig, lin_frame, plane):
     """
-    Corrects phase of main spectral line assuming exponentially decaying oscillations
+    Corrects phase of main spectral line assuming exponentially decaying oscillations.
 
     Args:
-        bpm_data_orig: matrix of original TbtData
-        lin_frame: DataFrame in which to correct the results
-        plane: "X" or "Y"
+        bpm_data_orig: matrix of original `TbtData`.
+        lin_frame: DataFrame in which to correct the results.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        DataFrame with corrected phases
+        A `DataFrame` with corrected phases.
     """
     bpm_data = bpm_data_orig.loc[lin_frame.index, :]
     damp, dstd = _get_damping(bpm_data)

@@ -1,3 +1,9 @@
+"""
+PS Booster Model Creator
+------------------------
+
+This module provides convenience functions for model creation of the ``PSB``.
+"""
 import os
 import shutil
 

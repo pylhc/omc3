@@ -1,3 +1,10 @@
+"""
+Run Kmod
+--------
+
+Top-level script to analyse Kmod-results from the ``LHC`` and creating files for GUI and plotting
+as well as returning beta-star and waist shift.
+"""
 from os.path import join
 
 import numpy as np
@@ -93,7 +100,135 @@ def kmod_params():
 @entrypoint(kmod_params(), strict=True)
 def analyse_kmod(opt):
     """
-    Run Kmod analysis
+    Run Kmod analysis.
+
+    Kmod Keyword Arguments:
+        *--Required--*
+
+        - **beam** *(str)*:
+
+            define beam used: B1 or B2
+
+            choices: ``['B1', 'B2']``
+
+
+        - **betastar_and_waist** *(float)*:
+
+            Estimated beta star of measurements and waist shift
+
+
+        - **working_directory** *(str)*:
+
+            path to working directory with stored KMOD measurement files
+
+
+        *--Optional--*
+
+        - **circuits** *(str)*:
+
+            circuit names of the modulated quadrupoles
+
+
+        - **cminus** *(float)*:
+
+            C Minus
+
+
+        - **errorK** *(float)*:
+
+            error in K of the modulated quadrupoles, relative to gradient
+
+
+        - **errorL** *(float)*:
+
+            error in length of the modulated quadrupoles, unit m
+
+
+        - **instruments** *(str)*:
+
+            define instruments (use keywords from twiss) at which beta should be
+            calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER
+
+            default: ``MONITOR,SBEND,TKICKER,INSTRUMENT``
+
+
+        - **interaction_point** *(str)*:
+
+            define interaction point
+
+            choices: ``['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8']``
+
+
+        - **log**:
+
+            flag for creating a log file
+
+            action: ``store_true``
+
+
+        - **measurement_dir** *(str)*:
+
+            give an optics measurement directory to include phase constraint in
+            penalty function
+
+
+        - **misalignment** *(float)*:
+
+            misalignment of the modulated quadrupoles in m
+
+
+        - **model_dir** *(str)*:
+
+            twiss model that contains phase
+
+
+        - **no_autoclean**:
+
+            flag for manually cleaning data
+
+            action: ``store_true``
+
+
+        - **no_plots**:
+
+            flag to not create any plots
+
+            action: ``store_true``
+
+
+        - **no_sig_digits**:
+
+            flag to not use significant digits
+
+            action: ``store_true``
+
+
+        - **outputdir**:
+
+            Path where outputfiles will be stored, defaults to the given
+            working_directory
+
+
+        - **phase_weight** *(float)*:
+
+            weight in penalty function between phase and beta.If weight=0 phase is
+            not used as a constraint.
+
+            default: ``0.0``
+
+
+        - **simulation**:
+
+            flag for enabling simulation mode
+
+            action: ``store_true``
+
+
+        - **tune_uncertainty** *(float)*:
+
+            tune measurement uncertainty
+
+            default: ``2.5e-05``
     """
     LOG.info('Getting input parameter')
     if opt.interaction_point is None and opt.circuits is None:

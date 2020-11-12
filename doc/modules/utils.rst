@@ -2,10 +2,6 @@ Utils
 **************************
 
 
-Package Content
-=======================
-
-
 .. automodule:: omc3.utils.contexts
     :members:
 
