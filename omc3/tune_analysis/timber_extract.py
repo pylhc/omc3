@@ -1,6 +1,6 @@
 """
-Module tune_analysis.timber_extract
--------------------------------------
+Timber Extraction
+-----------------
 
 Tools to extract data from ``Timber``.
 
