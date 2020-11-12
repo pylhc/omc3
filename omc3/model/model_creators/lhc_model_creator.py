@@ -1,3 +1,9 @@
+"""
+LHC Model Creator
+-----------------
+
+This module provides convenience functions for model creation of the ``LHC``.
+"""
 import logging
 import os
 import shutil
