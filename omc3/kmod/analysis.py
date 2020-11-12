@@ -1,3 +1,11 @@
+"""
+Analysis
+--------
+
+This module contains the analysis functionality of ``kmod``.
+
+It provides functions to calculate beta functions at different locations from K-modulation data.
+"""
 import datetime
 import os
 
@@ -20,15 +28,15 @@ LOG = logging_tools.get_logger(__name__)
 
 def return_sign_for_err(n):
     """
-    creates an array of form
+    Creates an array for error calculation, of form:
     [[ 0.  0.  0.]
     [ 1.  0.  0.]
     [-1. -0. -0.]
     [ 0.  1.  0.]
     [-0. -1. -0.]
     [ 0.  0.  1.]
-    [-0. -0. -1.]] for error calculation
-    columns corresponds to error i.e. first column for dQ etc.
+    [-0. -0. -1.]]
+    Columns corresponds to error, i.e. first column for `dQ` etc.
     """
     sign = np.zeros((2*n+1, n))
 
@@ -152,7 +160,7 @@ np.vectorize(fit_approx)
 
 
 def average_beta_from_Tune(Q, TdQ, l, Dk):
-    """Calculates average beta function in quadrupole from Tunechange TdQ and delta K """
+    """Calculates average beta function in quadrupole from tune change ``TdQ`` and ``delta K``."""
 
     beta_av = 2 * (1 / np.tan(2 * np.pi * Q) *
               (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (l * Dk)
@@ -344,6 +352,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
         weight*(((phase_adv - (phase_adv_constraint[0]+sign[8]*phase_adv_constraint[1]))/phase_adv_constraint[0])**2)
 
     return c2
+
 
 def get_beta_waist(magnet1_df, magnet2_df, kmod_input_params, plane):
 

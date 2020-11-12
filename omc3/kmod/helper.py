@@ -1,3 +1,11 @@
+"""
+Analysis
+--------
+
+This module contains helper functionality for ``kmod``.
+
+It provides functions to perform data cleaning, IO loading and plotting.
+"""
 import datetime
 from os.path import join
 
@@ -32,6 +40,7 @@ def add_tune_uncertainty(magnet_df, tune_uncertainty):
     for plane in PLANES:
         magnet_df[f"{ERR}{TUNE}{plane}"] = np.sqrt(magnet_df[f"{ERR}{TUNE}{plane}"]**2 + tune_uncertainty**2)
     return magnet_df
+
 
 # ##########################   FILE LOADING    ##########################################
 
@@ -114,6 +123,7 @@ def headers_for_df(magnet, k_df):
     head['END_TIME'] = datetime.datetime.fromtimestamp(k_df['TIME'].iloc[-1] / 1000).strftime(formats.TIME)
     # add starting tunes/tunesplit, number of cycles, ... to header
     return head
+
 
 # ##############################    PLOTING    #############################################
 

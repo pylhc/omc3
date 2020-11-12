@@ -22,6 +22,7 @@ Package Reference
 
    definitions/index
    harpy/index
+   kmod/index
    model/index
    optics_measurements/index
    plotting/index
