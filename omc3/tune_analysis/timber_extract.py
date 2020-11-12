@@ -2,14 +2,9 @@
 Module tune_analysis.timber_extract
 -------------------------------------
 
-Tools to extract data from timber.
+Tools to extract data from ``Timber``.
 
-It is a bit heavy on the LHC-side at the moment.
-Feel free to make it more accelerator independent.
-
-:module: omc3.tune_analysis.timber_extract
-:author: jdilly
-
+It is a bit heavy on the LHC side at the moment.
 """
 import re
 
@@ -30,12 +25,13 @@ LOG = logging_tools.get_logger(__name__)
 
 
 def lhc_fill_to_tfs(fill_number, keys=None, names=None):
-    """ Extracts data for keys of fill from timber.
+    """
+    Extracts data for keys of fill from ``Timber``.
 
     Args:
-        fill_number: fill number
-        keys: list of data to extract
-        names: dict to map keys to column names
+        fill_number: fill number.
+        keys: list of data to extract.
+        names: dict to map keys to column names.
 
     Returns: tfs pandas dataframe.
     """
@@ -46,13 +42,14 @@ def lhc_fill_to_tfs(fill_number, keys=None, names=None):
 
 
 def extract_between_times(t_start, t_end, keys=None, names=None):
-    """ Extracts data for keys between t_start and t_end from timber.
+    """
+    Extracts data for keys between t_start and t_end from timber.
 
     Args:
-        t_start: starting time in local time or timestamp
-        t_end: end time in local time or timestamp
-        keys: list of data to extract
-        names: dict to map keys to column names
+        t_start: starting time in local time or timestamp.
+        t_end: end time in local time or timestamp.
+        keys: list of data to extract.
+        names: dict to map keys to column names.
 
     Returns: tfs pandas dataframe.
     """
@@ -83,10 +80,12 @@ def extract_between_times(t_start, t_end, keys=None, names=None):
 def get_tune_and_coupling_variables(db):
     """
     Returns the tune and coupling variable names.
-    Args:
-        db: pytimber database
 
-    Returns: list of variable names
+    Args:
+        db: pytimber database.
+
+    Returns:
+        `list` of variable names.
     """
     bbq_vars = []
     for search_term in ['%EIGEN%FREQ%', '%COUPL%ABS%']:
@@ -98,14 +97,15 @@ def get_tune_and_coupling_variables(db):
 
 
 def get_fill_times(db, fill_number):
-    """ Returns start and end time of fill with fill number.
+    """
+    Returns start and end time of fill with fill number.
 
     Args:
-        db: pytimber database
-        fill_number: fill number
+        db: pytimber database.
+        fill_number: fill number.
 
-    Returns: tuple of start and end time
+    Returns:
+       `Tuple` of start and end time.
     """
     fill = db.getLHCFillData(fill_number)
     return fill['startTime'], fill['endTime']
-
