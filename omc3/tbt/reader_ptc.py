@@ -1,6 +1,6 @@
 """
-PTC Turn-by-Turn Data Handler
------------------------------
+PTC TbT Data Handler
+--------------------
 
 Tbt data handling from the ``PTC`` code.
 """

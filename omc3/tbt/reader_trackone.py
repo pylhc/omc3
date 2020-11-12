@@ -1,6 +1,6 @@
 """
-Trackone Turn-by-Turn Data Handler
-----------------------------------
+Trackone TbT Data Handler
+-------------------------
 
 Tbt data handling from ``PTC`` trackone.
 """

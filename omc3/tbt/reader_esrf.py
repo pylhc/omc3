@@ -1,6 +1,6 @@
 """
-ESRF Turn-by-Turn Data Handler
-------------------------------
+ESRF TbT Data Handler
+---------------------
 
 Data handling for tbt data from ``ESRF``.
 """

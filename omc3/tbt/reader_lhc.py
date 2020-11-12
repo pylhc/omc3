@@ -1,6 +1,6 @@
 """
-LHC Turn-by-Turn Data Handler
------------------------------
+LHC TbT Data Handler
+--------------------
 
 Data handling for tbt data from the ``LHC``.
 """
