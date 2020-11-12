@@ -23,10 +23,14 @@ DIVIDER = "|"
 NEWLINE = "\n" + " " * 10  # levelname + divider + 2
 BASIC_FORMAT = '%(levelname)7s {div:s} %(message)s {div:s} %(name)s'.format(div=DIVIDER)
 COLOR_LEVEL = '\33[0m\33[38;2;150;150;255m'
-COLOR_MESSAGE = '\33[0m\33[1m'
+# COLOR_MESSAGE = '\33[0m\33[1m'
+COLOR_MESSAGE = '\33[0m'
+# COLOR_MESSAGE = '\33[0m'
+# COLOR_MESSAGE_LOW = '\33[0m\33[38;2;160;160;160m'
+COLOR_MESSAGE_LOW = '\33[0m\33[38;2;140;140;140m'
 COLOR_WARN = '\33[0m\33[38;2;255;161;53m'
 COLOR_ERROR = '\33[0m\33[38;2;216;31;42m'
-COLOR_NAME = '\33[0m\33[38;2;127;127;127m'
+COLOR_NAME = '\33[0m\33[38;2;80;80;80m'
 COLOR_DIVIDER = '\33[0m\33[38;2;127;127;127m'
 COLOR_RESET = '\33[0m'
 
@@ -238,7 +242,7 @@ def list2str(list_: list) -> str:
 # Public Methods ###############################################################
 
 
-def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
+def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, force_color=False):
     """
     Sets up logger if name is __main__. Returns logger based on module name)
 
@@ -262,9 +266,17 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
         # print logs to the console
         root_logger.addHandler(
             stream_handler(
-                level=level_console,
-                fmt=fmt,
-                max_level=INFO
+                level=max(level_console, DEBUG),
+                max_level=INFO-1,
+                fmt=_maybe_bring_color(fmt, DEBUG, force_color),
+            )
+        )
+
+        root_logger.addHandler(
+            stream_handler(
+                level=max(level_console, INFO),
+                max_level=WARNING-1,
+                fmt=_maybe_bring_color(fmt, INFO, force_color),
             )
         )
 
@@ -272,8 +284,8 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
         root_logger.addHandler(
             stream_handler(
                 level=max(WARNING, level_console),
-                fmt=fmt,
-                max_level=WARNING
+                max_level=ERROR-1,
+                fmt=_maybe_bring_color(fmt, WARNING, force_color),
             )
         )
 
@@ -303,7 +315,7 @@ def stream_handler(stream=sys.stdout, level=DEBUG, fmt=BASIC_FORMAT, max_level=N
     """ Convenience function so the caller does not have to import logging """
     handler = logging.StreamHandler(stream)
     handler.setLevel(level)
-    console_formatter = logging.Formatter(_bring_color(fmt, level))
+    console_formatter = logging.Formatter(fmt)
     handler.setFormatter(console_formatter)
     if max_level:
         handler.addFilter(MaxFilter(max_level))
@@ -367,18 +379,21 @@ def _get_caller_logger_name():
     return ".".join([current_module, os.path.basename(caller_file)])
 
 
-def _bring_color(format_string, colorlevel=INFO):
+def _maybe_bring_color(format_string, colorlevel=INFO, force_color=False):
     """ Adds color to the logs (can only be used in a terminal) """
-    if not sys.stdout.isatty():
-        # Not a tty. You're being piped or redirected
+    if not (force_color or _use_color()):
         return format_string
 
     level = "%(levelname)"
     message = "%(message)"
     name = "%(name)"
+
+
     format_string = format_string.replace(level, COLOR_LEVEL + level)
-    
-    if colorlevel <= INFO:
+
+    if colorlevel <= DEBUG:
+        format_string = format_string.replace(message, COLOR_MESSAGE_LOW + message)
+    elif colorlevel <= INFO:
         format_string = format_string.replace(message, COLOR_MESSAGE + message)
     elif colorlevel <= WARNING:
         format_string = format_string.replace(message, COLOR_WARN + message)
@@ -390,3 +405,8 @@ def _bring_color(format_string, colorlevel=INFO):
     format_string = format_string + COLOR_RESET
 
     return format_string
+
+
+def _use_color():
+    """ Checks if one should use colors. """
+    return hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
