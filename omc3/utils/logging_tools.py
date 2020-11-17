@@ -247,6 +247,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, for
         level_root: main logging level, defaults to ``DEBUG``.
         level_console: console logging level, defaults to ``INFO``.
         fmt: Format of the logging. For default see ``BASIC_FORMAT``.
+        force_color: Uses color codes even if tty is not detected.
 
     Returns:
         Logger instance.
