@@ -1,3 +1,11 @@
+"""
+Handler
+-------
+
+This module contains high-level functions to manage most functionality of ``tbt``.
+Tools are provided to handle the different forms of turn-by-turn data, as well as IO
+functionality for these objects.
+"""
 from datetime import datetime
 
 import numpy as np
@@ -24,8 +32,7 @@ DATA_READERS = dict(lhc=reader_lhc,
 
 class TbtData(object):
     """
-    Object holding a representation of a Turn-by-Turn Data
-
+    Object holding a representation of a Turn-by-Turn Data.
     """
     def __init__(self, matrices, date, bunch_ids, nturns):
         self.matrices = matrices  # list per bunch containing dict per plane of DataFrames
@@ -37,7 +44,7 @@ class TbtData(object):
 
 def generate_average_tbtdata(tbtdata):
     """
-    Takes a TbtData object and returns TbtData object containing the average over all
+    Takes a `TbtData` object and returns `TbtData` object containing the average over all
     bunches/particles at all used BPMs.
     """
     data = tbtdata.matrices
@@ -133,13 +140,14 @@ def _write_tbt_data(tbt_data, bunch_id, output_file):
             output_file.write(row_format.format(PLANE_TO_NUM[plane], bpm_name, bpm_index, *samples))
 
 
-def numpy_to_tbts(names, matrix):
-    """Converts turn by turn data and names into TbTData.
+def numpy_to_tbts(names: np.ndarray, matrix: np.ndarray):
+    """
+    Converts turn by turn data and names into TbTData.
 
-    Arguments:
-        names: Numpy array of BPM names
+    Args:
+        names: Numpy array of BPM names.
         matrix: 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
-            quantities in order [x, y]
+            quantities in order [x, y].
     """
     # get list of TbTFile from 4D matrix ...
     _, nbpms, nbunches, nturns = matrix.shape

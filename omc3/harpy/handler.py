@@ -1,9 +1,10 @@
 """
-handler
----------------------
+Handler
+-------
 
-Handles the cleaning, frequency analysis and resonance search for a single-bunch TbtData.
-
+This module contains high-level functions to manage most functionality of ``harpy``.
+Tools are provided to handle the cleaning, frequency analysis and resonance search for a
+single-bunch `TbtData`.
 """
 from collections import OrderedDict
 from os.path import basename, join
@@ -26,17 +27,16 @@ ALL_PLANES = (*PLANES, "Z")
 PLANE_TO_NUM = {**P2N, "Z": 3}
 
 
-
 def run_per_bunch(tbt_data, harpy_input):
     """
-    Cleans data, analyses frequencies and searches resonances
+    Cleans data, analyses frequencies and searches for resonances.
 
     Args:
-        tbt_data: single bunch TbtData
-        harpy_input: Analysis settings
+        tbt_data: single bunch `TbtData`.
+        harpy_input: Analysis settings taken from the commandline.
 
     Returns:
-        Dictionary of TfsDataFrames per plane
+        Dictionary with a `TfsDataFrame` per plane.
     """
     model = None if harpy_input.model is None else tfs.read(harpy_input.model, index=COL_NAME).loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
@@ -129,8 +129,8 @@ def _add_calculated_phase_errors(lin_frame):
 def _get_spectral_phase_error(amplitude, noise):
     """
     When the error is too big (> 2*pi*0.25 more or less) the noise is not Gaussian anymore.
-    In such a case the distribution is almost uniform, so we set the error to be 0.3,
-    which is the standard deviation of uniformly distributed phases.
+    In such a case the distribution is almost uniform, so we set the error to be 0.3, which is
+    the standard deviation of uniformly distributed phases.
     This approximation does not bias the error by more than 20%, and that is only for large errors.
     """
     error = noise / (np.where(amplitude > 0.0, amplitude, 1e-15) * 2 * np.pi)
@@ -138,9 +138,10 @@ def _get_spectral_phase_error(amplitude, noise):
 
 
 def _sync_phase(lin_frame, plane):
-    """ Produces MUXSYNC and MUYSYNC column that is MUX/Y but shifted such that for bpm at index 0
-     is always 0. It allows to compare phases of consecutive measurements and if some measurements
-     stick out remove them from the data set. author: skowron
+    """
+    Produces ``MUXSYNC`` and ``MUYSYNC`` columns that are ``MUX/MUY`` but shifted such that for
+    BPM at index 0 is always 0. It allows to compare phases of consecutive measurements and if
+    some measurements stick out remove them from the data set. Original author is **skowron**.
     """
     phase = lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy()
     phase = phase - phase[0]

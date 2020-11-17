@@ -2,7 +2,7 @@ Plot-Subfunctions
 **************************
 
 Optics Measurements Plots
-===========================
+=========================
 
 
 .. automodule:: omc3.plotting.optics_measurements.constants
@@ -13,7 +13,7 @@ Optics Measurements Plots
 
 
 Spectrum Plots
-=================
+==============
 
 .. automodule:: omc3.plotting.spectrum.stem
     :members:
@@ -28,7 +28,7 @@ Spectrum Plots
 
 
 Common Plot Functionality
-==========================
+=========================
 
 .. automodule:: omc3.plotting.utils.annotations
     :members:

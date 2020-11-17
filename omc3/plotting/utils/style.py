@@ -1,13 +1,8 @@
 """
 Plotting Utilities: Style
------------------------------------
+-------------------------
 
-Helper functions to make the most awesome* plots out there.
-
-* please feel free to add more stuff
-
-:module: omc3.plotting.utils.style
-
+Helper functions to style plots.
 """
 import matplotlib
 from matplotlib import pyplot as plt
@@ -27,11 +22,13 @@ def omc3_styles():
 
 
 def set_style(styles=('standard',), manual=None):
-    """Sets the style for all following plots.
+    """
+    Sets the style for all following plots.
 
     Args:
-        styles: List of styles (or single string), either path to style-file, name of style in styles or from the mpl styles
-        manual: Dict of manual parameters to update. Convention: "REMOVE_ENTRY" removes entry
+        styles: `List` of styles (or single string), either path to style-file, name of style in
+            styles or from the mpl styles
+        manual: `Dict` of manual parameters to update. Convention: ``REMOVE_ENTRY`` removes entry.
     """
     if isinstance(styles, str):
         styles = (styles,)

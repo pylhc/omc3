@@ -1,11 +1,8 @@
 """
 Plotting Utilities: Lines
----------------------------------
+-------------------------
 
 Line-plotting related functionality.
-
-:module: omc3.plotting.utils.lines
-
 """
 import matplotlib
 import matplotlib.transforms as mtrans
@@ -22,7 +19,7 @@ VERTICAL_LINES_ALPHA = 0.5
 
 
 class MarkerList(object):
-    """ Create a list of predefined markers """
+    """Create a list of predefined markers."""
     # markers = ["s", "o", ">", "D", "v", "*", "h", "^", "p", "X", "<", "P"]  # matplotlib 2.++
     markers = ["s", "o", ">", "D", "v", "*", "h", "^", "p", "<"]
 
@@ -46,13 +43,14 @@ class MarkerList(object):
 
 
 def plot_vertical_lines_fast(ax, x, y=(0, 1), **kwargs):
-    """ Plots vertical lines, similar to axvline, but also in 3D, all at once and with only one label.
+    """
+    Plots vertical lines, similar to axvline, but also in 3D, all at once and with only one label.
 
-        Args:
-            ax: Axis to plot on
-            x: array of x-positions (data coordinates)
-            y: tuple of y-limits (axis coordinates, default (0,1) i.e. bottom to top)
-            kwargs: kwargs passed on to ax.plot
+    Args:
+        ax: Axis to plot on.
+        x: array of x-positions (data coordinates).
+        y: tuple of y-limits (axis coordinates, default (0,1) i.e. bottom to top).
+        kwargs: kwargs passed on to ax.plot.
     """
     trans = mtrans.blended_transform_factory(ax.transData, ax.transAxes)  # x is data, y is axes
     ax.plot(np.repeat(x, 3), np.tile([*y, np.nan], len(x)), transform=trans, **kwargs)
@@ -60,9 +58,11 @@ def plot_vertical_lines_fast(ax, x, y=(0, 1), **kwargs):
 
 def plot_vertical_line(ax, axvline_args: dict, text: str = None, text_loc: str = None,
                        label_size: float = matplotlib.rcParams['font.size']):
-    """ Plot a vertical line into the plot, where mline is a dictionary with arguments for axvline.
-    Advanced capabilities include: Automatic alpha value (if not overwritten), automatic zorder = -1 (if not overwritten),
-    and adding a label to the line, where the location is given by text_loc.
+    """
+    Plot a vertical line into the plot, where mline is a dictionary with arguments for ``axvline``.
+    Advanced capabilities include: Automatic alpha value (if not overwritten), automatic
+    zorder = -1 (if not overwritten), and adding a label to the line, where the location is given
+    by text_loc.
     """
     axvline_args.setdefault('alpha', VERTICAL_LINES_ALPHA)
     axvline_args.setdefault('marker', 'None')

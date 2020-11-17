@@ -1,10 +1,8 @@
 """
-Module tune_analysis.constants
-----------------------------------
+Constants
+---------
 
-:module: omc3.tune_analysis.constants
-:author: jdilly
-
+Specific constants and helpers to be used in ``tune_analysis``, to help with consistency.
 """
 from omc3.optics_measurements.constants import (ERR, RES, EXT, KICK_NAME, ACTION, TIME, NAT_TUNE)
 from omc3.definitions.constants import PLANE_TO_NUM

@@ -1,3 +1,9 @@
+"""
+Constants
+---------
+
+Specific constants to be used in ``kmod``, to help with consistency.
+"""
 from os.path import abspath, dirname, join
 
 

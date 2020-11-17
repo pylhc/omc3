@@ -1,9 +1,8 @@
 """
-PTC Turn-by-Turn Data Handler
--------------------------------
+PTC TbT Data Handler
+--------------------
 
-Tbt data handling from PTC.
-
+Tbt data handling from the ``PTC`` code.
 """
 from collections import namedtuple
 from datetime import datetime
@@ -35,8 +34,13 @@ LOGGER = get_logger(__name__)
 
 def read_tbt(file_path):
     """
-    Reads TbtData object from PTC trackone output.
+    Reads TbtData object from ``PTC`` **trackone** output.
 
+    Args:
+        file_path: path to a file containing TbtData.
+
+    Returns:
+        A `TbtData` object with the loaded data.
     """
     LOGGER.debug(f"Reading path: {file_path}")
 
@@ -65,7 +69,7 @@ def read_tbt(file_path):
 
 
 def _read_header(lines):
-    """ Reads header length and datetime from header. """
+    """Reads header length and datetime from header."""
     idx_line = 0
     date_str = {k: None for k in [DATE, TIME]}
     for idx_line, line in enumerate(lines):
@@ -87,8 +91,10 @@ def _read_header(lines):
 
 
 def _read_from_first_turn(lines):
-    """ Reads the bpms, particles, column indices and number of turns and particles
-        from the data of the first turn. """
+    """
+    Reads the BPMs, particles, column indices and number of turns and particles from the data of
+    the first turn.
+    """
     LOGGER.debug("Reading first turn to define boundary parameters.")
     bpms = []
     particles = []
@@ -135,7 +141,7 @@ def _read_from_first_turn(lines):
 
 
 def _read_data(lines, matrices, column_indices):
-    """ Read the data into the matrices. """
+    """Read the data into the matrices."""
     LOGGER.debug("Reading data.")
     segment = None
     column_map = {"X": COLX, "Y": COLY}
@@ -167,12 +173,12 @@ def _read_data(lines, matrices, column_indices):
 
 
 def _parse_data(column_indices, parts):
-    """ Converts the ``parts`` into a dictionary based on the indices in ``column_indices``. """
+    """Converts the ``parts`` into a dictionary based on the indices in ``column_indices``."""
     return {col: parts[col_idx] for col, col_idx in column_indices.items()}
 
 
 def _parse_column_names_to_indices(parts):
-    """ Parses the column names from the line into a dictionary with indices. """
+    """Parses the column names from the line into a dictionary with indices."""
     col_idx = {k: None for k in [COLX, COLY, COLTURN, COLPARTICLE]}
     LOGGER.debug("Setting column names.")
     for idx, column_name in enumerate(parts):

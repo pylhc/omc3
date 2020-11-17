@@ -1,3 +1,9 @@
+"""
+Segment Creator
+---------------
+
+This module provides convenience functions for model creation of a ``segment``.
+"""
 import shutil
 from os.path import join, dirname, pardir
 

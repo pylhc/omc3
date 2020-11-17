@@ -1,3 +1,9 @@
+"""
+Utils
+-----
+
+This module contains utilities for the ``plotting`` module.
+"""
 from collections import OrderedDict
 from pathlib import Path
 from typing import Iterable
@@ -6,7 +12,7 @@ from matplotlib import pyplot as plt
 
 
 class FigureContainer:
-    """ Container for attaching additional information to one figure. """
+    """Container for attaching additional information to one figure."""
     def __init__(self, id_: str, path: Path, axes_ids: Iterable[str]) -> None:
         self.fig, axs = plt.subplots(nrows=len(axes_ids))
         self.fig.canvas.set_window_title(id_)
@@ -26,7 +32,7 @@ class FigureContainer:
 
 
 class FigureCollector:
-    """ Class to collect figure containers and manage data adding. """
+    """Class to collect figure containers and manage data adding."""
     def __init__(self) -> None:
         self.fig_dict = OrderedDict()   # dictionary of matplotlib figures, for output
         self.figs = OrderedDict()       # dictionary of FigureContainers, used internally
@@ -35,7 +41,7 @@ class FigureCollector:
                         x_label: str, y_label: str,
                         path: Path = None, axes_id: str = '',
                         axes_ids: Iterable[str] = ('',)) -> None:
-        """ Add the data at the appropriate figure container. """
+        """Add the data at the appropriate figure container."""
         try:
             figure_cont = self.figs[figure_id]
         except KeyError:

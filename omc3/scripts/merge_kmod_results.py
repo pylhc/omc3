@@ -1,23 +1,20 @@
 """
 Merge KMOD Results
--------------------
+------------------
 
-Script to merge the results from KMOD into one TfsDataFrame.
-The script takes the kmod-results folders as input and merges the
-lsa-result tfs-files in these together.
+Script to merge the results from KMOD into one `TfsDataFrame`.
+The script takes the kmod-results folders as input and merges the lsa-result tfs-files in these
+together.
+The resulting `TfsDataFrame` is returned, but also written out if an ``outputdir`` is given.
 
-The resulting TfsDataFrame is returned, but also written out if an `outputdir`
-is given.
+**BPMWKs** (common for both beams) are hereby dropped, to avoid duplicated elements.
 
-BPMWKs (common for both beams) are hereby dropped, to avoid duplicated elements.
+Headers of the same name will be overwritten (depending on the alphabetical order of the
+directory names).
 
-Headers of the same name will be overwritten (depending on the alphabetical
-order of the directory names).
-
-Some sanity checks are performed, e.g. that there is only one entry per element.
-If IP1 and IP5 results are given for both planes and beams, the luminosity
-imbalance between these IPs is also calculated and written into the header,
-as well as logged.
+Some sanity checks are performed, e.g. that there is only one entry per element. If IP1 and IP5
+results are given for both planes and beams, the luminosity imbalance between these IPs is also
+calculated and written into the header, as well as logged.
 
 **Arguments:**
 
@@ -33,7 +30,6 @@ as well as logged.
 - **outputdir** *(Path)*:
 
     Output directory where to write the result tfs
-
 """
 import pathlib
 import re
@@ -86,7 +82,8 @@ def get_params():
 
 @entrypoint(get_params(), strict=True)
 def merge_kmod_results(opt) -> tfs.TfsDataFrame:
-    """ Main function to merge K-Mod output.
+    """
+    Main function to merge K-Mod output.
     See :mod:`omc3.scripts.merge_kmod_results`.
     """
     if opt.outputdir:
@@ -180,21 +177,23 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UF
     return imbalance, lumi_coefficient[IPS[0]], lumi_coefficient[IPS[1]]
 
 
-def _add_imbalance_to_header(tfs_df: tfs.TfsDataFrame,
-                             imbalance: UFloat, beta_ip1: UFloat, beta_ip5: UFloat) \
-        -> tfs.TfsDataFrame:
+def _add_imbalance_to_header(
+        tfs_df: tfs.TfsDataFrame,
+        imbalance: UFloat,
+        beta_ip1: UFloat,
+        beta_ip5: UFloat
+) -> tfs.TfsDataFrame:
     """
     Function to add the calculated imablance and effective betas to the header
 
     Args:
         tfs_df (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis.
-        imbalance (UFloat): uncertain imbalance
-        beta_ip1 (UFloat): uncertain effective beta in ip1
-        beta_ip5 (UFloat): uncertain effective beta in ip5
+        imbalance (UFloat): uncertain imbalance.
+        beta_ip1 (UFloat): uncertain effective beta in ip1.
+        beta_ip5 (UFloat): uncertain effective beta in ip5.
 
     Returns:
         tfs.TfsDataFrame with added headers.
-
     """
     header_map = [(HEADER_IMBALANCE, HEADER_REL_ERROR, imbalance),
                   (HEADER_EFF_BETA_IP1, HEADER_REL_ERROR_IP1, beta_ip1),
@@ -213,7 +212,7 @@ def merge_tfs(directories: List[pathlib.Path], filename: str) -> tfs.TfsDataFram
     Args:
         directories (List[pathlib.Path]): list of PosixPath objects to directories holding TFS
             files with the results of kmod analysis.
-        filename (str): name of the TFS files to look for in the provided directories
+        filename (str): name of the TFS files to look for in the provided directories.
 
     Returns:
         A `TfsDataFrame` combining all the loaded files from the provided directories.
@@ -240,7 +239,7 @@ def get_kmod_ip_subdirs(kmod_dirs: List[pathlib.Path]) -> List[pathlib.Path]:
     """ Returns the paths to the ip-subdirectories in the kmod result directories.
 
     Args:
-        kmod_dirs (List[Path]): Main kmod result directories with IP-subdirectories
+        kmod_dirs (List[Path]): Main kmod result directories with IP-subdirectories.
 
     Returns:
         (List[Path]) Paths to all subdirectories.

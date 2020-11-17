@@ -1,9 +1,8 @@
 """
-ESRF Turn-by-Turn Data Handler
---------------------------------
+ESRF TbT Data Handler
+---------------------
 
-Data handling for tbt data from ESRF.
-
+Data handling for tbt data from ``ESRF``.
 """
 import json
 from os.path import abspath, dirname, join
@@ -16,28 +15,28 @@ from omc3.tbt import handler
 
 def read_tbt(filepath):
     """
-    Reads ESRF matlab file.
+    Reads ESRF ``Matlab`` file.
 
     Args:
         filepath: path to a file
 
     Returns:
-        tbt.TbTData object
+        `tbt.TbTData` object.
     """
     names, matrix = load_esrf_mat_file(filepath)
     return handler.numpy_to_tbts(names, matrix)
 
 
-def load_esrf_mat_file(infile):
+def load_esrf_mat_file(infile) -> np.ndarray:
     """
-    Reads the ESRF TbT Matlab file, checks for nans and data duplicities from consecutive kicks
+    Reads the ESRF TbT ``Matlab`` file, checks for nans and data duplicities from consecutive kicks.
 
-    Attributes:
+    Args:
         infile: path to file to be read
+
     Returns:
-        Numpy array of BPM names
-        4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
-        quantities in order [x, y]
+        A Numpy array of BPM names and a 4D Numpy array [quantity, BPM, particle/bunch No.,
+        turn No.] quantities in order [x, y]
         """
     esrf_data = loadmat(infile)
     hor, ver = esrf_data["allx"], esrf_data["allz"]
