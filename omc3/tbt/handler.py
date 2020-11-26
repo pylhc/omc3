@@ -4,13 +4,13 @@ import numpy as np
 import pandas as pd
 import sdds
 
+from omc3.definitions.constants import PLANES
 from omc3.tbt import (reader_esrf, reader_iota, reader_lhc, reader_ptc,
                       reader_trackone)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
-PLANES = ('X', 'Y')
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
@@ -84,7 +84,7 @@ def write_tbt(output_path, tbt_data, noise=None):
         tbt_data.nbunches,
         tbt_data.nturns,
         tbt_data.bunch_ids,
-        tbt_data.matrices[0]["X"].index,
+        tbt_data.matrices[0]["X"].index.to_numpy(),
         np.ravel(data[PLANE_TO_NUM['X']]),
         np.ravel(data[PLANE_TO_NUM['Y']])
     ]

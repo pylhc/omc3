@@ -98,7 +98,7 @@ class DebugMode(object):
     def __enter__(self):
         return None
 
-    def __exit__(self, value, traceback):
+    def __exit__(self, *args, **kwargs):
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
@@ -213,6 +213,27 @@ class TempStringLogger:
     def get_log(self):
         """ Get the log as string. """
         return self.stream.getvalue()
+
+
+def odr_pprint(printer, odr_out):
+    """ Logs the odr output results.
+    Adapted from odr_output pretty print.
+    """
+    printer('ODR-Summary:')
+    printer(f'  Beta: {odr_out.beta}')
+    printer(f'  Beta Std Error: {odr_out.sd_beta}')
+    printer(f'  Beta Covariance: {odr_out.cov_beta}')
+    if hasattr(odr_out, 'info'):
+        printer(f'  Residual Variance: {odr_out.res_var}')
+        printer(f'  Inverse Condition #: {odr_out.inv_condnum}')
+        printer(f'  Reason(s) for Halting:')
+        for r in odr_out.stopreason:
+            printer(f'    {r}')
+
+
+def list2str(list_: list) -> str:
+    """ Returns string representation of list_, but without brackets."""
+    return str(list_).lstrip("[").rstrip("]")
 
 # Public Methods ###############################################################
 

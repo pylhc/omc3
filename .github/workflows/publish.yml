@@ -1,0 +1,63 @@
+# Publishes to PyPI upon creation of a release
+name: Upload Package to PyPI
+
+defaults:
+  run:
+    shell: bash
+
+on:  # Runs everytime a release is added to the repository
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:  # only latest python 3 on ubuntu-latest
+        os: [ubuntu-latest]
+        python-version: [3.x]
+
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Get full Python version
+        id: full-python-version
+        run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
+      - name: Set up cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}
+
+      - name: Ensure cache is healthy
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: pip --version >/dev/null 2>&1 || rm -rf .venv
+
+      - name: Upgrade pip, setuptools and wheel
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+
+      - name: Build and check build
+        run: |
+          python setup.py sdist bdist_wheel
+          twine check dist/*
+
+      - name: Build and publish
+        if: ${{ success() }}
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          python setup.py sdist bdist_wheel
+          twine check dist/*
+          twine upload dist/*

@@ -15,7 +15,6 @@ from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.getLogger(__name__)
 NTS_LIMIT = 8.  # Noise to signal limit
-N_SVD_ITER = 3
 
 
 def clean(harpy_input, bpm_data, model):
@@ -31,11 +30,11 @@ def clean(harpy_input, bpm_data, model):
     Returns:
         Clean BPM matrix, its decomposition, bad BPMs summary and estimated BPM resolutions
     """
-    if not harpy_input.clean:
-        return bpm_data, None, [], None
     bpm_data, bpms_not_in_model = _get_only_model_bpms(bpm_data, model)
     if bpm_data.empty:
-        raise AssertionError("Check BPMs names! None of the BPMs was found in the model!")
+        raise AssertionError("Check BPMs names! None of the BPMs were found in the model!")
+    if not harpy_input.clean:
+        return bpm_data, None, bpms_not_in_model, None
     with timeit(lambda spanned: LOGGER.debug(f"Time for filtering: {spanned}")):
         bpm_data, bad_bpms_clean = _cut_cleaning(harpy_input, bpm_data, model)
     with timeit(lambda spanned: LOGGER.debug(f"Time for SVD clean: {spanned}")):
@@ -73,13 +72,17 @@ def _cut_cleaning(harpy_input, bpm_data, model):
 
 
 def _svd_clean(bpm_data, harpy_input):
-    signed_limit = harpy_input.svd_dominance_limit * (1 if harpy_input.keep_dominant_bpms else -1)
-    u_mat, sv_mat, bpm_data_mean, u_mask = svd_decomposition(bpm_data, harpy_input.sing_val,
-                                                             dominance_limit=signed_limit)
+    bpm_data_mean = np.mean(bpm_data.to_numpy(), axis=1)
+    u_mat, sv_mat, u_mask = svd_decomposition(bpm_data - bpm_data_mean[:, None],
+                                              harpy_input.sing_val,
+                                              dominance_limit=harpy_input.svd_dominance_limit,
+                                              num_iter=harpy_input.num_svd_iterations)
 
     clean_u, dominant_bpms = _clean_dominant_bpms(u_mat, u_mask, harpy_input.svd_dominance_limit)
-    clean_data = clean_u.dot(sv_mat) + bpm_data_mean
+    clean_data = clean_u.dot(sv_mat) + bpm_data_mean[np.all(u_mask, axis=1), None]
     bpm_res = (clean_data - bpm_data.loc[clean_u.index]).std(axis=1)
+    orbit_offset = (clean_data - bpm_data.loc[clean_u.index]).mean(axis=1)
+    LOGGER.debug(f"Average closed orbit offset: {np.mean(orbit_offset)}")
     LOGGER.debug(f"Average BPM resolution: {np.mean(bpm_res)}")
     average_signal = np.mean(np.std(clean_data, axis=1))
     LOGGER.debug(f"np.mean(np.std(A, axis=1): {average_signal}")
@@ -118,7 +121,7 @@ def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
     """  Detects BPMs with exact zeros due to OP workaround  """
     if keep_exact_zeros:
         LOGGER.debug("Skipped exact zero check")
-        return pd.DataFrame()
+        return pd.Index([])
     exact_zeros = bpm_data[~np.all(bpm_data, axis=1)].index
     if exact_zeros.size:
         LOGGER.debug(f"Exact zeros detected. BPMs removed: {exact_zeros.size}")
@@ -137,15 +140,15 @@ def _get_bad_bpms_summary(harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes,
 def _report_clean_stats(n_total_bpms, n_good_bpms):
     LOGGER.debug("Filtering done:")
     if n_total_bpms == 0:
-        raise ValueError("Total Number of BPMs after filtering is zero")
+        raise ValueError("Total Number of BPMs after filtering is zero.")
     n_bad_bpms = n_total_bpms - n_good_bpms
     LOGGER.debug(f"(Statistics for file reading) Total BPMs: {n_total_bpms}, "
                  f"Good BPMs: {n_good_bpms} ({(100 * n_good_bpms / n_total_bpms):2.2f}%), "
                  f"Bad BPMs: {n_bad_bpms} ({(100 * n_bad_bpms / n_total_bpms):2.2f}%)")
     if (n_good_bpms / n_total_bpms) < 0.5:
         raise ValueError("More than half of BPMs are bad. "
-                         "This could be cause a bunch not present in the machine has been "
-                         "selected or because a problem with the phasing of the BPMs.")
+                         "This could be because a bunch not present in the machine has been "
+                         "selected or because of a problem with the phasing of the BPMs.")
 
 
 def _index_union(*indices):
@@ -157,7 +160,7 @@ def _index_union(*indices):
 
 def _fix_polarity(wrong_polarity_names, bpm_data):
     """  Fixes wrong polarity  """
-    bpm_data.loc[wrong_polarity_names] *= -1
+    bpm_data.loc[wrong_polarity_names, :] = -1 * bpm_data.loc[wrong_polarity_names, :].to_numpy()
     return bpm_data
 
 
@@ -173,67 +176,54 @@ def _resync_bpms(harpy_input, bpm_data, model):
     return bpm_data.iloc[:, :-1]
 
 
-def svd_decomposition(bpm_data, num_singular_values, dominance_limit=None):
+def svd_decomposition(matrix, num_singular_values, dominance_limit=None, num_iter=None):
     """
-    Computes reduced (n largest values) singular value docomposition of a matrix (bpm_data)
+    Computes reduced (K largest values) singular value decomposition of a matrix
+    Requiring K singular values from MxN matrix results in matrices sized: ((M,K) x diag(K) x (K,N))
 
     Args:
-        bpm_data: matrix to be decomposed
-        num_singular_values: input options object that contains
+        matrix: matrix to be decomposed
+        num_singular_values: Required number of singular values for reconstruction
         dominance_limit: limit on SVD dominance
+        num_iter: maximal number of iteration to remove elements and renormalise matrices
 
     Returns:
-        An indexed DataFrame of U matrix, product of S and V^T martices,
-            mean of original matrix and U matrix mask for cleaned elements
+        An indexed DataFrame of U matrix (M,K),
+        product of S and V^T martices (diag(K).x(K,N)),
+        and U matrix mask for cleaned elements
     """
-    bpm_data_mean = bpm_data.to_numpy().mean()
-    u_mat, svt_mat, u_mat_mask = _get_decomposition(bpm_data - bpm_data_mean, num_singular_values,
-                                                    dominance_limit=dominance_limit)
-    return pd.DataFrame(index=bpm_data.index, data=u_mat), svt_mat, bpm_data_mean, u_mat_mask
-
-
-def _get_decomposition(matrix, num, dominance_limit=None):
-    """
-    Removes noise floor
-    Requiring K singular values from MxN matrix results in matrices sized: ((MxK) x diag(K) x (K,N))
-
-    Returns:
-        U (MxK),  SVt (diag(K).(K,N)), U matrix mask for cleaned elements (same dimensions as U)
-    """
-    u_mat, s_mat, vt_mat = np.linalg.svd(matrix / np.sqrt(matrix.shape[1]), full_matrices=False)
-
-    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit)
+    u_mat, s_mat, vt_mat = np.linalg.svd(matrix, full_matrices=False)
+    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=num_iter)
 
     available = np.sum(s_mat > 0.)
-    if num > available:
+    if num_singular_values > available:
         LOGGER.warning(f"Requested more singular values than available(={available})")
-    keep = min(num, available)
-    indices = np.argsort(s_mat)[::-1][:keep]
+    keep = min(num_singular_values, available)
     LOGGER.debug(f"Number of singular values to keep: {keep}")
-    return (u_mat[:, indices],
-            np.dot(np.sqrt(matrix.shape[1]) * np.diag(s_mat[indices]), vt_mat[indices, :]),
-            u_mat_mask[:, indices])
+
+    indices = np.argsort(s_mat)[::-1][:keep]
+    return (pd.DataFrame(index=matrix.index, data=u_mat[:, indices]),
+            np.dot(np.diag(s_mat[indices]), vt_mat[indices, :]),
+            u_mat_mask[:, :int(np.max(indices))+1])
 
 
-def _remove_dominant_elements(u_mat, s_mat, dominance_limit):
+def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=3):
     u_mat_mask = np.ones(u_mat.shape, dtype=bool)
     if dominance_limit is None:
         return u_mat, s_mat, u_mat_mask
-    abs_dominance_limit = np.abs(dominance_limit)
-    if abs_dominance_limit < 1 / np.sqrt(2):
-        LOGGER.warning(f"The svd_dominance_limit looks too low: {abs_dominance_limit}")
+    if dominance_limit < 1 / np.sqrt(2):
+        LOGGER.warning(f"The svd_dominance_limit looks too low: {dominance_limit}")
 
-    for i in range(N_SVD_ITER):
-        if np.all(np.abs(u_mat) <= abs_dominance_limit):
+    for i in range(num_iter):
+        if np.all(np.abs(u_mat) <= dominance_limit):
             break
-        u_mat_mask[np.abs(u_mat) > abs_dominance_limit] = False
-        u_mat[np.abs(u_mat) > abs_dominance_limit] = 0.0
+        condition = np.logical_and(np.abs(u_mat) > dominance_limit,
+                                   np.abs(u_mat) == np.max(np.abs(u_mat), axis=0))
+        u_mat_mask[condition] = False
+        u_mat[condition] = 0.0
         norms = np.sqrt(np.sum(np.square(u_mat), axis=0))
         u_mat = u_mat / norms
         s_mat = s_mat * norms
-    # do not remove any BPMs
-    if dominance_limit < 0.0:
-        u_mat_mask = np.ones(u_mat.shape, dtype=bool)
     return u_mat, s_mat, u_mat_mask
 
 

@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 
-from omc3.optics_measurements.constants import PLANE_TO_NUM
+from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)

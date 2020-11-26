@@ -8,13 +8,12 @@ Phase advance
 Computes betatron phase advances and provides structures to store them.
 """
 from os.path import join
-
 import numpy as np
 import pandas as pd
 import tfs
 
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL,
-                                                PHASE_NAME, TOTAL_PHASE_NAME)
+                                                PHASE_NAME, TOTAL_PHASE_NAME, SPECIAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
@@ -49,6 +48,8 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
         +------++--------+--------+--------+--------+
         | BPM3 || phi_31 | phi_32 |   0    | phi_34 |
         +------++--------+--------+--------+--------+
+        | BPM4 || phi_41 | phi_42 | phi_43 |    0   |
+        +------++--------+--------+--------+--------+
 
 
         The phase advance between BPM_i and BPM_j can be obtained via:
@@ -64,12 +65,14 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
+    df[input_files.get_columns(df, f"MU{plane}")] = (input_files.get_data(df, f"MU{plane}")
+                                                     * meas_input.accelerator.beam_direction)
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
     phase_advances = {"MODEL": _get_square_data_frame(
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
     if meas_input.compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
-    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
+    phases_meas = input_files.get_data(df, f"MU{plane}")
     if meas_input.compensation == "equation":
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
@@ -163,7 +166,20 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
     meas = phase_advances["MEAS"]
     bd = accel.beam_direction
     elements = accel.elements
-    lines = []
+    special_phase_columns = ['ELEMENT1',
+                             'ELEMENT2',
+                             f'PHASE{plane}',
+                             f'{ERR}PHASE{plane}',
+                             f'PHASE{plane}_DEG',
+                             f'{ERR}PHASE{plane}_DEG',
+                             f'PHASE{plane}{MDL}',
+                             f'PHASE{plane}{MDL}_DEG',
+                             'BPM1',
+                             'BPM2',
+                             f'BPM_PHASE{plane}',
+                             f'BPM_{ERR}PHASE{plane}',]
+    special_phase_df = pd.DataFrame(columns=special_phase_columns)
+    
     for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
@@ -178,16 +194,23 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
         ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
         model_value = (model_value * bd) % 1
-        model_desc = f"{elem1} to {elem2} MODEL: {model_value:8.4f}     {'':6s} = {_to_deg(model_value):6.2f} deg"
-        result_desc = (f"{elem1} to {elem2} MEAS : {ph_result % 1:8.4f}  +- {bpm_err:6.4f} = "
-                       f"{_to_deg(ph_result):6.2f} +- {bpm_err * 360:3.2f} deg ({bpm_phase_advance:8.4f} + {elems_to_bpms:8.4f} [{minmu1}, {minmu2}])")
-        lines.extend([model_desc, result_desc])
-    with open(join(meas_input.outputdir, f"special_phase_{plane.lower()}.txt"), 'w') as spec_phase:
-        spec_phase.write('Special phase advances\n')
-        for line in lines:
-            spec_phase.write(line + '\n')
+        special_phase_df=special_phase_df.append(dict(zip(special_phase_columns,[
+                                                            elem1,
+                                                            elem2,
+                                                            ph_result % 1,
+                                                            bpm_err,
+                                                            _to_deg(ph_result),
+                                                            bpm_err * 360,
+                                                            model_value,
+                                                            _to_deg(model_value),
+                                                            minmu1,
+                                                            minmu2,
+                                                            bpm_phase_advance,
+                                                            elems_to_bpms,
+        ])), ignore_index=True)
 
-
+    tfs.write(join(meas_input.outputdir, f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}"), special_phase_df)
+    
 def _to_deg(phase):  # -90 to 90 degrees
     phase = phase % 0.5 * 360
     if phase < 90:

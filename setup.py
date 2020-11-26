@@ -1,5 +1,7 @@
 import pathlib
+
 import setuptools
+
 
 # The directory containing this file
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.absolute()
@@ -16,30 +18,37 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "numpy>=1.14.1",
-    "pandas>=0.24.0,<1.0",
-    "scipy>=1.0.0",
-    "scikit-learn>=0.20.3",
-    "tfs-pandas>=1.0.3",
+    "matplotlib>=3.2.0",
+    "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
+    "numpy>=1.19.0",
+    "pandas>=1.0",
+    "scipy>=1.5.0",
+    "scikit-learn>=0.23.0",
+    "tfs-pandas>=2.0",
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
-    "pytz>=2018.9",
+    "h5py>=2.9.0",
+    "pytimber>=2.8.0",
+    "uncertainties>=3.1.4",
 ]
 
-# Dependencies that should only be installed for test purposes
-TEST_DEPENDENCIES = [
-    "pytest>=5.2",
-    "pytest-cov>=2.6",
-    "h5py>=2.7.0",
-    "hypothesis>=3.23.0",
-    "attrs>=19.2.0",
-]
-
-# pytest-runner to be able to run pytest via setuptools
-SETUP_REQUIRES = ["pytest-runner"]
-
-# Extra dependencies for tools
-EXTRA_DEPENDENCIES = {"doc": ["sphinx", "travis-sphinx", "sphinx_rtd_theme"]}
+# Extra dependencies
+EXTRA_DEPENDENCIES = {
+    "test": [
+        "pytest>=5.2",
+        "pytest-cov>=2.7",
+        "hypothesis>=5.0.0",
+        "attrs>=19.2.0",
+    ],
+    "doc": [
+        "sphinx",
+        "travis-sphinx",
+        "sphinx_rtd_theme"
+    ],
+}
+EXTRA_DEPENDENCIES.update(
+    {'all': [elem for list_ in EXTRA_DEPENDENCIES.values() for elem in list_]}
+)
 
 
 setuptools.setup(
@@ -51,8 +60,9 @@ setuptools.setup(
     author=ABOUT_OMC3["__author__"],
     author_email=ABOUT_OMC3["__author_email__"],
     url=ABOUT_OMC3["__url__"],
-    packages=setuptools.find_packages(exclude=["tests", "doc", "bin"]),
-    python_requires=">=3.6",
+    packages=setuptools.find_packages(exclude=["tests*", "doc"]),
+    include_package_data=True,
+    python_requires=">=3.7",
     license=ABOUT_OMC3["__license__"],
     classifiers=[
         "Intended Audience :: Science/Research",
@@ -60,14 +70,12 @@ setuptools.setup(
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Physics",
         "Topic :: Scientific/Engineering :: Visualization",
     ],
     install_requires=DEPENDENCIES,
-    tests_require=DEPENDENCIES + TEST_DEPENDENCIES,
+    tests_require=EXTRA_DEPENDENCIES['test'],
     extras_require=EXTRA_DEPENDENCIES,
-    setup_requires=SETUP_REQUIRES,
 )

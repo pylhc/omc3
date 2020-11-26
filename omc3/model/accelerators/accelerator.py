@@ -55,7 +55,7 @@ class Accelerator(object):
         params.add_parameter(name="drv_tunes", type=float, nargs=2,
                              help="Driven tunes without integer part.", )
         params.add_parameter(name="driven_excitation", type=str, choices=("acd", "adt"),
-                             help="Driven tunes without integer part.", )
+                             help="Denotes driven excitation by AC-dipole (acd) or by ADT (adt)", )
         params.add_parameter(name="dpp", default=0.0, type=float, help="Delta p/p to use.",)
         params.add_parameter(name="energy", type=float, help="Energy in Tev.", )
         params.add_parameter(name="modifiers", type=str,
@@ -126,7 +126,7 @@ class Accelerator(object):
         try:
             self.model = tfs.read(join(model_dir, TWISS_DAT), index="NAME")
         except IOError:
-            bpm_index = [idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)]  # <-- shouldnt startswith have an option which is the initial letter of BPM
+            bpm_index = [idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)]
             self.model = self.elements.loc[bpm_index, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
 

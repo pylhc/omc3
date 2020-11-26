@@ -10,15 +10,16 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-import pytz
 import sdds
 
+from dateutil import tz
+
+from omc3.definitions.constants import PLANES
 from omc3.tbt import handler
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
-PLANES = ('X', 'Y')
 NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": "0", "Y": "1"}
 POSITIONS = {"X": "horPositionsConcentratedAndSorted", "Y": "verPositionsConcentratedAndSorted"}
@@ -58,7 +59,7 @@ def read_tbt(file_path):
     if len(bunch_ids) > nbunches:
         bunch_ids = bunch_ids[:nbunches]
     nturns = sdds_file.values[N_TURNS]
-    date = pytz.utc.localize(datetime.utcfromtimestamp(sdds_file.values[ACQ_STAMP] / 1e9))
+    date = datetime.utcfromtimestamp(sdds_file.values[ACQ_STAMP] / 1e9).replace(tzinfo=tz.tzutc())
     bpm_names = sdds_file.values[BPM_NAMES]
     nbpms = len(bpm_names)
     data = {k: sdds_file.values[POSITIONS[k]].reshape((nbpms, nbunches, nturns)) for k in PLANES}

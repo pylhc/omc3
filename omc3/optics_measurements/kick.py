@@ -15,11 +15,12 @@ import numpy as np
 import pandas as pd
 import tfs
 
+from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.model.accelerators.accelerator import AccElementTypes
 from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 DPPAMP, ERR, EXT, KICK_NAME,
                                                 NAT_TUNE, PEAK2PEAK,
-                                                PLANE_TO_NUM, RES,
+                                                RES,
                                                 RESCALE_FACTOR, RMS,
                                                 SQRT_ACTION, TIME, TUNE, S)
 
@@ -61,8 +62,9 @@ def _rescale_actions(df, scaling_factor, plane):
 
 def _getkick(measure_input, files, plane):
     load_columns, calc_columns, column_types = _get_column_mapping(plane)
-    kick_frame = pd.DataFrame(0., index=range(len(files[plane])),
-                                  columns=list(load_columns.keys()) + calc_columns)
+    kick_frame = pd.DataFrame(data=0.,
+                              index=range(len(files[plane])),
+                              columns=list(load_columns.keys()) + calc_columns)
 
     for i, df in enumerate(files[plane]):
         # load data directly from file
@@ -83,7 +85,7 @@ def _gen_kick_calc(meas_input, lin, plane):
     frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin.loc[:, [f"{AMPLITUDE}{plane}", PEAK2PEAK]],
                      how='inner', left_index=True, right_index=True)
     amps = (frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy() if meas_input.accelerator.excitation
-            else frame.loc[:, {PEAK2PEAK}].to_numpy() / 2.0)
+            else frame.loc[:, PEAK2PEAK].to_numpy() / 2.0)
     meansqrt2j = amps / np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
     mean2j = np.square(amps) / frame.loc[:, f"{BETA}{plane}"].to_numpy()
     return np.array([np.mean(meansqrt2j), np.std(meansqrt2j), np.mean(mean2j), np.std(mean2j)])
