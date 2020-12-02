@@ -31,8 +31,7 @@ def response_params():
     params.add_parameter(help="Print debug information.", name="debug", action="store_true",)
     return params
 
-
-@entrypoint(response_params())
+@entrypoint(response_params(), strict=False)
 def create_response_entrypoint(opt, other_opt):
     """ Entry point for creating pandas-based response matrices.
 
@@ -59,23 +58,7 @@ def create_response_entrypoint(opt, other_opt):
                              **Flags**: --variables
                              **Default**: ``['MQM', 'MQT', 'MQTL', 'MQY']``
     """
-    with logging_tools.DebugMode(active=opt.debug,
-                                 log_file=os.path.join(opt.model_dir, "generate_fullresponse.log")):
-        LOG.info("Creating response.")
-        accel_inst = manager.get_accelerator(other_opt)
-        if opt.creator == "madx":
-            fullresponse = response_madx.generate_fullresponse(
-                accel_inst, opt.variable_categories, delta_k=opt.delta_k
-            )
 
-        elif opt.creator == "twiss":
-            fullresponse = response_twiss.create_response(
-                accel_inst, opt.variable_categories, opt.optics_params
-            )
-
-        LOG.debug(f"Saving Response into file '{opt.outfile_path}'")
-        with open(opt.outfile_path, 'wb') as dump_file:
-            pickle.dump(fullresponse, dump_file)#, protocol=-1)
 
 
 if __name__ == "__main__":
