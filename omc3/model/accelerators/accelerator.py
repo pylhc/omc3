@@ -112,6 +112,7 @@ class Accelerator(object):
         self.xing = opt.get("xing", None)
         self.modifiers = opt.get("modifiers", None)
 
+
     def init_from_model_dir(self, model_dir):
         LOGGER.debug("Creating accelerator instance from model dir")
         self.model_dir = model_dir

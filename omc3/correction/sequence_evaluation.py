@@ -271,6 +271,7 @@ def _create_basic_job(accel_inst, k_values, variables):
 def check_varmap_file(accel_inst, vars_categories):
     """ Checks on varmap file and creates it if not in model folder.
     THIS SHOULD BE REPLACED WITH A CALL TO JAIMES DATABASE, IF IT BECOMES AVAILABLE """
+    #accel_inst.modifiers = "model/opticsfile.18"
     if accel_inst.modifiers is None:
         raise ValueError("Optics not defined. Please provide modifiers.madx. "
                          "Otherwise MADX evaluation might be unstable.")

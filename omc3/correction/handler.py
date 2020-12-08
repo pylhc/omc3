@@ -28,7 +28,7 @@ def correct(accel_inst, opt):
     """
     meth_opt = _get_method_opt(opt)
     # read data from files
-    vars_list = _get_varlist(accel_inst, opt.variable_categories, opt.virt_flag)
+    vars_list = _get_varlist(accel_inst, opt.variable_categories)
     optics_params, meas_dict = _get_measurment_data(opt.optics_params, opt.meas_dir,
                                                     opt.beta_file_name, opt.weights, )
     if opt.fullresponse_path is not None:
@@ -42,7 +42,9 @@ def correct(accel_inst, opt):
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
     meas_dict = model_appenders.append_model_to_measurement(nominal_model, meas_dict, optics_params)
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
-    resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
+    print("shappeee000", resp_dict)
+    resp_matrix = _join_responses(      resp_dict, optics_params, vars_list)
+    print("shappeee", resp_matrix)
     delta = tfs.TfsDataFrame(0, index=vars_list, columns=[DELTA])
     # ######### Iteration Phase ######### #
     for iteration in range(opt.max_iter + 1):
@@ -74,6 +76,7 @@ def correct(accel_inst, opt):
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
         # ######### Actual optimization ######### #
+        print("shappeee22", resp_matrix)
         delta += _calculate_delta(resp_matrix, meas_dict, optics_params, vars_list, opt.method,
                                   meth_opt)
         delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix,
@@ -158,7 +161,7 @@ def read_meas(meas_dir, filename):
     return tfs.read(os.path.join(meas_dir, filename), index="NAME")
 
 
-def _get_varlist(accel_cls, variables, virt_flag):  # TODO: Virtual?
+def _get_varlist(accel_cls, variables):  # TODO: Virtual?
     varlist = np.array(accel_cls.get_variables(classes=variables))
     if len(varlist) == 0:
         raise ValueError("No variables found! Make sure your categories are valid!")
@@ -249,10 +252,11 @@ def _rms(a):
 
 def _join_responses(resp, keys, varslist):
     """ Returns matrix #BPMs * #Parameters x #variables """
+
     return pd.concat([resp[k] for k in keys],  # dataframes
                      axis="index",  # axis to join along
-                     join_axes=[pd.Index(varslist)]
-                     # other axes to use (pd Index obj required)
+                     join="outer",#=[pd.Index(varslist)]
+                    # other axes to use (pd Index obj required)
                      ).fillna(0.0)
 
 
