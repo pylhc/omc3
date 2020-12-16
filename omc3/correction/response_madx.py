@@ -141,8 +141,74 @@ def _load_madx_results(variables, process_pool, incr_dict, temp_dir):
 def _create_fullresponse_from_dict(var_to_twiss):
     """ Convert var-tfs dictionary to fullresponse dictionary """
     var_to_twiss = _add_coupling(var_to_twiss)
-    resp = pd.Panel.from_dict(var_to_twiss)
+    keys = list(var_to_twiss.keys())
+    columns=["MUX","MUY","BETX","BETY","DX", "DY", "1001R","1001I","1010R","1010I","Q1","Q2","incr"]
+    
+    bpms=var_to_twiss["0"].index
+    resp=np.empty((len(keys),bpms.size,len(columns)))
+    
+    for i, key in enumerate(keys):
+    	resp[i] = var_to_twiss[key].loc[:,columns].to_numpy()
+    
+	
     resp = resp.transpose(2, 1, 0)
+    
+    model_index = list(keys).index('0')
+    #dividing BET by nominal model and create normalized dispersion
+    resp[columns.index("BETX")] = np.divide(resp[columns.index("BETX")],resp[columns.index("BETX"),:,model_index][:,np.newaxis])
+    resp[columns.index("BETY")] = np.divide(resp[columns.index("BETY")],resp[columns.index("BETY"),:,model_index][:,np.newaxis])
+    NDX_arr = np.divide(resp[columns.index("DX")],np.sqrt(resp[columns.index("BETX")]))
+    NDY_arr = np.divide(resp[columns.index("DY")],np.sqrt(resp[columns.index("BETY")]))
+   
+   
+    #subtracting nominal model from data
+    resp = np.subtract(resp, resp[:,:,model_index][:,:,np.newaxis])
+    NDX_arr = np.subtract(NDX_arr,NDX_arr[:,model_index][:,np.newaxis])
+    NDY_arr = np.subtract(NDY_arr,NDY_arr[:,model_index][:,np.newaxis])
+    
+    # Remove difference of nominal model with itself (bunch of zeros) and divide by increment
+    resp = np.delete(resp,model_index,axis = 2)
+    NDX_arr = np.delete(NDX_arr,model_index,axis = 1)
+    NDY_arr = np.delete(NDY_arr,model_index,axis = 1)
+    keys.remove("0")
+    
+   
+    resp = np.divide(resp,resp[columns.index('incr')])
+    
+    Q_arr = np.column_stack((resp[columns.index("Q1"),0,:],resp[columns.index("Q2"),0,:])).T   
+ 
+    with suppress_warnings(np.ComplexWarning):  # raised as everything is complex-type now
+        df = {'MUX': pd.DataFrame(data=resp[columns.index("MUX")], index=bpms, columns=keys).astype(np.float64),
+              'MUY': pd.DataFrame(data=resp[columns.index("MUY")], index=bpms, columns=keys).astype(np.float64),
+              'BETX': pd.DataFrame(data=resp[columns.index("BETX")], index=bpms, columns=keys).astype(np.float64),
+              'BETY': pd.DataFrame(data=resp[columns.index("BETY")], index=bpms, columns=keys).astype(np.float64),
+              'DX': pd.DataFrame(data=resp[columns.index("DX")], index=bpms, columns=keys).astype(np.float64),
+              'DY': pd.DataFrame(data=resp[columns.index("DY")], index=bpms, columns=keys).astype(np.float64),
+
+              'NDX': pd.DataFrame(data=NDX_arr, index=bpms, columns=keys).astype(np.float64),
+              'NDY': pd.DataFrame(data=NDY_arr, index=bpms, columns=keys).astype(np.float64),
+              
+              "F1001R": pd.DataFrame(data = resp[columns.index('1001R')], index=bpms, columns=keys).astype(np.float64),
+              "F1001I": pd.DataFrame(data = resp[columns.index('1001I')], index=bpms, columns=keys).astype(np.float64),
+              "F1010R": pd.DataFrame(data = resp[columns.index('1010R')], index=bpms, columns=keys).astype(np.float64),
+              "F1010I": pd.DataFrame(data = resp[columns.index('1010I')], index=bpms, columns=keys).astype(np.float64),
+              'Q': pd.DataFrame(data = Q_arr, index = ["Q1","Q2"],columns = keys).astype(np.float64),
+              }
+    return df
+
+"""
+def _create_fullresponse_from_dict(var_to_twiss):
+       var_to_twiss = _add_coupling(var_to_twiss)
+    
+    columns=["MUX","MUY","BETX","BETY","DX", "DY", "1001", "1010"]
+    bpms=var_to_twiss["0"].index
+    resp=np.empty((len(var_to_twiss.keys()),len(columns),bpms.size))
+    for key, i in enumerate(var_to_twiss.keys()):
+    	resp[i] = var_to_twiss[key].loc[:,columns].to_numpy()
+    
+    #resp = pd.Panel.from_dict(var_to_twiss)
+    resp = resp.transpose(2, 1, 0)
+    
     # After transpose e.g: resp[NDX, bpm12l1.b1, kqt3]
     # The magnet called "0" is no change (nominal model)
     resp['NDX'] = resp.xs('DX', axis=0).div(np.sqrt(resp.xs('BETX', axis=0)), axis="index")
@@ -155,7 +221,7 @@ def _create_fullresponse_from_dict(var_to_twiss):
     resp = resp.div(resp.loc['incr', :, :])
 
     with suppress_warnings(np.ComplexWarning):  # raised as everything is complex-type now
-        df = {'MUX': resp.xs('MUX', axis=0).astype(np.float64),
+        df = {'MUX': pd.DataFrame(data=resp[0], index=bpms, columns=var_to_twiss.keys()).astype.float64),
               'MUY': resp.xs('MUY', axis=0).astype(np.float64),
               'BETX': resp.xs('BETX', axis=0).astype(np.float64),
               'BETY': resp.xs('BETY', axis=0).astype(np.float64),
@@ -170,6 +236,7 @@ def _create_fullresponse_from_dict(var_to_twiss):
               'Q': resp.loc[['Q1', 'Q2'], resp.major_axis[0], :].transpose().astype(np.float64),
               }
     return df
+"""
 
 
 def _get_jobfiles(temp_dir, index):
@@ -200,6 +267,8 @@ def _add_coupling(dict_of_tfs):
     with timeit(lambda t: LOG.debug(f"  Time adding coupling: {t} s")):
         for var in dict_of_tfs:
             cpl = optics_class.get_coupling(dict_of_tfs[var])
-            dict_of_tfs[var]["1001"] = cpl["F1001"]
-            dict_of_tfs[var]["1010"] = cpl["F1010"]
+            dict_of_tfs[var]["1001R"] = np.real(cpl["F1001"])
+            dict_of_tfs[var]["1001I"] = np.imag(cpl["F1001"])
+            dict_of_tfs[var]["1010R"] = np.real(cpl["F1010"])
+            dict_of_tfs[var]["1010I"] = np.imag(cpl["F1010"])
         return dict_of_tfs

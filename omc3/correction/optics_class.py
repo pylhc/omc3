@@ -61,7 +61,7 @@ def get_coupling(tw):
 
     j = np.array([[0., 1.],
                   [-1., 0.]])
-    rs = np.reshape(tw.as_matrix(columns=["R11", "R12", "R21", "R22"]), (len(tw), 2, 2))
+    rs = np.reshape(tw.loc[:,["R11", "R12", "R21", "R22"]].to_numpy(), (len(tw), 2, 2))
     cs = np.einsum("ij,kjn,no->kio",
                    -j, np.transpose(rs, axes=(0, 2, 1)), j)
     cs = np.einsum("k,kij->kij", (1 / np.sqrt(1 + np.linalg.det(rs))), cs)
