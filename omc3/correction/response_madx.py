@@ -171,9 +171,10 @@ def _create_fullresponse_from_dict(var_to_twiss):
     NDX_arr = np.delete(NDX_arr,model_index,axis = 1)
     NDY_arr = np.delete(NDY_arr,model_index,axis = 1)
     keys.remove("0")
-    
    
     resp = np.divide(resp,resp[columns.index('incr')])
+    NDX_arr =np.divide(NDX_arr,resp[columns.index('incr')])
+    NDY_arr =np.divide(NDY_arr,resp[columns.index('incr')])
     
     Q_arr = np.column_stack((resp[columns.index("Q1"),0,:],resp[columns.index("Q2"),0,:])).T   
  
