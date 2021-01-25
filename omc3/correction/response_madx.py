@@ -16,10 +16,11 @@ import numpy as np
 import pandas as pd
 #import xarray as xr
 import tfs
-import madx_wrapper
-from correction import optics_class
-from utils import logging_tools, iotools
-from utils.contexts import timeit, suppress_warnings
+
+import omc3.madx_wrapper as madx_wrapper
+from omc3.correction import optics_class
+from omc3.utils import logging_tools, iotools
+from omc3.utils.contexts import timeit, suppress_warnings
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -154,12 +155,12 @@ def _create_fullresponse_from_dict(var_to_twiss):
     resp = resp.transpose(2, 1, 0)
     
     model_index = list(keys).index('0')
-    #dividing BET by nominal model and create normalized dispersion
-    resp[columns.index("BETX")] = np.divide(resp[columns.index("BETX")],resp[columns.index("BETX"),:,model_index][:,np.newaxis])
-    resp[columns.index("BETY")] = np.divide(resp[columns.index("BETY")],resp[columns.index("BETY"),:,model_index][:,np.newaxis])
+    #create normalized dispersion and dividing BET by nominal model
     NDX_arr = np.divide(resp[columns.index("DX")],np.sqrt(resp[columns.index("BETX")]))
     NDY_arr = np.divide(resp[columns.index("DY")],np.sqrt(resp[columns.index("BETY")]))
-   
+    resp[columns.index("BETX")] = np.divide(resp[columns.index("BETX")],resp[columns.index("BETX"),:,model_index][:,np.newaxis])
+    resp[columns.index("BETY")] = np.divide(resp[columns.index("BETY")],resp[columns.index("BETY"),:,model_index][:,np.newaxis])
+    
    
     #subtracting nominal model from data
     resp = np.subtract(resp, resp[:,:,model_index][:,:,np.newaxis])
@@ -171,11 +172,11 @@ def _create_fullresponse_from_dict(var_to_twiss):
     NDX_arr = np.delete(NDX_arr,model_index,axis = 1)
     NDY_arr = np.delete(NDY_arr,model_index,axis = 1)
     keys.remove("0")
-   
-    resp = np.divide(resp,resp[columns.index('incr')])
+   	
+   	
     NDX_arr =np.divide(NDX_arr,resp[columns.index('incr')])
     NDY_arr =np.divide(NDY_arr,resp[columns.index('incr')])
-    
+    resp = np.divide(resp,resp[columns.index('incr')])
     Q_arr = np.column_stack((resp[columns.index("Q1"),0,:],resp[columns.index("Q2"),0,:])).T   
  
     with suppress_warnings(np.ComplexWarning):  # raised as everything is complex-type now
@@ -197,47 +198,7 @@ def _create_fullresponse_from_dict(var_to_twiss):
               }
     return df
 
-"""
-def _create_fullresponse_from_dict(var_to_twiss):
-       var_to_twiss = _add_coupling(var_to_twiss)
-    
-    columns=["MUX","MUY","BETX","BETY","DX", "DY", "1001", "1010"]
-    bpms=var_to_twiss["0"].index
-    resp=np.empty((len(var_to_twiss.keys()),len(columns),bpms.size))
-    for key, i in enumerate(var_to_twiss.keys()):
-    	resp[i] = var_to_twiss[key].loc[:,columns].to_numpy()
-    
-    #resp = pd.Panel.from_dict(var_to_twiss)
-    resp = resp.transpose(2, 1, 0)
-    
-    # After transpose e.g: resp[NDX, bpm12l1.b1, kqt3]
-    # The magnet called "0" is no change (nominal model)
-    resp['NDX'] = resp.xs('DX', axis=0).div(np.sqrt(resp.xs('BETX', axis=0)), axis="index")
-    resp['NDY'] = resp.xs('DY', axis=0).div(np.sqrt(resp.xs('BETY', axis=0)), axis="index")
-    resp['BETX'] = resp.xs('BETX', axis=0).div(resp.loc['BETX', :, '0'], axis="index")
-    resp['BETY'] = resp.xs('BETY', axis=0).div(resp.loc['BETY', :, '0'], axis="index")
-    resp = resp.subtract(resp.xs('0', axis=2), axis=2)
-    # Remove difference of nominal model with itself (bunch of zeros)
-    resp.drop('0', axis=2, inplace=True)
-    resp = resp.div(resp.loc['incr', :, :])
 
-    with suppress_warnings(np.ComplexWarning):  # raised as everything is complex-type now
-        df = {'MUX': pd.DataFrame(data=resp[0], index=bpms, columns=var_to_twiss.keys()).astype.float64),
-              'MUY': resp.xs('MUY', axis=0).astype(np.float64),
-              'BETX': resp.xs('BETX', axis=0).astype(np.float64),
-              'BETY': resp.xs('BETY', axis=0).astype(np.float64),
-              'DX': resp.xs('DX', axis=0).astype(np.float64),
-              'DY': resp.xs('DY', axis=0).astype(np.float64),
-              'NDX': resp.xs('NDX', axis=0).astype(np.float64),
-              'NDY': resp.xs('NDY', axis=0).astype(np.float64),
-              "F1001R": tfs.TfsDataFrame(resp.xs('1001', axis=0).apply(np.real).astype(np.float64)),
-              "F1001I": tfs.TfsDataFrame(resp.xs('1001', axis=0).apply(np.imag).astype(np.float64)),
-              "F1010R": tfs.TfsDataFrame(resp.xs('1010', axis=0).apply(np.real).astype(np.float64)),
-              "F1010I": tfs.TfsDataFrame(resp.xs('1010', axis=0).apply(np.imag).astype(np.float64)),
-              'Q': resp.loc[['Q1', 'Q2'], resp.major_axis[0], :].transpose().astype(np.float64),
-              }
-    return df
-"""
 
 
 def _get_jobfiles(temp_dir, index):

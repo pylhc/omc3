@@ -36,6 +36,7 @@ def get_accelerator(opt, other_opt):
         return opt.accel
     print("ccccc", other_opt, opt)
     myinst = ACCELS[opt.accel](other_opt)
+    print(opt.accel)
     print("nnnnnn", myinst.modifiers )
     return ACCELS[opt.accel](other_opt)
 

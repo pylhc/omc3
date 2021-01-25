@@ -43,10 +43,11 @@ treated as zeros
 """
 import os
 
-from correction import handler
-from utils import iotools, logging_tools
-from model import manager
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
+
+from omc3.correction import handler
+from omc3.utils import iotools, logging_tools
+from omc3.model import manager
 LOG = logging_tools.get_logger(__name__)
 
 CORRECTION_DEFAULTS = {
@@ -126,6 +127,8 @@ def global_correction_entrypoint(opt, accel_opt):
     opt = _add_hardcoded_paths(opt)
     iotools.create_dirs(opt.output_dir)
     accel_inst = manager.get_accelerator(accel_opt)
+    print("global_correct entrypoint")
+    print(accel_inst.get_variables(classes = opt.variable_categories))
     handler.correct(accel_inst, opt)
 
 

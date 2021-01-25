@@ -265,7 +265,7 @@ class Lhc(Accelerator):
     def get_update_correction_script(self, outpath, corr_file):
         madx_script = self.get_base_madx_script(self.model_dir)
         madx_script += (f"call, file = '{corr_file}';\n"
-                        f"exec, do_twiss_elements(LHCB{self.beam}, {outpath}, {self.dpp});\n")
+                        f"exec, do_twiss_elements(LHCB{self.beam}, '{outpath}', {self.dpp});\n")
         return madx_script
 
 

@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
-import madx_wrapper
+import omc3.madx_wrapper as madx_wrapper
 import tfs
-from correction import filters, model_appenders, response_twiss, optics_class
-from correction.constants import DELTA, DIFF, WEIGHT, VALUE, ERROR
-from optics_measurements.constants import EXT, PHASE_NAME, DISPERSION_NAME, NORM_DISP_NAME
-from utils import logging_tools
+from omc3.correction import filters, model_appenders, response_twiss, optics_class
+from omc3.correction.constants import DELTA, DIFF, WEIGHT, VALUE, ERROR
+from omc3.optics_measurements.constants import EXT, PHASE_NAME, DISPERSION_NAME, NORM_DISP_NAME
+from omc3.utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 
@@ -31,20 +31,23 @@ def correct(accel_inst, opt):
     vars_list = _get_varlist(accel_inst, opt.variable_categories)
     optics_params, meas_dict = _get_measurment_data(opt.optics_params, opt.meas_dir,
                                                     opt.beta_file_name, opt.weights, )
+                                         
+    
     if opt.fullresponse_path is not None:
         resp_dict = _load_fullresponse(opt.fullresponse_path, vars_list)
     else:
        resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories,
                                                   optics_params)
+                                                  
     # the model in accel_inst is modified later, so save nominal model here to variables
     nominal_model = _maybe_add_coupling_to_model(accel_inst.model, optics_params)
     # apply filters to data
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
     meas_dict = model_appenders.append_model_to_measurement(nominal_model, meas_dict, optics_params)
+    
+
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
-    print("shappeee000", resp_dict)
     resp_matrix = _join_responses(      resp_dict, optics_params, vars_list)
-    print("shappeee", resp_matrix)
     delta = tfs.TfsDataFrame(0, index=vars_list, columns=[DELTA])
     # ######### Iteration Phase ######### #
     for iteration in range(opt.max_iter + 1):
@@ -54,9 +57,10 @@ def correct(accel_inst, opt):
         if iteration > 0:
             LOG.debug("Updating model via MADX.")
             corr_model_path = os.path.join(opt.output_dir, f"twiss_{iteration}{EXT}")
-            _create_corrected_model(corr_model_path, opt.change_params_path, accel_inst)
+            
+            _create_corrected_model(corr_model_path, opt.change_params_path, accel_inst)#This is where the corected model should be created?
 
-            corr_model_elements = tfs.read(corr_model_path, index="NAME")
+            corr_model_elements = tfs.read(corr_model_path, index="NAME") #this is where we get the error
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index,
@@ -65,6 +69,7 @@ def correct(accel_inst, opt):
 
             meas_dict = model_appenders.append_model_to_measurement(corr_model, meas_dict,
                                                                     optics_params)
+                                                                    
             if opt.update_response:
                 LOG.debug("Updating response.")
                 # please look away for the next two lines.
@@ -76,9 +81,9 @@ def correct(accel_inst, opt):
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
         # ######### Actual optimization ######### #
-        print("shappeee22", resp_matrix)
         delta += _calculate_delta(resp_matrix, meas_dict, optics_params, vars_list, opt.method,
                                   meth_opt)
+        
         delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix,
                                                             opt.min_corrector_strength)
         # remove unused correctors from vars_list
@@ -252,12 +257,11 @@ def _rms(a):
 
 def _join_responses(resp, keys, varslist):
     """ Returns matrix #BPMs * #Parameters x #variables """
-
     return pd.concat([resp[k] for k in keys],  # dataframes
                      axis="index",  # axis to join along
                      join="outer",#=[pd.Index(varslist)]
                     # other axes to use (pd Index obj required)
-                     ).fillna(0.0)
+                     ).reindex(columns = varslist).fillna(0.0)
 
 
 def _join_columns(col, meas, keys):

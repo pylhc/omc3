@@ -1,7 +1,7 @@
 from collections import defaultdict
 import numpy as np
-from correction.constants import MODEL, DIFF, VALUE
-from utils import logging_tools
+from omc3.correction.constants import MODEL, DIFF, VALUE
+from omc3.utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 

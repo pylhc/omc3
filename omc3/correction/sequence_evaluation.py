@@ -11,10 +11,11 @@ import multiprocessing
 import os
 import pickle
 import numpy as np
-import madx_wrapper
-from utils import logging_tools, iotools
+
+import omc3.madx_wrapper as madx_wrapper
+from omc3.utils import logging_tools, iotools
 import tfs
-from utils.contexts import timeit, suppress_exception
+from omc3.utils.contexts import timeit, suppress_exception
 
 LOG = logging_tools.get_logger(__name__)
 

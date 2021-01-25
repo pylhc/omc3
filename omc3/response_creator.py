@@ -6,11 +6,13 @@ The response matrices can be either created by response_madx or analytically via
 """
 import os
 import pickle
-from model import manager
-from utils import logging_tools
+
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-from correction import response_madx, response_twiss
-from global_correct import CORRECTION_DEFAULTS
+
+from omc3.model import manager
+from omc3.utils import logging_tools
+from omc3.correction import response_madx, response_twiss
+from omc3.global_correct import CORRECTION_DEFAULTS
 
 LOG = logging_tools.get_logger(__name__)
 

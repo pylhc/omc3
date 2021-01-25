@@ -108,9 +108,10 @@ import pickle
 import numpy as np
 import pandas as pd
 import tfs
-from correction.sequence_evaluation import check_varmap_file
-from utils import logging_tools
-from utils.contexts import timeit
+
+from omc3.correction.sequence_evaluation import check_varmap_file
+from omc3.utils import logging_tools
+from omc3.utils.contexts import timeit
 
 LOG = logging_tools.get_logger(__name__)
 
