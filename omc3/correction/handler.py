@@ -32,7 +32,6 @@ def correct(accel_inst, opt):
     optics_params, meas_dict = _get_measurment_data(opt.optics_params, opt.meas_dir,
                                                     opt.beta_file_name, opt.weights, )
                                          
-    
     if opt.fullresponse_path is not None:
         resp_dict = _load_fullresponse(opt.fullresponse_path, vars_list)
     else:
@@ -49,6 +48,7 @@ def correct(accel_inst, opt):
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
     resp_matrix = _join_responses(      resp_dict, optics_params, vars_list)
     delta = tfs.TfsDataFrame(0, index=vars_list, columns=[DELTA])
+   
     # ######### Iteration Phase ######### #
     for iteration in range(opt.max_iter + 1):
         LOG.info(f"Correction Iteration {iteration} of {opt.max_iter}.")
@@ -62,7 +62,7 @@ def correct(accel_inst, opt):
 
             corr_model_elements = tfs.read(corr_model_path, index="NAME") #this is where we get the error
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
-
+            
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index,
                                                                 types=["bpm"])
             corr_model = corr_model_elements.loc[bpms_index_mask, :]
@@ -79,7 +79,7 @@ def correct(accel_inst, opt):
                                                            optics_params)
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
-
+           
         # ######### Actual optimization ######### #
         delta += _calculate_delta(resp_matrix, meas_dict, optics_params, vars_list, opt.method,
                                   meth_opt)
@@ -148,7 +148,7 @@ def _get_measurment_data(keys, meas_dir, beta_file_name, w_dict):
         elif key == "NDX":
             measurement[key] = read_meas(meas_dir, f"{NORM_DISP_NAME}{key[-1].lower()}{EXT}")
         elif key in ('F1001R', 'F1001I', 'F1010R', 'F1010I'):
-            pass  # TODO now it doesn't load coupling files
+            measurement[key] = read_meas(meas_dir,f"{key[:-1]}{EXT}").filter(regex=key)
         elif key == "Q":
             measurement[key] = pd.DataFrame({
                 # Just fractional tunes:
