@@ -1,0 +1,2 @@
+!call, file="/afs/cern.ch/eng/lhc/optics/runII/2018/PROTON/opticsfile.1";
+call, file = "/home/eirik/CERN/lhc2018/2018/PROTON/opticsfile.1";
