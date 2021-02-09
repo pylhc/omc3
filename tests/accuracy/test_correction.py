@@ -271,9 +271,6 @@ def test_global_correct_quad():
                             OPTICS_PARAMS, VARIABLE_CATEGORIES, WEIGHTS, FULLRESPONSE_PATH, GENERATED_MEASUREMENT_PATH, RMS_TOL_DICT)
 
 
-test_global_correct_quad()
-
-
 @pytest.mark.basic
 def test_global_correct_skew():
     with tempfile.TemporaryDirectory() as temp:
