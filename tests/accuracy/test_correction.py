@@ -118,7 +118,7 @@ def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):
                   headers_dict=h_dict, save_index="index_column")
 
 
-def test_response_madx(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, delta_k=0.00002):
+def assert_response_madx(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, delta_k=0.00002):
     fullresponse_path = correction_dir + "Fullresponse_pandas_omc3"
 
     create_response_entrypoint(**accel_settings,
@@ -283,7 +283,7 @@ def test_global_correct_skew():
 def test_fullresponse_madx_quad():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        test_response_madx(ACCEL_SETTINGS, temp_dir,
+        assert_response_madx(ACCEL_SETTINGS, temp_dir,
                            VARIABLE_CATEGORIES, FULLRESPONSE_PATH)
 
 
@@ -291,7 +291,7 @@ def test_fullresponse_madx_quad():
 def test_fullresponse_madx_skew():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        test_response_madx(ACCEL_SETTINGS, temp_dir,
+        assert_response_madx(ACCEL_SETTINGS, temp_dir,
                            VARIABLE_CATEGORIES_SKEW, FULLRESPONSE_PATH_SKEW)
 
 
