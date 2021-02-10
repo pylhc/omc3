@@ -138,7 +138,7 @@ def _assert_response_madx(accel_settings, correction_dir, variable_categories, c
     is_equal = True
     for key in fullresponse_data.keys():
         assert np.all(np.isclose(fullresponse_data[key][comparison_fullresponse_data[key].columns].to_numpy(
-        ), comparison_fullresponse_data[key].to_numpy()),atol=1e-07), f"Fulresponse does not match for a key {key}"
+        ), comparison_fullresponse_data[key].to_numpy(),atol=1e-07)), f"Fulresponse does not match for a key {key}"
 
 
 def _assert_response_twiss(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, RMS_tol_dict, delta_k=0.00002):
