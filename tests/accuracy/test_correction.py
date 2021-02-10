@@ -118,7 +118,7 @@ def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):
                   headers_dict=h_dict, save_index="index_column")
 
 
-def assert_response_madx(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, delta_k=0.00002):
+def _assert_response_madx(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, delta_k=0.00002):
     fullresponse_path = correction_dir + "Fullresponse_pandas_omc3"
 
     create_response_entrypoint(**accel_settings,
@@ -141,7 +141,7 @@ def assert_response_madx(accel_settings, correction_dir, variable_categories, co
         ), comparison_fullresponse_data[key].to_numpy())), f"Fulresponse does not match for a key {key}"
 
 
-def test_response_twiss(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, RMS_tol_dict, delta_k=0.00002):
+def _assert_response_twiss(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, RMS_tol_dict, delta_k=0.00002):
     fullresponse_path = correction_dir + "Fullresponse_pandas_omc3"
 
     create_response_entrypoint(**accel_settings,
@@ -168,7 +168,7 @@ def test_response_twiss(accel_settings, correction_dir, variable_categories, com
             delta**2)) < RMS_tol_dict[key], f"RMS difference between twiss and madx responseis not within tolerance {RMS_tol_dict[key]} for key {key}"
 
 
-def test_global_correct(accel_settings, correction_dir, optics_params, variable_categories, weights, fullresponse_path, generated_measurement_path, RMS_tol_dict):
+def _assert_global_correct(accel_settings, correction_dir, optics_params, variable_categories, weights, fullresponse_path, generated_measurement_path, RMS_tol_dict):
     model_dir = accel_settings["model_dir"]
     model_path = model_dir + "twiss.dat"
     corrected_path = correction_dir + "twiss_1.tfs"
@@ -267,7 +267,7 @@ RMS_TOL_DICT_SKEW = {"F1001R": 0.001, "F1001I": 0.001,
 def test_global_correct_quad():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        test_global_correct(ACCEL_SETTINGS, temp_dir,
+        _assert_global_correct(ACCEL_SETTINGS, temp_dir,
                             OPTICS_PARAMS, VARIABLE_CATEGORIES, WEIGHTS, FULLRESPONSE_PATH, GENERATED_MEASUREMENT_PATH, RMS_TOL_DICT)
 
 
@@ -275,7 +275,7 @@ def test_global_correct_quad():
 def test_global_correct_skew():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        test_global_correct(ACCEL_SETTINGS, temp_dir,
+        _assert_global_correct(ACCEL_SETTINGS, temp_dir,
                             OPTICS_PARAMS_SKEW, VARIABLE_CATEGORIES_SKEW, WEIGHTS_SKEW, FULLRESPONSE_PATH_SKEW, GENERATED_MEASUREMENT_PATH_SKEW, RMS_TOL_DICT_SKEW)
 
 
@@ -283,7 +283,7 @@ def test_global_correct_skew():
 def test_fullresponse_madx_quad():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        assert_response_madx(ACCEL_SETTINGS, temp_dir,
+        _assert_response_madx(ACCEL_SETTINGS, temp_dir,
                            VARIABLE_CATEGORIES, FULLRESPONSE_PATH)
 
 
@@ -291,7 +291,7 @@ def test_fullresponse_madx_quad():
 def test_fullresponse_madx_skew():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        assert_response_madx(ACCEL_SETTINGS, temp_dir,
+        _assert_response_madx(ACCEL_SETTINGS, temp_dir,
                            VARIABLE_CATEGORIES_SKEW, FULLRESPONSE_PATH_SKEW)
 
 
@@ -299,7 +299,7 @@ def test_fullresponse_madx_skew():
 def test_fullresponse_twiss():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        test_response_twiss(ACCEL_SETTINGS, temp_dir,
+        _assert_response_twiss(ACCEL_SETTINGS, temp_dir,
                             VARIABLE_CATEGORIES, FULLRESPONSE_PATH, RMS_TOL_DICT_CORRECTION)
 
 
@@ -307,5 +307,5 @@ def test_fullresponse_twiss():
 def test_fullresponse_twiss_skew():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
-        test_response_twiss(ACCEL_SETTINGS, temp_dir,
+        _assert_response_twiss(ACCEL_SETTINGS, temp_dir,
                             VARIABLE_CATEGORIES_SKEW, FULLRESPONSE_PATH_SKEW, RMS_TOL_DICT_CORRECTION)
