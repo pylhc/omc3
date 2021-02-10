@@ -113,7 +113,7 @@ def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):
                 np.divide(df_model.loc[:, "DX"],
                           np.sqrt(df_model.loc[:, "BETX"]))
             write_file = f"{NORM_DISP_NAME}{parameter[-1].lower()}{EXT}"
-        print(f"{Output_dir}{write_file}")
+            
         tfs.write(f"{Output_dir}{write_file}", new,
                   headers_dict=h_dict, save_index="index_column")
 
@@ -138,7 +138,7 @@ def _assert_response_madx(accel_settings, correction_dir, variable_categories, c
     is_equal = True
     for key in fullresponse_data.keys():
         assert np.all(np.isclose(fullresponse_data[key][comparison_fullresponse_data[key].columns].to_numpy(
-        ), comparison_fullresponse_data[key].to_numpy())), f"Fulresponse does not match for a key {key}"
+        ), comparison_fullresponse_data[key].to_numpy()),atol=1e-07), f"Fulresponse does not match for a key {key}"
 
 
 def _assert_response_twiss(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, RMS_tol_dict, delta_k=0.00002):
@@ -173,7 +173,6 @@ def _assert_global_correct(accel_settings, correction_dir, optics_params, variab
     model_path = model_dir + "twiss.dat"
     corrected_path = correction_dir + "twiss_1.tfs"
 
-    print(correction_dir)
     _tfs_converter(model_path, generated_measurement_path,
                    optics_params, correction_dir)
 
@@ -228,7 +227,6 @@ def _assert_global_correct(accel_settings, correction_dir, optics_params, variab
 
         RMS_dict[parameter] = np.sqrt(np.mean((delta)**2))
 
-    print(RMS_dict)
     for key in RMS_dict.keys():
         assert RMS_dict[key] < RMS_tol_dict[key], f"RMS of {key} is not within tolerance"
 
