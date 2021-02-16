@@ -138,7 +138,7 @@ def _assert_response_madx(accel_settings, correction_dir, variable_categories, c
     is_equal = True
     for key in fullresponse_data.keys():
         assert np.all(np.isclose(fullresponse_data[key][comparison_fullresponse_data[key].columns].to_numpy(
-        ), comparison_fullresponse_data[key].to_numpy(),atol=1e-07)), f"Fulresponse does not match for a key {key}"
+        ), comparison_fullresponse_data[key].to_numpy(),atol=1e-06)), f"Fulresponse does not match for a key {key}"
 
 
 def _assert_response_twiss(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, RMS_tol_dict, delta_k=0.00002):
@@ -165,7 +165,7 @@ def _assert_response_twiss(accel_settings, correction_dir, variable_categories, 
         delta = fullresponse_data[key].loc[index, columns].to_numpy(
         ) - comparison_fullresponse_data[key].to_numpy()
         assert np.sqrt(np.mean(
-            delta**2)) < RMS_tol_dict[key], f"RMS difference between twiss and madx responseis not within tolerance {RMS_tol_dict[key]} for key {key}"
+            delta**2)) < RMS_tol_dict[key], f"RMS difference between twiss and madx response is not within tolerance {RMS_tol_dict[key]} for key {key}"
 
 
 def _assert_global_correct(accel_settings, correction_dir, optics_params, variable_categories, weights, fullresponse_path, generated_measurement_path, RMS_tol_dict):
