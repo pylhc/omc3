@@ -233,20 +233,23 @@ def _assert_global_correct(accel_settings, correction_dir, optics_params, variab
 
 
 CORRECTION_DIR = os.path.join(os.path.dirname(__file__),'..','inputs','correction') + '/'
+MODEL_DIR = os.path.join(os.path.dirname(__file__),'..','inputs','models','inj_beam1') + '/'
 FULLRESPONSE_PATH = CORRECTION_DIR + "Fullresponse_pandas"
-MODEL_DIR = CORRECTION_DIR + "model_dir/"
 GENERATED_MEASUREMENT_PATH = CORRECTION_DIR + "twiss_quadrupole_error.dat"
-ACCEL_SETTINGS = dict(beam=1, model_dir=MODEL_DIR,
+ACCEL_SETTINGS = dict(ats=True,beam=1, model_dir=MODEL_DIR,
                       year="2018", accel="lhc", energy=0.45)
 OPTICS_PARAMS = ["MUX", "MUY", "BETX", "BETY", "DX", "NDX", "Q"]
 VARIABLE_CATEGORIES = ["MQY"]
 WEIGHTS = [1., 1., 1., 1., 1., 1., 10.]
 RMS_TOL_DICT = {"MUX": 0.001, "MUY": 0.001, "BETX": 0.01, "BETY": 0.01,
-                "DX": 0.001, "NDX": 0.001, "Q": 1e-05}
+                "DX": 0.0015, "NDX": 0.001, "Q": 1e-05}
 
 
-RMS_TOL_DICT_CORRECTION = {"Q": 3., "MUX": 3., "MUY": 3., "BETX": 15., "BETY": 15.,
-                           "DX": 2., "DY": 1, "NDX": 2., "NDY": 1., "F1001R": 1., "F1001I": 1., "F1010R": 1., "F1010I": 1.}
+RMS_TOL_DICT_CORRECTION = {"Q": 3., "MUX": 3., "MUY": 3., "BETX": 25., "BETY": 25.,
+                           "DX": 3., "DY": 1, "NDX": 2., "NDY": 1., "F1001R": 1., "F1001I": 1., "F1010R": 1., "F1010I": 1.}
+
+
+
 
 GENERATED_MEASUREMENT_PATH_SKEW = CORRECTION_DIR + \
     "twiss_skew_quadrupole_error.dat"

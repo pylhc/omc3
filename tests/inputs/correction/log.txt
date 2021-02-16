@@ -3,7 +3,7 @@
   +     MAD-X 5.06.00  (64 bit, Linux)       +
   + Support: mad@cern.ch, http://cern.ch/mad +
   + Release   date: 2020.08.13               +
-  + Execution date: 2021.01.15 09:35:17      +
+  + Execution date: 2021.02.16 09:35:12      +
   ++++++++++++++++++++++++++++++++++++++++++++
 option, -echo;
 
@@ -272,10 +272,8 @@ option, -echo;
 ++++++ info: on_a8 redefined
 ++++++ info: on_oh8 redefined
 ++++++ info: on_ov8 redefined
-exec, match_tunes(0.275, 0.295, 1);
+exec, match_tunes_ats(62.2799999999999, 60.3100000000003, 1);
 
-++++++ info: int_qx redefined
-++++++ info: int_qy redefined
 START MATCHING
 
 number of variables:    2
@@ -284,21 +282,22 @@ total constraints:      2
 
 START LMDIF:
 
-Initial Penalty Function =   0.18500014E+00
+Initial Penalty Function =   0.10000017E+00
 
 
+call:       4   Penalty function =   0.20242897E-07
  ++++++++++ LMDIF ended: converged successfully
-call:       3   Penalty function =   0.18500014E+00
+call:       4   Penalty function =   0.20242897E-07
 
 MATCH SUMMARY
 
 Node_Name                  Constraint   Type  Target Value       Final Value        Penalty
 --------------------------------------------------------------------------------------------------
-lhcb1msia.exit.b1_p_:1     mux          4     6.22750000E+01     6.23100000E+01     1.22500252E-01
-lhcb1msia.exit.b1_p_:1     muy          4     6.02950000E+01     6.03200000E+01     6.24998873E-02
+lhcb1msia.exit.b1_p_:1     mux          4     6.22800000E+01     6.22800103E+01     1.06888173E-08
+lhcb1msia.exit.b1_p_:1     muy          4     6.03100000E+01     6.03100098E+01     9.55407962E-09
 
 
-Final Penalty Function =   1.85000139e-01
+Final Penalty Function =   2.02428969e-08
 
 
 
@@ -306,141 +305,63 @@ Final Penalty Function =   1.85000139e-01
 
 Variable                 Final Value  Initial Value Lower Limit  Upper Limit 
 --------------------------------------------------------------------------------
-kqtd.b1                   0.00000e+00  0.00000e+00 -1.00000e+20  1.00000e+20
-kqtf.b1                   0.00000e+00  0.00000e+00 -1.00000e+20  1.00000e+20
+dqx.b1                   -2.99972e-02  0.00000e+00 -1.00000e+20  1.00000e+20
+dqy.b1                   -9.99900e-03  0.00000e+00 -1.00000e+20  1.00000e+20
 
 END MATCH SUMMARY
 
-VARIABLE "TAR" SET TO   1.85000139e-01
-exec, coupling_knob(1);
+VARIABLE "TAR" SET TO   2.02428969e-08
+exec, coupling_knob_ats(1);
 
-++++++ info: kqs.r7b1 redefined
-++++++ info: kqs.r5b1 redefined
-++++++ info: kqs.r3b1 redefined
-++++++ info: kqs.r1b1 redefined
-++++++ info: kqs.l8b1 redefined
-++++++ info: kqs.l6b1 redefined
-++++++ info: kqs.l4b1 redefined
+++++++ info: cmrs.b1 redefined
+++++++ info: cmrs.b2 redefined
+++++++ info: cmis.b1 redefined
+++++++ info: cmis.b2 redefined
+call, file = '/home/eirik/CERN/correction_test/correction2/skew_quadrupole_error.madx';
+
+kqs.l2b1 = kqs.l2b1 + 0.0001;
+
 ++++++ info: kqs.l2b1 redefined
-++++++ info: kqs.a81b1 redefined
-++++++ info: kqs.a67b1 redefined
-++++++ info: kqs.a45b1 redefined
-++++++ info: kqs.a23b1 redefined
-use_acd=1;
+kqs.l6b1 = kqs.l6b1 - 0.00023;
 
-use_adt=0;
-
-exec, do_twiss_monitors(LHCB1, '/home/eirik/CERN/correction_test/correction/model_dir/twiss.dat', 0.0);
+++++++ info: kqs.l6b1 redefined
+exec, do_twiss_monitors(LHCB1, '/home/eirik/CERN/correction_test/correction2/twiss_skew_quadrupole_error.dat', 0.0);
 
 enter Twiss module
   
-iteration:   1 error:   1.169668E-07 deltap:   1.000000E-06
-orbit:  -1.293603E-07 -2.395788E-09  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
+iteration:   1 error:   8.965416E-08 deltap:   1.000000E-06
+orbit:  -1.255633E-07 -2.307046E-09 -1.407017E-10  4.945820E-13  0.000000E+00  0.000000E+00
+++++++ warning: TWISS:  Calculation of Wx, Wy etc. could be inaccurate due to coupling!                                                                                       
   
-iteration:   1 error:   8.611701E-09 deltap:   0.000000E+00
-orbit:   1.337853E-08  4.226529E-10  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
+iteration:   1 error:   1.483823E-08 deltap:   0.000000E+00
+orbit:   1.487330E-08  4.766227E-10 -1.398987E-10  4.574843E-13  0.000000E+00  0.000000E+00
+++++++ warning: TWISS:  Calculation of Wx, Wy etc. could be inaccurate due to coupling!                                                                                       
 
 ++++++ table: summ
 
             length             orbit5               alfa            gammatr 
-        26658.8832                 -0    0.0003478717476        53.61550742 
+        26658.8832                 -0     0.000348235506        53.58749737 
 
                 q1                dq1            betxmax              dxmax 
-       62.31000004        1.999920534         588.948328        2.861364109 
+       62.27996814        2.127432764        589.9896481        2.865001615 
 
              dxrms             xcomax             xcorms                 q2 
-       1.499401832    8.686216784e-08    2.432115223e-08        60.31999998 
+       1.500897013    9.397168571e-08    2.659957652e-08        60.31005204 
 
                dq2            betymax              dymax              dyrms 
-         2.0000708        640.9197637                  0                  0 
+        2.10935867        641.3875536     0.009210289463    0.0006236414608 
 
             ycomax             ycorms             deltap            synch_1 
-                 0                  0                  0        9.273872292 
+   7.780139145e-10    2.176336665e-10                  0        9.283569685 
 
            synch_2            synch_3            synch_4            synch_5 
-    0.002244883795     7.99769003e-07    1.179626561e-06     2.36541652e-08 
+    0.002244883795     7.99769003e-07    1.180860399e-06    2.369121877e-08 
 
            synch_6            synch_8             nflips 
-       13.47387295       0.2776884135                  0 
-exec, do_twiss_elements(LHCB1, '/home/eirik/CERN/correction_test/correction/model_dir/twiss_elements.dat', 0.0);
+       13.47265636       0.2782110193                  0 
 
-enter Twiss module
-  
-iteration:   1 error:   1.169668E-07 deltap:   1.000000E-06
-orbit:  -1.293603E-07 -2.395788E-09  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
-  
-iteration:   1 error:   8.611701E-09 deltap:   0.000000E+00
-orbit:   1.337853E-08  4.226529E-10  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
-
-++++++ table: summ
-
-            length             orbit5               alfa            gammatr 
-        26658.8832                 -0    0.0003478717476        53.61550742 
-
-                q1                dq1            betxmax              dxmax 
-       62.31000004        1.999920534         588.948328        2.861364109 
-
-             dxrms             xcomax             xcorms                 q2 
-       1.499401832    8.686216784e-08    2.432115223e-08        60.31999998 
-
-               dq2            betymax              dymax              dyrms 
-         2.0000708        640.9197637                  0                  0 
-
-            ycomax             ycorms             deltap            synch_1 
-                 0                  0                  0        9.273872292 
-
-           synch_2            synch_3            synch_4            synch_5 
-    0.002244883795     7.99769003e-07    1.179626561e-06     2.36541652e-08 
-
-           synch_6            synch_8             nflips 
-       13.47387295       0.2776884135                  0 
-if(use_acd == 1){
-
-exec, twiss_ac_dipole(0.275, 0.295, 0.263, 0.31, 1, '/home/eirik/CERN/correction_test/correction/model_dir/twiss_ac.dat', 0.0);
-
-}else if(use_adt == 1){
-
-exec, twiss_adt(0.275, 0.295, 0.263, 0.31, 1, '/home/eirik/CERN/correction_test/correction/model_dir/twiss_adt.dat', 0.0);
-
-}
-
-++++++ info: seqedit - number of elements installed:  2
-++++++ info: seqedit - number of elements moved:      0
-++++++ info: seqedit - number of elements removed:    0
-++++++ info: seqedit - number of elements replaced:   0
-enter Twiss module
-  
-iteration:   1 error:   1.071478E-07 deltap:   1.000000E-06
-orbit:  -1.221355E-07 -2.255370E-09  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
-  
-iteration:   1 error:   8.460887E-09 deltap:   0.000000E+00
-orbit:   1.600675E-08  4.737342E-10  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
-
-++++++ table: summ
-
-            length             orbit5               alfa            gammatr 
-        26658.8832                 -0    0.0003478718946        53.61549609 
-
-                q1                dq1            betxmax              dxmax 
-       62.29810464        1.771902135        637.5326848        2.867152124 
-
-             dxrms             xcomax             xcorms                 q2 
-       1.499383338    9.349838975e-08    2.585070788e-08        60.33513369 
-
-               dq2            betymax              dymax              dyrms 
-       2.051247119        704.9053272                  0                  0 
-
-            ycomax             ycorms             deltap            synch_1 
-                 0                  0                  0        9.273876208 
-
-           synch_2            synch_3            synch_4            synch_5 
-    0.002244883795     7.99769003e-07    1.179628895e-06    2.371474902e-08 
-
-           synch_6            synch_8             nflips 
-       13.51229326       0.2776993403                  0 
-
-  Number of warnings: 233
-233 in C and 0 in Fortran
+  Number of warnings: 235
+233 in C and 2 in Fortran
 
   ++++++++++++++++++++++++++++++++++++++++++++
   +          MAD-X finished normally         +
