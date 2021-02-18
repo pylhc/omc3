@@ -14,6 +14,7 @@ import time
 import warnings
 from contextlib import contextmanager
 from io import StringIO
+from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL  # make them available directly
 
 import pandas as pd
 
@@ -21,22 +22,13 @@ DIVIDER = "|"
 NEWLINE = "\n" + " " * 10  # levelname + divider + 2
 BASIC_FORMAT = '%(levelname)7s {div:s} %(message)s {div:s} %(name)s'.format(div=DIVIDER)
 COLOR_LEVEL = '\33[0m\33[38;2;150;150;255m'
-COLOR_MESSAGE = '\33[0m\33[1m'
+COLOR_MESSAGE = '\33[0m'
+COLOR_MESSAGE_LOW = '\33[0m\33[38;2;140;140;140m'
 COLOR_WARN = '\33[0m\33[38;2;255;161;53m'
 COLOR_ERROR = '\33[0m\33[38;2;216;31;42m'
-COLOR_NAME = '\33[0m\33[38;2;127;127;127m'
+COLOR_NAME = '\33[0m\33[38;2;80;80;80m'
 COLOR_DIVIDER = '\33[0m\33[38;2;127;127;127m'
 COLOR_RESET = '\33[0m'
-
-
-NOTSET = logging.NOTSET
-DEBUG = logging.DEBUG
-INFO = logging.INFO
-WARN = logging.WARN
-WARNING = logging.WARNING
-ERROR = logging.ERROR
-CRITICAL = logging.CRITICAL
-FATAL = logging.FATAL
 
 
 # Classes and Contexts #########################################################
@@ -234,7 +226,7 @@ def list2str(list_: list) -> str:
 # Public Methods ###############################################################
 
 
-def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
+def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, color=None):
     """
     Sets up logger if name is **__main__**. Returns logger based on module name.
 
@@ -243,6 +235,8 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
         level_root: main logging level, defaults to ``DEBUG``.
         level_console: console logging level, defaults to ``INFO``.
         fmt: Format of the logging. For default see ``BASIC_FORMAT``.
+        color: If `None` colors are used if tty is detected.
+              `False` will never use colors and `True` will always enforce them.
 
     Returns:
         Logger instance.
@@ -258,9 +252,17 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
         # print logs to the console
         root_logger.addHandler(
             stream_handler(
-                level=level_console,
-                fmt=fmt,
-                max_level=INFO
+                level=max(level_console, DEBUG),
+                max_level=INFO-1,
+                fmt=_maybe_bring_color(fmt, DEBUG, color),
+            )
+        )
+
+        root_logger.addHandler(
+            stream_handler(
+                level=max(level_console, INFO),
+                max_level=WARNING-1,
+                fmt=_maybe_bring_color(fmt, INFO, color),
             )
         )
 
@@ -268,8 +270,8 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
         root_logger.addHandler(
             stream_handler(
                 level=max(WARNING, level_console),
-                fmt=fmt,
-                max_level=WARNING
+                max_level=ERROR-1,
+                fmt=_maybe_bring_color(fmt, WARNING, color),
             )
         )
 
@@ -278,7 +280,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
             stream_handler(
                 stream=sys.stderr,
                 level=max(ERROR, level_console),
-                fmt=fmt,
+                fmt=_maybe_bring_color(fmt, ERROR, color),
             )
         )
 
@@ -299,7 +301,7 @@ def stream_handler(stream=sys.stdout, level=DEBUG, fmt=BASIC_FORMAT, max_level=N
     """Convenience function so the caller does not have to import logging."""
     handler = logging.StreamHandler(stream)
     handler.setLevel(level)
-    console_formatter = logging.Formatter(_bring_color(fmt, level))
+    console_formatter = logging.Formatter(fmt)
     handler.setFormatter(console_formatter)
     if max_level:
         handler.addFilter(MaxFilter(max_level))
@@ -363,18 +365,26 @@ def _get_caller_logger_name():
     return ".".join([current_module, os.path.basename(caller_file)])
 
 
-def _bring_color(format_string, colorlevel=INFO):
+def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
     """Adds color to the logs (can only be used in a terminal)."""
-    if not sys.stdout.isatty():
-        # Not a tty. You're being piped or redirected
+    if color_flag is None:
+        color_flag = _isatty()
+
+    if not color_flag:
         return format_string
 
     level = "%(levelname)"
     message = "%(message)"
     name = "%(name)"
-    format_string = format_string.replace(level, COLOR_LEVEL + level)
-    
-    if colorlevel <= INFO:
+
+    if colorlevel <= WARNING:
+        format_string = format_string.replace(level, COLOR_LEVEL + level)
+    else:
+        format_string = format_string.replace(level, COLOR_ERROR + level)
+
+    if colorlevel <= DEBUG:
+        format_string = format_string.replace(message, COLOR_MESSAGE_LOW + message)
+    elif colorlevel <= INFO:
         format_string = format_string.replace(message, COLOR_MESSAGE + message)
     elif colorlevel <= WARNING:
         format_string = format_string.replace(message, COLOR_WARN + message)
@@ -386,3 +396,8 @@ def _bring_color(format_string, colorlevel=INFO):
     format_string = format_string + COLOR_RESET
 
     return format_string
+
+
+def _isatty():
+    """Checks if stdout is a tty, which means it should support color-codes."""
+    return hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
