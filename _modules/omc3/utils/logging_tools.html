@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>omc3.utils.logging_tools &mdash; omc3 0.2.0 documentation</title>
   
@@ -17,7 +17,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -30,8 +33,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -246,6 +247,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -286,6 +289,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">NOTSET</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>  <span class="c1"># make them available directly</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -293,22 +297,13 @@
 <span class="n">NEWLINE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># levelname + divider + 2</span>
 <span class="n">BASIC_FORMAT</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(levelname)7s</span><span class="s1"> </span><span class="si">{div:s}</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1"> </span><span class="si">{div:s}</span><span class="s1"> </span><span class="si">%(name)s</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">div</span><span class="o">=</span><span class="n">DIVIDER</span><span class="p">)</span>
 <span class="n">COLOR_LEVEL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;150;150;255m&#39;</span>
-<span class="n">COLOR_MESSAGE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[1m&#39;</span>
+<span class="n">COLOR_MESSAGE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m&#39;</span>
+<span class="n">COLOR_MESSAGE_LOW</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;140;140;140m&#39;</span>
 <span class="n">COLOR_WARN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;255;161;53m&#39;</span>
 <span class="n">COLOR_ERROR</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;216;31;42m&#39;</span>
-<span class="n">COLOR_NAME</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;127;127;127m&#39;</span>
+<span class="n">COLOR_NAME</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;80;80;80m&#39;</span>
 <span class="n">COLOR_DIVIDER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;127;127;127m&#39;</span>
 <span class="n">COLOR_RESET</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m&#39;</span>
-
-
-<span class="n">NOTSET</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span>
-<span class="n">DEBUG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
-<span class="n">INFO</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
-<span class="n">WARN</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARN</span>
-<span class="n">WARNING</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
-<span class="n">ERROR</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
-<span class="n">CRITICAL</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span>
-<span class="n">FATAL</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FATAL</span>
 
 
 <span class="c1"># Classes and Contexts #########################################################</span>
@@ -506,7 +501,7 @@
 <span class="c1"># Public Methods ###############################################################</span>
 
 
-<div class="viewcode-block" id="get_logger"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.get_logger">[docs]</a><span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">level_root</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">level_console</span><span class="o">=</span><span class="n">INFO</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">):</span>
+<div class="viewcode-block" id="get_logger"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.get_logger">[docs]</a><span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">level_root</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">level_console</span><span class="o">=</span><span class="n">INFO</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up logger if name is **__main__**. Returns logger based on module name.</span>
 
@@ -515,6 +510,8 @@
 <span class="sd">        level_root: main logging level, defaults to ``DEBUG``.</span>
 <span class="sd">        level_console: console logging level, defaults to ``INFO``.</span>
 <span class="sd">        fmt: Format of the logging. For default see ``BASIC_FORMAT``.</span>
+<span class="sd">        color: If `None` colors are used if tty is detected.</span>
+<span class="sd">              `False` will never use colors and `True` will always enforce them.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Logger instance.</span>
@@ -530,9 +527,17 @@
         <span class="c1"># print logs to the console</span>
         <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span>
             <span class="n">stream_handler</span><span class="p">(</span>
-                <span class="n">level</span><span class="o">=</span><span class="n">level_console</span><span class="p">,</span>
-                <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
-                <span class="n">max_level</span><span class="o">=</span><span class="n">INFO</span>
+                <span class="n">level</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">level_console</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">),</span>
+                <span class="n">max_level</span><span class="o">=</span><span class="n">INFO</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">fmt</span><span class="o">=</span><span class="n">_maybe_bring_color</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">color</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span>
+            <span class="n">stream_handler</span><span class="p">(</span>
+                <span class="n">level</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">level_console</span><span class="p">,</span> <span class="n">INFO</span><span class="p">),</span>
+                <span class="n">max_level</span><span class="o">=</span><span class="n">WARNING</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">fmt</span><span class="o">=</span><span class="n">_maybe_bring_color</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">color</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -540,8 +545,8 @@
         <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span>
             <span class="n">stream_handler</span><span class="p">(</span>
                 <span class="n">level</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">WARNING</span><span class="p">,</span> <span class="n">level_console</span><span class="p">),</span>
-                <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
-                <span class="n">max_level</span><span class="o">=</span><span class="n">WARNING</span>
+                <span class="n">max_level</span><span class="o">=</span><span class="n">ERROR</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">fmt</span><span class="o">=</span><span class="n">_maybe_bring_color</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">color</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -550,7 +555,7 @@
             <span class="n">stream_handler</span><span class="p">(</span>
                 <span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
                 <span class="n">level</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">level_console</span><span class="p">),</span>
-                <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
+                <span class="n">fmt</span><span class="o">=</span><span class="n">_maybe_bring_color</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">color</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -571,7 +576,7 @@
     <span class="sd">&quot;&quot;&quot;Convenience function so the caller does not have to import logging.&quot;&quot;&quot;</span>
     <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
     <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
-    <span class="n">console_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">_bring_color</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">level</span><span class="p">))</span>
+    <span class="n">console_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
     <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">console_formatter</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">max_level</span><span class="p">:</span>
         <span class="n">handler</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">MaxFilter</span><span class="p">(</span><span class="n">max_level</span><span class="p">))</span>
@@ -635,18 +640,26 @@
     <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">current_module</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">caller_file</span><span class="p">)])</span>
 
 
-<span class="k">def</span> <span class="nf">_bring_color</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="n">colorlevel</span><span class="o">=</span><span class="n">INFO</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_maybe_bring_color</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="n">colorlevel</span><span class="o">=</span><span class="n">INFO</span><span class="p">,</span> <span class="n">color_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Adds color to the logs (can only be used in a terminal).&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
-        <span class="c1"># Not a tty. You&#39;re being piped or redirected</span>
+    <span class="k">if</span> <span class="n">color_flag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">color_flag</span> <span class="o">=</span> <span class="n">_isatty</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">color_flag</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">format_string</span>
 
     <span class="n">level</span> <span class="o">=</span> <span class="s2">&quot;%(levelname)&quot;</span>
     <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;%(message)&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;%(name)&quot;</span>
-    <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">COLOR_LEVEL</span> <span class="o">+</span> <span class="n">level</span><span class="p">)</span>
-    
-    <span class="k">if</span> <span class="n">colorlevel</span> <span class="o">&lt;=</span> <span class="n">INFO</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="n">colorlevel</span> <span class="o">&lt;=</span> <span class="n">WARNING</span><span class="p">:</span>
+        <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">COLOR_LEVEL</span> <span class="o">+</span> <span class="n">level</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">COLOR_ERROR</span> <span class="o">+</span> <span class="n">level</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">colorlevel</span> <span class="o">&lt;=</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">COLOR_MESSAGE_LOW</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">colorlevel</span> <span class="o">&lt;=</span> <span class="n">INFO</span><span class="p">:</span>
         <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">COLOR_MESSAGE</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">colorlevel</span> <span class="o">&lt;=</span> <span class="n">WARNING</span><span class="p">:</span>
         <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">COLOR_WARN</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span>
@@ -658,34 +671,36 @@
     <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span> <span class="o">+</span> <span class="n">COLOR_RESET</span>
 
     <span class="k">return</span> <span class="n">format_string</span>
+
+
+<span class="k">def</span> <span class="nf">_isatty</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Checks if stdout is a tty, which means it should support color-codes.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="s1">&#39;isatty&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">()</span>
 </pre></div>
 
            </div>
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 
+        &#169; Copyright .
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
