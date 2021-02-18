@@ -14,6 +14,7 @@ import time
 import warnings
 from contextlib import contextmanager
 from io import StringIO
+from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL  # make them available directly
 
 import pandas as pd
 
@@ -21,26 +22,13 @@ DIVIDER = "|"
 NEWLINE = "\n" + " " * 10  # levelname + divider + 2
 BASIC_FORMAT = '%(levelname)7s {div:s} %(message)s {div:s} %(name)s'.format(div=DIVIDER)
 COLOR_LEVEL = '\33[0m\33[38;2;150;150;255m'
-# COLOR_MESSAGE = '\33[0m\33[1m'
 COLOR_MESSAGE = '\33[0m'
-# COLOR_MESSAGE = '\33[0m'
-# COLOR_MESSAGE_LOW = '\33[0m\33[38;2;160;160;160m'
 COLOR_MESSAGE_LOW = '\33[0m\33[38;2;140;140;140m'
 COLOR_WARN = '\33[0m\33[38;2;255;161;53m'
 COLOR_ERROR = '\33[0m\33[38;2;216;31;42m'
 COLOR_NAME = '\33[0m\33[38;2;80;80;80m'
 COLOR_DIVIDER = '\33[0m\33[38;2;127;127;127m'
 COLOR_RESET = '\33[0m'
-
-
-NOTSET = logging.NOTSET
-DEBUG = logging.DEBUG
-INFO = logging.INFO
-WARN = logging.WARN
-WARNING = logging.WARNING
-ERROR = logging.ERROR
-CRITICAL = logging.CRITICAL
-FATAL = logging.FATAL
 
 
 # Classes and Contexts #########################################################
