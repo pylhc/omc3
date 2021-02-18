@@ -226,7 +226,7 @@ def list2str(list_: list) -> str:
 # Public Methods ###############################################################
 
 
-def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, force_color=False):
+def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, color=None):
     """
     Sets up logger if name is **__main__**. Returns logger based on module name.
 
@@ -235,7 +235,8 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, for
         level_root: main logging level, defaults to ``DEBUG``.
         level_console: console logging level, defaults to ``INFO``.
         fmt: Format of the logging. For default see ``BASIC_FORMAT``.
-        force_color: Uses color codes even if tty is not detected.
+        color: If `None` colors are used if tty is detected.
+              `False` will never use colors and `True` will always enforce them.
 
     Returns:
         Logger instance.
@@ -253,7 +254,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, for
             stream_handler(
                 level=max(level_console, DEBUG),
                 max_level=INFO-1,
-                fmt=_maybe_bring_color(fmt, DEBUG, force_color),
+                fmt=_maybe_bring_color(fmt, DEBUG, color),
             )
         )
 
@@ -261,7 +262,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, for
             stream_handler(
                 level=max(level_console, INFO),
                 max_level=WARNING-1,
-                fmt=_maybe_bring_color(fmt, INFO, force_color),
+                fmt=_maybe_bring_color(fmt, INFO, color),
             )
         )
 
@@ -270,7 +271,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, for
             stream_handler(
                 level=max(WARNING, level_console),
                 max_level=ERROR-1,
-                fmt=_maybe_bring_color(fmt, WARNING, force_color),
+                fmt=_maybe_bring_color(fmt, WARNING, color),
             )
         )
 
@@ -364,9 +365,12 @@ def _get_caller_logger_name():
     return ".".join([current_module, os.path.basename(caller_file)])
 
 
-def _maybe_bring_color(format_string, colorlevel=INFO, force_color=False):
+def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
     """Adds color to the logs (can only be used in a terminal)."""
-    if not (force_color or _use_color()):
+    if color_flag is None:
+        color_flag = _isatty()
+
+    if not color_flag:
         return format_string
 
     level = "%(levelname)"
@@ -391,6 +395,6 @@ def _maybe_bring_color(format_string, colorlevel=INFO, force_color=False):
     return format_string
 
 
-def _use_color():
-    """Checks if one should use colors."""
+def _isatty():
+    """Checks if stdout is a tty, which means it should support color-codes."""
     return hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
