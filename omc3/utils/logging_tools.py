@@ -280,7 +280,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, col
             stream_handler(
                 stream=sys.stderr,
                 level=max(ERROR, level_console),
-                fmt=fmt,
+                fmt=_maybe_bring_color(fmt, ERROR, color),
             )
         )
 
@@ -377,7 +377,11 @@ def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
     message = "%(message)"
     name = "%(name)"
 
-    format_string = format_string.replace(level, COLOR_LEVEL + level)
+    if colorlevel <= WARNING:
+        format_string = format_string.replace(level, COLOR_LEVEL + level)
+    else:
+        format_string = format_string.replace(level, COLOR_ERROR + level)
+
 
     if colorlevel <= DEBUG:
         format_string = format_string.replace(message, COLOR_MESSAGE_LOW + message)
