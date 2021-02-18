@@ -382,7 +382,6 @@ def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
     else:
         format_string = format_string.replace(level, COLOR_ERROR + level)
 
-
     if colorlevel <= DEBUG:
         format_string = format_string.replace(message, COLOR_MESSAGE_LOW + message)
     elif colorlevel <= INFO:
