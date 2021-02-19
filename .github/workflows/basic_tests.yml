@@ -51,4 +51,4 @@ jobs:
         run: pip install '.[test]'
 
       - name: Run basic tests
-        run: python -m pytest -m "not extended" tests/accuracy/test_correction.py
+        run: python -m pytest -m "not extended" tests/accuracy/test_correction.py -k madx
