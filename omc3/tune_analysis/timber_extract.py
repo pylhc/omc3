@@ -20,26 +20,14 @@ import tfs
 from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime
-
+from omc3.utils.mock import cern_network_import
 
 TIME_COL = const.get_time_col()
 START_TIME = const.get_tstart_head()
 END_TIME = const.get_tend_head()
 
 LOG = logging_tools.get_logger(__name__)
-
-try:
-    import pytimber
-except ImportError:
-    class MockPytimber:
-        """Mock class to raise if pytimber functionality is called when the package is not installed."""
-        def __getattr__(self, *args, **kwargs):
-            LOG.error(
-                "The pytimber package does not seem to be installed but is needed for this function. "
-                "Install it with the 'tech' dependency of omc3, which requires to be on the CERN "
-                "technical network and install from the acc-py package index. See module documentation.")
-            raise ImportError("The pytimber package is needed for this operation but can't be found.")
-    pytimber = MockPytimber()
+pytimber = cern_network_import("pytimber")
 
 
 def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
