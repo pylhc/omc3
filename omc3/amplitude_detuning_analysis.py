@@ -72,7 +72,7 @@ from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, s
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.tune_analysis import fitting_tools, kick_file_modifiers
+from omc3.tune_analysis import timber_extract, fitting_tools, kick_file_modifiers
 from omc3.tune_analysis.constants import (get_kick_out_name, get_bbq_out_name,
                                           get_mav_col, get_timber_bbq_key,
                                           get_bbq_col)
@@ -82,10 +82,6 @@ from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     )
 from omc3.utils.logging_tools import get_logger, list2str, DebugMode
 
-try:
-    from omc3.tune_analysis import timber_extract
-except ImportError:
-    timber_extract = None
 
 # Globals ----------------------------------------------------------------------
 
@@ -323,12 +319,6 @@ def _get_bbq_data(beam, input_, kick_df):
     except ValueError:
         # input is a string
         if input_ == "kick":
-            if not timber_extract:
-                LOG.error(
-                    "The pytimber package does not seem to be installed but is needed for this function. "
-                    "Install it with the 'tech' dependency of omc3, which requires to be on the CERN "
-                    "technical network.")
-                raise ImportError("The pytimber package is needed for this operation but can't be found.")
             LOG.debug("Getting timber data from kick-times.")
             timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
             t_start = min(kick_df.index.to_numpy())
@@ -345,11 +335,6 @@ def _get_bbq_data(beam, input_, kick_df):
     else:
         # input is a number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")
-        if not timber_extract:
-            LOG.error("The pytimber package does not seem to be installed but is needed for this function. "
-                      "Install it with the 'tech' dependency of omc3, which requires to be on the CERN "
-                      "technical network.")
-            raise ImportError("The pytimber package is needed for this operation but can't be found.")
         timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
         data = timber_extract.lhc_fill_to_tfs(fill_number,
                                               keys=timber_keys,

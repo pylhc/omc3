@@ -15,19 +15,31 @@ https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 import re
 
 import numpy as np
-import pytimber
 import tfs
 
 from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime
 
+
 TIME_COL = const.get_time_col()
 START_TIME = const.get_tstart_head()
 END_TIME = const.get_tend_head()
 
-
 LOG = logging_tools.get_logger(__name__)
+
+try:
+    import pytimber
+except ImportError:
+    class MockPytimber:
+        """Mock class to raise if pytimber functionality is called when the package is not installed."""
+        def __getattr__(self, *args, **kwargs):
+            LOG.error(
+                "The pytimber package does not seem to be installed but is needed for this function. "
+                "Install it with the 'tech' dependency of omc3, which requires to be on the CERN "
+                "technical network and install from the acc-py package index. See module documentation.")
+            raise ImportError("The pytimber package is needed for this operation but can't be found.")
+    pytimber = MockPytimber()
 
 
 def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
@@ -83,12 +95,12 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
     return out_df
 
 
-def get_tune_and_coupling_variables(db: pytimber.LoggingDB) -> list:
+def get_tune_and_coupling_variables(db) -> list:
     """
     Returns the tune and coupling variable names.
 
     Args:
-        db: pytimber database.
+        db (pytimber.LoggingDB): pytimber database.
 
     Returns:
         `list` of variable names.
@@ -102,13 +114,13 @@ def get_tune_and_coupling_variables(db: pytimber.LoggingDB) -> list:
     return bbq_vars
 
 
-def get_fill_times(db: pytimber.LoggingDB, fill_number: int) -> tuple:
+def get_fill_times(db, fill_number: int) -> tuple:
     """
     Returns start and end time of fill with fill number.
 
     Args:
-        db: pytimber database.
-        fill_number: fill number.
+        db (pytimber.LoggingDB): pytimber database.
+        fill_number (int): fill number.
 
     Returns:
        `Tuple` of start and end time.
