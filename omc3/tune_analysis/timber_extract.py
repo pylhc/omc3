@@ -24,7 +24,7 @@ END_TIME = const.get_tend_head()
 LOG = logging_tools.get_logger(__name__)
 
 
-def lhc_fill_to_tfs(fill_number, keys=None, names=None):
+def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
     """
     Extracts data for keys of fill from ``Timber``.
 
@@ -35,13 +35,13 @@ def lhc_fill_to_tfs(fill_number, keys=None, names=None):
 
     Returns: tfs pandas dataframe.
     """
-    db = pytimber.LoggingDB()
+    db = pytimber.LoggingDB(source="nxcals")
     t_start, t_end = get_fill_times(db, fill_number)
     out_df = extract_between_times(t_start, t_end, keys, names)
     return out_df
 
 
-def extract_between_times(t_start, t_end, keys=None, names=None):
+def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataFrame:
     """
     Extracts data for keys between t_start and t_end from timber.
 
@@ -53,7 +53,7 @@ def extract_between_times(t_start, t_end, keys=None, names=None):
 
     Returns: tfs pandas dataframe.
     """
-    db = pytimber.LoggingDB()
+    db = pytimber.LoggingDB(source="nxcals")
     if keys is None:
         keys = get_tune_and_coupling_variables(db)
 
@@ -77,7 +77,7 @@ def extract_between_times(t_start, t_end, keys=None, names=None):
     return out_df
 
 
-def get_tune_and_coupling_variables(db):
+def get_tune_and_coupling_variables(db: pytimber.LoggingDB) -> list:
     """
     Returns the tune and coupling variable names.
 
@@ -96,7 +96,7 @@ def get_tune_and_coupling_variables(db):
     return bbq_vars
 
 
-def get_fill_times(db, fill_number):
+def get_fill_times(db: pytimber.LoggingDB, fill_number: int) -> tuple:
     """
     Returns start and end time of fill with fill number.
 
