@@ -2,15 +2,13 @@
 Timber Extraction
 -----------------
 
-Tools to extract data from ``Timber``.
+Tools to extract data from ``Timber``. It is a bit heavy on the LHC side at the moment.
 
-Please note: this module requires the ``pytimber`` package to access ``Timber`` functionality,
+**Please note**: this module requires the ``pytimber`` package to access ``Timber`` functionality,
 both of which are only possible from inside the CERN network.
 
-To install ``pytimber`` along ``omc3``, please do so from inside the CERN network by using the `tech` extra
-dependency (`pip install omc3[tech]`).
-
-It is a bit heavy on the LHC side at the moment.
+To install ``pytimber`` along ``omc3``, please do so from inside the CERN network by using the [tech] extra
+dependency (``pip install omc3[tech]``).
 """
 import re
 
