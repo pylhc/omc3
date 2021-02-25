@@ -72,7 +72,7 @@ from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, s
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.tune_analysis import timber_extract, fitting_tools, kick_file_modifiers
+from omc3.tune_analysis import fitting_tools, kick_file_modifiers
 from omc3.tune_analysis.constants import (get_kick_out_name, get_bbq_out_name,
                                           get_mav_col, get_timber_bbq_key,
                                           get_bbq_col)
@@ -81,6 +81,11 @@ from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     read_two_kick_files_from_folder
                                                     )
 from omc3.utils.logging_tools import get_logger, list2str, DebugMode
+
+try:
+    from omc3.tune_analysis import timber_extract
+except ImportError:
+    timber_extract = None
 
 # Globals ----------------------------------------------------------------------
 
@@ -313,6 +318,11 @@ def _check_analyse_opt(opt):
 
 def _get_bbq_data(beam, input_, kick_df):
     """Return BBQ data from input, either file or timber fill."""
+    if not timber_extract:
+        LOG.error("The pytimber package does not seem to be installed but is needed for this function. "
+                  "Install it with the 'tech' dependency of omc3, which requires to be on the CERN "
+                  "technical network.")
+        raise ImportError("The pytimber package is needed for this operation but can't be found.")
     try:
         fill_number = int(input_)
     except ValueError:
