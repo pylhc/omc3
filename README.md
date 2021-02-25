@@ -92,7 +92,7 @@ pip install --editable omc3
 
 You can install extra dependencies (as defined in `setup.py`) suited to your use case with the following commands:
 ```
-pip install --editable omc3[tech]
+pip install --editable omc3[tech]  # requires to be inside the CERN network
 pip install --editable omc3[test]
 pip install --editable omc3[test,doc]
 pip install --editable omc3[all]
