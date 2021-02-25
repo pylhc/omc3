@@ -8,7 +8,9 @@ Tools to extract data from ``Timber``. It is a bit heavy on the LHC side at the 
 both of which are only possible from inside the CERN network.
 
 To install ``pytimber`` along ``omc3``, please do so from inside the CERN network by using the [tech] extra
-dependency (``pip install omc3[tech]``).
+dependency and installing from the ``acc-py`` package index (by specifying ``--index-url
+https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
+``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).
 """
 import re
 
