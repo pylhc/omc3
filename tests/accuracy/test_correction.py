@@ -118,7 +118,7 @@ def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):
                   headers_dict=h_dict, save_index="index_column")
 
 
-def _assert_response_madx(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, delta_k=0.00002):
+def _assert_response_madx(accel_settings, correction_dir, variable_categories,optics_params , comparison_fullresponse_path, delta_k=0.00002):
     fullresponse_path = correction_dir + "Fullresponse_pandas_omc3"
 
     create_response_entrypoint(**accel_settings,
@@ -137,8 +137,9 @@ def _assert_response_madx(accel_settings, correction_dir, variable_categories, c
 
     is_equal = True
     for key in fullresponse_data.keys():
-        assert np.all(np.isclose(fullresponse_data[key][comparison_fullresponse_data[key].columns].to_numpy(
-        ), comparison_fullresponse_data[key].to_numpy(),rtol=1e-04,atol=1e-06)), f"Fulresponse does not match for a key {key}"
+        if key in optics_params:
+            assert np.all(np.isclose(fullresponse_data[key][comparison_fullresponse_data[key].columns].to_numpy(
+            ), comparison_fullresponse_data[key].to_numpy(),rtol=1e-04,atol=1e-06)), f"Fulresponse does not match for a key {key}"
 
 
 def _assert_response_twiss(accel_settings, correction_dir, variable_categories, comparison_fullresponse_path, RMS_tol_dict, delta_k=0.00002):
@@ -285,7 +286,7 @@ def test_fullresponse_madx_quad():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
         _assert_response_madx(ACCEL_SETTINGS, temp_dir,
-                           VARIABLE_CATEGORIES, FULLRESPONSE_PATH)
+                           VARIABLE_CATEGORIES,OPTICS_PARAMS, FULLRESPONSE_PATH)
 
 
 @pytest.mark.basic
@@ -293,7 +294,7 @@ def test_fullresponse_madx_skew():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
         _assert_response_madx(ACCEL_SETTINGS, temp_dir,
-                           VARIABLE_CATEGORIES_SKEW, FULLRESPONSE_PATH_SKEW)
+                           VARIABLE_CATEGORIES_SKEW,OPTICS_PARAMS_SKEW FULLRESPONSE_PATH_SKEW)
 
 
 @pytest.mark.basic
