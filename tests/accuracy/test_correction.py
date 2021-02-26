@@ -294,7 +294,7 @@ def test_fullresponse_madx_skew():
     with tempfile.TemporaryDirectory() as temp:
         temp_dir = temp + "/"
         _assert_response_madx(ACCEL_SETTINGS, temp_dir,
-                           VARIABLE_CATEGORIES_SKEW,OPTICS_PARAMS_SKEW FULLRESPONSE_PATH_SKEW)
+                           VARIABLE_CATEGORIES_SKEW,OPTICS_PARAMS_SKEW, FULLRESPONSE_PATH_SKEW)
 
 
 @pytest.mark.basic
