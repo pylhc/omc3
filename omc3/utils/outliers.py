@@ -1,10 +1,8 @@
 r"""
-Module utils.outliers
-----------------------
+Outliers
+--------
 
-Created on 08/05/17
-
-:author: Lukas Malina
+Helper functions for outlier detection.
 """
 import numpy as np
 from scipy.stats import t
@@ -13,9 +11,8 @@ from scipy.stats import t
 # nsig: Limit for not being cleaned
 def get_filter_mask(data, x_data=None, limit=0.0, niter=20, nsig=None, mask=None):
     """
-    It filters the array of values which are meant to be constant
-    or a linear function of the other array if that is provided
-    Returns a filter mask for the original array
+    Filters the array of values which are meant to be constant or a linear function of the other
+    array if that is provided. Returns a filter mask for the original array
     """
     if x_data is not None:
         if not len(data) == len(x_data):

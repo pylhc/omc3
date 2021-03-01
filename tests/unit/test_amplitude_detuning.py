@@ -1,43 +1,48 @@
 import tempfile
 from pathlib import Path
 
+import matplotlib
 import pytest
 
 from omc3.amplitude_detuning_analysis import analyse_with_bbq_corrections
 from omc3.plotting.plot_amplitude_detuning import main as pltampdet
 from omc3.plotting.plot_bbq import main as pltbbq
 
+# Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
+matplotlib.use("Agg")
+
 
 @pytest.mark.basic
 def test_amplitude_detuning_outliers_filter():
-    test_amplitude_detuning_full(method='outliers')
+    test_amplitude_detuning_full(method="outliers")
+
 
 @pytest.mark.basic
 def test_bbq_plot():
     with tempfile.TemporaryDirectory() as out:
         fig = pltbbq(
-            input=str(get_input_dir() / 'bbq_ampdet.tfs'),
-            output=str(Path(out) / 'bbq.pdf'),
+            input=str(get_input_dir() / "bbq_ampdet.tfs"), output=str(Path(out) / "bbq.pdf"),
         )
         assert fig is not None
         assert len(list(Path(out).glob("*.pdf"))) == 1
+
 
 @pytest.mark.basic
 def test_ampdet_plot():
     with tempfile.TemporaryDirectory() as out:
         fig = pltampdet(
-            kicks=[str(get_input_dir() / 'kick_ampdet_xy.tfs')],
-            labels=['Beam 1 Vertical'],
-            plane='Y',
+            kicks=[str(get_input_dir() / "kick_ampdet_xy.tfs")],
+            labels=["Beam 1 Vertical"],
+            plane="Y",
             correct_acd=True,
-            output=str(Path(out) / 'ampdet.pdf'),
+            output=str(Path(out) / "ampdet.pdf"),
         )
         assert len(fig) == 4
         assert len(list(Path(out).glob("*.pdf"))) == 4
 
 
 @pytest.mark.extended
-@pytest.mark.parametrize("method", ['cut', 'minmax'])
+@pytest.mark.parametrize("method", ["cut", "minmax"])
 def test_amplitude_detuning_full(method):
     with tempfile.TemporaryDirectory() as out:
         setup = dict(
@@ -48,7 +53,7 @@ def test_amplitude_detuning_full(method):
             bbq_in=str(get_input_dir() / "bbq_ampdet.tfs"),
             detuning_order=1,
             output=out,
-            window_length=100 if method != 'outliers' else 50,
+            window_length=100 if method != "outliers" else 50,
             tunes=[0.2838, 0.3104],
             tune_cut=0.001,
             tunes_minmax=[0.2828, 0.2848, 0.3094, 0.3114],
@@ -61,6 +66,7 @@ def test_amplitude_detuning_full(method):
 
         assert len(list(Path(out).glob("*.tfs"))) == 2
         assert len([k for k, v in kick_df.headers.items() if k.startswith("ODR") and v != 0]) == 16
+
 
 @pytest.mark.extended
 def test_no_bbq_input():
@@ -81,4 +87,4 @@ def test_no_bbq_input():
 
 
 def get_input_dir():
-    return Path(__file__).parent.parent / 'inputs' / 'amplitude_detuning'
+    return Path(__file__).parent.parent / "inputs" / "amplitude_detuning"

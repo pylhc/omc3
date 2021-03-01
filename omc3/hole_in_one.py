@@ -1,24 +1,33 @@
 """
-Entrypoint hole_in_one
-------------------------
+Hole in One
+-----------
 
-Created on 27/01/19
+``hole_in_one`` is the top-level script of analysis functionality offered in ``omc3``. In most of
+your use cases, this is the file you will want to call. It handles:
+- frequency spectra of Turn-by-Turn BPM data,
+- various lattice optics parameters from frequency spectra,
+- various lattice optics parameters from Turn-by-Turn BPM data,
 
-:author: Lukas Malina
+A general analysis workflow, from straight out turn-by-turn measurement or simulations files to
+results, goes as follows:
 
-Top-level script, which computes:
-    frequency spectra of Turn-by-Turn BPM data
-    various lattice optics parameters from frequency spectra
-    various lattice optics parameters from Turn-by-Turn BPM data
++-----------------------+--------+---------------------+------+-----------------------------------+
+|                      Analysis Workflow                                                          |
++=======================+========+=====================+======+===================================+
+| Turn-by-Turn BPM data | --->   |  frequency spectra  | ---> | various lattice optics parameters |
++-----------------------+--------+---------------------+------+-----------------------------------+
 
-Generally, analysis flows as follows:
-   Turn-by-Turn BPM data   --->    frequency spectra   --->    various lattice optics parameters
+The first step above consists in frequency analysis performed by ``harpy``, while the second
+one is optics analysis performed by ``measure_optics``. Each corresponding stage is represented
+by a different set of files:
 
-Stages represented by different files:
-    Sdds file:  .sdds      --->   Tfs files: .lin[xy]  --->    Tfs files: .tfs
++--------------------------+--------+---------------------------+------+-----------------------+
+|                     Corresponding Files                                                      |
++==========================+========+===========================+======+=======================+
+|  SDDS file:  **.sdds**   | --->   |  Tfs files: **.lin[xy]**  | ---> |  Tfs files: **.tfs**  |
++--------------------------+--------+---------------------------+------+-----------------------+
 
-To run either of the two or both steps, use options:
-                          --harpy                     --optics
+To run either of the two or both steps, see options ``--harpy`` and ``--optics``.
 """
 import os
 from collections import OrderedDict
@@ -219,10 +228,11 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--coupling_method**
         Choices: ``(0, 1, 2)``
         Default: ``2``
-      - **nonlinear**: Calculate higher order RDTs
+      - **nonlinear**: Calculate higher order RDTs or CRDT
 
         Flags: **--nonlinear**
-        Action: ``store_true``
+        Choices: ``(rdt, crdt)``
+        Default: ``None``
       - **only_coupling**: Calculate only coupling.
 
         Flags: **--only_coupling**
@@ -254,8 +264,6 @@ def hole_in_one_entrypoint(opt, rest):
 
       - For the rest, please see get_parameters() methods in child Accelerator classes,
         which are declared in ``omc3/model/accelerators/*.py``.
-
-
     """
     if not opt.harpy and not opt.optics:
         raise SystemError("No module has been chosen.")
@@ -297,7 +305,7 @@ def _get_suboptions(opt, rest):
 
 
 def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
-    """ Write the parsed options into a config file for later use. """
+    """Write the parsed options into a config file for later use."""
     all_opt = OrderedDict()
     if harpy_opt is not None:
         all_opt["harpy"] = True
@@ -488,9 +496,9 @@ def optics_params():
     params.add_parameter(name="union", action="store_true",
                          help="If present, the phase advances are calculate for union of BPMs "
                               "with at least 3 valid measurements, instead of intersection .")
-    params.add_parameter(name="nonlinear", nargs='+', default=[],
+    params.add_parameter(name="nonlinear", nargs='*', default=[],
                          choices=('rdt', 'crdt'),
-                         help="Choose which analysis is conducted.")
+                         help="Choose which rdt analysis is conducted.")
     params.add_parameter(name="three_bpm_method", action="store_true",
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")

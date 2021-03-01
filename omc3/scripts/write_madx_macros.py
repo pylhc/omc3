@@ -1,3 +1,21 @@
+"""
+Write MAD-X Macros
+------------------
+
+Write out madx scripts for the tracking macros.
+
+**Arguments:**
+
+*--Required--*
+
+- **outputdir**:
+
+    Directory where the observation_points.def will be put.
+
+- **twissfile**:
+
+    Path to twissfile with observationspoint in the NAME column.
+"""
 import os
 import tfs
 from omc3.model.constants import MACROS_DIR, OBS_POINTS
@@ -70,6 +88,6 @@ def _get_params():
     return params
 
 
-@entrypoint(_get_params())
+@entrypoint(_get_params(), strict=True)
 def read_twiss_and_return_obs(opt):
     tracking_macros(tfs.read(opt.twissfile, index='NAME').index.tolist(), opt.outputdir)

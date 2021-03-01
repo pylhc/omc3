@@ -1,3 +1,10 @@
+"""
+Constants
+---------
+
+This module provides high-level functions to manage most functionality of ``model``.
+Specific constants to be used in ``model``, to help with consistency.
+"""
 MACROS_DIR = "macros"
 OBS_POINTS = "observation_points.def"
 MODIFIERS_MADX = "modifiers.madx"

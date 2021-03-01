@@ -2,6 +2,7 @@ import os
 import random
 import string
 import tempfile
+import itertools
 
 import numpy as np
 import pandas as pd
@@ -20,22 +21,51 @@ NBPMS = 100
 BASEAMP = 0.001
 AMPZ, MUZ, TUNEZ = 0.01, 0.3, 0.008
 
+HARPY_SETTINGS = dict(
+    clean=[True, False],
+    keep_exact_zeros=[False, True],
+    singval=[12],
+    peak_to_peak=[1e-8],
+    window=['hann', 'rectangle', 'welch', 'triangle', 'hamming', 'nuttal3', 'nuttal4'],
+    max_peak=[0.02],
+    svd_dominance_limit=[0.925],
+    num_svd_iterations=[3],
+    tolerance=[0.01],
+    tune_clean_limit=[1e-5],
+    turn_bits=[18],
+    output_bits=[12],
+)
 
+HARPY_INPUT = list(itertools.product(*HARPY_SETTINGS.values()))
 
 @pytest.mark.basic
 def test_harpy(_test_file, _model_file):
+
+    [clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak, svd_dominance_limit,
+     num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits ] = HARPY_INPUT[0]
+
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
     _write_tbt_file(model, os.path.dirname(_test_file))
     hole_in_one_entrypoint(harpy=True,
-                            clean=True,
-                            autotunes="transverse",
-                            outputdir=os.path.dirname(_test_file),
-                            files=[_test_file],
-                            model=_model_file,
-                            to_write=["lin"],
-                            turn_bits=18,
-                            unit="m")
+                           clean=clean,
+                           keep_exact_zeros=keep_exact_zeros,
+                           singval=singval,
+                           peak_to_peak=peak_to_peak,
+                           window=window,
+                           max_peak=max_peak,
+                           svd_dominance_limit=svd_dominance_limit,
+                           num_svd_iterations=num_svd_iterations,
+                           tolerance=tolerance,
+                           tune_clean_limit=tune_clean_limit,
+                           turn_bits=turn_bits,
+                           output_bits=output_bits,
+                           autotunes="transverse",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           model=_model_file,
+                           to_write=["lin"],
+                           unit="m")
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
     _assert_spectra(lin, model)
@@ -46,17 +76,46 @@ def test_harpy_without_model(_test_file, _model_file):
     tfs.write(_model_file, model, save_index="NAME")
     _write_tbt_file(model, os.path.dirname(_test_file))
     hole_in_one_entrypoint(harpy=True,
-                            clean=True,
-                            autotunes="transverse",
-                            outputdir=os.path.dirname(_test_file),
-                            files=[_test_file],
-                            to_write=["lin"],
-                            turn_bits=18,
-                            unit="m")
+                           clean=True,
+                           autotunes="transverse",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           to_write=["lin"],
+                           turn_bits=18,
+                           unit="m")
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
     _assert_spectra(lin, model)
 
+@pytest.mark.extended
+@pytest.mark.parametrize("clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak,"
+                         "svd_dominance_limit, num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits",
+                          HARPY_INPUT)
+def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak,
+                         svd_dominance_limit, num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits):
+    model = _get_model_dataframe()
+    tfs.write(_model_file, model, save_index="NAME")
+    _write_tbt_file(model, os.path.dirname(_test_file))
+    hole_in_one_entrypoint(harpy=True,
+                           clean=clean,
+                           keep_exact_zeros=keep_exact_zeros,
+                           singval=singval,
+                           peak_to_peak=peak_to_peak,
+                           window=window,
+                           max_peak=max_peak,
+                           svd_dominance_limit=svd_dominance_limit,
+                           num_svd_iterations=num_svd_iterations,
+                           tolerance=tolerance,
+                           tune_clean_limit=tune_clean_limit,
+                           turn_bits=turn_bits,
+                           output_bits=output_bits,
+                           autotunes="transverse",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           model=_model_file,
+                           to_write=["lin"],
+                           unit="m")
+    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
 
 @pytest.mark.extended
 def test_freekick_harpy(_test_file, _model_file):
@@ -64,15 +123,15 @@ def test_freekick_harpy(_test_file, _model_file):
     tfs.write(_model_file, model, save_index="NAME")
     _write_tbt_file(model, os.path.dirname(_test_file))
     hole_in_one_entrypoint(harpy=True,
-                            clean=True,
-                            autotunes="transverse",
-                            is_free_kick=True,
-                            outputdir=os.path.dirname(_test_file),
-                            files=[_test_file],
-                            model=_model_file,
-                            to_write=["lin"],
-                            unit='m',
-                            turn_bits=18)
+                           clean=True,
+                           autotunes="transverse",
+                           is_free_kick=True,
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           model=_model_file,
+                           to_write=["lin"],
+                           unit='m',
+                           turn_bits=18)
     lin = dict(X=tfs.read(f"{_test_file}.linx"),
                 Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
@@ -94,14 +153,14 @@ def test_harpy_3d(_test_file, _model_file):
     tfs.write(_model_file, model, save_index="NAME")
     _write_tbt_file(model, os.path.dirname(_test_file))
     hole_in_one_entrypoint(harpy=True,
-                            clean=True,
-                            autotunes="all",
-                            outputdir=os.path.dirname(_test_file),
-                            files=[_test_file],
-                            model=_model_file,
-                            to_write=["lin"],
-                            turn_bits=18,
-                            unit="m")
+                           clean=True,
+                           autotunes="all",
+                           outputdir=os.path.dirname(_test_file),
+                           files=[_test_file],
+                           model=_model_file,
+                           to_write=["lin"],
+                           turn_bits=18,
+                           unit="m")
     lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
     model = tfs.read(_model_file)
     _assert_spectra(lin, model)

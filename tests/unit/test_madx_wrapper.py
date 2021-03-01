@@ -7,6 +7,7 @@ from omc3.utils.contexts import silence, temporary_dir
 
 LIB = abspath(join(dirname(__file__), pardir, pardir, "omc3", "model", "madx_macros"))
 
+
 @pytest.mark.basic
 def test_with_macro():
     """ Checks:
@@ -23,6 +24,7 @@ def test_with_macro():
         with open(outfile, "r") as of:
             out_lines = of.read()
         assert out_lines == content
+
 
 @pytest.mark.basic
 def test_with_nonexistent_file():
