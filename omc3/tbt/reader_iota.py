@@ -1,9 +1,10 @@
 """
-Iota data handler
+Iota TbT Data Handler
 ---------------------
 
-Takes Hdf5 file path containing the TbT data and returns a TbtData class to be read and processed by harpy
-
+Data handling for tbt data from ``Iota``.
+Takes ``hdf5`` file path containing the TbT data and returns a `TbtData` class to be read and
+processed by ``harpy``.
 """
 from datetime import datetime
 
@@ -25,14 +26,14 @@ PLANES_CONV = {1: {'X': 'H', 'Y': 'V'},
 
 def read_tbt(file_path):
     """
-    Reads TbTData object from provided file_path
+    Reads TbTData object from provided file_path.
+
     Args:
-        file_path: path to a file containing TbtData
+        file_path: path to a file containing TbtData.
 
     Returns:
-        TbtData
+        A `TbtData` object with the loaded data.
     """
-
     hdf_file = h5py.File(file_path, 'r')
     bunch_ids = [1]
     date = datetime.now()
@@ -49,10 +50,11 @@ def read_tbt(file_path):
 
         except TypeError:
             pass
+        except KeyError:
+            pass
 
 
 def _get_turn_by_turn_data_v1(hd5, plane, version):
-
     keys = [key for key in hd5.keys() if (key.endswith(PLANES_CONV[version][plane]))]
     nbpm = len(keys)
     nturn = FUNCTIONS[version]['get_nturns'](hd5, version)

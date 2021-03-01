@@ -1,10 +1,8 @@
 """
 Plot TFS
--------------------------
+--------
 
-Easily plot tfs-files with all kinds of additional functionality and ways to
-combine plots.
-
+Easily plot tfs-files with all kinds of additional functionality and ways to combine plots.
 
 .. code-block:: python
 
@@ -105,7 +103,6 @@ combine plots.
   If the respective length is 1, the same label will be used for all figures or axes.
 
 - **y_lim** *(float, int None)*: Limits on the y axis (Tupel)
-
 """
 from collections import OrderedDict
 from pathlib import Path
@@ -301,7 +298,7 @@ def get_params():
 
 @entrypoint(get_params(), strict=True)
 def plot(opt):
-    """ Main plotting function. """
+    """Main plotting function."""
     LOG.info(f"Starting plotting of tfs files: {list2str(opt.files):s}")
     if opt.output is not None:
         save_config(Path(opt.output), opt, __file__)
@@ -331,7 +328,7 @@ def plot(opt):
 
 
 def sort_data(opt):
-    """ Load all data from files and sort into figures"""
+    """Load all data from files and sort into figures."""
     collector = FigureCollector()
     axes_ids = _get_axes_ids(opt)
 
@@ -393,10 +390,10 @@ def sort_data(opt):
 
 
 def get_id(filename_parts, column, file_label, column_label, same_axes, same_figure, prefix, plane='', planes=[]):
-    """ Get the right IDs for the current sorting way.
-
-    This is where the actual sorting happens, by mapping the right IDs according
-    to the chosen options.
+    """
+    Get the right IDs for the current sorting way.
+    This is where the actual sorting happens, by mapping the right IDs according to the chosen
+    options.
     """
     planes = "".join(planes)
 
@@ -502,7 +499,7 @@ def _update_y_labels(fig_collection, y_labels):
 
 
 def _share_xaxis(fig_collection):
-    """ Shared xaxis at last axes and remove all xlabels, ticks of other axes. """
+    """Shared xaxis at last axes and remove all xlabels, ticks of other axes."""
     for fig_container in fig_collection.figs.values():
         axs = fig_container.axes.values()
         fig_container.axes[fig_container.axes_ids[-1]].get_shared_x_axes().join(*axs)
@@ -517,7 +514,7 @@ def _share_xaxis(fig_collection):
 
 
 def _create_plots(fig_collection, opt):
-    """ Main plotting routine """
+    """Main plotting routine."""
     for fig_container in fig_collection.figs.values():
         for idx_ax, ax_id in enumerate(fig_container.axes_ids):
             ax, data, xlabel, ylabel = fig_container[ax_id]
@@ -568,6 +565,8 @@ def _set_axes_layout(ax, x_lim, y_lim, ylabel, xlabel):
 
 
 def _get_full_output_path(folder, filename):
+    if folder is None or filename is None:
+        return None
     return Path(folder) / f"{filename}.{matplotlib.rcParams['savefig.format']}"
 
 
@@ -575,7 +574,7 @@ def _get_full_output_path(folder, filename):
 
 
 def _check_opt(opt):
-    """ Sanity checks for the opt structure and broadcasting of parameters. """
+    """Sanity checks for the opt structure and broadcasting of parameters."""
     if opt.file_labels is None:
         opt.file_labels = [None] * len(opt.files)
     elif len(opt.file_labels) != len(opt.files):
@@ -614,13 +613,11 @@ def _check_opt(opt):
 
 
 def _get_axes_ids(opt):
-    """ Get's all id's first (to know how many axes to use).
-    So the `get_id` is done later for actual plotting again.
-
-    The order matters, as this function detemines the order in which
-    the data is distributed on the figure axes (if multiple), which is important
-    if one gives the manual y-labels option.
-
+    """
+    Get's all id's first (to know how many axes to use). So the `get_id` is done later for
+    actual plotting again.
+    The order matters, as this function detemines the order in which the data is distributed on
+    the figure axes (if multiple), which is important if one gives the manual y-labels option.
     Couldn't find a quicker way... (jdilly)
     """
     axes_ids = []  # needs to be something ordered
@@ -644,7 +641,7 @@ def _get_axes_ids(opt):
 
 
 def _get_marker(idx, change):
-    """ Return the marker used """
+    """Return the marker used"""
     if change:
         return plines.MarkerList.get_marker(idx)
     else:
@@ -652,10 +649,10 @@ def _get_marker(idx, change):
 
 
 def _safe_format(label, insert):
-    """ Formats label.
-    Usually just `.format()` works fine, even if there is no {}-placeholder in the label,
-    but it might cause errors if latex is used in the label or `None`.
-    Hence the try-excepts.
+    """
+    Formats label. Usually just ``.format()`` works fine, even if there is no {}-placeholder in
+    the label, but it might cause errors if latex is used in the label or ``None``. Hence the
+    try-excepts.
     """
     try:
         return label.format(insert)

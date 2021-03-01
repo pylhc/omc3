@@ -1,100 +1,257 @@
+"""
+Run Kmod
+--------
+
+Top-level script to analyse Kmod-results from the ``LHC`` and creating files for GUI and plotting
+as well as returning beta-star and waist shift.
+"""
 from os.path import join
 
 import numpy as np
 import pandas as pd
 import tfs
-from generic_parser import entrypoint, EntryPointParameters
+from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.kmod import analysis, helper
-from omc3.kmod.constants import EXT, FIT_PLOTS_NAME, SEQUENCES_PATH, BETA, ERR, STAR
-from omc3.optics_measurements.constants import EXT
-from omc3.utils import logging_tools, iotools
+from omc3.kmod.constants import (BETA, ERR, EXT, FIT_PLOTS_NAME, INSTRUMENTS_FILE_NAME,
+                                 LSA_FILE_NAME, RESULTS_FILE_NAME, SEQUENCES_PATH, STAR)
+from omc3.utils import iotools, logging_tools
 
-LOG = logging_tools.get_logger(__name__)
+LOG = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
 
 LSA_COLUMNS = ['NAME', f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
-RESULTS_FILE_NAME = 'results'
-INSTRUMENTS_FILE_NAME = 'beta_instrument'
-LSA_FILE_NAME = 'lsa_results'
 
 
 def kmod_params():
     parser = EntryPointParameters()
-    parser.add_parameter(flags='--betastar_and_waist', type=float,
-                         name='betastar_and_waist', required=True, nargs='+',
+    parser.add_parameter(name='betastar_and_waist',
+                         type=float,
+                         required=True, nargs='+',
                          help='Estimated beta star of measurements and waist shift',)
-    parser.add_parameter(flags='--working_directory', type=str,
-                         name='working_directory', required=True,
+    parser.add_parameter(name='working_directory',
+                         type=str,
+                         required=True,
                          help='path to working directory with stored KMOD measurement files',)
-    parser.add_parameter(flags='--beam', type=str,
-                         name='beam', choices=['B1', 'B2'], required=True,
+    parser.add_parameter(name='beam',
+                         type=str,
+                         choices=['B1', 'B2'], required=True,
                          help='define beam used: B1 or B2',)
-    parser.add_parameter(flags='--cminus', type=float,
-                         name='cminus',
+    parser.add_parameter(name='cminus', 
+                         type=float,                         
                          help='C Minus',)
-    parser.add_parameter(flags='--misalignment', type=float,
-                         name='misalignment',
+    parser.add_parameter(name='misalignment',
+                         type=float,
                          help='misalignment of the modulated quadrupoles in m',)
-    parser.add_parameter(flags='--errorK', type=float,
-                         name='errorK',
+    parser.add_parameter(name='errorK',
+                         type=float,
                          help='error in K of the modulated quadrupoles, relative to gradient',)
-    parser.add_parameter(flags='--errorL', type=float,
-                         name='errorL',
+    parser.add_parameter(name='errorL',
+                         type=float,                         
                          help='error in length of the modulated quadrupoles, unit m',)
-    parser.add_parameter(flags='--tune_uncertainty', type=float,
-                         name='tune_uncertainty', default=2.5e-5,
+    parser.add_parameter(name='tune_uncertainty',
+                         type=float,
+                         default=2.5e-5,
                          help='tune measurement uncertainty')
-    parser.add_parameter(flags='--instruments', type=str,
-                         name='instruments', default='MONITOR,SBEND,TKICKER,INSTRUMENT',
+    parser.add_parameter(name='instruments',
+                         type=str,
+                         default='MONITOR,SBEND,TKICKER,INSTRUMENT',
                          help='define instruments (use keywords from twiss) at which beta should '
                               'be calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER',)
-    parser.add_parameter(flags='--simulation', action='store_true',
-                         name='simulation',
+    parser.add_parameter(name='simulation',
+                         action='store_true',                         
                          help='flag for enabling simulation mode',)
-    parser.add_parameter(flags='--log', action='store_true',
-                         name='log',
+    parser.add_parameter(name='log',
+                         action='store_true',                         
                          help='flag for creating a log file')
-    parser.add_parameter(flags='--no_autoclean', action='store_true',
-                         name='no_autoclean',
+    parser.add_parameter(name='no_autoclean',
+                         action='store_true',
                          help='flag for manually cleaning data')
-    parser.add_parameter(flags='--no_sig_digits', action='store_true',
-                         name='no_sig_digits',
+    parser.add_parameter(name='no_sig_digits',
+                         action='store_true',                         
                          help='flag to not use significant digits')
-    parser.add_parameter(flags='--no_plots', action='store_true',
-                         name='no_plots',
+    parser.add_parameter(name='no_plots',
+                         action='store_true',                         
                          help='flag to not create any plots')
-    parser.add_parameter(flags='--circuits', type=str,
-                         name='circuits', nargs=2,
+    parser.add_parameter(name='circuits',
+                         type=str,
+                         nargs=2,
                          help='circuit names of the modulated quadrupoles')
-    parser.add_parameter(flags='--interaction_point', type=str,
-                         name='ip', choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'],
+    parser.add_parameter(name='interaction_point',
+                         type=str,
+                         choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'],
                          help='define interaction point')
+    parser.add_parameter(name='measurement_dir',
+                         type=str,                         
+                         help='give an optics measurement directory to include phase constraint in penalty function')
+    parser.add_parameter(name='phase_weight',
+                         type=float,
+                         default=0.0,
+                         help='weight in penalty function between phase and beta.'
+                              'If weight=0 phase is not used as a constraint.')
+    parser.add_parameter(name='model_dir',
+                         type=str,
+                         help='twiss model that contains phase')
+    parser.add_parameter(name="outputdir", help="Path where outputfiles will be stored, defaults "
+                                                "to the given working_directory")
+
     return parser
 
 
 @entrypoint(kmod_params(), strict=True)
 def analyse_kmod(opt):
     """
-    Run Kmod analysis
+    Run Kmod analysis.
+
+    Kmod Keyword Arguments:
+        *--Required--*
+
+        - **beam** *(str)*:
+
+            define beam used: B1 or B2
+
+            choices: ``['B1', 'B2']``
+
+
+        - **betastar_and_waist** *(float)*:
+
+            Estimated beta star of measurements and waist shift
+
+
+        - **working_directory** *(str)*:
+
+            path to working directory with stored KMOD measurement files
+
+
+        *--Optional--*
+
+        - **circuits** *(str)*:
+
+            circuit names of the modulated quadrupoles
+
+
+        - **cminus** *(float)*:
+
+            C Minus
+
+
+        - **errorK** *(float)*:
+
+            error in K of the modulated quadrupoles, relative to gradient
+
+
+        - **errorL** *(float)*:
+
+            error in length of the modulated quadrupoles, unit m
+
+
+        - **instruments** *(str)*:
+
+            define instruments (use keywords from twiss) at which beta should be
+            calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER
+
+            default: ``MONITOR,SBEND,TKICKER,INSTRUMENT``
+
+
+        - **interaction_point** *(str)*:
+
+            define interaction point
+
+            choices: ``['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8']``
+
+
+        - **log**:
+
+            flag for creating a log file
+
+            action: ``store_true``
+
+
+        - **measurement_dir** *(str)*:
+
+            give an optics measurement directory to include phase constraint in
+            penalty function
+
+
+        - **misalignment** *(float)*:
+
+            misalignment of the modulated quadrupoles in m
+
+
+        - **model_dir** *(str)*:
+
+            twiss model that contains phase
+
+
+        - **no_autoclean**:
+
+            flag for manually cleaning data
+
+            action: ``store_true``
+
+
+        - **no_plots**:
+
+            flag to not create any plots
+
+            action: ``store_true``
+
+
+        - **no_sig_digits**:
+
+            flag to not use significant digits
+
+            action: ``store_true``
+
+
+        - **outputdir**:
+
+            Path where outputfiles will be stored, defaults to the given
+            working_directory
+
+
+        - **phase_weight** *(float)*:
+
+            weight in penalty function between phase and beta.If weight=0 phase is
+            not used as a constraint.
+
+            default: ``0.0``
+
+
+        - **simulation**:
+
+            flag for enabling simulation mode
+
+            action: ``store_true``
+
+
+        - **tune_uncertainty** *(float)*:
+
+            tune measurement uncertainty
+
+            default: ``2.5e-05``
     """
     LOG.info('Getting input parameter')
-    if opt.ip is None and opt.circuits is None:
+    if opt.interaction_point is None and opt.circuits is None:
         raise AttributeError('No IP or circuits specified, stopping analysis')
-    if opt.ip is not None and opt.circuits is not None:
+    if opt.interaction_point is not None and opt.circuits is not None:
         raise AttributeError('Both IP and circuits specified, choose only one, stopping analysis')
     if not 1 < len(opt.betastar_and_waist) < 5:
         raise AttributeError("Option betastar_and_waist has to consist of 2 to 4 floats")
     opt.betastar_and_waist = convert_betastar_and_waist(opt.betastar_and_waist)
     for error in ("cminus", "errorK", "errorL", "misalignment"):
         opt = check_default_error(opt, error)
+    if opt.measurement_dir is None and opt.model_dir is None and opt.phase_weight:
+        raise AttributeError("Cannot use phase advance without measurement or model")
+    if opt.outputdir is None:
+        opt.outputdir = opt.working_directory
 
-    LOG.info(f"{'IP trim' if opt.ip is not None else 'Individual magnets'} analysis")
-    opt['magnets'] = MAGNETS_IP[opt.ip.upper()] if opt.ip is not None else [
+    LOG.info(f"{'IP trim' if opt.interaction_point is not None else 'Individual magnets'} analysis")
+    opt['magnets'] = MAGNETS_IP[opt.interaction_point.upper()] if opt.interaction_point is not None else [
         find_magnet(opt.beam, circuit) for circuit in opt.circuits]
-    opt['label'] = f'{opt.ip}{opt.beam}' if opt.ip is not None else f'{opt.magnets[0]}-{opt.magnets[1]}'
+    opt['label'] = f'{opt.interaction_point}{opt.beam}' if opt.interaction_point is not None else f'{opt.magnets[0]}-{opt.magnets[1]}'
     opt['instruments'] = list(map(str.upper, opt.instruments.split(",")))
 
-    output_dir = join(opt.working_directory, opt.label)
+    output_dir = join(opt.outputdir, opt.label)
     iotools.create_dirs(output_dir)
 
     LOG.info('Get inputfiles')
@@ -111,6 +268,7 @@ def analyse_kmod(opt):
     LOG.info('Write magnet dataframes and results')
     for magnet_df in [magnet1_df, magnet2_df]:
         tfs.write(join(output_dir, f"{magnet_df.headers['QUADRUPOLE']}{EXT}"), magnet_df)
+
     tfs.write(join(output_dir, f'{RESULTS_FILE_NAME}{EXT}'), results_df)
 
     if opt.instruments_found:
@@ -118,16 +276,18 @@ def analyse_kmod(opt):
 
     create_lsa_results_file(betastar_required, opt.instruments_found, results_df, instrument_beta_df, output_dir)
 
+
 def create_lsa_results_file(betastar_required, instruments_found, results_df, instrument_beta_df, output_dir):
     lsa_results_df = pd.DataFrame(columns=LSA_COLUMNS)
     if betastar_required:
         exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
         lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
     if instruments_found:
-        lsa_results_df=lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
-    
+        lsa_results_df = lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
+
     if not lsa_results_df.empty:
         tfs.write(join(output_dir, f'{LSA_FILE_NAME}{EXT}'), lsa_results_df)
+
 
 def convert_betastar_and_waist(bs):
     if len(bs) == 2:
@@ -211,5 +371,4 @@ MAGNETS_IP = {
 
 
 if __name__ == '__main__':
-    with logging_tools.DebugMode(active=True, log_file=""):
-        analyse_kmod()
+    analyse_kmod()

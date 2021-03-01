@@ -15,6 +15,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 ASCII_PRECISION = 0.5 / np.power(10, handler.PRINT_PRECISION)
 
 
+@pytest.mark.basic
 def test_converter_one_file(_sdds_file, _test_file):
     converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file))
     origin = handler.read_tbt(_sdds_file)
@@ -22,6 +23,7 @@ def test_converter_one_file(_sdds_file, _test_file):
     _compare_tbt(origin, new, False)
 
 
+@pytest.mark.basic
 def test_converter_one_file_with_noise(_sdds_file, _test_file):
     np.random.seed(2019)
     noiselevel = 0.0005
@@ -31,6 +33,7 @@ def test_converter_one_file_with_noise(_sdds_file, _test_file):
     _compare_tbt(origin, new, True, noiselevel*10)
 
 
+@pytest.mark.basic
 def test_converter_more_files(_sdds_file, _test_file):
     rep = 2
     converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep)
@@ -39,6 +42,8 @@ def test_converter_more_files(_sdds_file, _test_file):
         new = handler.read_tbt(f'{_test_file}_r{i}.sdds')
         _compare_tbt(origin, new, False)
 
+
+@pytest.mark.basic
 def test_converter_more_files_with_noise(_sdds_file, _test_file):
     np.random.seed(2019)
     rep = 2
@@ -50,6 +55,7 @@ def test_converter_more_files_with_noise(_sdds_file, _test_file):
         _compare_tbt(origin, new, True, noiselevel*10)
 
 
+@pytest.mark.basic
 def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):
     origin = handler.read_tbt(_sdds_file)
     handler.write_tbt(_test_file, origin)
@@ -57,6 +63,7 @@ def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):
     _compare_tbt(origin, new, False)
 
 
+@pytest.mark.basic
 def test_tbt_read_hdf5(_hdf5_file):
 
     origin = handler.TbtData(
@@ -76,6 +83,7 @@ def test_tbt_read_hdf5(_hdf5_file):
     _compare_tbt(origin, new, False)
 
 
+@pytest.mark.basic
 def test_tbt_read_hdf5_v2(_hdf5_file_v2):
 
     origin = handler.TbtData(
@@ -95,6 +103,7 @@ def test_tbt_read_hdf5_v2(_hdf5_file_v2):
     _compare_tbt(origin, new, False)
 
 
+@pytest.mark.basic
 def test_compare_average_Tbtdata():
     npart = 10
     data = {plane: np.concatenate(
@@ -136,30 +145,35 @@ def test_compare_average_Tbtdata():
     _compare_tbt(handler.generate_average_tbtdata(origin), new, False)
 
 
+@pytest.mark.basic
 def test_tbt_read_ptc(_ptc_file):
     new = reader_ptc.read_tbt(_ptc_file)
     origin = _original_trackone()
     _compare_tbt(origin, new, True)
 
 
+@pytest.mark.basic
 def test_tbt_read_trackone(_ptc_file):
     new = reader_trackone.read_tbt(_ptc_file)
     origin = _original_trackone(True)
     _compare_tbt(origin, new, True)
 
 
+@pytest.mark.basic
 def test_tbt_read_ptc_sci(_ptc_file_sci):
     new = reader_ptc.read_tbt(_ptc_file_sci)
     origin = _original_trackone()
     _compare_tbt(origin, new, True)
 
 
+@pytest.mark.basic
 def test_tbt_read_trackone_sci(_ptc_file_sci):
     new = reader_trackone.read_tbt(_ptc_file_sci)
     origin = _original_trackone(True)
     _compare_tbt(origin, new, True)
 
 
+@pytest.mark.basic
 def test_tbt_read_ptc_looseparticles(_ptc_file_losses):
     new = reader_ptc.read_tbt(_ptc_file_losses)
     assert len(new.matrices) == 3
@@ -168,6 +182,7 @@ def test_tbt_read_ptc_looseparticles(_ptc_file_losses):
     assert not new.matrices[0]["X"].isna().any().any()
 
 
+@pytest.mark.basic
 def test_tbt_read_trackone_looseparticles(_ptc_file_losses):
     new = reader_trackone.read_tbt(_ptc_file_losses)
     assert len(new.matrices) == 3
@@ -176,6 +191,7 @@ def test_tbt_read_trackone_looseparticles(_ptc_file_losses):
     assert not new.matrices[0]["X"].isna().any().any()
 
 
+@pytest.mark.basic
 def test_tbt_write_read_ascii(_sdds_file, _test_file):
     origin = handler.read_tbt(_sdds_file)
     handler.write_lhc_ascii(_test_file, origin)

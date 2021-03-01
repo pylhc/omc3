@@ -1,8 +1,9 @@
 """
-Module tune_analysis.fitting_tools
--------------------------------------
+Fitting Tools
+-------------
 
-Tools for fitting functions, mainly via odr.
+This module contains fitting functionality for ``tune_analysis``.
+It provides tools for fitting functions, mainly via odr.
 
 Important Convention:
     The beta-parameter in the ODR models go upwards with order, i.e.
@@ -10,10 +11,6 @@ Important Convention:
     |  beta[1] = slope
     |  beta[2] = quadratic term
     |  etc.
-
-:module: omc3.tune_analysis.fitting_tools
-:author: jdilly
-
 """
 import numpy as np
 from scipy.odr import RealData, Model, ODR
@@ -27,21 +24,22 @@ LOG = logging_tools.get_logger(__name__)
 
 
 def get_poly_fun(order):
-    """ Returns the function of polynomial order. (is this pythonic enough?)"""
+    """Returns the function of polynomial order. (is this pythonic enough?)."""
     def poly_func(beta, x):
         return sum(beta[i] * np.power(x, i) for i in range(order+1))
     return poly_func
 
 
 def do_odr(x, y, xerr, yerr, order):
-    """ Returns the odr fit.
+    """
+    Returns the odr fit.
 
     Args:
-        x: Series of x data
-        y: Series of y data
-        xerr: Series of x data errors
-        yerr: Series of y data errors
-        order: fit order; 1: linear, 2: quadratic
+        x: `Series` of x data.
+        y: `Series` of y data.
+        xerr: `Series` of x data errors.
+        yerr: `Series` of y data errors.
+        order: fit order, ``1`` for linear, ``2`` for quadratic.
 
     Returns: Odr fit. Betas order is index = coefficient of same order.
     """
@@ -54,4 +52,3 @@ def do_odr(x, y, xerr, yerr, order):
     odr_fit = odr.run()
     logging_tools.odr_pprint(LOG.info, odr_fit)
     return odr_fit
-

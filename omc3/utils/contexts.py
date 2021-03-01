@@ -1,8 +1,8 @@
 """
-Module utils.contexts
-----------------------
+Contexts
+--------
 
-Provides contexts to use.
+Provides contexts managers to use.
 """
 import os
 import shutil
@@ -15,7 +15,7 @@ from contextlib import contextmanager
 
 @contextmanager
 def log_out(stdout=sys.stdout, stderr=sys.stderr):
-    """ Temporarily changes sys.stdout and sys.stderr. """
+    """Temporarily changes ``sys.stdout`` and ``sys.stderr``."""
     old_stdout = sys.stdout
     old_stderr = sys.stderr
     sys.stdout = stdout
@@ -29,9 +29,8 @@ def log_out(stdout=sys.stdout, stderr=sys.stderr):
 
 @contextmanager
 def silence():
-    """ Suppress all console output.
-
-    sys.stdout and sys.stderr are rerouted to devnull.
+    """
+    Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.
     """
     devnull = open(os.devnull, "w")
     with log_out(stdout=devnull, stderr=devnull):
@@ -43,7 +42,7 @@ def silence():
 
 @contextmanager
 def timeit(function):
-    """ Prints the time at the end of the context via ``function``. """
+    """Prints the time at the end of the context via ``function``."""
     start_time = time.time()
     try:
         yield
@@ -54,7 +53,7 @@ def timeit(function):
 
 @contextmanager
 def suppress_warnings(warning_classes):
-    """ Suppress all warnings of given classes. """
+    """Suppress all warnings of given classes."""
     with warnings.catch_warnings(record=True) as warn_list:
         yield
     for w in warn_list:
@@ -71,7 +70,7 @@ def suppress_warnings(warning_classes):
 
 @contextmanager
 def temporary_dir():
-    """ Create a temporary dir and remove it afterwards. """
+    """Create a temporary dir and remove it afterwards."""
     try:
         dir_path = tempfile.mkdtemp()
         yield dir_path
@@ -81,7 +80,7 @@ def temporary_dir():
 
 @contextmanager
 def temporary_file_path(content="", suffix="", prefix="", text=True):
-    """ Returns path to temporary file with content. """
+    """Returns path to temporary file with content."""
     fd, file_path = tempfile.mkstemp(suffix=suffix, prefix=prefix, text=text)
     os.close(fd)  # close file descriptor
     if content:
@@ -95,7 +94,7 @@ def temporary_file_path(content="", suffix="", prefix="", text=True):
 
 @contextmanager
 def suppress_exception(exception):
-    """ Catch exception and ignore it. """
+    """Catch exception and ignore it."""
     try:
         yield
     except exception:

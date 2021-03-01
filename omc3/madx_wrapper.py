@@ -1,12 +1,10 @@
 """
-Entrypoint madx_wrapper
---------------------------
+MAD-X Wrapper
+-------------
 
-Runs MADX with a file or a string as an input.
-If defined, writes the processed MADX script and logging output into files.
+``madx_wrapper`` is high-level wrapper for running ``MAD-X`` codes within ``omc3``.
 
-Usage:
-    python madx_wrapper.py --file your_madx_file.madx
+Usage: ``python madx_wrapper.py --file your_madx_file.madx``
 """
 import contextlib
 import os
@@ -22,7 +20,6 @@ from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
-LIB = abspath(join(dirname(__file__), "lib"))
 _LOCAL_PATH = join(dirname(__file__), "bin")
 
 if "darwin" in sys.platform:
@@ -59,38 +56,37 @@ def main(opt):
              madx_path=opt.madx_path, cwd=opt.cwd)
 
 
-def run_file(input_file, output_file=None, log_file=None,
-             madx_path=MADX_PATH, cwd=None):
-    """Runs MADX in a subprocess.
+def run_file(input_file, output_file=None, log_file=None, madx_path=MADX_PATH, cwd=None):
+    """
+    Runs ``MAD-X`` on a given script in a subprocess.
 
-    Attributes:
-        input_file: MADX input file
-        output_file: If given writes MADX script.
-        log_file: If given writes MADX logging output.
-        madx_path: Path to MADX executable
+    Args:
+        input_file: ``MAD-X`` input file.
+        output_file: If given writes ``MAD-X`` script.
+        log_file: If given writes ``MAD-X`` logging output.
+        madx_path: Path to the ``MAD-X`` executable.
     """
     input_string = _read_input_file(input_file)
     run_string(input_string, output_file=output_file, log_file=log_file,
                madx_path=madx_path, cwd=cwd)
 
 
-def run_string(input_string, output_file=None, log_file=None,
-               madx_path=MADX_PATH, cwd=None):
-    """Runs MADX in a subprocess.
+def run_string(input_string, output_file=None, log_file=None, madx_path=MADX_PATH, cwd=None):
+    """
+    Runs ``MAD-X`` on a given string in a subprocess.
 
-    Arguments:
-        input_string: MADX input string
-        output_file: If given writes MADX script.
-        log_file: If given writes MADX logging output.
-        madx_path: Path to MADX executable
-
+    Args:
+        input_string: ``MAD-X`` input string.
+        output_file: If given writes ``MAD-X`` script.
+        log_file: If given writes ``MAD-X`` logging output.
+        madx_path: Path to the ``MAD-X`` executable.
     """
     _check_log_and_output_files(output_file, log_file)
     _run(input_string, log_file, output_file, madx_path, cwd)
 
 
 def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH, cwd=None):
-    """ Starts the madx-process """
+    """Starts the ``MAD-X`` process."""
     with _madx_input_wrapper(full_madx_script, output_file) as madx_jobfile:
         process = subprocess.Popen([madx_path, madx_jobfile], shell=False,
                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
@@ -119,7 +115,7 @@ def _check_log_and_output_files(output_file, log_file):
 
 @contextlib.contextmanager
 def _logfile_wrapper(file_path=None):
-    """ Logs into file and debug if file is given, into info otherwise """
+    """Logs into file and debug if file is given, into info otherwise."""
     if file_path is None:
         def log_handler(line):
             line = line.rstrip()
@@ -138,9 +134,9 @@ def _logfile_wrapper(file_path=None):
 
 @contextlib.contextmanager
 def _madx_input_wrapper(content, file_path=None):
-    """ Writes content into an output file and returns filepath.
-
-    If file_path is not given, the output file is temporary and will be deleted afterwards.
+    """
+    Writes content into an output file and returns filepath.
+    If ``file_path`` is not given, the output file is temporary and will be deleted afterwards.
     """
     if file_path is None:
         temp_file = True
@@ -161,9 +157,8 @@ def _madx_input_wrapper(content, file_path=None):
 
 
 def _raise_madx_error(log=None, file=None):
-    """ Rasing Error Wrapper
-
-    Extracts extra info from log and output file if given.
+    """
+    Raising Error Wrapper. Extracts extra info from log and output file if given.
     """
     message = "MADX run failed."
     if log is not None:
