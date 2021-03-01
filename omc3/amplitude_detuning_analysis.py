@@ -31,7 +31,7 @@ the measurements.
 
   Choices: ``['cut', 'minmax', 'outliers']``
   Default: ``outliers``
-- **bbq_in**: Fill number of desired data to extract from ``Timber`` (requires installing with the [tech]
+- **bbq_in**: Fill number of desired data to extract from ``Timber`` (requires installing with the [cern]
   extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string 'kick' to use the
   timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.
 

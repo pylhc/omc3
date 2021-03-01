@@ -14,11 +14,11 @@ Provides mock functionality for packages necessitating the ``CERN GPN`` and only
 import importlib
 
 
-class TechicalNetworkMockPackage:
+class CERNNetworkMockPackage:
     """
     Mock class to raise an error if the desired package functionality is called when the package is not
     actually installed. Designed for packages installable only from inside the CERN network,
-    that are declared as ``tech`` extras.
+    that are declared as ``cern`` extra. See module documentation.
     """
     def __init__(self, name: str):
         self.name = name
@@ -26,7 +26,7 @@ class TechicalNetworkMockPackage:
     def __getattr__(self, item):
         raise ImportError(
             f"The '{self.name}' package does not seem to be installed but is needed for this function. "
-            "Install it with the 'tech' extra dependency, which requires to be on the CERN network and "
+            "Install it with the 'cern' extra dependency, which requires to be on the CERN network and to "
             "install from the acc-py package index. Refer to the documentation for more information."
         )
 
@@ -43,4 +43,4 @@ def cern_network_import(package: str):
     try:
         return importlib.import_module(package)
     except ImportError:
-        return TechicalNetworkMockPackage(package)
+        return CERNNetworkMockPackage(package)

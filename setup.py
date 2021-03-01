@@ -33,7 +33,7 @@ DEPENDENCIES = [
 
 # Extra dependencies
 EXTRA_DEPENDENCIES = {
-    "tech": [
+    "cern": [
         "pytimber>=2.8.0",
     ],
     "test": [

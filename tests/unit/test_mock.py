@@ -1,13 +1,13 @@
 import pytest
 import tfs
 
-from omc3.utils.mock import TechicalNetworkMockPackage, cern_network_import
+from omc3.utils.mock import CERNNetworkMockPackage, cern_network_import
 
 
 class TestCERNNetworkImport:
     def test_absent_package_gives_mock_class(self):
         fake_package = cern_network_import("fake_package")
-        assert isinstance(fake_package, TechicalNetworkMockPackage)
+        assert isinstance(fake_package, CERNNetworkMockPackage)
         assert fake_package.name == "fake_package"
 
         with pytest.raises(ImportError):
