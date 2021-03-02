@@ -28,12 +28,14 @@ DEPENDENCIES = [
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
     "h5py>=2.9.0",
-    "pytimber>=2.8.0",
     "uncertainties>=3.1.4",
 ]
 
 # Extra dependencies
 EXTRA_DEPENDENCIES = {
+    "cern": [
+        "pytimber>=2.8.0",
+    ],
     "test": [
         "pytest>=5.2",
         "pytest-cov>=2.7",
