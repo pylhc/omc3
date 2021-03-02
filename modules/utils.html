@@ -203,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stats">Stats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#time-tools">Time Tools</a></li>
@@ -621,6 +622,37 @@ It won’t open the file, so only the files path is returned.</p>
 <dt id="omc3.utils.logging_tools.unformatted_console_logging">
 <code class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></code><code class="sig-name descname"><span class="pre">unformatted_console_logging</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#unformatted_console_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.unformatted_console_logging" title="Permalink to this definition">¶</a></dt>
 <dd><p>Log only to console and only unformatted.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.utils.mock"></span><div class="section" id="mock">
+<h2>Mock<a class="headerlink" href="#mock" title="Permalink to this headline">¶</a></h2>
+<p>Provides mock functionality for packages necessitating the <code class="docutils literal notranslate"><span class="pre">CERN</span> <span class="pre">GPN</span></code> and only installable from the
+<code class="docutils literal notranslate"><span class="pre">acc-py</span></code> package index, such as <code class="docutils literal notranslate"><span class="pre">pytimber</span></code>, <code class="docutils literal notranslate"><span class="pre">pjlsa</span></code> etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">omc3.utils.mock</span> <span class="kn">import</span> <span class="n">cern_network_import</span>
+<span class="n">pytimber</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pytimber&quot;</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">)</span>  <span class="c1"># will raise if pytimber not installed</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="omc3.utils.mock.CERNNetworkMockPackage">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">omc3.utils.mock.</span></code><code class="sig-name descname"><span class="pre">CERNNetworkMockPackage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/mock.html#CERNNetworkMockPackage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.mock.CERNNetworkMockPackage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mock class to raise an error if the desired package functionality is called when the package is not
+actually installed. Designed for packages installable only from inside the CERN network,
+that are declared as <code class="docutils literal notranslate"><span class="pre">cern</span></code> extra. See module documentation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="omc3.utils.mock.cern_network_import">
+<code class="sig-prename descclassname"><span class="pre">omc3.utils.mock.</span></code><code class="sig-name descname"><span class="pre">cern_network_import</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/mock.html#cern_network_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.mock.cern_network_import" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to try and import packages only available (and installable) on the CERN network.
+If installed, the module is returned, otherwise a mock class is returned, which will raise an
+insightful <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> on attempted use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>package</strong> (<em>str</em>) -- name of the package to try and import.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

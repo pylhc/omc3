@@ -204,6 +204,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#stats">Stats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#time-tools">Time Tools</a></li>
@@ -566,9 +567,9 @@ the measurements.</p>
 <p>Choices: <code class="docutils literal notranslate"><span class="pre">['cut',</span> <span class="pre">'minmax',</span> <span class="pre">'outliers']</span></code>
 Default: <code class="docutils literal notranslate"><span class="pre">outliers</span></code></p>
 </li>
-<li><p><strong>bbq_in</strong>: Fill number of desired data to extract from timber
-or path to presaved bbq-tfs-file. Use the string ‘kick’ to use the timestamps
-in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.</p></li>
+<li><p><strong>bbq_in</strong>: Fill number of desired data to extract from <code class="docutils literal notranslate"><span class="pre">Timber</span></code> (requires installing with the [cern]
+extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string ‘kick’ to use the
+timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.</p></li>
 <li><p><strong>debug</strong>: Activates Debug mode</p>
 <p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </li>

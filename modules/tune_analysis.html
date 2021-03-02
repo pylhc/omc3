@@ -204,6 +204,7 @@
 <li class="toctree-l2"><a class="reference internal" href="utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#stats">Stats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#time-tools">Time Tools</a></li>
@@ -609,11 +610,16 @@ deviation of the moving average.</p>
 </div>
 <span class="target" id="module-omc3.tune_analysis.timber_extract"></span><div class="section" id="timber-extraction">
 <h2>Timber Extraction<a class="headerlink" href="#timber-extraction" title="Permalink to this headline">¶</a></h2>
-<p>Tools to extract data from <code class="docutils literal notranslate"><span class="pre">Timber</span></code>.</p>
-<p>It is a bit heavy on the LHC side at the moment.</p>
+<p>Tools to extract data from <code class="docutils literal notranslate"><span class="pre">Timber</span></code>. It is a bit heavy on the LHC side at the moment.</p>
+<p><strong>Please note</strong>: this module requires the <code class="docutils literal notranslate"><span class="pre">pytimber</span></code> package to access <code class="docutils literal notranslate"><span class="pre">Timber</span></code> functionality,
+both of which are only possible from inside the CERN network.</p>
+<p>To install <code class="docutils literal notranslate"><span class="pre">pytimber</span></code> along <code class="docutils literal notranslate"><span class="pre">omc3</span></code>, please do so from inside the CERN network by using the [cern] extra
+dependency and installing from the <code class="docutils literal notranslate"><span class="pre">acc-py</span></code> package index (by specifying <code class="docutils literal notranslate"><span class="pre">--index-url</span>
+<span class="pre">https://acc-py-repo.cern.ch/repository/vr-py-releases/simple</span></code> and
+<code class="docutils literal notranslate"><span class="pre">--trusted-host</span> <span class="pre">acc-py-repo.cern.ch</span></code> to your <code class="docutils literal notranslate"><span class="pre">pip</span></code> installation command).</p>
 <dl class="py function">
 <dt id="omc3.tune_analysis.timber_extract.extract_between_times">
-<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">extract_between_times</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#extract_between_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.extract_between_times" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">extract_between_times</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tfs.handler.TfsDataFrame</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#extract_between_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.extract_between_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts data for keys between t_start and t_end from timber.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -630,13 +636,13 @@ deviation of the moving average.</p>
 
 <dl class="py function">
 <dt id="omc3.tune_analysis.timber_extract.get_fill_times">
-<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">get_fill_times</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_fill_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_fill_times" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">get_fill_times</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_fill_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_fill_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns start and end time of fill with fill number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>db</strong> -- pytimber database.</p></li>
-<li><p><strong>fill_number</strong> -- fill number.</p></li>
+<li><p><strong>db</strong> (<em>pytimber.LoggingDB</em>) -- pytimber database.</p></li>
+<li><p><strong>fill_number</strong> (<em>int</em>) -- fill number.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -647,11 +653,11 @@ deviation of the moving average.</p>
 
 <dl class="py function">
 <dt id="omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables">
-<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">get_tune_and_coupling_variables</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_tune_and_coupling_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">get_tune_and_coupling_variables</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_tune_and_coupling_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the tune and coupling variable names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>db</strong> -- pytimber database.</p>
+<dd class="field-odd"><p><strong>db</strong> (<em>pytimber.LoggingDB</em>) -- pytimber database.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><cite>list</cite> of variable names.</p>
@@ -661,7 +667,7 @@ deviation of the moving average.</p>
 
 <dl class="py function">
 <dt id="omc3.tune_analysis.timber_extract.lhc_fill_to_tfs">
-<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">lhc_fill_to_tfs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#lhc_fill_to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></code><code class="sig-name descname"><span class="pre">lhc_fill_to_tfs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tfs.handler.TfsDataFrame</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#lhc_fill_to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts data for keys of fill from <code class="docutils literal notranslate"><span class="pre">Timber</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

@@ -202,6 +202,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
@@ -277,29 +278,35 @@
 <span class="sd">Timber Extraction</span>
 <span class="sd">-----------------</span>
 
-<span class="sd">Tools to extract data from ``Timber``.</span>
+<span class="sd">Tools to extract data from ``Timber``. It is a bit heavy on the LHC side at the moment.</span>
 
-<span class="sd">It is a bit heavy on the LHC side at the moment.</span>
+<span class="sd">**Please note**: this module requires the ``pytimber`` package to access ``Timber`` functionality,</span>
+<span class="sd">both of which are only possible from inside the CERN network.</span>
+
+<span class="sd">To install ``pytimber`` along ``omc3``, please do so from inside the CERN network by using the [cern] extra</span>
+<span class="sd">dependency and installing from the ``acc-py`` package index (by specifying ``--index-url</span>
+<span class="sd">https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and</span>
+<span class="sd">``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pytimber</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
 
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">const</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.time_tools</span> <span class="kn">import</span> <span class="n">CERNDatetime</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.mock</span> <span class="kn">import</span> <span class="n">cern_network_import</span>
 
 <span class="n">TIME_COL</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_time_col</span><span class="p">()</span>
 <span class="n">START_TIME</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_tstart_head</span><span class="p">()</span>
 <span class="n">END_TIME</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_tend_head</span><span class="p">()</span>
 
-
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">pytimber</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pytimber&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="lhc_fill_to_tfs"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs">[docs]</a><span class="k">def</span> <span class="nf">lhc_fill_to_tfs</span><span class="p">(</span><span class="n">fill_number</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="lhc_fill_to_tfs"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs">[docs]</a><span class="k">def</span> <span class="nf">lhc_fill_to_tfs</span><span class="p">(</span><span class="n">fill_number</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts data for keys of fill from ``Timber``.</span>
 
@@ -310,13 +317,13 @@
 
 <span class="sd">    Returns: tfs pandas dataframe.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">()</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">)</span>
     <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span> <span class="o">=</span> <span class="n">get_fill_times</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">fill_number</span><span class="p">)</span>
     <span class="n">out_df</span> <span class="o">=</span> <span class="n">extract_between_times</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out_df</span></div>
 
 
-<div class="viewcode-block" id="extract_between_times"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.extract_between_times">[docs]</a><span class="k">def</span> <span class="nf">extract_between_times</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="extract_between_times"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.extract_between_times">[docs]</a><span class="k">def</span> <span class="nf">extract_between_times</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts data for keys between t_start and t_end from timber.</span>
 
@@ -328,7 +335,7 @@
 
 <span class="sd">    Returns: tfs pandas dataframe.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">()</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">get_tune_and_coupling_variables</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
 
@@ -352,12 +359,12 @@
     <span class="k">return</span> <span class="n">out_df</span></div>
 
 
-<div class="viewcode-block" id="get_tune_and_coupling_variables"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables">[docs]</a><span class="k">def</span> <span class="nf">get_tune_and_coupling_variables</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<div class="viewcode-block" id="get_tune_and_coupling_variables"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables">[docs]</a><span class="k">def</span> <span class="nf">get_tune_and_coupling_variables</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the tune and coupling variable names.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        db: pytimber database.</span>
+<span class="sd">        db (pytimber.LoggingDB): pytimber database.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        `list` of variable names.</span>
@@ -371,13 +378,13 @@
     <span class="k">return</span> <span class="n">bbq_vars</span></div>
 
 
-<div class="viewcode-block" id="get_fill_times"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_fill_times">[docs]</a><span class="k">def</span> <span class="nf">get_fill_times</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">fill_number</span><span class="p">):</span>
+<div class="viewcode-block" id="get_fill_times"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_fill_times">[docs]</a><span class="k">def</span> <span class="nf">get_fill_times</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">fill_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns start and end time of fill with fill number.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        db: pytimber database.</span>
-<span class="sd">        fill_number: fill number.</span>
+<span class="sd">        db (pytimber.LoggingDB): pytimber database.</span>
+<span class="sd">        fill_number (int): fill number.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">       `Tuple` of start and end time.</span>

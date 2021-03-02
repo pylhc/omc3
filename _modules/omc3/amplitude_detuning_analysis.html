@@ -202,6 +202,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#stats">Stats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#time-tools">Time Tools</a></li>
@@ -306,9 +307,9 @@
 
 <span class="sd">  Choices: ``[&#39;cut&#39;, &#39;minmax&#39;, &#39;outliers&#39;]``</span>
 <span class="sd">  Default: ``outliers``</span>
-<span class="sd">- **bbq_in**: Fill number of desired data to extract from timber</span>
-<span class="sd">  or path to presaved bbq-tfs-file. Use the string &#39;kick&#39; to use the timestamps</span>
-<span class="sd">  in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.</span>
+<span class="sd">- **bbq_in**: Fill number of desired data to extract from ``Timber`` (requires installing with the [cern]</span>
+<span class="sd">  extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string &#39;kick&#39; to use the</span>
+<span class="sd">  timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.</span>
 
 <span class="sd">- **debug**: Activates Debug mode</span>
 
@@ -356,6 +357,7 @@
                                                     <span class="n">read_two_kick_files_from_folder</span>
                                                     <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.logging_tools</span> <span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">list2str</span><span class="p">,</span> <span class="n">DebugMode</span>
+
 
 <span class="c1"># Globals ----------------------------------------------------------------------</span>
 
@@ -595,8 +597,8 @@
         <span class="k">if</span> <span class="n">input_</span> <span class="o">==</span> <span class="s2">&quot;kick&quot;</span><span class="p">:</span>
             <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting timber data from kick-times.&quot;</span><span class="p">)</span>
             <span class="n">timber_keys</span><span class="p">,</span> <span class="n">bbq_cols</span> <span class="o">=</span> <span class="n">_get_timber_keys_and_bbq_columns</span><span class="p">(</span><span class="n">beam</span><span class="p">)</span>
-            <span class="n">t_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-            <span class="n">t_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="n">t_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+            <span class="n">t_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">timber_extract</span><span class="o">.</span><span class="n">extract_between_times</span><span class="p">(</span><span class="n">t_start</span><span class="o">-</span><span class="n">DTIME</span><span class="p">,</span> <span class="n">t_end</span><span class="o">+</span><span class="n">DTIME</span><span class="p">,</span>
                                                         <span class="n">keys</span><span class="o">=</span><span class="n">timber_keys</span><span class="p">,</span>
                                                         <span class="n">names</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">timber_keys</span><span class="p">,</span> <span class="n">bbq_cols</span><span class="p">)))</span>

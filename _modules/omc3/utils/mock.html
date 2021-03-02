@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>omc3.utils.contexts &mdash; omc3 0.2.0 documentation</title>
+  <title>omc3.utils.mock &mdash; omc3 0.2.0 documentation</title>
   
 
   
@@ -258,7 +258,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>omc3.utils.contexts</li>
+      <li>omc3.utils.mock</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -273,108 +273,53 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for omc3.utils.contexts</h1><div class="highlight"><pre>
+  <h1>Source code for omc3.utils.mock</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Contexts</span>
-<span class="sd">--------</span>
+<span class="sd">Mock</span>
+<span class="sd">----</span>
 
-<span class="sd">Provides contexts managers to use.</span>
+<span class="sd">Provides mock functionality for packages necessitating the ``CERN GPN`` and only installable from the</span>
+<span class="sd">``acc-py`` package index, such as ``pytimber``, ``pjlsa`` etc.</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from omc3.utils.mock import cern_network_import</span>
+<span class="sd">    pytimber = cern_network_import(&quot;pytimber&quot;)</span>
+<span class="sd">    db = pytimber.LoggingDB(source=&quot;nxcals&quot;)  # will raise if pytimber not installed</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
 
 
-<div class="viewcode-block" id="log_out"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.log_out">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">log_out</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Temporarily changes ``sys.stdout`` and ``sys.stderr``.&quot;&quot;&quot;</span>
-    <span class="n">old_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
-    <span class="n">old_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">stdout</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">stderr</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_stdout</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">old_stderr</span></div>
-
-
-<div class="viewcode-block" id="silence"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.silence">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">silence</span><span class="p">():</span>
+<div class="viewcode-block" id="CERNNetworkMockPackage"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.CERNNetworkMockPackage">[docs]</a><span class="k">class</span> <span class="nc">CERNNetworkMockPackage</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.</span>
+<span class="sd">    Mock class to raise an error if the desired package functionality is called when the package is not</span>
+<span class="sd">    actually installed. Designed for packages installable only from inside the CERN network,</span>
+<span class="sd">    that are declared as ``cern`` extra. See module documentation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">devnull</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">log_out</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">devnull</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">devnull</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">yield</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">devnull</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; package does not seem to be installed but is needed for this function. &quot;</span>
+            <span class="s2">&quot;Install it with the &#39;cern&#39; extra dependency, which requires to be on the CERN network and to &quot;</span>
+            <span class="s2">&quot;install from the acc-py package index. Refer to the documentation for more information.&quot;</span>
+        <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="timeit"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.timeit">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">timeit</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Prints the time at the end of the context via ``function``.&quot;&quot;&quot;</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<div class="viewcode-block" id="cern_network_import"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.cern_network_import">[docs]</a><span class="k">def</span> <span class="nf">cern_network_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function to try and import packages only available (and installable) on the CERN network.</span>
+<span class="sd">    If installed, the module is returned, otherwise a mock class is returned, which will raise an</span>
+<span class="sd">    insightful ``ImportError`` on attempted use.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        package (str): name of the package to try and import.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">time_used</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-        <span class="n">function</span><span class="p">(</span><span class="n">time_used</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="suppress_warnings"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.suppress_warnings">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">suppress_warnings</span><span class="p">(</span><span class="n">warning_classes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Suppress all warnings of given classes.&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">warn_list</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">warn_list</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">warning_classes</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{file:s}</span><span class="s2">:</span><span class="si">{line:d}</span><span class="s2">: </span><span class="si">{clas:s}</span><span class="s2">: </span><span class="si">{message:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">file</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
-                <span class="n">line</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span>
-                <span class="n">clas</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">_category_name</span><span class="p">,</span>
-                <span class="n">message</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
-            <span class="p">),</span>
-                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
-            <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="temporary_dir"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.temporary_dir">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">temporary_dir</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Create a temporary dir and remove it afterwards.&quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
-        <span class="k">yield</span> <span class="n">dir_path</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="temporary_file_path"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.temporary_file_path">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">temporary_file_path</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns path to temporary file with content.&quot;&quot;&quot;</span>
-    <span class="n">fd</span><span class="p">,</span> <span class="n">file_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>  <span class="c1"># close file descriptor</span>
-    <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">file_path</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="suppress_exception"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.suppress_exception">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">suppress_exception</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Catch exception and ignore it.&quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">except</span> <span class="n">exception</span><span class="p">:</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CERNNetworkMockPackage</span><span class="p">(</span><span class="n">package</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
