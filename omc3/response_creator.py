@@ -63,11 +63,7 @@ def create_response_entrypoint(opt, other_opt):
     """
     LOG.info("Creating response.")
     accel_inst = manager.get_accelerator(other_opt)
-    print("aaaa", other_opt)
-    print("dddddddd",     accel_inst.modifiers)
 
- #   accel_inst.modifiers = "model/opticsfile.18"
-    
     if opt.creator == "madx":
         fullresponse = response_madx.generate_fullresponse(
             accel_inst, opt.variable_categories, delta_k=opt.delta_k
