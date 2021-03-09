@@ -1,17 +1,20 @@
+import os
+import pickle
+import tempfile
 import time
+
 import matplotlib.pyplot as plt
 import numpy as np
-import tfs
-import pickle
 import pytest
-import tempfile
-import os
+import tfs
+from optics_functions.coupling import coupling_from_cmatrix
 
-from omc3.response_creator import create_response_entrypoint
+from omc3.correction.constants import DELTA, ERR
 from omc3.global_correct import global_correction_entrypoint
-from omc3.optics_measurements.constants import EXT, PHASE_NAME, DISPERSION_NAME, NORM_DISP_NAME, BETA_NAME
-from omc3.correction.constants import ERR, DELTA
-from omc3.correction import optics_class
+from omc3.optics_measurements.constants import (BETA_NAME, DISPERSION_NAME,
+                                                EXT, NORM_DISP_NAME,
+                                                PHASE_NAME)
+from omc3.response_creator import create_response_entrypoint
 
 NAME = "NAME"
 CORRECTION_DIR = os.path.join(os.path.dirname(__file__), "..", "inputs", "correction") + "/"
@@ -55,13 +58,24 @@ RMS_TOL_DICT_CORRECTION = {
 }
 
 
-def _add_coupling(tfs_df):
-    cpl = optics_class.get_coupling(tfs_df)
-    tfs_df["F1001R"] = np.real(cpl["F1001"])
-    tfs_df["F1001I"] = np.imag(cpl["F1001"])
-    tfs_df["F1010R"] = np.real(cpl["F1010"])
-    tfs_df["F1010I"] = np.imag(cpl["F1010"])
-    return tfs_df
+def _add_coupling(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+    """
+    Computes the coupling RDTs from the input TfsDataFrame and returns a copy of said TfsDataFrame with
+    columns for the real and imaginary parts of the computed coupling RDTs.
+
+    Args:
+        tfs_df (tfs.TfsDataFrame): Twiss dataframe.
+
+    Returns:
+        A TfsDataFrame with the added columns.
+    """
+    result_tfs_df = tfs_df.copy()
+    coupling_rdts_df = coupling_from_cmatrix(result_tfs_df)
+    result_tfs_df["F1001R"] = np.real(coupling_rdts_df["F1001"]).astype(np.float64)
+    result_tfs_df["F1001I"] = np.imag(coupling_rdts_df["F1001"]).astype(np.float64)
+    result_tfs_df["F1010R"] = np.real(coupling_rdts_df["F1010"]).astype(np.float64)
+    result_tfs_df["F1010I"] = np.imag(coupling_rdts_df["F1010"]).astype(np.float64)
+    return result_tfs_df
 
 
 def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):

@@ -2,17 +2,21 @@ import datetime
 import os
 import pickle
 import time
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
+import tfs
+from optics_functions.coupling import coupling_from_cmatrix
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
-import tfs
-from omc3.correction import filters, model_appenders, response_twiss, optics_class
-from omc3.correction.constants import DELTA, DIFF, WEIGHT, VALUE, ERROR
-from omc3.optics_measurements.constants import EXT, PHASE_NAME, DISPERSION_NAME, NORM_DISP_NAME
+from omc3.correction import filters, model_appenders, response_twiss
+from omc3.correction.constants import DELTA, DIFF, ERROR, VALUE, WEIGHT
+from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT,
+                                                NORM_DISP_NAME, PHASE_NAME)
 from omc3.utils import logging_tools
+
 LOG = logging_tools.get_logger(__name__)
 
 
@@ -173,14 +177,27 @@ def _get_varlist(accel_cls, variables):  # TODO: Virtual?
     return varlist
 
 
-def _maybe_add_coupling_to_model(model, keys):
+def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -> tfs.TfsDataFrame:
+    """
+    Computes the coupling RDTs from the input model TfsDataFrame and returns a copy of said TfsDataFrame with
+    columns for the real and imaginary parts of the computed coupling RDTs. The operation is only done if
+    terms corresponding to coupling RDTs are found in the provided keys.
+
+    Args:
+        model (tfs.TfsDataFrame): Twiss dataframe.
+        keys (Sequence[str]):
+
+    Returns:
+        A TfsDataFrame with the added columns.
+    """
+    result_tfs_df = model.copy()
     if any([key for key in keys if key.startswith("F1")]):
-        couple = optics_class.get_coupling(model)
-        model["F1001R"] = couple["F1001"].apply(np.real).astype(np.float64)
-        model["F1001I"] = couple["F1001"].apply(np.imag).astype(np.float64)
-        model["F1010R"] = couple["F1010"].apply(np.real).astype(np.float64)
-        model["F1010I"] = couple["F1010"].apply(np.imag).astype(np.float64)
-    return model
+        coupling_rdts_df = coupling_from_cmatrix(result_tfs_df)
+        result_tfs_df["F1001R"] = np.real(coupling_rdts_df["F1001"]).astype(np.float64)
+        result_tfs_df["F1001I"] = np.imag(coupling_rdts_df["F1001"]).astype(np.float64)
+        result_tfs_df["F1010R"] = np.real(coupling_rdts_df["F1010"]).astype(np.float64)
+        result_tfs_df["F1010I"] = np.imag(coupling_rdts_df["F1010"]).astype(np.float64)
+    return result_tfs_df
 
 
 def _calculate_delta(resp_matrix, meas_dict, keys, vars_list, method, meth_opt):
