@@ -10,11 +10,13 @@ Compare results with case all==0
 import multiprocessing
 import os
 import pickle
+from typing import List, Sequence, Tuple
 
 import numpy as np
 import tfs
 
 import omc3.madx_wrapper as madx_wrapper
+from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import suppress_exception, timeit
 
@@ -26,14 +28,18 @@ EXT = "varmap"  # Extension Standard
 # Read Sequence ##############################################################
 
 
-def evaluate_for_variables(accel_inst, variable_categories, order=4,
-                           num_proc=multiprocessing.cpu_count(),
-                           temp_dir=None):
+def evaluate_for_variables(
+    accel_inst: Accelerator,
+    variable_categories,
+    order: int = 4,
+    num_proc: int = multiprocessing.cpu_count(),
+    temp_dir: str = None
+) -> dict:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
 
         Args:
-            accel_inst : Accelerator Instance.
+            accel_inst (Accelerator): Accelerator Instance.
             variable_categories (list): Categories of the variables/knobs to use. (from .json)
             order (int or tuple): Max or [min, max] of K-value order to use.
             num_proc (int): Number of processes to use in parallel.
@@ -63,34 +69,37 @@ def evaluate_for_variables(accel_inst, variable_categories, order=4,
     return mapping
 
 
-def _generate_madx_jobs(accel_inst, variables, k_values, num_proc, temp_dir):
+def _generate_madx_jobs(
+    accel_inst: Accelerator,
+    variables: Sequence[str],
+    k_values: List[float],
+    num_proc: int,
+    temp_dir: str,
+) -> None:
     """ Generates madx job-files """
     def _assign(var, value):
         return "{var:s} = {value:d};\n".format(var=var, value=value)
 
     def _do_macro(var):
         return (
-            "exec, create_table({table:s});\n"
-            "write, table={table:s}, file='{f_out:s}';\n"
-        ).format(
-            table="table." + var,
-            f_out=_get_tablefile(temp_dir, var),
+            f"exec, create_table(table.{var:s});\n"
+            f"write, table=table.{var:s}, file='{_get_tablefile(temp_dir, var):s}';\n"
         )
 
     LOG.debug("Generating MADX jobfiles.")
     vars_per_proc = int(np.ceil(len(variables) / num_proc))
 
     # load template
-    madx_script = _create_basic_job(accel_inst, k_values, variables)
+    madx_script: str = _create_basic_job(accel_inst, k_values, variables)
 
     # build content for testing each variable
-    for proc_idx in range(num_proc):
-        job_content = madx_script % {"TEMPFILE": _get_surveyfile(temp_dir, proc_idx)}
+    for proc_index in range(num_proc):
+        job_content = madx_script % {"TEMPFILE": _get_surveyfile(temp_dir, proc_index)}
 
         for i in range(vars_per_proc):
             try:
                 # var to be tested
-                current_var = variables[proc_idx * vars_per_proc + i]
+                current_var = variables[proc_index * vars_per_proc + i]
             except IndexError:
                 break
             else:
@@ -100,14 +109,14 @@ def _generate_madx_jobs(accel_inst, variables, k_values, num_proc, temp_dir):
                 job_content += "\n"
 
         # last thing to do: get baseline
-        if proc_idx+1 == num_proc:
+        if proc_index+1 == num_proc:
             job_content += _do_macro("0")
 
-        with open(_get_jobfile(temp_dir, proc_idx), "w") as job_file:
+        with open(_get_jobfile(temp_dir, proc_index), "w") as job_file:
             job_file.write(job_content)
 
 
-def _call_madx(process_pool, temp_dir, num_proc):
+def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:
     """ Call madx in parallel """
     LOG.debug("Starting {:d} MAD-X jobs...".format(num_proc))
     madx_jobs = [_get_jobfile(temp_dir, index) for index in range(num_proc)]
@@ -117,7 +126,7 @@ def _call_madx(process_pool, temp_dir, num_proc):
     LOG.debug("MAD-X jobs done.")
 
 
-def _clean_up(variables, temp_dir, num_proc):
+def _clean_up(variables: Sequence[str], temp_dir: str, num_proc: int) -> None:
     """ Merge Logfiles and clean temporary outputfiles """
     LOG.debug("Cleaning output and printing log...")
     for var in (variables + ["0"]):
@@ -142,7 +151,12 @@ def _clean_up(variables, temp_dir, num_proc):
         os.rmdir(temp_dir)
 
 
-def _load_madx_results(variables, k_values, process_pool, temp_dir):
+def _load_madx_results(
+    variables: Sequence[str],
+    k_values: List[float],
+    process_pool: multiprocessing.Pool,
+    temp_dir: str,
+) -> dict:
     """ Load the madx results in parallel and return var-tfs dictionary """
     LOG.debug("Loading Madx Results.")
     path_and_vars = []
@@ -165,7 +179,7 @@ def _load_madx_results(variables, k_values, process_pool, temp_dir):
 # Helper #####################################################################
 
 
-def _get_orders(order):
+def _get_orders(order: int) -> Sequence[str]:
     """ Returns a list of strings with K-values to be used """
     try:
         return ["K{:d}{:s}".format(i, s) for i in range(order) for s in ["", "S"]]
@@ -173,22 +187,22 @@ def _get_orders(order):
         return ["K{:d}{:s}".format(i, s) for i in range(*order) for s in ["", "S"]]
 
 
-def _get_jobfile(folder, index):
+def _get_jobfile(folder: float, index: int) -> str:
     """ Return names for jobfile and iterfile according to index """
     return os.path.join(folder, "job.varmap.{:d}.madx".format(index))
 
 
-def _get_tablefile(folder, var):
+def _get_tablefile(folder: str, var: str) -> str:
     """ Return name of the variable-specific table file """
     return os.path.join(folder, "table." + var)
 
 
-def _get_surveyfile(folder, index):
+def _get_surveyfile(folder: str, index: int) -> str:
     """ Returns the name of the macro """
     return os.path.join(folder, "survey.{:d}.tmp".format(index))
 
 
-def _launch_single_job(inputfile_path):
+def _launch_single_job(inputfile_path: str):
     """ Function for pool to start a single madx job """
     log_file = inputfile_path + ".log"
     try:
@@ -199,7 +213,7 @@ def _launch_single_job(inputfile_path):
         return None
 
 
-def _load_and_remove_twiss(path_and_var):
+def _load_and_remove_twiss(path_and_var: Tuple[str, str]) -> Tuple[str, tfs.TfsDataFrame]:
     """ Function for pool to retrieve results """
     path, var = path_and_var
     twissfile = _get_tablefile(path, var)
@@ -207,22 +221,22 @@ def _load_and_remove_twiss(path_and_var):
     return var, tfs_data
 
 
-def _create_basic_job(accel_inst, k_values, variables):
+def _create_basic_job(accel_inst: Accelerator, k_values: List[float], variables: Sequence[str]) -> str:
     """ Create the madx-job basics needed
         TEMPFILE needs to be replaced in the returned string.
     """
     # basic sequence creation
-    job_content = accel_inst.get_base_madx_script(accel_inst.model_dir)
+    job_content: str = accel_inst.get_base_madx_script(accel_inst.model_dir)
 
     # create a survey and save it to a temporary file
     job_content += (
         "select, flag=survey, clear;\n"
-        "select, flag=survey, pattern='^M.*\.B{beam:d}$', COLUMN=NAME, L;\n"
+        f"select, flag=survey, pattern='^M.*\.B{accel_inst.beam:d}$', COLUMN=NAME, L;\n"
         "survey, file='%(TEMPFILE)s';\n"
         "readmytable, file='%(TEMPFILE)s', table=mytable;\n"
         "n_elem = table(mytable, tablelength);\n"
         "\n"
-    ).format(beam=accel_inst.beam)
+    )
 
     # create macro for assigning values to the k_values per element
     job_content += "assign_k_values(element) : macro = {\n"
@@ -231,11 +245,11 @@ def _create_basic_job(accel_inst, k_values, variables):
         #TODO: Ask someone who knows about MADX if K0-handling is correct
         # (see user guide 10.3 Bending Magnet)
         if k_val == "K0":
-            job_content += "    {k:s} = element->angle / element->L;\n".format(k=k_val)
+            job_content += f"    {k_val:s} = element->angle / element->L;\n"
         elif k_val == "K0S":
-            job_content += "    {k:s} = element->tilt / element->L;\n".format(k=k_val)
+            job_content += f"    {k_val:s} = element->tilt / element->L;\n"
         else:
-            job_content += "    {k:s} = element->{k:s};\n".format(k=k_val)
+            job_content += f"    {k_val:s} = element->{k:s};\n"
     job_content += "};\n\n"
 
     # create macro for using the row index as variable (see madx userguide)
@@ -248,7 +262,7 @@ def _create_basic_job(accel_inst, k_values, variables):
     # create macro to create the full table with loop over elements
     job_content += (
         "create_table(table_id) : macro = {{\n"
-        "    create, table=table_id, column=_name, L, {col:s};\n"
+        f"    create, table=table_id, column=_name, L, {','.join(k_values):s};\n"
         "    i_elem = 0;\n"
         "    while (i_elem < n_elem) {{\n"
         "        i_elem = i_elem + 1;\n"
@@ -257,11 +271,11 @@ def _create_basic_job(accel_inst, k_values, variables):
         "        fill,  table=table_id;\n"
         "    }};\n"
         "}};\n\n"
-    ).format(col=",".join(k_values))
+    )
 
     # set all variables to zero
     for var in variables:
-        job_content += "{var:s} = 0;\n".format(var=var)
+        job_content += f"{var:s} = 0;\n"
 
     job_content += "\n"
     return job_content
@@ -270,7 +284,7 @@ def _create_basic_job(accel_inst, k_values, variables):
 # Wrapper ##################################################################
 
 
-def check_varmap_file(accel_inst, vars_categories):
+def check_varmap_file(accel_inst: Accelerator, vars_categories):
     """ Checks on varmap file and creates it if not in model folder.
     THIS SHOULD BE REPLACED WITH A CALL TO JAIMES DATABASE, IF IT BECOMES AVAILABLE """
     #accel_inst.modifiers = "model/opticsfile.18"
