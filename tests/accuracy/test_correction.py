@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 import tfs
-from optics_functions.coupling import coupling_from_cmatrix
+from optics_functions.coupling import coupling_via_cmatrix
 
 from omc3.correction.constants import DELTA, ERR
 from omc3.global_correct import global_correction_entrypoint
@@ -70,7 +70,7 @@ def _add_coupling(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
         A TfsDataFrame with the added columns.
     """
     result_tfs_df = tfs_df.copy()
-    coupling_rdts_df = coupling_from_cmatrix(result_tfs_df)
+    coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
     result_tfs_df["F1001R"] = np.real(coupling_rdts_df["F1001"]).astype(np.float64)
     result_tfs_df["F1001I"] = np.imag(coupling_rdts_df["F1001"]).astype(np.float64)
     result_tfs_df["F1010R"] = np.real(coupling_rdts_df["F1010"]).astype(np.float64)

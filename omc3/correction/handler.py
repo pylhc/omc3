@@ -7,7 +7,7 @@ from typing import Sequence
 import numpy as np
 import pandas as pd
 import tfs
-from optics_functions.coupling import coupling_from_cmatrix
+from optics_functions.coupling import coupling_via_cmatrix
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
@@ -192,7 +192,7 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     """
     result_tfs_df = model.copy()
     if any([key for key in keys if key.startswith("F1")]):
-        coupling_rdts_df = coupling_from_cmatrix(result_tfs_df)
+        coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
         result_tfs_df["F1001R"] = np.real(coupling_rdts_df["F1001"]).astype(np.float64)
         result_tfs_df["F1001I"] = np.imag(coupling_rdts_df["F1001"]).astype(np.float64)
         result_tfs_df["F1010R"] = np.real(coupling_rdts_df["F1010"]).astype(np.float64)
