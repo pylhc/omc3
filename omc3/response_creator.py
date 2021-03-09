@@ -4,15 +4,14 @@ The response matrices can be either created by response_madx or analytically via
 
 :author: Joschua Dillys
 """
-import os
 import pickle
 
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
-from omc3.model import manager
-from omc3.utils import logging_tools
 from omc3.correction import response_madx, response_twiss
 from omc3.global_correction import CORRECTION_DEFAULTS
+from omc3.model import manager
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -35,8 +34,8 @@ def response_params():
 
 
 @entrypoint(response_params())
-def create_response_entrypoint(opt, other_opt):
-    """ Entry point for creating pandas-based response matrices.
+def create_response_entrypoint(opt: dict, other_opt: dict) -> None:
+    """Entry point for creating pandas-based response matrices.
 
     The response matrices can be either created by response_madx or TwissResponse.
 
@@ -75,7 +74,7 @@ def create_response_entrypoint(opt, other_opt):
         )
 
     LOG.debug(f"Saving Response into file '{opt.outfile_path}'")
-    with open(opt.outfile_path, 'wb') as dump_file:
+    with open(opt.outfile_path, "wb") as dump_file:
         pickle.dump(fullresponse, dump_file)
 
 
