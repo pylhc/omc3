@@ -1,6 +1,88 @@
 """
 LHC
--------------------
+---
+
+Accelerator-Class for the ``LHC`` collider.
+
+Model Creation Keyword Args:
+    *--Required--*
+
+    - **beam** *(int)*:
+
+        Beam to use.
+
+        choices: ``(1, 2)``
+
+
+    - **year** *(str)*:
+
+        Year of the optics (or hllhc1.3).
+
+        choices: ``('2012', '2015', '2016', '2017', '2018', 'hllhc1.3')``
+
+
+    *--Optional--*
+
+    - **ats**:
+
+        Marks ATS optics
+
+        action: ``store_true``
+
+
+    - **dpp** *(float)*:
+
+        Delta p/p to use.
+
+        default: ``0.0``
+
+
+    - **driven_excitation** *(str)*:
+
+        Denotes driven excitation by AC-dipole (acd) or by ADT (adt)
+
+        choices: ``('acd', 'adt')``
+
+
+    - **drv_tunes** *(float)*:
+
+        Driven tunes without integer part.
+
+
+    - **energy** *(float)*:
+
+        Energy in Tev.
+
+
+    - **fullresponse**:
+
+        If True, outputs also fullresponse madx file.
+
+        action: ``store_true``
+
+
+    - **model_dir** *(str)*:
+
+        Path to model directory; loads tunes and excitation from model!
+
+
+    - **modifiers** *(str)*:
+
+        Path to the optics file to use (modifiers file).
+
+
+    - **nat_tunes** *(float)*:
+
+        Natural tunes without integer part.
+
+
+    - **xing**:
+
+        If True, x-ing angles will be applied to model
+
+        action: ``store_true``
+
+
 """
 import json
 import os
@@ -22,7 +104,8 @@ LHC_DIR = os.path.join(CURRENT_DIR, "lhc")
 
 
 class Lhc(Accelerator):
-    """ Parent Class for Lhc-Types.
+    """
+    Parent Class for LHC-types.
     """
     NAME = "lhc"
     RE_DICT = {AccElementTypes.BPMS: r"BPM",
@@ -61,8 +144,7 @@ class Lhc(Accelerator):
         self.verify_object()
 
     def verify_object(self):  # TODO: Maybe more checks?
-        """Verifies if everything is defined which should be defined
-        """
+        """Verifies if everything is defined which should be defined."""
         LOGGER.debug("Accelerator class verification")
         _ = self.beam
 
@@ -142,11 +224,12 @@ class Lhc(Accelerator):
         return _list_intersect_keep_order(vars_by_position, vars_by_class)
 
     def get_ips(self):
-        """ Returns an iterable with this accelerator IPs.
+        """
+        Returns an iterable with this accelerator's IPs.
 
         Returns:
-            An iterator returning tuples with:
-                ("ip name", "left BPM name", "right BPM name")
+            An iterator returning `tuples` with:
+                (``ip name``, ``left BPM name``, ``right BPM name``)
         """
         for ip in Lhc.LHC_IPS:
             yield ("IP{}".format(ip),

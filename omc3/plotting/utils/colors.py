@@ -1,11 +1,8 @@
 """
 Plotting Utilities: Colors
------------------------------------
+--------------------------
 
-Make everything Rainbow.
-
-:module: omc3.plotting.utils.colors
-
+Helper functions to handle colors in plots.
 """
 import colorsys
 from itertools import cycle
@@ -15,7 +12,7 @@ from matplotlib import colors as mc
 
 
 def get_mpl_color(idx=None):
-    """ Gets the 'new' default matplotlib colors by index, or the whole cycle."""
+    """Gets the 'new' default ``matplotlib`` colors by index, or the whole cycle."""
     c = [
         '#1f77b4',  # muted blue
         '#ff7f0e',  # safety orange
@@ -34,7 +31,7 @@ def get_mpl_color(idx=None):
 
 
 def rgb_plotly_to_mpl(rgb_string):
-    """ Helper function to transforn plotly rbg to matplotlib rgb."""
+    """Helper function to transforn plotly rbg to ``matplotlib`` rgb."""
     if rgb_string.startswith('#'):
         return rgb_string
 
@@ -46,10 +43,9 @@ def rgb_plotly_to_mpl(rgb_string):
 
 def change_color_brightness(color, amount=0.5):
     """
-    Lightens the given color by multiplying (1-luminosity) by the given amount.
-    Input can be matplotlib color string, hex string, or RGB tuple.
-    An amount of 1 equals to no change. 0 is very bright (white) and 2 is very dark.
-    By Ian Hincks
+    Lightens the given color by multiplying (1-luminosity) by the given amount. Input can be
+    ``matplotlib`` color string, hex string, or RGB tuple. An amount of 1 equals to no change. 0
+    is very bright (white) and 2 is very dark. Original code by Ian Hincks
     Source: https://stackoverflow.com/questions/37765197/darken-or-lighten-a-color-in-matplotlib
     """
     if not (0<=amount<=2):
@@ -68,15 +64,17 @@ def change_color_brightness(color, amount=0.5):
 
 
 def change_ebar_alpha_for_line(ebar, alpha):
-    """ Changes the alpha value of an error-bar container.
-    Loop through bars (ebar[1]) and caps (ebar[2]) and set the alpha value. """
+    """
+    Changes the alpha value of an error-bar container.
+    Loop through bars (ebar[1]) and caps (ebar[2]) and set the alpha value.
+    """
     for bars_or_caps in ebar[1:]:
         for bar_or_cap in bars_or_caps:
             bar_or_cap.set_alpha(alpha)
 
 
 def change_ebar_alpha_for_axes(ax, alpha):
-    """ Wrapper for change_ebar_alpha_for_line to change all in one axes. """
+    """Wrapper for change_ebar_alpha_for_line to change all in one axes."""
     for ebar in ax.containers:
         if isinstance(ebar, matplotlib.container.ErrorbarContainer):
             change_ebar_alpha_for_line(ebar, alpha)

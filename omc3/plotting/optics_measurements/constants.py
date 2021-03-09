@@ -1,12 +1,8 @@
 """
-Constants: Plot TFS
-----------------------------------
+Constants
+---------
 
-Constants and definitions for the tfs plotter.
-
-:module: constants.plot_tfs
-:author: jdilly
-
+Constants and definitions for the ``plotting`` module.
 """
 from omc3.optics_measurements.constants import (
     S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,

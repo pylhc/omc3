@@ -1,8 +1,9 @@
 """
 Manager
--------------------
+-------
 
-Contains entrypoint wrappers to get accelerator classes or their instances
+This module provides high-level functions to manage most functionality of ``model``.
+It contains entrypoint wrappers to get accelerator classes or their instances.
 """
 from generic_parser.entrypoint_parser import entrypoint, EntryPoint, EntryPointParameters
 from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota
@@ -28,7 +29,9 @@ def _get_params():
 
 @entrypoint(_get_params())
 def get_accelerator(opt, other_opt):
-    """ Returns accelerator instance. """
+    """
+    Returns the `Accelerator` instance of the desired accelerator, as given at the commandline.
+    """
     if not isinstance(opt.accel, str):
         # assume it's the class
         return opt.accel
@@ -38,7 +41,7 @@ def get_accelerator(opt, other_opt):
 
 @entrypoint(_get_params())
 def get_parsed_opt(opt, other_opt):
-    """ Get all accelerator related options as a nice dict. """
+    """Get all accelerator related options as a `dict`."""
     accel = ACCELS[opt.accel]
     parser = EntryPoint(accel.get_parameters(), strict=True)
     accel_opt = parser.parse(other_opt)

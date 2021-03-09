@@ -2,10 +2,8 @@
 Chromatic
 ----------------
 
-:module: optics_measurements.chromatic
-:author: Lukas Malina
-
-Computes various chromatic beam properties
+This module contains chromatic calculations functionality of ``optics_measurements``.
+It provides functions to compute various chromatic beam properties.
 """
 import numpy as np
 import pandas as pd

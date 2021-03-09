@@ -1,8 +1,9 @@
 """
-RDTs
--------------------
+Resonance Driving Terms
+-----------------------
 
-Computes global resonance driving terms f_jklm.
+This module contains RDT calculations related functionality of ``optics_measurements``.
+It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from copy import deepcopy
 from os.path import join
@@ -48,8 +49,8 @@ def calculate(measure_input, input_files, tunes, invariants, header):
         tunes:
         invariants:
         header:
-    Returns:
 
+    Returns:
     """
     LOGGER.info(f"Start of RDT analysis")
     meas_input = deepcopy(measure_input)
@@ -175,7 +176,7 @@ def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase):
 
 def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     """
-    Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT
+    Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.
     """
     amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
     kick_data = get_linearized_problem(invariants, plane, rdt)  # corresponding to actions in meters
@@ -193,7 +194,7 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
 def get_linearized_problem(invs, plane, rdt):
     """
     2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
-    we use sqrt(2J): unit is sqrt(m)
+    we use sqrt(2J): unit is sqrt(m).
     """
     j, k, l, m = rdt
     act_x = invs["X"].T[0]
@@ -217,13 +218,13 @@ def complex_secondary_lines(phase_adv, err_padv, sig1, sig2):
     """
 
     Args:
-        phase_adv: phase advances between two BPMs
-        err_padv: error on the phase advance between two BPMs
-        sig1: Complex coefficients of a secondary lines at the first BPM of the pairs
-        sig2: Complex coefficients of a secondary lines at the second BPM of the pairs
+        phase_adv: phase advances between two BPMs.
+        err_padv: error on the phase advance between two BPMs.
+        sig1: Complex coefficients of a secondary lines at the first BPM of the pairs.
+        sig2: Complex coefficients of a secondary lines at the second BPM of the pairs.
 
     Returns:
-         amplitudes, phases err_amplitudes and err_phases of the complex signal
+         `Tuple` with amplitudes, phases err_amplitudes and err_phases of the complex signal.
     """
     tp = 2.0 * np.pi
     # computing complex secondary line (h-)

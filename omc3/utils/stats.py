@@ -1,20 +1,15 @@
 """
-Module utils.stats
--------------------
+Stats
+-----
 
-Created on 03.07.18
+Helper module providing statistical methods to compute various weighted averages along specified
+axis and their errors as well as unbiased error estimator of infinite normal distribution from
+finite-sized sample.
 
-:author: Lukas Malina
-
-Provides statistical methods to compute:
-    various weighted averages along specified axis and their errors
-    unbiased error estimator of infinite normal distribution from finite-sized sample
-
-TODO use weighted average and its error in circular calculations
-TODO write tests
-TODO LOGGER or Raising error and warnings?
-TODO if zeros or nans occur in errors, fallback to uniform weights only in affected cases
-
+- TODO: use weighted average and its error in circular calculations
+- TODO: write tests
+- TODO: LOGGER or Raising error and warnings?
+- TODO: if zeros or nans occur in errors, fallback to uniform weights only in affected cases
 """
 import numpy as np
 from scipy.special import erf

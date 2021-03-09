@@ -1,10 +1,10 @@
 """
 Accelerator
--------------------
+-----------
 
-Contains parent accelerator class and other support classes
+This module provides high-level classes to define most functionality of ``model.accelerators``.
+It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
-
 from os.path import isfile, join
 
 import pandas as pd
@@ -29,7 +29,7 @@ DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
 
 
 class AccElementTypes(object):
-    """ Defines the strings for the element types BPMS, MAGNETS and ARC_BPMS. """
+    """Defines the strings for the element types ``BPMS``, ``MAGNETS`` and ``ARC_BPMS``."""
     BPMS = "bpm"
     MAGNETS = "magnet"
     ARC_BPMS = "arc_bpm"
@@ -164,17 +164,16 @@ class Accelerator(object):
     @classmethod
     def get_element_types_mask(cls, list_of_elements, types):
         """
-        Return boolean mask for elements in list_of_elements that belong
-        to any of the specified types.
-        Needs to handle: "bpm", "magnet", "arc_bpm" (see :class:`AccElementTypes`)
+        Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
+        specified types.
+        Needs to handle: `bpm`, `magnet`, `arc_bpm` (see :class:`AccElementTypes`)
 
         Args:
-            list_of_elements: List of elements
-            types: Kinds of elements to look for
+            list_of_elements: list of elements.
+            types: the kinds of elements to look for.
 
         Returns:
-            Boolean array of elements of specified kinds.
-
+            A boolean array of elements of specified kinds.
         """
         unknown_elements = [ty for ty in types if ty not in cls.RE_DICT]
         if len(unknown_elements):
@@ -188,16 +187,16 @@ class Accelerator(object):
     @classmethod
     def get_variables(cls, frm=None, to=None, classes=None):
         """
-        Gets the variables with elements in the given range and the given
-        classes. None means everything.
+        Gets the variables with elements in the given range and the given classes. ``None`` means
+        everything.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     @classmethod
     def get_correctors_variables(cls, frm=None, to=None, classes=None):
         """
-        Returns the set of corrector variables between frm and to, with classes
-        in classes. None means select all.
+        Returns the set of corrector variables between ``frm`` and ``to``, with classes in
+        classes. ``None`` means select all.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -213,16 +212,18 @@ class Accelerator(object):
 
     def verify_object(self):
         """
-        Verifies that this instance of an accelerator is properly
-        instantiated.
+        Verifies that this instance of an `Accelerator` is properly instantiated.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     def get_exciter_bpm(self, plane, distance):
         """
         Returns the BPM next to the exciter.
-        The accelerator instance knows already which excitation method is used.
-        distance: 1=nearest bpm 2=next to nearest bpm
+        The `Accelerator` instance knows already which excitation method is used.
+
+        Args:
+            plane: **X** or **Y**.
+            distance: 1=nearest bpm 2=next to nearest bpm.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -243,8 +244,8 @@ class Accelerator(object):
 
     def get_update_correction_script(self, tiwss_out_path, corrections_file_path):
         """
-        Returns job (string) to create an updated model from changeparameters input
-        (used in iterative correction).
+        Returns job (string) to create an updated model from changeparameters input (used in
+        iterative correction).
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -259,9 +260,9 @@ class Accelerator(object):
 
 class Variable(object):
     """
-    Generic corrector variable class that holds name, position (s) and
-    physical elements it affectes. This variables should be logical variables
-    that should have and effect in the model if modified.
+    Generic corrector variable class that holds `name`, `position (s)` and physical elements it
+    affects. These variables should be logical variables that have and effect in the model if
+    modified.
     """
     def __init__(self, name, elements, classes):
         self.name = name
@@ -271,9 +272,8 @@ class Variable(object):
 
 class Element(object):
     """
-    Generic corrector element class that holds name and position (s)
-    of the corrector. This element should represent a physical element of the
-    accelerator.
+    Generic corrector element class that holds `name` and `position (s)` of the corrector. This
+    element should represent a physical element of the accelerator.
     """
     def __init__(self, name, s):
         self.name = name
@@ -282,7 +282,7 @@ class Element(object):
 
 class AcceleratorDefinitionError(Exception):
     """
-    Raised when an accelerator instance is wrongly used, for
-    example by calling a method that should have been overwritten.
+    Raised when an `Accelerator` instance is wrongly used, for example by calling a method that
+    should have been overwritten.
     """
     pass

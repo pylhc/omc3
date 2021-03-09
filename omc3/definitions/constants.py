@@ -1,12 +1,9 @@
 """
 Constants
--------------
+---------
 
-Constants to use throughout the project, so they don't have to be redefined
-all the time.
-
-:module: omc3.definitions.constants
-
+General constants to use throughout ``omc3``, so they don't have to be redefined all the time.
+Also helps with consistency.
 """
 import numpy as np
 

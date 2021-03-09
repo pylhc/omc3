@@ -1,10 +1,8 @@
 """
-LHC Turn-by-Turn Data Handler
---------------------------------
+LHC TbT Data Handler
+--------------------
 
-
-Basic tbt io-functionality.
-
+Data handling for tbt data from the ``LHC``.
 """
 from datetime import datetime
 
@@ -42,12 +40,13 @@ BPM_NAMES = "bpmNames"
 
 def read_tbt(file_path):
     """
-    Reads TbTData object from provided file_path
+    Reads TbTData object from provided file_path.
+
     Args:
-        file_path: path to a file containing TbtData
+        file_path: path to a file containing TbtData.
 
     Returns:
-        TbtData
+        A `TbtData` object with the loaded data.
     """
     if _is_ascii_file(file_path):
         matrices, date = _read_ascii(file_path)
@@ -69,9 +68,9 @@ def read_tbt(file_path):
     return handler.TbtData(matrices, date, bunch_ids, nturns)
 
 
-def _is_ascii_file(file_path):
+def _is_ascii_file(file_path) -> bool:
     """
-    Returns true only if the file looks like a readable tbt ASCII file.
+    Returns ``True`` only if the file looks like a readable tbt ASCII file.
     """
     with open(file_path, "r") as file_data:
         try:
@@ -85,7 +84,7 @@ def _is_ascii_file(file_path):
 
 
 def _read_ascii(file_path):
-    """ Read the ascii file. """
+    """Read the ascii file."""
     with open(file_path, "r") as file_data:
         data_lines = file_data.readlines()
 

@@ -1,8 +1,9 @@
 """
-Isolation forest
--------------------
+Isolation Forest
+----------------
 
-Detects and excludes BPMs with anomalies.
+This module contains the isolation forest functionality of ``optics_measurements``.
+It provides functions to detect and exclude BPMs with anomalies.
 """
 import numpy as np
 import pandas as pd

@@ -16,9 +16,9 @@ jobs:
     name: ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix:  # only latest python 3 on latest ubuntu
+      matrix:  # only lowest supported Python on latest ubuntu
         os: [ubuntu-latest]
-        python-version: [3.x]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v2
@@ -74,7 +74,7 @@ jobs:
           ./cc-test-reporter before-build
 
       - name: Run all tests
-        run: python -m pytest
+        run: python -m pytest --cov-report xml --cov=omc3
 
       - name: Push Coverage to CodeClimate
         if: ${{ success() }}  # only if tests were successful

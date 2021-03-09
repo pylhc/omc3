@@ -2,10 +2,6 @@ Utils
 **************************
 
 
-Package Content
-=======================
-
-
 .. automodule:: omc3.utils.contexts
     :members:
 
@@ -15,6 +11,10 @@ Package Content
 
 
 .. automodule:: omc3.utils.logging_tools
+    :members:
+
+
+.. automodule:: omc3.utils.mock
     :members:
 
 
