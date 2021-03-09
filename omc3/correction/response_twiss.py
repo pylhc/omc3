@@ -105,6 +105,7 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
 
 """
 import pickle
+
 import numpy as np
 import pandas as pd
 import tfs

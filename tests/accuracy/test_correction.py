@@ -1,9 +1,7 @@
 import os
 import pickle
 import tempfile
-import time
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 import tfs

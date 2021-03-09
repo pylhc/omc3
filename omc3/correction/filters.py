@@ -1,9 +1,11 @@
 from collections import defaultdict
+
 import numpy as np
 import tfs
 
-from omc3.correction.constants import VALUE, ERROR, ERR, WEIGHT, DELTA
-from omc3.utils import stats, logging_tools
+from omc3.correction.constants import DELTA, ERR, ERROR, VALUE, WEIGHT
+from omc3.utils import logging_tools, stats
+
 LOG = logging_tools.get_logger(__name__)
 
 

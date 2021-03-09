@@ -10,12 +10,13 @@ Compare results with case all==0
 import multiprocessing
 import os
 import pickle
+
 import numpy as np
+import tfs
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.utils import logging_tools, iotools
-import tfs
-from omc3.utils.contexts import timeit, suppress_exception
+from omc3.utils import iotools, logging_tools
+from omc3.utils.contexts import suppress_exception, timeit
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -284,6 +285,6 @@ def check_varmap_file(accel_inst, vars_categories):
         LOG.info("Variable mapping '{:s}' not found. Evaluating it via madx.".format(varmap_path))
         mapping = evaluate_for_variables(accel_inst, vars_categories)
         with open(varmap_path, 'wb') as dump_file:
-            pickle.dump(mapping, dump_file, protocol=-1)
+            pickle.dump(mapping, dump_file)
 
     return varmap_path
