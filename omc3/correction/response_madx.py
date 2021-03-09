@@ -12,7 +12,7 @@ For now, the response matrix is stored in a 'pickled' file.
 import copy
 import multiprocessing
 import os
-from typing import Dict
+from typing import Dict, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -20,6 +20,7 @@ import tfs
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
+from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
 
@@ -29,9 +30,13 @@ LOG = logging_tools.get_logger(__name__)
 # Full Response Mad-X ##########################################################
 
 
-def generate_fullresponse(accel_inst, variable_categories,
-                          delta_k=0.00002, num_proc=multiprocessing.cpu_count(),
-                          temp_dir=None):
+def generate_fullresponse(
+    accel_inst: Accelerator,
+    variable_categories: Sequence[str],
+    delta_k: float = 2e-5,
+    num_proc: int = multiprocessing.cpu_count(),
+    temp_dir: str = None
+) -> Dict[str, pd.DataFrame]:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
 
@@ -64,7 +69,13 @@ def generate_fullresponse(accel_inst, variable_categories,
     return fullresponse
 
 
-def _generate_madx_jobs(accel_inst, variables, delta_k, num_proc, temp_dir):
+def _generate_madx_jobs(
+    accel_inst: Accelerator,
+    variables: Sequence[str],
+    delta_k: float,
+    num_proc: int,
+    temp_dir: str
+) -> Dict[str, float]:
     """ Generates madx job-files """
     LOG.debug("Generating MADX jobfiles.")
     incr_dict = {'0': 0.0}
@@ -94,7 +105,7 @@ def _generate_madx_jobs(accel_inst, variables, delta_k, num_proc, temp_dir):
     return incr_dict
 
 
-def _get_madx_job(accel_inst):
+def _get_madx_job(accel_inst: Accelerator) -> str:
     job_content = accel_inst.get_base_madx_script(accel_inst.model_dir)
     job_content += (
         "select, flag=twiss, clear;\n"
@@ -103,7 +114,7 @@ def _get_madx_job(accel_inst):
     return job_content
 
 
-def _call_madx(process_pool, temp_dir, num_proc):
+def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:
     """ Call madx in parallel """
     LOG.debug(f"Starting {num_proc:d} MAD-X jobs...")
     madx_jobs = [_get_jobfiles(temp_dir, index) for index in range(num_proc)]
@@ -111,7 +122,7 @@ def _call_madx(process_pool, temp_dir, num_proc):
     LOG.debug("MAD-X jobs done.")
 
 
-def _clean_up(temp_dir, num_proc):
+def _clean_up(temp_dir: str, num_proc: int) -> None:
     """ Merge Logfiles and clean temporary outputfiles """
     LOG.debug("Cleaning output and building log...")
     full_log = ""
@@ -127,7 +138,12 @@ def _clean_up(temp_dir, num_proc):
         full_log_file.write(full_log)
 
 
-def _load_madx_results(variables, process_pool, incr_dict, temp_dir) -> Dict[str, tfs.TfsDataFrame]:
+def _load_madx_results(
+    variables: Sequence[str],
+    process_pool: multiprocessing.Pool,
+    incr_dict: dict,
+    temp_dir: str
+) -> Dict[str, tfs.TfsDataFrame]:
     """ Load the madx results in parallel and return var-tfs dictionary """
     LOG.debug("Loading Madx Results.")
     vars_and_paths = []
@@ -195,19 +211,19 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
         }
 
 
-def _get_jobfiles(temp_dir, index):
+def _get_jobfiles(temp_dir: str, index: int) -> str:
     """ Return names for jobfile and iterfile according to index """
     jobfile_path = os.path.join(temp_dir, f"job.iterate.{index:d}.madx")
     return jobfile_path
 
 
-def _launch_single_job(inputfile_path):
+def _launch_single_job(inputfile_path: str) -> None:
     """ Function for pool to start a single madx job """
     log_file = inputfile_path + ".log"
     madx_wrapper.run_file(inputfile_path, log_file=log_file)
 
 
-def _load_and_remove_twiss(var_and_path):
+def _load_and_remove_twiss(var_and_path: Tuple[str, str]) -> Tuple[str, tfs.TfsDataFrame]:
     """ Function for pool to retrieve results """
     (var, path) = var_and_path
     twissfile = os.path.join(path, "twiss." + var)
