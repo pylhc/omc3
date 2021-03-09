@@ -30,6 +30,7 @@ DEPENDENCIES = [
     "h5py>=2.9.0",
     "pytimber>=2.8.0",
     "uncertainties>=3.1.4",
+    "optics_functions>=0.1.0",
 ]
 
 # Extra dependencies
