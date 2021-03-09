@@ -104,13 +104,16 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
     https://doi.org/10.1103/PhysRevAccelBeams.20.054801
 
 """
+import copy
 import pickle
+from typing import Dict, List, Sequence
 
 import numpy as np
 import pandas as pd
 import tfs
 
 from omc3.correction.sequence_evaluation import check_varmap_file
+from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
@@ -122,7 +125,7 @@ PLANES = ("X", "Y")
 # Twiss Response Class ########################################################
 
 
-class TwissResponse(object):
+class TwissResponse:
     """ Provides Response Matrices calculated from sequence, model and given variables.
 
     Args:
@@ -747,7 +750,7 @@ class TwissResponse(object):
         else:
             return self._var_to_el[order]
 
-    def get_response_for(self, obs=None):
+    def get_response_for(self, obs=None) -> dict:  # Dict[str, ???]
         """ Calculates and returns only desired response matrices """
         # calling functions for the getters to call functions only if needed
         def caller(func, plane):
@@ -800,7 +803,7 @@ class TwissResponse(object):
 
 # Associated Functions #########################################################
 
-def response_add(*args):
+def response_add(*args) -> pd.DataFrame:
     """ Merges two or more Response Matrix DataFrames """
     base_df = args[0]
     for df in args[1:]:
@@ -808,20 +811,21 @@ def response_add(*args):
     return base_df
 
 
-def dict_mul(number, dictionary):
+def dict_mul(number: float, dictionary: dict) -> dict:
     """ Multiply an int with a dict of dataframes (or anything multiplyable) """
+    result_dict = copy.deepcopy(dictionary)
     if number != 1:
-        for key in dictionary:
-            dictionary[key] = number * dictionary[key]
-    return dictionary
+        for key in result_dict:
+            result_dict[key] = number * result_dict[key]
+    return result_dict
 
 
-def upper(list_of_strings):
+def upper(list_of_strings: Sequence[str]) -> Sequence[str]:
     """ Set all items of list to uppercase """
     return [item.upper() for item in list_of_strings]
 
 
-def get_phase_advances(twiss_df):
+def get_phase_advances(twiss_df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     """
     Calculate phase advances between all elements
 
@@ -830,11 +834,9 @@ def get_phase_advances(twiss_df):
     """
     LOG.debug("Calculating Phase Advances:")
     phase_advance_dict = dict.fromkeys(['X', 'Y'])
-    with timeit(lambda t:
-                LOG.debug("  Phase Advances calculated in {:f}s".format(t))):
+    with timeit(lambda elapsed: LOG.debug(f"  Phase Advances calculated in {elapsed}s")):
         for plane in PLANES:
             colmn_phase = "MU" + plane
-
             phases_mdl = twiss_df.loc[twiss_df.index, colmn_phase]
             # Same convention as in [1]: DAdv(i,j) = Phi(j) - Phi(i)
             phase_advances = pd.DataFrame((phases_mdl[None, :] - phases_mdl[:, None]),
@@ -861,14 +863,18 @@ def tau(data, q):
 # Wrapper ##################################################################
 
 
-def create_response(accel_inst, vars_categories, optics_params):
+def create_response(
+    accel_inst: Accelerator,
+    vars_categories: Sequence[str],
+    optics_params: List[str],
+) -> dict:
     """ Wrapper to create response via TwissResponse """
     LOG.debug("Creating response via TwissResponse.")
     varmap_path = check_varmap_file(accel_inst, vars_categories)
 
     with timeit(lambda t: LOG.debug(f"Total time getting TwissResponse: {t} s")):
         tr = TwissResponse(accel_inst, vars_categories, varmap_path)
-        response = tr.get_response_for(optics_params)
+        response: dict = tr.get_response_for(optics_params)
 
     if not any([resp.size for resp in response.values()]):
         raise ValueError("Responses are all empty. "
