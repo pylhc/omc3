@@ -42,19 +42,21 @@ treated as zeros
 
 """
 import os
+from typing import Dict
 
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import handler
-from omc3.utils import iotools, logging_tools
 from omc3.model import manager
+from omc3.utils import iotools, logging_tools
+
 LOG = logging_tools.get_logger(__name__)
 
 CORRECTION_DEFAULTS = {
     "optics_file": None,
     "output_filename": "changeparameters_iter",
     "svd_cut": 0.01,
-    "optics_params": ['MUX', 'MUY', 'BETX', 'BETY', 'NDX', 'Q'],
+    "optics_params": ["MUX", "MUY", "BETX", "BETY", "NDX", "Q"],
     "variable_categories": ["MQM", "MQT", "MQTL", "MQY"],
     "beta_file_name": "beta_phase_",
     "method": "pinv",
@@ -117,9 +119,9 @@ def correction_params():
 
 
 @entrypoint(correction_params())
-def global_correction_entrypoint(opt, accel_opt):
-    """ Do the global correction. Iteratively.
-        # TODO auto-generate docstring
+def global_correction_entrypoint(opt: dict, accel_opt: dict) -> None:
+    """Do the global correction. Iteratively.
+    # TODO auto-generate docstring
     """
     LOG.info("Starting Iterative Global Correction.")
     opt = _check_opt_add_dicts(opt)
@@ -129,7 +131,7 @@ def global_correction_entrypoint(opt, accel_opt):
     handler.correct(accel_inst, opt)
 
 
-def _check_opt_add_dicts(opt):
+def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
     """ Check on options and put in missing values """
     def_dict = _get_default_values()
     opt.optics_params = [p.replace("BB", "BET") for p in opt.optics_params]
@@ -139,47 +141,64 @@ def _check_opt_add_dicts(opt):
         elif len(opt[key]) != len(opt.optics_params):
             raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
         opt[key] = dict(zip(opt.optics_params, opt[key]))
-
     return opt
 
 
-def _add_hardcoded_paths(opt):
+def _add_hardcoded_paths(opt: dict) -> dict:  # acts inplace...
     opt.change_params_path = os.path.join(opt.output_dir, f"{opt.output_filename}.madx")
-    opt.change_params_correct_path = os.path.join(opt.output_dir,
-                                                  f"{opt.output_filename}_correct.madx")
+    opt.change_params_correct_path = os.path.join(opt.output_dir, f"{opt.output_filename}_correct.madx")
     opt.knob_path = os.path.join(opt.output_dir, f"{opt.output_filename}.tfs")
     return opt
 
 
-OPTICS_PARAMS_CHOICES = ('MUX', 'MUY', 'BETX', 'BETY', 'DX', 'DY', 'NDX',
-                         'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')
+OPTICS_PARAMS_CHOICES = ("MUX", "MUY",  "BETX", "BETY", "DX", "DY", "NDX",
+                         "Q", "F1001R", "F1001I", "F1010R", "F1010I")
+
 
 # Define functions here, to new optics params
-def _get_default_values():
+def _get_default_values() -> Dict[str, Dict[str, float]]:
     return {
-        'modelcut': {
-            'MUX': 0.05, 'MUY': 0.05,
-            'BETX': 0.2, 'BETY': 0.2,
-            'DX': 0.2, 'DY': 0.2,
-            'NDX': 0.2, 'Q': 0.1,
-            'F1001R': 0.2, 'F1001I': 0.2,
-            'F1010R': 0.2, 'F1010I': 0.2,
+        "modelcut": {
+            "MUX": 0.05,
+            "MUY": 0.05,
+            "BETX": 0.2,
+            "BETY": 0.2,
+            "DX": 0.2,
+            "DY": 0.2,
+            "NDX": 0.2,
+            "Q": 0.1,
+            "F1001R": 0.2,
+            "F1001I": 0.2,
+            "F1010R": 0.2,
+            "F1010I": 0.2,
         },
-        'errorcut': {
-            'MUX': 0.035, 'MUY': 0.035,
-            'BETX': 0.02, 'BETY': 0.02,
-            'DX': 0.02, 'DY': 0.02,
-            'NDX': 0.02, 'Q': 0.027,
-            'F1001R': 0.02, 'F1001I': 0.02,
-            'F1010R': 0.02, 'F1010I': 0.02,
+        "errorcut": {
+            "MUX": 0.035,
+            "MUY": 0.035,
+            "BETX": 0.02,
+            "BETY": 0.02,
+            "DX": 0.02,
+            "DY": 0.02,
+            "NDX": 0.02,
+            "Q": 0.027,
+            "F1001R": 0.02,
+            "F1001I": 0.02,
+            "F1010R": 0.02,
+            "F1010I": 0.02,
         },
-        'weights': {
-            'MUX': 1, 'MUY': 1,
-            'BETX': 0, 'BETY': 0,
-            'DX': 0, 'DY': 0,
-            'NDX': 0, 'Q': 10,
-            'F1001R': 0, 'F1001I': 0,
-            'F1010R': 0, 'F1010I': 0,
+        "weights": {
+            "MUX": 1,
+            "MUY": 1,
+            "BETX": 0,
+            "BETY": 0,
+            "DX": 0,
+            "DY": 0,
+            "NDX": 0,
+            "Q": 10,
+            "F1001R": 0,
+            "F1001I": 0,
+            "F1010R": 0,
+            "F1010I": 0,
         },
     }
 
