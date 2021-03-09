@@ -12,7 +12,7 @@ from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 from omc3.model import manager
 from omc3.utils import logging_tools
 from omc3.correction import response_madx, response_twiss
-from omc3.global_correct import CORRECTION_DEFAULTS
+from omc3.global_correction import CORRECTION_DEFAULTS
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -76,7 +76,7 @@ def create_response_entrypoint(opt, other_opt):
 
     LOG.debug(f"Saving Response into file '{opt.outfile_path}'")
     with open(opt.outfile_path, 'wb') as dump_file:
-        pickle.dump(fullresponse, dump_file)#, protocol=-1)
+        pickle.dump(fullresponse, dump_file)
 
 
 if __name__ == "__main__":

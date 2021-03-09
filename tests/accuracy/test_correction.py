@@ -8,7 +8,7 @@ import tfs
 from optics_functions.coupling import coupling_via_cmatrix
 
 from omc3.correction.constants import DELTA, ERR
-from omc3.global_correct import global_correction_entrypoint
+from omc3.global_correction import global_correction_entrypoint
 from omc3.optics_measurements.constants import (BETA_NAME, DISPERSION_NAME,
                                                 EXT, NORM_DISP_NAME,
                                                 PHASE_NAME)

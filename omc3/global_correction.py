@@ -59,7 +59,7 @@ CORRECTION_DEFAULTS = {
     "beta_file_name": "beta_phase_",
     "method": "pinv",
     "max_iter": 3,
-    }
+}
 
 
 def correction_params():
@@ -122,13 +122,10 @@ def global_correction_entrypoint(opt, accel_opt):
         # TODO auto-generate docstring
     """
     LOG.info("Starting Iterative Global Correction.")
-    # check on opt
     opt = _check_opt_add_dicts(opt)
     opt = _add_hardcoded_paths(opt)
     iotools.create_dirs(opt.output_dir)
     accel_inst = manager.get_accelerator(accel_opt)
-    print("global_correct entrypoint")
-    print(accel_inst.get_variables(classes = opt.variable_categories))
     handler.correct(accel_inst, opt)
 
 
