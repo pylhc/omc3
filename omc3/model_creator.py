@@ -61,11 +61,8 @@ def create_instance_and_model(opt, accel_opt):
         logging.basicConfig(level=numeric_level) # warning level to stderr
 
     create_dirs(opt.outputdir)
-    print("aaaa111", accel_opt)
 
     accel_inst = manager.get_accelerator(accel_opt)
-    print("aaaa", accel_opt)
-    print("dddddddd",     accel_inst.modifiers)
     LOGGER.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     accel_inst.verify_object()
     creator = CREATORS[accel_inst.NAME][opt.type]

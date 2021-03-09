@@ -20,7 +20,6 @@ ACCELS = {
 
 
 def _get_params():
-    print("LLLLLLLLLL")
     params = EntryPointParameters()
     params.add_parameter(name="accel", required=True, choices=list(ACCELS.keys()),
                          help="Choose the accelerator to use.Can be the class already.")
@@ -30,14 +29,10 @@ def _get_params():
 @entrypoint(_get_params())
 def get_accelerator(opt, other_opt):
     """ Returns accelerator instance. """
-    print("bbbb", other_opt)
     if not isinstance(opt.accel, str):
         # assume it's the class
         return opt.accel
-    print("ccccc", other_opt, opt)
     myinst = ACCELS[opt.accel](other_opt)
-    print(opt.accel)
-    print("nnnnnn", myinst.modifiers )
     return ACCELS[opt.accel](other_opt)
 
 
@@ -47,5 +42,4 @@ def get_parsed_opt(opt, other_opt):
     accel = ACCELS[opt.accel]
     parser = EntryPoint(accel.get_parameters(), strict=True)
     accel_opt = parser.parse(other_opt)
-    print("ffff", accel_opt)
     return {**opt, **accel_opt}
