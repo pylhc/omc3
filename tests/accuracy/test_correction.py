@@ -15,6 +15,7 @@ from omc3.optics_measurements.constants import (BETA_NAME, DISPERSION_NAME,
 from omc3.response_creator import create_response_entrypoint
 
 NAME = "NAME"
+MAX_ITER = 1
 CORRECTION_DIR = os.path.join(os.path.dirname(__file__), "..", "inputs", "correction") + "/"
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "inputs", "models", "inj_beam1") + "/"
 FULLRESPONSE_PATH = CORRECTION_DIR + "Fullresponse_pandas"
@@ -163,6 +164,67 @@ def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):
 
         tfs.write(f"{Output_dir}{write_file}", new, headers_dict=h_dict, save_index="index_column")
 
+def _get_rms_dict(
+    accel_settings,
+    correction_dir,
+    optics_params,
+    variable_categories,
+    weights,
+    max_iter,
+    fullresponse_path,
+    generated_measurement_path,
+    RMS_tol_dict,
+):
+    model_dir = accel_settings["model_dir"]
+    model_path = model_dir + "twiss.dat"
+    corrected_path = correction_dir + "twiss_1.tfs"
+
+    _tfs_converter(model_path, generated_measurement_path, optics_params, correction_dir)
+    global_correction_entrypoint(
+        **accel_settings,
+        meas_dir=correction_dir,
+        variable_categories=variable_categories,
+        fullresponse_path=fullresponse_path,
+        optics_params=optics_params,
+        output_dir=correction_dir,
+        weights=weights,
+        svd_cut=0.01,
+        max_iter=max_iter,
+    )
+
+    # calculate RMS difference between generated measurement and correction
+    gm_df = tfs.read(generated_measurement_path, index=NAME)
+    cor_df = tfs.read(corrected_path, index=NAME)
+    cor_df = cor_df.loc[gm_df.index, :]
+    model_df = tfs.read(model_path, index=NAME)
+
+    gm_df = _add_coupling(gm_df)
+    cor_df = _add_coupling(cor_df)
+    model_df = _add_coupling(model_df)
+
+    name_l = gm_df.index[:-1:].to_numpy()
+    name2_l = gm_df.index[1::].to_numpy()
+
+    RMS_dict = {}
+    for parameter in optics_params:
+        if parameter.startswith("MU"):
+            delta = (gm_df.loc[name2_l, parameter].to_numpy() - gm_df.loc[name_l, parameter].to_numpy()) - (cor_df.loc[name2_l, parameter].to_numpy() - cor_df.loc[name_l, parameter].to_numpy())
+        elif parameter.startswith("BET"):
+            delta = np.divide(gm_df.loc[:, parameter] - cor_df.loc[:, parameter], model_df.loc[:, parameter]).to_numpy()
+        elif parameter.startswith("D"):
+            delta = (gm_df.loc[:, parameter] - cor_df.loc[:, parameter]).to_numpy()
+        elif parameter.startswith("F"):
+            delta = (gm_df.loc[:, parameter] - cor_df.loc[:, parameter]).to_numpy()
+        elif parameter == "Q":
+            delta_Q1 = np.divide(gm_df["Q1"] - cor_df["Q1"], model_df["Q1"])
+            delta_Q2 = np.divide(gm_df["Q2"] - cor_df["Q2"], model_df["Q2"])
+            delta = np.array([delta_Q1, delta_Q2])
+        elif parameter == "NDX":
+            NDX_gm = np.divide(gm_df.loc[:, "DX"], np.sqrt(gm_df.loc[:, "BETX"])).to_numpy()
+            NDX_cor = np.divide(cor_df.loc[:, "DX"], np.sqrt(cor_df.loc[:, "BETX"])).to_numpy()
+            delta = NDX_gm - NDX_cor
+        RMS_dict[parameter] = np.sqrt(np.mean((delta) ** 2))
+    return RMS_dict
 
 def _assert_response_madx(
     accel_settings,
@@ -237,59 +299,22 @@ def _assert_global_correct(
     optics_params,
     variable_categories,
     weights,
+    max_iter,
     fullresponse_path,
     generated_measurement_path,
     RMS_tol_dict,
 ):
-    model_dir = accel_settings["model_dir"]
-    model_path = model_dir + "twiss.dat"
-    corrected_path = correction_dir + "twiss_1.tfs"
-
-    _tfs_converter(model_path, generated_measurement_path, optics_params, correction_dir)
-    global_correction_entrypoint(
-        **accel_settings,
-        meas_dir=correction_dir,
-        variable_categories=variable_categories,
-        fullresponse_path=fullresponse_path,
-        optics_params=optics_params,
-        output_dir=correction_dir,
-        weights=weights,
-        svd_cut=0.01,
-        max_iter=1,
-    )
-
-    # calculate RMS difference between generated measurement and correction
-    gm_df = tfs.read(generated_measurement_path, index=NAME)
-    cor_df = tfs.read(corrected_path, index=NAME)
-    cor_df = cor_df.loc[gm_df.index, :]
-    model_df = tfs.read(model_path, index=NAME)
-
-    gm_df = _add_coupling(gm_df)
-    cor_df = _add_coupling(cor_df)
-    model_df = _add_coupling(model_df)
-
-    name_l = gm_df.index[:-1:].to_numpy()
-    name2_l = gm_df.index[1::].to_numpy()
-
-    RMS_dict = {}
-    for parameter in optics_params:
-        if parameter.startswith("MU"):
-            delta = (gm_df.loc[name2_l, parameter].to_numpy() - gm_df.loc[name_l, parameter].to_numpy()) - (cor_df.loc[name2_l, parameter].to_numpy() - cor_df.loc[name_l, parameter].to_numpy())
-        elif parameter.startswith("BET"):
-            delta = np.divide(gm_df.loc[:, parameter] - cor_df.loc[:, parameter], model_df.loc[:, parameter]).to_numpy()
-        elif parameter.startswith("D"):
-            delta = (gm_df.loc[:, parameter] - cor_df.loc[:, parameter]).to_numpy()
-        elif parameter.startswith("F"):
-            delta = (gm_df.loc[:, parameter] - cor_df.loc[:, parameter]).to_numpy()
-        elif parameter == "Q":
-            delta_Q1 = np.divide(gm_df["Q1"] - cor_df["Q1"], model_df["Q1"])
-            delta_Q2 = np.divide(gm_df["Q2"] - cor_df["Q2"], model_df["Q2"])
-            delta = np.array([delta_Q1, delta_Q2])
-        elif parameter == "NDX":
-            NDX_gm = np.divide(gm_df.loc[:, "DX"], np.sqrt(gm_df.loc[:, "BETX"])).to_numpy()
-            NDX_cor = np.divide(cor_df.loc[:, "DX"], np.sqrt(cor_df.loc[:, "BETX"])).to_numpy()
-            delta = NDX_gm - NDX_cor
-        RMS_dict[parameter] = np.sqrt(np.mean((delta) ** 2))
+    RMS_dict = _get_rms_dict(
+    accel_settings,
+    correction_dir,
+    optics_params,
+    variable_categories,
+    weights,
+    max_iter,
+    fullresponse_path,
+    generated_measurement_path,
+    RMS_tol_dict,
+)
 
     for key in RMS_dict.keys():
         assert RMS_dict[key] < RMS_tol_dict[key], f"RMS of {key} is not within tolerance"
@@ -305,6 +330,7 @@ def test_global_correct_quad():
             OPTICS_PARAMS,
             VARIABLE_CATEGORIES,
             WEIGHTS,
+            MAX_ITER,
             FULLRESPONSE_PATH,
             GENERATED_MEASUREMENT_PATH,
             RMS_TOL_DICT,
@@ -321,6 +347,7 @@ def test_global_correct_skew():
             OPTICS_PARAMS_SKEW,
             VARIABLE_CATEGORIES_SKEW,
             WEIGHTS_SKEW,
+            MAX_ITER,
             FULLRESPONSE_PATH_SKEW,
             GENERATED_MEASUREMENT_PATH_SKEW,
             RMS_TOL_DICT_SKEW,
