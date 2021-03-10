@@ -176,7 +176,7 @@ def _get_rms_dict(
 ):
     model_dir = accel_settings["model_dir"]
     model_path = model_dir + "twiss.dat"
-    corrected_path = correction_dir + "twiss_1.tfs"
+    corrected_path = correction_dir + f"twiss_{max_iter}.tfs"
 
     _tfs_converter(model_path, generated_measurement_path, optics_params, correction_dir)
     global_correction_entrypoint(
@@ -322,22 +322,22 @@ def _assert_iteration_convergence(accel_settings,
     optics_params,
     variable_categories,
     weights,
-    max_iter,
     fullresponse_path,
     generated_measurement_path,
-    RMS_tol_dict,
 ):
+    max_iter1 = 1
+    
     RMS_dict1 = _get_rms_dict(
     accel_settings,
     correction_dir,
     optics_params,
     variable_categories,
     weights,
-    max_iter,
+    max_iter1,
     fullresponse_path,
     generated_measurement_path,
 )
-    max_iter2 = max_iter + 1
+    max_iter2 = 2
     
     RMS_dict2 = _get_rms_dict(
     accel_settings,
@@ -349,8 +349,8 @@ def _assert_iteration_convergence(accel_settings,
     fullresponse_path,
     generated_measurement_path,
 )
-    for key in RMS_dict.keys():
-        assert RMS_dict2[key] < RMS_tol_dict1[key], f"RMS of {key} is got worse after repeated correction"
+    for key in RMS_dict1.keys():
+        assert RMS_dict2[key] < RMS_dict1[key], f"RMS of {key} is got worse after repeated correction"
     
 @pytest.mark.basic
 def test_global_correct_quad():
@@ -442,10 +442,7 @@ def test_itteration_convergence():
             OPTICS_PARAMS,
             VARIABLE_CATEGORIES,
             WEIGHTS,
-            MAX_ITER,
             FULLRESPONSE_PATH,
             GENERATED_MEASUREMENT_PATH,
-            RMS_TOL_DICT,
 	)
-
 
