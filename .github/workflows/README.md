@@ -10,9 +10,9 @@ It runs on `ubuntu-latest` and our lowest supported version, `Python 3.7`.
 
 ### Testing Suite
 
-Tests are ensured in the `basic_tests` and `extended_tests` workflows.
-The former runs our most simple tests on all pushes except those to `master` or in `pull requests`, and the latter runs the entire testing suite for all commits related to a `pull request`.
-Both run on a matrix of all available operating systems for all supported Python versions (currently `3.7`, `3.8` and `3.9`).
+Tests are ensured in the `tests` workflow, in two stages.
+The first stage runs our simple tests on all push events (except to `master`), and the second one runs the rest of the testing suite (the `extended` tests) after stage 1 has successfully finished, if the commit is related to a `pull request`.
+Tests runs on a matrix of all available operating systems for all supported Python versions (currently `3.7`, `3.8` and `3.9`).
 
 ### Test Coverage
 
