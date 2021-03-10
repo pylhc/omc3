@@ -336,6 +336,7 @@ def _assert_iteration_convergence(accel_settings,
     fullresponse_path,
     generated_measurement_path,
 )
+    max_iter2 = max_iter + 1
     
     RMS_dict2 = _get_rms_dict(
     accel_settings,
@@ -343,7 +344,7 @@ def _assert_iteration_convergence(accel_settings,
     optics_params,
     variable_categories,
     weights,
-    max_iter,
+    max_iter2,
     fullresponse_path,
     generated_measurement_path,
 )
