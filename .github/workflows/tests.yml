@@ -6,7 +6,6 @@ defaults:
     shell: bash
 
 on:  # Runs on any push event to any branch except master (the coverage workflow takes care of that)
-  pull_request:
   push:
     branches-ignore:
       - 'master'
@@ -56,10 +55,9 @@ jobs:
         run: python -m pytest -m "not extended"
 
 
-  extended_tests:  # Runs tests marked as "extended", but only in PRs and after the previous step
+  extended_tests:  # Runs tests marked as "extended", after the previous step
     needs: basic_tests
     name: extended ${{ matrix.os }} / ${{ matrix.python-version }}
-    if: github.event_name == 'pull_request'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
