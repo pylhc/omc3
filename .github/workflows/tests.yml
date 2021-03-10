@@ -56,8 +56,8 @@ jobs:
 
 
   extended_tests:  # Runs tests marked as "extended", after the previous step
-    needs: basic_tests
-    name: extended ${{ matrix.os }} / ${{ matrix.python-version }}
+    needs: basic_tests  # only here for aesthetics purpose
+    name: extended / ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
