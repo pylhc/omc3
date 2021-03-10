@@ -325,6 +325,7 @@ def _assert_iteration_convergence(accel_settings,
     max_iter,
     fullresponse_path,
     generated_measurement_path,
+    RMS_tol_dict,
 ):
     RMS_dict1 = _get_rms_dict(
     accel_settings,
@@ -444,6 +445,7 @@ def test_itteration_convergence():
             MAX_ITER,
             FULLRESPONSE_PATH,
             GENERATED_MEASUREMENT_PATH,
+            RMS_TOL_DICT,
 	)
 
 
