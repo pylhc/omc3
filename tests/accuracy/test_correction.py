@@ -441,8 +441,9 @@ def test_itteration_convergence():
             OPTICS_PARAMS,
             VARIABLE_CATEGORIES,
             WEIGHTS,
+            MAX_ITER,
             FULLRESPONSE_PATH,
             GENERATED_MEASUREMENT_PATH,
 	)
-	
-	
+
+
