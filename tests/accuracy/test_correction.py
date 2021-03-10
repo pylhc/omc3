@@ -79,7 +79,7 @@ def _add_coupling(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
 
 def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):
     """
-    ???
+    Takes a twiss file and writes the parameters in optics_parameters to Output_dir in the format global_correction_entrypoint uses (same format you would get from hole_in_one)
     Args:
         twiss_model_file:
         twiss_file:
@@ -173,7 +173,6 @@ def _get_rms_dict(
     max_iter,
     fullresponse_path,
     generated_measurement_path,
-    RMS_tol_dict,
 ):
     model_dir = accel_settings["model_dir"]
     model_path = model_dir + "twiss.dat"
@@ -313,13 +312,44 @@ def _assert_global_correct(
     max_iter,
     fullresponse_path,
     generated_measurement_path,
-    RMS_tol_dict,
 )
 
     for key in RMS_dict.keys():
         assert RMS_dict[key] < RMS_tol_dict[key], f"RMS of {key} is not within tolerance"
 
-
+def _assert_iteration_convergence(accel_settings,
+    correction_dir,
+    optics_params,
+    variable_categories,
+    weights,
+    max_iter,
+    fullresponse_path,
+    generated_measurement_path,
+):
+    RMS_dict1 = _get_rms_dict(
+    accel_settings,
+    correction_dir,
+    optics_params,
+    variable_categories,
+    weights,
+    max_iter,
+    fullresponse_path,
+    generated_measurement_path,
+)
+    
+    RMS_dict2 = _get_rms_dict(
+    accel_settings,
+    correction_dir,
+    optics_params,
+    variable_categories,
+    weights,
+    max_iter,
+    fullresponse_path,
+    generated_measurement_path,
+)
+    for key in RMS_dict.keys():
+        assert RMS_dict2[key] < RMS_tol_dict1[key], f"RMS of {key} is got worse after repeated correction"
+    
 @pytest.mark.basic
 def test_global_correct_quad():
     with tempfile.TemporaryDirectory() as temp:
@@ -400,3 +430,18 @@ def test_fullresponse_twiss_skew():
             FULLRESPONSE_PATH_SKEW,
             RMS_TOL_DICT_CORRECTION,
         )
+        
+@pytest.mark.basic
+def test_itteration_convergence():
+    with tempfile.TemporaryDirectory() as temp:
+        temp_dir = temp + "/"
+        _assert_iteration_convergence(ACCEL_SETTINGS,
+            temp_dir,
+            OPTICS_PARAMS,
+            VARIABLE_CATEGORIES,
+            WEIGHTS,
+            FULLRESPONSE_PATH,
+            GENERATED_MEASUREMENT_PATH,
+	)
+	
+	
