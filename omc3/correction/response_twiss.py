@@ -112,6 +112,7 @@ import numpy as np
 import pandas as pd
 import tfs
 
+from omc3.correction.constants import BETA, DISP, S, NORM_DISP, PHASE_ADV, F1001, F1010, TUNE
 from omc3.correction.sequence_evaluation import check_varmap_file
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
@@ -191,7 +192,7 @@ class TwissResponse:
         LOG.debug(f"  Entries left: {model.shape[0]}")
 
         # Add Dummy for Phase Calculations
-        model.loc[DUMMY_ID, ["S", "MUX", "MUY"]] = 0.0
+        model.loc[DUMMY_ID, [f"{S}", f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]] = 0.0
         return model
 
     def _get_variable_mapping(self, varmap_or_path):
@@ -243,7 +244,7 @@ class TwissResponse:
             el_order = []
             for var in v2e[order]:
                 el_order += upper(v2e[order][var].index)
-            el_in[order] = tw.loc[list(set(el_order)), "S"].sort_values().index.tolist()
+            el_in[order] = tw.loc[list(set(el_order)), f"{S}"].sort_values().index.tolist()
         return el_in
 
     @staticmethod
@@ -297,13 +298,13 @@ class TwissResponse:
             dcoupl = dict.fromkeys(["1001", "1010"])
 
             i2pi = 2j * np.pi
-            phx = dphi(adv['X'].loc[k1s_el, el_out], tw.Q1).values
-            phy = dphi(adv['Y'].loc[k1s_el, el_out], tw.Q2).values
-            bet_term = np.sqrt(tw.loc[k1s_el, "BETX"].values * tw.loc[k1s_el, "BETY"].values)
+            phx = dphi(adv["X"].loc[k1s_el, el_out], tw.Q1).values
+            phy = dphi(adv["Y"].loc[k1s_el, el_out], tw.Q2).values
+            bet_term = np.sqrt(tw.loc[k1s_el, f"{BETA}X"].values * tw.loc[k1s_el, f"{BETA}Y"].values)
 
-            for plane in ["1001", "1010"]:
-                phs_sign = -1 if plane == "1001" else 1
-                dcoupl[plane] = tfs.TfsDataFrame(
+            for coupling_rdt in ["1001", "1010"]:
+                phs_sign = -1 if coupling_rdt == "1001" else 1
+                dcoupl[coupling_rdt] = tfs.TfsDataFrame(
                     bet_term[:, None] * np.exp(i2pi * (phx + phs_sign * phy)) /
                     (4 * (1 - np.exp(i2pi * (tw.Q1 + phs_sign * tw.Q2)))),
                     index=k1s_el, columns=el_out).transpose()
@@ -323,7 +324,7 @@ class TwissResponse:
             dbeta = dict.fromkeys(PLANES)
 
             for plane in PLANES:
-                col_beta = f"BET{plane}"
+                col_beta = f"{BETA}{plane}"
                 q = tw.Q1 if plane == "X" else tw.Q2
                 coeff_sign = -1 if plane == "X" else 1
 
@@ -356,8 +357,8 @@ class TwissResponse:
             }
 
             col_disp_map = {
-                "X": {"K1L": "DX", "K1SL": "DY", },
-                "Y": {"K1L": "DY", "K1SL": "DX", },
+                "X": {"K1L": f"{DISP}X", "K1SL": f"{DISP}Y", },
+                "Y": {"K1L": f"{DISP}Y", "K1SL": f"{DISP}X", },
             }
 
             q_map = {"X": tw.Q1, "Y": tw.Q2}
@@ -365,7 +366,7 @@ class TwissResponse:
 
             for plane in sign_map:
                 q = q_map[plane]
-                col_beta = f"BET{plane}"
+                col_beta = f"{BETA}{plane}"
                 el_types = sign_map[plane].keys()
                 els_per_type = [els_in[el_type] for el_type in el_types]
 
@@ -410,13 +411,13 @@ class TwissResponse:
             els_in = self._elements_in
 
             sign_map = {
-                "X": {"K0L": 1, "K1L": -1, "K1SL": 1, },
-                "Y": {"K0SL": -1, "K1L": 1, "K1SL": 1, },
+                "X": {"K0L": 1, "K1L": -1, "K1SL": 1},
+                "Y": {"K0SL": -1, "K1L": 1, "K1SL": 1},
             }
 
             col_disp_map = {
-                "X": {"K1L": "DX", "K1SL": "DY", },
-                "Y": {"K1L": "DY", "K1SL": "DX", },
+                "X": {"K1L": f"{DISP}X", "K1SL": f"{DISP}Y"},
+                "Y": {"K1L": f"{DISP}Y", "K1SL": f"{DISP}X"},
             }
 
             sign_correct_term = {
@@ -430,7 +431,7 @@ class TwissResponse:
 
             for plane in sign_map:
                 q = q_map[plane]
-                col_beta = "BET{}".format(plane)
+                col_beta = f"{BETA}{plane}"
                 el_types = sign_map[plane].keys()
                 els_per_type = [els_in[el_type] for el_type in el_types]
 
@@ -495,7 +496,7 @@ class TwissResponse:
             if len(k1_el) > 0:
                 dmu = dict.fromkeys(PLANES)
 
-                pi = tfs.TfsDataFrame(tw['S'][:, None] < tw['S'][None, :],  # pi(i,j) = s(i) < s(j)
+                pi = tfs.TfsDataFrame(tw[f"{S}"][:, None] < tw[f"{S}"][None, :],  # pi(i,j) = s(i) < s(j)
                                       index=tw.index, columns=tw.index, dtype=int)
 
                 pi_term = (pi.loc[k1_el, el_out].values -
@@ -503,7 +504,7 @@ class TwissResponse:
                            np.diag(pi.loc[el_out, el_out_mm].values)[None, :])
 
                 for plane in PLANES:
-                    col_beta = "BET" + plane
+                    col_beta = f"{BETA}{plane}"
                     q = tw.Q1 if plane == "X" else tw.Q2
                     coeff_sign = 1 if plane == "X" else -1
 
@@ -550,7 +551,7 @@ class TwissResponse:
                 pi_term = pi.loc[k1_el, el_out].values
 
                 for plane in PLANES:
-                    col_beta = "BET" + plane
+                    col_beta = f"{BETA}{plane}"
                     q = tw.Q1 if plane == "X" else tw.Q2
                     coeff_sign = 1 if plane == "X" else -1
 
@@ -584,10 +585,10 @@ class TwissResponse:
             if len(k1_el) > 0:
                 dtune = dict.fromkeys(PLANES)
 
-                dtune["X"] = 1/(4 * np.pi) * tw.loc[k1_el, ["BETX"]].transpose()
+                dtune["X"] = 1/(4 * np.pi) * tw.loc[k1_el, [f"{BETA}X"]].transpose()
                 dtune["X"].index = ["DQX"]
 
-                dtune["Y"] = -1 / (4 * np.pi) * tw.loc[k1_el, ["BETY"]].transpose()
+                dtune["Y"] = -1 / (4 * np.pi) * tw.loc[k1_el, [f"{BETA}Y"]].transpose()
                 dtune["Y"].index = ["DQY"]
             else:
                 LOG.debug("  No 'K1L' variables found. Tune Response will be empty.")
@@ -607,9 +608,8 @@ class TwissResponse:
 
         beta_norm = dict.fromkeys(beta.keys())
         for plane in beta:
-            col = "BET" + plane
-            beta_norm[plane] = beta[plane].div(
-                tw.loc[el_out, col], axis='index')
+            col = f"{BETA}{plane}"
+            beta_norm[plane] = beta[plane].div(tw.loc[el_out, col], axis="index")
         return beta_norm
 
     ################################
@@ -641,9 +641,7 @@ class TwissResponse:
             """ Actual mapping function """
             df_map = tfs.TfsDataFrame(index=df.index, columns=mapping.keys())
             for var, magnets in mapping.items():
-                df_map[var] = df.loc[:, upper(magnets.index)].mul(
-                    magnets.values, axis="columns"
-                ).sum(axis="columns")
+                df_map[var] = df.loc[:, upper(magnets.index)].mul(magnets.values, axis="columns").sum(axis="columns")
             return df_map
 
         # convenience wrapper for dicts
@@ -763,7 +761,7 @@ class TwissResponse:
         def tune_caller(func, _unused):
             tune = func()
             res = tune["X"].append(tune["Y"])
-            res.index = ["Q1", "Q2"]
+            res.index = [f"{TUNE}1", f"{TUNE}2"]
             return res
 
         def couple_caller(func, plane):
@@ -775,19 +773,19 @@ class TwissResponse:
 
         # to avoid if-elif-elif-...
         obs_map = {
-            'Q': (tune_caller, self.get_tune, None),
-            'BETX': (caller, self.get_beta_beat, "X"),
-            'BETY': (caller, self.get_beta_beat, "Y"),
-            'MUX': (caller, self.get_phase, "X"),
-            'MUY': (caller, self.get_phase, "Y"),
-            'DX': (disp_caller, self.get_dispersion, "X"),
-            'DY': (disp_caller, self.get_dispersion, "Y"),
-            'NDX': (disp_caller, self.get_norm_dispersion, "X"),
-            'NDY': (disp_caller, self.get_norm_dispersion, "Y"),
-            'F1001R': (couple_caller, self.get_coupling, "1001R"),
-            'F1001I': (couple_caller, self.get_coupling, "1001I"),
-            'F1010R': (couple_caller, self.get_coupling, "1010R"),
-            'F1010I': (couple_caller, self.get_coupling, "1010I"),
+            f"{TUNE}": (tune_caller, self.get_tune, None),
+            f"{BETA}X": (caller, self.get_beta_beat, "X"),
+            f"{BETA}Y": (caller, self.get_beta_beat, "Y"),
+            f"{PHASE_ADV}X": (caller, self.get_phase, "X"),
+            f"{PHASE_ADV}Y": (caller, self.get_phase, "Y"),
+            f"{DISP}X": (disp_caller, self.get_dispersion, "X"),
+            f"{DISP}Y": (disp_caller, self.get_dispersion, "Y"),
+            f"{NORM_DISP}X": (disp_caller, self.get_norm_dispersion, "X"),
+            f"{NORM_DISP}Y": (disp_caller, self.get_norm_dispersion, "Y"),
+            f"{F1001}R": (couple_caller, self.get_coupling, "1001R"),
+            f"{F1001}I": (couple_caller, self.get_coupling, "1001I"),
+            f"{F1010}R": (couple_caller, self.get_coupling, "1010R"),
+            f"{F1010}I": (couple_caller, self.get_coupling, "1010I"),
         }
 
         if obs is None:
@@ -833,10 +831,10 @@ def get_phase_advances(twiss_df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         Matrices similar to DPhi(i,j) = Phi(j) - Phi(i)
     """
     LOG.debug("Calculating Phase Advances:")
-    phase_advance_dict = dict.fromkeys(['X', 'Y'])
+    phase_advance_dict = dict.fromkeys(["X", "Y"])
     with timeit(lambda elapsed: LOG.debug(f"  Phase Advances calculated in {elapsed}s")):
         for plane in PLANES:
-            colmn_phase = "MU" + plane
+            colmn_phase = f"{PHASE_ADV}{plane}"
             phases_mdl = twiss_df.loc[twiss_df.index, colmn_phase]
             # Same convention as in [1]: DAdv(i,j) = Phi(j) - Phi(i)
             phase_advances = pd.DataFrame((phases_mdl[None, :] - phases_mdl[:, None]),
