@@ -13,7 +13,9 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
-from omc3.correction.constants import DELTA, DIFF, ERROR, VALUE, WEIGHT
+from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
+                                       F1010, NORM_DISP, PHASE_ADV, TUNE,
+                                       VALUE, WEIGHT)
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT,
                                                 NORM_DISP_NAME, PHASE_NAME)
@@ -146,24 +148,24 @@ def _get_measurement_data(
     measurement = {}
     filtered_keys = [key for key in keys if w_dict[key] != 0]
     for key in filtered_keys:
-        if key.startswith('MU'):
+        if key.startswith(f"{PHASE_ADV}"):
             measurement[key] = read_measurement_file(meas_dir, f"{PHASE_NAME}{key[-1].lower()}{EXT}")
-        elif key.startswith('D'):
+        elif key.startswith(f"{DISP}"):
             measurement[key] = read_measurement_file(meas_dir, f"{DISPERSION_NAME}{key[-1].lower()}{EXT}")
-        elif key == "NDX":
+        elif key == f"{NORM_DISP}X":
             measurement[key] = read_measurement_file(meas_dir, f"{NORM_DISP_NAME}{key[-1].lower()}{EXT}")
-        elif key in ('F1001R', 'F1001I', 'F1010R', 'F1010I'):
+        elif key in (f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"):
             measurement[key] = read_measurement_file(meas_dir, f"{key[:-1]}{EXT}").filter(regex=key)
-        elif key == "Q":
+        elif key == f"{TUNE}":
             measurement[key] = pd.DataFrame(
                 {  # Just fractional tunes:
-                    VALUE: np.remainder([read_measurement_file(meas_dir, f"{PHASE_NAME}x{EXT}")['Q1'],
-                                         read_measurement_file(meas_dir, f"{PHASE_NAME}x{EXT}")['Q2']],
+                    VALUE: np.remainder([read_measurement_file(meas_dir, f"{PHASE_NAME}x{EXT}")[f"{TUNE}1"],
+                                         read_measurement_file(meas_dir, f"{PHASE_NAME}x{EXT}")[f"{TUNE}2"]],
                                         [1, 1]),
                     ERROR: np.array([0.001, 0.001])  # TODO measured errors not in the file
                 },
-                index=['Q1', 'Q2'])
-        elif key.startswith('BET'):
+                index=[f"{TUNE}1", f"{TUNE}2"])
+        elif key.startswith(f"{BETA}"):
             measurement[key] = read_measurement_file(meas_dir, f"{beta_file_name}{key[-1].lower()}{EXT}")
     return filtered_keys, measurement
 
@@ -195,10 +197,10 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     result_tfs_df = model.copy()
     if any([key for key in keys if key.startswith("F1")]):
         coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
-        result_tfs_df["F1001R"] = np.real(coupling_rdts_df["F1001"]).astype(np.float64)
-        result_tfs_df["F1001I"] = np.imag(coupling_rdts_df["F1001"]).astype(np.float64)
-        result_tfs_df["F1010R"] = np.real(coupling_rdts_df["F1010"]).astype(np.float64)
-        result_tfs_df["F1010I"] = np.imag(coupling_rdts_df["F1010"]).astype(np.float64)
+        result_tfs_df[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
+        result_tfs_df[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
+        result_tfs_df[f"{F1010}R"] = np.real(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
+        result_tfs_df[f"{F1010}I"] = np.imag(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
     return result_tfs_df
 
 
@@ -213,8 +215,8 @@ def _calculate_delta(
     """ Get the deltas for the variables.
 
     Output is Dataframe with one column 'DELTA' and vars_list index. """
-    weight_vector = _join_columns('WEIGHT', meas_dict, keys)
-    diff_vector = _join_columns('DIFF', meas_dict, keys)
+    weight_vector = _join_columns(f"{WEIGHT}", meas_dict, keys)
+    diff_vector = _join_columns(f"{DIFF}", meas_dict, keys)
 
     resp_weighted = resp_matrix.mul(weight_vector, axis="index")
     diff_weighted = diff_vector * weight_vector
