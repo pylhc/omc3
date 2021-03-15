@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.correction.constants import DELTA, ERR, ERROR, VALUE, WEIGHT
+from omc3.correction.constants import DELTA, ERR, ERROR, PHASE, PHASE_ADV, TUNE, VALUE, WEIGHT
 from omc3.utils import logging_tools, stats
 
 LOG = logging_tools.get_logger(__name__)
@@ -21,14 +21,14 @@ def filter_measurement(keys: Sequence[str], meas: pd.DataFrame, model: pd.DataFr
 
 
 def _get_measurement_filters() -> defaultdict:
-    return defaultdict(lambda: _get_filtered_generic, {'Q': _get_tunes})
+    return defaultdict(lambda: _get_filtered_generic, {f"{TUNE}": _get_tunes})
 
 
 def _get_filtered_generic(key: str, meas: pd.DataFrame, model: pd.DataFrame, opt: dict) -> tfs.TfsDataFrame:
     common_bpms = meas.index.intersection(model.index)
     meas = meas.loc[common_bpms, :]
     new = tfs.TfsDataFrame(index=common_bpms)
-    col = key if "MU" not in key else f"PHASE{key[-1]}"
+    col = key if f"{PHASE_ADV}" not in key else f"{PHASE}{key[-1]}"
     new[VALUE] = meas.loc[:, col].values
     new[ERROR] = meas.loc[:, f"{ERR}{col}"].values
     new[WEIGHT] = (_get_errorbased_weights(key, opt.weights[key], meas.loc[:, f"{ERR}{DELTA}{col}"])
@@ -38,7 +38,7 @@ def _get_filtered_generic(key: str, meas: pd.DataFrame, model: pd.DataFrame, opt
     model_filter = np.abs(meas.loc[:, f"{DELTA}{col}"].values) < opt.modelcut[key]
     # if opt.automatic_model_cut:  # TODO automated model cut
     #     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f"{DELTA}{col}"].values), portion=0.95)
-    if "MU" in key:
+    if f"{PHASE_ADV}" in key:
         new['NAME2'] = meas.loc[:, 'NAME2'].values
         second_bpm_in = np.in1d(new.loc[:, 'NAME2'].values, new.index.values)
         good_bpms = error_filter & model_filter & second_bpm_in
@@ -82,8 +82,8 @@ def filter_response_index(response, measurement, keys: Sequence[str]):
 
 def _get_response_filters() -> Dict[str, Callable]:
     return defaultdict(lambda:  _get_generic_response, {
-        'MUX': _get_phase_response, 'MUY': _get_phase_response,
-        'Q': _get_tune_response})
+        f"{PHASE_ADV}X": _get_phase_response, f"{PHASE_ADV}Y": _get_phase_response,
+        f"{TUNE}": _get_tune_response})
 
 
 def _get_generic_response(resp: pd.DataFrame, meas: pd.DataFrame) -> pd.DataFrame:
