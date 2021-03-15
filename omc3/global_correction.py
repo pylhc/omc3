@@ -42,11 +42,14 @@ treated as zeros
 
 """
 import os
+from pathlib import Path
 from typing import Dict
 
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import handler
+from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
+                                       NORM_DISP, PHASE_ADV, TUNE)
 from omc3.model import manager
 from omc3.utils import iotools, logging_tools
 
@@ -56,7 +59,7 @@ CORRECTION_DEFAULTS = {
     "optics_file": None,
     "output_filename": "changeparameters_iter",
     "svd_cut": 0.01,
-    "optics_params": ["MUX", "MUY", "BETX", "BETY", "NDX", "Q"],
+    "optics_params": [f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISP}X", f"{TUNE}"],
     "variable_categories": ["MQM", "MQT", "MQTL", "MQY"],
     "beta_file_name": "beta_phase_",
     "method": "pinv",
@@ -75,9 +78,10 @@ def correction_params():
                               "calculates the response analytically.",)
     params.add_parameter(name="optics_params", type=str, nargs="+",
                          default=CORRECTION_DEFAULTS["optics_params"],
-                         choices=('MUX', 'MUY', 'BBX', 'BBY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q',
-                                  'F1001R', 'F1001I', 'F1010R', 'F1010I'),
-                         help="List of parameters to correct upon (e.g. BETX BETY)", )
+                         choices=(f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETABEAT}X", f"{BETABEAT}Y",
+                                  f"{BETA}X", f"{BETA}Y", f"{DISP}X", f"{DISP}Y", f"{NORM_DISP}X", f"{TUNE}",
+                                  f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"),
+                         help=f"List of parameters to correct upon (e.g. {BETA}X {BETA}Y)", )
     params.add_parameter(name="output_filename", default=CORRECTION_DEFAULTS["output_filename"],
                          help="Identifier of the output files.", )
     params.add_parameter(name="min_corrector_strength", type=float, default=0.,
@@ -120,9 +124,7 @@ def correction_params():
 
 @entrypoint(correction_params())
 def global_correction_entrypoint(opt: dict, accel_opt: dict) -> None:
-    """Do the global correction. Iteratively.
-    # TODO auto-generate docstring
-    """
+    """Do the global correction. Iteratively."""
     LOG.info("Starting Iterative Global Correction.")
     opt = _check_opt_add_dicts(opt)
     opt = _add_hardcoded_paths(opt)
@@ -134,7 +136,7 @@ def global_correction_entrypoint(opt: dict, accel_opt: dict) -> None:
 def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
     """ Check on options and put in missing values """
     def_dict = _get_default_values()
-    opt.optics_params = [p.replace("BB", "BET") for p in opt.optics_params]
+    opt.optics_params = [param.replace(f"{BETABEAT}", f"{BETA}") for param in opt.optics_params]
     for key in ("modelcut", "errorcut", "weights"):
         if opt[key] is None:
             opt[key] = [def_dict[key][p] for p in opt.optics_params]
@@ -145,60 +147,61 @@ def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
 
 
 def _add_hardcoded_paths(opt: dict) -> dict:  # acts inplace...
-    opt.change_params_path = os.path.join(opt.output_dir, f"{opt.output_filename}.madx")
-    opt.change_params_correct_path = os.path.join(opt.output_dir, f"{opt.output_filename}_correct.madx")
-    opt.knob_path = os.path.join(opt.output_dir, f"{opt.output_filename}.tfs")
+    opt.change_params_path = str(Path(opt.output_dir) / f"{opt.output_filename}.madx")
+    opt.change_params_correct_path = str(Path(opt.output_dir) / f"{opt.output_filename}_correct.madx")
+    opt.knob_path = str(Path(opt.output_dir) / f"{opt.output_filename}.tfs")
     return opt
 
 
-OPTICS_PARAMS_CHOICES = ("MUX", "MUY",  "BETX", "BETY", "DX", "DY", "NDX",
-                         "Q", "F1001R", "F1001I", "F1010R", "F1010I")
+OPTICS_PARAMS_CHOICES = (f"{PHASE_ADV}X", f"{PHASE_ADV}Y",  f"{BETA}X", f"{BETA}Y",
+                         f"{DISP}X", f"{DISP}Y", f"{NORM_DISP}X", f"{TUNE}", f"{F1001}R",
+                         f"{F1001}I", f"{F1010}R", f"{F1010}I")
 
 
 # Define functions here, to new optics params
 def _get_default_values() -> Dict[str, Dict[str, float]]:
     return {
         "modelcut": {
-            "MUX": 0.05,
-            "MUY": 0.05,
-            "BETX": 0.2,
-            "BETY": 0.2,
-            "DX": 0.2,
-            "DY": 0.2,
-            "NDX": 0.2,
-            "Q": 0.1,
-            "F1001R": 0.2,
-            "F1001I": 0.2,
-            "F1010R": 0.2,
-            "F1010I": 0.2,
+            f"{PHASE_ADV}X": 0.05,
+            f"{PHASE_ADV}Y": 0.05,
+            f"{BETA}X": 0.2,
+            f"{BETA}Y": 0.2,
+            f"{DISP}X": 0.2,
+            f"{DISP}Y": 0.2,
+            f"{NORM_DISP}X": 0.2,
+            f"{TUNE}": 0.1,
+            f"{F1001}R": 0.2,
+            f"{F1001}I": 0.2,
+            f"{F1010}R": 0.2,
+            f"{F1010}I": 0.2,
         },
         "errorcut": {
-            "MUX": 0.035,
-            "MUY": 0.035,
-            "BETX": 0.02,
-            "BETY": 0.02,
-            "DX": 0.02,
-            "DY": 0.02,
-            "NDX": 0.02,
-            "Q": 0.027,
-            "F1001R": 0.02,
-            "F1001I": 0.02,
-            "F1010R": 0.02,
-            "F1010I": 0.02,
+            f"{PHASE_ADV}X": 0.035,
+            f"{PHASE_ADV}Y": 0.035,
+            f"{BETA}X": 0.02,
+            f"{BETA}Y": 0.02,
+            f"{DISP}X": 0.02,
+            f"{DISP}Y": 0.02,
+            f"{NORM_DISP}X": 0.02,
+            f"{TUNE}": 0.027,
+            f"{F1001}R": 0.02,
+            f"{F1001}I": 0.02,
+            f"{F1010}R": 0.02,
+            f"{F1010}I": 0.02,
         },
         "weights": {
-            "MUX": 1,
-            "MUY": 1,
-            "BETX": 0,
-            "BETY": 0,
-            "DX": 0,
-            "DY": 0,
-            "NDX": 0,
-            "Q": 10,
-            "F1001R": 0,
-            "F1001I": 0,
-            "F1010R": 0,
-            "F1010I": 0,
+            f"{PHASE_ADV}X": 1,
+            f"{PHASE_ADV}Y": 1,
+            f"{BETA}X": 0,
+            f"{BETA}Y": 0,
+            f"{DISP}X": 0,
+            f"{DISP}Y": 0,
+            f"{NORM_DISP}X": 0,
+            f"{TUNE}": 10,
+            f"{F1001}R": 0,
+            f"{F1001}I": 0,
+            f"{F1010}R": 0,
+            f"{F1010}I": 0,
         },
     }
 

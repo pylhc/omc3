@@ -120,7 +120,7 @@ def create_instance_and_model(opt, accel_opt):
         
     else:
         numeric_level = getattr(logging, "WARNING", None)
-        logging.basicConfig(level=numeric_level) # warning level to stderr
+        logging.basicConfig(level=numeric_level)  # warning level to stderr
 
     create_dirs(opt.outputdir)
 
