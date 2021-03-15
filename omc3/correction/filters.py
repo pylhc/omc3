@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.correction.constants import DELTA, ERR, ERROR, PHASE, PHASE_ADV, TUNE, VALUE, WEIGHT
+from omc3.correction.constants import (DELTA, ERR, ERROR, PHASE, PHASE_ADV,
+                                       TUNE, VALUE, WEIGHT)
 from omc3.utils import logging_tools, stats
 
 LOG = logging_tools.get_logger(__name__)

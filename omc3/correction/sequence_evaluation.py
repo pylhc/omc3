@@ -46,7 +46,7 @@ def evaluate_for_variables(
             temp_dir (str): temporary directory. If ``None``, uses model_dir.
     """
     LOG.debug("Generating Fullresponse via Mad-X.")
-    with timeit(lambda t: LOG.debug("  Total time generating fullresponse: {:f}s".format(t))):
+    with timeit(lambda elapsed: LOG.debug(f"  Total time generating fullresponse: {elapsed}s")):
         if not temp_dir:
             temp_dir = accel_inst.model_dir
         iotools.create_dirs(temp_dir)
@@ -78,7 +78,7 @@ def _generate_madx_jobs(
 ) -> None:
     """ Generates madx job-files """
     def _assign(var, value):
-        return "{var:s} = {value:d};\n".format(var=var, value=value)
+        return f"{var:s} = {value:d};\n"
 
     def _do_macro(var):
         return (
@@ -118,11 +118,11 @@ def _generate_madx_jobs(
 
 def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:
     """ Call madx in parallel """
-    LOG.debug("Starting {:d} MAD-X jobs...".format(num_proc))
+    LOG.debug(f"Starting {num_proc:d} MAD-X jobs...")
     madx_jobs = [_get_jobfile(temp_dir, index) for index in range(num_proc)]
     failed = [LOG.error(fail) for fail in process_pool.map(_launch_single_job, madx_jobs) if fail]
     if len(failed):
-        raise RuntimeError("{:d} of {:d} Madx jobs failed!".format(len(failed), num_proc))
+        raise RuntimeError(f"{len(failed):d} of {num_proc:d} Madx jobs failed!")
     LOG.debug("MAD-X jobs done.")
 
 
@@ -164,15 +164,14 @@ def _load_madx_results(
         path_and_vars.append((temp_dir, value))
 
     _, base_tfs = _load_and_remove_twiss((temp_dir, "0"))
-    mapping = dict([(o, {}) for o in k_values] +
-                   [(o + "L", {}) for o in k_values])
+    mapping = dict([(order, {}) for order in k_values] + [(order + "L", {}) for order in k_values])
     for var, tfs_data in process_pool.map(_load_and_remove_twiss, path_and_vars):
-        for o in k_values:
-            diff = (tfs_data[o] - base_tfs[o])
+        for order in k_values:
+            diff = (tfs_data[order] - base_tfs[order])
             mask = diff != 0  # drop zeros, maybe abs(diff) < eps ?
             k_list = diff.loc[mask]
-            mapping[o][var] = k_list
-            mapping[o + "L"][var] = k_list.mul(base_tfs.loc[mask, "L"])
+            mapping[order][var] = k_list
+            mapping[order + "L"][var] = k_list.mul(base_tfs.loc[mask, "L"])
     return mapping
 
 
@@ -182,24 +181,24 @@ def _load_madx_results(
 def _get_orders(order: int) -> Sequence[str]:
     """ Returns a list of strings with K-values to be used """
     try:
-        return ["K{:d}{:s}".format(i, s) for i in range(order) for s in ["", "S"]]
+        return [f"K{i:d}{s:s}" for i in range(3) for s in ["", "S"]]
     except TypeError:
-        return ["K{:d}{:s}".format(i, s) for i in range(*order) for s in ["", "S"]]
+        return [f"K{i:d}{s:s}" for i in range(*order) for s in ["", "S"]]
 
 
 def _get_jobfile(folder: float, index: int) -> str:
     """ Return names for jobfile and iterfile according to index """
-    return os.path.join(folder, "job.varmap.{:d}.madx".format(index))
+    return os.path.join(folder, f"job.varmap.{index:d}.madx")
 
 
 def _get_tablefile(folder: str, var: str) -> str:
     """ Return name of the variable-specific table file """
-    return os.path.join(folder, "table." + var)
+    return os.path.join(folder, f"table.{var}")
 
 
 def _get_surveyfile(folder: str, index: int) -> str:
     """ Returns the name of the macro """
-    return os.path.join(folder, "survey.{:d}.tmp".format(index))
+    return os.path.join(folder, f"survey.{index:d}.tmp")
 
 
 def _launch_single_job(inputfile_path: str):
@@ -242,7 +241,7 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[float], variables:
     job_content += "assign_k_values(element) : macro = {\n"
     # job_content += "    value, element; show, element;\n"
     for k_val in k_values:
-        #TODO: Ask someone who knows about MADX if K0-handling is correct
+        # TODO: Ask someone who knows about MADX if K0-handling is correct
         # (see user guide 10.3 Bending Magnet)
         if k_val == "K0":
             job_content += f"    {k_val:s} = element->angle / element->L;\n"
@@ -287,7 +286,6 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[float], variables:
 def check_varmap_file(accel_inst: Accelerator, vars_categories):
     """ Checks on varmap file and creates it if not in model folder.
     THIS SHOULD BE REPLACED WITH A CALL TO JAIMES DATABASE, IF IT BECOMES AVAILABLE """
-    #accel_inst.modifiers = "model/opticsfile.18"
     if accel_inst.modifiers is None:
         raise ValueError("Optics not defined. Please provide modifiers.madx. "
                          "Otherwise MADX evaluation might be unstable.")
@@ -296,9 +294,9 @@ def check_varmap_file(accel_inst: Accelerator, vars_categories):
 
     varmap_path = os.path.join(accel_inst.model_dir, varmapfile_name + "." + EXT)
     if not os.path.isfile(varmap_path):
-        LOG.info("Variable mapping '{:s}' not found. Evaluating it via madx.".format(varmap_path))
+        LOG.info(f"Variable mapping '{varmap_path:s}' not found. Evaluating it via madx.")
         mapping = evaluate_for_variables(accel_inst, vars_categories)
-        with open(varmap_path, 'wb') as dump_file:
+        with open(varmap_path, "wb") as dump_file:
             pickle.dump(mapping, dump_file)
 
     return varmap_path
