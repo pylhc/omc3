@@ -30,18 +30,21 @@ def _get_filtered_generic(key: str, meas: pd.DataFrame, model: pd.DataFrame, opt
     meas = meas.loc[common_bpms, :]
     new = tfs.TfsDataFrame(index=common_bpms)
     col = key if f"{PHASE_ADV}" not in key else f"{PHASE}{key[-1]}"
-    new[VALUE] = meas.loc[:, col].values
-    new[ERROR] = meas.loc[:, f"{ERR}{col}"].values
-    new[WEIGHT] = (_get_errorbased_weights(key, opt.weights[key], meas.loc[:, f"{ERR}{DELTA}{col}"])
-                   if opt.use_errorbars else opt.weights[key])
+    new[VALUE] = meas.loc[:, col].to_numpy()
+    new[ERROR] = meas.loc[:, f"{ERR}{col}"].to_numpy()
+    new[WEIGHT] = (
+        _get_errorbased_weights(key, opt.weights[key], meas.loc[:, f"{ERR}{DELTA}{col}"])
+        if opt.use_errorbars
+        else opt.weights[key]
+    )
     # filter cuts
-    error_filter = meas.loc[:, f"{ERR}{DELTA}{col}"].values < opt.errorcut[key]
-    model_filter = np.abs(meas.loc[:, f"{DELTA}{col}"].values) < opt.modelcut[key]
+    error_filter = meas.loc[:, f"{ERR}{DELTA}{col}"].to_numpy() < opt.errorcut[key]
+    model_filter = np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()) < opt.modelcut[key]
     # if opt.automatic_model_cut:  # TODO automated model cut
-    #     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f"{DELTA}{col}"].values), portion=0.95)
+    #     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()), portion=0.95)
     if f"{PHASE_ADV}" in key:
-        new['NAME2'] = meas.loc[:, 'NAME2'].values
-        second_bpm_in = np.in1d(new.loc[:, 'NAME2'].values, new.index.values)
+        new["NAME2"] = meas.loc[:, "NAME2"].to_numpy()
+        second_bpm_in = np.in1d(new.loc[:, "NAME2"].to_numpy(), new.index.to_numpy())
         good_bpms = error_filter & model_filter & second_bpm_in
         good_bpms[-1] = False
     else:
@@ -54,7 +57,7 @@ def _get_tunes(key: str, meas: pd.DataFrame, model, opt: dict):
     meas[WEIGHT] = opt.weights[key]
     if opt.use_errorbars:
         meas[WEIGHT] = _get_errorbased_weights(key, meas[WEIGHT], meas[ERROR])
-    LOG.debug(f"Number of tune measurements: {len(meas.index.values)}")
+    LOG.debug(f"Number of tune measurements: {len(meas.index.to_numpy())}")
     return meas
 
 
@@ -62,8 +65,10 @@ def _get_errorbased_weights(key: str, weights, errors):
     # TODO case without errors used may corrupt the correction (typical error != 1)
     w2 = stats.weights_from_errors(errors)
     if w2 is None:
-        LOG.warn(f"Weights will not be based on errors for '{key}'"
-                 f", zeros of NaNs were found. Maybe don't use --errorbars.")
+        LOG.warn(
+            f"Weights will not be based on errors for '{key}'"
+            f", zeros of NaNs were found. Maybe don't use --errorbars."
+        )
         return weights
     return weights * np.sqrt(w2)
 
@@ -82,19 +87,20 @@ def filter_response_index(response, measurement, keys: Sequence[str]):
 
 
 def _get_response_filters() -> Dict[str, Callable]:
-    return defaultdict(lambda:  _get_generic_response, {
-        f"{PHASE_ADV}X": _get_phase_response, f"{PHASE_ADV}Y": _get_phase_response,
-        f"{TUNE}": _get_tune_response})
+    return defaultdict(
+        lambda: _get_generic_response,
+        {f"{PHASE_ADV}X": _get_phase_response, f"{PHASE_ADV}Y": _get_phase_response, f"{TUNE}": _get_tune_response},
+    )
 
 
 def _get_generic_response(resp: pd.DataFrame, meas: pd.DataFrame) -> pd.DataFrame:
-    return resp.loc[meas.index.values, :]
+    return resp.loc[meas.index.to_numpy(), :]
 
 
 def _get_phase_response(resp: pd.DataFrame, meas: pd.DataFrame) -> pd.DataFrame:
-    phase1 = resp.loc[meas.index.values, :]
-    phase2 = resp.loc[meas.loc[:, 'NAME2'].values, :]
-    return -phase1.sub(phase2.values)  # phs2-phs1 but with idx of phs1
+    phase1 = resp.loc[meas.index.to_numpy(), :]
+    phase2 = resp.loc[meas.loc[:, "NAME2"].to_numpy(), :]
+    return -phase1.sub(phase2.to_numpy())  # phs2-phs1 but with idx of phs1
 
 
 def _get_tune_response(resp, meas):  # ???
