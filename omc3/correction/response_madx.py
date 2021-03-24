@@ -1,9 +1,12 @@
 """
-Provides a function to create the responses of beta, phase, dispersion, tune and coupling
-via iterative madx calls.
+Response MAD-X
+--------------
 
-The variables under investigation need to be provided as a list (which can be gotten from
-accelerator class).
+Provides a function to create the responses of beta, phase, dispersion, tune and coupling via iterative
+madx calls.
+
+The variables under investigation need to be provided as a list (which can be obtained from the accelerator
+class).
 
 For now, the response matrix is stored in a 'pickled' file.
 

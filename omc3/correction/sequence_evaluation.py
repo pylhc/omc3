@@ -1,11 +1,13 @@
 """
-Similar to Sequence Parser but with MADX
+Sequence Evaluation
+-------------------
+
+Similar to Sequence Parser but with MAD-X.
 
 First: Set all variables to 0
 Then: Set one variable at a time to 1
 
-Compare results with case all==0
-
+Compare results with case all==0.
 """
 import multiprocessing
 import os
@@ -285,7 +287,7 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[float], variables:
 
 def check_varmap_file(accel_inst: Accelerator, vars_categories):
     """ Checks on varmap file and creates it if not in model folder.
-    THIS SHOULD BE REPLACED WITH A CALL TO JAIMES DATABASE, IF IT BECOMES AVAILABLE """
+    """
     if accel_inst.modifiers is None:
         raise ValueError("Optics not defined. Please provide modifiers.madx. "
                          "Otherwise MADX evaluation might be unstable.")

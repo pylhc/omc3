@@ -1,4 +1,7 @@
 r"""
+Global Correction
+-----------------
+
 Iterative Correction Scheme.
 
 The response matrices :math:`R_{O}` for the observables :math:`O` (e.g. BBX, MUX, ...)
@@ -10,7 +13,7 @@ are loaded from a file and then the equation
 is being solved for :math:`\delta var` via a chosen method (at the moment only numpys pinv,
 which creates a pseudo-inverse via svd is used).
 
-The response matrices are hereby merged into one matrix for all observables to solve vor all
+The response matrices are hereby merged into one matrix for all observables to solve for all
 :math:`\delta var` at the same time.
 
 To normalize the observables to another ``weigths`` (W) can be applied.

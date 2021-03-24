@@ -1,4 +1,7 @@
 """
+Response Creator
+----------------
+
 Provides a response generation wrapper.
 The response matrices can be either created by response_madx or analytically via TwissResponse.
 

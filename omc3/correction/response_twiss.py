@@ -1,5 +1,8 @@
 r"""
-Provides Class to get response matrices from Twiss parameters.
+Response TWISS
+--------------
+
+Provides a class to get response matrices from Twiss parameters.
 
 The calculation is based on formulas in [#FranchiAnalyticformulasrapid2017]_, [#TomasReviewlinearoptics2017]_.
 

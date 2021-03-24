@@ -38,9 +38,11 @@ After installing, codes can be run with either `python -m omc3.SCRIPT --FLAG ARG
 #### Main Scripts
 
 Main scripts to be executed lie in the [`/omc3`](omc3) directory. These include:
+- `global_correction.py` to calculate corrections from measurement files.
 - `hole_in_one.py` to perform frequency analysis on turn by turn BPM data and infer optics (and more) for a given accelerator.
 - `madx_wrapper.py` to start a `MAD-X` run with a file or string as input.
 - `model_creator.py` to provide optics models required for optics analysis.
+- `response_creator.py` to provide correction response files.
 - `run_kmod.py` to analyse data from K-modulation and return the measured optics functions.
 - `tbt_converter.py` to convert different turn by turn datatypes to sdds, and add noise.
 - `amplitude_detuning_analysis.py` to perform amp. det. analysis on optics data with tune correction.

@@ -1,3 +1,9 @@
+"""
+Handler
+-------
+
+This module contains high-level functions to manage most functionality of the corrections calculations.
+"""
 import datetime
 import os
 import pickle

@@ -1,3 +1,9 @@
+"""
+Model Appenders
+---------------
+
+Utilities to get variations from measurement to model and append those to the proper data structures.
+"""
 from collections import defaultdict
 from typing import Callable, Dict, Sequence
 
@@ -21,8 +27,8 @@ def append_model_to_measurement(
     returns a dictionary with the variation from measurement to model for each key.
 
     Args:
-        model (pd.DataFrame): DataFrame of the model.to_numpy().
-        measurement (pd.DataFrame): DataFrame of the measurement.to_numpy().
+        model (pd.DataFrame): DataFrame of the model.
+        measurement (pd.DataFrame): DataFrame of the measurement.
         keys (Sequence[str]): keys to get variation to model for.
 
     Returns:
