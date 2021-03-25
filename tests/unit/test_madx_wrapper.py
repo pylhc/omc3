@@ -5,7 +5,7 @@ import pytest
 from omc3 import madx_wrapper, model
 from omc3.utils.contexts import silence
 
-LIB = Path(model.__file__) / "madx_macros"
+LIB = Path(model.__file__).parent / "madx_macros"
 
 
 @pytest.mark.basic
