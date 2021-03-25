@@ -2,7 +2,7 @@
 Sequence Evaluation
 -------------------
 
-Similar to Sequence Parser but with MAD-X.
+Evaluates the variable responses from a sequence in MAD-X.
 
 First: Set all variables to 0
 Then: Set one variable at a time to 1
@@ -10,8 +10,9 @@ Then: Set one variable at a time to 1
 Compare results with case all==0.
 """
 import multiprocessing
-import os
 import pickle
+from contextlib import suppress
+from pathlib import Path
 from typing import List, Sequence, Tuple
 
 import numpy as np
@@ -19,8 +20,8 @@ import tfs
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.utils import iotools, logging_tools
-from omc3.utils.contexts import suppress_exception, timeit
+from omc3.utils import logging_tools
+from omc3.utils.contexts import timeit
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -35,7 +36,7 @@ def evaluate_for_variables(
     variable_categories,
     order: int = 4,
     num_proc: int = multiprocessing.cpu_count(),
-    temp_dir: str = None
+    temp_dir: Path = None
 ) -> dict:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
@@ -45,13 +46,13 @@ def evaluate_for_variables(
             variable_categories (list): Categories of the variables/knobs to use. (from .json)
             order (int or tuple): Max or [min, max] of K-value order to use.
             num_proc (int): Number of processes to use in parallel.
-            temp_dir (str): temporary directory. If ``None``, uses model_dir.
+            temp_dir (Path): temporary directory. If ``None``, uses model_dir.
     """
     LOG.debug("Generating Fullresponse via Mad-X.")
     with timeit(lambda elapsed: LOG.debug(f"  Total time generating fullresponse: {elapsed}s")):
         if not temp_dir:
-            temp_dir = accel_inst.model_dir
-        iotools.create_dirs(temp_dir)
+            temp_dir = Path(accel_inst.model_dir)
+        temp_dir.mkdir(parents=True, exist_ok=True)
 
         variables = accel_inst.get_variables(classes=variable_categories)
         if len(variables) == 0:
@@ -76,7 +77,7 @@ def _generate_madx_jobs(
     variables: Sequence[str],
     k_values: List[float],
     num_proc: int,
-    temp_dir: str,
+    temp_dir: Path,
 ) -> None:
     """ Generates madx job-files """
     def _assign(var, value):
@@ -114,8 +115,7 @@ def _generate_madx_jobs(
         if proc_index+1 == num_proc:
             job_content += _do_macro("0")
 
-        with open(_get_jobfile(temp_dir, proc_index), "w") as job_file:
-            job_file.write(job_content)
+        _get_jobfile(temp_dir, proc_index).write_text(job_content)
 
 
 def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:
@@ -128,29 +128,24 @@ def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int)
     LOG.debug("MAD-X jobs done.")
 
 
-def _clean_up(variables: Sequence[str], temp_dir: str, num_proc: int) -> None:
+def _clean_up(variables: List[str], temp_dir: Path, num_proc: int) -> None:
     """ Merge Logfiles and clean temporary outputfiles """
     LOG.debug("Cleaning output and printing log...")
     for var in (variables + ["0"]):
-        with suppress_exception(OSError):
-            os.remove(_get_tablefile(temp_dir, var))
+        _get_tablefile(temp_dir, var).unlink(missing_ok=True)
     full_log = ""
     for index in range(num_proc):
         survey_path = _get_surveyfile(temp_dir, index)
         job_path = _get_jobfile(temp_dir, index)
-        log_path = job_path + ".log"
-        with open(log_path, "r") as log_file:
-            full_log += log_file.read()
-        with suppress_exception(OSError):
-            os.remove(log_path)
-        with suppress_exception(OSError):
-            os.remove(job_path)
-        with suppress_exception(OSError):
-            os.remove(survey_path)
+        log_path = job_path.with_name(f"{job_path.name}.log")
+        if log_path.exists():
+            full_log += log_path.read_text()
+        log_path.unlink(missing_ok=True)
+        job_path.unlink(missing_ok=True)
+        survey_path.unlink(missing_ok=True)
     LOG.debug(full_log)
-
-    with suppress_exception(OSError):
-        os.rmdir(temp_dir)
+    with suppress(OSError):
+        temp_dir.rmdir()
 
 
 def _load_madx_results(
@@ -188,22 +183,22 @@ def _get_orders(order: int) -> Sequence[str]:
         return [f"K{i:d}{s:s}" for i in range(*order) for s in ["", "S"]]
 
 
-def _get_jobfile(folder: float, index: int) -> str:
+def _get_jobfile(folder: Path, index: int) -> Path:
     """ Return names for jobfile and iterfile according to index """
-    return os.path.join(folder, f"job.varmap.{index:d}.madx")
+    return folder / f"job.varmap.{index:d}.madx"
 
 
-def _get_tablefile(folder: str, var: str) -> str:
+def _get_tablefile(folder: Path, var: str) -> Path:
     """ Return name of the variable-specific table file """
-    return os.path.join(folder, f"table.{var}")
+    return folder / f"table.{var}"
 
 
-def _get_surveyfile(folder: str, index: int) -> str:
+def _get_surveyfile(folder: Path, index: int) -> Path:
     """ Returns the name of the macro """
-    return os.path.join(folder, f"survey.{index:d}.tmp")
+    return folder / f"survey.{index:d}.tmp"
 
 
-def _launch_single_job(inputfile_path: str):
+def _launch_single_job(inputfile_path: Path):
     """ Function for pool to start a single madx job """
     log_file = inputfile_path + ".log"
     try:
@@ -214,7 +209,7 @@ def _launch_single_job(inputfile_path: str):
         return None
 
 
-def _load_and_remove_twiss(path_and_var: Tuple[str, str]) -> Tuple[str, tfs.TfsDataFrame]:
+def _load_and_remove_twiss(path_and_var: Tuple[Path, str]) -> Tuple[str, tfs.TfsDataFrame]:
     """ Function for pool to retrieve results """
     path, var = path_and_var
     twissfile = _get_tablefile(path, var)
@@ -222,7 +217,7 @@ def _load_and_remove_twiss(path_and_var: Tuple[str, str]) -> Tuple[str, tfs.TfsD
     return var, tfs_data
 
 
-def _create_basic_job(accel_inst: Accelerator, k_values: List[float], variables: Sequence[str]) -> str:
+def _create_basic_job(accel_inst: Accelerator, k_values: List[str], variables: Sequence[str]) -> str:
     """ Create the madx-job basics needed
         TEMPFILE needs to be replaced in the returned string.
     """
@@ -250,7 +245,7 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[float], variables:
         elif k_val == "K0S":
             job_content += f"    {k_val:s} = element->tilt / element->L;\n"
         else:
-            job_content += f"    {k_val:s} = element->{k:s};\n"
+            job_content += f"    {k_val:s} = element->{k_val:s};\n"
     job_content += "};\n\n"
 
     # create macro for using the row index as variable (see madx userguide)
@@ -292,10 +287,8 @@ def check_varmap_file(accel_inst: Accelerator, vars_categories):
         raise ValueError("Optics not defined. Please provide modifiers.madx. "
                          "Otherwise MADX evaluation might be unstable.")
 
-    varmapfile_name = f"{accel_inst.NAME.lower()}b{accel_inst.beam:d}_{'_'.join(sorted(set(vars_categories)))}"
-
-    varmap_path = os.path.join(accel_inst.model_dir, varmapfile_name + "." + EXT)
-    if not os.path.isfile(varmap_path):
+    varmap_path = Path(accel_inst.model_dir) / f"{'_'.join(sorted(set(vars_categories)))}.{EXT}"
+    if not varmap_path.exists():
         LOG.info(f"Variable mapping '{varmap_path:s}' not found. Evaluating it via madx.")
         mapping = evaluate_for_variables(accel_inst, vars_categories)
         with open(varmap_path, "wb") as dump_file:

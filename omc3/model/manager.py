@@ -35,7 +35,6 @@ def get_accelerator(opt, other_opt):
     if not isinstance(opt.accel, str):
         # assume it's the class
         return opt.accel
-    myinst = ACCELS[opt.accel](other_opt)
     return ACCELS[opt.accel](other_opt)
 
 

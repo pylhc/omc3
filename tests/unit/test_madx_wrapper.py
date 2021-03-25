@@ -1,33 +1,28 @@
-from os.path import exists, isfile, join, dirname, pardir, abspath
+from pathlib import Path
 
 import pytest
 
-from omc3 import madx_wrapper
-from omc3.utils.contexts import silence, temporary_dir
+from omc3 import madx_wrapper, model
+from omc3.utils.contexts import silence
 
-LIB = abspath(join(dirname(__file__), pardir, pardir, "omc3", "model", "madx_macros"))
+LIB = Path(model.__file__) / "madx_macros"
 
 
 @pytest.mark.basic
-def test_with_macro():
+def test_with_macro(tmp_path):
     """ Checks:
          - Output_file is created.
     """
-    content = "call,file='{}';\ncall,file='{}';\n".format(
-        join(LIB, "lhc.macros.madx"), join(LIB, "general.macros.madx"))
-
-    with temporary_dir() as tmpdir:
-        outfile = join(tmpdir, "job.with_macro.madx")
-        with silence():
-            madx_wrapper.run_string(content, output_file=outfile, cwd=tmpdir)
-        assert exists(outfile)
-        with open(outfile, "r") as of:
-            out_lines = of.read()
-        assert out_lines == content
+    content = f"call,file='{str(LIB / 'lhc.macros.madx')}';\ncall,file='{str(LIB / 'general.macros.madx')}';\n"
+    outfile = tmp_path / "job.with_macro.madx"
+    with silence():
+        madx_wrapper.run_string(content, output_file=outfile, cwd=tmp_path)
+    assert outfile.exists()
+    assert content == outfile.read_text()
 
 
 @pytest.mark.basic
-def test_with_nonexistent_file():
+def test_with_nonexistent_file(tmp_path):
     """ Checks:
          - Madx crashes when tries to call a non-existent file
          - Logfile is created
@@ -35,9 +30,8 @@ def test_with_nonexistent_file():
     """
     call_file = "does_not_exist.madx"
     content = "call, file ='{:s}';".format(call_file)
-    with temporary_dir() as tmpdir:
-        log_file = join(tmpdir, "tmp_log.log")
-        with pytest.raises(madx_wrapper.MadxError) as e:
-            madx_wrapper.run_string(content, log_file=log_file, cwd=tmpdir)
-        assert isfile(log_file)
-        assert call_file in str(e.value)
+    log_file = tmp_path / "tmp_log.log"
+    with pytest.raises(madx_wrapper.MadxError) as e:
+        madx_wrapper.run_string(content, log_file=log_file, cwd=tmp_path)
+    assert log_file.exists()
+    assert call_file in str(e.value)

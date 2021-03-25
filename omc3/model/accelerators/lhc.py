@@ -87,6 +87,7 @@ Model Creation Keyword Args:
 import json
 import os
 from collections import OrderedDict
+from pathlib import Path
 
 import tfs
 from generic_parser import EntryPoint
@@ -345,10 +346,10 @@ class Lhc(Accelerator):
         madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
         return madx_script
 
-    def get_update_correction_script(self, outpath, corr_file):
+    def get_update_correction_script(self, outpath: Path, corr_file: Path):
         madx_script = self.get_base_madx_script(self.model_dir)
-        madx_script += (f"call, file = '{corr_file}';\n"
-                        f"exec, do_twiss_elements(LHCB{self.beam}, '{outpath}', {self.dpp});\n")
+        madx_script += (f"call, file = '{str(corr_file)}';\n"
+                        f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n")
         return madx_script
 
 

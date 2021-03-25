@@ -27,18 +27,143 @@ After each iteration the model variables are changed by :math:`-\delta var` and 
 observables are recalculated by Mad-X.
 :eq:`eq1` is then solved again.
 
+Input arguments are split into correction arguments and accelerator arguments.
+The former are listed below, the latter depend on the accelerator you want
+to use. Check :mod:`omc3.model` to see which ones are needed.
+
+**Arguments:**
+
+*--Required--*
+
+- **meas_dir**:
+
+    Path to the directory containing the measurement files.
+
+
+- **output_dir**:
+
+    Path to the directory where to write the output files.
+
+
+*--Optional--*
+
+- **beta_file_name**:
+
+    Prefix of the beta file to use. E.g.: getkmodbeta
+
+    default: ``beta_phase_``
+
+
+- **errorcut** *(float)*:
+
+    Reject BPMs whose error bar is higher than the corresponding input.
+    Input in order of optics_params.
+
+
+- **fullresponse_path**:
+
+    Path to the fullresponse binary file.If not given, calculates the
+    response analytically.
+
+
+- **max_iter** *(int)*:
+
+    Maximum number of correction re-iterations to perform. A value of `0`
+    means the correction is calculated once.
+
+    default: ``3``
+
+
+- **method** *(str)*:
+
+    Optimization method to use.
+
+    choices: ``('pinv', 'omp')``
+
+    default: ``pinv``
+
+
+- **min_corrector_strength** *(float)*:
+
+    Minimum (absolute) strength of correctors.
+
+    default: ``0.0``
+
+
+- **modelcut** *(float)*:
+
+    Reject BPMs whose deviation to the model is higher than the
+    correspoding input. Input in order of optics_params.
+
+
+- **n_correctors** *(int)*:
+
+    Maximum number of correctors to use. (Method: 'omp')
+
+
+- **optics_params** *(str)*:
+
+    List of parameters to correct upon (e.g. BETX BETY)
+
+    choices: ``('MUX', 'MUY', 'BBX', 'BBY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
+
+    default: ``['MUX', 'MUY', 'BETX', 'BETY', 'NDX', 'Q']``
+
+
+- **output_filename**:
+
+    Identifier of the output files.
+
+    default: ``changeparameters_iter``
+
+
+- **svd_cut** *(float)*:
+
+    Cutoff for small singular values of the pseudo inverse. (Method:
+    'pinv')Singular values smaller than rcond*largest_singular_value are
+    set to zero
+
+    default: ``0.01``
+
+
+- **update_response**:
+
+    Update the (analytical) response per iteration.
+
+    action: ``store_true``
+
+
+- **use_errorbars**:
+
+    Take into account the measured errorbars in the correction.
+
+    action: ``store_true``
+
+
+- **variable_categories**:
+
+    List of names of the variables classes to use.
+
+    default: ``['MQM', 'MQT', 'MQTL', 'MQY']``
+
+
+- **weights** *(float)*:
+
+    Weight to apply to each measured quantity. Input in order of
+    optics_params.
+
 
 :author: Lukas Malina, Joschua Dilly
 
 
 Possible problems and notes:
- * error-based weights default? likely - but be carefull with low tune errors vs
+ * error-based weights default? likely - but be careful with low tune errors vs
 svd cut in pseudoinverse
  * manual creation of pd.DataFrame varslist, deltas? maybe
 tunes in tfs_pandas single value or a column?
  * There should be some summation/renaming for iterations
  * For two beam correction
- * The two beams can be treated separately until the calcultation of correction
+ * The two beams can be treated separately until the calculation of correction
  * Values missing in the response (i.e. correctors of the other beam) shall be
 treated as zeros
  * Missing a part that treats the output from LSA
@@ -48,6 +173,7 @@ import os
 from pathlib import Path
 from typing import Dict
 
+from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import handler
@@ -126,12 +252,12 @@ def correction_params():
 
 
 @entrypoint(correction_params())
-def global_correction_entrypoint(opt: dict, accel_opt: dict) -> None:
+def global_correction_entrypoint(opt: DotDict, accel_opt) -> None:
     """Do the global correction. Iteratively."""
     LOG.info("Starting Iterative Global Correction.")
     opt = _check_opt_add_dicts(opt)
     opt = _add_hardcoded_paths(opt)
-    iotools.create_dirs(opt.output_dir)
+    opt.output_dir.mkdir(parents=True, exist_ok=True)
     accel_inst = manager.get_accelerator(accel_opt)
     handler.correct(accel_inst, opt)
 
@@ -146,13 +272,15 @@ def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
         elif len(opt[key]) != len(opt.optics_params):
             raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
         opt[key] = dict(zip(opt.optics_params, opt[key]))
+    opt.meas_dir = Path(opt.meas_dir)
+    opt.output_dir = Path(opt.output_dir)
     return opt
 
 
-def _add_hardcoded_paths(opt: dict) -> dict:  # acts inplace...
-    opt.change_params_path = str(Path(opt.output_dir) / f"{opt.output_filename}.madx")
-    opt.change_params_correct_path = str(Path(opt.output_dir) / f"{opt.output_filename}_correct.madx")
-    opt.knob_path = str(Path(opt.output_dir) / f"{opt.output_filename}.tfs")
+def _add_hardcoded_paths(opt: DotDict) -> DotDict:  # acts inplace...
+    opt.change_params_path = opt.output_dir / f"{opt.output_filename}.madx"
+    opt.change_params_correct_path = opt.output_dir / f"{opt.output_filename}_correct.madx"
+    opt.knob_path = opt.output_dir / f"{opt.output_filename}.tfs"
     return opt
 
 
@@ -210,5 +338,5 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
 
 
 if __name__ == "__main__":
-    with logging_tools.DebugMode(active=True, log_file="iterative_correction.log"):
+    with logging_tools.DebugMode(active=False, log_file="iterative_correction.log"):
         global_correction_entrypoint()

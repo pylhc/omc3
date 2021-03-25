@@ -14,6 +14,7 @@ from typing import Callable, Dict, List, Sequence, Tuple
 import numpy as np
 import pandas as pd
 import tfs
+from generic_parser import DotDict
 from optics_functions.coupling import coupling_via_cmatrix
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
@@ -30,14 +31,13 @@ from omc3.utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 
-def correct(accel_inst: Accelerator, opt: dict) -> None:
-    """
+def correct(accel_inst: Accelerator, opt: DotDict) -> None:
+    """ Perform global correction as described in :mod:`omc3.global_correction`.
 
     Args:
-        accel_inst:
-        opt:
-
-    Returns:
+        accel_inst (Accelerator): Accelerator Instance
+        opt (DotDict): Correction options,
+                       see :mod:`omc3.global_correction` for details.
 
     """
     method_options = opt.get_subdict(["svd_cut", "n_correctors"])
@@ -72,7 +72,7 @@ def correct(accel_inst: Accelerator, opt: dict) -> None:
         # ######### Update Model and Response ######### #
         if iteration > 0:
             LOG.debug("Updating model via MADX.")
-            corr_model_path = os.path.join(opt.output_dir, f"twiss_{iteration}{EXT}")
+            corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
             # This is where the corected model should be created?
             _create_corrected_model(corr_model_path, opt.change_params_path, accel_inst)
@@ -124,7 +124,7 @@ def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
     LOG.debug(f_str.format("", _rms(diff_w - r_delta_w)))
 
 
-def _load_fullresponse(full_response_path: str, variables: Sequence[str]) -> dict:
+def _load_fullresponse(full_response_path: Path, variables: Sequence[str]) -> dict:
     """
     Full response is dictionary of optics-parameter gradients upon
     a change of a single quadrupole strength
@@ -143,11 +143,11 @@ def _load_fullresponse(full_response_path: str, variables: Sequence[str]) -> dic
 
 def _get_measurement_data(
     keys: Sequence[str],
-    meas_dir: str,
+    meas_dir: Path,
     beta_file_name: str,
     w_dict: Dict[str, float],
 ) -> Tuple[List[str], Dict[str, tfs.TfsDataFrame]]:
-    """ Retruns a dictionary full of get_llm data """
+    """ Loads all measurements defined by `keys` into a dictionary. """
     measurement = {}
     filtered_keys = [key for key in keys if w_dict[key] != 0]
     for key in filtered_keys:
@@ -179,8 +179,8 @@ def _get_measurement_data(
     return filtered_keys, measurement
 
 
-def read_measurement_file(meas_dir: str, filename: str) -> tfs.TfsDataFrame:
-    return tfs.read(Path(meas_dir) / filename, index="NAME")
+def read_measurement_file(meas_dir: Path, filename: str) -> tfs.TfsDataFrame:
+    return tfs.read(meas_dir / filename, index="NAME")
 
 
 def _get_varlist(accel_cls: Accelerator, variables: Sequence[str]):  # TODO: Virtual?
@@ -271,15 +271,15 @@ def _create_corrected_model(twiss_out: str, change_params, accel_inst: Accelerat
     madx_wrapper.run_string(madx_script, log_file=os.devnull)
 
 
-def write_knob(knob_path: str, delta: pd.DataFrame) -> None:
+def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
     a = datetime.datetime.fromtimestamp(time.time())
     delta_out = -delta.loc[:, [DELTA]]
-    delta_out.headers["PATH"] = os.path.dirname(knob_path)
+    delta_out.headers["PATH"] = str(knob_path.parent)
     delta_out.headers["DATE"] = str(a.ctime())
     tfs.write(knob_path, delta_out, save_index="NAME")
 
 
-def writeparams(path_to_file: str, delta: pd.DataFrame) -> None:
+def writeparams(path_to_file: Path, delta: pd.DataFrame) -> None:
     with open(path_to_file, "w") as madx_script:
         for var in delta.index.to_numpy():
             value = delta.loc[var, DELTA]

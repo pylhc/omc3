@@ -3,12 +3,64 @@ Response Creator
 ----------------
 
 Provides a response generation wrapper.
-The response matrices can be either created by response_madx or analytically via TwissResponse.
+The response matrices can be either created by :mod:`omc3.correction.response_madx`
+or analytically via :mod:`omc3.correction.response_twiss`.
 
-:author: Joschua Dillys
+Input arguments are split into response creation arguments and accelerator arguments.
+The former are listed below, the latter depend on the accelerator you want
+to use. Check :mod:`omc3.model` to see which ones are needed.
+
+
+**Arguments:**
+
+*--Required--*
+
+- **outfile_path** *(str)*:
+
+    Name of fullresponse file.
+
+
+*--Optional--*
+
+- **creator** *(str)*:
+
+    Create either with madx or analytically from twiss file.
+
+    choices: ``('madx', 'twiss')``
+
+    default: ``madx``
+
+
+- **debug**:
+
+    Print debug information.
+
+    action: ``store_true``
+
+
+- **delta_k** *(float)*:
+
+    Delta K1 to be applied to quads for sensitivity matrix (madx-only).
+
+    default: ``2e-05``
+
+
+- **optics_params** *(str)*:
+
+    List of parameters to correct upon (e.g. BBX BBY; twiss-only).
+
+
+- **variable_categories**:
+
+    List of the variables classes to use.
+
+    default: ``['MQM', 'MQT', 'MQTL', 'MQY']``
+
+
 """
 import pickle
 
+from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import response_madx, response_twiss
@@ -37,31 +89,10 @@ def response_params():
 
 
 @entrypoint(response_params())
-def create_response_entrypoint(opt: dict, other_opt: dict) -> None:
+def create_response_entrypoint(opt: DotDict, other_opt) -> None:
     """Entry point for creating pandas-based response matrices.
 
     The response matrices can be either created by response_madx or TwissResponse.
-
-    Keyword Args:
-        Required
-        outfile_path (str): Name of fullresponse file.
-                            **Flags**: ['-o', '--outfile']
-        Optional
-        creator (str): Create either with madx or analytically from twiss file.
-                       **Flags**: --creator
-                       **Choices**: ('madx', 'twiss')
-                       **Default**: ``madx``
-        debug: Print debug information.
-               **Flags**: --debug
-               **Action**: ``store_true``
-        delta_k (float): Delta K1L to be applied to quads for sensitivity matrix (madx-only).
-                         **Flags**: ['-k', '--deltak']
-                         **Default**: ``2e-05``
-        optics_params (str): List of parameters to correct upon (e.g. BBX BBY; twiss-only).
-                             **Flags**: --optics_params
-        variable_categories: List of the variables classes to use.
-                             **Flags**: --variables
-                             **Default**: ``['MQM', 'MQT', 'MQTL', 'MQY']``
     """
     LOG.info("Creating response.")
     accel_inst = manager.get_accelerator(other_opt)
