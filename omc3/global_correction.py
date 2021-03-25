@@ -29,7 +29,7 @@ observables are recalculated by Mad-X.
 
 Input arguments are split into correction arguments and accelerator arguments.
 The former are listed below, the latter depend on the accelerator you want
-to use. Check :mod:`omc3.model` to see which ones are needed.
+to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 **Arguments:**
 
@@ -153,19 +153,14 @@ to use. Check :mod:`omc3.model` to see which ones are needed.
     optics_params.
 
 
-:author: Lukas Malina, Joschua Dilly
 
-
-Possible problems and notes:
- * error-based weights default? likely - but be careful with low tune errors vs
-svd cut in pseudoinverse
- * manual creation of pd.DataFrame varslist, deltas? maybe
-tunes in tfs_pandas single value or a column?
+Possible problems and notes (lmalina, 2020):
+ * error-based weights default? likely - but be careful with low tune errors vs svd cut in pseudoinverse
+ * manual creation of pd.DataFrame varslist, deltas? maybe tunes in tfs_pandas single value or a column?
  * There should be some summation/renaming for iterations
  * For two beam correction
  * The two beams can be treated separately until the calculation of correction
- * Values missing in the response (i.e. correctors of the other beam) shall be
-treated as zeros
+ * Values missing in the response (i.e. correctors of the other beam) shall be treated as zeros
  * Missing a part that treats the output from LSA
 
 """

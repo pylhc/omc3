@@ -2,20 +2,17 @@
 Filters
 -------
 
-
 Filters for different kind of measurement data, and to filter the entries
 in the response matrix based on (the presumably then filtered) measurement data.
-Measurement filters extract valid (or trustworthy) data,
-e.g. to be used in corrections.
+Measurement filters extract valid (or trustworthy) data, e.g. to be used in
+corrections.
 The main function is :meth:`omc3.correction.filters.filter_measurement`
 which decides on which filter to use for the given keys.
 
 In earlier implementations there was a split between all kinds of measures,
 i.e. beta, phase etc. In this implementation most of it is handled by
 the `_get_filtered_generic` function.
-
 """
-
 from collections import defaultdict
 from typing import Callable, Dict, Sequence
 
@@ -36,8 +33,8 @@ LOG = logging_tools.get_logger(__name__)
 
 def filter_measurement(keys: Sequence[str], meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> dict:
     """ Filters measurements in `keys` based on the dict-entries (keys as in `keys`)
-     in `opt.errorcut`, `opt.modelcut` and `opt.weights` and unifies the
-     data-column names to VALUE, ERROR, WEIGHT.
+    in `opt.errorcut`, `opt.modelcut` and `opt.weights` and unifies the
+    data-column names to VALUE, ERROR, WEIGHT.
     If `opt.use_errorbars` is `True` the weights will be also based on the errors."""
     filters = _get_measurement_filters()
     new = dict.fromkeys(keys)
@@ -47,6 +44,8 @@ def filter_measurement(keys: Sequence[str], meas: pd.DataFrame, model: pd.DataFr
 
 
 def _get_measurement_filters() -> defaultdict:
+    """ Returns a dict with the respective `_get_*` filter-functions that defaults
+    to `_get_filtered_generic`."""
     return defaultdict(lambda: _get_filtered_generic, {f"{TUNE}": _get_tunes})
 
 
@@ -116,7 +115,7 @@ def filter_response_index(response: Dict, measurement: Dict, keys: Sequence[str]
 
 def _get_response_filters() -> Dict[str, Callable]:
     """ Returns a dict with the respective `_get_*_response` functions that defaults
-     to `_get_generic_response`."""
+    to `_get_generic_response`."""
     return defaultdict(
         lambda: _get_generic_response,
         {f"{PHASE_ADV}X": _get_phase_response, f"{PHASE_ADV}Y": _get_phase_response, f"{TUNE}": _get_tune_response},

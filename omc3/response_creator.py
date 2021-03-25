@@ -8,7 +8,7 @@ or analytically via :mod:`omc3.correction.response_twiss`.
 
 Input arguments are split into response creation arguments and accelerator arguments.
 The former are listed below, the latter depend on the accelerator you want
-to use. Check :mod:`omc3.model` to see which ones are needed.
+to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 
 **Arguments:**
