@@ -308,7 +308,7 @@ class TwissResponse:
                     bet_term[:, None] * np.exp(i2pi * (phx + phs_sign * phy)) /
                     (4 * (1 - np.exp(i2pi * (tw.Q1 + phs_sign * tw.Q2)))),
                     index=k1s_el, columns=el_out).transpose()
-        return dict_mul(self._direction, dcoupl)
+        return dict_multiply(self._direction, dcoupl)
 
     def _calc_beta_response(self):
         """Response Matrix for delta beta.
@@ -339,10 +339,10 @@ class TwissResponse:
                     columns=el_out,
                 ).transpose()
 
-        return dict_mul(self._direction, dbeta)
+        return dict_multiply(self._direction, dbeta)
 
     def _calc_dispersion_response(self):
-        """Response Matrix for delta normalized dispersion
+        r"""Response Matrix for delta normalized dispersion
 
         Eq. 25-27 in [#FranchiAnalyticformulasrapid2017]_
         But w/o the assumtion :math:`\delta K_1 = 0` from Appendix B.1
@@ -395,10 +395,10 @@ class TwissResponse:
                         LOG.debug(f"  No '{el_type}' variables found. "
                                   f"Dispersion Response '{out_str}' will be empty.")
                         disp_resp[out_str] = tfs.TfsDataFrame(None, index=el_out)
-        return dict_mul(self._direction, disp_resp)
+        return dict_multiply(self._direction, disp_resp)
 
     def _calc_norm_dispersion_response(self):
-        """Response Matrix for delta normalized dispersion
+        r"""Response Matrix for delta normalized dispersion
 
         Eq. 25-27 in [#FranchiAnalyticformulasrapid2017]_
         But w/o the assumtion :math:`\delta K_1 = 0` from Appendix B.1
@@ -470,7 +470,7 @@ class TwissResponse:
                             f"Normalized Dispersion Response '{out_str:s}' will be empty."
                         )
                         disp_resp[out_str] = tfs.TfsDataFrame(None, index=el_out)
-        return dict_mul(self._direction, disp_resp)
+        return dict_multiply(self._direction, disp_resp)
 
     def _calc_phase_advance_response(self):
         """Response Matrix for delta DPhi.
@@ -523,7 +523,7 @@ class TwissResponse:
                 dmu = {"X": tfs.TfsDataFrame(None, index=el_out),
                        "Y": tfs.TfsDataFrame(None, index=el_out)}
 
-        return dict_mul(self._direction, dmu)
+        return dict_multiply(self._direction, dmu)
 
     def _calc_phase_response(self):
         """Response Matrix for delta DPhi.
@@ -571,7 +571,7 @@ class TwissResponse:
                 dmu = {"X": tfs.TfsDataFrame(None, index=el_out),
                        "Y": tfs.TfsDataFrame(None, index=el_out)}
 
-        return dict_mul(self._direction, dmu)
+        return dict_multiply(self._direction, dmu)
 
     def _calc_tune_response(self):
         """Response vectors for Tune.
@@ -596,7 +596,7 @@ class TwissResponse:
                 dtune = {"X": tfs.TfsDataFrame(None, index=["DQX"]),
                          "Y": tfs.TfsDataFrame(None, index=["DQY"])}
 
-        return dict_mul(self._direction, dtune)
+        return dict_multiply(self._direction, dtune)
 
     ################################
     #       Normalizing
@@ -628,7 +628,7 @@ class TwissResponse:
 
     @staticmethod
     def _map_to_variables(df, mapping):
-        """Maps from magnets to variables using self._var_to_el.
+        r"""Maps from magnets to variables using self._var_to_el.
         Could actually be done by matrix multiplication :math:'A \cdot var_to_el',
          yet, as var_to_el is very sparsely populated, looping is easier.
 
@@ -812,8 +812,8 @@ def response_add(*args) -> pd.DataFrame:
     return base_df
 
 
-def dict_mul(number: float, dictionary: dict) -> dict:
-    """ Multiply an int with a dict of dataframes (or anything multiplyable) """
+def dict_multiply(number: float, dictionary: dict) -> dict:
+    """ Multiply all values in a dict with the given `number`."""
     result_dict = copy.deepcopy(dictionary)
     if number != 1:
         for key in result_dict:

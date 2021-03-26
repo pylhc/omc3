@@ -86,7 +86,7 @@ def _generate_madx_jobs(
     def _do_macro(var):
         return (
             f"exec, create_table(table.{var:s});\n"
-            f"write, table=table.{var:s}, file='{_get_tablefile(temp_dir, var):s}';\n"
+            f"write, table=table.{var:s}, file='{str(_get_tablefile(temp_dir, var)):s}';\n"
         )
 
     LOG.debug("Generating MADX jobfiles.")
@@ -161,14 +161,14 @@ def _load_madx_results(
         path_and_vars.append((temp_dir, value))
 
     _, base_tfs = _load_and_remove_twiss((temp_dir, "0"))
-    mapping = dict([(order, {}) for order in k_values] + [(order + "L", {}) for order in k_values])
+    mapping = dict([(order, {}) for order in k_values] + [(f"{order}L", {}) for order in k_values])
     for var, tfs_data in process_pool.map(_load_and_remove_twiss, path_and_vars):
         for order in k_values:
             diff = (tfs_data[order] - base_tfs[order])
             mask = diff != 0  # drop zeros, maybe abs(diff) < eps ?
             k_list = diff.loc[mask]
             mapping[order][var] = k_list
-            mapping[order + "L"][var] = k_list.mul(base_tfs.loc[mask, "L"])
+            mapping[f"{order}L"][var] = k_list.mul(base_tfs.loc[mask, "L"])
     return mapping
 
 
@@ -200,7 +200,7 @@ def _get_surveyfile(folder: Path, index: int) -> Path:
 
 def _launch_single_job(inputfile_path: Path):
     """ Function for pool to start a single madx job """
-    log_file = inputfile_path + ".log"
+    log_file = inputfile_path.with_name(f"{inputfile_path.name}.log")
     try:
         madx_wrapper.run_file(inputfile_path, log_file=log_file)
     except madx_wrapper.MadxError as e:
