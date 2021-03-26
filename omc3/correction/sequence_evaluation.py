@@ -97,7 +97,7 @@ def _generate_madx_jobs(
 
     # build content for testing each variable
     for proc_index in range(num_proc):
-        job_content = madx_script % {"TEMPFILE": _get_surveyfile(temp_dir, proc_index)}
+        job_content = madx_script % {"TEMPFILE": str(_get_surveyfile(temp_dir, proc_index))}
 
         for i in range(vars_per_proc):
             try:
