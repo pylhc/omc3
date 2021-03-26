@@ -29,7 +29,7 @@ def test_with_nonexistent_file(tmp_path):
          - Error message is read from log
     """
     call_file = "does_not_exist.madx"
-    content = "call, file ='{:s}';".format(call_file)
+    content = f"call, file ='{call_file:s}';"
     log_file = tmp_path / "tmp_log.log"
     with pytest.raises(madx_wrapper.MadxError) as e:
         madx_wrapper.run_string(content, log_file=log_file, cwd=tmp_path)

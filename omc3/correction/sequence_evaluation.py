@@ -289,7 +289,8 @@ def check_varmap_file(accel_inst: Accelerator, vars_categories):
 
     varmap_path = Path(accel_inst.model_dir) / f"{'_'.join(sorted(set(vars_categories)))}.{EXT}"
     if not varmap_path.exists():
-        LOG.info(f"Variable mapping '{varmap_path:s}' not found. Evaluating it via madx.")
+        LOG.info(f"Variable mapping '{str(varmap_path):s}' not found. "
+                 "Evaluating it via madx.")
         mapping = evaluate_for_variables(accel_inst, vars_categories)
         with open(varmap_path, "wb") as dump_file:
             pickle.dump(mapping, dump_file)
