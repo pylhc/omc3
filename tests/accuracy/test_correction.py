@@ -1,35 +1,42 @@
-import os
 import pickle
-import tempfile
+import shutil
 
 import numpy as np
 import pytest
 import tfs
-from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.correction.constants import DELTA, ERR, PHASE_ADV, BETA, DISP, PHASE, NORM_DISP, TUNE, F1001, F1010
+from omc3 import model
 from omc3.global_correction import global_correction_entrypoint
-from omc3.optics_measurements.constants import BETA_NAME, DISPERSION_NAME, EXT, NORM_DISP_NAME, PHASE_NAME
 from omc3.response_creator import create_response_entrypoint
+from omc3.correction.constants import PHASE_ADV, BETA, DISP, NORM_DISP, F1001, F1010, TUNE
 
-NAME = "NAME"
+from pathlib import Path
+
+
+# Paths ---
+INPUTS = Path(__file__).parent / 'inputs'
+CORRECTION_DIR = INPUTS / "correction"
+MODEL_DIR = INPUTS / "models" / "inj_beam1"
+FULLRESPONSE_PATH = CORRECTION_DIR / "Fullresponse_pandas"
+GENERATED_MEASUREMENT_PATH = CORRECTION_DIR / "twiss_quadrupole_error.dat"
+FULLRESPONSE_PATH_SKEW = CORRECTION_DIR / "Fullresponse_pandas_skew"
+
+GENERATED_MEASUREMENT_PATH_SKEW = CORRECTION_DIR / "twiss_skew_quadrupole_error.dat"
+ERROR_FILE_SKEW = CORRECTION_DIR / "skew_quadrupole_error.madx"
+
+# Correction Input Parameters ---
 MAX_ITER = 1
-CORRECTION_DIR = os.path.join(os.path.dirname(__file__), "..", "inputs", "correction") + "/"
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "inputs", "models", "inj_beam1") + "/"
-FULLRESPONSE_PATH = CORRECTION_DIR + "Fullresponse_pandas"
-GENERATED_MEASUREMENT_PATH = CORRECTION_DIR + "twiss_quadrupole_error.dat"
 ACCEL_SETTINGS = dict(ats=True, beam=1, model_dir=MODEL_DIR, year="2018", accel="lhc", energy=0.45)
-OPTICS_PARAMS = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETA}X", f"{BETA}Y", f"{DISP}X", f"{NORM_DISP}X",
-                 f"{TUNE}"]
-VARIABLE_CATEGORIES = ["MQY"]
-WEIGHTS = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0]
-GENERATED_MEASUREMENT_PATH_SKEW = CORRECTION_DIR + "twiss_skew_quadrupole_error.dat"
-ERROR_FILE_SKEW = CORRECTION_DIR + "skew_quadrupole_error.madx"
+OPTICS_PARAMS = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y",
+                 f"{BETA}X", f"{BETA}Y",
+                 f"{DISP}X", f"{NORM_DISP}X", f"{TUNE}"]
 OPTICS_PARAMS_SKEW = [f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"]
-VARIABLE_CATEGORIES_SKEW = ["MQSl"]
-WEIGHTS_SKEW = [1.0, 1.0, 1.0, 1.0]
-FULLRESPONSE_PATH_SKEW = CORRECTION_DIR + "Fullresponse_pandas_skew"
+
 RMS_TOL_DICT_SKEW = {rdt: 0.001 for rdt in OPTICS_PARAMS_SKEW}
+VARIABLE_CATEGORIES = ["MQY"]
+VARIABLE_CATEGORIES_SKEW = ["MQSl"]
+WEIGHTS = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0]
+WEIGHTS_SKEW = [1.0, 1.0, 1.0, 1.0]
 RMS_TOL_DICT = {
     f"{PHASE_ADV}X": 0.001,
     f"{PHASE_ADV}Y": 0.001,
@@ -56,134 +63,87 @@ RMS_TOL_DICT_CORRECTION = {
 }
 
 
-def _add_coupling(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
-    """
-    Computes the coupling RDTs from the input TfsDataFrame and returns a copy of said TfsDataFrame with
-    columns for the real and imaginary parts of the computed coupling RDTs.
-
-    Args:
-        tfs_df (tfs.TfsDataFrame): Twiss dataframe.
-
-    Returns:
-        A TfsDataFrame with the added columns.
-    """
-    result_tfs_df = tfs_df.copy()
-    coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
-    result_tfs_df[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
-    result_tfs_df[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
-    result_tfs_df[f"{F1010}R"] = np.real(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
-    result_tfs_df[f"{F1010}I"] = np.imag(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
-    return result_tfs_df
+@pytest.mark.basic
+def test_global_correct_quad(tmp_path):
+    _assert_global_correct(
+        ACCEL_SETTINGS,
+        tmp_path,
+        OPTICS_PARAMS,
+        VARIABLE_CATEGORIES,
+        WEIGHTS,
+        MAX_ITER,
+        FULLRESPONSE_PATH,
+        GENERATED_MEASUREMENT_PATH,
+        RMS_TOL_DICT,
+    )
 
 
-def _tfs_converter(twiss_model_file, twiss_file, optics_parameters, Output_dir):
-    """
-    Takes a twiss file and writes the parameters in optics_parameters to Output_dir in the format
-    global_correction_entrypoint uses (same format you would get from hole_in_one).
+@pytest.mark.basic
+def test_global_correct_skew(tmp_path):
+    _assert_global_correct(
+        ACCEL_SETTINGS,
+        tmp_path,
+        OPTICS_PARAMS_SKEW,
+        VARIABLE_CATEGORIES_SKEW,
+        WEIGHTS_SKEW,
+        MAX_ITER,
+        FULLRESPONSE_PATH_SKEW,
+        GENERATED_MEASUREMENT_PATH_SKEW,
+        RMS_TOL_DICT_SKEW,
+    )
 
-    Args:
-        twiss_model_file:
-        twiss_file:
-        optics_parameters:
-        Output_dir:
 
-    Returns:
+@pytest.mark.basic
+def test_fullresponse_madx_quad(tmp_path):
+    _assert_response_madx(
+        ACCEL_SETTINGS, tmp_path, VARIABLE_CATEGORIES, OPTICS_PARAMS, FULLRESPONSE_PATH
+    )
 
-    """
-    err_low = 0.01
-    err_high = 0.02
 
-    df_twiss = _add_coupling(tfs.read(twiss_file, NAME))
-    df_model = _add_coupling(tfs.read(twiss_model_file, NAME))
+@pytest.mark.basic
+def test_fullresponse_madx_skew(tmp_path):
+    _assert_response_madx(
+        ACCEL_SETTINGS,
+        tmp_path,
+        VARIABLE_CATEGORIES_SKEW,
+        OPTICS_PARAMS_SKEW,
+        FULLRESPONSE_PATH_SKEW,
+    )
 
-    h_dict = {f"{TUNE}1": df_twiss[f"{TUNE}1"], f"{TUNE}2": df_twiss[f"{TUNE}2"]}
-    for parameter in optics_parameters:
-        col = parameter if f"{PHASE_ADV}" not in parameter else f"{PHASE}{parameter[-1]}"
-        if parameter.startswith(f"{PHASE_ADV}"):
-            new = tfs.TfsDataFrame(index=df_twiss.index[:-1:])  # ???????
-            new[NAME] = df_twiss.index[:-1:]
-            new[f"{NAME}2"] = df_twiss.index[1::]
-            new[col] = (
-                df_twiss.loc[new[f"{NAME}2"], parameter].to_numpy()
-                - df_twiss.loc[new[NAME], parameter].to_numpy()
-            )
 
-            mean_abs = np.mean(abs(new[col].to_numpy()))
-            new[f"{ERR}{col}"] = np.random.uniform(
-                err_low * mean_abs, err_high * mean_abs, len(df_twiss.index) - 1
-            )
-            new[f"{ERR}{DELTA}{col}"] = new[f"{ERR}{col}"]
-            new[f"{DELTA}{col}"] = new[col] - (
-                df_model.loc[new[f"{NAME}2"], parameter].to_numpy()
-                - df_model.loc[new[NAME], parameter].to_numpy()
-            )
-            write_file = f"{PHASE_NAME}{parameter[-1].lower()}{EXT}"
+@pytest.mark.basic
+def test_fullresponse_twiss(tmp_path):
+    _assert_response_twiss(
+        ACCEL_SETTINGS,
+        tmp_path,
+        VARIABLE_CATEGORIES,
+        FULLRESPONSE_PATH,
+        RMS_TOL_DICT_CORRECTION,
+    )
 
-        elif parameter.startswith(f"{BETA}"):
-            new = tfs.TfsDataFrame(index=df_twiss.index)
-            new[NAME] = df_twiss.index
-            new[col] = df_twiss.loc[:, parameter]
 
-            mean_abs = np.mean(abs(new[col].to_numpy()))
-            new[f"{ERR}{col}"] = np.random.uniform(
-                err_low * mean_abs, err_high * mean_abs, len(df_twiss.index)
-            )
-            new[f"{ERR}{DELTA}{col}"] = new[f"{ERR}{col}"] / df_model.loc[:, parameter]
-            new[f"{DELTA}{col}"] = (new[col] - df_model.loc[:, parameter]) / df_model.loc[:, parameter]
-            write_file = f"{BETA_NAME}{parameter[-1].lower()}{EXT}"
+@pytest.mark.basic
+def test_fullresponse_twiss_skew(tmp_path):
+    _assert_response_twiss(
+        ACCEL_SETTINGS,
+        tmp_path,
+        VARIABLE_CATEGORIES_SKEW,
+        FULLRESPONSE_PATH_SKEW,
+        RMS_TOL_DICT_CORRECTION,
+    )
 
-        elif parameter.startswith(f"{DISP}"):
-            new = tfs.TfsDataFrame(index=df_twiss.index)
-            new[NAME] = df_twiss.index
-            new[col] = df_twiss.loc[:, parameter]
 
-            mean_abs = np.mean(abs(new[col].to_numpy()))
-            new[f"{ERR}{col}"] = np.random.uniform(
-                err_low * mean_abs, err_high * mean_abs, len(df_twiss.index)
-            )
-            new[f"{ERR}{DELTA}{col}"] = new[f"{ERR}{col}"]
-            new[f"{DELTA}{col}"] = new[col] - df_model.loc[:, parameter]
-            write_file = f"{DISPERSION_NAME}{parameter[-1].lower()}{EXT}"
-
-        elif parameter.startswith("F") and parameter.endswith("R"):
-            Re = parameter
-            Im = parameter[:-1] + "I"
-            new = tfs.TfsDataFrame(index=df_twiss.index)
-            new[NAME] = df_twiss.index
-            new[Re] = df_twiss.loc[:, Re]
-
-            mean_abs_Re = np.mean(abs(new[Re].to_numpy()))
-            new[f"{ERR}{Re}"] = np.random.uniform(
-                err_low * mean_abs_Re, err_high * mean_abs_Re, len(df_twiss.index)
-            )
-            new[f"{ERR}{DELTA}{Re}"] = new[f"{ERR}{Re}"]
-            new[f"{DELTA}{Re}"] = new[Re] - df_model.loc[:, Re]
-
-            new[Im] = df_twiss.loc[:, Im]
-            mean_abs_Im = np.mean(abs(new[Im].to_numpy()))
-            new[f"{ERR}{Im}"] = np.random.uniform(
-                err_low * mean_abs_Im, err_high * mean_abs_Im, len(df_twiss.index)
-            )
-            new[f"{ERR}{DELTA}{Im}"] = new[f"{ERR}{Im}"]
-            new[f"{DELTA}{Im}"] = new[Im] - df_model.loc[:, Im]
-            write_file = f"{parameter[:-1]}{EXT}"
-
-        elif parameter == f"{NORM_DISP}X":
-            new = tfs.TfsDataFrame(index=df_twiss.index)
-            new[NAME] = df_twiss.index
-            new[col] = np.divide(df_twiss.loc[:, f"{DISP}X"], np.sqrt(df_twiss.loc[:, f"{BETA}X"]))
-
-            mean_abs = np.mean(abs(new[col].to_numpy()))
-            new[f"{ERR}{col}"] = np.random.uniform(
-                err_low * mean_abs, err_high * mean_abs, len(df_twiss.index)
-            )
-            new[f"{ERR}{DELTA}{col}"] = new[f"{ERR}{col}"]
-            new[f"{DELTA}{col}"] = new[col] - np.divide(
-                df_model.loc[:, f"{DISP}X"], np.sqrt(df_model.loc[:, f"{BETA}X"])
-            )
-            write_file = f"{NORM_DISP_NAME}{parameter[-1].lower()}{EXT}"
-
-        tfs.write(f"{Output_dir}{write_file}", new, headers_dict=h_dict, save_index="index_column")
+@pytest.mark.basic
+def test_iteration_convergence(tmp_path):
+    _assert_iteration_convergence(
+        ACCEL_SETTINGS,
+        tmp_path,
+        OPTICS_PARAMS,
+        VARIABLE_CATEGORIES,
+        WEIGHTS,
+        FULLRESPONSE_PATH,
+        GENERATED_MEASUREMENT_PATH,
+    )
 
 
 def _get_rms_dict(
@@ -197,10 +157,10 @@ def _get_rms_dict(
     generated_measurement_path,
 ):
     model_dir = accel_settings["model_dir"]
-    model_path = model_dir + "twiss.dat"
-    corrected_path = correction_dir + f"twiss_{max_iter}.tfs"
+    model_path = model_dir / "twiss.dat"
+    corrected_path = correction_dir / f"twiss_{max_iter}.tfs"
 
-    _tfs_converter(model_path, generated_measurement_path, optics_params, correction_dir)
+    _convert_model_to_optics_measurement_tfs(model_path, generated_measurement_path, optics_params, correction_dir)
     global_correction_entrypoint(
         **accel_settings,
         meas_dir=correction_dir,
@@ -260,7 +220,7 @@ def _assert_response_madx(
     comparison_fullresponse_path,
     delta_k=0.00002,
 ):
-    fullresponse_path = correction_dir + "Fullresponse_pandas_omc3"
+    fullresponse_path = correction_dir / "Fullresponse_pandas_omc3"
     create_response_entrypoint(
         **accel_settings,
         creator="madx",
@@ -294,7 +254,7 @@ def _assert_response_twiss(
     RMS_tol_dict,
     delta_k=0.00002,
 ):
-    fullresponse_path = correction_dir + "Fullresponse_pandas_omc3"
+    fullresponse_path = correction_dir / "Fullresponse_pandas_omc3"
     create_response_entrypoint(
         **accel_settings,
         creator="twiss",
@@ -383,98 +343,12 @@ def _assert_iteration_convergence(
         assert RMS_dict2[key] < RMS_dict1[key], f"RMS of {key} is got worse after repeated correction"
 
 
-@pytest.mark.basic
-def test_global_correct_quad():
-    with tempfile.TemporaryDirectory() as temp:
-        temp_dir = temp + "/"
-        _assert_global_correct(
-            ACCEL_SETTINGS,
-            temp_dir,
-            OPTICS_PARAMS,
-            VARIABLE_CATEGORIES,
-            WEIGHTS,
-            MAX_ITER,
-            FULLRESPONSE_PATH,
-            GENERATED_MEASUREMENT_PATH,
-            RMS_TOL_DICT,
-        )
+@pytest.fixture(scope="module")
+def model_inj_beam1(tmp_path: Path):
+    correction_inputs_path = INPUTS / "correction"
+    macros_path = tmp_path / "macros"
+    macros_path.mkdir()
 
-
-@pytest.mark.basic
-def test_global_correct_skew():
-    with tempfile.TemporaryDirectory() as temp:
-        temp_dir = temp + "/"
-        _assert_global_correct(
-            ACCEL_SETTINGS,
-            temp_dir,
-            OPTICS_PARAMS_SKEW,
-            VARIABLE_CATEGORIES_SKEW,
-            WEIGHTS_SKEW,
-            MAX_ITER,
-            FULLRESPONSE_PATH_SKEW,
-            GENERATED_MEASUREMENT_PATH_SKEW,
-            RMS_TOL_DICT_SKEW,
-        )
-
-
-@pytest.mark.basic
-def test_fullresponse_madx_quad():
-    with tempfile.TemporaryDirectory() as temp:
-        temp_dir = temp + "/"
-        _assert_response_madx(
-            ACCEL_SETTINGS, temp_dir, VARIABLE_CATEGORIES, OPTICS_PARAMS, FULLRESPONSE_PATH
-        )
-
-
-@pytest.mark.basic
-def test_fullresponse_madx_skew():
-    with tempfile.TemporaryDirectory() as temp:
-        temp_dir = temp + "/"
-        _assert_response_madx(
-            ACCEL_SETTINGS,
-            temp_dir,
-            VARIABLE_CATEGORIES_SKEW,
-            OPTICS_PARAMS_SKEW,
-            FULLRESPONSE_PATH_SKEW,
-        )
-
-
-@pytest.mark.basic
-def test_fullresponse_twiss():
-    with tempfile.TemporaryDirectory() as temp:
-        temp_dir = temp + "/"
-        _assert_response_twiss(
-            ACCEL_SETTINGS,
-            temp_dir,
-            VARIABLE_CATEGORIES,
-            FULLRESPONSE_PATH,
-            RMS_TOL_DICT_CORRECTION,
-        )
-
-
-@pytest.mark.basic
-def test_fullresponse_twiss_skew():
-    with tempfile.TemporaryDirectory() as temp:
-        temp_dir = temp + "/"
-        _assert_response_twiss(
-            ACCEL_SETTINGS,
-            temp_dir,
-            VARIABLE_CATEGORIES_SKEW,
-            FULLRESPONSE_PATH_SKEW,
-            RMS_TOL_DICT_CORRECTION,
-        )
-
-
-@pytest.mark.basic
-def test_itteration_convergence():
-    with tempfile.TemporaryDirectory() as temp:
-        temp_dir = temp + "/"
-        _assert_iteration_convergence(
-            ACCEL_SETTINGS,
-            temp_dir,
-            OPTICS_PARAMS,
-            VARIABLE_CATEGORIES,
-            WEIGHTS,
-            FULLRESPONSE_PATH,
-            GENERATED_MEASUREMENT_PATH,
-        )
+    shutil.copytree(INPUTS / "models" / "inj_beam1", tmp_path)
+    shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
+    return tmp_path

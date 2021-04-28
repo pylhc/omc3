@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 import tfs
 from generic_parser import DotDict
-from optics_functions.coupling import coupling_via_cmatrix
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
@@ -23,6 +22,7 @@ from omc3.correction import filters, model_appenders, response_twiss
 from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
                                        F1010, NORM_DISP, PHASE_ADV, TUNE,
                                        VALUE, WEIGHT)
+from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT,
                                                 NORM_DISP_NAME, PHASE_NAME)
@@ -59,7 +59,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     nominal_model = _maybe_add_coupling_to_model(accel_inst.model, optics_params)
     # apply filters to data
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
-    meas_dict = model_appenders.append_model_to_measurement(nominal_model, meas_dict, optics_params)
+    meas_dict = model_appenders.add_differences_to_model_to_measurements(nominal_model, meas_dict)
 
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
     resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
@@ -83,7 +83,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
             corr_model = corr_model_elements.loc[bpms_index_mask, :]
 
-            meas_dict = model_appenders.append_model_to_measurement(corr_model, meas_dict, optics_params)
+            meas_dict = model_appenders.add_differences_to_model_to_measurements(corr_model, meas_dict)
 
             if opt.update_response:
                 LOG.debug("Updating response.")
@@ -191,10 +191,8 @@ def _get_varlist(accel_cls: Accelerator, variables: Sequence[str]):  # TODO: Vir
 
 
 def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -> tfs.TfsDataFrame:
-    """
-    Computes the coupling RDTs from the input model TfsDataFrame and returns a copy of said TfsDataFrame with
-    columns for the real and imaginary parts of the computed coupling RDTs. The operation is only done if
-    terms corresponding to coupling RDTs are found in the provided keys.
+    """ Add coupling to the model, if terms corresponding to coupling RDTs are
+    found in the provided keys.
 
     Args:
         model (tfs.TfsDataFrame): Twiss dataframe.
@@ -203,14 +201,9 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     Returns:
         A TfsDataFrame with the added columns.
     """
-    result_tfs_df = model.copy()
     if any([key for key in keys if key.startswith("F1")]):
-        coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
-        result_tfs_df[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
-        result_tfs_df[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
-        result_tfs_df[f"{F1010}R"] = np.real(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
-        result_tfs_df[f"{F1010}I"] = np.imag(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
-    return result_tfs_df
+        return add_coupling_to_model(model)
+    return model
 
 
 def _calculate_delta(
@@ -245,14 +238,14 @@ def _get_method_fun(method: str) -> Callable:
     return method_to_function_dict[method]
 
 
-def _pseudo_inverse(response_mat: pd.DataFrame, diff_vec, opt: dict):
+def _pseudo_inverse(response_mat: pd.DataFrame, diff_vec, opt: DotDict):
     """ Calculates the pseudo-inverse of the response via svd. (numpy) """
     if opt.svd_cut is None:
         raise ValueError("svd_cut setting needed for pseudo inverse method.")
     return np.dot(np.linalg.pinv(response_mat, opt.svd_cut), diff_vec)
 
 
-def _orthogonal_matching_pursuit(response_mat: pd.DataFrame, diff_vec, opt: dict):
+def _orthogonal_matching_pursuit(response_mat: pd.DataFrame, diff_vec, opt: DotDict):
     """ Calculated n_correctors via orthogonal matching pursuit"""
     if opt.n_correctors is None:
         raise ValueError("n_correctors setting needed for orthogonal matching pursuit.")

@@ -11,6 +11,8 @@ from pathlib import Path
 
 from generic_parser.entry_datatypes import get_instance_faker_meta
 from generic_parser.entrypoint_parser import save_options_to_config
+from pandas import DataFrame
+from tfs import TfsDataFrame
 
 from omc3.definitions import formats
 from omc3.utils import logging_tools
@@ -241,6 +243,17 @@ class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
         if isinstance(value, str):
             value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
         return Path(value)
+
+
+class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path, str)):
+    """A class that behaves like a Path when possible, otherwise like a string."""
+    def __new__(cls, value):
+        if isinstance(value, str):
+            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+        try:
+            return Path(value)
+        except TypeError:
+            TfsDataFrame(value)
 
 
 def convert_paths_in_dict_to_strings(dict_: dict) -> dict:

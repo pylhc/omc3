@@ -2,25 +2,29 @@
 Model Appenders
 ---------------
 
-Utilities to get variations from measurement to model and append those to the proper data structures.
+Utilities to append new columns to measurement and model dataframes.
+E.g. get differences between measurement and model and append those to
+the measurement data (for corrections).
 """
 from collections import defaultdict
 from typing import Callable, Dict, Sequence
 
 import numpy as np
 import pandas as pd
+from optics_functions.coupling import coupling_via_cmatrix
 
 from omc3.correction.constants import (BETA, DIFF, MODEL, NORM_DISP, PHASE_ADV,
-                                       TUNE, VALUE)
+                                       TUNE, VALUE, F1001, F1010)
 from omc3.utils import logging_tools
+from omc3.optics_measurements.toolbox import df_diff, df_rel_diff
 
 LOG = logging_tools.get_logger(__name__)
 
 
-def append_model_to_measurement(
+def add_differences_to_model_to_measurements(
     model: pd.DataFrame,
-    measurement: pd.DataFrame,
-    keys: Sequence[str]
+    measurement: Dict[str, pd.DataFrame],
+    keys: Sequence[str] = None,
 ) -> Dict[str, pd.DataFrame]:
     """
     Provided with DataFrames from a model and a measurement, and a number of keys to be found in both,
@@ -28,14 +32,19 @@ def append_model_to_measurement(
 
     Args:
         model (pd.DataFrame): DataFrame of the model.
-        measurement (pd.DataFrame): DataFrame of the measurement.
-        keys (Sequence[str]): keys to get variation to model for.
+        measurement (Dict[str, pd.DataFrame]): DataFrames of the measurement.
+        keys (Sequence[str]): Parameters to get variation to model for. Optional.
+                              If omitted, all entries in `measurement` are used.
 
     Returns:
-        A dictionary
+        A dictionary of optics parameters and the resulting DataFrames.
     """
     appenders: Dict[str, Callable] = _get_model_appenders()
+    if keys is None:
+        keys = measurement.keys()
+
     res_dict = {}
+
     for key in keys:
         res_dict[key] = appenders[key](model, measurement[key], key)
     return res_dict
@@ -51,7 +60,7 @@ def _get_model_appenders() -> Dict[str, Callable]:
 def _get_model_generic(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.DataFrame:
     with logging_tools.log_pandas_settings_with_copy(LOG.debug):
         meas[MODEL] = model.loc[meas.index.to_numpy(), key].to_numpy()
-        meas[DIFF] = meas.loc[:, VALUE].to_numpy() - meas.loc[:, MODEL].to_numpy()
+        meas[DIFF] = df_diff(meas, VALUE, MODEL)
     return meas
 
 
@@ -59,14 +68,15 @@ def _get_model_phases(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.D
     with logging_tools.log_pandas_settings_with_copy(LOG.debug):
         meas[MODEL] = (model.loc[meas["NAME2"].to_numpy(), key].to_numpy() -
                        model.loc[meas.index.to_numpy(), key].to_numpy())
-        meas[DIFF] = meas.loc[:, VALUE].to_numpy() - meas.loc[:, MODEL].to_numpy()
+        meas[DIFF] = df_diff(meas, VALUE, MODEL)
     return meas
 
 
 def _get_model_betabeat(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.DataFrame:
     with logging_tools.log_pandas_settings_with_copy(LOG.debug):
         meas[MODEL] = model.loc[meas.index.to_numpy(), key].to_numpy()
-        meas[DIFF] = (meas.loc[:, VALUE].to_numpy() - meas.loc[:, MODEL].to_numpy()) / meas.loc[:, MODEL].to_numpy()
+
+        meas[DIFF] = df_rel_diff(meas, VALUE, MODEL)
     return meas
 
 
@@ -85,3 +95,26 @@ def _get_model_tunes(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.Da
         meas[MODEL] = np.remainder([model[f"{TUNE}1"], model[f"{TUNE}2"]], [1, 1])
         meas[DIFF] = meas.loc[:, VALUE].to_numpy() - meas.loc[:, MODEL].to_numpy()
     return meas
+
+
+# ----
+
+def add_coupling_to_model(model: pd.DataFrame) -> pd.DataFrame:
+    """
+    Computes the coupling RDTs from the input model TfsDataFrame and returns a copy of said TfsDataFrame with
+    columns for the real and imaginary parts of the computed coupling RDTs.
+
+    Args:
+        model (tfs.TfsDataFrame): Twiss dataframe.
+
+    Returns:
+        A TfsDataFrame with the added columns.
+    """
+    result_tfs_df = model.copy()
+    coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
+    result_tfs_df[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
+    result_tfs_df[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
+    result_tfs_df[f"{F1010}R"] = np.real(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
+    result_tfs_df[f"{F1010}I"] = np.imag(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
+    return result_tfs_df
+

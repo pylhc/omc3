@@ -31,7 +31,7 @@ LOG = logging_tools.get_logger(__name__)
 # Measurement Filter -----------------------------------------------------------
 
 
-def filter_measurement(keys: Sequence[str], meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> dict:
+def filter_measurement(keys: Sequence[str], meas: Dict[str, pd.DataFrame], model: pd.DataFrame, opt: DotDict) -> dict:
     """ Filters measurements in `keys` based on the dict-entries (keys as in `keys`)
     in `opt.errorcut`, `opt.modelcut` and `opt.weights` and unifies the
     data-column names to VALUE, ERROR, WEIGHT.
