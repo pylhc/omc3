@@ -86,12 +86,38 @@ def test_run_and_output(tmp_path, beam1_path):
                 assert df[col].equals(model[param])
 
 
+@pytest.mark.basic
 def test_run_random(beam1_path):
-    # results = fake_measurement(
-    #     twiss=beam1_path,
-    #     # randomize is set automatically
-    # )
-    pass
+    results = fake_measurement(
+        twiss=beam1_path,
+        # randomize is set automatically
+        relative_errors=[0.1],
+        seed=2230,
+    )
+    for name, df in results.items():
+        error_columns = _error_columns(df)
+        model_columns = _model_columns(df)
+        delta_columns = _delta_columns(df)
+        assert len(error_columns)
+        assert len(model_columns)
+        assert len(delta_columns)
+
+        for col in list(error_columns) + list(delta_columns):
+            param = col.replace(ERR, "").replace(DELTA, "")
+            if not df[f"{param}{MDL}"].any():
+                continue
+
+            if name.startswith(TOTAL_PHASE_NAME):
+                assert sum(df[col] == 0) == 1
+            else:
+                assert (df[col] != 0).all()
+            assert not df[col].isna().any()
+
+        for col in model_columns:
+            param = col[:-len(MDL)]
+            if param in df.columns:
+                assert (not df[col].any()) or (not df[col].equals(df[param]))
+                assert not df[param].isna().any()
 
 
 @pytest.mark.basic

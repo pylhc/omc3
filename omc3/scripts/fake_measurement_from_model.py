@@ -82,12 +82,16 @@ from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_
                                                 TUNE, NAME, NAME2, S, MDL)
 from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check
 from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
+from omc3.utils import logging_tools
+
+
+LOG = logging_tools.get_logger(__name__)
 
 OPTICS_PARAMETERS = tuple([f'{param}{plane}' for param in (PHASE, BETA, DISP) for plane in PLANES] + [f'{NORM_DISP}X', F1010, F1001])
 FAKED_HEADER = "FAKED_FROM"
 VALUES = 'values'
 ERRORS = 'errors'
-EPSILON = 1e-17  # smallest allowed relative error
+EPSILON = 1e-14  # smallest allowed relative error, empirical value could be smaller but then normal(mean, err) == mean sometimes
 
 
 def get_params():
@@ -150,6 +154,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
     Takes a twiss file and writes the parameters in optics_parameters to Output_dir in the format
     global_correction_entrypoint uses (same format you would get from hole_in_one).
     """
+    LOG.info("Generating fake measurements.")
     # prepare data
     np.random.seed(opt.seed)
     randomize = opt.randomize if opt.randomize is not None else []
@@ -183,6 +188,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
 
     # output
     if opt.outputdir is not None:
+        LOG.info("Writing fake measurements to files.")
         output_path = Path(opt.outputdir)
         for filename, df in results.items():
             full_path = output_path / f"{filename}{EXT}"
@@ -195,6 +201,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
 
 def create_beta(df_twiss, df_model, parameter, relative_error, randomize, headers):
     """ Create both beta_amp and beta_phase measurements. """
+    LOG.info(f"Creating fake beta for {parameter}.")
     plane = parameter[-1]
     df = create_measurement(df_twiss, parameter, relative_error, randomize)
     df = append_model(df, df_model, parameter, plane, beat=True)
@@ -205,6 +212,7 @@ def create_beta(df_twiss, df_model, parameter, relative_error, randomize, header
 
 def create_dispersion(df_twiss, df_model, parameter, relative_error, randomize, headers):
     """ Creates dispersion measurement. """
+    LOG.info(f"Creating fake dispersion for {parameter}.")
     plane = parameter[-1]
     df = create_measurement(df_twiss, parameter, relative_error, randomize)
     df = append_model(df, df_model, parameter, plane)
@@ -214,6 +222,7 @@ def create_dispersion(df_twiss, df_model, parameter, relative_error, randomize, 
 
 def create_phase(df_twiss, df_model, parameter, relative_error, randomize, headers):
     """ Creates both phase advance and total phase measurements. """
+    LOG.info(f"Creating fake phases for {parameter}.")
     results = {}
     dict_adv = create_phase_advance(df_twiss, df_model, parameter, relative_error, randomize, headers)
     results.update(dict_adv)
@@ -225,6 +234,7 @@ def create_phase(df_twiss, df_model, parameter, relative_error, randomize, heade
 
 def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomize, headers):
     """ Creates phase advance measurements. """
+    LOG.debug(f"Creating fake phase advance for {parameter}.")
     plane = parameter[-1]
     df_adv = tfs.TfsDataFrame(index=df_twiss.index[:-1])
     df_adv[NAME2] = df_twiss.index[1:].to_numpy()
@@ -236,9 +246,9 @@ def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomiz
         )
 
     values = get_phase_advances(df_twiss)
-    errors = relative_error * np.abs(values)
+    errors = relative_error * np.ones_like(values)
     if ERRORS in randomize:
-        errors = _get_random_errors(errors, values) % 0.5
+        errors = _get_random_errors(errors, np.ones_like(values)) % 0.5
 
     if VALUES in randomize:
         values = np.random.normal(values, errors)
@@ -261,19 +271,20 @@ def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomiz
 
 def create_total_phase(df_twiss, df_model, parameter, relative_error, randomize, headers):
     """ Creates total phase measurements. """
+    LOG.debug(f"Creating fake total phase for {parameter}.")
     plane = parameter[-1]
     df_tot = tfs.TfsDataFrame(index=df_twiss.index)
     element0 = df_twiss.index[0]
     df_tot[NAME2] = element0
 
     values = df_twiss[f"{PHASE_ADV}{plane}"] - df_twiss.loc[element0, f"{PHASE_ADV}{plane}"]
-    errors = relative_error * np.abs(values)
+    errors = relative_error * np.ones_like(values)
     if ERRORS in randomize:
-        errors = _get_random_errors(errors, values) % 0.5
+        errors = _get_random_errors(errors, np.ones_like(values)) % 0.5
         errors[0] = 0.
 
     if VALUES in randomize:
-        rand_val = np.random.normal(values, errors)
+        rand_val = np.random.normal(values, errors) % 1
         values += ang_interval_check(rand_val - values)
 
     df_tot[parameter] = values % 1
@@ -297,6 +308,7 @@ def create_total_phase(df_twiss, df_model, parameter, relative_error, randomize,
 
 def create_coupling(df_twiss, df_model, parameter, relative_error, randomize, headers):
     """ Creates coupling measurements for either the difference or sum RDT. """
+    LOG.info(f"Creating fake coupling for {parameter}.")
     re = create_measurement(df_twiss, f'{parameter}R', relative_error, randomize)
     im = create_measurement(df_twiss, f'{parameter}I', relative_error, randomize)
     df = pd.concat([re, im], axis=1)
@@ -322,6 +334,7 @@ CREATOR_MAP = {
 
 def create_normalized_dispersion(df_disp, df_beta, df_model, parameter, headers):
     """ Creates normalized dispersion from pre-created dispersion and beta dataframes. """
+    LOG.info(f"Creating fake normalized dispersion for {parameter}.")
     plane = parameter[-1]  # 'X'
 
     # Measurement
@@ -349,13 +362,18 @@ def create_normalized_dispersion(df_disp, df_beta, df_model, parameter, headers)
 def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: float,
                        randomize: Sequence[str]) -> tfs.TfsDataFrame:
     """ Create a new measurement Dataframe from df_twiss from parameter. """
+    LOG.debug(f"Creating fake measurement for {parameter}.")
     values = df_twiss.loc[:, parameter]
     errors = relative_error * values.abs()
-    if ERRORS in randomize:
-        errors = _get_random_errors(errors, values)
+    if all(values == 0):
+        LOG.warn(f"All value for {parameter} are zero. "
+                 f"Fake measurement will be zero as well.")
+    else:
+        if ERRORS in randomize:
+            errors = _get_random_errors(errors, values)
 
-    if VALUES in randomize:
-        values = np.random.normal(values, errors)
+        if VALUES in randomize:
+            values = np.random.normal(values, errors)
 
     df = tfs.TfsDataFrame({parameter: values,
                            f"{ERR}{parameter}": errors},
@@ -366,6 +384,7 @@ def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: f
 def append_model(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
                  planes: str = '', beat: bool = False) -> pd.DataFrame:
     """ Add the values to the measurement. """
+    LOG.debug(f"Appending model to fake measurement for {parameter}.")
     df[S] = df_model[S]
 
     for plane in planes:
@@ -385,6 +404,7 @@ def append_model(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
 def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
               add_coupling: bool = False) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """ Get's the input data as TfsDataFrames. """
+    LOG.debug("Loading data.")
     def try_reading(df_or_path):
         try:
             return tfs.read(df_or_path, index=NAME)
@@ -429,13 +449,12 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> 
 
 def _get_random_errors(errors: np.array, values: np.array) -> np.array:
     """ Creates normal distributed error-values that will not be lower than EPSILON. """
-    errors = np.random.normal(errors, errors)  # yes: (errors, errors)
-
-    # avoid == 0 errors:
-    eps_errors = EPSILON * values
-    too_small = errors < eps_errors
-    errors[too_small] = eps_errors[too_small]
-    return errors
+    random_errors = np.zeros_like(errors)
+    too_small = np.ones_like(errors, dtype=bool)
+    while sum(too_small):
+        random_errors[too_small] = np.random.normal(errors[too_small], errors[too_small])
+        too_small = random_errors < EPSILON * np.abs(values)
+    return random_errors
 
 
 # Script Mode ------------------------------------------------------------------
