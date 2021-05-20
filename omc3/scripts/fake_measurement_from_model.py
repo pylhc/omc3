@@ -88,10 +88,24 @@ from omc3.utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 OPTICS_PARAMETERS = tuple([f'{param}{plane}' for param in (PHASE, BETA, DISP) for plane in PLANES] + [f'{NORM_DISP}X', F1010, F1001])
+OUTPUTNAMES_MAP = {
+    # Names to be output on input of certain parameters.
+    # This is not used here but might be helpful. Also used in tests.
+    f'{BETA}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME)),
+    f'{BETA}Y': tuple(f"{name}y" for name in (BETA_NAME, AMP_BETA_NAME)),
+    f'{DISP}X': tuple([f"{DISPERSION_NAME}x"]),
+    f'{DISP}Y': tuple([f"{DISPERSION_NAME}y"]),
+    f'{PHASE}X': tuple(f"{name}x" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
+    f'{PHASE}Y': tuple(f"{name}y" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
+    F1010: tuple([F1010.lower()]),
+    F1001: tuple([F1001.lower()]),
+    f'{NORM_DISP}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
+}
 FAKED_HEADER = "FAKED_FROM"
 VALUES = 'values'
 ERRORS = 'errors'
-EPSILON = 1e-14  # smallest allowed relative error, empirical value could be smaller but then normal(mean, err) == mean sometimes
+EPSILON = 1e-14  # smallest allowed relative error, empirical value
+                 # could be smaller but then normal(mean, err) == mean sometimes
 
 
 def get_params():
@@ -243,7 +257,7 @@ def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomiz
         return (
                 df_source.loc[df_adv[NAME2], f"{PHASE_ADV}{plane}"].to_numpy()
                 - df_source.loc[df_adv.index, f"{PHASE_ADV}{plane}"].to_numpy()
-        )
+        ) % 0.5
 
     values = get_phase_advances(df_twiss)
     errors = relative_error * np.ones_like(values)
@@ -281,7 +295,7 @@ def create_total_phase(df_twiss, df_model, parameter, relative_error, randomize,
     errors = relative_error * np.ones_like(values)
     if ERRORS in randomize:
         errors = _get_random_errors(errors, np.ones_like(values)) % 0.5
-        errors[0] = 0.
+    errors[0] = 0.
 
     if VALUES in randomize:
         rand_val = np.random.normal(values, errors) % 1
@@ -399,6 +413,7 @@ def append_model(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
         df[f"{ERR}{DELTA}{parameter}"] = df[f'{ERR}{parameter}']
     return df
 
+
 # Other Functions --------------------------------------------------------------
 
 def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
@@ -428,7 +443,7 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> 
     """ Special care for normalized dispersion"""
     parameters = list(parameters)
     if errors is None:
-        errors = [0. ]
+        errors = [0.]
     errors = list(errors)
     if len(errors) == 1:
         errors = errors * len(parameters)
