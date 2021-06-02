@@ -21,6 +21,8 @@ from omc3.scripts.fake_measurement_from_model import (_get_data, OPTICS_PARAMETE
 
 INPUT_DIR = Path(__file__).parent.parent / "inputs"
 
+EPS = 1e-12  # allowed machine precision errors
+
 
 # Input Tests ------------------------------------------------------------------
 
@@ -30,6 +32,7 @@ def test_get_data_string(beam1_path):
     twiss, model = _get_data(str(beam1_path))
     assert twiss.any().any()
     assert twiss.equals(model)
+
 
 @pytest.mark.basic
 def test_get_data_path(beam1_path):
@@ -143,7 +146,7 @@ def _test_error_columns(name, df, randomized, error_val):
             elif name[:-1] in (BETA_NAME, AMP_BETA_NAME) and DELTA in col:
                 # errdeltabet (beating) errors are also equal to the relative error,
                 # but with less precision
-                assert all(np.abs(df.loc[idx, col]-error_val) < 1e-16)
+                assert all(np.abs(df.loc[idx, col]-error_val) < EPS)
             elif name[:-1] in (NORM_DISP_NAME):
                 # not sure how to test this, but should already be tested with disp and beta
                 assert all(df.loc[idx, col])
@@ -188,20 +191,24 @@ def _test_model_columns(name, df, randomized):
             assert not df[param].isna().any()
 
 
-@pytest.mark.parametrize("parameter", ["PHASEX"])
-# @pytest.mark.parametrize("parameter", OPTICS_PARAMETERS)
+@pytest.mark.parametrize("parameter", OPTICS_PARAMETERS)
+@pytest.mark.parametrize("beam", ("beam1_coupling", "beam1", "beam2"))
 @pytest.mark.basic
-def test_parameter(both_beams_path, parameter):
-    """ Test each parameter individually and checks if the randomization makes sense."""
+def test_parameter(beam, parameter):
+    """ Test each parameter individually and checks if the randomization makes sense.
+    As the default beam1 and beam2 do not include coupling,
+    the model with skew quads is used as well.
+    """
+    twiss_path = beam1_coupling_path() if "coupling" in beam else beam_path(beam)
     relative_error = 0.1
     randomize = [VALUES, ERRORS]
 
     results = fake_measurement(
-        twiss=both_beams_path,
+        twiss=twiss_path,
         randomize=randomize,
         relative_errors=[relative_error],
         parameters=[parameter],
-        seed=2021,
+        seed=2022,  # gaussian distribution test is sensitive to seed used!
     )
 
     assert len(results)
@@ -221,83 +228,101 @@ def test_parameter(both_beams_path, parameter):
     for name, df in results.items():
         plane = parameter[-1]
         assert S in df.columns
-        assert f"{PHASE_ADV}{plane}{MDL}" in df.columns
+        if plane in "XY":
+            assert f"{PHASE_ADV}{plane}{MDL}" in df.columns
         name_tester_map[name[:-1]](df, plane, relative_error)
 
 
 def _test_beta(df, plane, relative_error):
-    assert f"{BETA}{plane}" in df.columns
-    assert f"{BETA}{plane}{MDL}" in df.columns
-    assert f"{DELTA}{BETA}{plane}" in df.columns
-    assert f"{ERR}{BETA}{plane}" in df.columns
-    assert f"{ERR}{DELTA}{BETA}{plane}" in df.columns
+    assert _all_columns_present(df, BETA, plane)
 
     assert all(df[f"{BETA}{plane}"]) > 0
     assert all(df[f"{ERR}{BETA}{plane}"]) > 0
-    assert all(df[f"{ERR}{BETA}{plane}"] <= 5 * relative_error * np.abs(df[f"{BETA}{plane}{MDL}"]))
-    assert all(np.abs(((df[f"{DELTA}{BETA}{plane}"] * df[f"{BETA}{plane}{MDL}"]) - df[f"{BETA}{plane}"] + df[f"{BETA}{plane}{MDL}"])) < 1e-12)
-    assert all(np.abs(df[f"{ERR}{DELTA}{BETA}{plane}"] * df[f"{BETA}{plane}{MDL}"] - df[f"{ERR}{BETA}{plane}"]) < 1e-12)
+    assert all(df[f"{ERR}{BETA}{plane}"] <= 5 * relative_error * np.abs(df[f"{BETA}{plane}{MDL}"]))  # rough estimate
+    assert all(np.abs(((df[f"{DELTA}{BETA}{plane}"] * df[f"{BETA}{plane}{MDL}"]) - df[f"{BETA}{plane}"] + df[f"{BETA}{plane}{MDL}"])) < EPS)
+    assert all(np.abs(df[f"{ERR}{DELTA}{BETA}{plane}"] * df[f"{BETA}{plane}{MDL}"] - df[f"{ERR}{BETA}{plane}"]) < EPS)
     assert _gaussian_distribution_test(df[f"{BETA}{plane}"], df[f"{BETA}{plane}{MDL}"], df[f"{ERR}{BETA}{plane}"])
 
 
 def _test_phase(df, plane, relative_error):
-    assert f"{PHASE}{plane}" in df.columns
-    assert f"{PHASE}{plane}{MDL}" in df.columns
-    assert f"{DELTA}{PHASE}{plane}" in df.columns
-    assert f"{ERR}{PHASE}{plane}" in df.columns
-    assert f"{ERR}{DELTA}{PHASE}{plane}" in df.columns
+    assert _all_columns_present(df, PHASE, plane)
 
     assert all(df[f"{PHASE}{plane}"] <= 0.5)
     assert all(df[f"{PHASE}{plane}"] >= -0.5)
     assert all(df[f"{ERR}{PHASE}{plane}"] > 0)
     assert all(df[f"{ERR}{PHASE}{plane}"] < 0.5)
-    assert all(np.abs(df[f"{DELTA}{PHASE}{plane}"] - df[f"{PHASE}{plane}"] + df[f"{PHASE}{plane}{MDL}"]) % 1 < 1e-12)
+    assert all(np.abs(df[f"{DELTA}{PHASE}{plane}"] - df[f"{PHASE}{plane}"] + df[f"{PHASE}{plane}{MDL}"]) % 1 < EPS)
     assert all(np.abs(df[f"{ERR}{DELTA}{PHASE}{plane}"] - df[f"{ERR}{PHASE}{plane}"]) == 0)
     assert _gaussian_distribution_test(df[f"{PHASE}{plane}"], df[f"{PHASE}{plane}{MDL}"], df[f"{ERR}{PHASE}{plane}"])
 
 
 def _test_total_phase(df, plane, relative_error):
-    assert f"{PHASE}{plane}" in df.columns
-    assert f"{PHASE}{plane}{MDL}" in df.columns
-    assert f"{DELTA}{PHASE}{plane}" in df.columns
-    assert f"{ERR}{PHASE}{plane}" in df.columns
-    assert f"{ERR}{DELTA}{PHASE}{plane}" in df.columns
+    assert _all_columns_present(df, PHASE, plane)
     indx = df.index[1:]
 
     assert all(df[f"{PHASE}{plane}"] < 1)
     assert all(df[f"{PHASE}{plane}"] >= 0)
     assert all(df.loc[indx, f"{ERR}{PHASE}{plane}"] > 0)
     assert all(df.loc[indx, f"{ERR}{PHASE}{plane}"] < 0.5)
-    assert all(np.abs(df[f"{DELTA}{PHASE}{plane}"] - df[f"{PHASE}{plane}"] + df[f"{PHASE}{plane}{MDL}"]) % 1 < 1e-12)
+    assert all(np.abs(df[f"{DELTA}{PHASE}{plane}"] - df[f"{PHASE}{plane}"] + df[f"{PHASE}{plane}{MDL}"]) % 1 < EPS)
     assert all(np.abs(df[f"{ERR}{DELTA}{PHASE}{plane}"] - df[f"{ERR}{PHASE}{plane}"]) == 0)
     assert _gaussian_distribution_test(df.loc[indx, f"{PHASE}{plane}"], df.loc[indx, f"{PHASE}{plane}{MDL}"], df.loc[indx, f"{ERR}{PHASE}{plane}"])
 
 
 def _test_disp(df, plane, relative_error):
-    pass
+    assert _all_columns_present(df, DISP, plane)
+
+    assert all(df[f"{ERR}{DISP}{plane}"] <= 5 * relative_error * np.abs(df[f"{DISP}{plane}{MDL}"]))  # rough estimate
+    assert all(np.abs((df[f"{DELTA}{DISP}{plane}"] - df[f"{DISP}{plane}"] + df[f"{DISP}{plane}{MDL}"])) < EPS)
+    assert all(np.abs(df[f"{ERR}{DELTA}{DISP}{plane}"] - df[f"{ERR}{DISP}{plane}"]) < EPS)
+    if any(df[f"{DISP}{plane}{MDL}"]):
+        assert _gaussian_distribution_test(df[f"{DISP}{plane}"], df[f"{DISP}{plane}{MDL}"], df[f"{ERR}{DISP}{plane}"])
 
 
 def _test_norm_disp(df, plane, relative_error):
-    pass
+    assert _all_columns_present(df, NORM_DISP, plane)
+
+    assert all(df[f"{ERR}{NORM_DISP}{plane}"] <= 5 * relative_error * np.abs(df[f"{NORM_DISP}{plane}{MDL}"]))  # rough estimate
+    assert all(np.abs((df[f"{DELTA}{NORM_DISP}{plane}"] - df[f"{NORM_DISP}{plane}"] + df[f"{NORM_DISP}{plane}{MDL}"])) < EPS)
+    assert all(np.abs(df[f"{ERR}{DELTA}{NORM_DISP}{plane}"] - df[f"{ERR}{NORM_DISP}{plane}"]) < EPS)
+    if any(df[f"{NORM_DISP}{plane}{MDL}"]):
+        assert _gaussian_distribution_test(df[f"{NORM_DISP}{plane}"], df[f"{NORM_DISP}{plane}{MDL}"], df[f"{ERR}{NORM_DISP}{plane}"])
 
 
 def _test_coupling(df, plane, relative_error):
-    pass
+    param = "F1010" if plane == "0" else "F1001"
+    for plane in ("R", "I"):
+        assert _all_columns_present(df, param, plane)
+
+        assert all(df[f"{ERR}{param}{plane}"] <= 5 * relative_error * np.abs(df[f"{param}{plane}{MDL}"]))  # rough estimate
+        assert all(np.abs((df[f"{DELTA}{param}{plane}"] - df[f"{param}{plane}"] + df[f"{param}{plane}{MDL}"])) < EPS)
+        assert all(np.abs(df[f"{ERR}{DELTA}{param}{plane}"] - df[f"{ERR}{param}{plane}"]) < EPS)
+        if any(df[f"{param}{plane}{MDL}"]):
+            assert _gaussian_distribution_test(df[f"{param}{plane}"], df[f"{param}{plane}{MDL}"], df[f"{ERR}{param}{plane}"])
+
+
+def _all_columns_present(df, param, plane):
+    all_columns = (f"{param}{plane}",
+                   f"{param}{plane}{MDL}",
+                   f"{DELTA}{param}{plane}",
+                   f"{ERR}{param}{plane}",
+                   f"{ERR}{DELTA}{param}{plane}",
+                   )
+    missing = [col for col in all_columns if col not in df.columns ]
+    if len(missing):
+        raise ValueError(f"Missing Columns: {', '.join(missing)}")
+    return True
 
 
 def _gaussian_distribution_test(value, mean, std=None):
-    """ Very rough test if between 63% and 70% of values are within one sigma
+    """ Very rough test if between 63% and 72% of values are within one sigma
     and fullfills the Kolmogorov-Smirnov test. """
     if std is None:
-        std = mean
+        std = 1
     normalized = (value - mean) / std
-    absdiff = np.abs(value-mean)
-
     ks = stats.kstest(normalized, "norm")
-
-    ratio = sum(absdiff < std) / len(value)
-    return (0.63 <= ratio <= 0.70) and all(absdiff > 0) and (ks.pvalue > 0.05)
-
+    ratio = sum(abs(normalized) < 1) / len(value)
+    return (0.63 <= ratio <= 0.72) and all(abs(normalized) > 0) and (ks.pvalue > 0.05)
 
 
 # Fixtures ------
@@ -315,6 +340,10 @@ def beam1_path():
 @pytest.fixture
 def beam2_path():
     return beam_path("beam2")
+
+
+def beam1_coupling_path():
+    return INPUT_DIR / "correction" / "twiss_skew_quadrupole_error.dat"
 
 
 def beam_path(beam):

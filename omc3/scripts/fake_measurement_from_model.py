@@ -218,6 +218,8 @@ def create_beta(df_twiss, df_model, parameter, relative_error, randomize, header
     LOG.info(f"Creating fake beta for {parameter}.")
     plane = parameter[-1]
     df = create_measurement(df_twiss, parameter, relative_error, randomize)
+    df[parameter] = np.abs(df[parameter])
+
     df = append_model(df, df_model, parameter, plane, beat=True)
     df.headers = headers.copy()
     return {f'{BETA_NAME}{plane.lower()}': df,
