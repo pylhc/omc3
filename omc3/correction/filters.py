@@ -21,8 +21,7 @@ import pandas as pd
 import tfs
 from generic_parser import DotDict
 
-from omc3.correction.constants import (DELTA, ERR, ERROR, PHASE, PHASE_ADV,
-                                       TUNE, VALUE, WEIGHT)
+from omc3.correction.constants import (DELTA, ERR, ERROR, PHASE, TUNE, VALUE, WEIGHT)
 from omc3.utils import logging_tools, stats
 
 LOG = logging_tools.get_logger(__name__)
@@ -49,31 +48,30 @@ def _get_measurement_filters() -> defaultdict:
     return defaultdict(lambda: _get_filtered_generic, {f"{TUNE}": _get_tunes})
 
 
-def _get_filtered_generic(key: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> tfs.TfsDataFrame:
+def _get_filtered_generic(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> tfs.TfsDataFrame:
     common_bpms = meas.index.intersection(model.index)
     meas = meas.loc[common_bpms, :]
     new = tfs.TfsDataFrame(index=common_bpms)
-    col = key if f"{PHASE_ADV}" not in key else f"{PHASE}{key[-1]}"
     new[VALUE] = meas.loc[:, col].to_numpy()
     new[ERROR] = meas.loc[:, f"{ERR}{col}"].to_numpy()
     new[WEIGHT] = (
-        _get_errorbased_weights(key, opt.weights[key], meas.loc[:, f"{ERR}{DELTA}{col}"])
+        _get_errorbased_weights(col, opt.weights[col], meas.loc[:, f"{ERR}{DELTA}{col}"])
         if opt.use_errorbars
-        else opt.weights[key]
+        else opt.weights[col]
     )
     # filter cuts
-    error_filter = meas.loc[:, f"{ERR}{DELTA}{col}"].to_numpy() < opt.errorcut[key]
-    model_filter = np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()) < opt.modelcut[key]
+    error_filter = meas.loc[:, f"{ERR}{DELTA}{col}"].to_numpy() < opt.errorcut[col]
+    model_filter = np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()) < opt.modelcut[col]
     # if opt.automatic_model_cut:  # TODO automated model cut
     #     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()), portion=0.95)
-    if f"{PHASE_ADV}" in key:
+    if f"{PHASE}" in col:
         new["NAME2"] = meas.loc[:, "NAME2"].to_numpy()
         second_bpm_in = np.in1d(new.loc[:, "NAME2"].to_numpy(), new.index.to_numpy())
         good_bpms = error_filter & model_filter & second_bpm_in
         good_bpms[-1] = False
     else:
         good_bpms = error_filter & model_filter
-    LOG.debug(f"Number of BPMs with {key}: {np.sum(good_bpms)}")
+    LOG.debug(f"Number of BPMs with {col}: {np.sum(good_bpms)}")
     return new.loc[good_bpms, :]
 
 
@@ -118,7 +116,7 @@ def _get_response_filters() -> Dict[str, Callable]:
     to `_get_generic_response`."""
     return defaultdict(
         lambda: _get_generic_response,
-        {f"{PHASE_ADV}X": _get_phase_response, f"{PHASE_ADV}Y": _get_phase_response, f"{TUNE}": _get_tune_response},
+        {f"{PHASE}X": _get_phase_response, f"{PHASE}Y": _get_phase_response, f"{TUNE}": _get_tune_response},
     )
 
 
@@ -132,7 +130,7 @@ def _get_phase_response(resp: pd.DataFrame, meas: pd.DataFrame) -> pd.DataFrame:
     return -phase1.sub(phase2.to_numpy())  # phs2-phs1 but with idx of phs1
 
 
-def _get_tune_response(resp, meas):  # ???
+def _get_tune_response(resp, meas):  # ??? TODO: DELETE (can use generic)
     return resp
 
 

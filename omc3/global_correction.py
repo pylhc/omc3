@@ -4,7 +4,7 @@ Global Correction
 
 Iterative Correction Scheme.
 
-The response matrices :math:`R_{O}` for the observables :math:`O` (e.g. BBX, MUX, ...)
+The response matrices :math:`R_{O}` for the observables :math:`O` (e.g. BBX, PHASEX, ...)
 are loaded from a file and then the equation
 
 .. math:: R_{O} \cdot \delta var = O_{meas} - O_{model}
@@ -105,9 +105,9 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
     List of parameters to correct upon (e.g. BETX BETY)
 
-    choices: ``('MUX', 'MUY', 'BBX', 'BBY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
+    choices: ``('PHASEX', 'PHASEY', 'BBX', 'BBY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
 
-    default: ``['MUX', 'MUY', 'BETX', 'BETY', 'NDX', 'Q']``
+    default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'NDX', 'Q']``
 
 
 - **output_filename**:
@@ -164,7 +164,6 @@ Possible problems and notes (lmalina, 2020):
  * Missing a part that treats the output from LSA
 
 """
-import os
 from pathlib import Path
 from typing import Dict
 
@@ -173,17 +172,24 @@ from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import handler
 from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
-                                       NORM_DISP, PHASE_ADV, TUNE)
+                                       NORM_DISP, PHASE, TUNE)
 from omc3.model import manager
-from omc3.utils import iotools, logging_tools
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
+
+OPTICS_PARAMS_CHOICES = (f"{PHASE}X", f"{PHASE}Y",
+                         f"{BETA}X", f"{BETA}Y",
+                         f"{NORM_DISP}X",
+                         f"{TUNE}",
+                         f"{DISP}X", f"{DISP}Y",
+                         f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I")
 
 CORRECTION_DEFAULTS = {
     "optics_file": None,
     "output_filename": "changeparameters_iter",
     "svd_cut": 0.01,
-    "optics_params": [f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISP}X", f"{TUNE}"],
+    "optics_params": OPTICS_PARAMS_CHOICES[:6],
     "variable_categories": ["MQM", "MQT", "MQTL", "MQY"],
     "beta_file_name": "beta_phase_",
     "method": "pinv",
@@ -193,55 +199,73 @@ CORRECTION_DEFAULTS = {
 
 def correction_params():
     params = EntryPointParameters()
-    params.add_parameter(name="meas_dir", required=True,
+    params.add_parameter(name="meas_dir",
+                         required=True,
                          help="Path to the directory containing the measurement files.",)
-    params.add_parameter(name="output_dir", required=True,
+    params.add_parameter(name="output_dir",
+                         required=True,
                          help="Path to the directory where to write the output files.", )
     params.add_parameter(name="fullresponse_path",
                          help="Path to the fullresponse binary file.If not given, "
                               "calculates the response analytically.",)
-    params.add_parameter(name="optics_params", type=str, nargs="+",
-                         default=CORRECTION_DEFAULTS["optics_params"],
-                         choices=(f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETABEAT}X", f"{BETABEAT}Y",
-                                  f"{BETA}X", f"{BETA}Y", f"{DISP}X", f"{DISP}Y", f"{NORM_DISP}X", f"{TUNE}",
-                                  f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"),
+    params.add_parameter(name="optics_params",
+                         type=str,
+                         nargs="+",
+                         default=list(CORRECTION_DEFAULTS["optics_params"]),
+                         choices=OPTICS_PARAMS_CHOICES,
                          help=f"List of parameters to correct upon (e.g. {BETA}X {BETA}Y)", )
-    params.add_parameter(name="output_filename", default=CORRECTION_DEFAULTS["output_filename"],
+    params.add_parameter(name="output_filename",
+                         default=CORRECTION_DEFAULTS["output_filename"],
                          help="Identifier of the output files.", )
-    params.add_parameter(name="min_corrector_strength", type=float, default=0.,
+    params.add_parameter(name="min_corrector_strength",
+                         type=float,
+                         default=0.,
                          help="Minimum (absolute) strength of correctors.",)
-    params.add_parameter(name="modelcut", nargs="+", type=float,
+    params.add_parameter(name="modelcut",
+                         nargs="+",
+                         type=float,
                          help="Reject BPMs whose deviation to the model is higher "
                               "than the correspoding input. Input in order of optics_params.",)
-    params.add_parameter(name="errorcut", nargs="+", type=float,
+    params.add_parameter(name="errorcut",
+                         nargs="+",
+                         type=float,
                          help="Reject BPMs whose error bar is higher than the corresponding "
                               "input. Input in order of optics_params.",)
-    params.add_parameter(name="weights", nargs="+", type=float,
+    params.add_parameter(name="weights",
+                         nargs="+", type=float,
                          help="Weight to apply to each measured quantity. "
                               "Input in order of optics_params.",)
-    params.add_parameter(name="variable_categories", nargs="+",
+    params.add_parameter(name="variable_categories",
+                         nargs="+",
                          default=CORRECTION_DEFAULTS["variable_categories"],
                          help="List of names of the variables classes to use.", )
     params.add_parameter(name="beta_file_name",
                          default=CORRECTION_DEFAULTS["beta_file_name"],
                          help="Prefix of the beta file to use. E.g.: getkmodbeta", )
-    params.add_parameter(name="method", type=str, choices=("pinv", "omp"),
+    params.add_parameter(name="method",
+                         type=str,
+                         choices=("pinv", "omp"),
                          default=CORRECTION_DEFAULTS["method"],
                          help="Optimization method to use.", )
-    params.add_parameter(name="svd_cut", type=float,
+    params.add_parameter(name="svd_cut",
+                         type=float,
                          default=CORRECTION_DEFAULTS["svd_cut"],
                          help="Cutoff for small singular values of the pseudo inverse. "
                               "(Method: 'pinv')Singular values smaller than "
                               "rcond*largest_singular_value are set to zero", )
-    params.add_parameter(name="n_correctors", type=int,
+    params.add_parameter(name="n_correctors",
+                         type=int,
                          help="Maximum number of correctors to use. (Method: 'omp')")
-    params.add_parameter(name="max_iter", type=int,
+    params.add_parameter(name="max_iter",
+                         type=int,
                          default=CORRECTION_DEFAULTS["max_iter"],
                          help="Maximum number of correction re-iterations to perform. "
                               "A value of `0` means the correction is calculated once.", )
-    params.add_parameter(name="use_errorbars", action="store_true",
+    params.add_parameter(name="use_errorbars",
+                         action="store_true",
                          help="Take into account the measured errorbars in the correction.", )
-    params.add_parameter(name="update_response", action="store_true",
+    params.add_parameter(name="update_response",
+                         action="store_true",
                          help="Update the (analytical) response per iteration.", )
     return params
 
@@ -279,17 +303,12 @@ def _add_hardcoded_paths(opt: DotDict) -> DotDict:  # acts inplace...
     return opt
 
 
-OPTICS_PARAMS_CHOICES = (f"{PHASE_ADV}X", f"{PHASE_ADV}Y",  f"{BETA}X", f"{BETA}Y",
-                         f"{DISP}X", f"{DISP}Y", f"{NORM_DISP}X", f"{TUNE}", f"{F1001}R",
-                         f"{F1001}I", f"{F1010}R", f"{F1010}I")
-
-
 # Define functions here, to new optics params
 def _get_default_values() -> Dict[str, Dict[str, float]]:
     return {
         "modelcut": {
-            f"{PHASE_ADV}X": 0.05,
-            f"{PHASE_ADV}Y": 0.05,
+            f"{PHASE}X": 0.05,
+            f"{PHASE}Y": 0.05,
             f"{BETA}X": 0.2,
             f"{BETA}Y": 0.2,
             f"{DISP}X": 0.2,
@@ -302,8 +321,8 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{F1010}I": 0.2,
         },
         "errorcut": {
-            f"{PHASE_ADV}X": 0.035,
-            f"{PHASE_ADV}Y": 0.035,
+            f"{PHASE}X": 0.035,
+            f"{PHASE}Y": 0.035,
             f"{BETA}X": 0.02,
             f"{BETA}Y": 0.02,
             f"{DISP}X": 0.02,
@@ -316,8 +335,8 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{F1010}I": 0.02,
         },
         "weights": {
-            f"{PHASE_ADV}X": 1,
-            f"{PHASE_ADV}Y": 1,
+            f"{PHASE}X": 1,
+            f"{PHASE}Y": 1,
             f"{BETA}X": 0,
             f"{BETA}Y": 0,
             f"{DISP}X": 0,

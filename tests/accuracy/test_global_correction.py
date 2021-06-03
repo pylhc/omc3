@@ -4,39 +4,54 @@ import shutil
 import numpy as np
 import pytest
 import tfs
+from generic_parser import DotDict
 
+from pandas.testing import assert_frame_equal
 from omc3 import model
-from omc3.global_correction import global_correction_entrypoint
-from omc3.response_creator import create_response_entrypoint
-from omc3.correction.constants import PHASE_ADV, BETA, DISP, NORM_DISP, F1001, F1010, TUNE
+from omc3.correction import model_appenders, filters
+from omc3.correction.handler import get_measurement_data, _rms
+from omc3.correction.model_appenders import add_coupling_to_model
+from omc3.global_correction import global_correction_entrypoint as global_correction, OPTICS_PARAMS_CHOICES
+from omc3.optics_measurements.constants import (DISPERSION_NAME, BETA_NAME, AMP_BETA_NAME, PHASE_NAME, NORM_DISP_NAME,
+    NAME)
+from omc3.response_creator import create_response_entrypoint as create_response
+from omc3.correction.constants import (PHASE_ADV, BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE, DIFF, ERROR,
+                                       ERR, WEIGHT)
+from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 
 from pathlib import Path
 
+from omc3.scripts.fake_measurement_from_model import (
+    VALUES,
+    ERRORS,
+)
 
 # Paths ---
-INPUTS = Path(__file__).parent / 'inputs'
-CORRECTION_DIR = INPUTS / "correction"
-MODEL_DIR = INPUTS / "models" / "inj_beam1"
-FULLRESPONSE_PATH = CORRECTION_DIR / "Fullresponse_pandas"
-GENERATED_MEASUREMENT_PATH = CORRECTION_DIR / "twiss_quadrupole_error.dat"
-FULLRESPONSE_PATH_SKEW = CORRECTION_DIR / "Fullresponse_pandas_skew"
+INPUTS = Path(__file__).parent.parent / 'inputs'
+CORRECTION_INPUTS = INPUTS / "correction"
 
-GENERATED_MEASUREMENT_PATH_SKEW = CORRECTION_DIR / "twiss_skew_quadrupole_error.dat"
-ERROR_FILE_SKEW = CORRECTION_DIR / "skew_quadrupole_error.madx"
+FULLRESPONSE_PATH = CORRECTION_INPUTS / "Fullresponse_pandas"
+GENERATED_MEASUREMENT_PATH = CORRECTION_INPUTS / "twiss_quadrupole_error.dat"
+FULLRESPONSE_PATH_SKEW = CORRECTION_INPUTS / "Fullresponse_pandas_skew"
+GENERATED_MEASUREMENT_PATH_SKEW = CORRECTION_INPUTS / "twiss_skew_quadrupole_error.dat"
+# ERROR_FILE_SKEW = CORRECTION_DIR / "skew_quadrupole_error.madx"
 
 # Correction Input Parameters ---
-MAX_ITER = 1
-ACCEL_SETTINGS = dict(ats=True, beam=1, model_dir=MODEL_DIR, year="2018", accel="lhc", energy=0.45)
-OPTICS_PARAMS = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y",
-                 f"{BETA}X", f"{BETA}Y",
-                 f"{DISP}X", f"{NORM_DISP}X", f"{TUNE}"]
-OPTICS_PARAMS_SKEW = [f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"]
 
-RMS_TOL_DICT_SKEW = {rdt: 0.001 for rdt in OPTICS_PARAMS_SKEW}
-VARIABLE_CATEGORIES = ["MQY"]
-VARIABLE_CATEGORIES_SKEW = ["MQSl"]
-WEIGHTS = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0]
-WEIGHTS_SKEW = [1.0, 1.0, 1.0, 1.0]
+FILENAME_MAP = {
+    # Names to be output on input of certain parameters.
+    f'{BETA}X': f"{BETA_NAME}x",
+    f'{BETA}Y': f"{BETA_NAME}y",
+    f'{DISP}X': f"{DISPERSION_NAME}x",
+    f'{DISP}Y': f"{DISPERSION_NAME}y",
+    f'{PHASE}X': f"{PHASE_NAME}x",
+    f'{PHASE}Y': f"{PHASE_NAME}y",
+    f'{F1010}I': F1010.lower(),
+    f'{F1010}R': F1010.lower(),
+    f'{F1001}I': F1001.lower(),
+    f'{F1001}R': F1001.lower(),
+    f'{NORM_DISP}X': f"{NORM_DISP_NAME}x",
+}
 RMS_TOL_DICT = {
     f"{PHASE_ADV}X": 0.001,
     f"{PHASE_ADV}Y": 0.001,
@@ -45,6 +60,10 @@ RMS_TOL_DICT = {
     f"{DISP}X": 0.0015,
     f"{NORM_DISP}X": 0.001,
     f"{TUNE}": 1e-05,
+    f"{F1001}R": 0.003,
+    f"{F1001}I": 0.003,
+    f"{F1010}R": 0.001,
+    f"{F1010}I": 0.001,
 }
 RMS_TOL_DICT_CORRECTION = {
     f"{PHASE_ADV}X": 3.0,
@@ -61,6 +80,77 @@ RMS_TOL_DICT_CORRECTION = {
     f"{F1010}R": 1.0,
     f"{F1010}I": 1.0,
 }
+
+
+def get_skew_params():
+    twiss = CORRECTION_INPUTS / f"twiss_skew_quadrupole_error.dat"
+    optics_params = OPTICS_PARAMS_CHOICES[8:]
+    variables = ["MQSl"]
+    fullresponse = "Fullresponse_pandas_skew"
+    return twiss, optics_params, variables, fullresponse
+
+
+def get_normal_params():
+    twiss = CORRECTION_INPUTS / f"twiss_quadrupole_error.dat"
+    optics_params = OPTICS_PARAMS_CHOICES[:6]
+    variables = ["MQY"]
+    fullresponse = "Fullresponse_pandas"
+    return twiss, optics_params, variables, fullresponse
+
+
+# Unit Tests
+
+
+@pytest.mark.basic
+# @pytest.mark.parametrize('orientation', ('skew', 'normal'))
+@pytest.mark.parametrize('orientation', ('normal',))
+def test_global_correct(tmp_path, model_inj_beam1, orientation):
+    iterations = 3
+
+    is_skew = orientation == 'skew'
+    twiss_path, optics_params, variables, fullresponse = get_skew_params() if is_skew else get_normal_params()
+
+    # create and load fake measurement
+    error_val = 0.1
+    model_df, meas_dict = _create_fake_measurement(tmp_path, model_inj_beam1.path, twiss_path, error_val, optics_params)
+
+    # Perform global correction
+    global_correction(
+        **model_inj_beam1.settings,
+        # correction params
+        meas_dir=tmp_path,
+        variable_categories=variables,
+        fullresponse_path=model_inj_beam1.path / fullresponse,
+        optics_params=list(optics_params),
+        output_dir=tmp_path,
+        weights=[1.0] * len(optics_params),
+        svd_cut=0.01,
+        max_iter=iterations,
+    )
+
+    # Test if corrected model is closer to measurement
+    for iter_step in range(iterations):
+        if iter_step == 0:
+            model_prev_df = model_df
+            continue
+
+        model_iter_df = tfs.read(tmp_path / f"twiss_{iter_step}.tfs", index=NAME)
+        model_iter_df = add_coupling_to_model(model_iter_df)
+
+        meas_dict_prev = model_appenders.add_differences_to_model_to_measurements(model_prev_df, meas_dict)
+        meas_dict_iter = model_appenders.add_differences_to_model_to_measurements(model_iter_df, meas_dict)
+
+        diff_rms_prev = {param: _rms(meas_dict_prev[param][DIFF]) for param in optics_params}
+        diff_rms_iter = {param: _rms(meas_dict_iter[param][DIFF]) for param in optics_params}
+
+        # assert RMS after correction smaller than tolerances
+        for param in optics_params:
+            assert diff_rms_iter[param] < RMS_TOL_DICT[param]
+
+        # assert total RMS decreases between steps
+        assert sum(diff_rms_prev.values()) > sum(diff_rms_iter.values())
+
+        model_prev_df = model_iter_df
 
 
 @pytest.mark.basic
@@ -343,12 +433,51 @@ def _assert_iteration_convergence(
         assert RMS_dict2[key] < RMS_dict1[key], f"RMS of {key} is got worse after repeated correction"
 
 
-@pytest.fixture(scope="module")
-def model_inj_beam1(tmp_path: Path):
-    correction_inputs_path = INPUTS / "correction"
-    macros_path = tmp_path / "macros"
-    macros_path.mkdir()
+def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics_params):
+    model_df = tfs.read(model_path / "twiss.dat", index=NAME)
+    model_df = add_coupling_to_model(model_df)
 
-    shutil.copytree(INPUTS / "models" / "inj_beam1", tmp_path)
+    # create fake measurement data
+    fake_measurement(
+        model=model_df,
+        twiss=twiss_path,
+        randomize=[VALUES, ERRORS],
+        relative_errors=[error_val],
+        seed=2230,
+        outputdir=tmp_path,
+    )
+
+    # load the fake data into a dict
+    _, meas_dict = get_measurement_data(
+        optics_params,
+        meas_dir=tmp_path,
+        beta_file_name='beta_phase_',
+    )
+
+    # map to VALUE, ERROR and WEIGHT, similar to filter_measurement
+    # but without the filtering
+    for col, meas in meas_dict.items():
+        if col != TUNE:
+            meas[VALUE] = meas.loc[:, col].to_numpy()
+            meas[ERROR] = meas.loc[:, f"{ERR}{col}"].to_numpy()
+        meas[WEIGHT] = 1.
+    return model_df, meas_dict
+
+
+@pytest.fixture(scope="module")
+def model_inj_beam1(tmp_path_factory):
+    tmp_path = tmp_path_factory.getbasetemp() / "model_inj_beam1"
+    shutil.copytree(INPUTS / "models" / "inj_beam1", tmp_path)  # creates tmp_path dir
+
+    macros_path = tmp_path / "macros"
     shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
-    return tmp_path
+
+    settings = dict(
+        ats=True,
+        beam=1,
+        model_dir=str(tmp_path),
+        year="2018",
+        accel="lhc",
+        energy=0.45,
+    )
+    return DotDict(path=tmp_path, settings=settings)

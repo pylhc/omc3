@@ -71,6 +71,7 @@ import numpy as np
 import pandas as pd
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
+
 from omc3.correction.constants import DISP, NORM_DISP, F1001, F1010
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.definitions.constants import PLANES
@@ -81,16 +82,13 @@ from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_
                                                 PHASE_ADV, BETA, PHASE,
                                                 TUNE, NAME, NAME2, S, MDL)
 from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check
-from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
 from omc3.utils import logging_tools
-
+from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
 
 LOG = logging_tools.get_logger(__name__)
 
-OPTICS_PARAMETERS = tuple([f'{param}{plane}' for param in (PHASE, BETA, DISP) for plane in PLANES] + [f'{NORM_DISP}X', F1010, F1001])
 OUTPUTNAMES_MAP = {
     # Names to be output on input of certain parameters.
-    # This is not used here but might be helpful. Also used in tests.
     f'{BETA}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME)),
     f'{BETA}Y': tuple(f"{name}y" for name in (BETA_NAME, AMP_BETA_NAME)),
     f'{DISP}X': tuple([f"{DISPERSION_NAME}x"]),
@@ -125,8 +123,8 @@ def get_params():
     params.add_parameter(
         name="parameters",
         help="Optics parameters to use",
-        choices=OPTICS_PARAMETERS,
-        default=list(OPTICS_PARAMETERS),
+        choices=list(OUTPUTNAMES_MAP.keys()),
+        default=list(OUTPUTNAMES_MAP.keys()),
         type=str,
         nargs="+",
     )
@@ -275,7 +273,7 @@ def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomiz
 
     # adv model
     df_adv[S] = df_model.loc[df_adv.index, S]
-    df_adv[f'{S}2'] = df_model.loc[df_adv[NAME2], S]
+    df_adv[f'{S}2'] = df_model.loc[df_adv[NAME2], S].to_numpy()
     df_adv[f'{parameter}{MDL}'] = get_phase_advances(df_model)
     df_adv[f'{PHASE_ADV}{plane}{MDL}'] = df_model.loc[df_adv.index, f'{PHASE_ADV}{plane}']
 

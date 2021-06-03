@@ -58,33 +58,51 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 
 """
-import pickle
-
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import response_madx, response_twiss
-from omc3.global_correction import CORRECTION_DEFAULTS
+from omc3.correction.response_io import write_fullresponse
+from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr
 
 LOG = logging_tools.get_logger(__name__)
 
 
 def response_params():
     params = EntryPointParameters()
-    params.add_parameter(name="creator", type=str, choices=("madx", "twiss"),
-                         default="madx", help="Create either with madx or analytically from twiss file.")
-    params.add_parameter(name="variable_categories", nargs="+",
+    params.add_parameter(name="creator",
+                         type=str,
+                         choices=("madx", "twiss"),
+                         default="madx",
+                         help="Create either with madx or analytically from twiss file."
+                         )
+    params.add_parameter(name="variable_categories",
+                         nargs="+",
                          default=CORRECTION_DEFAULTS["variable_categories"],
-                         help="List of the variables classes to use.")
-    params.add_parameter(name="outfile_path", required=True, type=str,
-                         help="Name of fullresponse file.")
-    params.add_parameter(name="delta_k", type=float, default=0.00002,
+                         help="List of the variables classes to use."
+                         )
+    params.add_parameter(name="outfile_path",
+                         required=True,
+                         type=PathOrStr,
+                         help="Name of fullresponse file."
+                         )
+    params.add_parameter(name="delta_k",
+                         type=float,
+                         default=0.00002,
                          help="Delta K1 to be applied to quads for sensitivity matrix (madx-only).")
-    params.add_parameter(name="optics_params", type=str, nargs="+",
-                         help="List of parameters to correct upon (e.g. BBX BBY; twiss-only).", )  # TODO add choices
-    params.add_parameter(help="Print debug information.", name="debug", action="store_true",)
+    params.add_parameter(name="optics_params",
+                         type=str,
+                         nargs="+",
+                         choices=OPTICS_PARAMS_CHOICES,
+                         help="List of parameters to correct upon (e.g. BBX BBY; twiss-only).",
+                         )
+    params.add_parameter(help="Print debug information.",
+                         name="debug",
+                         action="store_true",
+                         )
     return params
 
 
@@ -107,9 +125,10 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> None:
             accel_inst, opt.variable_categories, opt.optics_params
         )
 
-    LOG.debug(f"Saving Response into file '{opt.outfile_path}'")
-    with open(opt.outfile_path, "wb") as dump_file:
-        pickle.dump(fullresponse, dump_file)
+    write_fullresponse(opt.outfile_path, fullresponse)
+
+
+# Script Mode ------------------------------------------------------------------
 
 
 if __name__ == "__main__":

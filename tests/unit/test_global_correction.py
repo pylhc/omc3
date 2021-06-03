@@ -1,0 +1,63 @@
+import shutil
+from pathlib import Path
+
+import numpy as np
+import pytest
+from pandas.testing import assert_frame_equal
+
+from omc3 import model
+from omc3.correction.constants import TUNE, VALUE
+from omc3.global_correction import OPTICS_PARAMS_CHOICES
+from omc3.correction.handler import get_measurement_data, _rms
+from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
+from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, FILENAME_MAP, INPUTS
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize('orientation', ('skew', 'normal'))
+def test_read_measurement_data(tmp_path, model_inj_beam1, orientation):
+    """ Tests if all necessary measurement data is read. """
+    is_skew = orientation == 'skew'
+    twiss, optics_params, variables, fullresponse = get_skew_params() if is_skew else get_normal_params()
+    meas_fake = fake_measurement(
+        model=model_inj_beam1 / "twiss.dat",
+        twiss=twiss,
+        randomize=[],
+        relative_errors=[0.1],
+        outputdir=tmp_path,
+    )
+    _, meas_dict = get_measurement_data(
+        OPTICS_PARAMS_CHOICES,
+        meas_dir=tmp_path,
+        beta_file_name='beta_phase_',
+    )
+    assert len(meas_dict) == len(FILENAME_MAP) + 1  # + Q
+    for key, df in meas_dict.items():
+        # don't check for exact equality, because of read-write
+        if key == TUNE:
+            res_df = list(meas_fake.values())[0]
+            for i in (1, 2):
+                assert res_df.headers[f"{TUNE}{i}"] % 1 - df.loc[f"{TUNE}{i}", VALUE] < 1e-7
+        else:
+            res_df = meas_fake[FILENAME_MAP[key]]
+            assert len(df.columns)
+            assert_frame_equal(df, res_df.loc[:, df.columns])
+
+
+@pytest.mark.basic
+def test_rms():
+    """ Tests the rms-function."""
+    for _ in range(5):
+        vec = np.random.rand(100)
+        assert np.sqrt(np.mean(np.square(vec))) == _rms(vec)
+
+
+@pytest.fixture(scope="module")
+def model_inj_beam1(tmp_path_factory):
+    tmp_path = tmp_path_factory.getbasetemp() / "model_inj_beam1"
+    shutil.copytree(INPUTS / "models" / "inj_beam1", tmp_path)  # creates tmp_path dir
+
+    macros_path = tmp_path / "macros"
+    shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
+    return tmp_path
+

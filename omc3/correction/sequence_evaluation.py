@@ -10,7 +10,6 @@ Then: Set one variable at a time to 1
 Compare results with case all==0.
 """
 import multiprocessing
-import pickle
 from contextlib import suppress
 from pathlib import Path
 from typing import List, Sequence, Tuple
@@ -19,13 +18,14 @@ import numpy as np
 import tfs
 
 import omc3.madx_wrapper as madx_wrapper
+from omc3.correction.response_io import write_fullresponse, write_varmap
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 LOG = logging_tools.get_logger(__name__)
 
-EXT = "varmap"  # Extension Standard
+EXT = "h5"  # Extension Standard
 
 
 # Read Sequence ##############################################################
@@ -292,7 +292,6 @@ def check_varmap_file(accel_inst: Accelerator, vars_categories):
         LOG.info(f"Variable mapping '{str(varmap_path):s}' not found. "
                  "Evaluating it via madx.")
         mapping = evaluate_for_variables(accel_inst, vars_categories)
-        with open(varmap_path, "wb") as dump_file:
-            pickle.dump(mapping, dump_file)
+        write_varmap(varmap_path, mapping)
 
     return varmap_path

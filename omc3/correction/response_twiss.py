@@ -108,7 +108,6 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
 
 """
 import copy
-import pickle
 from typing import Dict, List, Sequence
 
 import numpy as np
@@ -116,6 +115,7 @@ import pandas as pd
 import tfs
 
 from omc3.correction.constants import BETA, DISP, F1001, F1010, NORM_DISP, PHASE_ADV, TUNE, S
+from omc3.correction.response_io import read_varmap
 from omc3.correction.sequence_evaluation import check_varmap_file
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
@@ -210,17 +210,12 @@ class TwissResponse:
             raise ValueError("No variables found. Maybe wrong categories?")
 
         try:
-            with open(varmap_or_path, "rb") as varmapfile:
-                mapping = pickle.load(varmapfile)
-        except TypeError:
+            mapping = read_varmap(varmap_or_path)
+        except AttributeError:
             LOG.debug("Received varmap as dictionary.")
             mapping = varmap_or_path
         else:
             LOG.debug(f"Loaded varmap from file '{varmap_or_path}'")
-
-        for order in ("K0L", "K0SL", "K1L", "K1SL"):
-            if order not in mapping:
-                mapping[order] = {}
 
         # check if all variables can be found
         check_var = [var for var in variables if all(var not in mapping[order] for order in mapping)]

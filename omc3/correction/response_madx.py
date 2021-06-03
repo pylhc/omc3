@@ -8,7 +8,7 @@ madx calls.
 The variables under investigation need to be provided as a list (which can be obtained from the accelerator
 class).
 
-For now, the response matrix is stored in a 'pickled' file.
+For now, the response matrix is stored in a hdf5 file.
 
 :author: Lukas Malina, Joschua Dilly, Jaime (...) Coello de Portugal
 """

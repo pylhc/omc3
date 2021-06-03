@@ -20,12 +20,13 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
 from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
-                                       F1010, NORM_DISP, PHASE_ADV, TUNE,
+                                       F1010, NORM_DISP, PHASE, TUNE,
                                        VALUE, WEIGHT)
 from omc3.correction.model_appenders import add_coupling_to_model
+from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT,
-                                                NORM_DISP_NAME, PHASE_NAME)
+                                                NORM_DISP_NAME, PHASE_NAME, NAME)
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -43,7 +44,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     method_options = opt.get_subdict(["svd_cut", "n_correctors"])
     # read data from files
     vars_list = _get_varlist(accel_inst, opt.variable_categories)
-    optics_params, meas_dict = _get_measurement_data(
+    optics_params, meas_dict = get_measurement_data(
         opt.optics_params,
         opt.meas_dir,
         opt.beta_file_name,
@@ -74,10 +75,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             LOG.debug("Updating model via MADX.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            # This is where the corected model should be created?
-            _create_corrected_model(corr_model_path, opt.change_params_path, accel_inst)
-
-            corr_model_elements = tfs.read(corr_model_path, index="NAME")  # this is where we get the error
+            corr_model_elements = _create_corrected_model(corr_model_path, opt.change_params_path, accel_inst)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
@@ -97,8 +95,8 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         # ######### Actual optimization ######### #
         delta += _calculate_delta(resp_matrix, meas_dict, optics_params, vars_list, opt.method, method_options)
 
-        delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix, opt.min_corrector_strength)
         # remove unused correctors from vars_list
+        delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix, opt.min_corrector_strength)
 
         writeparams(opt.change_params_path, delta)
         writeparams(opt.change_params_correct_path, -delta)
@@ -107,51 +105,27 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     LOG.info("Finished Iterative Global Correction.")
 
 
-def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
-    """ Prints current RMS status """
-    f_str = "{:>20s} : {:.5e}"
-    LOG.debug("RMS Measure - Model (before correction, w/o weigths):")
-    for key in meas:
-        LOG.debug(f_str.format(key, _rms(meas[key].loc[:, DIFF].to_numpy())))
-
-    LOG.info("RMS Measure - Model (before correction, w/ weigths):")
-    for key in meas:
-        LOG.info(f_str.format(key, _rms(meas[key].loc[:, DIFF].to_numpy() * meas[key].loc[:, WEIGHT].to_numpy())))
-
-    LOG.info(f_str.format("All", _rms(diff_w)))
-    LOG.debug(f_str.format("R * delta", _rms(r_delta_w)))
-    LOG.debug("(Measure - Model) - (R * delta)   ")
-    LOG.debug(f_str.format("", _rms(diff_w - r_delta_w)))
+# Input ------------------------------------------------------------------------
 
 
-def _load_fullresponse(full_response_path: Path, variables: Sequence[str]) -> dict:
-    """
-    Full response is dictionary of optics-parameter gradients upon
-    a change of a single quadrupole strength
-    """
-    LOG.debug("Starting loading Full Response optics")
-    with open(full_response_path, "rb") as full_response_file:
-        full_response_data = pickle.load(full_response_file)
-
-    loaded_variables = [var for resp in full_response_data.values() for var in resp]
-    if not any([var in loaded_variables for var in variables]):
-        raise ValueError(
-            "None of the given variables found in response matrix. Are you using the right categories?"
-        )
-    return full_response_data
+def read_measurement_file(meas_dir: Path, filename: str) -> tfs.TfsDataFrame:
+    return tfs.read(meas_dir / filename, index="NAME")
 
 
-def _get_measurement_data(
-    keys: Sequence[str],
-    meas_dir: Path,
-    beta_file_name: str,
-    w_dict: Dict[str, float],
+def get_measurement_data(
+        keys: Sequence[str],
+        meas_dir: Path,
+        beta_file_name: str,
+        w_dict: Dict[str, float] = None,
 ) -> Tuple[List[str], Dict[str, tfs.TfsDataFrame]]:
     """ Loads all measurements defined by `keys` into a dictionary. """
     measurement = {}
-    filtered_keys = [key for key in keys if w_dict[key] != 0]
+    filtered_keys = keys
+    if w_dict is not None:
+        filtered_keys = [key for key in keys if w_dict[key] != 0]
+
     for key in filtered_keys:
-        if key.startswith(f"{PHASE_ADV}"):
+        if key.startswith(f"{PHASE}"):
             measurement[key] = read_measurement_file(meas_dir, f"{PHASE_NAME}{key[-1].lower()}{EXT}")
 
         elif key.startswith(f"{DISP}"):
@@ -161,7 +135,7 @@ def _get_measurement_data(
             measurement[key] = read_measurement_file(meas_dir, f"{NORM_DISP_NAME}{key[-1].lower()}{EXT}")
 
         elif key in (f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"):
-            measurement[key] = read_measurement_file(meas_dir, f"{key[:-1]}{EXT}").filter(regex=key)
+            measurement[key] = read_measurement_file(meas_dir, f"{key[:-1].lower()}{EXT}").filter(regex=key)
 
         elif key == f"{TUNE}":
             measurement[key] = pd.DataFrame(
@@ -179,8 +153,25 @@ def _get_measurement_data(
     return filtered_keys, measurement
 
 
-def read_measurement_file(meas_dir: Path, filename: str) -> tfs.TfsDataFrame:
-    return tfs.read(meas_dir / filename, index="NAME")
+def _load_fullresponse(full_response_path: Path, variables: Sequence[str]) -> dict:
+    """
+    Full response is dictionary of optics-parameter gradients upon
+    a change of a single quadrupole strength
+    """
+    LOG.debug("Starting loading Full Response optics")
+    full_response_data = read_fullresponse(full_response_path)
+
+    # There is a check in read_fullresponse but there all variables need to be present.
+    # Here only some. So I leave it like that (jdilly 2021-06-03)
+    loaded_variables = [var for resp in full_response_data.values() for var in resp]
+    if not any([var in loaded_variables for var in variables]):
+        raise ValueError(
+            "None of the given variables found in response matrix. Are you using the right categories?"
+        )
+    return full_response_data
+
+
+# Data handling ----------------------------------------------------------------
 
 
 def _get_varlist(accel_cls: Accelerator, variables: Sequence[str]):  # TODO: Virtual?
@@ -206,31 +197,37 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _calculate_delta(
-    resp_matrix: pd.DataFrame,
-    meas_dict: dict,
-    keys: Sequence[str],
-    vars_list: Sequence[str],
-    method: str,
-    meth_opt
-):
-    """Get the deltas for the variables.
+def _create_corrected_model(twiss_out: str, change_params, accel_inst: Accelerator) -> tfs.TfsDataFrame:
+    """ Use the calculated deltas in changeparameters.madx to create a corrected model """
+    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params)
+    madx_wrapper.run_string(madx_script, log_file=os.devnull)
+    return tfs.read(twiss_out, index=NAME)
 
-    Output is Dataframe with one column 'DELTA' and vars_list index."""
-    weight_vector = _join_columns(f"{WEIGHT}", meas_dict, keys)
-    diff_vector = _join_columns(f"{DIFF}", meas_dict, keys)
 
-    resp_weighted = resp_matrix.mul(weight_vector, axis="index")
-    diff_weighted = diff_vector * weight_vector
+def _join_responses(resp, keys, varslist):
+    """ Returns matrix #BPMs * #Parameters x #variables """
+    return (
+        pd.concat(
+            [resp[k] for k in keys],  # dataframes
+            axis="index",  # axis to join along
+            join="outer",  # =[pd.Index(varslist)]
+            # other axes to use (pd Index obj required)
+        ).reindex(columns=varslist).fillna(0.0)
+    )
 
-    delta = _get_method_fun(method)(resp_weighted, diff_weighted, meth_opt)
-    delta = tfs.TfsDataFrame(delta, index=vars_list, columns=[DELTA])
 
-    # check calculations
-    update = np.dot(resp_weighted, delta[DELTA])
-    _print_rms(meas_dict, diff_weighted, update)
+def _join_columns(col, meas, keys):
+    """ Retuns vector: N= #BPMs * #Parameters (BBX, MUX etc.) """
+    return np.concatenate([meas[key].loc[:, col].to_numpy() for key in keys], axis=0)
 
-    return delta
+
+def _filter_by_strength(delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_strength: float = 0):
+    """ Remove too small correctors """
+    delta = delta.loc[delta[DELTA].abs() > min_strength]
+    return delta, resp_matrix.loc[:, delta.index], delta.index.to_numpy()
+
+
+# Optimization -----------------------------------------------------------------
 
 
 def _get_method_fun(method: str) -> Callable:
@@ -258,10 +255,59 @@ def _orthogonal_matching_pursuit(response_mat: pd.DataFrame, diff_vec, opt: DotD
     return coef
 
 
-def _create_corrected_model(twiss_out: str, change_params, accel_inst: Accelerator) -> None:
-    """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params)
-    madx_wrapper.run_string(madx_script, log_file=os.devnull)
+def _calculate_delta(
+        resp_matrix: pd.DataFrame,
+        meas_dict: dict,
+        keys: Sequence[str],
+        vars_list: Sequence[str],
+        method: str,
+        meth_opt
+):
+    """Get the deltas for the variables.
+
+    Output is Dataframe with one column 'DELTA' and vars_list index."""
+    weight_vector = _join_columns(f"{WEIGHT}", meas_dict, keys)
+    diff_vector = _join_columns(f"{DIFF}", meas_dict, keys)
+
+    resp_weighted = resp_matrix.mul(weight_vector, axis="index")
+    diff_weighted = diff_vector * weight_vector
+
+    delta = _get_method_fun(method)(resp_weighted, diff_weighted, meth_opt)
+    delta = tfs.TfsDataFrame(delta, index=vars_list, columns=[DELTA])
+
+    # check calculations
+    update = np.dot(resp_weighted, delta[DELTA])
+    _print_rms(meas_dict, diff_weighted, update)
+
+    return delta
+
+
+# Print ------------------------------------------------------------------------
+
+
+def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
+    """ Prints current RMS status """
+    f_str = "{:>20s} : {:.5e}"
+    LOG.debug("RMS Measure - Model (before correction, w/o weigths):")
+    for key in meas:
+        LOG.debug(f_str.format(key, _rms(meas[key].loc[:, DIFF].to_numpy())))
+
+    LOG.info("RMS Measure - Model (before correction, w/ weigths):")
+    for key in meas:
+        LOG.info(f_str.format(key, _rms(meas[key].loc[:, DIFF].to_numpy() * meas[key].loc[:, WEIGHT].to_numpy())))
+
+    LOG.info(f_str.format("All", _rms(diff_w)))
+    LOG.debug(f_str.format("R * delta", _rms(r_delta_w)))
+    LOG.debug("(Measure - Model) - (R * delta)   ")
+    LOG.debug(f_str.format("", _rms(diff_w - r_delta_w)))
+
+
+def _rms(a):
+    """Calculate root mean square error of a number or an ndarray."""
+    return np.sqrt(np.mean(np.square(a)))
+
+
+# Output -----------------------------------------------------------------------
 
 
 def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
@@ -277,33 +323,3 @@ def writeparams(path_to_file: Path, delta: pd.DataFrame) -> None:
         for var in delta.index.to_numpy():
             value = delta.loc[var, DELTA]
             madx_script.write(f"{var} = {var} {value:+e};\n")
-
-
-def _rms(a):
-    """Calculate root mean square error of a number or an ndarray."""
-    return np.sqrt(np.mean(np.square(a)))
-
-
-def _join_responses(resp, keys, varslist):
-    """ Returns matrix #BPMs * #Parameters x #variables """
-    return (
-        pd.concat(
-            [resp[k] for k in keys],  # dataframes
-            axis="index",  # axis to join along
-            join="outer",  # =[pd.Index(varslist)]
-            # other axes to use (pd Index obj required)
-        )
-        .reindex(columns=varslist)
-        .fillna(0.0)
-    )
-
-
-def _join_columns(col, meas, keys):
-    """ Retuns vector: N= #BPMs * #Parameters (BBX, MUX etc.) """
-    return np.concatenate([meas[key].loc[:, col].to_numpy() for key in keys], axis=0)
-
-
-def _filter_by_strength(delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_strength: float = 0):
-    """ Remove too small correctors """
-    delta = delta.loc[delta[DELTA].abs() > min_strength]
-    return delta, resp_matrix.loc[:, delta.index], delta.index.to_numpy()

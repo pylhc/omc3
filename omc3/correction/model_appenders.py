@@ -14,7 +14,7 @@ import pandas as pd
 from optics_functions.coupling import coupling_via_cmatrix
 
 from omc3.correction.constants import (BETA, DIFF, MODEL, NORM_DISP, PHASE_ADV,
-                                       TUNE, VALUE, F1001, F1010)
+                                       TUNE, VALUE, F1001, F1010, PHASE)
 from omc3.utils import logging_tools
 from omc3.optics_measurements.toolbox import df_diff, df_rel_diff
 
@@ -46,13 +46,13 @@ def add_differences_to_model_to_measurements(
     res_dict = {}
 
     for key in keys:
-        res_dict[key] = appenders[key](model, measurement[key], key)
+        res_dict[key] = appenders[key](model, measurement[key].copy(), key)
     return res_dict
 
 
 def _get_model_appenders() -> Dict[str, Callable]:
     return defaultdict(lambda:  _get_model_generic, {
-        f"{PHASE_ADV}X": _get_model_phases, f"{PHASE_ADV}Y": _get_model_phases,
+        f"{PHASE}X": _get_model_phases, f"{PHASE}Y": _get_model_phases,
         f"{BETA}X": _get_model_betabeat, f"{BETA}Y": _get_model_betabeat,
         f"{NORM_DISP}X": _get_model_norm_disp, f"{TUNE}": _get_model_tunes, })
 
@@ -65,9 +65,10 @@ def _get_model_generic(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.
 
 
 def _get_model_phases(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.DataFrame:
+    model_column = f"{PHASE_ADV}{key[-1]}"
     with logging_tools.log_pandas_settings_with_copy(LOG.debug):
-        meas[MODEL] = (model.loc[meas["NAME2"].to_numpy(), key].to_numpy() -
-                       model.loc[meas.index.to_numpy(), key].to_numpy())
+        meas[MODEL] = (model.loc[meas["NAME2"].to_numpy(), model_column].to_numpy() -
+                       model.loc[meas.index.to_numpy(), model_column].to_numpy())
         meas[DIFF] = df_diff(meas, VALUE, MODEL)
     return meas
 
@@ -75,7 +76,6 @@ def _get_model_phases(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.D
 def _get_model_betabeat(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.DataFrame:
     with logging_tools.log_pandas_settings_with_copy(LOG.debug):
         meas[MODEL] = model.loc[meas.index.to_numpy(), key].to_numpy()
-
         meas[DIFF] = df_rel_diff(meas, VALUE, MODEL)
     return meas
 
