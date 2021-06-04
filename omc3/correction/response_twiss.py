@@ -4,6 +4,10 @@ Response TWISS
 
 Provides a class to get response matrices from Twiss parameters.
 
+.. warning::
+  The responses are only valid for MAD-X Beam 1 and Beam 2 twiss-files, **not for Beam 4** !!
+
+
 The calculation is based on formulas in [#FranchiAnalyticformulasrapid2017]_, [#TomasReviewlinearoptics2017]_.
 
 
@@ -158,7 +162,6 @@ class TwissResponse:
             self._var_to_el = self._get_variable_mapping(varmap_or_path)
             self._elements_in = self._get_input_elements()
             self._elements_out = self._get_output_elements(at_elements)
-            self._direction = self._get_direction(accel_inst)
 
             # calculate all phase advances
             self._phase_advances = get_phase_advances(self._twiss)
@@ -234,19 +237,17 @@ class TwissResponse:
         v2e = self._var_to_el
         tw = self._twiss
 
-        el_in = dict.fromkeys(v2e.keys())
+        el_in = dict.fromkeys(k for k in v2e.keys() if k[-1] == 'L')
         for order in el_in:
             el_order = []
             for var in v2e[order]:
                 el_order += upper(v2e[order][var].index)
             el_in[order] = tw.loc[list(set(el_order)), f"{S}"].sort_values().index.tolist()
-        return el_in
 
-    @staticmethod
-    def _get_direction(accel_inst):
-        """ Sign for the direction of the beam. """
-        # TODO use straight the beam_direction from accel class
-        return 1 if accel_inst.beam == 1 else -1
+        for order in ["K0L", "K0SL", "K1L", "K1SL"]:
+            if order not in el_in:
+                el_in[order] = []
+        return el_in
 
     def _get_output_elements(self, at_elements):
         """Return name-array of elements to use for output.
@@ -299,11 +300,11 @@ class TwissResponse:
 
             for coupling_rdt in ["1001", "1010"]:
                 phs_sign = -1 if coupling_rdt == "1001" else 1
-                dcoupl[coupling_rdt] = tfs.TfsDataFrame(
+                dcoupl[coupling_rdt] = pd.DataFrame(
                     bet_term[:, None] * np.exp(i2pi * (phx + phs_sign * phy)) /
                     (4 * (1 - np.exp(i2pi * (tw.Q1 + phs_sign * tw.Q2)))),
                     index=k1s_el, columns=el_out).transpose()
-        return dict_multiply(self._direction, dcoupl)
+        return dcoupl
 
     def _calc_beta_response(self):
         """Response Matrix for delta beta.
@@ -325,7 +326,7 @@ class TwissResponse:
 
                 pi2tau = 2 * np.pi * tau(adv[plane].loc[k1_el, el_out], q)
 
-                dbeta[plane] = tfs.TfsDataFrame(
+                dbeta[plane] = pd.DataFrame(
                     tw.loc[el_out, col_beta].to_numpy()[None, :]
                     * tw.loc[k1_el, col_beta].to_numpy()[:, None]
                     * np.cos(2 * pi2tau.to_numpy())
@@ -334,7 +335,7 @@ class TwissResponse:
                     columns=el_out,
                 ).transpose()
 
-        return dict_multiply(self._direction, dbeta)
+        return dbeta
 
     def _calc_dispersion_response(self):
         r"""Response Matrix for delta normalized dispersion
@@ -389,8 +390,8 @@ class TwissResponse:
                     else:
                         LOG.debug(f"  No '{el_type}' variables found. "
                                   f"Dispersion Response '{out_str}' will be empty.")
-                        disp_resp[out_str] = tfs.TfsDataFrame(None, index=el_out)
-        return dict_multiply(self._direction, disp_resp)
+                        disp_resp[out_str] = pd.DataFrame(None, index=el_out)
+        return disp_resp
 
     def _calc_norm_dispersion_response(self):
         r"""Response Matrix for delta normalized dispersion
@@ -464,8 +465,8 @@ class TwissResponse:
                             f"  No '{el_type:s}' variables found. "
                             f"Normalized Dispersion Response '{out_str:s}' will be empty."
                         )
-                        disp_resp[out_str] = tfs.TfsDataFrame(None, index=el_out)
-        return dict_multiply(self._direction, disp_resp)
+                        disp_resp[out_str] = pd.DataFrame(None, index=el_out)
+        return disp_resp
 
     def _calc_phase_advance_response(self):
         """Response Matrix for delta DPhi.
@@ -489,7 +490,7 @@ class TwissResponse:
             if len(k1_el) > 0:
                 dmu = dict.fromkeys(PLANES)
 
-                pi = tfs.TfsDataFrame(tw[f"{S}"][:, None] < tw[f"{S}"][None, :],  # pi(i,j) = s(i) < s(j)
+                pi = pd.DataFrame(tw[f"{S}"][:, None] < tw[f"{S}"][None, :],  # pi(i,j) = s(i) < s(j)
                                       index=tw.index, columns=tw.index, dtype=int)
 
                 pi_term = (
@@ -508,17 +509,17 @@ class TwissResponse:
                         (np.sin(2 * pi2tau.loc[:, el_out].to_numpy())
                          - np.sin(2 * pi2tau.loc[:, el_out_mm].to_numpy())) / np.sin(2 * np.pi * q)
                     )
-                    dmu[plane] = tfs.TfsDataFrame(
+                    dmu[plane] = pd.DataFrame(
                         tw.loc[k1_el, col_beta].to_numpy()[:, None] * brackets * (coeff_sign / (8 * np.pi)),
                         index=k1_el,
                         columns=el_out,
                     ).transpose()
             else:
                 LOG.debug("  No 'K1L' variables found. Phase Response will be empty.")
-                dmu = {"X": tfs.TfsDataFrame(None, index=el_out),
-                       "Y": tfs.TfsDataFrame(None, index=el_out)}
+                dmu = {"X": pd.DataFrame(None, index=el_out),
+                       "Y": pd.DataFrame(None, index=el_out)}
 
-        return dict_multiply(self._direction, dmu)
+        return dmu
 
     def _calc_phase_response(self):
         """Response Matrix for delta DPhi.
@@ -540,7 +541,7 @@ class TwissResponse:
             if len(k1_el) > 0:
                 dmu = dict.fromkeys(PLANES)
 
-                pi = tfs.TfsDataFrame(tw["S"][:, None] < tw["S"][None, :],  # pi(i,j) = s(i) < s(j)
+                pi = pd.DataFrame(tw["S"][:, None] < tw["S"][None, :],  # pi(i,j) = s(i) < s(j)
                                       index=tw.index, columns=tw.index, dtype=int)
 
                 pi_term = pi.loc[k1_el, el_out].to_numpy()
@@ -556,17 +557,17 @@ class TwissResponse:
                          - np.sin(2 * pi2tau.loc[:, DUMMY_ID].to_numpy()[:, None])
                         ) / np.sin(2 * np.pi * q)
                     )
-                    dmu[plane] = tfs.TfsDataFrame(
+                    dmu[plane] = pd.DataFrame(
                         tw.loc[k1_el, col_beta].to_numpy()[:, None] * brackets * (coeff_sign / (8 * np.pi)),
                         index=k1_el,
                         columns=el_out,
                     ).transpose()
             else:
                 LOG.debug("  No 'K1L' variables found. Phase Response will be empty.")
-                dmu = {"X": tfs.TfsDataFrame(None, index=el_out),
-                       "Y": tfs.TfsDataFrame(None, index=el_out)}
+                dmu = {"X": pd.DataFrame(None, index=el_out),
+                       "Y": pd.DataFrame(None, index=el_out)}
 
-        return dict_multiply(self._direction, dmu)
+        return dmu
 
     def _calc_tune_response(self):
         """Response vectors for Tune.
@@ -588,10 +589,9 @@ class TwissResponse:
                 dtune["Y"].index = ["DQY"]
             else:
                 LOG.debug("  No 'K1L' variables found. Tune Response will be empty.")
-                dtune = {"X": tfs.TfsDataFrame(None, index=["DQX"]),
-                         "Y": tfs.TfsDataFrame(None, index=["DQY"])}
-
-        return dict_multiply(self._direction, dtune)
+                dtune = {"X": pd.DataFrame(None, index=["DQX"]),
+                         "Y": pd.DataFrame(None, index=["DQY"])}
+        return dtune
 
     ################################
     #       Normalizing
@@ -636,7 +636,7 @@ class TwissResponse:
 
         def map_fun(df, mapping):
             """ Actual mapping function """
-            df_map = tfs.TfsDataFrame(index=df.index, columns=mapping.keys())
+            df_map = pd.DataFrame(index=df.index, columns=mapping.keys())
             for var, magnets in mapping.items():
                 df_map[var] = df.loc[:, upper(magnets.index)].mul(magnets.to_numpy(), axis="columns").sum(axis="columns")
             return df_map
@@ -766,7 +766,7 @@ class TwissResponse:
             # Also: take care of minus-sign convention!
             sign = -1 if plane[-1] == "R" else 1
             part_func = np.real if plane[-1] == "R" else np.imag
-            return sign * tfs.TfsDataFrame(func()[plane[:-1]].apply(part_func).astype(np.float64))
+            return sign * pd.DataFrame(func()[plane[:-1]].apply(part_func).astype(np.float64))
 
         # to avoid if-elif-elif-...
         obs_map = {
@@ -805,15 +805,6 @@ def response_add(*args) -> pd.DataFrame:
     for df in args[1:]:
         base_df = base_df.add(df, fill_value=0.0)
     return base_df
-
-
-def dict_multiply(number: float, dictionary: dict) -> dict:
-    """ Multiply all values in a dict with the given `number`."""
-    result_dict = copy.deepcopy(dictionary)
-    if number != 1:
-        for key in result_dict:
-            result_dict[key] = number * result_dict[key]
-    return result_dict
 
 
 def upper(list_of_strings: Sequence[str]) -> Sequence[str]:

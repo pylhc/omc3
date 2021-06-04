@@ -287,7 +287,7 @@ def check_varmap_file(accel_inst: Accelerator, vars_categories):
         raise ValueError("Optics not defined. Please provide modifiers.madx. "
                          "Otherwise MADX evaluation might be unstable.")
 
-    varmap_path = Path(accel_inst.model_dir) / f"{'_'.join(sorted(set(vars_categories)))}.{EXT}"
+    varmap_path = Path(accel_inst.model_dir) / f"varmap_{'_'.join(sorted(set(vars_categories)))}.{EXT}"
     if not varmap_path.exists():
         LOG.info(f"Variable mapping '{str(varmap_path):s}' not found. "
                  "Evaluating it via madx.")

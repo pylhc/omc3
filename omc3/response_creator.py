@@ -13,14 +13,13 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 **Arguments:**
 
-*--Required--*
+*--Optional--*
+
 
 - **outfile_path** *(str)*:
 
     Name of fullresponse file.
 
-
-*--Optional--*
 
 - **creator** *(str)*:
 
@@ -58,6 +57,9 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 
 """
+from typing import Dict
+
+import pandas as pd
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
@@ -85,7 +87,6 @@ def response_params():
                          help="List of the variables classes to use."
                          )
     params.add_parameter(name="outfile_path",
-                         required=True,
                          type=PathOrStr,
                          help="Name of fullresponse file."
                          )
@@ -107,7 +108,7 @@ def response_params():
 
 
 @entrypoint(response_params())
-def create_response_entrypoint(opt: DotDict, other_opt) -> None:
+def create_response_entrypoint(opt: DotDict, other_opt) -> Dict[str, pd.DataFrame]:
     """Entry point for creating pandas-based response matrices.
 
     The response matrices can be either created by response_madx or TwissResponse.
@@ -125,7 +126,9 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> None:
             accel_inst, opt.variable_categories, opt.optics_params
         )
 
-    write_fullresponse(opt.outfile_path, fullresponse)
+    if opt.outfile_path is not None:
+        write_fullresponse(opt.outfile_path, fullresponse)
+    return fullresponse
 
 
 # Script Mode ------------------------------------------------------------------

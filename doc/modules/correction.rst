@@ -17,11 +17,21 @@ Correction
     :members:
 
 
+.. automodule:: omc3.correction.model_diff
+    :members:
+
+
 .. automodule:: omc3.correction.response_madx
     :members:
+
 
 .. automodule:: omc3.correction.response_twiss
     :members:
 
+
 .. automodule:: omc3.correction.sequence_evaluation
+    :members:
+
+
+.. automodule:: omc3.correction.response_io
     :members:
