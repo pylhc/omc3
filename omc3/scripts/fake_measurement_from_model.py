@@ -81,7 +81,7 @@ from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_
                                                 EXT, DELTA, ERR,
                                                 PHASE_ADV, BETA, PHASE,
                                                 TUNE, NAME, NAME2, S, MDL)
-from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check
+from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check, ang_diff
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
 
@@ -181,7 +181,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
     # create defaults
     results = {}
     for parameter, error in _get_loop_parameters(opt.parameters, opt.relative_errors):
-        create = CREATOR_MAP[parameter]
+        create = CREATOR_MAP[parameter[:-1]]
         new_dfs = create(df_twiss, df_model, parameter,
                          relative_error=error,
                          randomize=randomize,
@@ -254,10 +254,10 @@ def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomiz
     df_adv[NAME2] = df_twiss.index[1:].to_numpy()
 
     def get_phase_advances(df_source):
-        return (
-                df_source.loc[df_adv[NAME2], f"{PHASE_ADV}{plane}"].to_numpy()
-                - df_source.loc[df_adv.index, f"{PHASE_ADV}{plane}"].to_numpy()
-        ) % 0.5
+        return ang_diff(
+                df_source.loc[df_adv[NAME2], f"{PHASE_ADV}{plane}"].to_numpy(),
+                df_source.loc[df_adv.index, f"{PHASE_ADV}{plane}"].to_numpy()
+        )
 
     values = get_phase_advances(df_twiss)
     errors = relative_error * np.ones_like(values)
@@ -299,7 +299,7 @@ def create_total_phase(df_twiss, df_model, parameter, relative_error, randomize,
 
     if VALUES in randomize:
         rand_val = np.random.normal(values, errors) % 1
-        values += ang_interval_check(rand_val - values)
+        values += ang_diff(rand_val, values)
 
     df_tot[parameter] = values % 1
     df_tot[f'{ERR}{parameter}'] = errors
@@ -333,14 +333,11 @@ def create_coupling(df_twiss, df_model, parameter, relative_error, randomize, he
 
 
 CREATOR_MAP = {
-    f'{BETA}X': create_beta,
-    f'{BETA}Y': create_beta,
-    f'{DISP}X': create_dispersion,
-    f'{DISP}Y': create_dispersion,
-    f'{PHASE}X': create_phase,
-    f'{PHASE}Y': create_phase,
-    F1010: create_coupling,
-    F1001: create_coupling,
+    BETA: create_beta,
+    DISP: create_dispersion,
+    PHASE: create_phase,
+    F1010[:-1]: create_coupling,
+    F1001[:-1]: create_coupling,
 }
 
 

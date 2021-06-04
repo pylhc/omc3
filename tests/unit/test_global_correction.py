@@ -6,11 +6,27 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 from omc3 import model
-from omc3.correction.constants import TUNE, VALUE
-from omc3.global_correction import OPTICS_PARAMS_CHOICES
+from omc3.correction.constants import (BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE)
 from omc3.correction.handler import get_measurement_data, _rms
+from omc3.global_correction import OPTICS_PARAMS_CHOICES
+from omc3.optics_measurements.constants import (DISPERSION_NAME, BETA_NAME, PHASE_NAME, NORM_DISP_NAME)
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
-from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, FILENAME_MAP, INPUTS
+from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, INPUTS
+
+FILENAME_MAP = {
+    # Names to be output on input of certain parameters.
+    f'{BETA}X': f"{BETA_NAME}x",
+    f'{BETA}Y': f"{BETA_NAME}y",
+    f'{DISP}X': f"{DISPERSION_NAME}x",
+    f'{DISP}Y': f"{DISPERSION_NAME}y",
+    f'{PHASE}X': f"{PHASE_NAME}x",
+    f'{PHASE}Y': f"{PHASE_NAME}y",
+    f'{F1010}I': F1010.lower(),
+    f'{F1010}R': F1010.lower(),
+    f'{F1001}I': F1001.lower(),
+    f'{F1001}R': F1001.lower(),
+    f'{NORM_DISP}X': f"{NORM_DISP_NAME}x",
+}
 
 
 @pytest.mark.basic

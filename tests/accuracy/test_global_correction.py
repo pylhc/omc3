@@ -1,118 +1,71 @@
-import pickle
 import shutil
+from pathlib import Path
 
 import numpy as np
 import pytest
 import tfs
 from generic_parser import DotDict
 
-from pandas.testing import assert_frame_equal
 from omc3 import model
-from omc3.correction import model_appenders, filters
+from omc3.correction.constants import (BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE, ERROR,
+                                       ERR, WEIGHT, DELTA)
 from omc3.correction.handler import get_measurement_data, _rms
 from omc3.correction.model_appenders import add_coupling_to_model
+from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import global_correction_entrypoint as global_correction, OPTICS_PARAMS_CHOICES
-from omc3.optics_measurements.constants import (DISPERSION_NAME, BETA_NAME, AMP_BETA_NAME, PHASE_NAME, NORM_DISP_NAME,
-    NAME)
-from omc3.response_creator import create_response_entrypoint as create_response
-from omc3.correction.constants import (PHASE_ADV, BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE, DIFF, ERROR,
-                                       ERR, WEIGHT)
+from omc3.optics_measurements.constants import NAME
+from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
-
-from pathlib import Path
-
-from omc3.scripts.fake_measurement_from_model import (
-    VALUES,
-    ERRORS,
-)
 
 # Paths ---
 INPUTS = Path(__file__).parent.parent / 'inputs'
 CORRECTION_INPUTS = INPUTS / "correction"
 
-FULLRESPONSE_PATH = CORRECTION_INPUTS / "Fullresponse_pandas"
-GENERATED_MEASUREMENT_PATH = CORRECTION_INPUTS / "twiss_quadrupole_error.dat"
-FULLRESPONSE_PATH_SKEW = CORRECTION_INPUTS / "Fullresponse_pandas_skew"
-GENERATED_MEASUREMENT_PATH_SKEW = CORRECTION_INPUTS / "twiss_skew_quadrupole_error.dat"
-# ERROR_FILE_SKEW = CORRECTION_DIR / "skew_quadrupole_error.madx"
-
 # Correction Input Parameters ---
 
-FILENAME_MAP = {
-    # Names to be output on input of certain parameters.
-    f'{BETA}X': f"{BETA_NAME}x",
-    f'{BETA}Y': f"{BETA_NAME}y",
-    f'{DISP}X': f"{DISPERSION_NAME}x",
-    f'{DISP}Y': f"{DISPERSION_NAME}y",
-    f'{PHASE}X': f"{PHASE_NAME}x",
-    f'{PHASE}Y': f"{PHASE_NAME}y",
-    f'{F1010}I': F1010.lower(),
-    f'{F1010}R': F1010.lower(),
-    f'{F1001}I': F1001.lower(),
-    f'{F1001}R': F1001.lower(),
-    f'{NORM_DISP}X': f"{NORM_DISP_NAME}x",
-}
 RMS_TOL_DICT = {
-    f"{PHASE_ADV}X": 0.001,
-    f"{PHASE_ADV}Y": 0.001,
+    f"{PHASE}X": 0.001,
+    f"{PHASE}Y": 0.001,
     f"{BETA}X": 0.01,
     f"{BETA}Y": 0.01,
     f"{DISP}X": 0.0015,
+    f"{DISP}Y": 0.0015,
     f"{NORM_DISP}X": 0.001,
-    f"{TUNE}": 1e-05,
-    f"{F1001}R": 0.003,
-    f"{F1001}I": 0.003,
+    f"{TUNE}": 0.01,
+    f"{F1001}R": 0.001,
+    f"{F1001}I": 0.001,
     f"{F1010}R": 0.001,
     f"{F1010}I": 0.001,
-}
-RMS_TOL_DICT_CORRECTION = {
-    f"{PHASE_ADV}X": 3.0,
-    f"{PHASE_ADV}Y": 3.0,
-    f"{BETA}X": 25.0,
-    f"{BETA}Y": 25.0,
-    f"{DISP}X": 3.0,
-    f"{DISP}Y": 1,
-    f"{NORM_DISP}X": 2.0,
-    f"{NORM_DISP}Y": 1.0,
-    f"{TUNE}": 3.0,
-    f"{F1001}R": 1.0,
-    f"{F1001}I": 1.0,
-    f"{F1010}R": 1.0,
-    f"{F1010}I": 1.0,
 }
 
 
 def get_skew_params():
-    twiss = CORRECTION_INPUTS / f"twiss_skew_quadrupole_error.dat"
+    twiss = CORRECTION_INPUTS / "inj_beam1" / f"twiss_skew_quadrupole_error.dat"
     optics_params = OPTICS_PARAMS_CHOICES[8:]
     variables = ["MQSl"]
-    fullresponse = "Fullresponse_pandas_skew"
-    return twiss, optics_params, variables, fullresponse
+    fullresponse = "fullresponse_skew.h5"
+    seed = 2234
+    return twiss, optics_params, variables, fullresponse, seed
 
 
 def get_normal_params():
-    twiss = CORRECTION_INPUTS / f"twiss_quadrupole_error.dat"
+    twiss = CORRECTION_INPUTS / "inj_beam1" / f"twiss_quadrupole_error.dat"
     optics_params = OPTICS_PARAMS_CHOICES[:6]
     variables = ["MQY"]
-    fullresponse = "Fullresponse_pandas"
-    return twiss, optics_params, variables, fullresponse
-
-
-# Unit Tests
+    fullresponse = "fullresponse.h5"
+    seed = 12368
+    return twiss, optics_params, variables, fullresponse, seed
 
 
 @pytest.mark.basic
-# @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-@pytest.mark.parametrize('orientation', ('normal',))
+@pytest.mark.parametrize('orientation', ('skew', 'normal'))
 def test_global_correct(tmp_path, model_inj_beam1, orientation):
-    iterations = 3
-
-    is_skew = orientation == 'skew'
-    twiss_path, optics_params, variables, fullresponse = get_skew_params() if is_skew else get_normal_params()
+    twiss_path, optics_params, variables, fullresponse, seed = get_skew_params() if orientation == 'skew' else get_normal_params()
+    iterations = 2
 
     # create and load fake measurement
     error_val = 0.1
-    model_df, meas_dict = _create_fake_measurement(tmp_path, model_inj_beam1.path, twiss_path, error_val, optics_params)
+    twiss_df, model_df, meas_dict = _create_fake_measurement(tmp_path, model_inj_beam1.path, twiss_path, error_val, optics_params, seed)
 
     # Perform global correction
     global_correction(
@@ -128,322 +81,53 @@ def test_global_correct(tmp_path, model_inj_beam1, orientation):
         max_iter=iterations,
     )
 
-    # Test if corrected model is closer to measurement
-    for iter_step in range(iterations):
+    # Test if corrected model is closer to model used to create measurement
+    for iter_step in range(iterations+1):
         if iter_step == 0:
-            model_prev_df = model_df
-            continue
+            model_iter_df = model_df
+        else:
+            model_iter_df = tfs.read(tmp_path / f"twiss_{iter_step}.tfs", index=NAME)
+            model_iter_df = add_coupling_to_model(model_iter_df)
 
-        model_iter_df = tfs.read(tmp_path / f"twiss_{iter_step}.tfs", index=NAME)
-        model_iter_df = add_coupling_to_model(model_iter_df)
+        diff_df = diff_twiss_parameters(model_iter_df, twiss_df, optics_params)
+        if TUNE in optics_params:
+            diff_df.headers[f"{DELTA}{TUNE}"] = np.array([diff_df[f"{DELTA}{TUNE}1"], diff_df[f"{DELTA}{TUNE}2"]])
+        diff_rms = {param: _rms(diff_df[f"{DELTA}{param}"]) for param in optics_params}
 
-        meas_dict_prev = model_appenders.add_differences_to_model_to_measurements(model_prev_df, meas_dict)
-        meas_dict_iter = model_appenders.add_differences_to_model_to_measurements(model_iter_df, meas_dict)
+        # ############ FOR DEBUGGING #############
+        # print(f"ITERATION {iter_step}")
+        # for param in optics_params:
+        #     print(f"{param}: {diff_rms[param]}")
+        # ########################################
 
-        diff_rms_prev = {param: _rms(meas_dict_prev[param][DIFF]) for param in optics_params}
-        diff_rms_iter = {param: _rms(meas_dict_iter[param][DIFF]) for param in optics_params}
+        if iter_step > 0:
+            # assert RMS after correction smaller than tolerances
+            for param in optics_params:
+                assert diff_rms[param] < RMS_TOL_DICT[param]
 
-        # assert RMS after correction smaller than tolerances
-        for param in optics_params:
-            assert diff_rms_iter[param] < RMS_TOL_DICT[param]
-
-        # assert total RMS decreases between steps
-        assert sum(diff_rms_prev.values()) > sum(diff_rms_iter.values())
-
-        model_prev_df = model_iter_df
-
-
-@pytest.mark.basic
-def test_global_correct_quad(tmp_path):
-    _assert_global_correct(
-        ACCEL_SETTINGS,
-        tmp_path,
-        OPTICS_PARAMS,
-        VARIABLE_CATEGORIES,
-        WEIGHTS,
-        MAX_ITER,
-        FULLRESPONSE_PATH,
-        GENERATED_MEASUREMENT_PATH,
-        RMS_TOL_DICT,
-    )
+            # assert total RMS decreases between steps
+            # ('skew' is converged after one step, still works with seed 2234)
+            assert sum(diff_rms_prev.values()) > sum(diff_rms.values())
+        diff_rms_prev = diff_rms
 
 
-@pytest.mark.basic
-def test_global_correct_skew(tmp_path):
-    _assert_global_correct(
-        ACCEL_SETTINGS,
-        tmp_path,
-        OPTICS_PARAMS_SKEW,
-        VARIABLE_CATEGORIES_SKEW,
-        WEIGHTS_SKEW,
-        MAX_ITER,
-        FULLRESPONSE_PATH_SKEW,
-        GENERATED_MEASUREMENT_PATH_SKEW,
-        RMS_TOL_DICT_SKEW,
-    )
+# Helper -----------------------------------------------------------------------
 
 
-@pytest.mark.basic
-def test_fullresponse_madx_quad(tmp_path):
-    _assert_response_madx(
-        ACCEL_SETTINGS, tmp_path, VARIABLE_CATEGORIES, OPTICS_PARAMS, FULLRESPONSE_PATH
-    )
-
-
-@pytest.mark.basic
-def test_fullresponse_madx_skew(tmp_path):
-    _assert_response_madx(
-        ACCEL_SETTINGS,
-        tmp_path,
-        VARIABLE_CATEGORIES_SKEW,
-        OPTICS_PARAMS_SKEW,
-        FULLRESPONSE_PATH_SKEW,
-    )
-
-
-@pytest.mark.basic
-def test_fullresponse_twiss(tmp_path):
-    _assert_response_twiss(
-        ACCEL_SETTINGS,
-        tmp_path,
-        VARIABLE_CATEGORIES,
-        FULLRESPONSE_PATH,
-        RMS_TOL_DICT_CORRECTION,
-    )
-
-
-@pytest.mark.basic
-def test_fullresponse_twiss_skew(tmp_path):
-    _assert_response_twiss(
-        ACCEL_SETTINGS,
-        tmp_path,
-        VARIABLE_CATEGORIES_SKEW,
-        FULLRESPONSE_PATH_SKEW,
-        RMS_TOL_DICT_CORRECTION,
-    )
-
-
-@pytest.mark.basic
-def test_iteration_convergence(tmp_path):
-    _assert_iteration_convergence(
-        ACCEL_SETTINGS,
-        tmp_path,
-        OPTICS_PARAMS,
-        VARIABLE_CATEGORIES,
-        WEIGHTS,
-        FULLRESPONSE_PATH,
-        GENERATED_MEASUREMENT_PATH,
-    )
-
-
-def _get_rms_dict(
-    accel_settings,
-    correction_dir,
-    optics_params,
-    variable_categories,
-    weights,
-    max_iter,
-    fullresponse_path,
-    generated_measurement_path,
-):
-    model_dir = accel_settings["model_dir"]
-    model_path = model_dir / "twiss.dat"
-    corrected_path = correction_dir / f"twiss_{max_iter}.tfs"
-
-    _convert_model_to_optics_measurement_tfs(model_path, generated_measurement_path, optics_params, correction_dir)
-    global_correction_entrypoint(
-        **accel_settings,
-        meas_dir=correction_dir,
-        variable_categories=variable_categories,
-        fullresponse_path=fullresponse_path,
-        optics_params=optics_params,
-        output_dir=correction_dir,
-        weights=weights,
-        svd_cut=0.01,
-        max_iter=max_iter,
-    )
-
-    # calculate RMS difference between generated measurement and correction
-    gm_df = tfs.read(generated_measurement_path, index=NAME)
-    cor_df = tfs.read(corrected_path, index=NAME)
-    cor_df = cor_df.loc[gm_df.index, :]
-    model_df = tfs.read(model_path, index=NAME)
-
-    gm_df = _add_coupling(gm_df)
-    cor_df = _add_coupling(cor_df)
-    model_df = _add_coupling(model_df)
-
-    name_l = gm_df.index[:-1:].to_numpy()
-    name2_l = gm_df.index[1::].to_numpy()
-
-    RMS_dict = {}
-    for parameter in optics_params:
-        if parameter.startswith(f"{PHASE_ADV}"):
-            delta = (gm_df.loc[name2_l, parameter].to_numpy() - gm_df.loc[name_l, parameter].to_numpy()) - (
-                cor_df.loc[name2_l, parameter].to_numpy() - cor_df.loc[name_l, parameter].to_numpy()
-            )
-        elif parameter.startswith(f"{BETA}"):
-            delta = np.divide(
-                gm_df.loc[:, parameter] - cor_df.loc[:, parameter], model_df.loc[:, parameter]
-            ).to_numpy()
-        elif parameter.startswith(f"{DISP}"):
-            delta = (gm_df.loc[:, parameter] - cor_df.loc[:, parameter]).to_numpy()
-        elif parameter.startswith("F"):
-            delta = (gm_df.loc[:, parameter] - cor_df.loc[:, parameter]).to_numpy()
-        elif parameter == f"{TUNE}":
-            delta_Q1 = np.divide(gm_df[f"{TUNE}1"] - cor_df[f"{TUNE}1"], model_df[f"{TUNE}1"])
-            delta_Q2 = np.divide(gm_df[f"{TUNE}2"] - cor_df[f"{TUNE}2"], model_df[f"{TUNE}2"])
-            delta = np.array([delta_Q1, delta_Q2])
-        elif parameter == f"{NORM_DISP}X":
-            NDX_gm = np.divide(gm_df.loc[:, f"{DISP}X"], np.sqrt(gm_df.loc[:, f"{BETA}X"])).to_numpy()
-            NDX_cor = np.divide(cor_df.loc[:, f"{DISP}X"], np.sqrt(cor_df.loc[:, f"{BETA}X"])).to_numpy()
-            delta = NDX_gm - NDX_cor
-        RMS_dict[parameter] = np.sqrt(np.mean((delta) ** 2))
-    return RMS_dict
-
-
-def _assert_response_madx(
-    accel_settings,
-    correction_dir,
-    variable_categories,
-    optics_params,
-    comparison_fullresponse_path,
-    delta_k=0.00002,
-):
-    fullresponse_path = correction_dir / "Fullresponse_pandas_omc3"
-    create_response_entrypoint(
-        **accel_settings,
-        creator="madx",
-        delta_k=delta_k,
-        variable_categories=variable_categories,
-        outfile_path=fullresponse_path,
-    )
-
-    with open(fullresponse_path, "rb") as fullresponse_file:
-        fullresponse_data = pickle.load(fullresponse_file)
-
-    with open(comparison_fullresponse_path, "rb") as comparison_fullresponse_file:
-        comparison_fullresponse_data = pickle.load(comparison_fullresponse_file)
-
-    # is_equal = True
-    for key in fullresponse_data.keys():
-        if key in optics_params:
-            assert np.allclose(
-                fullresponse_data[key][comparison_fullresponse_data[key].columns].to_numpy(),
-                comparison_fullresponse_data[key].to_numpy(),
-                rtol=1e-04,
-                atol=1e-06,
-            ), f"Fulresponse does not match for a key {key}"
-
-
-def _assert_response_twiss(
-    accel_settings,
-    correction_dir,
-    variable_categories,
-    comparison_fullresponse_path,
-    RMS_tol_dict,
-    delta_k=0.00002,
-):
-    fullresponse_path = correction_dir / "Fullresponse_pandas_omc3"
-    create_response_entrypoint(
-        **accel_settings,
-        creator="twiss",
-        delta_k=delta_k,
-        variable_categories=variable_categories,
-        outfile_path=fullresponse_path,
-    )
-
-    with open(fullresponse_path, "rb") as fullresponse_file:
-        fullresponse_data = pickle.load(fullresponse_file)
-
-    with open(comparison_fullresponse_path, "rb") as comparison_fullresponse_file:
-        comparison_fullresponse_data = pickle.load(comparison_fullresponse_file)
-
-    # is_equal = True
-    for key in fullresponse_data.keys():
-        index = comparison_fullresponse_data[key].index
-        columns = comparison_fullresponse_data[key].columns
-        delta = (
-            fullresponse_data[key].loc[index, columns].to_numpy()
-            - comparison_fullresponse_data[key].to_numpy()
-        )
-        assert np.sqrt(np.mean(delta ** 2)) < RMS_tol_dict[key], (
-            f"RMS difference between twiss and madx response is not within "
-            f"tolerance {RMS_tol_dict[key]} for key {key}"
-        )
-
-
-def _assert_global_correct(
-    accel_settings,
-    correction_dir,
-    optics_params,
-    variable_categories,
-    weights,
-    max_iter,
-    fullresponse_path,
-    generated_measurement_path,
-    RMS_tol_dict,
-):
-    RMS_dict = _get_rms_dict(
-        accel_settings,
-        correction_dir,
-        optics_params,
-        variable_categories,
-        weights,
-        max_iter,
-        fullresponse_path,
-        generated_measurement_path,
-    )
-
-    for key in RMS_dict.keys():
-        assert RMS_dict[key] < RMS_tol_dict[key], f"RMS of {key} is not within tolerance"
-
-
-def _assert_iteration_convergence(
-    accel_settings,
-    correction_dir,
-    optics_params,
-    variable_categories,
-    weights,
-    fullresponse_path,
-    generated_measurement_path,
-):
-    RMS_dict1 = _get_rms_dict(
-        accel_settings,
-        correction_dir,
-        optics_params,
-        variable_categories,
-        weights,
-        MAX_ITER,
-        fullresponse_path,
-        generated_measurement_path,
-    )
-
-    RMS_dict2 = _get_rms_dict(
-        accel_settings,
-        correction_dir,
-        optics_params,
-        variable_categories,
-        weights,
-        MAX_ITER + 1,
-        fullresponse_path,
-        generated_measurement_path,
-    )
-    for key in RMS_dict1.keys():
-        assert RMS_dict2[key] < RMS_dict1[key], f"RMS of {key} is got worse after repeated correction"
-
-
-def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics_params):
+def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics_params, seed):
     model_df = tfs.read(model_path / "twiss.dat", index=NAME)
     model_df = add_coupling_to_model(model_df)
+
+    twiss_df = tfs.read(twiss_path, index=NAME)
+    twiss_df = add_coupling_to_model(twiss_df)
 
     # create fake measurement data
     fake_measurement(
         model=model_df,
-        twiss=twiss_path,
+        twiss=twiss_df,
         randomize=[VALUES, ERRORS],
         relative_errors=[error_val],
-        seed=2230,
+        seed=seed,
         outputdir=tmp_path,
     )
 
@@ -461,7 +145,10 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics
             meas[VALUE] = meas.loc[:, col].to_numpy()
             meas[ERROR] = meas.loc[:, f"{ERR}{col}"].to_numpy()
         meas[WEIGHT] = 1.
-    return model_df, meas_dict
+    return twiss_df, model_df, meas_dict
+
+
+# Fixtures ---
 
 
 @pytest.fixture(scope="module")

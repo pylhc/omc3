@@ -391,7 +391,7 @@ def beam2_path():
 
 
 def beam1_coupling_path():
-    return INPUT_DIR / "correction" / "twiss_skew_quadrupole_error.dat"
+    return INPUT_DIR / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
 
 
 def beam_path(beam):
