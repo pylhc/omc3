@@ -123,7 +123,7 @@ def _get_response_filters() -> Dict[str, Callable]:
     to `_get_generic_response`."""
     return defaultdict(
         lambda: _get_generic_response,
-        {f"{PHASE}X": _get_phase_response, f"{PHASE}Y": _get_phase_response, f"{TUNE}": _get_tune_response},
+        {f"{PHASE}X": _get_phase_response, f"{PHASE}Y": _get_phase_response},
     )
 
 
@@ -136,10 +136,6 @@ def _get_phase_response(resp: pd.DataFrame, meas: pd.DataFrame) -> pd.DataFrame:
     phase1 = resp.loc[meas.index.to_numpy(), :]
     phase2 = resp.loc[meas.loc[:, NAME2].to_numpy(), :]
     return -phase1.sub(phase2.to_numpy())  # phs2-phs1 but with idx of phs1
-
-
-def _get_tune_response(resp, meas):  # ??? TODO: DELETE (can use generic)
-    return resp
 
 
 def _get_smallest_data_mask(data, portion: float = 0.95) -> np.ndarray:
