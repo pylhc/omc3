@@ -24,7 +24,7 @@ from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.constants import (BETA, DISP, F1001, F1010, INCR,
-                                       NORM_DISP, PHASE_ADV, TUNE)
+                                       NORM_DISP, PHASE_ADV, TUNE, PHASE)
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
@@ -159,10 +159,10 @@ def _load_madx_results(
 
 
 def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) -> Dict[str, pd.DataFrame]:
-    """ Convert var-tfs dictionary to fullresponse dictionary """
+    """ Convert var-tfs dictionary to fullresponse dictionary. """
     var_to_twiss = _add_coupling(var_to_twiss)
     keys = list(var_to_twiss.keys())
-    # columns = ["MUX","MUY","BETX","BETY","DX", "DY", "F1001R","F1001I","F1010R","F1010I","Q1","Q2","incr"]
+
     columns = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETA}X", f"{BETA}Y", f"{DISP}X", f"{DISP}Y",
                f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I", f"{TUNE}1", f"{TUNE}2", INCR]
 

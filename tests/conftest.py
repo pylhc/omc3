@@ -11,6 +11,11 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
+from generic_parser import DotDict
+
+from omc3 import model
+
+INPUTS = Path(__file__).parent / 'inputs'
 
 
 @contextmanager
@@ -30,3 +35,40 @@ def cli_args(*args, **kwargs):
     sys.argv = [script] + list(args)
     yield
     sys.argv = args_save
+
+
+@pytest.fixture(scope="module")
+def model_inj_beam1(tmp_path_factory):
+    """ Fixture for inj beam 1 model"""
+    return tmp_model(tmp_path_factory.getbasetemp(), beam=1, id_='inj')
+
+
+def tmp_model(temp_dir: Path, beam: int, id_: str):
+    """Creates a temporary model directory based on the input/models/model_inj_beam#
+    but with the addition of a macros/ directory containing the macros from
+    the omc3/models/madx_macros.
+
+    Args:
+        temp_dir (Path): Base-Temporary Directory, the model will be in a subfolder
+        beam (int): Beam to use
+        id_ (str): Model identifyier. `inj` or `25cm`
+
+    Returns:
+        A DotDict with the attributes ``path``, the path to the model directory
+        and ``settings``, the accelerator class settings for this model.
+    """
+    tmp_model_path = temp_dir / f"model_{id_}_beam{beam}"
+    shutil.copytree(INPUTS / "models" / f"{id_}_beam{beam}", tmp_model_path)  # creates tmp_path dir
+
+    macros_path = tmp_model_path / "macros"
+    shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
+
+    settings = dict(
+        ats=True,
+        beam=beam,
+        model_dir=str(tmp_model_path),
+        year="2018",
+        accel="lhc",
+        energy=0.45 if id_ == 'inj' else 6.5,
+    )
+    return DotDict(path=tmp_model_path, settings=settings)

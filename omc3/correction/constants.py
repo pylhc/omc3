@@ -18,6 +18,8 @@ MODEL = "MODEL"
 DIFF = "DIFF"
 
 # Names
+NAME = "NAME"
+NAME2 = "NAME2"
 S = "S"
 BETA = "BET"
 BETABEAT = "BB"

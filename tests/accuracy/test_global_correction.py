@@ -1,12 +1,8 @@
-import shutil
 from pathlib import Path
 
 import numpy as np
 import pytest
 import tfs
-from generic_parser import DotDict
-
-from omc3 import model
 from omc3.correction.constants import (BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE, ERROR,
                                        ERR, WEIGHT, DELTA)
 from omc3.correction.handler import get_measurement_data, _rms
@@ -103,11 +99,18 @@ def test_global_correct(tmp_path, model_inj_beam1, orientation):
         if iter_step > 0:
             # assert RMS after correction smaller than tolerances
             for param in optics_params:
-                assert diff_rms[param] < RMS_TOL_DICT[param]
+                assert diff_rms[param] < RMS_TOL_DICT[param], (
+                    f"RMS for {param} in iteration {iter_step} larger than tolerance."
+                    f"{diff_rms[param]} >= {RMS_TOL_DICT[param]}."
+                    )
 
             # assert total RMS decreases between steps
             # ('skew' is converged after one step, still works with seed 2234)
-            assert sum(diff_rms_prev.values()) > sum(diff_rms.values())
+            assert sum(diff_rms_prev.values()) > sum(diff_rms.values()), (
+                f"Total RMS in iteration {iter_step} larger than in previous iteration."
+                f"{sum(diff_rms.values())} >= {sum(diff_rms_prev.values())}."
+            )
+
         diff_rms_prev = diff_rms
 
 
@@ -146,25 +149,3 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics
             meas[ERROR] = meas.loc[:, f"{ERR}{col}"].to_numpy()
         meas[WEIGHT] = 1.
     return twiss_df, model_df, meas_dict
-
-
-# Fixtures ---
-
-
-@pytest.fixture(scope="module")
-def model_inj_beam1(tmp_path_factory):
-    tmp_path = tmp_path_factory.getbasetemp() / "model_inj_beam1"
-    shutil.copytree(INPUTS / "models" / "inj_beam1", tmp_path)  # creates tmp_path dir
-
-    macros_path = tmp_path / "macros"
-    shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
-
-    settings = dict(
-        ats=True,
-        beam=1,
-        model_dir=str(tmp_path),
-        year="2018",
-        accel="lhc",
-        energy=0.45,
-    )
-    return DotDict(path=tmp_path, settings=settings)

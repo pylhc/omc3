@@ -47,7 +47,7 @@ def write_fullresponse(path: Path, fullresponse: Dict[str, pd.DataFrame]):
     """
     LOG.info(f"Saving response matrices into file '{str(path)}'")
     if path.exists():
-        LOG.warning(f"Varmap file {str(path)} already exist and will be overwritten.")
+        LOG.warning(f"Fullresponse file {str(path)} already exist and will be overwritten.")
     with pd.HDFStore(path, mode='w', complib=COMPLIB, complevel=COMPLEVEL) as store:
         for param, response_df in fullresponse.items():
             store.put(value=response_df, key=param, format="table")
