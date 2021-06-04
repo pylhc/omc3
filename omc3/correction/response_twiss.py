@@ -6,14 +6,15 @@ Provides a class to get response matrices from Twiss parameters.
 
 .. warning::
   The responses are only valid for MAD-X Beam 1 and Beam 2 twiss-files, **not for Beam 4** !!
+  Also, it only works properly for on-orbit twiss files.
 
 
-The calculation is based on formulas in [#FranchiAnalyticformulasrapid2017]_, [#TomasReviewlinearoptics2017]_.
+The calculation is based on formulas in [#FranchiAnalyticformulasrapid2017]_, [#TomasReviewlinearoptics2017]_
+and is summarized in [#DillyUpdatedGlobalOpticsCorrection2018]_, where the following
+equations can be found in Eq. 10 - Eq. 15.
 
 
-Only works properly for on-orbit twiss files.
-
-* Beta Response:     Eq. A35 inserted into Eq. B45 in [#FranchiAnalyticformulasrapid2017]_
+* Beta Response:
 
 .. math::
 
@@ -21,7 +22,7 @@ Only works properly for on-orbit twiss files.
     \frac{cos(2\tau_{z,mj})}{sin(2\pi Q_z)}
 
 
-* Dispersion Response: Eq. 25-27 in [#FranchiAnalyticformulasrapid2017]_ + K1 (see Eq. B17)
+* Dispersion Response:
 
 .. math::
 
@@ -51,7 +52,7 @@ Only works properly for on-orbit twiss files.
     \frac{\beta_{y,m}}{4}\frac{cos(2\tau_{y,mj})}{2sin(\pi Q_y)}
 
 
-* Phase Advance Response:    Eq. 28 in [#FranchiAnalyticformulasrapid2017]_
+* Phase Advance Response:
 
 .. math::
 
@@ -60,14 +61,14 @@ Only works properly for on-orbit twiss files.
     \frac{sin(2\tau_{z,mj}) - sin(2\tau_{z,mw})}{sin(2\pi Q_z)} \right\}
 
 
-* Tune Response:             Eq. 7 in [#TomasReviewlinearoptics2017]_
+* Tune Response:
 
 .. math::
 
     \delta Q_z = \pm \sum_m \delta K_{1,m} \frac{\beta_{z,m}}{4\pi}
 
 
-* Coupling Response:            Eq. 10 in [#FranchiAnalyticformulasrapid2017]_
+* Coupling Response:
 
 .. math::
 
@@ -100,7 +101,7 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
 ..  [#FranchiAnalyticformulasrapid2017]
     A. Franchi et al.,
     Analytic formulas for the rapid evaluation of the orbit response matrix
-    and chromatic functions from lattice parameters in circular accelerators
+    and chromatic functions from lattice parameters in circular accelerators. (2017)
     https://arxiv.org/abs/1711.06589
 
 .. [#TomasReviewlinearoptics2017]
@@ -109,6 +110,11 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
     accelerators.'
     Physical Review Accelerators and Beams, 20(5), 54801. (2017)
     https://doi.org/10.1103/PhysRevAccelBeams.20.054801
+
+..  [#DillyUpdatedGlobalOpticsCorrection2018]
+    J. Dilly et al.,
+    An updated global optics correction scheme. (2018)
+    https://cds.cern.ch/record/2632945/
 
 """
 import copy
@@ -281,10 +287,7 @@ class TwissResponse:
     ################################
 
     def _calc_coupling_response(self):
-        """Response Matrix for coupling.
-
-        Eq. 10 in [#FranchiAnalyticformulasrapid2017]_
-        """
+        """Response Matrix for coupling."""
         LOG.debug("Calculate Coupling Matrix")
         with timeit(lambda t: LOG.debug(f"  Time needed: {t} s")):
             tw = self._twiss
@@ -307,10 +310,7 @@ class TwissResponse:
         return dcoupl
 
     def _calc_beta_response(self):
-        """Response Matrix for delta beta.
-
-        Eq. A35 -> Eq. B45 in [#FranchiAnalyticformulasrapid2017]_
-        """
+        """Response Matrix for delta beta."""
         LOG.debug("Calculate Beta Response Matrix")
         with timeit(lambda t: LOG.debug(f"  Time needed: {t} s")):
             tw = self._twiss
@@ -338,11 +338,7 @@ class TwissResponse:
         return dbeta
 
     def _calc_dispersion_response(self):
-        r"""Response Matrix for delta normalized dispersion
-
-        Eq. 25-27 in [#FranchiAnalyticformulasrapid2017]_
-        But w/o the assumtion :math:`\delta K_1 = 0` from Appendix B.1
-        """
+        """Response Matrix for delta normalized dispersion."""
         LOG.debug("Calculate Dispersion Response Matrix")
         with timeit(lambda t: LOG.debug(f"  Time needed: {t} s")):
             tw = self._twiss
@@ -394,12 +390,7 @@ class TwissResponse:
         return disp_resp
 
     def _calc_norm_dispersion_response(self):
-        r"""Response Matrix for delta normalized dispersion
-
-        Eq. 25-27 in [#FranchiAnalyticformulasrapid2017]_
-        But w/o the assumtion :math:`\delta K_1 = 0` from Appendix B.1
-        and added linearization for :math:`\frac{1}{\sqrt{\beta}}`
-        """
+        """Response Matrix for delta normalized dispersion."""
         LOG.debug("Calculate Normalized Dispersion Response Matrix")
         with timeit(lambda t: LOG.debug(f"  Time needed: {t} s")):
             tw = self._twiss
@@ -471,7 +462,6 @@ class TwissResponse:
     def _calc_phase_advance_response(self):
         """Response Matrix for delta DPhi.
 
-        Eq. 28 in [#FranchiAnalyticformulasrapid2017]_
         Reduced to only phase advances between consecutive elements,
         as the 3D-Matrix of all elements exceeds memory space
         (~11000^3 = 1331 Giga Elements)
@@ -524,10 +514,6 @@ class TwissResponse:
     def _calc_phase_response(self):
         """Response Matrix for delta DPhi.
 
-        Eq. 28 in [#FranchiAnalyticformulasrapid2017]_
-        Reduced to only delta phase.
-        --> w = 0:  DPhi(z,j) = DPhi(x, 0->j)
-
         This calculation could also be achieved by applying np.cumsum to the DataFrames of
         _calc_phase_adv_response() (tested!), but _calc_phase_response() is about 4x faster.
         """
@@ -570,10 +556,7 @@ class TwissResponse:
         return dmu
 
     def _calc_tune_response(self):
-        """Response vectors for Tune.
-
-        Eq. 7 in [#TomasReviewlinearoptics2017]_
-        """
+        """Response vectors for Tune."""
         LOG.debug("Calculate Tune Response Matrix")
         with timeit(lambda t: LOG.debug(f"  Time needed: {t} s")):
             tw = self._twiss
@@ -836,12 +819,12 @@ def get_phase_advances(twiss_df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
 
 
 def dphi(data, q):
-    """Return dphi from phase advances in data, see Eq. 8 in [#FranchiAnalyticformulasrapid2017]_"""
+    """Return dphi from phase advances in data, see Eq. 7 in [#DillyUpdatedGlobalOpticsCorrection2018]_"""
     return data + np.where(data <= 0, q, 0)  # '<=' seems to be what MAD-X does
 
 
 def tau(data, q):
-    """Return tau from phase advances in data, see Eq. 16 in [#FranchiAnalyticformulasrapid2017]_"""
+    """Return tau from phase advances in data, see Eq. 8 in [#DillyUpdatedGlobalOpticsCorrection2018]_"""
     return data + np.where(data <= 0, q / 2, -q / 2)  # '<=' seems to be what MAD-X does
 
 
