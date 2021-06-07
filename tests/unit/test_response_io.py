@@ -10,7 +10,7 @@ import pytest
 INPUT_DIR = Path(__file__).parent.parent / "inputs"
 INJ_BEAM1_MODEL = INPUT_DIR / "models" / "inj_beam1"
 FULLRESPONSE_PATH = INJ_BEAM1_MODEL / "fullresponse.h5"
-VARMAP_PATH = INJ_BEAM1_MODEL / "varmap_lhcb1_MQY.h5"
+VARMAP_PATH = INJ_BEAM1_MODEL / "varmap_MQY.h5"
 
 
 # Fullresponse -----------------------------------------------------------------
@@ -57,7 +57,7 @@ def test_fullresponse_read_fail():
 @pytest.mark.basic
 def test_fullresponse_parameter_fail():
     with pytest.raises(ValueError) as e:
-        read_fullresponse(VARMAP_PATH, optics_parameters=["BETX", "SOME", "OTHER"])
+        read_fullresponse(FULLRESPONSE_PATH, optics_parameters=["BETX", "SOME", "OTHER"])
     assert "SOME" in str(e.value)
     assert "OTHER" in str(e.value)
 

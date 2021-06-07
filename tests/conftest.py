@@ -5,6 +5,7 @@ Fixtures defined in here are discovered by all tests automatically.
 
 See also https://stackoverflow.com/a/34520971 .
 """
+import re
 import shutil
 import sys
 from contextlib import contextmanager
@@ -38,9 +39,9 @@ def cli_args(*args, **kwargs):
 
 
 @pytest.fixture(scope="module")
-def model_inj_beam1(tmp_path_factory):
+def model_inj_beam1(request, tmp_path_factory):
     """ Fixture for inj beam 1 model"""
-    return tmp_model(tmp_path_factory.getbasetemp(), beam=1, id_='inj')
+    return tmp_model(get_tmpdir_path(request, tmp_path_factory), beam=1, id_='inj')
 
 
 def tmp_model(temp_dir: Path, beam: int, id_: str):
@@ -72,3 +73,15 @@ def tmp_model(temp_dir: Path, beam: int, id_: str):
         energy=0.45 if id_ == 'inj' else 6.5,
     )
     return DotDict(path=tmp_model_path, settings=settings)
+
+
+def get_tmpdir_path(request, factory):
+    """ Get's the name from the request node.
+    So that there will be different folders for new scopes.
+    Similar to factory.mkdir(), but without creating it.
+    """
+    name = request.node.name
+    name = re.sub(r"[\W]", "_", name)
+    MAXVAL = 30
+    name = name[:MAXVAL]
+    return factory.getbasetemp().joinpath(name)

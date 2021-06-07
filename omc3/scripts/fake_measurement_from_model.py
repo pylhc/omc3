@@ -377,8 +377,8 @@ def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: f
     values = df_twiss.loc[:, parameter]
     errors = relative_error * values.abs()
     if all(values == 0):
-        LOG.warn(f"All value for {parameter} are zero. "
-                 f"Fake measurement will be zero as well.")
+        LOG.warning(f"All value for {parameter} are zero. "
+                    f"Fake measurement will be zero as well.")
     else:
         if ERRORS in randomize:
             errors = _get_random_errors(errors, values)
