@@ -9,8 +9,8 @@ from omc3.response_creator import create_response_entrypoint as create_response
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
 
 DELTA_K = 2e-5
-MADX_RTOL = 1e-4
-MADX_ATOL = 1e-6
+MADX_RTOL = 1e-3
+MADX_ATOL = 1e-8 / DELTA_K  # tfs-precision / DELTA
 TWISS_RMS_TOL = 0.07
 
 
