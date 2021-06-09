@@ -16,7 +16,7 @@ def test_with_macro(tmp_path):
     content = f"call,file='{str(LIB / 'lhc.macros.madx')}';\ncall,file='{str(LIB / 'general.macros.madx')}';\n"
     outfile = tmp_path / "job.with_macro.madx"
     with silence():
-        madx_wrapper.run_string(content, output_file=outfile, cwd=tmp_path)
+        madx_wrapper.run_string(content, output_file=str(outfile), cwd=str(tmp_path))  # on windows, py3.7 Path() causes problems (jdilly, 2021-06-09)
     assert outfile.exists()
     assert content == outfile.read_text()
 
