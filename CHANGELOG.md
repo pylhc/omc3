@@ -1,5 +1,24 @@
 # OMC3 Changelog
 
+#### 2021-06-10
+
+- Added:
+  - global correction framework
+    - global correction entrypoint
+    - response matrix creation in madx and analytically
+    - response read/write functions in hdf5
+    - madx sequence evaluation
+    - model appenders
+    - model differences functions
+  - script to fake measurement from model
+  - more usages of constants for strings (e.g. column names)
+  - introducing pathlib.Path in some places
+
+- Fixes:
+  - Matplotlib warnings for `set_window_title`
+  - Excluded Windows and MacOS py3.9 from normal testing, due to installation issues of pyTables
+
+
 #### 2020-09-30
 
 - Added:

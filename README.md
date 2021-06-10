@@ -62,6 +62,7 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 - `update_nattune_in_linfile.py` to update the natural tune columns in the lin files by finding the highest peak in the spectrum in a given interval.
 - `write_madx_macros.py` to generate `MAD-X` tracking macros with observation points from a twiss file.
 - `merge_kmod_results.py` to merge lsa_results files created by kmod, and add the luminosity imbalance if the 4 needed IP/Beam files combination are present.
+- `fake_measurement_from_model.py` to create a fake measurement based on a model twiss file.
 
 Example use for these scripts can be found in the [`tests`](tests) files.
 
