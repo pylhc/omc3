@@ -18,7 +18,7 @@ TWISS_RMS_TOL = 0.07
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
 @pytest.mark.parametrize('creator', ('madx', 'twiss'))
 def test_reponse_accuracy(tmp_path, model_inj_beam1, orientation, creator):
-    """ Tests the accuracy of a newly generated response agains the saved
+    """ Tests the accuracy of a newly generated response against the saved
     response matrix. In that way also twiss and madx responses are compared to
     each other.
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
