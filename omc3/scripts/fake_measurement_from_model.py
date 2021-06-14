@@ -211,7 +211,8 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
 
 # Main Creator Functions -------------------------------------------------------
 
-def create_beta(df_twiss, df_model, parameter, relative_error, randomize, headers):
+def create_beta(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
+                relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Create both beta_amp and beta_phase measurements. """
     LOG.info(f"Creating fake beta for {parameter}.")
     plane = parameter[-1]
@@ -224,7 +225,8 @@ def create_beta(df_twiss, df_model, parameter, relative_error, randomize, header
             f'{AMP_BETA_NAME}{plane.lower()}': df}
 
 
-def create_dispersion(df_twiss, df_model, parameter, relative_error, randomize, headers):
+def create_dispersion(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
+                      relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates dispersion measurement. """
     LOG.info(f"Creating fake dispersion for {parameter}.")
     plane = parameter[-1]
@@ -234,7 +236,8 @@ def create_dispersion(df_twiss, df_model, parameter, relative_error, randomize, 
     return {f'{DISPERSION_NAME}{plane.lower()}': df}
 
 
-def create_phase(df_twiss, df_model, parameter, relative_error, randomize, headers):
+def create_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
+                 relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates both phase advance and total phase measurements. """
     LOG.info(f"Creating fake phases for {parameter}.")
     results = {}
@@ -246,7 +249,8 @@ def create_phase(df_twiss, df_model, parameter, relative_error, randomize, heade
     return results
 
 
-def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomize, headers):
+def create_phase_advance(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
+                         relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates phase advance measurements. """
     LOG.debug(f"Creating fake phase advance for {parameter}.")
     plane = parameter[-1]
@@ -283,7 +287,8 @@ def create_phase_advance(df_twiss, df_model, parameter, relative_error, randomiz
     return {f'{PHASE_NAME}{plane.lower()}': df_adv}
 
 
-def create_total_phase(df_twiss, df_model, parameter, relative_error, randomize, headers):
+def create_total_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
+                       relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates total phase measurements. """
     LOG.debug(f"Creating fake total phase for {parameter}.")
     plane = parameter[-1]
@@ -320,7 +325,8 @@ def create_total_phase(df_twiss, df_model, parameter, relative_error, randomize,
     return {f'{TOTAL_PHASE_NAME}{plane.lower()}': df_tot}
 
 
-def create_coupling(df_twiss, df_model, parameter, relative_error, randomize, headers):
+def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
+                    relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates coupling measurements for either the difference or sum RDT. """
     LOG.info(f"Creating fake coupling for {parameter}.")
     re = create_measurement(df_twiss, f'{parameter}R', relative_error, randomize)
@@ -343,7 +349,8 @@ CREATOR_MAP = {
 
 # Not mapped ---
 
-def create_normalized_dispersion(df_disp, df_beta, df_model, parameter, headers):
+def create_normalized_dispersion(df_disp: pd.DataFrame, df_beta: pd.DataFrame,
+                                 df_model: pd.DataFrame, parameter: str, headers: Dict):
     """ Creates normalized dispersion from pre-created dispersion and beta dataframes. """
     LOG.info(f"Creating fake normalized dispersion for {parameter}.")
     plane = parameter[-1]  # 'X'
