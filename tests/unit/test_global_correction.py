@@ -32,7 +32,8 @@ FILENAME_MAP = {
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
 def test_read_measurement_data(tmp_path, model_inj_beam1, orientation):
-    """ Tests if all necessary measurement data is read. """
+    """ Tests if all necessary measurement data is read.
+    Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
     is_skew = orientation == 'skew'
     twiss, optics_params, variables, fullresponse, _ = get_skew_params() if is_skew else get_normal_params()
     meas_fake = fake_measurement(

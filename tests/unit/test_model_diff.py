@@ -17,12 +17,15 @@ MODEL_INJ_BEAM1 = INPUTS / "models" / "inj_beam1" / "twiss.dat"
 MODEL_INJ_BEAM1_MQ_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_quadrupole_error.dat"
 MODEL_INJ_BEAM1_MQS_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
 
-EPS = 1e-12
+EPS = 1e-12  # numerical accuracy, as the inverse calculation will not give the exact starting values
 
 
 @pytest.mark.parametrize('model_error_path', (MODEL_INJ_BEAM1_MQ_ERR, MODEL_INJ_BEAM1_MQS_ERR), ids=('MQ', 'MQS'))
 @pytest.mark.basic
 def test_simple_diff(model_error_path):
+    """Asserts that the diff_twiss_parameters functions perform the correct
+    calculations by applying the respective inverse calculations on
+    model, model_errors and delta."""
     model = tfs.read(MODEL_INJ_BEAM1, index=NAME)
     model = add_coupling_to_model(model)
 

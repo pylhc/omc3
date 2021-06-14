@@ -18,6 +18,10 @@ TWISS_RMS_TOL = 0.07
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
 @pytest.mark.parametrize('creator', ('madx', 'twiss'))
 def test_reponse_accuracy(tmp_path, model_inj_beam1, orientation, creator):
+    """ Tests the accuracy of a newly generated response agains the saved
+    response matrix. In that way also twiss and madx responses are compared to
+    each other.
+    Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
     # parameter setup
     is_skew = orientation == 'skew'
     _, optics_params, variables, fullresponse, _ = get_skew_params() if is_skew else get_normal_params()
@@ -54,7 +58,8 @@ def test_reponse_accuracy(tmp_path, model_inj_beam1, orientation, creator):
 
 
 def _adapt_optics_params(optics_params, creator, is_skew):
-    """ Changes the parameters that come from """
+    """Changes the optics parameters stemming from the defaults
+     so that they fit the creation functions."""
     if creator == 'madx':
         # madx creates responses for all anyway, so test all parameters
         optics_params = OPTICS_PARAMS_CHOICES
