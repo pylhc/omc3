@@ -35,7 +35,7 @@ LOG = logging_tools.get_logger(__name__)
 # Full Response Mad-X ##########################################################
 
 
-def generate_fullresponse(
+def create_fullresponse(
     accel_inst: Accelerator,
     variable_categories: Sequence[str],
     delta_k: float = 2e-5,
