@@ -54,13 +54,6 @@ Model Creation Keyword Args:
         Energy in Tev.
 
 
-    - **fullresponse**:
-
-        If True, outputs also fullresponse madx file.
-
-        action: ``store_true``
-
-
     - **model_dir** *(str)*:
 
         Path to model directory; loads tunes and excitation from model!
@@ -85,8 +78,8 @@ Model Creation Keyword Args:
 
 """
 import json
-import os
 from collections import OrderedDict
+from pathlib import Path
 
 import tfs
 from generic_parser import EntryPoint
@@ -95,12 +88,13 @@ from omc3.model.accelerators.accelerator import (AccElementTypes, Accelerator,
                                                  AcceleratorDefinitionError,
                                                  AccExcitationMode)
 from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
-                                  GENERAL_MACROS, LHC_MACROS, MACROS_DIR)
+                                  GENERAL_MACROS, LHC_MACROS, MACROS_DIR,
+                                  MODIFIER_TAG)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
-CURRENT_DIR = os.path.dirname(__file__)
-LHC_DIR = os.path.join(CURRENT_DIR, "lhc")
+CURRENT_DIR = Path(__file__).parent
+LHC_DIR = CURRENT_DIR / "lhc"
 
 
 class Lhc(Accelerator):
@@ -148,12 +142,7 @@ class Lhc(Accelerator):
         LOGGER.debug("Accelerator class verification")
         _ = self.beam
 
-        if self.model_dir is None:  # is the class is used to create full response?
-            if self.modifiers is None:
-                raise AcceleratorDefinitionError(
-                    "The accelerator definition is incomplete, optics "
-                    "file or model directory has not been specified."
-                )
+        if self.model_dir is None:
             if self.xing is None:
                 raise AcceleratorDefinitionError("Crossing on or off not set.")
 
@@ -162,8 +151,21 @@ class Lhc(Accelerator):
         if (self.excitation != AccExcitationMode.FREE) and (self.drv_tunes is None):
             raise AcceleratorDefinitionError("Driven tunes not set.")
 
-        if self.modifiers is not None and not os.path.exists(self.modifiers):
-            raise AcceleratorDefinitionError(f"Optics file '{self.modifiers}' does not exist.")
+        if self.modifiers is None or not len(self.modifiers):
+            raise AcceleratorDefinitionError(
+                "The accelerator definition is incomplete, no modifiers found."
+            )
+        else:
+            not_exist = []
+            if self.model_dir is None:
+                not_exits = [m for m in self.modifiers if not m.exists()]
+            else:
+                not_exits = [m for m in self.modifiers if not (self.model_dir / m).exists()]
+
+            if len(not_exits):
+                raise AcceleratorDefinitionError(
+                    f"The following modifier files do not exist: {', '.join(not_exist)}"
+                )
 
         # print info about the accelerator
         # TODO: write more output prints
@@ -171,6 +173,7 @@ class Lhc(Accelerator):
         LOGGER.debug(f"Class name       {self.__class__.__name__}")
         LOGGER.debug(f"Beam             {self.beam}")
         LOGGER.debug(f"Beam direction   {self.beam_direction}")
+        LOGGER.debug(f"Modifiers        {', '.join(self.modifiers)}")
 
     @property
     def beam(self):
@@ -186,17 +189,17 @@ class Lhc(Accelerator):
         self._beam = value
 
     def get_file(self, filename):
-        return os.path.join(CURRENT_DIR, self.NAME, filename)
+        return CURRENT_DIR / self.NAME / filename
 
     @staticmethod
     def get_lhc_error_dir():
-        return os.path.join(LHC_DIR, "systematic_errors")
+        return LHC_DIR / "systematic_errors"
 
     def get_variables(self, frm=None, to=None, classes=None):
-        correctors_dir = os.path.join(LHC_DIR, "2012", "correctors")  # not a bug
+        correctors_dir = LHC_DIR / "2012" / "correctors"
         all_corrs = _merge_jsons(
-            os.path.join(correctors_dir, f"correctors_b{self.beam}", "beta_correctors.json"),
-            os.path.join(correctors_dir, f"correctors_b{self.beam}", "coupling_correctors.json"),
+            correctors_dir / f"correctors_b{self.beam}" / "beta_correctors.json",
+            correctors_dir / f"correctors_b{self.beam}" / "coupling_correctors.json",
             self._get_triplet_correctors_file(),
         )
         my_classes = classes
@@ -266,12 +269,12 @@ class Lhc(Accelerator):
     # Private Methods ##########################################################
 
     def _get_triplet_correctors_file(self):
-        correctors_dir = os.path.join(LHC_DIR, self.correctors_dir, "correctors")
-        return os.path.join(correctors_dir, "triplet_correctors.json")
+        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
+        return correctors_dir / "triplet_correctors.json"
 
     def _get_corrector_elems(self):
-        correctors_dir = os.path.join(LHC_DIR, self.correctors_dir, "correctors")
-        return os.path.join(correctors_dir, f"corrector_elems_b{self.beam}.tfs")
+        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
+        return correctors_dir / f"corrector_elems_b{self.beam}.tfs"
 
     def get_exciter_bpm(self, plane, commonbpms):
         beam = self.beam
@@ -315,12 +318,13 @@ class Lhc(Accelerator):
         ats_suffix = '_ats' if self.ats else ''
         madx_script = (
             f"option, -echo;\n"
-            f"{_call_in_madx(os.path.join(outdir, MACROS_DIR, GENERAL_MACROS))}"
-            f"{_call_in_madx(os.path.join(outdir, MACROS_DIR, LHC_MACROS))}"
+            f"call, file = '{outdir / MACROS_DIR / GENERAL_MACROS}';\n"
+            f"call, file = '{outdir / MACROS_DIR / LHC_MACROS}';\n"
             f'title, "Model from Lukas :-)";\n'
             f"{self.load_main_seq_madx()}\n"
-            f"exec, define_nominal_beams();\n"
-            f"{_call_in_madx(self.modifiers)}"
+            f"exec, define_nominal_beams();\n")
+        madx_script += ''.join(f"call, file = '{modifier}'; {MODIFIER_TAG}\n" for modifier in self.modifiers)
+        madx_script += (
             f"exec, cycle_sequences();\n"
             f"xing_angles = {'1' if self.xing else '0'};\n"
             f"if(xing_angles==1){{\n"
@@ -334,9 +338,9 @@ class Lhc(Accelerator):
         if best_knowledge:
             # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
             madx_script += (
-                    f"readmytable, file = '{os.path.join(outdir, B2_ERRORS_TFS)}', table=errtab;\n"
+                    f"readmytable, file = '{outdir / B2_ERRORS_TFS}', table=errtab;\n"
                     f"seterr, table=errtab;\n"
-                    f"{_call_in_madx(os.path.join(outdir, B2_SETTINGS_MADX))}")
+                    f"call, file = '{outdir / B2_SETTINGS_MADX}';\n")
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
         madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
@@ -356,20 +360,16 @@ class Lhc(Accelerator):
 
 
 def _get_call_main_for_year(year):
-    call_main = _call_in_madx(_get_file_for_year(year, "main.seq"))
+    call_main = f"call, file = '{_get_file_for_year(year, 'main.seq')}';\n"
     if year == "2012":
-        call_main += _call_in_madx(os.path.join(LHC_DIR, "2012", "install_additional_elements.madx"))
+        call_main += f"call, file = '{LHC_DIR / '2012' / 'install_additional_elements.madx'}';\n"
     if year == "hllhc1.3":
-        call_main += _call_in_madx(os.path.join(LHC_DIR, "hllhc1.3", "main_update.seq"))
+        call_main += f"call, file = '{LHC_DIR / 'hllhc1.3' / 'main_update.seq'}';\n"
     return call_main
 
 
-def _call_in_madx(path_to_call):
-    return f"call, file = '{path_to_call}';\n"
-
-
 def _get_file_for_year(year, filename):
-    return os.path.join(LHC_DIR, year, filename)
+    return LHC_DIR / year / filename
 
 
 def _merge_jsons(*files):

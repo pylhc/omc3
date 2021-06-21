@@ -9,7 +9,7 @@ import os
 import shutil
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
-from omc3.model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
+from omc3.model.constants import ERROR_DEFFS_TXT
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,8 +18,7 @@ class PsModelCreator(object):
 
     @classmethod
     def get_madx_script(cls, instance, output_path):
-        use_acd = "1" if (instance.excitation ==
-                          AccExcitationMode.ACD) else "0"
+        use_acd = "1" if (instance.excitation == AccExcitationMode.ACD) else "0"
         replace_dict = {
             "FILES_DIR": instance.get_dir(),
             "USE_ACD": use_acd,
@@ -40,18 +39,15 @@ class PsModelCreator(object):
         else:
             LOGGER.debug("ACD is OFF")
 
-        with open(instance.get_file("nominal.madx")) as textfile:
-            madx_template = textfile.read()
+        madx_template = instance.get_file("nominal.madx").read_text()
         out = madx_template % replace_dict
         return out
 
     @classmethod
     def _prepare_fullresponse(cls, instance, output_path):
-        with open(instance.get_file("template.iterate.madx")) as textfile:
-            iterate_template = textfile.read()
-
+        iterate_template = instance.get_file("template.iterate.madx").read_text()
         replace_dict = {
-            "FILES_DIR": instance.get_dir(),
+            "FILES_DIR": str(instance.get_dir()),
             "OPTICS_PATH": instance.modifiers,
             "PATH": output_path,
             "KINETICENERGY": instance.energy,
@@ -60,15 +56,11 @@ class PsModelCreator(object):
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
         }
-
-        with open(os.path.join(output_path, JOB_ITERATE_MADX), "w") as textfile:
-            textfile.write(iterate_template % replace_dict)
+        output_file = output_path / JOB_ITERATE_MADX
+        output_file.write_text(iterate_template % replace_dict)
 
     @classmethod
     def prepare_run(cls, instance, output_path):
-        if instance.fullresponse:
-            cls._prepare_fullresponse(instance, output_path)
-
         # get path of file from PS model directory (without year at the end)
         src_path = instance.get_file("error_deff.txt")
         dest_path = os.path.join(output_path, ERROR_DEFFS_TXT)

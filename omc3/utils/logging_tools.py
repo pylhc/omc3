@@ -226,7 +226,7 @@ def list2str(list_: list) -> str:
 # Public Methods ###############################################################
 
 
-def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, color=None):
+def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, color=None):
     """
     Sets up logger if name is **__main__**. Returns logger based on module name.
 
@@ -244,6 +244,9 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, col
     logger_name = _get_caller_logger_name()
 
     if name == "__main__":
+        if level_console is None:
+            level_console = DEBUG if sys.flags.debug else INFO
+
         # set up root logger
         root_logger = logging.getLogger("")
         root_logger.handlers = []  # remove handlers in case someone already created them

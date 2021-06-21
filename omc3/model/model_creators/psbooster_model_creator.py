@@ -8,7 +8,8 @@ import os
 import shutil
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
-from omc3.model.constants import ERROR_DEFFS_TXT, JOB_ITERATE_MADX
+from omc3.model.constants import ERROR_DEFFS_TXT
+from pathlib import Path
 
 
 class PsboosterModelCreator(object):
