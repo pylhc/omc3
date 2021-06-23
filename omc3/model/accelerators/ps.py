@@ -57,8 +57,8 @@ from pathlib import Path
 
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
-from omc3.model.constants import PLANE_TO_HV
+from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes, AccExcitationMode
+from omc3.model.constants import PLANE_TO_HV, MODIFIER_TAG
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -95,6 +95,29 @@ class Ps(Accelerator):
         if not len(found_bpms):
             raise KeyError
         return (list(bpms).index(found_bpms[0]), found_bpms[0]), f"{PLANE_TO_HV[plane]}ACMAP"
+
+    def get_base_madx_script(self, model_directory, best_knowledge=False):
+        if best_knowledge:
+            raise NotImplementedError(f"Best knowledge model not implemented for accelerator {self.NAME}")
+
+        use_acd = str(int(self.excitation == AccExcitationMode.ACD)),
+        replace_dict = {
+            "FILES_DIR": str(self.get_dir()),
+            "USE_ACD": use_acd,
+            "NAT_TUNE_X": self.nat_tunes[0],
+            "NAT_TUNE_Y": self.nat_tunes[1],
+            "KINETICENERGY": self.energy,
+            "DRV_TUNE_X": "",
+            "DRV_TUNE_Y": "",
+            "MODIFIERS": "",
+        }
+        if self.modifiers:
+            replace_dict["MODIFIERS"] = '\n'.join([f" call, file = '{m}'; {MODIFIER_TAG}" for m in self.modifiers])
+        if use_acd:
+            replace_dict["DRV_TUNE_X"] = self.drv_tunes[0]
+            replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
+        mask = self.get_file('base.mask').read_text()
+        return mask % replace_dict
 
 
 class _PsSegmentMixin(object):

@@ -7,6 +7,7 @@ This module provides convenience functions for model creation of the ``PS``.
 import logging
 import os
 import shutil
+from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.constants import ERROR_DEFFS_TXT
@@ -17,31 +18,16 @@ LOGGER = logging.getLogger(__name__)
 class PsModelCreator(object):
 
     @classmethod
-    def get_madx_script(cls, instance, output_path):
-        use_acd = "1" if (instance.excitation == AccExcitationMode.ACD) else "0"
+    def get_madx_script(cls, accel, output_path: Path):
+        madx_script = accel.get_base_madx_script(output_path)
         replace_dict = {
-            "FILES_DIR": instance.get_dir(),
-            "USE_ACD": use_acd,
-            "NAT_TUNE_X": instance.nat_tunes[0],
-            "NAT_TUNE_Y": instance.nat_tunes[1],
-            "KINETICENERGY": instance.energy,
-            "DPP": instance.dpp,
-            "OUTPUT": output_path,
-            "DRV_TUNE_X": "",
-            "DRV_TUNE_Y": "",
-            "OPTICS_PATH": instance.modifiers,
+            "USE_ACD": str(int(accel.excitation == AccExcitationMode.ACD)),
+            "DPP": accel.dpp,
+            "OUTPUT": str(output_path),
         }
-        LOGGER.info(f"instance name {instance.NAME}")
-        if use_acd:
-            replace_dict["DRV_TUNE_X"] = instance.drv_tunes[0]
-            replace_dict["DRV_TUNE_Y"] = instance.drv_tunes[1]
-            LOGGER.debug(f"ACD is ON. Driven tunes {replace_dict['DRV_TUNE_X']}, {replace_dict['DRV_TUNE_Y']}")
-        else:
-            LOGGER.debug("ACD is OFF")
-
-        madx_template = instance.get_file("nominal.madx").read_text()
-        out = madx_template % replace_dict
-        return out
+        madx_template = accel.get_file("twiss.mask").read_text()
+        madx_script += madx_template % replace_dict
+        return madx_script
 
     # TODO: Remove when Response Creation implemented (just here for reference) jdilly, 2021
     # @classmethod

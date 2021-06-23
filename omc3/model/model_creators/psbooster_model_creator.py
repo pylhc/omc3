@@ -4,7 +4,6 @@ PS Booster Model Creator
 
 This module provides convenience functions for model creation of the ``PSB``.
 """
-import os
 import shutil
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
@@ -15,29 +14,17 @@ from pathlib import Path
 class PsboosterModelCreator(object):
 
     @classmethod
-    def get_madx_script(cls, instance, output_path):
-        use_acd = "1" if (instance.excitation ==
-                          AccExcitationMode.ACD) else "0"
+    def get_madx_script(cls, accel, output_path: Path):
+        madx_script = accel.get_base_madx_script(output_path)
         replace_dict = {
-            "FILES_DIR": instance.get_dir(),
-            "RING": instance.ring,
-            "USE_ACD": use_acd,
-            "NAT_TUNE_X": instance.nat_tunes[0],
-            "NAT_TUNE_Y": instance.nat_tunes[1],
-            "KINETICENERGY": instance.energy,
-            "DPP": instance.dpp,
-            "OUTPUT": output_path,
-            "DRV_TUNE_X": "",
-            "DRV_TUNE_Y": "",
+            "USE_ACD": str(int(accel.excitation == AccExcitationMode.ACD)),
+            "RING": accel.ring,
+            "DPP": accel.dpp,
+            "OUTPUT": str(output_path),
         }
-        if use_acd:
-            replace_dict["DRV_TUNE_X"] = instance.drv_tunes[0]
-            replace_dict["DRV_TUNE_Y"] = instance.drv_tunes[1]
-
-        with open(instance.get_file("nominal.madx")) as textfile:
-            madx_template = textfile.read()
-
-        return madx_template % replace_dict
+        madx_template = accel.get_file("twiss.mask").read_text()
+        madx_script += madx_template % replace_dict
+        return madx_script
 
     # TODO: Remove when Response Creation implemented (just here for reference) jdilly, 2021
     # @classmethod

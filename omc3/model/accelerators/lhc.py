@@ -309,14 +309,14 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
-    def get_base_madx_script(self, outdir, best_knowledge=False):
+    def get_base_madx_script(self, model_directory, best_knowledge=False):
         ats_md = False
         high_beta = False
         ats_suffix = '_ats' if self.ats else ''
         madx_script = (
             f"option, -echo;\n"
-            f"call, file = '{outdir / MACROS_DIR / GENERAL_MACROS}';\n"
-            f"call, file = '{outdir / MACROS_DIR / LHC_MACROS}';\n"
+            f"call, file = '{model_directory / MACROS_DIR / GENERAL_MACROS}';\n"
+            f"call, file = '{model_directory / MACROS_DIR / LHC_MACROS}';\n"
             f'title, "LHC Model created by OMC3";\n'
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n")
@@ -335,9 +335,9 @@ class Lhc(Accelerator):
         if best_knowledge:
             # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
             madx_script += (
-                    f"readmytable, file = '{outdir / B2_ERRORS_TFS}', table=errtab;\n"
+                    f"readmytable, file = '{model_directory / B2_ERRORS_TFS}', table=errtab;\n"
                     f"seterr, table=errtab;\n"
-                    f"call, file = '{outdir / B2_SETTINGS_MADX}';\n")
+                    f"call, file = '{model_directory / B2_SETTINGS_MADX}';\n")
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
         madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
