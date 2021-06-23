@@ -1,5 +1,4 @@
-from os import listdir
-from os.path import abspath, dirname, isdir, isfile, join
+from pathlib import Path
 from shutil import rmtree
 import itertools
 import tfs
@@ -13,25 +12,13 @@ from tests.accuracy.twiss_to_lin import optics_measurement_test_files
 
 LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
 DEFAULT_LIMIT = 5e-3
-BASE_PATH = abspath(join(dirname(__file__), "..", "results"))
+BASE_PATH = Path(__file__).parent.parent / "results"
+INPUTS = Path(__file__).parent.parent / 'inputs'
 
 
 def _drop_item(idx_drop, lst):
     """ Returns new list where idx_drop in old list is no longer present."""
     return [item for idx, item in enumerate(lst) if idx != idx_drop]
-
-
-def _create_input(motion, beam=1):
-    dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
-    print(f"\nInput creation: {dpps}")
-    opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
-                    model_dir=join(dirname(__file__), "..", "inputs", "models", f"25cm_beam{beam}"),
-                    outputdir=BASE_PATH)
-    optics_opt, rest = _optics_entrypoint(opt_dict)
-    optics_opt.accelerator = manager.get_accelerator(rest)
-    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion,
-                                         beam_direction=(1 if beam == 1 else -1))
-    return lins, optics_opt
 
 
 MEASURE_OPTICS_SETTINGS = dict(
@@ -41,18 +28,16 @@ MEASURE_OPTICS_SETTINGS = dict(
     three_bpm_method=[False],
     second_order_disp=[False],
 )
+MEASURE_OPTICS_INPUT = list(itertools.product(*MEASURE_OPTICS_SETTINGS.values()))  # easy to add more tests in grid above
 
-
-PRE_CREATED_INPUT = dict(free=_create_input("free"), driven=_create_input("driven"))
-MEASURE_OPTICS_INPUT = list(itertools.product(*MEASURE_OPTICS_SETTINGS.values()))
-INPUT_OPPOSITE_DIRECTION=_create_input("driven", beam=2)
 
 @pytest.mark.basic
-def test_single_file():
+def test_single_file_single_input():
     test_single_file(*MEASURE_OPTICS_INPUT[0])
 
+
 @pytest.mark.basic
-def test_3_onmom_files():
+def test_3_onmom_files_single_input():
     test_3_onmom_files(*MEASURE_OPTICS_INPUT[1])
 
 
@@ -118,19 +103,14 @@ def _test_prototype(lin_slice, **kwargs):
     lins, optics_opt = PRE_CREATED_INPUT["free" if kwargs['compensation'] == 'none' else "driven"]
     optics_opt.update(kwargs)
     inputs = measure_optics.InputFiles(lins[lin_slice], optics_opt)
-    _run_evaluate_and_clean_up(inputs, optics_opt, kwargs.get('limits', LIMITS))
-
-
-def _run_evaluate_and_clean_up(inputs, optics_opt, limits):
     with timeit(lambda spanned: print(f"\nTotal time for optics measurements: {spanned}")):
         measure_optics.measure_optics(inputs, optics_opt)
-    evaluate_accuracy(optics_opt.outputdir, limits)
-    _clean_up(optics_opt.outputdir)
+    evaluate_accuracy(optics_opt.outputdir, kwargs.get('limits', LIMITS))
 
 
 def evaluate_accuracy(meas_path, limits):
-    for f in [f for f in listdir(meas_path) if (isfile(join(meas_path, f)) and (".tfs" in f))]:
-        a = tfs.read(join(meas_path, f))
+    for f in meas_path.glob("*.tfs"):
+        a = tfs.read(f)
         cols = [column for column in a.columns.to_numpy() if column.startswith('DELTA')]
         if f == "normalised_dispersion_x.tfs":
             cols.remove("DELTADX")
@@ -143,6 +123,26 @@ def evaluate_accuracy(meas_path, limits):
             print(f"\nFile: {f:25}  Column: {col[5:]:15}   RMS:    {rms:.6f}")
 
 
-def _clean_up(path_dir):
-    if isdir(path_dir):
-        rmtree(path_dir, ignore_errors=True)
+@pytest.fixture(scope="module")
+def free_input(tmp_path_factory):
+    tmp_path = tmp_path_factory.mktmp()
+    return _created_input(tmp_path, motion="free")
+
+
+@pytest.fixture(scope="module")
+def driven_input(tmp_path_factory):
+    tmp_path = tmp_path_factory.mktmp()
+    return _created_input(tmp_path, motion="driven")
+
+
+def _created_input(output_path, motion, beam=1):
+    dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
+    print(f"\nInput creation: {dpps}")
+    opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
+                    model_dir=INPUTS / "models" / f"25cm_beam{beam}",
+                    outputdir=output_path)
+    optics_opt, rest = _optics_entrypoint(opt_dict)
+    optics_opt.accelerator = manager.get_accelerator(rest)
+    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion,
+                                         beam_direction=(1 if beam == 1 else -1))
+    return lins, optics_opt
