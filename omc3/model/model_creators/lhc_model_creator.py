@@ -55,14 +55,19 @@ class LhcModelCreator(object):
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
         madx_script = accel.get_base_madx_script(outdir)
         madx_script +=(
-                f"use_acd={use_acd};\nuse_adt={use_adt};\n"
                 f"exec, do_twiss_monitors(LHCB{accel.beam}, '{outdir /TWISS_DAT}', {accel.dpp});\n"
                 f"exec, do_twiss_elements(LHCB{accel.beam}, '{outdir / TWISS_ELEMENTS_DAT}', {accel.dpp});\n"
+        )
+        if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
+            # allow user to modify script and enable excitation, if driven tunes are given
+            madx_script +=(
+                f"use_acd={use_acd};\nuse_adt={use_adt};\n"
                 f"if(use_acd == 1){{\n"
                 f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{outdir / TWISS_AC_DAT}', {accel.dpp});\n"
                 f"}}else if(use_adt == 1){{\n"
                 f"exec, twiss_adt({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{outdir / TWISS_ADT_DAT}', {accel.dpp});\n"
-                f"}}\n")
+                f"}}\n"
+            )
         return madx_script
 
     @classmethod
