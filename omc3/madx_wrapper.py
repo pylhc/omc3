@@ -39,14 +39,28 @@ class MadxError(Exception):
 
 def madx_wrapper_params():
     params = EntryPointParameters()
-    params.add_parameter(name="file",
-                         help="The file with the annotated MADX input to run.")
-    params.add_parameter(name="output",
-                         help="Path to a file where to write the MADX script.")
-    params.add_parameter(name="log", help="Path to a file where to write the MADX log output.")
-    params.add_parameter(name="madx_path", default=MADX_PATH,
-                         help="Path to the MAD-X executable to use")
-    params.add_parameter(name="cwd", help="Set current working directory")
+    params.add_parameter(
+        name="file",
+        required=True,
+        help="The file with the annotated MADX input to run."
+    )
+    params.add_parameter(
+        name="output",
+        help="Path to a file where to write the MADX script."
+    )
+    params.add_parameter(
+        name="log",
+        help="Path to a file where to write the MADX log output."
+    )
+    params.add_parameter(
+        name="madx_path",
+        default=MADX_PATH,
+        help="Path to the MAD-X executable to use"
+    )
+    params.add_parameter(
+        name="cwd",
+        help="Set current working directory"
+    )
     return params
 
 

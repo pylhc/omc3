@@ -4,8 +4,7 @@ Model Creator
 
 Entrypoint to run the model creator for LHC, PSBooster and PS models.
 """
-import logging
-import sys
+from pathlib import Path
 
 from generic_parser import EntryPointParameters, entrypoint
 
@@ -50,12 +49,6 @@ def _get_params():
         required=True,
         type=str,
         help="Output path for model, twiss files will be writen here."
-    )
-    params.add_parameter(
-        name="writeto",
-        type=str,
-        help=("Path to the file where to write the resulting MAD-X script."
-              " Defaults to {} in the output directory.")
     )
     params.add_parameter(
         name="logfile",
@@ -105,12 +98,6 @@ def create_instance_and_model(opt, accel_opt):
             choices: ``('nominal', 'best_knowledge', 'coupling_correction')``
 
 
-        - **writeto** *(str)*:
-
-            Path to the file where to write the resulting MAD-X script.
-            Defaults to job.create_model.madx in the output directory.
-
-
     Accelerator Keyword Args:
         lhc: :mod:`omc3.model.accelerators.lhc`
 
@@ -130,12 +117,12 @@ def create_instance_and_model(opt, accel_opt):
     """
     # Prepare paths
     output_dir = Path(opt.outputdir)
-    job_file = output_dir / JOB_MODEL_MADX if opt.writeto is None else Path(opt.writeto)
+    job_file = output_dir / JOB_MODEL_MADX
     log_file = None if opt.logfile is None else Path(opt.logfile)
-    create_dirs(outputdir)
+    create_dirs(output_dir)
 
     accel_inst = manager.get_accelerator(accel_opt)
-    LOGGER.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
+    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     accel_inst.verify_object()
     creator = CREATORS[accel_inst.NAME][opt.type]
     creator.prepare_run(accel_inst, output_dir)

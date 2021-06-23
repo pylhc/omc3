@@ -76,7 +76,6 @@ from omc3.model.accelerators.accelerator import (Accelerator,
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
-RINGS = ("ler", "her")
 
 
 class SKekB(Accelerator):
@@ -84,10 +83,10 @@ class SKekB(Accelerator):
     NAME = "skekb"
     RINGS = ("ler", "her")
 
-    @staticmethod
-    def get_parameters():
+    @classmethod
+    def get_parameters(cls):
         params = super(SKekB, SKekB).get_parameters()
-        params.add_parameter(name="ring", type=str, choices=RINGS, required=True,
+        params.add_parameter(name="ring", type=str, choices=cls.RINGS, required=True,
                              help="HER or LER ring.")
         return params
 
@@ -108,7 +107,7 @@ class SKekB(Accelerator):
 
     @ring.setter
     def ring(self, value):
-        if value not in RINGS:
+        if value not in self.RINGS:
             raise AcceleratorDefinitionError("Ring parameter has to be one of ('ler', 'her')")
         self._ring = value
 

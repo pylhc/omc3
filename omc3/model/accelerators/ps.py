@@ -64,7 +64,7 @@ import os
 
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.model.constants import PLANE_TO_HV
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
@@ -74,6 +74,10 @@ class Ps(Accelerator):
     """Parent Class for PS-types."""
     NAME = "ps"
     YEAR = 2018
+    RE_DICT = {AccElementTypes.BPMS: r"PR\.BPM",
+               AccElementTypes.MAGNETS: r".*",
+               AccElementTypes.ARC_BPMS: r"PR\.BPM"
+               }
 
     # Public Methods ##########################################################
 

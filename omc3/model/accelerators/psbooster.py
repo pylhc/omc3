@@ -73,7 +73,7 @@ import os
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import (Accelerator,
-                                                 AcceleratorDefinitionError)
+                                                 AcceleratorDefinitionError, AccElementTypes)
 from omc3.model.constants import PLANE_TO_HV
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = os.path.dirname(__file__)
@@ -82,6 +82,10 @@ CURRENT_DIR = os.path.dirname(__file__)
 class Psbooster(Accelerator):
     """Parent Class for Psbooster-types."""
     NAME = "psbooster"
+    RE_DICT = {AccElementTypes.BPMS: r"BR\d\.BPM[^T]",
+               AccElementTypes.MAGNETS: r".*",
+               AccElementTypes.ARC_BPMS: r"BR\d\.BPM[^T]"
+               }
 
     @staticmethod
     def get_parameters():
