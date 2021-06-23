@@ -43,28 +43,30 @@ class PsModelCreator(object):
         out = madx_template % replace_dict
         return out
 
-    @classmethod
-    def _prepare_fullresponse(cls, instance, output_path):
-        iterate_template = instance.get_file("template.iterate.madx").read_text()
-        replace_dict = {
-            "FILES_DIR": str(instance.get_dir()),
-            "OPTICS_PATH": instance.modifiers,
-            "PATH": output_path,
-            "KINETICENERGY": instance.energy,
-            "NAT_TUNE_X": instance.nat_tunes[0],
-            "NAT_TUNE_Y": instance.nat_tunes[1],
-            "DRV_TUNE_X": "",
-            "DRV_TUNE_Y": "",
-        }
-        output_file = output_path / JOB_ITERATE_MADX
-        output_file.write_text(iterate_template % replace_dict)
+    # TODO: Remove when Response Creation implemented (just here for reference) jdilly, 2021
+    # @classmethod
+    # def _prepare_fullresponse(cls, instance, output_path):
+    #     iterate_template = instance.get_file("template.iterate.madx").read_text()
+    #     replace_dict = {
+    #         "FILES_DIR": str(instance.get_dir()),
+    #         "OPTICS_PATH": instance.modifiers,
+    #         "PATH": output_path,
+    #         "KINETICENERGY": instance.energy,
+    #         "NAT_TUNE_X": instance.nat_tunes[0],
+    #         "NAT_TUNE_Y": instance.nat_tunes[1],
+    #         "DRV_TUNE_X": "",
+    #         "DRV_TUNE_Y": "",
+    #     }
+    #     output_file = output_path / JOB_ITERATE_MADX
+    #     output_file.write_text(iterate_template % replace_dict)
 
     @classmethod
     def prepare_run(cls, instance, output_path):
         # get path of file from PS model directory (without year at the end)
-        src_path = instance.get_file("error_deff.txt")
-        dest_path = os.path.join(output_path, ERROR_DEFFS_TXT)
-        shutil.copy(src_path, dest_path)
+        shutil.copy(
+            instance.get_file("error_deff.txt"),
+            output_path / ERROR_DEFFS_TXT
+        )
 
 
 

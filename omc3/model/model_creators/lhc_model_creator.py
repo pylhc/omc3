@@ -5,8 +5,8 @@ LHC Model Creator
 This module provides convenience functions for model creation of the ``LHC``.
 """
 import logging
-import os
 import shutil
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -21,7 +21,6 @@ from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
                                   TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
                                   TWISS_ELEMENTS_DAT)
 from omc3.utils import iotools
-from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
@@ -91,29 +90,39 @@ class LhcModelCreator(object):
                       headers_dict={"NAME": "EFIELD", "TYPE": "EFIELD"}, save_index="NAME")
 
 
-
 class LhcBestKnowledgeCreator(LhcModelCreator):
+    EXTRACTED_MQTS_FILENAME = 'extracted_mqts.str'
+    CORRECTIONS_FILENAME = 'corrections.madx'
 
     @classmethod
-    def get_madx_script(cls, accel, outdir):
+    def get_madx_script(cls, accel, outdir: Path):
         if accel.excitation is not AccExcitationMode.FREE:
             raise AcceleratorDefinitionError("Don't set ACD or ADT for best knowledge model.")
         if accel.energy is None:
             raise AcceleratorDefinitionError("Best knowledge model requires energy.")
+
+        corrections_file = outdir / cls.CORRECTIONS_FILENAME
+        if not corrections_file.exists():
+            raise IOError(f"Corrections file '{corrections_file}' not found in output directory."
+                          f" This file is needed for best-knowledge model creation.")
+
+        mqts_file = outdir / cls.EXTRACTED_MQTS_FILENAME
+        if not mqts_file.exists():
+            raise IOError(f"Extracted MQTs file '{corrections_file}' not found in output directory."
+                          f" This file is needed for best-knowledge model creation.")
+
         madx_script = accel.get_base_madx_script(outdir, best_knowledge=True)
         madx_script += (
-            f"call, file = '{outdir / 'corrections.madx'}';\n"
-            f"call, file = '{outdir / 'extracted_mqts.str'}';\n"
+            f"call, file = '{corrections_file}';\n"
+            f"call, file = '{mqts_file}';\n"
             f"exec, do_twiss_monitors(LHCB{accel.beam}, '{outdir / TWISS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
             f"exec, do_twiss_elements(LHCB{accel.beam}, '{outdir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
         )
         return madx_script
 
 
-
 class LhcCouplingCreator(LhcModelCreator):
+
     @classmethod
     def get_madx_script(cls, lhc_instance, output_path):
         return cls.get_correction_check_script(lhc_instance, output_path)
-
-

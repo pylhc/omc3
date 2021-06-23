@@ -31,13 +31,6 @@ Model Creation Keyword Args:
         Energy in **Tev**.
 
 
-    - **fullresponse**:
-
-        If True, outputs also fullresponse madx file.
-
-        action: ``store_true``
-
-
     - **model_dir** *(str)*:
 
         Path to model directory; loads tunes and excitation from model!
@@ -60,14 +53,15 @@ Model Creation Keyword Args:
         action: ``store_true``
 """
 import logging
-import os
+from pathlib import Path
 
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.model.constants import PLANE_TO_HV
+
 LOGGER = logging.getLogger(__name__)
-CURRENT_DIR = os.path.dirname(__file__)
+CURRENT_DIR = Path(__file__).parent
 
 
 class Ps(Accelerator):
@@ -91,11 +85,7 @@ class Ps(Accelerator):
 
     @classmethod
     def get_dir(cls):
-        return os.path.join(CURRENT_DIR, cls.NAME, str(cls.YEAR))
-
-    @classmethod
-    def get_file(cls, filename):
-        return os.path.join(CURRENT_DIR, cls.NAME, filename)
+        return CURRENT_DIR / cls.NAME / str(cls.YEAR)
 
     def get_exciter_bpm(self, plane, bpms):
         if not self.excitation:

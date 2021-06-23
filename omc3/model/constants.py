@@ -7,6 +7,7 @@ Specific constants to be used in ``model``, to help with consistency.
 """
 MACROS_DIR = "macros"
 OBS_POINTS = "observation_points.def"
+MODIFIERS_MADX = 'modifiers.madx'
 MODIFIER_TAG = "!@modifier"
 TWISS_BEST_KNOWLEDGE_DAT = "twiss_best_knowledge.dat"
 TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT = "twiss_elements_best_knowledge.dat"

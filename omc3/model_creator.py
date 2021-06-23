@@ -47,12 +47,12 @@ def _get_params():
     params.add_parameter(
         name="outputdir",
         required=True,
-        type=str,
+        type=Path,
         help="Output path for model, twiss files will be writen here."
     )
     params.add_parameter(
         name="logfile",
-        type=str,
+        type=Path,
         help=("Path to the file where to write the MAD-X script output."
               "If not provided it will be written to sys.stdout.")
     )
@@ -116,18 +116,17 @@ def create_instance_and_model(opt, accel_opt):
         JPARC: Not implemented
     """
     # Prepare paths
-    output_dir = Path(opt.outputdir)
-    job_file = output_dir / JOB_MODEL_MADX
-    log_file = None if opt.logfile is None else Path(opt.logfile)
-    create_dirs(output_dir)
+    create_dirs(opt.outputdir)
 
     accel_inst = manager.get_accelerator(accel_opt)
     LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     accel_inst.verify_object()
     creator = CREATORS[accel_inst.NAME][opt.type]
-    creator.prepare_run(accel_inst, output_dir)
-    madx_script = creator.get_madx_script(accel_inst, output_dir)
-    run_string(madx_script, output_file=job_file, log_file=log_file)
+    creator.prepare_run(accel_inst, opt.outputdir)
+    madx_script = creator.get_madx_script(accel_inst, opt.outputdir)
+    run_string(madx_script,
+               output_file=opt.outputdir / JOB_MODEL_MADX,
+               log_file=opt.logfile)
 
 
 if __name__ == "__main__":

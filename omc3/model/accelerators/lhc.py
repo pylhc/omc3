@@ -92,7 +92,7 @@ from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
                                   MODIFIER_TAG)
 from omc3.utils import logging_tools
 
-LOGGER = logging_tools.get_logger(__name__)
+LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
 LHC_DIR = CURRENT_DIR / "lhc"
 
@@ -139,7 +139,7 @@ class Lhc(Accelerator):
 
     def verify_object(self):  # TODO: Maybe more checks?
         """Verifies if everything is defined which should be defined."""
-        LOGGER.debug("Accelerator class verification")
+        LOG.debug("Accelerator class verification")
         _ = self.beam
 
         if self.model_dir is None:
@@ -169,11 +169,11 @@ class Lhc(Accelerator):
 
         # print info about the accelerator
         # TODO: write more output prints
-        LOGGER.debug("... verification passed. \nSome information about the accelerator:")
-        LOGGER.debug(f"Class name       {self.__class__.__name__}")
-        LOGGER.debug(f"Beam             {self.beam}")
-        LOGGER.debug(f"Beam direction   {self.beam_direction}")
-        LOGGER.debug(f"Modifiers        {', '.join(self.modifiers)}")
+        LOG.debug("... verification passed. \nSome information about the accelerator:")
+        LOG.debug(f"Class name       {self.__class__.__name__}")
+        LOG.debug(f"Beam             {self.beam}")
+        LOG.debug(f"Beam direction   {self.beam_direction}")
+        LOG.debug(f"Modifiers        {', '.join([str(m) for m in self.modifiers])}")
 
     @property
     def beam(self):
@@ -187,9 +187,6 @@ class Lhc(Accelerator):
         if value not in (1, 2):
             raise AcceleratorDefinitionError("Beam parameter has to be one of (1, 2)")
         self._beam = value
-
-    def get_file(self, filename):
-        return CURRENT_DIR / self.NAME / filename
 
     @staticmethod
     def get_lhc_error_dir():
@@ -243,19 +240,19 @@ class Lhc(Accelerator):
                    Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=self.beam))
 
     def log_status(self):
-        LOGGER.info(f"  model dir = {self.model_dir}")
-        LOGGER.info("Natural Tune X      [{:10.3f}]".format(self.nat_tunes[0]))
-        LOGGER.info("Natural Tune Y      [{:10.3f}]".format(self.nat_tunes[1]))
-        LOGGER.info("Best Knowledge Model     [{:>10s}]".format(
+        LOG.info(f"  model dir = {self.model_dir}")
+        LOG.info("Natural Tune X      [{:10.3f}]".format(self.nat_tunes[0]))
+        LOG.info("Natural Tune Y      [{:10.3f}]".format(self.nat_tunes[1]))
+        LOG.info("Best Knowledge Model     [{:>10s}]".format(
             "NO" if self.model_best_knowledge is None else "OK"))
 
         if self.excitation == AccExcitationMode.FREE:
-            LOGGER.info("Excitation          [{:>10s}]".format("NO"))
+            LOG.info("Excitation          [{:>10s}]".format("NO"))
             return
-        LOGGER.info("Excitation          [{:>10s}]".format(
+        LOG.info("Excitation          [{:>10s}]".format(
             "ACD" if self.excitation == AccExcitationMode.ACD else "ADT"))
-        LOGGER.info("> Driven Tune X     [{:10.3f}]".format(self.drv_tunes[0]))
-        LOGGER.info("> Driven Tune Y     [{:10.3f}]".format(self.drv_tunes[1]))
+        LOG.info("> Driven Tune X     [{:10.3f}]".format(self.drv_tunes[0]))
+        LOG.info("> Driven Tune Y     [{:10.3f}]".format(self.drv_tunes[1]))
 
     def load_main_seq_madx(self):
         try:
@@ -320,7 +317,7 @@ class Lhc(Accelerator):
             f"option, -echo;\n"
             f"call, file = '{outdir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{outdir / MACROS_DIR / LHC_MACROS}';\n"
-            f'title, "Model from Lukas :-)";\n'
+            f'title, "LHC Model created by OMC3";\n'
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n")
         madx_script += ''.join(f"call, file = '{modifier}'; {MODIFIER_TAG}\n" for modifier in self.modifiers)
