@@ -307,6 +307,7 @@
 <span class="n">COLOR_DIVIDER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;127;127;127m&#39;</span>
 <span class="n">COLOR_RESET</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m&#39;</span>
 
+<span class="n">MADX</span> <span class="o">=</span> <span class="n">DEBUG</span> <span class="o">+</span> <span class="mi">3</span>
 
 <span class="c1"># Classes and Contexts #########################################################</span>
 
@@ -528,6 +529,8 @@
         <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">root_logger</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># remove handlers in case someone already created them</span>
         <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level_root</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">addLevelName</span><span class="p">(</span><span class="n">MADX</span><span class="p">,</span> <span class="s1">&#39;MADX&#39;</span><span class="p">)</span>
 
         <span class="c1"># print logs to the console</span>
         <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span>
