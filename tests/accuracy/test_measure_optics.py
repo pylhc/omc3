@@ -13,8 +13,8 @@ from omc3.utils import stats
 from omc3.utils.contexts import timeit
 from tests.accuracy.twiss_to_lin import optics_measurement_test_files
 
-# LOG = logging_tools.get_logger(__name__)
-LOG = logging_tools.get_logger('__main__')
+LOG = logging_tools.get_logger(__name__)
+# LOG = logging_tools.get_logger('__main__')  # debugging
 
 LIMITS = {
     'PHASE': 1e-4,
