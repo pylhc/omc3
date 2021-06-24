@@ -53,12 +53,9 @@ def test_3_onmom_files_single_input(tmp_path, input_data):
 @pytest.mark.extended
 @pytest.mark.parametrize('input_data', (1, 2), ids=["Beam1", "Beam2"], indirect=True)
 @pytest.mark.parametrize(PARAMS, VALUES_GRID)
-# @pytest.mark.parametrize("lin_slice",
-#                          (slice(0, 1), slice(None, 3), slice(-3, None), slice(None, 7)),
-#                          ids=("single_file", "3_files_onmom", "3_files_pseudo_onmom", "offmom"))
 @pytest.mark.parametrize("lin_slice",
-                         ([slice(None, 7)]),
-                         ids=("offmom",))
+                         (slice(0, 1), slice(None, 3), slice(-3, None), slice(None, 7)),
+                         ids=("single_file", "3_files_onmom", "3_files_pseudo_onmom", "offmom"))
 def test_measure_optics(
         tmp_path, input_data, lin_slice,
         compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
