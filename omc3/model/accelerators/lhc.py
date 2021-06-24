@@ -173,7 +173,8 @@ class Lhc(Accelerator):
         LOG.debug(f"Class name       {self.__class__.__name__}")
         LOG.debug(f"Beam             {self.beam}")
         LOG.debug(f"Beam direction   {self.beam_direction}")
-        LOG.debug(f"Modifiers        {', '.join([str(m) for m in self.modifiers])}")
+        if self.modifiers:
+            LOG.debug(f"Modifiers        {', '.join([str(m) for m in self.modifiers])}")
 
     @property
     def beam(self):
@@ -232,27 +233,27 @@ class Lhc(Accelerator):
                 (``ip name``, ``left BPM name``, ``right BPM name``)
         """
         for ip in Lhc.LHC_IPS:
-            yield ("IP{}".format(ip),
+            yield (f"IP{ip}",
                    Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=self.beam),
                    Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=self.beam))
-            yield ("IP{}_DOROS".format(ip),
+            yield (f"IP{ip}_DOROS",
                    Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=self.beam),
                    Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=self.beam))
 
     def log_status(self):
         LOG.info(f"  model dir = {self.model_dir}")
-        LOG.info("Natural Tune X      [{:10.3f}]".format(self.nat_tunes[0]))
-        LOG.info("Natural Tune Y      [{:10.3f}]".format(self.nat_tunes[1]))
-        LOG.info("Best Knowledge Model     [{:>10s}]".format(
-            "NO" if self.model_best_knowledge is None else "OK"))
+        LOG.info(f"Natural Tune X      [{self.nat_tunes[0]:10.3f}]")
+        LOG.info(f"Natural Tune Y      [{self.nat_tunes[1]:10.3f}]")
+        LOG.info(f"Best Knowledge Model     "
+                 f"[{'NO' if self.model_best_knowledge is None else 'OK':>10s}]")
 
         if self.excitation == AccExcitationMode.FREE:
-            LOG.info("Excitation          [{:>10s}]".format("NO"))
+            LOG.info(f"Excitation          [{'NO':>10s}]")
             return
-        LOG.info("Excitation          [{:>10s}]".format(
-            "ACD" if self.excitation == AccExcitationMode.ACD else "ADT"))
-        LOG.info("> Driven Tune X     [{:10.3f}]".format(self.drv_tunes[0]))
-        LOG.info("> Driven Tune Y     [{:10.3f}]".format(self.drv_tunes[1]))
+        LOG.info(f"Excitation          "
+                 f"[{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]")
+        LOG.info(f"> Driven Tune X     [{self.drv_tunes[0]:10.3f}]")
+        LOG.info(f"> Driven Tune Y     [{self.drv_tunes[1]:10.3f}]")
 
     def load_main_seq_madx(self):
         try:
@@ -279,20 +280,13 @@ class Lhc(Accelerator):
         l_r = 'L' if (beam == 1 != plane == 'Y') else 'R'
         a_b = 'B' if beam == 1 else 'A'
         if self.excitation == AccExcitationMode.ACD:
-            return self._is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"],
-                                      commonbpms), f"MKQA.6L4.B{beam}"
+            return _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"],
+                                 commonbpms), f"MKQA.6L4.B{beam}"
         if self.excitation == AccExcitationMode.ADT:
-            return self._is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"],
-                                          commonbpms), f"ADTK{adt}5{l_r}4.B{beam}"
+            return _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"],
+                                 commonbpms), f"ADTK{adt}5{l_r}4.B{beam}"
 
         return None
-
-    @staticmethod
-    def _is_one_of_in(bpms_to_find, bpms):
-        found_bpms = [bpm for bpm in bpms_to_find if bpm in bpms]
-        if len(found_bpms):
-            return list(bpms).index(found_bpms[0]), found_bpms[0]
-        raise KeyError
 
     def important_phase_advances(self):
         if self.beam == 2:
@@ -389,6 +383,13 @@ def _remove_dups_keep_order(my_list):
 
 def _list_intersect_keep_order(primary_list, secondary_list):
     return [elem for elem in primary_list if elem in secondary_list]
+
+
+def _is_one_of_in(bpms_to_find, bpms):
+    found_bpms = [bpm for bpm in bpms_to_find if bpm in bpms]
+    if len(found_bpms):
+        return list(bpms).index(found_bpms[0]), found_bpms[0]
+    raise KeyError
 
 
 class _LhcSegmentMixin(object):

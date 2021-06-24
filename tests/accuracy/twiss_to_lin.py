@@ -48,7 +48,8 @@ def optics_measurement_test_files(modeldir, dpps, motion, beam_direction):
         raise ValueError("Beam direction has to be either 1 or -1")
     model, tune, nattune = get_combined_model_and_tunes(modeldir)
     lins = []
-    np.random.seed(12345678)
+    # np.random.seed(12345678)
+    np.random.seed(123456)
     for dpp_value in dpps:
         lins.append(
             generate_lin_files(model, tune, nattune, MOTION[motion],

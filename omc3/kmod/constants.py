@@ -4,10 +4,9 @@ Constants
 
 Specific constants to be used in ``kmod``, to help with consistency.
 """
-from os.path import abspath, dirname, join
+from pathlib import Path
 
-
-SEQUENCES_PATH = join(dirname(abspath(__file__)), 'sequences')
+SEQUENCES_PATH = Path(__file__).parent / 'sequences'
 EXT = ".tfs"
 FIT_PLOTS_NAME = 'fit_plots.pdf'
 

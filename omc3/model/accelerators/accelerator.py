@@ -329,6 +329,8 @@ def _get_modifiers_from_modeldir(model_dir: Path):
     job_file = model_dir / JOB_MODEL_MADX
     if job_file.exists():
         job_madx = job_file.read_text()
+
+        # find modifier tag in lines and return called file in these lines
         modifiers = re.findall(fr"\s+call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}", job_madx,
                                flags=re.IGNORECASE)
         modifiers = [Path(m) for m in modifiers]

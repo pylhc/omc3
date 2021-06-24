@@ -20,7 +20,7 @@ from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
-from omc3. utils import logging_tools
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -42,7 +42,7 @@ def _get_params():
     params.add_parameter(
         name="type",
         choices=("nominal", "best_knowledge", "coupling_correction"),
-        help="Type of model to create, either nominal or best_knowledge"
+        help="Type of model to create."
     )
     params.add_parameter(
         name="outputdir",
@@ -93,7 +93,7 @@ def create_instance_and_model(opt, accel_opt):
 
         - **type**:
 
-            Type of model to create, either nominal or best_knowledge
+            Type of model to create.
 
             choices: ``('nominal', 'best_knowledge', 'coupling_correction')``
 

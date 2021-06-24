@@ -3,109 +3,73 @@ from shutil import rmtree
 import itertools
 import tfs
 import pytest
+from generic_parser import DotDict
+
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
+from omc3.utils import logging_tools
 from tests.accuracy.twiss_to_lin import optics_measurement_test_files
 
-LIMITS = {'P': 1e-4, 'B': 3e-3, 'D': 1e-2, 'A': 6e-3}
-DEFAULT_LIMIT = 5e-3
+# LOG = logging_tools.get_logger(__name__)
+LOG = logging_tools.get_logger('__main__')
+
+LIMITS = {'PHASE': 1e-4, 'BET': 3e-3, 'D': 1e-2, 'ALF': 6e-3, '': 5e-3}  # last one is orbit
 BASE_PATH = Path(__file__).parent.parent / "results"
 INPUTS = Path(__file__).parent.parent / 'inputs'
 
-
-def _drop_item(idx_drop, lst):
-    """ Returns new list where idx_drop in old list is no longer present."""
-    return [item for idx, item in enumerate(lst) if idx != idx_drop]
-
+DPPS = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]  # defines the slicing
 
 MEASURE_OPTICS_SETTINGS = dict(
     compensation=["model", "equation", "none"],
     coupling_method=[2],
-    range_of_bpm=[11],
+    range_of_bpms=[11],
     three_bpm_method=[False],
     second_order_disp=[False],
 )
-MEASURE_OPTICS_INPUT = list(itertools.product(*MEASURE_OPTICS_SETTINGS.values()))  # easy to add more tests in grid above
+VALUES_GRID = list(itertools.product(*MEASURE_OPTICS_SETTINGS.values()))  # easy to add more tests in grid above
+PARAMS = ", ".join(MEASURE_OPTICS_SETTINGS)
 
 
 @pytest.mark.basic
-def test_single_file_single_input():
-    test_single_file(*MEASURE_OPTICS_INPUT[0])
+def test_single_file_single_input(tmp_path, input_data):
+    test_measure_optics(tmp_path, input_data, slice(0, 1), *VALUES_GRID[0])
 
 
 @pytest.mark.basic
-def test_3_onmom_files_single_input():
-    test_3_onmom_files(*MEASURE_OPTICS_INPUT[1])
+def test_3_onmom_files_single_input(tmp_path, input_data):
+    test_measure_optics(tmp_path, input_data, slice(None, 3), *VALUES_GRID[1])
 
 
 @pytest.mark.extended
-@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                            _drop_item(0, MEASURE_OPTICS_INPUT))
-def test_single_file(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    _test_prototype(slice(0, 1),
-                    outputdir=join(BASE_PATH, "single"),
-                    compensation=compensation,
-                    coupling_method=coupling_method,
-                    range_of_bpms=range_of_bpms,
-                    three_bpm_method=three_bpm_method,
-                    second_order_disp=second_order_disp,
-                    )
-
-@pytest.mark.extended
-@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                            _drop_item(1, MEASURE_OPTICS_INPUT))
-def test_3_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    _test_prototype(slice(None, 3),
-                    outputdir=join(BASE_PATH, "onmom"),
-                    compensation=compensation,
-                    coupling_method=coupling_method,
-                    range_of_bpms=range_of_bpms,
-                    three_bpm_method=three_bpm_method,
-                    second_order_disp=second_order_disp,
-                    )
-
-
-@pytest.mark.extended
-@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                            MEASURE_OPTICS_INPUT)
-def test_3_pseudo_onmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    _test_prototype(slice(-3, None),
-                    outputdir=join(BASE_PATH, "pseudo_onmom"),
-                    compensation=compensation,
-                    coupling_method=coupling_method,
-                    range_of_bpms=range_of_bpms,
-                    three_bpm_method=three_bpm_method,
-                    second_order_disp=second_order_disp,
-                    )
-
-@pytest.mark.extended
-@pytest.mark.parametrize("compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp",
-                            MEASURE_OPTICS_INPUT)
-def test_offmom_files(compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    _test_prototype(slice(None, 7),
-                    chromatic_beating=True,
-                    outputdir=join(BASE_PATH, "offmom"),
-                    compensation=compensation,
-                    coupling_method=coupling_method,
-                    range_of_bpms=range_of_bpms,
-                    three_bpm_method=three_bpm_method,
-                    second_order_disp=second_order_disp,
-                    )
+@pytest.mark.parametrize('input_data', (1, 2), ids=["Beam1", "Beam2"], indirect=True)
+@pytest.mark.parametrize(PARAMS, VALUES_GRID)
+@pytest.mark.parametrize("lin_slice",
+                         (slice(0, 1), slice(None, 3), slice(-3, None), slice(None, 7)),
+                         ids=("single_file", "3_files_onmom", "3_files_pseudo_onmom", "offmom"))
+def test_measure_optics(
+        tmp_path, input_data, lin_slice,
+        compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
+    data = input_data["free" if compensation == 'none' else "driven"]
+    lins, optics_opt = data['lins'], data['optics_opt']
+    optics_opt.update(
+        outputdir=tmp_path,
+        compensation=compensation,
+        coupling_method=coupling_method,
+        range_of_bpms=range_of_bpms,
+        three_bpm_method=three_bpm_method,
+        second_order_disp=second_order_disp,
+        chromatic_beating=lin_slice == slice(None, 7),
+    )
+    inputs = measure_optics.InputFiles(lins[lin_slice], optics_opt)
+    with timeit(lambda spanned: LOG.debug(f"\nTotal time for optics measurements: {spanned}")):
+        measure_optics.measure_optics(inputs, optics_opt)
+    evaluate_accuracy(optics_opt.outputdir, LIMITS)
 
 
 # Helper ---
-
-
-def _test_prototype(lin_slice, **kwargs):
-    lins, optics_opt = PRE_CREATED_INPUT["free" if kwargs['compensation'] == 'none' else "driven"]
-    optics_opt.update(kwargs)
-    inputs = measure_optics.InputFiles(lins[lin_slice], optics_opt)
-    with timeit(lambda spanned: print(f"\nTotal time for optics measurements: {spanned}")):
-        measure_optics.measure_optics(inputs, optics_opt)
-    evaluate_accuracy(optics_opt.outputdir, kwargs.get('limits', LIMITS))
 
 
 def evaluate_accuracy(meas_path, limits):
@@ -116,33 +80,24 @@ def evaluate_accuracy(meas_path, limits):
             cols.remove("DELTADX")
         for col in cols:
             rms = stats.weighted_rms(a.loc[:, col].to_numpy(), errors=a.loc[:, f"ERR{col}"].to_numpy())
-            if col[5] in limits.keys():
-                assert rms < limits[col[5]], "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
-            else:
-                assert rms < DEFAULT_LIMIT, "\nFile: {:25}  Column: {:15}   RMS: {:.6f}".format(f, col, rms)
-            print(f"\nFile: {f:25}  Column: {col[5:]:15}   RMS:    {rms:.6f}")
+            assert rms < limits[col[5:-1]], f"\nFile: {f!s:25}  Column: {col:15}   RMS: {rms:.6f}"
+            LOG.info(f"File: {f.name:25}  Column: {col[5:]:15}   RMS:    {rms:.6f}")
 
 
-@pytest.fixture(scope="module")
-def free_input(tmp_path_factory):
-    tmp_path = tmp_path_factory.mktmp()
-    return _created_input(tmp_path, motion="free")
+@pytest.fixture(scope="module", params=(1,), ids=("Beam1",))
+def input_data(request, tmp_path_factory):
+    """Creates the input lin data and optics_options."""
+    data = {}
+    beam = request.param
+    for motion in ("free", "driven"):
+        output_path = tmp_path_factory.mktemp(f"input_{motion}_b{beam}")
 
-
-@pytest.fixture(scope="module")
-def driven_input(tmp_path_factory):
-    tmp_path = tmp_path_factory.mktmp()
-    return _created_input(tmp_path, motion="driven")
-
-
-def _created_input(output_path, motion, beam=1):
-    dpps = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]
-    print(f"\nInput creation: {dpps}")
-    opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
-                    model_dir=INPUTS / "models" / f"25cm_beam{beam}",
-                    outputdir=output_path)
-    optics_opt, rest = _optics_entrypoint(opt_dict)
-    optics_opt.accelerator = manager.get_accelerator(rest)
-    lins = optics_measurement_test_files(opt_dict["model_dir"], dpps, motion,
-                                         beam_direction=(1 if beam == 1 else -1))
-    return lins, optics_opt
+        opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
+                        model_dir=INPUTS / "models" / f"25cm_beam{beam}",
+                        outputdir=output_path)
+        optics_opt, rest = _optics_entrypoint(opt_dict)
+        optics_opt.accelerator = manager.get_accelerator(rest)
+        lins = optics_measurement_test_files(opt_dict["model_dir"], DPPS, motion,
+                                             beam_direction=(1 if beam == 1 else -1))
+        data[motion] = {'lins': lins, 'optics_opt': optics_opt}
+    return data
