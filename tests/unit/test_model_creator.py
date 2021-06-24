@@ -113,6 +113,12 @@ def test_lhc_creation_best_knowledge(tmp_path):
         energy=6.5,
         modifiers=[COMP_MODEL / "opticsfile.24_ctpps2"],
     )
+    create_instance_and_model(
+        outputdir=tmp_path,
+        type="best_knowledge",
+        logfile=tmp_path / "madx_log.txt",
+        **accel_opt
+    )
 
 
 # Helper -----------------------------------------------------------------------
