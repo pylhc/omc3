@@ -147,7 +147,7 @@ def _check_arrays(a_array, b_array, eps=None, tunes=False):
 
     for a, b in zip(a_array, b_array):
         if eps is None:
-            a == b
+            assert a == b
         elif tunes:
             assert abs((a%1) - (b%1)) <= eps
         else:
