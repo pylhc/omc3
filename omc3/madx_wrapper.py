@@ -110,8 +110,13 @@ def run_string(input_string: str,
 def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH, cwd=None):
     """Starts the ``MAD-X`` process."""
     with _madx_input_wrapper(full_madx_script, output_file) as madx_jobfile:
-        process = subprocess.Popen([madx_path, madx_jobfile], shell=False,
-                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
+        process = subprocess.Popen(
+            [str(madx_path), str(madx_jobfile)],
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=None if cwd is None else str(cwd),
+        )
         with _logfile_wrapper(log_file) as log_handler, process.stdout:
             for line in process.stdout:
                 log_handler(line.decode('utf-8'))

@@ -1,22 +1,29 @@
-from pathlib import Path
-from shutil import rmtree
 import itertools
-import tfs
+from pathlib import Path
+
+import numpy as np
 import pytest
-from generic_parser import DotDict
+import tfs
 
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
+from omc3.utils import logging_tools
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
-from omc3.utils import logging_tools
 from tests.accuracy.twiss_to_lin import optics_measurement_test_files
 
 # LOG = logging_tools.get_logger(__name__)
 LOG = logging_tools.get_logger('__main__')
 
-LIMITS = {'PHASE': 1e-4, 'BET': 3e-3, 'D': 1e-2, 'ALF': 6e-3, '': 5e-3}  # last one is orbit
+LIMITS = {
+    'PHASE': 1e-4,
+    'ALF': 6e-3,
+    'BET': 3e-3,
+    'D': 1.1e-2,
+    'ND': 5e-3,
+    '': 5e-3  # orbit
+}
 BASE_PATH = Path(__file__).parent.parent / "results"
 INPUTS = Path(__file__).parent.parent / 'inputs'
 
@@ -46,9 +53,12 @@ def test_3_onmom_files_single_input(tmp_path, input_data):
 @pytest.mark.extended
 @pytest.mark.parametrize('input_data', (1, 2), ids=["Beam1", "Beam2"], indirect=True)
 @pytest.mark.parametrize(PARAMS, VALUES_GRID)
+# @pytest.mark.parametrize("lin_slice",
+#                          (slice(0, 1), slice(None, 3), slice(-3, None), slice(None, 7)),
+#                          ids=("single_file", "3_files_onmom", "3_files_pseudo_onmom", "offmom"))
 @pytest.mark.parametrize("lin_slice",
-                         (slice(0, 1), slice(None, 3), slice(-3, None), slice(None, 7)),
-                         ids=("single_file", "3_files_onmom", "3_files_pseudo_onmom", "offmom"))
+                         ([slice(None, 7)]),
+                         ids=("offmom",))
 def test_measure_optics(
         tmp_path, input_data, lin_slice,
         compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
@@ -74,14 +84,18 @@ def test_measure_optics(
 
 def evaluate_accuracy(meas_path, limits):
     for f in meas_path.glob("*.tfs"):
-        a = tfs.read(f)
-        cols = [column for column in a.columns.to_numpy() if column.startswith('DELTA')]
-        if f == "normalised_dispersion_x.tfs":
-            cols.remove("DELTADX")
+        df = tfs.read(f)
+        cols = df.columns[df.columns.str.startswith('DELTA')]
         for col in cols:
-            rms = stats.weighted_rms(a.loc[:, col].to_numpy(), errors=a.loc[:, f"ERR{col}"].to_numpy())
-            assert rms < limits[col[5:-1]], f"\nFile: {f!s:25}  Column: {col:15}   RMS: {rms:.6f}"
-            LOG.info(f"File: {f.name:25}  Column: {col[5:]:15}   RMS:    {rms:.6f}")
+            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD'):
+                continue
+
+            rms = stats.weighted_rms(
+                data=df.loc[:, col].to_numpy(),
+                errors=df.loc[:, f"ERR{col}"].to_numpy()
+            )
+            assert rms < limits[col[5:-1]], f"\n{f.name:25}  {col:15}   RMS: {rms:.1e}"
+            LOG.info(f"{f.name:25}  {col[5:]:15}   RMS: {rms:.1e}")
 
 
 @pytest.fixture(scope="module", params=(1,), ids=("Beam1",))
@@ -90,6 +104,7 @@ def input_data(request, tmp_path_factory):
     data = {}
     beam = request.param
     for motion in ("free", "driven"):
+        np.random.seed(12345678)
         output_path = tmp_path_factory.mktemp(f"input_{motion}_b{beam}")
 
         opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
