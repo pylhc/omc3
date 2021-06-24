@@ -1,12 +1,10 @@
-from shutil import rmtree
-import pytest
 from pathlib import Path
 
-from omc3.model.constants import MODIFIERS_MADX
+import pytest
+
+from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator
 from omc3.model_creator import create_instance_and_model
-from omc3.utils import iotools
-from omc3.model.manager import get_accelerator
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 COMP_MODEL = INPUTS / "models" / "25cm_beam1"

@@ -30,6 +30,7 @@ COLOR_NAME = '\33[0m\33[38;2;80;80;80m'
 COLOR_DIVIDER = '\33[0m\33[38;2;127;127;127m'
 COLOR_RESET = '\33[0m'
 
+MADX = DEBUG + 3
 
 # Classes and Contexts #########################################################
 
@@ -251,6 +252,8 @@ def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, col
         root_logger = logging.getLogger("")
         root_logger.handlers = []  # remove handlers in case someone already created them
         root_logger.setLevel(level_root)
+
+        logging.addLevelName(MADX, 'MADX')
 
         # print logs to the console
         root_logger.addHandler(

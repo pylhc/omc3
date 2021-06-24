@@ -143,7 +143,7 @@ def _logfile_wrapper(file_path=None):
         def log_handler(line):
             line = line.rstrip()
             if len(line):
-                LOG.info(line)
+                LOG.log(logging_tools.MADX, line)
         yield log_handler
     else:
         with open(file_path, "w") as log_file:
@@ -151,7 +151,7 @@ def _logfile_wrapper(file_path=None):
                 log_file.write(line)
                 line = line.rstrip()
                 if len(line):
-                    LOG.debug(line)
+                    LOG.log(logging_tools.MADX, line)
             yield log_handler
 
 
