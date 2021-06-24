@@ -330,6 +330,12 @@ classes. <code class="docutils literal notranslate"><span class="pre">None</span
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_dir">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default directory for accelerator. Should be overwritten if more specific.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask">
 <em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_element_types_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_element_types_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a boolean mask for elements in <code class="docutils literal notranslate"><span class="pre">list_of_elements</span></code> that belong to any of the
@@ -361,6 +367,12 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_file">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default location for accelerator files. Should be overwritten if more specific.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -434,12 +446,6 @@ modified.</p>
 <li><p><strong>energy</strong> <em>(float)</em>:</p>
 <blockquote>
 <div><p>Energy in <strong>Tev</strong>.</p>
-</div></blockquote>
-</li>
-<li><p><strong>fullresponse</strong>:</p>
-<blockquote>
-<div><p>If True, outputs also fullresponse madx file.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </div></blockquote>
 </li>
 <li><p><strong>model_dir</strong> <em>(str)</em>:</p>
@@ -521,12 +527,6 @@ modified.</p>
 <div><p>Energy in Tev.</p>
 </div></blockquote>
 </li>
-<li><p><strong>fullresponse</strong>:</p>
-<blockquote>
-<div><p>If True, outputs also fullresponse madx file.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
 <li><p><strong>model_dir</strong> <em>(str)</em>:</p>
 <blockquote>
 <div><p>Path to model directory; loads tunes and excitation from model!</p>
@@ -557,7 +557,7 @@ modified.</p>
 <dd><p>Parent Class for LHC-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc.get_base_madx_script">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns job (string) to create the basic accelerator sequence.</p>
 </dd></dl>
 
@@ -641,12 +641,6 @@ everything.</p>
 <div><p>Energy in <strong>Tev</strong>.</p>
 </div></blockquote>
 </li>
-<li><p><strong>fullresponse</strong>:</p>
-<blockquote>
-<div><p>If True, outputs also fullresponse madx file.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
 <li><p><strong>model_dir</strong> <em>(str)</em>:</p>
 <blockquote>
 <div><p>Path to model directory; loads tunes and excitation from model!</p>
@@ -675,6 +669,18 @@ everything.</p>
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.ps.</span></span><span class="sig-name descname"><span class="pre">Ps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parent Class for PS-types.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps.get_base_madx_script">
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create the basic accelerator sequence.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps.get_dir">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default directory for accelerator. Should be overwritten if more specific.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps.get_exciter_bpm">
 <span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
@@ -727,12 +733,6 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <div><p>Energy in <strong>Tev</strong>.</p>
 </div></blockquote>
 </li>
-<li><p><strong>fullresponse</strong>:</p>
-<blockquote>
-<div><p>If True, outputs also fullresponse madx file.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
 <li><p><strong>model_dir</strong> <em>(str)</em>:</p>
 <blockquote>
 <div><p>Path to model directory; loads tunes and excitation from model!</p>
@@ -767,6 +767,12 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.psbooster.</span></span><span class="sig-name descname"><span class="pre">Psbooster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parent Class for Psbooster-types.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster.get_base_madx_script">
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns job (string) to create the basic accelerator sequence.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster.get_exciter_bpm">
 <span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.get_exciter_bpm" title="Permalink to this definition">¶</a></dt>
@@ -826,12 +832,6 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <li><p><strong>energy</strong> <em>(float)</em>:</p>
 <blockquote>
 <div><p>Energy in <strong>Tev</strong>.</p>
-</div></blockquote>
-</li>
-<li><p><strong>fullresponse</strong>:</p>
-<blockquote>
-<div><p>If True, outputs also fullresponse madx file.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </div></blockquote>
 </li>
 <li><p><strong>model_dir</strong> <em>(str)</em>:</p>
@@ -897,12 +897,6 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <li><p><strong>energy</strong> <em>(float)</em>:</p>
 <blockquote>
 <div><p>Energy in <strong>Tev</strong>.</p>
-</div></blockquote>
-</li>
-<li><p><strong>fullresponse</strong>:</p>
-<blockquote>
-<div><p>If True, outputs also fullresponse madx file.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </div></blockquote>
 </li>
 <li><p><strong>model_dir</strong> <em>(str)</em>:</p>

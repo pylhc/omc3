@@ -282,7 +282,7 @@
 <span class="sd">Top-level script to analyse Kmod-results from the ``LHC`` and creating files for GUI and plotting</span>
 <span class="sd">as well as returning beta-star and waist shift.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -294,7 +294,7 @@
                                  <span class="n">LSA_FILE_NAME</span><span class="p">,</span> <span class="n">RESULTS_FILE_NAME</span><span class="p">,</span> <span class="n">SEQUENCES_PATH</span><span class="p">,</span> <span class="n">STAR</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 
-<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">level_console</span><span class="o">=</span><span class="n">logging_tools</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">LSA_COLUMNS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NAME&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">]</span>
 
@@ -306,13 +306,13 @@
                          <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Estimated beta star of measurements and waist shift&#39;</span><span class="p">,)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;working_directory&#39;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
                          <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;path to working directory with stored KMOD measurement files&#39;</span><span class="p">,)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;beam&#39;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">,</span> <span class="s1">&#39;B2&#39;</span><span class="p">],</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;define beam used: B1 or B2&#39;</span><span class="p">,)</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;define beam used: 1 or 2&#39;</span><span class="p">,)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;cminus&#39;</span><span class="p">,</span> 
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>                         
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;C Minus&#39;</span><span class="p">,)</span>
@@ -358,7 +358,7 @@
                          <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ip1&#39;</span><span class="p">,</span> <span class="s1">&#39;ip2&#39;</span><span class="p">,</span> <span class="s1">&#39;ip5&#39;</span><span class="p">,</span> <span class="s1">&#39;ip8&#39;</span><span class="p">,</span> <span class="s1">&#39;IP1&#39;</span><span class="p">,</span> <span class="s1">&#39;IP2&#39;</span><span class="p">,</span> <span class="s1">&#39;IP5&#39;</span><span class="p">,</span> <span class="s1">&#39;IP8&#39;</span><span class="p">],</span>
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;define interaction point&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;measurement_dir&#39;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>                         
+                         <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;give an optics measurement directory to include phase constraint in penalty function&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;phase_weight&#39;</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
@@ -366,9 +366,11 @@
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;weight in penalty function between phase and beta.&#39;</span>
                               <span class="s1">&#39;If weight=0 phase is not used as a constraint.&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_dir&#39;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;twiss model that contains phase&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path where outputfiles will be stored, defaults &quot;</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path where outputfiles will be stored, defaults &quot;</span>
                                                 <span class="s2">&quot;to the given working_directory&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span>
@@ -382,11 +384,11 @@
 <span class="sd">    Kmod Keyword Arguments:</span>
 <span class="sd">        *--Required--*</span>
 
-<span class="sd">        - **beam** *(str)*:</span>
+<span class="sd">        - **beam** *(int)*:</span>
 
-<span class="sd">            define beam used: B1 or B2</span>
+<span class="sd">            define beam used: 1 or 2</span>
 
-<span class="sd">            choices: ``[&#39;B1&#39;, &#39;B2&#39;]``</span>
+<span class="sd">            choices: ``[1, 2]``</span>
 
 
 <span class="sd">        - **betastar_and_waist** *(float)*:</span>
@@ -394,7 +396,7 @@
 <span class="sd">            Estimated beta star of measurements and waist shift</span>
 
 
-<span class="sd">        - **working_directory** *(str)*:</span>
+<span class="sd">        - **working_directory** *(Path)*:</span>
 
 <span class="sd">            path to working directory with stored KMOD measurement files</span>
 
@@ -443,7 +445,7 @@
 <span class="sd">            action: ``store_true``</span>
 
 
-<span class="sd">        - **measurement_dir** *(str)*:</span>
+<span class="sd">        - **measurement_dir** *(Path)*:</span>
 
 <span class="sd">            give an optics measurement directory to include phase constraint in</span>
 <span class="sd">            penalty function</span>
@@ -454,7 +456,7 @@
 <span class="sd">            misalignment of the modulated quadrupoles in m</span>
 
 
-<span class="sd">        - **model_dir** *(str)*:</span>
+<span class="sd">        - **model_dir** *(Path)*:</span>
 
 <span class="sd">            twiss model that contains phase</span>
 
@@ -480,7 +482,7 @@
 <span class="sd">            action: ``store_true``</span>
 
 
-<span class="sd">        - **outputdir**:</span>
+<span class="sd">        - **outputdir** *(Path)*:</span>
 
 <span class="sd">            Path where outputfiles will be stored, defaults to the given</span>
 <span class="sd">            working_directory</span>
@@ -525,10 +527,10 @@
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;IP trim&#39;</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">interaction_point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;Individual magnets&#39;</span><span class="si">}</span><span class="s2"> analysis&quot;</span><span class="p">)</span>
     <span class="n">opt</span><span class="p">[</span><span class="s1">&#39;magnets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MAGNETS_IP</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">interaction_point</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">interaction_point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span>
         <span class="n">find_magnet</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="n">circuit</span><span class="p">)</span> <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">circuits</span><span class="p">]</span>
-    <span class="n">opt</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">interaction_point</span><span class="si">}{</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">interaction_point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">magnets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">magnets</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">opt</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">interaction_point</span><span class="si">}</span><span class="s1">B</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="si">:</span><span class="s1">d</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">interaction_point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">magnets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">magnets</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="n">opt</span><span class="p">[</span><span class="s1">&#39;instruments&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">instruments</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)))</span>
 
-    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">/</span> <span class="n">opt</span><span class="o">.</span><span class="n">label</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
 
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Get inputfiles&#39;</span><span class="p">)</span>
@@ -540,16 +542,16 @@
 
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Plot tunes and fit&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">no_plots</span><span class="p">:</span>
-        <span class="n">helper</span><span class="o">.</span><span class="n">plot_cleaned_data</span><span class="p">([</span><span class="n">magnet1_df</span><span class="p">,</span> <span class="n">magnet2_df</span><span class="p">],</span> <span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">FIT_PLOTS_NAME</span><span class="p">),</span> <span class="n">interactive_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">helper</span><span class="o">.</span><span class="n">plot_cleaned_data</span><span class="p">([</span><span class="n">magnet1_df</span><span class="p">,</span> <span class="n">magnet2_df</span><span class="p">],</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">FIT_PLOTS_NAME</span><span class="p">,</span> <span class="n">interactive_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Write magnet dataframes and results&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">magnet_df</span> <span class="ow">in</span> <span class="p">[</span><span class="n">magnet1_df</span><span class="p">,</span> <span class="n">magnet2_df</span><span class="p">]:</span>
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">magnet_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;QUADRUPOLE&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">magnet_df</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">magnet_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;QUADRUPOLE&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">magnet_df</span><span class="p">)</span>
 
-    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">RESULTS_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">results_df</span><span class="p">)</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">RESULTS_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">results_df</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">instruments_found</span><span class="p">:</span>
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">INSTRUMENTS_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">instrument_beta_df</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">INSTRUMENTS_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">instrument_beta_df</span><span class="p">)</span>
 
     <span class="n">create_lsa_results_file</span><span class="p">(</span><span class="n">betastar_required</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">instruments_found</span><span class="p">,</span> <span class="n">results_df</span><span class="p">,</span> <span class="n">instrument_beta_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span></div>
 
@@ -563,7 +565,7 @@
         <span class="n">lsa_results_df</span> <span class="o">=</span> <span class="n">lsa_results_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instrument_beta_df</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">lsa_results_df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">LSA_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">lsa_results_df</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">LSA_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">lsa_results_df</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">convert_betastar_and_waist</span><span class="p">(</span><span class="n">bs</span><span class="p">):</span>
@@ -581,7 +583,7 @@
 
 
 <span class="k">def</span> <span class="nf">find_magnet</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">circuit</span><span class="p">):</span>
-    <span class="n">sequence</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">SEQUENCES_PATH</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;twiss_lhc</span><span class="si">{</span><span class="n">beam</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">))</span>
+    <span class="n">sequence</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">SEQUENCES_PATH</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;twiss_lhcb</span><span class="si">{</span><span class="n">beam</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">)</span>
     <span class="n">circuit</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
     <span class="n">magnetname</span> <span class="o">=</span> <span class="n">sequence</span><span class="p">[</span><span class="n">sequence</span><span class="p">[</span><span class="s1">&#39;NAME&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;MQ\w+\.</span><span class="si">{:s}{:s}{:s}</span><span class="s1">\.\w+&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">circuit</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">circuit</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">circuit</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]))][</span><span class="s1">&#39;NAME&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">magnetname</span>
@@ -590,7 +592,7 @@
 <span class="k">def</span> <span class="nf">define_params</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">magnet1_df</span><span class="p">,</span> <span class="n">magnet2_df</span><span class="p">):</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39; adding additional parameters to header &#39;</span><span class="p">)</span>
     <span class="n">beta_star_required</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">sequence</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">SEQUENCES_PATH</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;twiss_lhc</span><span class="si">{</span><span class="n">options</span><span class="o">.</span><span class="n">beam</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
+    <span class="n">sequence</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">SEQUENCES_PATH</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;twiss_lhcb</span><span class="si">{</span><span class="n">options</span><span class="o">.</span><span class="n">beam</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">magnet_df</span> <span class="ow">in</span> <span class="p">[</span><span class="n">magnet1_df</span><span class="p">,</span> <span class="n">magnet2_df</span><span class="p">]:</span>
         <span class="n">magnet_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;LENGTH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">magnet_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;QUADRUPOLE&#39;</span><span class="p">],</span> <span class="s1">&#39;L&#39;</span><span class="p">]</span>

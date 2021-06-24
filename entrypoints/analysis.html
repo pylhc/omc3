@@ -616,10 +616,10 @@ as well as returning beta-star and waist shift.</p>
 <dl>
 <dt>Kmod Keyword Arguments:</dt><dd><p><em>--Required--</em></p>
 <ul>
-<li><p><strong>beam</strong> <em>(str)</em>:</p>
+<li><p><strong>beam</strong> <em>(int)</em>:</p>
 <blockquote>
-<div><p>define beam used: B1 or B2</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">['B1',</span> <span class="pre">'B2']</span></code></p>
+<div><p>define beam used: 1 or 2</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code></p>
 </div></blockquote>
 </li>
 <li><p><strong>betastar_and_waist</strong> <em>(float)</em>:</p>
@@ -627,7 +627,7 @@ as well as returning beta-star and waist shift.</p>
 <div><p>Estimated beta star of measurements and waist shift</p>
 </div></blockquote>
 </li>
-<li><p><strong>working_directory</strong> <em>(str)</em>:</p>
+<li><p><strong>working_directory</strong> <em>(Path)</em>:</p>
 <blockquote>
 <div><p>path to working directory with stored KMOD measurement files</p>
 </div></blockquote>
@@ -674,7 +674,7 @@ calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER</p>
 <p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </div></blockquote>
 </li>
-<li><p><strong>measurement_dir</strong> <em>(str)</em>:</p>
+<li><p><strong>measurement_dir</strong> <em>(Path)</em>:</p>
 <blockquote>
 <div><p>give an optics measurement directory to include phase constraint in
 penalty function</p>
@@ -685,7 +685,7 @@ penalty function</p>
 <div><p>misalignment of the modulated quadrupoles in m</p>
 </div></blockquote>
 </li>
-<li><p><strong>model_dir</strong> <em>(str)</em>:</p>
+<li><p><strong>model_dir</strong> <em>(Path)</em>:</p>
 <blockquote>
 <div><p>twiss model that contains phase</p>
 </div></blockquote>
@@ -708,7 +708,7 @@ penalty function</p>
 <p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </div></blockquote>
 </li>
-<li><p><strong>outputdir</strong>:</p>
+<li><p><strong>outputdir</strong> <em>(Path)</em>:</p>
 <blockquote>
 <div><p>Path where outputfiles will be stored, defaults to the given
 working_directory</p>

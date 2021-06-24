@@ -295,37 +295,6 @@
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="delete_content_of_dir"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.delete_content_of_dir">[docs]</a><span class="k">def</span> <span class="nf">delete_content_of_dir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deletes all folders, files and symbolic links in given directory.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        path_to_dir (str): directory to delete the contents of.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="k">return</span>
-
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="n">item_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-        <span class="n">delete_item</span><span class="p">(</span><span class="n">item_path</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="delete_item"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.delete_item">[docs]</a><span class="k">def</span> <span class="nf">delete_item</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deletes the item given by ``path_to_item``. It distinguishes between a file, a directory and a</span>
-<span class="sd">    symbolic link.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">):</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not delete item because of OSError. Item: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_to_item</span><span class="p">))</span></div>
-
-
 <div class="viewcode-block" id="copy_content_of_dir"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.copy_content_of_dir">[docs]</a><span class="k">def</span> <span class="nf">copy_content_of_dir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copies all files and directories from ``src_dir`` to ``dst_dir``.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">):</span>
@@ -341,8 +310,9 @@
 
 <div class="viewcode-block" id="create_dirs"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.create_dirs">[docs]</a><span class="k">def</span> <span class="nf">create_dirs</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates all dirs to ``path_to_dir`` if not exists.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">)</span>
+    <span class="n">path_to_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path_to_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">path_to_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Created directory structure: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">))</span></div>
 
 
@@ -360,156 +330,6 @@
             <span class="k">raise</span> <span class="ne">IOError</span>
     <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not copy item because of IOError. Item: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_item</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="deleteFilesWithoutGitignore"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.deleteFilesWithoutGitignore">[docs]</a><span class="k">def</span> <span class="nf">deleteFilesWithoutGitignore</span><span class="p">(</span><span class="n">pathToDirectory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deletes all files in the given ``pathToDirectory`` except of the file with the name</span>
-<span class="sd">    **.gitignore**.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        ``True`` if the directory exists and the files were deleted, otherwise ``False``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pathToDirectory</span><span class="p">):</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="n">filenames_list</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pathToDirectory</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames_list</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;.gitignore&quot;</span> <span class="o">!=</span> <span class="n">filename</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pathToDirectory</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span> <span class="p">)</span>
-
-    <span class="k">return</span> <span class="kc">True</span></div>
-
-
-<span class="k">def</span> <span class="nf">exists_directory</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">not_exists_directory</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-    <span class="k">return</span> <span class="ow">not</span> <span class="n">exists_directory</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">no_dirs_exist</span><span class="p">(</span><span class="o">*</span><span class="n">dirs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="ow">not</span> <span class="n">dirs_exist</span><span class="p">(</span><span class="o">*</span><span class="n">dirs</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">dirs_exist</span><span class="p">(</span><span class="o">*</span><span class="n">dirs</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="kc">True</span>
-
-
-<div class="viewcode-block" id="get_all_filenames_in_dir_and_subdirs"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_all_filenames_in_dir_and_subdirs">[docs]</a><span class="k">def</span> <span class="nf">get_all_filenames_in_dir_and_subdirs</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Looks for files(not dirs) in dir and subdirs and returns them as a list.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[]</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">sub_folders</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>  <span class="c1"># @UnusedVariable</span>
-        <span class="n">result</span> <span class="o">+=</span> <span class="n">files</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-<div class="viewcode-block" id="get_all_absolute_filenames_in_dir_and_subdirs"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_all_absolute_filenames_in_dir_and_subdirs">[docs]</a><span class="k">def</span> <span class="nf">get_all_absolute_filenames_in_dir_and_subdirs</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Looks for files(not dirs) in dir and subdirs and returns them as a list.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[]</span>
-    <span class="n">abs_path_to_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">sub_folders</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">abs_path_to_dir</span><span class="p">):</span>  <span class="c1"># @UnusedVariable</span>
-        <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-<div class="viewcode-block" id="get_all_filenames_in_dir"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_all_filenames_in_dir">[docs]</a><span class="k">def</span> <span class="nf">get_all_filenames_in_dir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Looks for files in dir(not subdir) and returns them as a list.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[]</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="n">item_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">item_path</span><span class="p">):</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-<div class="viewcode-block" id="get_all_dir_names_in_dir"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_all_dir_names_in_dir">[docs]</a><span class="k">def</span> <span class="nf">get_all_dir_names_in_dir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Looks for directories in dir and returns them as a list.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[]</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-        <span class="n">item_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">item_path</span><span class="p">):</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-<span class="k">def</span> <span class="nf">is_empty_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">is_not_empty_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
-    <span class="k">return</span> <span class="ow">not</span> <span class="n">is_empty_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">read_all_lines_in_textfile</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">):</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;File does not exist: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">))</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">textfile</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">textfile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-
-
-<div class="viewcode-block" id="append_string_to_textfile"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.append_string_to_textfile">[docs]</a><span class="k">def</span> <span class="nf">append_string_to_textfile</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">,</span> <span class="n">str_to_append</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;If file does not exist, a new file will be created.&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_to_append</span><span class="p">:</span>
-        <span class="n">file_to_append</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">str_to_append</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="write_string_into_new_file"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.write_string_into_new_file">[docs]</a><span class="k">def</span> <span class="nf">write_string_into_new_file</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">,</span> <span class="n">str_to_insert</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An existing file will be truncated.&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">new_file</span><span class="p">:</span>
-        <span class="n">new_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">str_to_insert</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="replace_keywords_in_textfile"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.replace_keywords_in_textfile">[docs]</a><span class="k">def</span> <span class="nf">replace_keywords_in_textfile</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">,</span> <span class="n">dict_for_replacing</span><span class="p">,</span> <span class="n">new_output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function replaces all keywords in a textfile with the corresponding values in the provided</span>
-<span class="sd">    dictionary.</span>
-<span class="sd">    E.g.: A textfile with the content &quot;%(This)s will be replaced!&quot; and the dict {&quot;This&quot;:&quot;xyz&quot;}</span>
-<span class="sd">    results to the change &quot;xyz will be replaced!&quot; in the textfile.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        new_output_path: If new_output_path is ``None``, then the source file will be replaced.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">new_output_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">destination_file</span> <span class="o">=</span> <span class="n">path_to_textfile</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">destination_file</span> <span class="o">=</span> <span class="n">new_output_path</span>
-
-    <span class="n">all_lines</span> <span class="o">=</span> <span class="n">read_all_lines_in_textfile</span><span class="p">(</span><span class="n">path_to_textfile</span><span class="p">)</span>
-    <span class="n">lines_with_replaced_keys</span> <span class="o">=</span> <span class="n">all_lines</span> <span class="o">%</span> <span class="n">dict_for_replacing</span>
-    <span class="n">write_string_into_new_file</span><span class="p">(</span><span class="n">destination_file</span><span class="p">,</span> <span class="n">lines_with_replaced_keys</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="json_dumps_readable"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.json_dumps_readable">[docs]</a><span class="k">def</span> <span class="nf">json_dumps_readable</span><span class="p">(</span><span class="n">json_outfile</span><span class="p">,</span> <span class="n">object_to_dump</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is how you write a beautiful json file.</span>
-<span class="sd">    </span>
-<span class="sd">    Args:</span>
-<span class="sd">        json_outfile: File to write.</span>
-<span class="sd">        object_to_dump: object to dump to json format.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">object_to_dump</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">object_to_dump</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">    &quot;</span>
-                                                        <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;[</span><span class="se">\n</span><span class="s2">    &quot;</span>
-                              <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;],</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="p">,</span> <span class="s2">&quot;],</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                              <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;{</span><span class="se">\n</span><span class="s2">&quot;</span>
-                              <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">}&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
-        <span class="n">json_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">object_to_dump</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PathOrStr"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.PathOrStr">[docs]</a><span class="k">class</span> <span class="nc">PathOrStr</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>

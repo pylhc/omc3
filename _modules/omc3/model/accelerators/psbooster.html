@@ -309,13 +309,6 @@
 <span class="sd">        Energy in **Tev**.</span>
 
 
-<span class="sd">    - **fullresponse**:</span>
-
-<span class="sd">        If True, outputs also fullresponse madx file.</span>
-
-<span class="sd">        action: ``store_true``</span>
-
-
 <span class="sd">    - **model_dir** *(str)*:</span>
 
 <span class="sd">        Path to model directory; loads tunes and excitation from model!</span>
@@ -345,20 +338,25 @@
 <span class="sd">        action: ``store_true``</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPoint</span>
 
 <span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Accelerator</span><span class="p">,</span>
-                                                 <span class="n">AcceleratorDefinitionError</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">PLANE_TO_HV</span>
+                                                 <span class="n">AcceleratorDefinitionError</span><span class="p">,</span> <span class="n">AccElementTypes</span><span class="p">,</span> <span class="n">AccExcitationMode</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">PLANE_TO_HV</span><span class="p">,</span> <span class="n">MODIFIER_TAG</span>
+
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
 
 <div class="viewcode-block" id="Psbooster"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.psbooster.Psbooster">[docs]</a><span class="k">class</span> <span class="nc">Psbooster</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parent Class for Psbooster-types.&quot;&quot;&quot;</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;psbooster&quot;</span>
+    <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BR\d\.BPM[^T]&quot;</span><span class="p">,</span>
+               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
+               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BR\d\.BPM[^T]&quot;</span>
+               <span class="p">}</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">():</span>
@@ -386,15 +384,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="Psbooster.verify_object"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.psbooster.Psbooster.verify_object">[docs]</a>    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ring</span></div>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CURRENT_DIR</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span><span class="p">)</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CURRENT_DIR</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ring</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2"> cannot handle modifiers,&quot;</span>
+                                             <span class="sa">f</span><span class="s2">&quot; yet modifiers were given.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Psbooster.get_exciter_bpm"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.psbooster.Psbooster.get_exciter_bpm">[docs]</a>    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span><span class="p">:</span>
@@ -403,7 +396,28 @@
         <span class="n">found_bpms</span> <span class="o">=</span> <span class="p">[</span><span class="n">bpm</span> <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms_to_find</span> <span class="k">if</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">KeyError</span>
-        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP&quot;</span></div></div>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP&quot;</span></div>
+
+<div class="viewcode-block" id="Psbooster.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.psbooster.Psbooster.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_directory</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best knowledge model not implemented for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">use_acd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)),</span>
+        <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;FILES_DIR&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()),</span>
+            <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="n">use_acd</span><span class="p">,</span>
+            <span class="s2">&quot;RING&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ring</span><span class="p">,</span>
+            <span class="s2">&quot;NAT_TUNE_X&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;NAT_TUNE_Y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;KINETICENERGY&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
+            <span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">use_acd</span><span class="p">:</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s1">&#39;base.mask&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">mask</span> <span class="o">%</span> <span class="n">replace_dict</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">_PsboosterSegmentMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
