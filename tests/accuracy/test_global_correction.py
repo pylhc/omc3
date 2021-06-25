@@ -35,8 +35,8 @@ RMS_TOL_DICT = {
 }
 
 
-def get_skew_params():
-    twiss = CORRECTION_INPUTS / "inj_beam1" / f"twiss_skew_quadrupole_error.dat"
+def get_skew_params(beam):
+    twiss = CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_skew_quadrupole_error.dat"
     optics_params = OPTICS_PARAMS_CHOICES[8:]
     variables = ["MQSl"]
     fullresponse = "fullresponse_skew.h5"
@@ -44,8 +44,8 @@ def get_skew_params():
     return twiss, optics_params, variables, fullresponse, seed
 
 
-def get_normal_params():
-    twiss = CORRECTION_INPUTS / "inj_beam1" / f"twiss_quadrupole_error.dat"
+def get_normal_params(beam):
+    twiss = CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat"
     optics_params = OPTICS_PARAMS_CHOICES[:6]
     variables = ["MQY"]
     fullresponse = "fullresponse.h5"
@@ -56,17 +56,20 @@ def get_normal_params():
 @pytest.mark.basic
 @pytest.mark.parametrize('model_inj_beams', (1,), indirect=True)  # TODO: remove to also do beam 2
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_global_correct(tmp_path, model_inj_beams, orientation):
+def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
-    twiss_path, optics_params, variables, fullresponse, seed = get_skew_params() if orientation == 'skew' else get_normal_params()
+    beam = model_inj_beams.beam
+    twiss_path, optics_params, variables, fullresponse, seed = get_skew_params(beam) if orientation == 'skew' else get_normal_params(beam)
     iterations = 2
 
     # create and load fake measurement
     error_val = 0.1
-    twiss_df, model_df, meas_dict = _create_fake_measurement(tmp_path, model_inj_beams.model_dir, twiss_path, error_val, optics_params, seed)
+    twiss_df, model_df, meas_dict = _create_fake_measurement(
+        tmp_path, model_inj_beams.model_dir, twiss_path, error_val, optics_params, seed
+    )
 
     # Perform global correction
     global_correction(
