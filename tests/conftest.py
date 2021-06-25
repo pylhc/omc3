@@ -98,4 +98,8 @@ def get_tmpdir_path(request, factory):
     name = re.sub(r"[\W]", "_", name)
     MAXVAL = 30
     name = name[:MAXVAL]
-    return factory.getbasetemp().joinpath(name)
+    for ii in range(10):
+        path =  factory.getbasetemp() / f"{name}{ii}"
+        if not path.exists():
+            return path
+    raise IOError(f"More than 10 directories with the basename {name} exist in basetemp.")
