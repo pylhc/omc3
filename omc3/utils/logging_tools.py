@@ -30,6 +30,7 @@ COLOR_NAME = '\33[0m\33[38;2;80;80;80m'
 COLOR_DIVIDER = '\33[0m\33[38;2;127;127;127m'
 COLOR_RESET = '\33[0m'
 
+MADX = DEBUG + 3
 
 # Classes and Contexts #########################################################
 
@@ -226,7 +227,7 @@ def list2str(list_: list) -> str:
 # Public Methods ###############################################################
 
 
-def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, color=None):
+def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, color=None):
     """
     Sets up logger if name is **__main__**. Returns logger based on module name.
 
@@ -244,10 +245,15 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT, col
     logger_name = _get_caller_logger_name()
 
     if name == "__main__":
+        if level_console is None:
+            level_console = DEBUG if sys.flags.debug else INFO
+
         # set up root logger
         root_logger = logging.getLogger("")
         root_logger.handlers = []  # remove handlers in case someone already created them
         root_logger.setLevel(level_root)
+
+        logging.addLevelName(MADX, 'MADX')
 
         # print logs to the console
         root_logger.addHandler(
