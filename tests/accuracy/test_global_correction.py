@@ -54,6 +54,7 @@ def get_normal_params():
 
 
 @pytest.mark.basic
+@pytest.mark.parametrize('model_inj_beams', (1,), indirect=True)  # TODO: remove to also do beam 2
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
 def test_global_correct(tmp_path, model_inj_beams, orientation):
     """Creates a fake measurement from a modfied model-twiss with (skew)
