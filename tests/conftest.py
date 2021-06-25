@@ -44,28 +44,28 @@ def cli_args(*args, **kwargs):
 @pytest.fixture(scope="module", params=[1, 2])
 def model_inj_beams(request, tmp_path_factory):
     """ Fixture for inj model for both beams"""
-    return tmp_model(get_tmpdir_path(request, tmp_path_factory), beam=request.param, id_='inj')
+    return tmp_model(tmp_path_factory, beam=request.param, id_='inj')
 
 
 @pytest.fixture(scope="module")
 def model_inj_beam1(request, tmp_path_factory):
     """ Fixture for inj beam 1 model"""
-    return tmp_model(get_tmpdir_path(request, tmp_path_factory), beam=1, id_='inj')
+    return tmp_model(tmp_path_factory, beam=1, id_='inj')
 
 
 @pytest.fixture(scope="module")
 def model_inj_beam2(request, tmp_path_factory):
     """ Fixture for inj beam 2 model"""
-    return tmp_model(get_tmpdir_path(request, tmp_path_factory), beam=2, id_='inj')
+    return tmp_model(tmp_path_factory, beam=2, id_='inj')
 
 
-def tmp_model(temp_dir: Path, beam: int, id_: str):
+def tmp_model(factory, beam: int, id_: str):
     """Creates a temporary model directory based on the input/models/model_inj_beam#
     but with the addition of a macros/ directory containing the macros from
     the omc3/models/madx_macros.
 
     Args:
-        temp_dir (Path): Base-Temporary Directory, the model will be in a subfolder
+        factory: tmp_path_factory
         beam (int): Beam to use
         id_ (str): Model identifyier. `inj` or `25cm`
 
@@ -73,7 +73,9 @@ def tmp_model(temp_dir: Path, beam: int, id_: str):
         A DotDict with the attributes ``path``, the path to the model directory
         and ``settings``, the accelerator class settings for this model.
     """
-    tmp_model_path = temp_dir / f"model_{id_}_beam{beam}"
+    tmp_model_path = factory.mktemp(f"model_{id_}_beam{beam}")
+    tmp_model_path.rmdir()  # otherwise copytree will complain
+
     shutil.copytree(INPUTS / "models" / f"{id_}_beam{beam}", tmp_model_path)  # creates tmp_path dir
 
     macros_path = tmp_model_path / "macros"
@@ -87,19 +89,3 @@ def tmp_model(temp_dir: Path, beam: int, id_: str):
         accel="lhc",
         energy=0.45 if id_ == 'inj' else 6.5,
     )
-
-
-def get_tmpdir_path(request, factory):
-    """ Get's the name from the request node.
-    So that there will be different folders for new scopes.
-    Similar to factory.mkdir(), but without creating it.
-    """
-    name = request.node.name
-    name = re.sub(r"[\W]", "_", name)
-    MAXVAL = 30
-    name = name[:MAXVAL]
-    for ii in range(10):
-        path =  factory.getbasetemp() / f"{name}{ii}"
-        if not path.exists():
-            return path
-    raise IOError(f"More than 10 directories with the basename {name} exist in basetemp.")

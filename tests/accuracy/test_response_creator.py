@@ -1,15 +1,13 @@
-from pathlib import Path
-
 import numpy as np
 import pytest
 
 from omc3.correction.constants import (DISP, PHASE, PHASE_ADV)
 from omc3.correction.handler import _rms
-from omc3.correction.response_io import read_fullresponse, write_fullresponse
+from omc3.correction.response_io import read_fullresponse
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.response_creator import create_response_entrypoint as create_response
-from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
 from omc3.utils import logging_tools
+from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -33,7 +31,8 @@ def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
 
     # parameter setup
     is_skew = orientation == 'skew'
-    _, optics_params, variables, fullresponse, _ = get_skew_params() if is_skew else get_normal_params()
+    beam = model_inj_beams.beam
+    _, optics_params, variables, fullresponse, _ = get_skew_params(beam) if is_skew else get_normal_params(beam)
     optics_params = _adapt_optics_params(optics_params, creator, is_skew)
 
     # response creation

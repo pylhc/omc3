@@ -12,6 +12,10 @@ from omc3.global_correction import global_correction_entrypoint as global_correc
 from omc3.optics_measurements.constants import NAME
 from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
+from omc3.utils import logging_tools
+
+# LOG = logging_tools.get_logger(__name__)
+LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
 
 # Paths ---
 INPUTS = Path(__file__).parent.parent / 'inputs'

@@ -6,7 +6,6 @@ This module contains high-level functions to manage most functionality of the co
 """
 import datetime
 import os
-import pickle
 import time
 from pathlib import Path
 from typing import Callable, Dict, List, Sequence, Tuple
@@ -200,7 +199,7 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
 def _create_corrected_model(twiss_out: str, change_params, accel_inst: Accelerator) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
     madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params)
-    madx_wrapper.run_string(madx_script, log_file=os.devnull)
+    madx_wrapper.run_string(madx_script, log_file=os.devnull, cwd=Path(twiss_out).parent)
     return tfs.read(twiss_out, index=NAME)
 
 
