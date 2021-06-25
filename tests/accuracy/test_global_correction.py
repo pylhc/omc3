@@ -55,7 +55,7 @@ def get_normal_params():
 
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_global_correct(tmp_path, model_inj_beam1, orientation):
+def test_global_correct(tmp_path, model_inj_beams, orientation):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
@@ -65,15 +65,15 @@ def test_global_correct(tmp_path, model_inj_beam1, orientation):
 
     # create and load fake measurement
     error_val = 0.1
-    twiss_df, model_df, meas_dict = _create_fake_measurement(tmp_path, model_inj_beam1.path, twiss_path, error_val, optics_params, seed)
+    twiss_df, model_df, meas_dict = _create_fake_measurement(tmp_path, model_inj_beams.model_dir, twiss_path, error_val, optics_params, seed)
 
     # Perform global correction
     global_correction(
-        **model_inj_beam1.settings,
+        **model_inj_beams,
         # correction params
         meas_dir=tmp_path,
         variable_categories=variables,
-        fullresponse_path=model_inj_beam1.path / fullresponse,
+        fullresponse_path=model_inj_beams.model_dir / fullresponse,
         optics_params=list(optics_params),
         output_dir=tmp_path,
         weights=[1.0] * len(optics_params),

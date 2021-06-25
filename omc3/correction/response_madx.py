@@ -25,7 +25,7 @@ from optics_functions.coupling import coupling_via_cmatrix
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.constants import (BETA, DISP, F1001, F1010, INCR,
                                        NORM_DISP, PHASE_ADV, TUNE, PHASE)
-from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
 
@@ -113,7 +113,7 @@ def _get_madx_job(accel_inst: Accelerator) -> str:
     job_content = accel_inst.get_base_madx_script(accel_inst.model_dir)
     job_content += (
         "select, flag=twiss, clear;\n"
-        f"select, flag=twiss, pattern='^BPM.*\.B{accel_inst.beam:d}$', "
+        f"select, flag=twiss, pattern='{accel_inst.RE_DICT[AccElementTypes.BPMS]}', "
         "column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;\n\n")
     return job_content
 
@@ -223,7 +223,7 @@ def _get_jobfiles(temp_dir: Path, index: int) -> Path:
 def _launch_single_job(inputfile_path: Path) -> None:
     """ Function for pool to start a single madx job """
     log_file = inputfile_path.with_name(inputfile_path.name + ".log")
-    madx_wrapper.run_file(inputfile_path, log_file=log_file)
+    madx_wrapper.run_file(inputfile_path, log_file=log_file, cwd=inputfile_path.parent)
 
 
 def _load_and_remove_twiss(var_and_path: Tuple[str, Path]) -> Tuple[str, tfs.TfsDataFrame]:

@@ -19,7 +19,7 @@ import tfs
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.response_io import write_fullresponse, write_varmap
-from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
@@ -132,7 +132,9 @@ def _clean_up(variables: List[str], temp_dir: Path, num_proc: int) -> None:
     """ Merge Logfiles and clean temporary outputfiles """
     LOG.debug("Cleaning output and printing log...")
     for var in (variables + ["0"]):
-        _get_tablefile(temp_dir, var).unlink(missing_ok=True)
+        table_file = _get_tablefile(temp_dir, var)
+        with suppress(FileNotFoundError):  # py3.8 missing_ok=True
+            table_file.unlink()
     full_log = ""
     for index in range(num_proc):
         survey_path = _get_surveyfile(temp_dir, index)
@@ -140,9 +142,14 @@ def _clean_up(variables: List[str], temp_dir: Path, num_proc: int) -> None:
         log_path = job_path.with_name(f"{job_path.name}.log")
         if log_path.exists():
             full_log += log_path.read_text()
-        log_path.unlink(missing_ok=True)
-        job_path.unlink(missing_ok=True)
-        survey_path.unlink(missing_ok=True)
+        with suppress(FileNotFoundError):  # py3.8 missing_ok=True
+            log_path.unlink()
+
+        with suppress(FileNotFoundError):  # py3.8 missing_ok=True
+            job_path.unlink()
+
+        with suppress(FileNotFoundError):  # py3.8 missing_ok=True
+            survey_path.unlink()
     LOG.debug(full_log)
     with suppress(OSError):
         temp_dir.rmdir()
@@ -194,7 +201,7 @@ def _get_tablefile(folder: Path, var: str) -> Path:
 
 
 def _get_surveyfile(folder: Path, index: int) -> Path:
-    """ Returns the name of the macro """
+    """ Returns the name of the temporary survey file """
     return folder / f"survey.{index:d}.tmp"
 
 
@@ -202,7 +209,7 @@ def _launch_single_job(inputfile_path: Path):
     """ Function for pool to start a single madx job """
     log_file = inputfile_path.with_name(f"{inputfile_path.name}.log")
     try:
-        madx_wrapper.run_file(inputfile_path, log_file=log_file)
+        madx_wrapper.run_file(inputfile_path, log_file=log_file, cwd=inputfile_path.parent)
     except madx_wrapper.MadxError as e:
         return str(e)
     else:
@@ -238,7 +245,6 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[str], variables: S
     job_content += "assign_k_values(element) : macro = {\n"
     # job_content += "    value, element; show, element;\n"
     for k_val in k_values:
-        # TODO: Ask someone who knows about MADX if K0-handling is correct
         # (see user guide 10.3 Bending Magnet)
         if k_val == "K0":
             job_content += f"    {k_val:s} = element->angle / element->L;\n"

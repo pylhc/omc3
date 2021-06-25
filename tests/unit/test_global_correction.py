@@ -31,13 +31,13 @@ FILENAME_MAP = {
 
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_read_measurement_data(tmp_path, model_inj_beam1, orientation):
+def test_read_measurement_data(tmp_path, model_inj_beams, orientation):
     """ Tests if all necessary measurement data is read.
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
     is_skew = orientation == 'skew'
     twiss, optics_params, variables, fullresponse, _ = get_skew_params() if is_skew else get_normal_params()
     meas_fake = fake_measurement(
-        model=model_inj_beam1 / "twiss.dat",
+        model=model_inj_beams.model_dir / "twiss.dat",
         twiss=twiss,
         randomize=[],
         relative_errors=[0.1],
@@ -67,14 +67,3 @@ def test_rms():
     for _ in range(5):
         vec = np.random.rand(100)
         assert np.sqrt(np.mean(np.square(vec))) == _rms(vec)
-
-
-@pytest.fixture(scope="module")
-def model_inj_beam1(tmp_path_factory):
-    tmp_path = tmp_path_factory.getbasetemp() / "model_inj_beam1"
-    shutil.copytree(INPUTS / "models" / "inj_beam1", tmp_path)  # creates tmp_path dir
-
-    macros_path = tmp_path / "macros"
-    shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
-    return tmp_path
-

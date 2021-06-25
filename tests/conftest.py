@@ -38,10 +38,25 @@ def cli_args(*args, **kwargs):
     sys.argv = args_save
 
 
+# Model fixtures from /inputs/models -------------------------------------------
+# Hint: Before adding 25cm models, update files (see inj model folders, jdilly 2021)
+
+@pytest.fixture(scope="module", params=[1, 2])
+def model_inj_beams(request, tmp_path_factory):
+    """ Fixture for inj model for both beams"""
+    return tmp_model(get_tmpdir_path(request, tmp_path_factory), beam=request.param, id_='inj')
+
+
 @pytest.fixture(scope="module")
 def model_inj_beam1(request, tmp_path_factory):
     """ Fixture for inj beam 1 model"""
     return tmp_model(get_tmpdir_path(request, tmp_path_factory), beam=1, id_='inj')
+
+
+@pytest.fixture(scope="module")
+def model_inj_beam2(request, tmp_path_factory):
+    """ Fixture for inj beam 2 model"""
+    return tmp_model(get_tmpdir_path(request, tmp_path_factory), beam=2, id_='inj')
 
 
 def tmp_model(temp_dir: Path, beam: int, id_: str):
@@ -64,15 +79,14 @@ def tmp_model(temp_dir: Path, beam: int, id_: str):
     macros_path = tmp_model_path / "macros"
     shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
 
-    settings = dict(
+    return DotDict(
         ats=True,
         beam=beam,
-        model_dir=str(tmp_model_path),
+        model_dir=tmp_model_path,
         year="2018",
         accel="lhc",
         energy=0.45 if id_ == 'inj' else 6.5,
     )
-    return DotDict(path=tmp_model_path, settings=settings)
 
 
 def get_tmpdir_path(request, factory):

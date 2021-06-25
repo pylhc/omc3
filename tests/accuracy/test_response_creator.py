@@ -1,12 +1,18 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
 
 from omc3.correction.constants import (DISP, PHASE, PHASE_ADV)
 from omc3.correction.handler import _rms
-from omc3.correction.response_io import read_fullresponse
+from omc3.correction.response_io import read_fullresponse, write_fullresponse
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.response_creator import create_response_entrypoint as create_response
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
+from omc3.utils import logging_tools
+
+LOG = logging_tools.get_logger(__name__)
+# LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
 
 DELTA_K = 2e-5
 MADX_RTOL = 1e-3
@@ -17,11 +23,14 @@ TWISS_RMS_TOL = 0.07
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
 @pytest.mark.parametrize('creator', ('madx', 'twiss'))
-def test_reponse_accuracy(tmp_path, model_inj_beam1, orientation, creator):
+def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
     """ Tests the accuracy of a newly generated response against the saved
     response matrix. In that way also twiss and madx responses are compared to
     each other.
-    Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
+    Hint: the `model_inj_beam` fixture is defined in `conftest.py`."""
+    if model_inj_beams.beam == 2 and creator == 'twiss':
+        return  # TODO: create varmap files for beam 2 (jdilly, 2021)
+
     # parameter setup
     is_skew = orientation == 'skew'
     _, optics_params, variables, fullresponse, _ = get_skew_params() if is_skew else get_normal_params()
@@ -29,14 +38,14 @@ def test_reponse_accuracy(tmp_path, model_inj_beam1, orientation, creator):
 
     # response creation
     new_response = create_response(
-        **model_inj_beam1.settings,
+        **model_inj_beams,
         creator=creator,
         delta_k=DELTA_K,
         variable_categories=variables,
     )
 
     # compare to original response matrix
-    original_response = read_fullresponse(model_inj_beam1.path / fullresponse)
+    original_response = read_fullresponse(model_inj_beams.model_dir / fullresponse)
     for key in optics_params:
         original = original_response[key]
         new = new_response[key].loc[original.index, original.columns]
@@ -53,6 +62,8 @@ def test_reponse_accuracy(tmp_path, model_inj_beam1, orientation, creator):
 
         assert check, f"Fullresponse via {creator} does not match for {key}"
 
+
+# TODO: Add similar tests for PS and PSB (jdilly, 2021)
 
 # Helper -----------------------------------------------------------------------
 

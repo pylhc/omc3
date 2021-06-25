@@ -152,15 +152,16 @@ class Lhc(Accelerator):
             raise AcceleratorDefinitionError("Driven tunes not set.")
 
         if self.modifiers is None or not len(self.modifiers):
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, no modifiers found."
-            )
+            if self.model_dir is not None:
+                raise AcceleratorDefinitionError(
+                    "The accelerator definition is incomplete, no modifiers found."
+                )
         else:
             not_exist = []
             if self.model_dir is None:
-                not_exits = [m for m in self.modifiers if not m.exists()]
+                not_exits = [str(m) for m in self.modifiers if not m.exists()]
             else:
-                not_exits = [m for m in self.modifiers if not (self.model_dir / m).exists()]
+                not_exits = [str(m) for m in self.modifiers if not (self.model_dir / m).exists()]
 
             if len(not_exits):
                 raise AcceleratorDefinitionError(
