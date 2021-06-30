@@ -73,11 +73,16 @@ def converter_entrypoint(opt):
       - **noise_levels** *(float)*: Sigma of added Gaussian noise.
 
         Flags: **--noise_levels**
-        Default: None
+        Default: ``None``
       - **use_average** *(bool)*: If set, returned sdds only contains the average over all particle/bunches.
 
         Flags: **--use_average**
-        Default: False
+        Default: ``False``
+
+      - **drop_elements**: Names of elements to drop from the input file during conversion.
+
+        Flags: **--drop_elements**
+        Default: ``None``
     """
     if opt.realizations < 1:
         raise ValueError("Number of realizations lower than 1.")
