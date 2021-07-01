@@ -19,8 +19,23 @@ from omc3.utils import logging_tools, stats
 
 LOGGER = logging_tools.get_logger(__name__)
 
-
 def calculate(meas_input, input_files, tunes, plane, no_errors=False):
+    if meas_input.compensation == "none":
+        LOGGER.info("no compensation")
+        phase_advances, dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, 'none', no_errors)
+        driven_phase_advances = None
+    else:
+        LOGGER.info("compensated, run with compensation")
+        phase_advances, free_dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, meas_input.compensation, no_errors)
+        LOGGER.info("-- run uncompensated")
+        driven_phase_advances, drv_dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, 'none', no_errors)
+        dfs = free_dfs + drv_dfs
+
+    return {'free': phase_advances, 'driven': driven_phase_advances}, dfs
+
+
+
+def _calculate_with_compensation(meas_input, input_files, tunes, plane, compensation='none', no_errors=False):
     """
     Calculates phase advances
 
@@ -68,11 +83,10 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
     phase_advances = {"MODEL": _get_square_data_frame(
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
-    LOGGER.warn("---- ATTENTION: PHASE COMPENSATION by model TURNED OFF")
-    #if meas_input.compensation == "model":
-    #    df = _compensate_by_model(input_files, meas_input, df, plane)
+    if compensation == "model":
+        df = _compensate_by_model(input_files, meas_input, df, plane)
     phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
-    if meas_input.compensation == "equation":
+    if compensation == "equation":
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
     phases_errors = input_files.get_data(df, f"{ERR}MU{plane}")
@@ -125,7 +139,8 @@ def _compensate_by_model(input_files, meas_input, df, plane):
 
 
 def write(dfs, headers, output, plane):
-    for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME)):
+    LOGGER.info(f"writing phases: {len(dfs)}")
+    for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME, PHASE_NAME+"driven_", TOTAL_PHASE_NAME+"driven_")):
         tfs.write(join(output, f"{name}{plane.lower()}{EXT}"), df, head)
         LOGGER.info(f"Phase advance beating in {name}{plane.lower()}{EXT} = "
                     f"{stats.weighted_rms(df.loc[:, f'{DELTA}PHASE{plane}'])}")

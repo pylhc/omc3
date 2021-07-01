@@ -52,10 +52,10 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
         if meas_input.compensation == "none" else (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
 
     if meas_input.three_bpm_method:
-        beta_df = three_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
+        beta_df = three_bpm_method(meas_input, phase_dict['free'], plane, meas_and_model_tunes)
         error_method = METH_3BPM
     else:
-        beta_df, error_method = n_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
+        beta_df, error_method = n_bpm_method(meas_input, phase_dict['free'], plane, meas_and_model_tunes)
     LOGGER.info(f"Errors from {error_method}")
     rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].to_numpy(), errors=beta_df.loc[:, f"{ERR}{DELTA}BET{plane}"].to_numpy()) * 100
     LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")

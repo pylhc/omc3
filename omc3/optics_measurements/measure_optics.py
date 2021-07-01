@@ -50,9 +50,9 @@ def measure_optics(input_files, measure_input):
     invariants = {}
     phase_dict = {}
     for plane in PLANES:
-        phase_dict[plane], out_dfs = phase.calculate(measure_input, input_files, tune_dict, plane)
-        phase.write(out_dfs, [common_header, common_header], measure_input.outputdir, plane)
-        phase.write_special(measure_input, phase_dict[plane], tune_dict[plane]["QF"], plane)
+        phase_dict[plane], out_dfs  = phase.calculate(measure_input, input_files, tune_dict, plane)
+        phase.write(out_dfs, [common_header]*4, measure_input.outputdir, plane)
+        #phase.write_special(measure_input, phase_dict[plane], tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
             continue
         beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict[plane], common_header, plane)
@@ -60,7 +60,7 @@ def measure_optics(input_files, measure_input):
 
         ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_df, common_header, plane)
         invariants[plane] = kick.calculate(measure_input, input_files, ratio, common_header, plane)
-        ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict[plane])
+        ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict[plane]['free'])
         interaction_point.write(ip_df, common_header, measure_input.outputdir, plane)
         dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
         dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)

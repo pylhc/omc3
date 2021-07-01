@@ -46,18 +46,19 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
 
     """
     # say hello
-    LOG.info("calculating coupling")
+    LOG.info("calculating coupling -fffe")
 
     # intersect measurements
+    excitation = 'driven' if meas_input.compensation == 'model' else 'free'
     joined = _joined_frames(input_files)[0]
-    joined_index = joined.index.intersection(phase_dict['X']['MEAS'].index)  #shouldn't be necessary in the end
+    joined_index = joined.index.intersection(phase_dict['X'][excitation]['MEAS'].index)  #shouldn't be necessary in the end
     joined = joined.loc[joined_index]
 
-    phases_x = phase_dict['X']["MEAS"].loc[joined_index]
-    phases_y = phase_dict['Y']["MEAS"].loc[joined_index]
+    phases_x = phase_dict['X'][excitation]["MEAS"].loc[joined_index]
+    phases_y = phase_dict['Y'][excitation]["MEAS"].loc[joined_index]
 
-    pairs_x, deltas_x = _take_next(phases_x)
-    pairs_y, deltas_y = _take_next(phases_y)
+    pairs_x, deltas_x = _find_pair(phases_x)
+    pairs_y, deltas_y = _find_pair(phases_y)
 
     A01 = .5*_get_complex(
         joined["AMP01_X"].values*exp(joined["PHASE01_X"].values * PI2I), deltas_x, pairs_x
@@ -82,16 +83,22 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
 
     LOG.debug("f1001 = {}".format(f1001))
     one_over_N = 1 / len(f1001)
-    #C_abs = 4 * tune_sep * np.sum(abs(f1001))
+    tune_sep = tune_dict["X"]["QFM"] - tune_dict["Y"]["QFM"]
+
+    # old Cminus
+    C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
+    header_dict["OldCminus"] = C_old
+    LOG.info(f"abs OldCminus = {C_old}, tune_sep = {tune_sep}")
+
+    # new Cminus
+    C_new = np.abs(4.0 * np.mean(f1001 * np.exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    header_dict["newCminus"] = C_new
+    LOG.info(f"abs NewCminus = {C_new}")
 
     q1001_from_A = (q1001_from_A/PI2) % 1.0
     q1001_from_B = (q1001_from_B/PI2) % 1.0
     q1010_from_A = (q1010_from_A/PI2) % 1.0
     q1010_from_B = (q1010_from_B/PI2) % 1.0
-
-    print(q1010_from_A)
-    print(q1010_from_B)
-    print(q1010_from_B-q1010_from_A)
 
     if meas_input.compensation == "model":
         f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
@@ -99,11 +106,10 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
                           columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "q1001"],
                           data=np.array([
                               meas_input.accelerator.model.loc[joined_index, "S"].values,
-                              np.real(f1001), np.real(f1010),
-                              np.imag(f1001), np.imag(f1010),
+                              np.real(f1001.to_numpy()), np.real(f1010.to_numpy()),
+                              np.imag(f1001.to_numpy()), np.imag(f1010.to_numpy()),
                               q1001_from_A.values,
                           ]).transpose())
-
 
     tfs.write(os.path.join(meas_input.outputdir, "coupling.tfs"),
               rdt_df, header_dict, save_index="NAME")
