@@ -163,11 +163,9 @@ def _find_pair(phases):
       phases (matrix): phase advance matrix
     """
     slice = _tilt_slice_matrix(phases.values, 0, 2*CUTOFF) - 0.25
-    print(slice)
     indices = (np.argmin(abs(slice), axis=0))
     deltas = slice[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)
-    print(indices)
     #deltas = [phases[col][indices] for col in phases.columns]
 
     return np.array(indices), deltas
