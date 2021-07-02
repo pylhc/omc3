@@ -1,9 +1,8 @@
 """
-Trackone Turn-by-Turn Data Handler
------------------------------------
+Trackone TbT Data Handler
+-------------------------
 
-Tbt data handling from PTC trackone.
-
+Tbt data handling from ``PTC`` trackone.
 """
 from collections import OrderedDict
 
@@ -52,16 +51,18 @@ def get_trackone_stats(infile):
 
 def get_structure_from_trackone(nturns=0, npart=0, infile='trackone'):
     """
-    Reads the trackone file produced by PTC
+    Reads the **trackone** file produced by ``PTC``.
 
-    Attributes:
-        nturns: Number of turns tracked in the trackone, i.e. obtained from get_trackone_stats()
-        npart:  Number of particles tracked in the trackone, i.e. obtained from get_trackone_stats()
-        infile: path to trackone file to be read
+    Args:
+        nturns: Number of turns tracked in the **trackone**, i.e. obtained from
+            ``get_trackone_stats()``.
+        npart:  Number of particles tracked in the **trackone**, i.e. obtained from
+            ``get_trackone_stats()``.
+        infile: path to trackone file to be read.
+
     Returns:
-        Numpy array of BPM names
-        4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
-        quantities in order [x, px, y, py, t, pt, s, E]
+        A Numpy array of BPM names and a 4D Numpy array [quantity, BPM, particle/bunch No.,
+        turn No.] quantities in order [x, px, y, py, t, pt, s, E].
     """
     bpms = OrderedDict()
     with open(infile, 'r') as f:

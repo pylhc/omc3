@@ -1,11 +1,9 @@
 """
-IP
-----------------
+Interaction Point
+-----------------
 
-:module: optics_measurements.interaction_point
-:author: Jaime Coello de Portugal
-
-Computes beta* from phase.
+This module contains IP properties calculations related functionality of ``optics_measurements``.
+It provides functions to compute beta* from phase.
 """
 from os.path import join
 
@@ -22,14 +20,15 @@ COLUMNS = ("IP", "BETASTAR", "ERRBETASTAR", "PHASEADV", "ERRPHASEADV", "PHASEDVM
 
 
 def betastar_from_phase(meas_input, phase_d):
-    """Writes the getIP files with the betastar computed using phase advance.
+    """
+    Writes the **getIP** files with the betastar computed using phase advance.
 
     Arguments:
-        meas_input: Measurement_input object
-        phase_d: Output of calculation
+        meas_input: `Measurement_input` object.
+        phase_d: Output of calculation.
 
     Returns:
-        A nested dict with the same structure as the phase_d dict.
+        A nested `dict` with the same structure as the ``phase_d`` `dict`.
     """
     accel = meas_input.accelerator
     model = accel.model
@@ -57,16 +56,15 @@ def write(ips_d, headers, output_dir, plane):
 
 
 def phase_to_betastar(lstar, phase, errphase):
-    """Return the betastar and its error given the phase advance across the IP.
+    """
+    Return the betastar and its error given the phase advance across the IP.
 
-    This function computes the betastar using the phase advance between the
-    BPMs around the IP and their distance (lstar). The phase and error in the
-    phase must be given in radians.
+    This function computes the betastar using the phase advance between the BPMs around the IP
+    and their distance (lstar). The phase and error in the phase must be given in radians.
 
-    Arguments:
+    Args:
         lstar: The distance between the BPMs and the IR.
-        phase: The phase advance between the BPMs at each side of the IP. Must
-            be given in radians.
+        phase: The phase advance between the BPMs at each side of the IP. Must be given in radians.
         errphase: The error in phase. Must be given in radians.
     """
     return (_phase_to_betastar_value(lstar, phase),

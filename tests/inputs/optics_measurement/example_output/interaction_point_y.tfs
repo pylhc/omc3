@@ -1,0 +1,14 @@
+@ Measure_optics:version %s "0.4.0"
+@ Command %s "/afs/cern.ch/work/o/omc/anaconda3/bin/python /afs/cern.ch/user/l/lmalina/public/omc3/omc3/hole_in_one.py --optics --accel=lhc --lhcmode=lhc_runII_2018 --beam=1 --model_dir /afs/cern.ch/work/l/lmalina/2019-01-10/models/LHCB1/b1_inj/ --files /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid0_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid550_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds /afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/bunchid650_Beam1@BunchTurn@2018_10_27@23_14_52_381.sdds --outputdir=/afs/cern.ch/work/l/lmalina/2019-01-10/LHCB1/Measurements/Beam1@BunchTurn@2018_10_27@23_14_52_381/optics93 --nonlinear"
+@ CWD %s "/afs/cern.ch/user/l/lmalina/public/omc3"
+@ Date %s "14. May 2019, 12:18:02"
+@ Model_directory %s "/afs/cern.ch/work/l/lmalina/2019-01-10/models/LHCB1/b1_inj/"
+@ Compensation %s "by model"
+@ Q1 %le 0.2731720602787391
+@ Q2 %le 0.29294607681438123
+*                   IP             BETASTAR          ERRBETASTAR             PHASEADV          ERRPHASEADV           PHASEDVMDL                LSTAR
+$                   %s                  %le                  %le                  %le                  %le                  %le                  %le
+                   IP1        11.3970310943      0.0458655029133       0.345282384377    0.000529099935763           0.35016498              21.5715
+                   IP2        9.80556746195       0.163855946191       0.364326607467     0.00200238822175         0.3616380627               21.595
+                   IP5        10.2046942356       0.147829447522       0.359306468581     0.00178287074958           0.34944069               21.564
+                   IP8        9.69276038202       0.358818342732        0.36570786476      0.0044021241614           0.36182426               21.595

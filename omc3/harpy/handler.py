@@ -1,9 +1,10 @@
 """
-handler
----------------------
+Handler
+-------
 
-Handles the cleaning, frequency analysis and resonance search for a single-bunch TbtData.
-
+This module contains high-level functions to manage most functionality of ``harpy``.
+Tools are provided to handle the cleaning, frequency analysis and resonance search for a
+single-bunch `TbtData`.
 """
 from collections import OrderedDict
 from os.path import basename, join
@@ -15,28 +16,29 @@ import tfs
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES, PLANE_TO_NUM as P2N
 from omc3.harpy import clean, frequency, kicker
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.harpy.constants import (FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT,
+                                  COL_NAME, COL_TUNE, COL_AMP, COL_MU,
+                                  COL_NATTUNE, COL_NATAMP, COL_PHASE, COL_ERR)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.get_logger(__name__)
 ALL_PLANES = (*PLANES, "Z")
 PLANE_TO_NUM = {**P2N, "Z": 3}
-ERR = "ERR"
 
 
 def run_per_bunch(tbt_data, harpy_input):
     """
-    Cleans data, analyses frequencies and searches resonances
+    Cleans data, analyses frequencies and searches for resonances.
 
     Args:
-        tbt_data: single bunch TbtData
-        harpy_input: Analysis settings
+        tbt_data: single bunch `TbtData`.
+        harpy_input: Analysis settings taken from the commandline.
 
     Returns:
-        Dictionary of TfsDataFrames per plane
+        Dictionary with a `TfsDataFrame` per plane.
     """
-    model = None if harpy_input.model is None else tfs.read(harpy_input.model, index="NAME").loc[:, 'S']
+    model = None if harpy_input.model is None else tfs.read(harpy_input.model, index=COL_NAME).loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
     output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
@@ -64,8 +66,8 @@ def run_per_bunch(tbt_data, harpy_input):
         if harpy_input.is_free_kick:
             lins[plane] = kicker.phase_correction(bpm_datas[plane], lins[plane], plane)
 
-    measured_tunes = [lins["X"]["TUNEX"].mean(), lins["Y"]["TUNEY"].mean(),
-                      lins["X"]["TUNEZ"].mean() if tune_estimates[2] > 0 else 0]
+    measured_tunes = [lins["X"][f"{COL_TUNE}X"].mean(), lins["Y"][f"{COL_TUNE}Y"].mean(),
+                      lins["X"][f"{COL_TUNE}Z"].mean() if tune_estimates[2] > 0 else 0]
 
     for plane in PLANES:
         lins[plane] = lins[plane].join(frequency.find_resonances(
@@ -94,7 +96,7 @@ def _scale_to_meters(bpm_data, unit):
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
     lin_frame = pd.DataFrame(index=bpm_data.index.to_numpy(),
-                             data=OrderedDict([("NAME", bpm_data.index.to_numpy()),
+                             data=OrderedDict([(COL_NAME, bpm_data.index.to_numpy()),
                                                ("S", np.arange(bpm_data.index.size) if model is None
                                                else model.loc[bpm_data.index])]))
     lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
@@ -116,19 +118,19 @@ def _add_calculated_phase_errors(lin_frame):
     noise = lin_frame.loc[:, 'NOISE'].to_numpy()
     if np.max(noise) == 0.0:
         return lin_frame   # Do not calculated errors when no noise was calculated
-    for name_root in ('MU', 'PHASE'):
+    for name_root in (COL_MU, COL_PHASE):
         cols = [col for col in lin_frame.columns.to_numpy() if name_root in col]
         for col in cols:
-            lin_frame[f"{ERR}{col}"] = _get_spectral_phase_error(
-                lin_frame.loc[:, f"{col.replace(name_root, 'AMP')}"], noise)
+            lin_frame[f"{COL_ERR}{col}"] = _get_spectral_phase_error(
+                lin_frame.loc[:, f"{col.replace(name_root, COL_AMP)}"], noise)
     return lin_frame
 
 
 def _get_spectral_phase_error(amplitude, noise):
     """
     When the error is too big (> 2*pi*0.25 more or less) the noise is not Gaussian anymore.
-    In such a case the distribution is almost uniform, so we set the error to be 0.3,
-    which is the standard deviation of uniformly distributed phases.
+    In such a case the distribution is almost uniform, so we set the error to be 0.3, which is
+    the standard deviation of uniformly distributed phases.
     This approximation does not bias the error by more than 20%, and that is only for large errors.
     """
     error = noise / (np.where(amplitude > 0.0, amplitude, 1e-15) * 2 * np.pi)
@@ -136,13 +138,14 @@ def _get_spectral_phase_error(amplitude, noise):
 
 
 def _sync_phase(lin_frame, plane):
-    """ Produces MUXSYNC and MUYSYNC column that is MUX/Y but shifted such that for bpm at index 0
-     is always 0. It allows to compare phases of consecutive measurements and if some measurements
-     stick out remove them from the data set. author: skowron
     """
-    phase = lin_frame.loc[:, f"MU{plane}"].to_numpy()
+    Produces ``MUXSYNC`` and ``MUYSYNC`` columns that are ``MUX/MUY`` but shifted such that for
+    BPM at index 0 is always 0. It allows to compare phases of consecutive measurements and if
+    some measurements stick out remove them from the data set. Original author is **skowron**.
+    """
+    phase = lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy()
     phase = phase - phase[0]
-    lin_frame[f"MU{plane}SYNC"] = np.where(np.abs(phase) > 0.5, phase - np.sign(phase), phase)
+    lin_frame[f"{COL_MU}{plane}SYNC"] = np.where(np.abs(phase) > 0.5, phase - np.sign(phase), phase)
     return lin_frame
 
 
@@ -151,7 +154,7 @@ def _compute_headers(panda, date):
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
             try:
-                bpm_tunes = panda.loc[:, f"{prefix}TUNE{plane}"]
+                bpm_tunes = panda.loc[:, f"{prefix}{COL_TUNE}{plane}"]
             except KeyError:
                 pass
             else:
@@ -185,24 +188,24 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
-    cols = [col for col in panda.columns.to_numpy() if col.startswith('AMP')]
-    cols.remove(f"AMP{plane}")
-    panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"AMP{plane}"], axis="index")
-    amps = panda.loc[:, f"AMP{plane}"].to_numpy()
+    cols = [col for col in panda.columns.to_numpy() if col.startswith(COL_AMP)]
+    cols.remove(f"{COL_AMP}{plane}")
+    panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"{COL_AMP}{plane}"], axis="index")
+    amps = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy()
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
     # TODO  later remove
-    panda[f"AMP{plane}"] = panda.loc[:, f"AMP{plane}"].to_numpy() / 2
-    if f"NATAMP{plane}" in panda.columns:
-        panda[f"NATAMP{plane}"] = panda.loc[:, f"NATAMP{plane}"].to_numpy() / 2
+    panda[f"{COL_AMP}{plane}"] = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy() / 2
+    if f"{COL_NATAMP}{plane}" in panda.columns:
+        panda[f"{COL_NATAMP}{plane}"] = panda.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
 
     if np.max(panda.loc[:, 'NOISE'].to_numpy()) == 0.0:
         return panda  # Do not calculated errors when no noise was calculated
     noise_scaled = panda.loc[:, 'NOISE'] / amps
     panda.loc[:, "NOISE_SCALED"] = noise_scaled
-    panda.loc[:, f"{ERR}AMP{plane}"] = panda.loc[:, 'NOISE']
-    if f"NATTUNE{plane}" in panda.columns:
-        panda.loc[:, f"{ERR}NATAMP{plane}"] = panda.loc[:, 'NOISE']
+    panda.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = panda.loc[:, 'NOISE']
+    if f"{COL_NATTUNE}{plane}" in panda.columns:
+        panda.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = panda.loc[:, 'NOISE']
     for col in cols:
         this_amp = panda.loc[:, col]
-        panda.loc[:, f"{ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
+        panda.loc[:, f"{COL_ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
     return panda

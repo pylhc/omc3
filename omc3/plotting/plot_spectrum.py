@@ -1,26 +1,25 @@
 """
 Plot Spectrum
---------------------
+-------------
 
 Spectrum plotter for frequency analysis output-data (supports also DRIVE output).
 
 The spectra can be either plotted as `stem`-plots or as `waterfall`-plots.
-The stem-plots can be in any combination: split by given files, split by given
-bpms or combined in any way (by usage of the `combine_by` option).
-Note that if both of those are false (as is default)
-there will anyway be only one waterfall plot per given input file.
+The stem-plots can be in any combination: split by given files, split by given bpms or combined
+in any way (by usage of the `combine_by` option).
+Note that if both of those are false (as is default) there will anyway be only one waterfall plot
+per given input file.
 
 
-In case of split-by-file, plots are saved in a sub-directory of
-the given `output_dir` with the name of the original TbT file.
+In case of split-by-file, plots are saved in a sub-directory of the given `output_dir` with the
+name of the original TbT file.
 In case of split by bpm the plots will have the bpm-name in their filename.
 
 
-The `lines_tunes` and `lines_nattunes` lists accept tuples of multipliers for
-the respective tunes, which define the resonance lines plotted into the
-spectrum as well. A dashed line will indicate the average of all tunes
-given in the data of one figure, while a semi-transparent area will indicate
-min- and max- values of this line.
+The `lines_tunes` and `lines_nattunes` lists accept tuples of multipliers for the respective
+tunes, which define the resonance lines plotted into the spectrum as well. A dashed line will
+indicate the average of all tunes given in the data of one figure, while a semi-transparent area
+will indicate min- and max- values of this line.
 
 With `lines_manual`, one can plot vertical lines at manual locations (see
 parameter specs below).
@@ -99,7 +98,6 @@ one figure is used.
 - **ylim** *(float)*: Limits on the y axis (Tupel)
 
   Default: ``[1e-09, 1.0]``
-
 """
 import os
 from collections import OrderedDict
@@ -115,11 +113,12 @@ from matplotlib import cm
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
 from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
-                                          MANUAL_LOCATIONS, LOG,
+                                          LOG,
                                           FigureCollector, get_unique_filenames,
                                           filter_amps, get_bpms, get_stem_id,
                                           get_waterfall_id, get_data_for_bpm,
                                           load_spectrum_data)
+from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.utils import logging_tools
 
@@ -127,8 +126,10 @@ LOG = logging_tools.getLogger(__name__)
 
 
 def get_reshuffled_tab20c():
-    """ Reshuffel tab20c so that the colors change between next lines.
-    Needs to be up here as it is used in DEFAULTS which is loaded early."""
+    """
+    Reshuffel tab20c so that the colors change between next lines.
+    Needs to be up here as it is used in ``DEFAULTS`` which is loaded early.
+    """
     tab20c = cm.get_cmap('tab20c').colors
     out = [None] * 20
     step, chunk = 4, 5
@@ -217,8 +218,9 @@ def get_params():
                          default=[],
                          type=DictAsString,
                          help='List of manual lines to plot. Need to contain arguments for axvline, and may contain '
-                              f'the additional key "loc" which is one of {list(MANUAL_LOCATIONS.keys())} '
-                              'and places the label as text at the given location.')
+                              'the additional keys "text" and "loc" which is one of '
+                              f'{list(VERTICAL_LINES_TEXT_LOCATIONS.keys())} and places the text at the given location.'
+                         )
     params.add_parameter(name="xlim",
                          nargs=2,
                          type=float,
@@ -344,7 +346,7 @@ def _save_options_to_config(opt):
 
 
 def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
-    """ Load and sort input data by file and bpm and assign correct figure-containers. """
+    """Load and sort input data by file and bpm and assign correct figure-containers."""
     LOG.debug("Sorting input data.")
 
     stem_figs = FigureCollector()
@@ -352,6 +354,7 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
 
     # Data Sorting
     for file_path, filename in get_unique_filenames(opt.files):
+        filename = "_".join(filename)
         LOG.info(f"Loading data for file '{filename}'.")
 
         data = load_spectrum_data(file_path, opt.bpms)
@@ -374,7 +377,7 @@ def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
 
 
 def _get_all_bpms(bpms_dict):
-    """ Returns a union of all bpms for both planes """
+    """Returns a union of all bpms for both planes."""
     return set.union(*[set(v) for v in bpms_dict.values()])
 
 

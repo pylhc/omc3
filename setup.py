@@ -1,36 +1,6 @@
 import pathlib
-import shlex
-import sys
 
 import setuptools
-from setuptools.command.test import test as TestCommand
-
-
-class PyTest(TestCommand):
-    """ Allows passing commandline arguments to pytest.
-
-        e.g. `python setup.py test -a='-o python_classes=BasicTests'`
-        or   `python setup.py pytest -a '-o python_classes="BasicTests ExtendedTests"'
-        or   `python setup.py test --pytest-args='--collect-only'`
-
-    """
-    user_options = [('pytest-args=', 'a', "Arguments to pass into pytest")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = ''
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-
-        # shlex.split() preserves quotes
-        errno = pytest.main(shlex.split(self.pytest_args))
-        sys.exit(errno)
 
 
 # The directory containing this file
@@ -50,22 +20,21 @@ with README.open("r") as docs:
 DEPENDENCIES = [
     "matplotlib>=3.2.0",
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
-    "numpy>=1.18.0",
-    "pandas==0.25.*",
-    "scipy>=1.4.0",
-    "scikit-learn>=0.22.0",
-    "tfs-pandas>=1.0.3",
+    "numpy>=1.19.0",
+    "pandas>=1.0",
+    "scipy>=1.5.0",
+    "scikit-learn>=0.23.0",
+    "tfs-pandas>=2.0",
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
-    "pytz>=2018.9",
     "h5py>=2.9.0",
-    "pytimber>=2.8.0",
+    "uncertainties>=3.1.4",
 ]
 
 # Extra dependencies
 EXTRA_DEPENDENCIES = {
-    "setup": [
-        "pytest-runner"
+    "cern": [
+        "pytimber>=2.8.0",
     ],
     "test": [
         "pytest>=5.2",
@@ -94,23 +63,22 @@ setuptools.setup(
     author_email=ABOUT_OMC3["__author_email__"],
     url=ABOUT_OMC3["__url__"],
     packages=setuptools.find_packages(exclude=["tests*", "doc"]),
-    python_requires=">=3.6",
+    include_package_data=True,
+    python_requires=">=3.7",
     license=ABOUT_OMC3["__license__"],
-    cmdclass={'pytest': PyTest},  # pass test arguments
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering :: Physics",
         "Topic :: Scientific/Engineering :: Visualization",
     ],
     install_requires=DEPENDENCIES,
     tests_require=EXTRA_DEPENDENCIES['test'],
-    setup_requires=EXTRA_DEPENDENCIES['setup'],
     extras_require=EXTRA_DEPENDENCIES,
 )

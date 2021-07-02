@@ -1,0 +1,36 @@
+/******************************************************************************************
+ * TWISS
+ ******************************************************************************************/
+
+
+/************************************************************
+ * MAD uses pt as the 5th variable NOT delta-p.
+ * The result is that all derivatives are with repect to pt.
+ * This is the reason for the non-standard dispersion values
+ * for non-relativistic machines, like the PSB
+ ************************************************************/
+ select, flag=twiss, clear;
+ select, flag=twiss, pattern="^PR.*BPM",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ twiss, chrom, DELTAP = %(DPP)s , sequence=PS, file="%(OUTPUT)s/twiss.dat";
+
+ select, flag=twiss, clear;
+ select, flag=twiss,column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ twiss, chrom, DELTAP = %(DPP)s , sequence=PS, file="%(OUTPUT)s/twiss_elements.dat";
+
+!  AC Dipole i
+ ac_s = %(USE_ACD)s;
+ 
+ if (ac_s == 1) {
+
+      betxac = table(twiss, hacmap, betx);
+      betyac = table(twiss, vacmap, bety);
+     
+      hacmap21 := ac_s * (2*(cos(2*pi*Qxd)-cos(2*pi*Qx))/(betxac*sin(2*pi*Qx)));
+      vacmap43 := 2*(cos(2*pi*Qyd)-cos(2*pi*Qy))/(betyac*sin(2*pi*Qy));
+
+      value, betxac, betyac;
+      
+      select, flag=twiss, clear;
+      select, flag=twiss, pattern="^PR.*BPM",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+      twiss, centre, DELTAP = 0, sequence=PS, file="%(OUTPUT)s/twiss_ac.dat";
+ }

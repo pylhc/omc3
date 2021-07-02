@@ -12,7 +12,7 @@ for free motion and for driven motion. The twisses should contain the chromatic 
 """
 from collections import OrderedDict
 from datetime import datetime
-from os.path import join
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -33,7 +33,8 @@ NAT_OVER_DRV = 0.01
 MAGIC_NUMBER = 6   # SVD cleaning effect + main lobe size effect
 COUPLING = 0.1
 
-def optics_measurement_test_files(modeldir, dpps, motion):
+
+def optics_measurement_test_files(modeldir, dpps, motion, beam_direction):
     """
 
     Args:
@@ -43,15 +44,19 @@ def optics_measurement_test_files(modeldir, dpps, motion):
     Returns:
 
     """
+    if beam_direction not in (-1, 1):
+        raise ValueError("Beam direction has to be either 1 or -1")
     model, tune, nattune = get_combined_model_and_tunes(modeldir)
     lins = []
-    np.random.seed(12345678)
     for dpp_value in dpps:
-        lins.append(generate_lin_files(model, tune, nattune, MOTION[motion], dpp=dpp_value))
+        lins.append(
+            generate_lin_files(model, tune, nattune, MOTION[motion],
+                               dpp=dpp_value, beam_direction=beam_direction)
+        )
     return lins
 
 
-def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0):
+def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0, beam_direction=1):
     nbpms = len(model.index.to_numpy())
     lins = {}
     for plane in PLANES:
@@ -65,18 +70,18 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0):
         lin[f"NATTUNE{plane}"] = nattune[plane] + (ERRTUNE / np.sqrt(NAT_OVER_DRV)) * np.random.randn(nbpms)
         lin[f"MU{plane}"] = np.remainder(model.loc[:, f"MU{plane}{motion}"]
                                          + dpp * model.loc[:, f"DMU{plane}{motion}"]
-                                         + (noise_freq_domain / (2 * np.pi)) *np.random.randn(nbpms) + np.random.rand(), 1)
+                                         + (noise_freq_domain / (2 * np.pi)) *np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
         lin[f"ERRMU{plane}"] = noise_freq_domain / (2 * np.pi)
         lin[f"AMP{plane}"] = np.sqrt(model.loc[:, f"BET{plane}{motion}"] * ACTION *
                                      (1 + dpp * np.sin(2 * np.pi * model.loc[:, f"PHI{plane}{motion}"])
                                       * model.loc[:, f"W{plane}{motion}"])) + noise_freq_domain * np.random.randn(nbpms)
 
         lin[f"NATMU{plane}"] = np.remainder(model.loc[:, f"MU{plane}{MOTION['free']}"]
-                                            + (NAT_OVER_DRV * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1)
+                                            + (NAT_OVER_DRV * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
         lin[f"NATAMP{plane}"] = NAT_OVER_DRV * np.sqrt(ACTION * model.loc[:, f"BET{plane}{MOTION['free']}"]) + noise_freq_domain * np.random.randn(nbpms)
 
         lin[f"PHASE{COUP[plane]}"] = np.remainder(model.loc[:, f"MU{OTHER[plane]}{motion}"] + dpp * model.loc[:, f"DMU{OTHER[plane]}{motion}"]
-                                                  + (COUPLING * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1)
+                                                  + (COUPLING * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
         lin[f"AMP{COUP[plane]}"] = COUPLING * np.sqrt(ACTION *model.loc[:, f"BET{OTHER[plane]}{motion}"]
                                                   * (1 + dpp * np.sin(model.loc[:, f"PHI{OTHER[plane]}{motion}"]) * model.loc[:, f"W{OTHER[plane]}{motion}"])) + COUPLING * noise_freq_domain * np.random.randn(nbpms)
 
@@ -88,9 +93,9 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0):
     return lins
 
 
-def get_combined_model_and_tunes(model_dir):
-    free = tfs.read(join(model_dir, 'twiss.dat'))
-    driven = tfs.read(join(model_dir, 'twiss_ac.dat'))
+def get_combined_model_and_tunes(model_dir: Path):
+    free = tfs.read(model_dir / 'twiss.dat')
+    driven = tfs.read(model_dir / 'twiss_ac.dat')
     nattune = {"X": np.remainder(free.headers['Q1'], 1), "Y": np.remainder(free.headers['Q2'], 1)}
     tune = {"X": np.remainder(driven.headers['Q1'], 1), "Y": np.remainder(driven.headers['Q2'], 1)}
     model = pd.merge(free, driven, how='inner', on='NAME', suffixes=MOTION.values())
@@ -99,10 +104,10 @@ def get_combined_model_and_tunes(model_dir):
 
 
 def _get_header(tunes, nattunes, plane):
-    header = OrderedDict()
-    header[f"Q{PLANE_TO_NUM[plane]}"] = tunes[plane]
-    header[f"Q{PLANE_TO_NUM[plane]}RMS"] = 1e-7
-    header[f"NATQ{PLANE_TO_NUM[plane]}"] = nattunes[plane]
-    header[f"NATQ{PLANE_TO_NUM[plane]}RMS"] = 1e-6
-    header["TIME"] = datetime.utcnow().strftime(formats.TIME)
-    return header
+    return {
+        f"Q{PLANE_TO_NUM[plane]}": tunes[plane],
+        f"Q{PLANE_TO_NUM[plane]}RMS": 1e-7,
+        f"NATQ{PLANE_TO_NUM[plane]}": nattunes[plane],
+        f"NATQ{PLANE_TO_NUM[plane]}RMS": 1e-6,
+        "TIME": datetime.utcnow().strftime(formats.TIME),
+    }

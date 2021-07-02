@@ -1,12 +1,8 @@
 """
-Module tune_analysis.kickac_modifiers
---------------------------------------
+Kick File Modifiers
+-------------------
 
-Functions to add data to or extract data from kick_ac files.
-
-:module: omc3.tune_analysis.kick_file_modifiers
-:author: jdilly
-
+Functions to add data to or extract data from **kick_ac** files.
 """
 import os
 
@@ -33,14 +29,14 @@ LOG = logging_tools.get_logger(__name__)
 
 
 def _get_odr_headers(corrected):
-    """ Return Headers needed for ODR. """
+    """Return Headers needed for ODR."""
     if corrected:
         return get_odr_header_coeff_corrected, get_odr_header_err_coeff_corrected
     return get_odr_header_coeff, get_odr_header_err_coeff
 
 
 def _get_ampdet_columns(corrected):
-    """ Get columns needed for amplitude detuning """
+    """Get columns needed for amplitude detuning."""
     if corrected:
         return get_natq_corr_col, get_corr_natq_err_col
     return get_natq_col, get_natq_err_col
@@ -50,15 +46,17 @@ def _get_ampdet_columns(corrected):
 
 
 def add_bbq_data(kick_df, bbq_series, column):
-    """ Add bbq values from series to kickac dataframe into column.
+    """
+    Add BBQ values from series to kickac dataframe into column.
 
     Args:
-        kick_df: kick dataframe (needs to have time as index, best load it with `read_timed_dataframe()`)
-        bbq_series: series of bbq data with time as index
-        column: column name to add the data into
+        kick_df: kick `dataframe`, which needs to have time as index, best load it with
+            ``read_timed_dataframe()``.
+        bbq_series: `Series` of bbq data with time as index.
+        column: column name to add the data into.
 
-    Returns: modified kick dataframe
-
+    Returns:
+        Modified kick `Dataframe`.
     """
     kick_indx = get_timestamp_index(kick_df.index)
     bbq_indx = get_timestamp_index(bbq_series.index)
@@ -71,7 +69,7 @@ def add_bbq_data(kick_df, bbq_series, column):
 
 
 def add_moving_average(kickac_df, bbq_df, filter_args):
-    """ Adds the moving average of the bbq data to kickac_df and bbq_df. """
+    """Adds the moving average of the bbq data to kickac_df and bbq_df."""
     LOG.debug("Calculating moving average.")
     for idx, plane in enumerate(PLANES):
         if filter_args.bbq_filtering_method == 'outliers':
@@ -97,13 +95,14 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
 
 
 def add_corrected_natural_tunes(kickac_df):
-    """ Adds the corrected natural tunes to kickac
+    """
+    Adds the corrected natural tunes to ``kickac_df``.
 
     Args:
-        kickac_df: Dataframe containing the data
+        kickac_df: `Dataframe` containing the data.
 
     Returns:
-        Modified kick_ac
+        Modified kick_ac.
     """
     for plane in PLANES:
         kickac_df[get_natq_corr_col(plane)] = (
@@ -113,17 +112,18 @@ def add_corrected_natural_tunes(kickac_df):
 
 
 def add_odr(kickac_df, odr_fit, action_plane, tune_plane, corrected=False):
-    """ Adds the odr fit of the (un)corrected data to the header of the kickac.
+    """
+    Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.
 
     Args:
-        kickac_df: Dataframe containing the data
-        odr_fit: odr-fit data (definitions see ``detuning_tools.py``)
-        action_plane: Plane of the action
-        tune_plane: Plane of the tune
-        corrected: (BBQ) corrected data or uncorrected fit?
+        kickac_df: `Dataframe` containing the data.
+        odr_fit: odr-fit data (definitions see ``detuning_tools.py``).
+        action_plane: Plane of the action.
+        tune_plane: Plane of the tune.
+        corrected: (BBQ) corrected data or uncorrected fit?.
 
     Returns:
-        Modified kick_ac
+        Modified kick_ac.
     """
     header_val, header_err = _get_odr_headers(corrected)
     for idx in range(len(odr_fit.beta)):
@@ -133,15 +133,16 @@ def add_odr(kickac_df, odr_fit, action_plane, tune_plane, corrected=False):
 
 
 def add_total_natq_std(kickac_df):
-    """ Add the total standard deviation of the natural tune to the kickac.
-    The total standard deviation is here defined as the standard deviation of the measurement
-    plus the standard deviation of the moving average.
+    """
+    Add the total standard deviation of the natural tune to the kickac. The total standard
+    deviation is here defined as the standard deviation of the measurement plus the standard
+    deviation of the moving average.
 
     Args:
-        kickac_df: Dataframe containing the data
+        kickac_df: `Dataframe` containing the data.
 
     Returns:
-        Modified kick_ac
+        Modified kick_ac.
     """
     for plane in PLANES:
         kickac_df[get_corr_natq_err_col(plane)] = np.sqrt(
@@ -155,18 +156,18 @@ def add_total_natq_std(kickac_df):
 
 
 def get_odr_data(kickac_df, action_plane, tune_plane, order, corrected=False):
-    """ Extract the data from kickac.
+    """
+    Extract the data from kickac.
 
     Args:
-        kickac_df: Dataframe containing the data
-        action_plane: Plane of the action
-        tune_plane: Plane of the tune
-        order: Order of the odr fit
+        kickac_df: `Dataframe` containing the data.
+        action_plane: Plane of the action.
+        tune_plane: Plane of the tune.
+        order: Order of the odr fit.
         corrected: (BBQ) corrected data or uncorrected fit?
 
     Returns:
-        Dictionary containing fit data from odr
-
+        `Dictionary` containing fit data from odr.
     """
 
     header_val, header_err = _get_odr_headers(corrected)
@@ -178,18 +179,16 @@ def get_odr_data(kickac_df, action_plane, tune_plane, order, corrected=False):
 
 
 def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
-    """ Extract the data needed for the (un)corrected amplitude detuning
-    from the kickac dataframe.
+    """
+    Extract the data needed for the (un)corrected amplitude detuning from ``kickac_df``.
 
     Args:
-        kickac_df: Dataframe containing the data
-        action_plane: Plane of the action
-        tune_plane: Plane of the tune
-
+        kickac_df: `Dataframe` containing the data.
+        action_plane: Plane of the action.
+        tune_plane: Plane of the tune.
 
     Returns:
-        Dataframe containing action, tune, action_err and tune_err
-
+        `Dataframe` containing action, tune, action_err and tune_err.
     """
     col_natq, col_natq_std = _get_ampdet_columns(corrected)
 

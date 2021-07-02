@@ -1,3 +1,10 @@
+"""
+Toolbox
+-------
+
+This module contains helper functionality for ``optics_measurements``.
+It provides functions to perform regularly used simple calculations.
+"""
 import numpy as np
 
 

@@ -1,15 +1,15 @@
 """
-Entrypoint Amplitude Detuning Analysis
-------------------------------------------------
+Amplitude Detuning Analysis
+---------------------------
 
 Entrypoint for amplitude detuning analysis.
 
-This module provides functionality to run amplitude detuning analysis with
-additionally getting BBQ data from timber, averaging and filtering this data and
-subtracting it from the measurement data.
+This module provides functionality to run amplitude detuning analysis with additionally getting
+BBQ data from timber, averaging and filtering this data and subtracting it from the measurement
+data.
 
-Furthermore, the orthogonal distance regression is utilized to get a
-linear or quadratic fit from the measurements.
+Furthermore, the orthogonal distance regression is utilized to get a linear or quadratic fit from
+the measurements.
 
 
 **Arguments:**
@@ -31,9 +31,9 @@ linear or quadratic fit from the measurements.
 
   Choices: ``['cut', 'minmax', 'outliers']``
   Default: ``outliers``
-- **bbq_in**: Fill number of desired data to extract from timber
-  or path to presaved bbq-tfs-file. Use the string 'kick' to use the timestamps
-  in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.
+- **bbq_in**: Fill number of desired data to extract from ``Timber`` (requires installing with the [cern]
+  extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string 'kick' to use the
+  timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.
 
 - **debug**: Activates Debug mode
 
@@ -63,9 +63,6 @@ linear or quadratic fit from the measurements.
 - **window_length** *(int)*: Length of the moving average window. (# data points)
 
   Default: ``20``
-
-
-:author: Joschua Dilly
 """
 import os
 from collections import OrderedDict
@@ -84,6 +81,7 @@ from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     read_two_kick_files_from_folder
                                                     )
 from omc3.utils.logging_tools import get_logger, list2str, DebugMode
+
 
 # Globals ----------------------------------------------------------------------
 
@@ -194,9 +192,7 @@ def _get_params():
 
 @entrypoint(_get_params(), strict=True)
 def analyse_with_bbq_corrections(opt):
-    """ Create amplitude detuning analysis with BBQ correction from timber data.
-
-     """
+    """Create amplitude detuning analysis with BBQ correction from timber data."""
     LOG.info("Starting Amplitude Detuning Analysis")
     _save_options(opt)
 
@@ -248,8 +244,9 @@ def analyse_with_bbq_corrections(opt):
 
 
 def get_approx_bbq_interval(bbq_df, time_array, window_length):
-    """ Get data in approximate time interval,
-    for averaging based on window length and kick interval """
+    """
+    Get data in approximate time interval, for averaging based on window length and kick interval.
+    """
     bbq_tmp = bbq_df.dropna()
 
     # convert to float to use math-comparisons
@@ -266,7 +263,7 @@ def get_approx_bbq_interval(bbq_df, time_array, window_length):
 
 
 def _check_analyse_opt(opt):
-    """ Perform manual checks on opt-sturcture """
+    """Perform manual checks on opt-sturcture."""
     LOG.debug("Checking Options.")
 
     # for label
@@ -316,7 +313,7 @@ def _check_analyse_opt(opt):
 
 
 def _get_bbq_data(beam, input_, kick_df):
-    """ Return bbq data from input, either file or timber fill """
+    """Return BBQ data from input, either file or timber fill."""
     try:
         fill_number = int(input_)
     except ValueError:
@@ -324,8 +321,8 @@ def _get_bbq_data(beam, input_, kick_df):
         if input_ == "kick":
             LOG.debug("Getting timber data from kick-times.")
             timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
-            t_start = min(kick_df.index.values)
-            t_end = max(kick_df.index.values)
+            t_start = min(kick_df.index.to_numpy())
+            t_end = max(kick_df.index.to_numpy())
             data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME,
                                                         keys=timber_keys,
                                                         names=dict(zip(timber_keys, bbq_cols)))

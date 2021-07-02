@@ -1,11 +1,9 @@
 """
-Phase advance
-----------------
+Phase Advance
+-------------
 
-:module: optics_measurements.phase
-:author: Lukas Malina
-
-Computes betatron phase advances and provides structures to store them.
+This module contains phase calculation functionality of ``optics_measurements``.
+It provides functions to compute betatron phase advances and structures to store them.
 """
 from os.path import join
 import numpy as np
@@ -37,22 +35,21 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
 
 def _calculate_with_compensation(meas_input, input_files, tunes, plane, compensation='none', no_errors=False):
     """
-    Calculates phase advances
+    Calculates phase advances.
 
-    Parameters:
-        meas_input: the input object including settings and the accelerator class
-        input_files: includes measurement tfs
-        tunes: TunesDict object containing measured and model tunes and ac2bpm object
-        plane: "X" or "Y"
-        no_errors: if True measured errors shall not be propagated (only their spread)
+    Args:
+        meas_input: the input object including settings and the accelerator class.
+        input_files: includes measurement tfs.
+        tunes: `TunesDict` object containing measured and model tunes and ac2bpm object
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+        no_errors: if ``True``, measured errors shall not be propagated (only their spread).
 
     Returns:
-        dictionary of DataFrames indexed (BPMi x BPMj) yielding phase advance phi_ij
+        A `dictionary` of `TfsDataFrames` indexed (BPMi x BPMj) yielding phase advance `phi_ij`.
 
-         - "MEAS" measured phase advances
-         - "ERRMEAS" errors of measured phase advances
-         - "MODEL" model phase advances
-
+         - "MEAS": measured phase advances,
+         - "ERRMEAS": errors of measured phase advances,
+         - "MODEL": model phase advances.
 
         +------++--------+--------+--------+--------+
         |      ||  BPM1  |  BPM2  |  BPM3  |  BPM4  |
@@ -65,7 +62,6 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, compensa
         +------++--------+--------+--------+--------+
         | BPM4 || phi_41 | phi_42 | phi_43 |    0   |
         +------++--------+--------+--------+--------+
-
 
         The phase advance between BPM_i and BPM_j can be obtained via:
         phase_advances["MEAS"].loc[BPMi,BPMj]
@@ -80,13 +76,15 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, compensa
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
+    df[input_files.get_columns(df, f"MU{plane}")] = (input_files.get_data(df, f"MU{plane}")
+                                                     * meas_input.accelerator.beam_direction)
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
     phase_advances = {"MODEL": _get_square_data_frame(
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
     if compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
-    phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
-    if compensation == "equation":
+    phases_meas = input_files.get_data(df, f"MU{plane}")
+    if meas_input.compensation == "equation":
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
     phases_errors = input_files.get_data(df, f"{ERR}MU{plane}")
@@ -224,7 +222,8 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         ])), ignore_index=True)
 
     tfs.write(join(meas_input.outputdir, f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}"), special_phase_df)
-    
+
+
 def _to_deg(phase):  # -90 to 90 degrees
     phase = phase % 0.5 * 360
     if phase < 90:

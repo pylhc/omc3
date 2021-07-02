@@ -1,0 +1,81 @@
+/******************************************************************************************
+*
+* MAD-X File for PS  optics calculations
+*
+*
+*
+******************************************************************************************/
+
+title, "PS Ring lattice";
+
+/******************************************************************************************
+ * beam, use
+ ******************************************************************************************/
+
+beam_Ek=%(KINETICENERGY)s;
+beam_Etot = beam_Ek + pmass;
+beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+
+BEAM, PARTICLE=PROTON, PC = beam_pc;
+BRHO      := BEAM->PC * 3.3356;
+
+/******************************************************************************************
+ * PS 
+ ******************************************************************************************/
+ call, file = '%(FILES_DIR)s/elements/PS.ele';
+ call, file = '%(FILES_DIR)s/sequence/PS.seq';
+ call, file = '%(FILES_DIR)s/strength/elements.str';
+ call, file = '%(FILES_DIR)s/cmd/macros.ptc';
+
+ /*Strength files*/
+%(MODIFIERS)s
+
+/******************************************************************************************
+ * Install AC dipole
+ ******************************************************************************************/
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+ Qxd = %(DRV_TUNE_X)s;
+ Qyd = %(DRV_TUNE_Y)s;
+
+ 
+ hacmap21 = 0;
+ vacmap43 = 0;
+ hacmap: matrix, l=0, rm21 := hacmap21;
+ vacmap: matrix, l=0, rm43 := vacmap43;
+
+ seqedit, sequence=PS;
+  flatten;
+
+  install, element=hacmap, at=0.5, from=PR.KFB97;
+  install, element=vacmap, at=0.5, from=PR.KFB97;
+
+  cycle, start=PS43$START;
+ endedit;
+ 
+ use, sequence=PS;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+
+
+match, use_macro;
+  vary,   name=kf, step=1.0E-6 ;
+  vary,   name=kd, step=1.0E-6 ;
+  
+  !USE_MACRO, name=ptc_twiss_tune_macro;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu1)= Qx;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu2)= Qy;
+  
+  mq: macro
+   {
+     twiss;
+   }
+  CONSTRAINT, expr=  table(summ , q1)= Qx; 
+  CONSTRAINT, expr=  table(summ , q2)= Qy;
+  
+  lmdif,calls=1000,TOLERANCE=1.0E-21;
+ENDMATCH;

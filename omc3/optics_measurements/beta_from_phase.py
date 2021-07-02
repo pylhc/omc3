@@ -1,11 +1,9 @@
 """
-Beta from phase
------------------
+Beta from Phase
+--------------------
 
-:module: optics_measurements.beta_from_phase
-:author: Viktor Maier, Andreas Wegscheider, Lukas Malina
-
-Computes betas and alphas from phase advances.
+This module contains some of the beta calculation related functionality of ``optics_measurements``.
+It provides functions to calculate beta and alpha functions from phase advance data.
 """
 import os
 import re
@@ -36,17 +34,17 @@ METH_NO_ERR = "No Errors"
 
 def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     """
-    Calculates betas and alphas from phase advances
+    Calculates betas and alphas from phase advances.
 
     Args:
-        meas_input: OpticsInput object
-        tunes: TuneDict contains measured tunes
-        phase_dict: contains measured phase advances
-        header_dict:  dictionary of header items common for all output files
-        plane: plane
+        meas_input: `OpticsInput` object
+        tunes: `TuneDict` contains measured tunes.
+        phase_dict: contains measured phase advances.
+        header_dict:  dictionary of header items common for all output files.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        BetaDict object containing specific TfsDataFrames with results
+        `BetaDict` object containing specific `TfsDataFrame` with results.
     """
     meas_and_model_tunes = (tunes[plane]["Q"], tunes[plane]["QM"] % 1) \
         if meas_input.compensation == "none" else (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
@@ -70,17 +68,17 @@ def write(beta_df, header, outputdir, plane):
 
 def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     """
-    Calculates betas and alphas from using all BPM combination within range_of_bpms,
-    it also accounts for systematic errors
+    Calculates betas and alphas from using all BPM combination within **range_of_bpms**. It also
+    accounts for systematic errors
 
     Args:
-        meas_input: Optics measurement configuration object
-        phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
-        plane: plane either X or Y
-        meas_and_mdl_tunes: measured and model tunes
+        meas_input: Optics measurement configuration object.
+        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+        meas_and_mdl_tunes: measured and model tunes.
 
     Returns:
-        tfs.DataFrame containing betas and alfas from phase
+        `TfsDataFrame` containing betas and alfas from phase.
     """
     elements, error_method = get_elements_with_errors(meas_input, plane)
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
@@ -189,10 +187,11 @@ def calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_
                                                  cot_meas, outer_meas_phase_adv, probed_bpm_name,
                                                  betmdl1, alfmdl1, range_of_bpms):
     """
-    Calculates beta and alpha function as well as the respective covariance matrix lines for the
-    given BPM combination (triplet)
+    Calculates beta and alpha functions as well as the respective covariance matrix lines for the
+    given BPM combination (triplet).
+
     Args:
-        c: relative indices of other two BPMs wrt probed one
+        c: relative indices of other two BPMs wrt probed one.
         sin_squared_elements:
         outer_elmts:
         cot_model:
@@ -297,14 +296,13 @@ def _covariant_weighting(mat, col):
 
 def _assign_uncertainties(twiss_full, errordefspath):
     """
-    Adds uncertainty information to twiss_full.
+    Adds uncertainty information to ``twiss_full``.
 
     Sources of Errors:
-        dK1:    quadrupolar field errors
-        dS:     quadrupole longitudinal misalignments
-        dX:     sextupole transverse misalignments
-        BPMdS:  BPM longitudinal misalignments
-
+        ``dK1``:    quadrupolar field errors.
+        ``dS``:     quadrupole longitudinal misalignments.
+        ``dX``:     sextupole transverse misalignments.
+        ``BPMdS``:  BPM longitudinal misalignments.
     """
     LOGGER.debug("Start creating uncertainty information")
     errdefs = tfs.read(errordefspath)
@@ -349,8 +347,7 @@ def _get_header(header_dict, error_method, range_of_bpms, rmsbb):
 
 def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     """
-    Calculates betas and alphas from using adjacent BPMs (3 combiantion)
-
+    Calculates betas and alphas from using adjacent BPMs (3 combination).
     ``phase["MEAS"]``, ``phase["MODEL"]``, ``phase["ERRMEAS"]`` (from ``get_phases``) are of the
     form:
 
@@ -364,7 +361,7 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     |   BPM3   |  phi_13  |  phi_23  |    0     |  phi_43  |
     +----------+----------+----------+----------+----------+
 
-    aa ``tilt_slice_matrix(matrix, shift, slice, tune)`` brings it into the form:
+    and ``tilt_slice_matrix(matrix, shift, slice, tune)`` brings it into the form:
 
     +-----------+--------+--------+--------+--------+
     |           |  BPM1  |  BPM2  |  BPM3  |  BPM4  |
@@ -388,20 +385,19 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     |  cot(phi_13) - cot(phi_12)  |  cot(phi_24) - cot(phi_23)  |   cot(phi_35) - cot(phi_34) |
     +-----------------------------+-----------------------------+-----------------------------+
 
-    for the combination xxxABBx: first row
-    for the combinstion xBBAxxx: fourth row and
-    for the combination xxBABxx: second row of ``cot_phase_*_shift2``
+    - for the combination xxxABBx: first row,
+    - for the combinstion xBBAxxx: fourth row,
+    - for the combination xxBABxx: second row of ``cot_phase_*_shift2``.
 
     Args:
-        meas_input: Optics measurement configuration object
-        phase: phase matrices of measurement with errors and model tfs (bpm x bpm)
-        plane: plane either X or Y
-        meas_and_mdl_tunes: measured  and model tunes
+        meas_input: Optics measurement configuration object.
+        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+        meas_and_mdl_tunes: measured  and model tunes.
 
     Returns:
-        tfs.DataFrame containing betas and alfas from phase
-
-        """
+        `TfsDataFrame` containing betas and alfas from phase.
+    """
     tune, mdltune = meas_and_mdl_tunes
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     # tilt phase advances in order to have the phase advances in a neighbourhood
@@ -465,7 +461,7 @@ def _get_delta_columns(beta_df, plane):
 
 def _tilt_slice_matrix(matrix, slice_shift, slice_width, tune=0):
     """
-    Tilts and slices the ``matrix``
+    Tilts and slices the ``matrix``.
     Tilting means shifting each column upwards one step more than the previous columnns, i.e.
 
     a a a a a       a b c d

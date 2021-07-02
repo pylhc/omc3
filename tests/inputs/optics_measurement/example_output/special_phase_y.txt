@@ -1,0 +1,5 @@
+Special phase advances
+MKD.O5L6.B1 to TCTPH.4L1.B1 MODEL:   0.9294            = -25.40 deg
+MKD.O5L6.B1 to TCTPH.4L1.B1 MEAS :   0.9319  +- 0.0022 = -24.51 +- 0.80 deg (  0.9314 +   0.0005 [BPMYA.5L6.B1, BPMWB.4L1.B1])
+MKD.O5L6.B1 to TCTPH.4L5.B1 MODEL:   0.5644            =  23.18 deg
+MKD.O5L6.B1 to TCTPH.4L5.B1 MEAS :   0.5644  +- 0.0008 =  23.18 +- 0.27 deg (  0.5639 +   0.0004 [BPMYA.5L6.B1, BPMWB.4L5.B1])

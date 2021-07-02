@@ -1,12 +1,10 @@
 """
-Module utils.logging tools
-----------------------------
+Logging Tools
+-------------
 
 Functions for easier use of logging, like automatic logger setup
 (see: :meth:`~utils.logging_tools.get_logger`).
 """
-
-
 import datetime
 import inspect
 import logging
@@ -16,6 +14,7 @@ import time
 import warnings
 from contextlib import contextmanager
 from io import StringIO
+from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL  # make them available directly
 
 import pandas as pd
 
@@ -23,29 +22,21 @@ DIVIDER = "|"
 NEWLINE = "\n" + " " * 10  # levelname + divider + 2
 BASIC_FORMAT = '%(levelname)7s {div:s} %(message)s {div:s} %(name)s'.format(div=DIVIDER)
 COLOR_LEVEL = '\33[0m\33[38;2;150;150;255m'
-COLOR_MESSAGE = '\33[0m\33[1m'
+COLOR_MESSAGE = '\33[0m'
+COLOR_MESSAGE_LOW = '\33[0m\33[38;2;140;140;140m'
 COLOR_WARN = '\33[0m\33[38;2;255;161;53m'
 COLOR_ERROR = '\33[0m\33[38;2;216;31;42m'
-COLOR_NAME = '\33[0m\33[38;2;127;127;127m'
+COLOR_NAME = '\33[0m\33[38;2;80;80;80m'
 COLOR_DIVIDER = '\33[0m\33[38;2;127;127;127m'
 COLOR_RESET = '\33[0m'
 
-
-NOTSET = logging.NOTSET
-DEBUG = logging.DEBUG
-INFO = logging.INFO
-WARN = logging.WARN
-WARNING = logging.WARNING
-ERROR = logging.ERROR
-CRITICAL = logging.CRITICAL
-FATAL = logging.FATAL
-
+MADX = DEBUG + 3
 
 # Classes and Contexts #########################################################
 
 
 class MaxFilter(object):
-    """ To get messages only up to a certain level """
+    """To get messages only up to a certain level."""
     def __init__(self, level):
         self.__level = level
 
@@ -54,13 +45,13 @@ class MaxFilter(object):
 
 
 class DebugMode(object):
-    """ Context Manager for the debug mode.
-
-    Hint: Does not work with @contextmanager from contextlib (even though nicer code),
-    as the _get_caller would find the contextlib.py
+    """
+    Context Manager for the debug mode.
+    Hint: Does not work with ``@contextmanager`` from contextlib (even though nicer code),
+    as the ``_get_caller`` would find **contextlib.py**.
 
     Args:
-        active (bool): Defines if this manager is doing anything. (Default: ``True``)
+        active (bool): Defines if this manager is doing anything. Defaults to ``True``.
         log_file (str): File to log into.
     """
     def __init__(self, active=True, log_file=None):
@@ -113,37 +104,36 @@ class DebugMode(object):
 
 
 class TempFile(object):
-        """ Context Manager.
-        Lets another function write into a temporary file and logs its contents.
+    """
+    Context Manager. Lets another function write into a temporary file and logs its contents.
+    It won't open the file, so only the files path is returned.
 
-        It won't open the file though, so only the files path is returned.
+    Args:
+        file_path (str): Place to write the tempfile to.
+        log_func (func): The function with which the content should be logged (e.g. LOG.info).
+    """
 
-        Args:
-            file_path (str): Place to write the tempfile to.
-            log_func (func): The function with which the content should be logged (e.g. LOG.info)
-        """
+    def __init__(self, file_path, log_func):
+        self.path = file_path
+        self.log_func = log_func
 
-        def __init__(self, file_path, log_func):
-            self.path = file_path
-            self.log_func = log_func
+    def __enter__(self):
+        return self.path
 
-        def __enter__(self):
-            return self.path
-
-        def __exit__(self, value, traceback):
-            try:
-                with open(self.path, "r") as f:
-                    content = f.read()
-                self.log_func("{:s}:\n".format(self.path) + content)
-            except IOError:
-                self.log_func("{:s}: -file does not exist-".format(self.path))
-            else:
-                os.remove(self.path)
+    def __exit__(self, value, traceback):
+        try:
+            with open(self.path, "r") as f:
+                content = f.read()
+            self.log_func("{:s}:\n".format(self.path) + content)
+        except IOError:
+            self.log_func("{:s}: -file does not exist-".format(self.path))
+        else:
+            os.remove(self.path)
 
 
 @contextmanager
 def log_pandas_settings_with_copy(log_func):
-    """ Logs pandas SettingsWithCopy warning to loc_func instead of printing the warning. """
+    """Logs pandas ``SettingsWithCopy`` warning to loc_func instead of printing the warning."""
     caller_line = inspect.currentframe().f_back.f_back.f_lineno  # one frame for contextmanager
     old_mode = pd.options.mode.chained_assignment
     pd.options.mode.chained_assignment = 'warn'
@@ -162,7 +152,7 @@ def log_pandas_settings_with_copy(log_func):
 
 @contextmanager
 def logging_silence():
-    """ Remove temporarily all loggers from root logger."""
+    """Remove temporarily all loggers from root logger."""
     root_logger = getLogger("")
     handlers = list(root_logger.handlers)
     root_logger.handlers = []
@@ -174,7 +164,7 @@ def logging_silence():
 
 @contextmanager
 def unformatted_console_logging():
-    """ Log only to console and only unformatted. """
+    """Log only to console and only unformatted."""
     with logging_silence():
         handler = stream_handler(level=NOTSET, fmt="%(message)s")
         rl = getLogger("")
@@ -186,11 +176,12 @@ def unformatted_console_logging():
 
 
 class TempStringLogger:
-    """ Temporarily log into a string that can be retrieved by get_log
+    """
+    Temporarily log into a string that can be retrieved by ``get_log``.
 
     Args:
-        module: module to log, default: caller file.
-        level: logging level, default INFO.
+        module: module to log, defaults to the caller file.
+        level: logging level, defaults to ``INFO``.
     """
     def __init__(self, module=None, level=INFO):
         if module is None:
@@ -216,9 +207,7 @@ class TempStringLogger:
 
 
 def odr_pprint(printer, odr_out):
-    """ Logs the odr output results.
-    Adapted from odr_output pretty print.
-    """
+    """Logs the odr output results. Adapted from odr_output pretty print."""
     printer('ODR-Summary:')
     printer(f'  Beta: {odr_out.beta}')
     printer(f'  Beta Std Error: {odr_out.sd_beta}')
@@ -232,21 +221,23 @@ def odr_pprint(printer, odr_out):
 
 
 def list2str(list_: list) -> str:
-    """ Returns string representation of list_, but without brackets."""
+    """Returns string representation of ``list_``, but without brackets."""
     return str(list_).lstrip("[").rstrip("]")
 
 # Public Methods ###############################################################
 
 
-def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
+def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, color=None):
     """
-    Sets up logger if name is __main__. Returns logger based on module name)
+    Sets up logger if name is **__main__**. Returns logger based on module name.
 
     Args:
-        name: only used to check if __name__ is __main__
-        level_root: main logging level, default DEBUG
-        level_console: console logging level, default INFO
-        fmt: Format of the logging. For default see BASIC_FORMAT
+        name: only used to check if __name__ is __main__.
+        level_root: main logging level, defaults to ``DEBUG``.
+        level_console: console logging level, defaults to ``INFO``.
+        fmt: Format of the logging. For default see ``BASIC_FORMAT``.
+        color: If `None` colors are used if tty is detected.
+              `False` will never use colors and `True` will always enforce them.
 
     Returns:
         Logger instance.
@@ -254,17 +245,30 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
     logger_name = _get_caller_logger_name()
 
     if name == "__main__":
+        if level_console is None:
+            level_console = DEBUG if sys.flags.debug else INFO
+
         # set up root logger
         root_logger = logging.getLogger("")
         root_logger.handlers = []  # remove handlers in case someone already created them
         root_logger.setLevel(level_root)
 
+        logging.addLevelName(MADX, 'MADX')
+
         # print logs to the console
         root_logger.addHandler(
             stream_handler(
-                level=level_console,
-                fmt=fmt,
-                max_level=INFO
+                level=max(level_console, DEBUG),
+                max_level=INFO-1,
+                fmt=_maybe_bring_color(fmt, DEBUG, color),
+            )
+        )
+
+        root_logger.addHandler(
+            stream_handler(
+                level=max(level_console, INFO),
+                max_level=WARNING-1,
+                fmt=_maybe_bring_color(fmt, INFO, color),
             )
         )
 
@@ -272,8 +276,8 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
         root_logger.addHandler(
             stream_handler(
                 level=max(WARNING, level_console),
-                fmt=fmt,
-                max_level=WARNING
+                max_level=ERROR-1,
+                fmt=_maybe_bring_color(fmt, WARNING, color),
             )
         )
 
@@ -282,7 +286,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
             stream_handler(
                 stream=sys.stderr,
                 level=max(ERROR, level_console),
-                fmt=fmt,
+                fmt=_maybe_bring_color(fmt, ERROR, color),
             )
         )
 
@@ -291,7 +295,7 @@ def get_logger(name, level_root=DEBUG, level_console=INFO, fmt=BASIC_FORMAT):
 
 
 def file_handler(logfile, level=DEBUG, fmt=BASIC_FORMAT):
-    """ Convenience function so the caller does not have to import logging """
+    """Convenience function so the caller does not have to import logging."""
     handler = logging.FileHandler(logfile, mode='w', )
     handler.setLevel(level)
     formatter = logging.Formatter(fmt)
@@ -300,10 +304,10 @@ def file_handler(logfile, level=DEBUG, fmt=BASIC_FORMAT):
 
 
 def stream_handler(stream=sys.stdout, level=DEBUG, fmt=BASIC_FORMAT, max_level=None):
-    """ Convenience function so the caller does not have to import logging """
+    """Convenience function so the caller does not have to import logging."""
     handler = logging.StreamHandler(stream)
     handler.setLevel(level)
-    console_formatter = logging.Formatter(_bring_color(fmt, level))
+    console_formatter = logging.Formatter(fmt)
     handler.setFormatter(console_formatter)
     if max_level:
         handler.addFilter(MaxFilter(max_level))
@@ -311,23 +315,23 @@ def stream_handler(stream=sys.stdout, level=DEBUG, fmt=BASIC_FORMAT, max_level=N
 
 
 def add_module_handler(handler):
-    """ Add handler at current module level """
+    """Add handler at current module level."""
     current_module = _get_current_module()
     logging.getLogger(current_module).addHandler(handler)
 
 
 def add_root_handler(handler):
-    """ Add handler at root level """
+    """Add handler at root level."""
     logging.getLogger("").addHandler(handler)
 
 
 def getLogger(name):
-    """ Convenience function so the caller does not have to import logging """
+    """Convenience function so the caller does not have to import logging."""
     return logging.getLogger(name)
 
 
 def get_my_logger_name():
-    """ Return the logger name for the caller. """
+    """Return the logger name for the caller."""
     return _get_caller_logger_name()
 
 
@@ -335,7 +339,7 @@ def get_my_logger_name():
 
 
 def _get_caller():
-    """ Find the caller of the current log-function """
+    """Find the caller of the current log-function."""
     this_file, _ = os.path.splitext(__file__)
     caller_file = this_file
     caller_frame = inspect.currentframe()
@@ -347,7 +351,7 @@ def _get_caller():
 
 
 def _get_current_module(current_file=None):
-    """ Find the name of the current module """
+    """Find the name of the current module."""
     if not current_file:
         current_file = _get_caller()
     path_parts = os.path.abspath(current_file).split(os.path.sep)
@@ -361,24 +365,32 @@ def _get_current_module(current_file=None):
 
 
 def _get_caller_logger_name():
-    """ Returns logger name of the caller. """
+    """Returns logger name of the caller."""
     caller_file = _get_caller()
     current_module = _get_current_module(caller_file)
     return ".".join([current_module, os.path.basename(caller_file)])
 
 
-def _bring_color(format_string, colorlevel=INFO):
-    """ Adds color to the logs (can only be used in a terminal) """
-    if not sys.stdout.isatty():
-        # Not a tty. You're being piped or redirected
+def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
+    """Adds color to the logs (can only be used in a terminal)."""
+    if color_flag is None:
+        color_flag = _isatty()
+
+    if not color_flag:
         return format_string
 
     level = "%(levelname)"
     message = "%(message)"
     name = "%(name)"
-    format_string = format_string.replace(level, COLOR_LEVEL + level)
-    
-    if colorlevel <= INFO:
+
+    if colorlevel <= WARNING:
+        format_string = format_string.replace(level, COLOR_LEVEL + level)
+    else:
+        format_string = format_string.replace(level, COLOR_ERROR + level)
+
+    if colorlevel <= DEBUG:
+        format_string = format_string.replace(message, COLOR_MESSAGE_LOW + message)
+    elif colorlevel <= INFO:
         format_string = format_string.replace(message, COLOR_MESSAGE + message)
     elif colorlevel <= WARNING:
         format_string = format_string.replace(message, COLOR_WARN + message)
@@ -390,3 +402,8 @@ def _bring_color(format_string, colorlevel=INFO):
     format_string = format_string + COLOR_RESET
 
     return format_string
+
+
+def _isatty():
+    """Checks if stdout is a tty, which means it should support color-codes."""
+    return hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()

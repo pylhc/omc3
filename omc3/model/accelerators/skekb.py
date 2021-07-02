@@ -1,6 +1,66 @@
 """
-Super KEK-B
--------------------
+SuperKEKB
+---------
+
+Accelerator-Class for the ``SuperKEKB`` machine.
+
+
+Model Creation Keyword Args:
+    *--Required--*
+
+    - **ring** *(str)*:
+
+        HER or LER ring.
+
+        choices: ``('ler', 'her')``
+
+
+    *--Optional--*
+
+    - **dpp** *(float)*:
+
+        Deltap/p to use.
+
+        default: ``0.0``
+
+
+    - **driven_excitation** *(str)*:
+
+        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)
+
+        choices: ``('acd', 'adt')``
+
+
+    - **drv_tunes** *(float)*:
+
+        Driven tunes without integer part.
+
+
+    - **energy** *(float)*:
+
+        Energy in **Tev**.
+
+
+    - **model_dir** *(str)*:
+
+        Path to model directory; loads tunes and excitation from model!
+
+
+    - **modifiers** *(str)*:
+
+        Path to the optics file to use (modifiers file).
+
+
+    - **nat_tunes** *(float)*:
+
+        Natural tunes without integer part.
+
+
+    - **xing**:
+
+        If True, x-ing angles will be applied to model
+
+        action: ``store_true``
 """
 from generic_parser import EntryPoint
 
@@ -9,20 +69,17 @@ from omc3.model.accelerators.accelerator import (Accelerator,
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
-RINGS = ("ler", "her")
 
 
 class SKekB(Accelerator):
-    """
-    KEK's SuperKEKB accelerator.
-    """
+    """KEK's SuperKEKB accelerator."""
     NAME = "skekb"
     RINGS = ("ler", "her")
 
-    @staticmethod
-    def get_parameters():
+    @classmethod
+    def get_parameters(cls):
         params = super(SKekB, SKekB).get_parameters()
-        params.add_parameter(name="ring", type=str, choices=RINGS, required=True,
+        params.add_parameter(name="ring", type=str, choices=cls.RINGS, required=True,
                              help="HER or LER ring.")
         return params
 
@@ -43,7 +100,7 @@ class SKekB(Accelerator):
 
     @ring.setter
     def ring(self, value):
-        if value not in RINGS:
+        if value not in self.RINGS:
             raise AcceleratorDefinitionError("Ring parameter has to be one of ('ler', 'her')")
         self._ring = value
 

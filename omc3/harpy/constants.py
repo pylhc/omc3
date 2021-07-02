@@ -1,3 +1,9 @@
+"""
+Constants
+---------
+
+Specific constants to be used in ``harpy``, to help with consistency.
+"""
 # Output Fileextensions --------------------------------------------------------
 
 FILE_AMPS_EXT = ".amps{plane}"
@@ -21,3 +27,4 @@ COL_NATMU = "NATMU"
 
 COL_FREQ = "FREQ"
 COL_PHASE = "PHASE"
+COL_ERR = "ERR"

@@ -1,3 +1,9 @@
+"""
+Constants
+---------
+
+Specific constants to be used in optics_measurements, to help with consistency.
+"""
 # File Names -------------------------------------------------------------------
 EXT = ".tfs"
 AMP_BETA_NAME = "beta_amplitude_"
@@ -29,6 +35,11 @@ BETA = 'BET'
 DPP = 'DPP'
 DPPAMP = 'DPPAMP'
 AMPLITUDE = 'AMP'
+PHASE = 'PHASE'
+PHASE_ADV = 'MU'
+REAL = 'REAL'
+IMAG = 'IMAG'
+
 
 TIME = 'TIME'
 ACTION = '2J'

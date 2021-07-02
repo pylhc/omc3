@@ -1,13 +1,11 @@
 """
 Tune
-----------------
-
-:module: optics_measurements.tune
-:author: Lukas Malina
-
-Computes betatron tunes and provides structures to store them.
+----
+This module contains tune calculations functionality of ``optics_measurements``.
+It provides functions to compute betatron tunes and structures to store them.
 """
 import numpy as np
+import pandas as pd
 
 from omc3.definitions.constants import PLANES, PLANE_TO_NUM
 from omc3.utils import stats
@@ -26,15 +24,16 @@ def calculate(measure_input, input_files):
         if accelerator.excitation:
             tune_d[plane]["QM"] = accelerator.drv_tunes[PLANE_TO_NUM[plane] - 1]
             tune_d[plane]["QF"] = tune_d[plane]["Q"] - tune_d[plane]["QM"] + tune_d[plane]["QFM"]
-            tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
-            input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0, how='inner'),
-            plane, measure_input.accelerator)
+            if measure_input.compensation == "equation":
+                tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
+                    input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0, how='inner'),
+                    plane, measure_input.accelerator)
     return tune_d
 
 
 class TuneDict(dict):
     """
-    Data structure to hold tunes
+    Data structure to hold tunes.
     """
     def __init__(self):
         super(TuneDict, self).__init__(zip(PLANES, ({"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None},
@@ -42,32 +41,33 @@ class TuneDict(dict):
 
     def get_lambda(self, plane):
         """
-        Computes lambda compensation factor
+        Computes lambda compensation factor.
 
         Args:
-            plane: X or Y
+            plane: marking the horizontal or vertical plane, **X** or **Y**.
 
         Returns:
-             lambda compensation factor (driven vs free motion)
+             lambda compensation factor (driven vs free motion).
         """
         return (np.sin(np.pi * (self[plane]["Q"] - self[plane]["QF"])) /
                 np.sin(np.pi * (self[plane]["Q"] + self[plane]["QF"])))
 
-    def phase_ac2bpm(self, df_idx_by_bpms, plane, accelerator):
-        """Returns the necessary values for the exciter compensation.
-
-        See: doi:10.1103/PhysRevSTAB.11.084002
+    def phase_ac2bpm(self, df_idx_by_bpms: pd.DataFrame, plane: str, accelerator):
+        """
+        Returns the necessary values for the exciter compensation.
+        See **DOI: 10.1103/PhysRevSTAB.11.084002**
 
         Args:
             df_idx_by_bpms (pandas.DataFrame): commonbpms (see GetLLM._get_commonbpms)
-            plane (char): X,Y
-            accelerator: accelerator class instance.
+            plane (str): marking the horizontal or vertical plane, **X** or **Y**.
+            accelerator: an `Accelerator` object.
 
-        Returns tupel(a,b,c,d):
-            a (string): name of the nearest BPM.
-            b (float): compensated phase advance between the exciter and the nearest BPM.
-            c (int): k of the nearest BPM.
-            d (string): name of the exciter element.
+        Returns:
+            A `Tuple` consisting of four elements a, b, c, d.
+                - a (string): name of the nearest BPM.
+                - b (float): compensated phase advance between the exciter and the nearest BPM.
+                - c (int): k of the nearest BPM.
+                - d (string): name of the exciter element.
         """
         model = accelerator.elements
         r = self.get_lambda(plane)

@@ -1,13 +1,10 @@
 """
 Dpp
-----------------
+---
 
-:module: optics_measurements.dpp
-:author: Elena Fol, Lukas Malina
-
-Computes and arranges dp over p
+This module contains deltap over p calculations related functionality of ``optics_measurements``.
+It provides functions to computes and arrange dp over p.
 """
-
 import logging
 
 import numpy as np
@@ -20,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 
 def arrange_dpps(dpps):
     """
-    Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero
+    Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero.
     """
     closest_to_zero = np.argmin(np.abs(dpps))
     ranges = _compute_ranges(dpps)

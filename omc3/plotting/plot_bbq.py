@@ -1,6 +1,6 @@
 """
 Plot BBQ
-------------------------------------
+--------
 
 Provides the plotting function for the extracted and cleaned BBQ data from timber.
 
@@ -32,8 +32,6 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 - **x_lim** *(float)*: X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)
 
 - **y_lim** *(float)*: Y-Axis limits.
-
-
 """
 from collections import OrderedDict
 from contextlib import suppress
@@ -45,6 +43,7 @@ from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt, gridspec
 from matplotlib.ticker import FormatStrFormatter
+from pandas.plotting import register_matplotlib_converters
 
 from omc3 import amplitude_detuning_analysis as ad_ana
 from omc3.definitions import formats
@@ -56,6 +55,9 @@ from omc3.tune_analysis.constants import (get_mav_window_header, get_used_in_mav
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
+
+# Registering converters for datetime plotting as pandas won't do it for us automatically anymore
+register_matplotlib_converters()
 
 
 def get_params():
@@ -107,9 +109,7 @@ def get_params():
 
 @entrypoint(get_params(), strict=True)
 def main(opt):
-    """ Plot BBQ wrapper.
-
-    """
+    """Plot BBQ wrapper."""
     LOG.info("Plotting BBQ.")
     _save_options(opt)
     bbq_df = kick_mod.read_timed_dataframe(opt.input) if isinstance(opt.input, str) else opt.input
@@ -142,23 +142,21 @@ def main(opt):
     return fig
 
 
-def _plot_bbq_data(bbq_df,
-                   interval=None, x_lim=None, y_lim=None,
-                   two_plots=False):
-    """ Plot BBQ data.
+def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=False):
+    """
+    Plot BBQ data.
 
     Args:
-        bbq_df: BBQ Dataframe with moving average columns
-        interval: start and end time of used interval, will be marked with red bars
-        x_lim: x limits (time)
-        y_lim: y limits (tune)
-        output: Path to the output file
-        show: Shows plot if `True`
-        two_plots: Plots each tune in it's own axes if `True`
+        bbq_df: BBQ Dataframe with moving average columns.
+        interval: start and end time of used interval, will be marked with red bars.
+        x_lim: x limits (time).
+        y_lim: y limits (tune).
+        output: Path to the output file.
+        show: Shows plot if ``True``.
+        two_plots: Plots each tune in it's own axes if ``True``.
 
     Returns:
-        Plotted figure
-
+        Plotted figure.
     """
     LOG.debug("Plotting BBQ data.")
 
