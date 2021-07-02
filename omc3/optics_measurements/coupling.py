@@ -83,7 +83,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
 
     LOG.debug("f1001 = {}".format(f1001))
     one_over_N = 1 / len(f1001)
-    tune_sep = tune_dict["X"]["QFM"] - tune_dict["Y"]["QFM"]
+    tune_sep = (tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
     # old Cminus
     C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
@@ -91,7 +91,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     LOG.info(f"abs OldCminus = {C_old}, tune_sep = {tune_sep}")
 
     # new Cminus
-    C_new = np.abs(4.0 * np.mean(f1001 * np.exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * np.exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["newCminus"] = C_new
     LOG.info(f"abs NewCminus = {C_new}")
 
@@ -105,7 +105,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     rdt_df = pd.DataFrame(index=joined_index,
                           columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "q1001"],
                           data=np.array([
-                              meas_input.accelerator.model.loc[joined_index, "S"].values,
+                              meas_input.accelerator.model["S"].values[pairs_x],
                               np.real(f1001.to_numpy()), np.real(f1010.to_numpy()),
                               np.imag(f1001.to_numpy()), np.imag(f1010.to_numpy()),
                               q1001_from_A.values,
@@ -129,16 +129,15 @@ def compensate_model(f1001, f1010, tune_dict):
     dQx = PI2 * tune_dict["X"]["QM"]  # driven tunes
     dQy = PI2 * tune_dict["Y"]["QM"]
 
-    print(tune_dict)
 
     factor1001 = np.sqrt(0.0j + sin(dQy - Qx)*sin(dQx - Qy))/sin(Qx - Qy)
     factor1010 = sqrt(sin(Qx + dQy)*sin(Qy + dQx))/sin(Qx + Qy)
     f1001 *= factor1001
     f1010 *= factor1010
 
-    LOG.debug("compensation by model")
-    LOG.debug(f"f1001 factor: {factor1001}")
-    LOG.debug(f"f1010 factor: {factor1010}")
+    LOG.info("compensation by model")
+    LOG.info(f"f1001 factor: {factor1001}")
+    LOG.info(f"f1010 factor: {factor1010}")
 
     return f1001, f1010
 
