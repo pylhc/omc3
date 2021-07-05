@@ -67,7 +67,7 @@ def measure_optics(input_files, measure_input):
     coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
     if 'rdt' in measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))
-        rdt.calculate(measure_input, input_files, tune_dict, invariants, common_header)
+        rdt.calculate(measure_input, input_files, tune_dict, phase_dict, invariants, common_header)
     if 'crdt' in measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "crdt"))
         crdt.calculate(measure_input, input_files, invariants, common_header)

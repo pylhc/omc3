@@ -21,15 +21,15 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     if meas_input.compensation == "none":
         LOGGER.info("no compensation")
         phase_advances, dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, 'none', no_errors)
-        driven_phase_advances = None
+        uncompensated_phase_advances = phase_advances
     else:
         LOGGER.info("compensated, run with compensation")
         phase_advances, free_dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, meas_input.compensation, no_errors)
         LOGGER.info("-- run uncompensated")
-        driven_phase_advances, drv_dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, 'none', no_errors)
+        uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, 'none', no_errors)
         dfs = free_dfs + drv_dfs
 
-    return {'free': phase_advances, 'driven': driven_phase_advances}, dfs
+    return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
 
 
 

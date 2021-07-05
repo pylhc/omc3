@@ -12,14 +12,13 @@ Coupling calculations
 
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from collections import namedtuple
-from numpy import cos, tan, exp, sin, sqrt
 import numpy as np
+from numpy import exp, tan, cos, sin
 import os
 import sys
 import tfs
 import pandas as pd
 from numpy import conj
-from omc3.utils import stats
 from omc3.utils import logging_tools, stats
 from numpy import sqrt
 from omc3.definitions.constants import PLANES, PI2I, PI2
@@ -49,16 +48,16 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     LOG.info("calculating coupling -fffe")
 
     # intersect measurements
-    excitation = 'driven' if meas_input.compensation == 'model' else 'free'
+    compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
     joined = _joined_frames(input_files)[0]
-    joined_index = joined.index.intersection(phase_dict['X'][excitation]['MEAS'].index)  #shouldn't be necessary in the end
+    joined_index = joined.index.intersection(phase_dict['X'][compensation]['MEAS'].index)  #shouldn't be necessary in the end
     joined = joined.loc[joined_index]
 
-    phases_x = phase_dict['X'][excitation]["MEAS"].loc[joined_index]
-    phases_y = phase_dict['Y'][excitation]["MEAS"].loc[joined_index]
+    phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
+    phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
 
-    pairs_x, deltas_x = _find_pair(phases_x)
-    pairs_y, deltas_y = _find_pair(phases_y)
+    pairs_x, deltas_x = _find_pair(phases_x, 2)
+    pairs_y, deltas_y = _find_pair(phases_y, 2)
 
     A01 = .5*_get_complex(
         joined["AMP01_X"].values*exp(joined["PHASE01_X"].values * PI2I), deltas_x, pairs_x
@@ -73,10 +72,16 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         joined["AMP10_Y"].values*exp(-joined["PHASE10_Y"].values * PI2I), deltas_y, pairs_y
     )
 
-    q1001_from_A = np.angle(A01) - (joined[f"{COL_MU}X"] - 0.25) * PI2
-    q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}Y"] + 0.25) * PI2
-    q1010_from_A = np.angle(A0_1) + (joined[f"{COL_MU}Y"] + 0.25) * PI2
-    q1010_from_B = np.angle(B_10) + (joined[f"{COL_MU}X"] - 0.25) * PI2
+    q1001_from_A = np.angle(A01) - (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
+    q1010_from_A = np.angle(A0_1) + (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
+    q1010_from_B = np.angle(B_10) + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+
+    print(f"q1001_from_A.shape = {q1001_from_A.shape}")
+    print(f"A01.shape = {A01.shape}")
+    for i in range(len(q1001_from_A)):
+        q1001_i = np.angle(A01[i]) - (joined[f"{COL_MU}X"].to_numpy()[i] - 0.25) * PI2
+        print(f"{q1001_from_A[i]} = {q1001_i} = {np.angle(A01[i])} - {joined['MUX'].to_numpy()[i]} - 0.25")
 
     f1001 = .5 * sqrt(np.abs(A01 * B10))*exp(1.0j * q1001_from_A)
     f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*exp(1.0j * q1010_from_A)
@@ -91,7 +96,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     LOG.info(f"abs OldCminus = {C_old}, tune_sep = {tune_sep}")
 
     # new Cminus
-    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * np.exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["newCminus"] = C_new
     LOG.info(f"abs NewCminus = {C_new}")
 
@@ -106,9 +111,9 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
                           columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "q1001"],
                           data=np.array([
                               meas_input.accelerator.model["S"].values[pairs_x],
-                              np.real(f1001.to_numpy()), np.real(f1010.to_numpy()),
-                              np.imag(f1001.to_numpy()), np.imag(f1010.to_numpy()),
-                              q1001_from_A.values,
+                              np.real(f1001), np.real(f1010),
+                              np.imag(f1001), np.imag(f1010),
+                              q1001_from_A,
                           ]).transpose())
 
     tfs.write(os.path.join(meas_input.outputdir, "coupling.tfs"),
@@ -130,8 +135,8 @@ def compensate_model(f1001, f1010, tune_dict):
     dQy = PI2 * tune_dict["Y"]["QM"]
 
 
-    factor1001 = np.sqrt(0.0j + sin(dQy - Qx)*sin(dQx - Qy))/sin(Qx - Qy)
-    factor1010 = sqrt(sin(Qx + dQy)*sin(Qy + dQx))/sin(Qx + Qy)
+    factor1001 = np.sqrt(np.abs(sin(dQy - Qx)*sin(dQx - Qy)))/np.abs(sin(Qx - Qy))
+    factor1010 = np.abs(np.sqrt(sin(Qx + dQy)*sin(Qy + dQx))/sin(Qx + Qy))
     f1001 *= factor1001
     f1010 *= factor1010
 
@@ -194,8 +199,8 @@ def _joined_frames(input_files):
 
     assert len(input_files['X']) == len(input_files['Y'])
 
-    for linx, liny in zip(input_files['X'], input_files['Y']):
-        for df, plane in zip((linx,liny), PLANES):
+    for i, (linx, liny) in enumerate(zip(input_files['X'], input_files['Y'])):
+        for df, plane in zip((linx, liny), PLANES):
             rename_cols(df, plane, ['NAME', 'S', f'{COL_TUNE}{plane}', f'{COL_MU}{plane}',
                                     f'{COL_MU}{plane}SYNC'])
         merged_df = pd.merge(left=linx,
@@ -203,7 +208,7 @@ def _joined_frames(input_files):
                              on=['NAME', 'S'],
                              how='inner',
                              sort=False,
-                             suffixes=(False, False)
+                             suffixes=(False, f"__{i}")
                             ).set_index('NAME')
         merged_df.index.name='NAME'
         joined_dfs.append(merged_df)
