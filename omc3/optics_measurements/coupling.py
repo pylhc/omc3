@@ -56,8 +56,8 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
     phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
 
-    pairs_x, deltas_x = _find_pair(phases_x, 2)
-    pairs_y, deltas_y = _find_pair(phases_y, 2)
+    pairs_x, deltas_x = _find_pair(phases_x)
+    pairs_y, deltas_y = _find_pair(phases_y)
 
     A01 = .5*_get_complex(
         joined["AMP01_X"].values*exp(joined["PHASE01_X"].values * PI2I), deltas_x, pairs_x
