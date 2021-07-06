@@ -84,7 +84,7 @@ def evaluate_accuracy(meas_path, limits):
         df = tfs.read(f)
         cols = df.columns[df.columns.str.startswith('DELTA')]
         for col in cols:
-            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD'):
+            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD') or "phase_driven" in f.name:
                 continue
 
             rms = stats.weighted_rms(

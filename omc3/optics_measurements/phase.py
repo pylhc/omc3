@@ -20,20 +20,38 @@ LOGGER = logging_tools.get_logger(__name__)
 def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     if meas_input.compensation == "none":
         LOGGER.info("no compensation")
-        phase_advances, dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, 'none', no_errors)
+        phase_advances, dfs = _calculate_with_compensation(meas_input,
+                                                           input_files,
+                                                           tunes,
+                                                           plane,
+                                                           meas_input.accelerator.model,
+                                                           'none',
+                                                           no_errors)
         uncompensated_phase_advances = phase_advances
     else:
         LOGGER.info("compensated, run with compensation")
-        phase_advances, free_dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, meas_input.compensation, no_errors)
+        phase_advances, free_dfs = _calculate_with_compensation(meas_input,
+                                                                input_files,
+                                                                tunes,
+                                                                plane,
+                                                                meas_input.accelerator.model,
+                                                                meas_input.compensation,
+                                                                no_errors)
         LOGGER.info("-- run uncompensated")
-        uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(meas_input, input_files, tunes, plane, 'none', no_errors)
+        uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(meas_input,
+                                                                             input_files,
+                                                                             tunes,
+                                                                             plane,
+                                                                             meas_input.accelerator.model_driven,
+                                                                             'none',
+                                                                             no_errors)
         dfs = free_dfs + drv_dfs
 
     return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
 
 
 
-def _calculate_with_compensation(meas_input, input_files, tunes, plane, compensation='none', no_errors=False):
+def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df, compensation='none', no_errors=False):
     """
     Calculates phase advances.
 
@@ -70,7 +88,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, compensa
     LOGGER.info("Calculating phase advances")
     LOGGER.info(f"Measured tune in plane {plane} = {tunes[plane]['Q']}")
 
-    df = pd.DataFrame(meas_input.accelerator.model).loc[:, ["S", f"MU{plane}"]]
+    df = model_df.loc[:, ["S", f"MU{plane}"]]
     how = 'outer' if meas_input.union else 'inner'
     dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
