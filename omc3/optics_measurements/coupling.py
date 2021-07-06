@@ -10,6 +10,7 @@ Coupling calculations
 
 """
 
+from functools import reduce
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from collections import namedtuple
 import numpy as np
@@ -24,13 +25,22 @@ from numpy import sqrt
 from omc3.definitions.constants import PLANES, PI2I, PI2
 from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE
 
+# column name constants
+COL_AMPX_SEC = "AMP01_X"     # amplitude of secondary line in horizontal spectrum
+COL_AMPY_SEC = "AMP10_Y"     # amplitude of secondary line in vertical spectrum
+COL_FREQX_SEC = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
+COL_FREQY_SEC = "PHASE10_Y"  # frequency of secondary line in vertical spectrum
+
+COLS_TO_KEEP_X = ["NAME", "S", "AMP01", "PHASE01", "MUX"]
+COLS_TO_KEEP_Y = ["NAME", "S", "AMP10", "PHASE10", "MUY"]
+
 LOG = logging_tools.get_logger(__name__)
 
 CUTOFF = 5
 
 # --------------------------------------------------------------------------------------------------
 # ---- main part -----------------------------------------------------------------------------------
-
+# --------------------------------------------------------------------------------------------------
 
 def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict):
     """
@@ -49,39 +59,40 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
 
     # intersect measurements
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
-    joined = _joined_frames(input_files)[0]
-    joined_index = joined.index.intersection(phase_dict['X'][compensation]['MEAS'].index)  #shouldn't be necessary in the end
-    joined = joined.loc[joined_index]
+    joined = _joined_frames(input_files)
+    joined_index = joined.index
 
     phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
     phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
+
+    # averaging
+    for col in [COL_AMPX_SEC, COL_AMPY_SEC]:
+        cols = [c for c in joined if c.startswith(col)]
+        joined[col] = stats.weighted_mean(joined[cols], axis=1)
+    for col in [COL_FREQX_SEC, COL_FREQY_SEC]:
+        cols = [x for x in joined if x.startswith(col)]
+        joined[col] = stats.circular_mean(joined[cols], axis=1)
 
     pairs_x, deltas_x = _find_pair(phases_x)
     pairs_y, deltas_y = _find_pair(phases_y)
 
     A01 = .5*_get_complex(
-        joined["AMP01_X"].values*exp(joined["PHASE01_X"].values * PI2I), deltas_x, pairs_x
+        joined[COL_AMPX_SEC].values*exp(joined[COL_FREQX_SEC].values * PI2I), deltas_x, pairs_x
     )
     B10 = .5 * _get_complex(
-        joined["AMP10_Y"].values*exp(joined["PHASE10_Y"].values * PI2I), deltas_y, pairs_y
+        joined[COL_AMPY_SEC].values*exp(joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
     )
     A0_1 = .5*_get_complex(
-        joined["AMP01_X"].values*exp(-joined["PHASE01_X"].values * PI2I), deltas_x, pairs_x
+        joined[COL_AMPX_SEC].values*exp(-joined[COL_FREQX_SEC].values * PI2I), deltas_x, pairs_x
     )
     B_10 = .5 * _get_complex(
-        joined["AMP10_Y"].values*exp(-joined["PHASE10_Y"].values * PI2I), deltas_y, pairs_y
+        joined[COL_AMPY_SEC].values*exp(-joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
     )
 
     q1001_from_A = np.angle(A01) - (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
     q1010_from_A = np.angle(A0_1) + (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
     q1010_from_B = np.angle(B_10) + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-
-    print(f"q1001_from_A.shape = {q1001_from_A.shape}")
-    print(f"A01.shape = {A01.shape}")
-    for i in range(len(q1001_from_A)):
-        q1001_i = np.angle(A01[i]) - (joined[f"{COL_MU}X"].to_numpy()[i] - 0.25) * PI2
-        print(f"{q1001_from_A[i]} = {q1001_i} = {np.angle(A01[i])} - {joined['MUX'].to_numpy()[i]} - 0.25")
 
     f1001 = .5 * sqrt(np.abs(A01 * B10))*exp(1.0j * q1001_from_A)
     f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*exp(1.0j * q1010_from_A)
@@ -116,6 +127,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
                               q1001_from_A,
                           ]).transpose())
 
+    rdt_df.sort_values(by="S", inplace=True)
     tfs.write(os.path.join(meas_input.outputdir, "coupling.tfs"),
               rdt_df, header_dict, save_index="NAME")
 
@@ -151,6 +163,7 @@ def compensate_ryoichi():
 
 # --------------------------------------------------------------------------------------------------
 # ---- helper functions ----------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 
 
 def _take_next(phases, shift=1):
@@ -200,22 +213,26 @@ def _joined_frames(input_files):
     assert len(input_files['X']) == len(input_files['Y'])
 
     for i, (linx, liny) in enumerate(zip(input_files['X'], input_files['Y'])):
-        for df, plane in zip((linx, liny), PLANES):
-            rename_cols(df, plane, ['NAME', 'S', f'{COL_TUNE}{plane}', f'{COL_MU}{plane}',
-                                    f'{COL_MU}{plane}SYNC'])
+        linx = linx[COLS_TO_KEEP_X]
+        liny = liny[COLS_TO_KEEP_Y]
+        linx.rename(columns=rename_col("X", i), inplace=True)
+        liny.rename(columns=rename_col("Y", i), inplace=True)
         merged_df = pd.merge(left=linx,
                              right=liny,
                              on=['NAME', 'S'],
                              how='inner',
                              sort=False,
-                             suffixes=(False, f"__{i}")
-                            ).set_index('NAME')
-        merged_df.index.name='NAME'
+                            )
+        
         joined_dfs.append(merged_df)
-    return joined_dfs
+
+    return reduce(lambda a,b: pd.merge(a, b, how='inner', on=['NAME', 'S'],sort=False), joined_dfs).set_index("NAME")
 
 
-def rename_cols(df, suffix, exceptions=['']):
-    df.columns = [f'{col}_{suffix}' if col not in exceptions else col for col in df.columns]
-    df.index.name = None
-    return df
+def rename_col(plane, index):
+    def fn(column):
+        if column in ["NAME", "S", "MUX", "MUY"]:
+            return column
+        return f"{column}_{plane}_{index}" 
+
+    return fn
