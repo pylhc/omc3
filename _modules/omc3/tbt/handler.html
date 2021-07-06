@@ -344,8 +344,12 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;lhc&quot;</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">DATA_READERS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+<div class="viewcode-block" id="read_tbt"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.handler.read_tbt">[docs]</a><span class="k">def</span> <span class="nf">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;lhc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TbtData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calls the appropriate loader for the provided data type and returns a TbtData object of the loaded data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading turn-by-turn data from &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DATA_READERS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">write_tbt</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
