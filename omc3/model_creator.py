@@ -41,7 +41,7 @@ def _get_params():
     params = EntryPointParameters()
     params.add_parameter(
         name="type",
-        choices=("nominal", "best_knowledge", "coupling_correction"),
+        choices=("nominal", "best_knowledge", "coupling_correction","segment"),
         help="Type of model to create."
     )
     params.add_parameter(

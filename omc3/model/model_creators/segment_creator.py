@@ -19,7 +19,7 @@ class SegmentCreator(object):
     def prepare_run(cls, instance, output_path):
         macros_path = Path(output_path) / MACROS_DIR
         create_dirs(macros_path)
-        lib_path = Path(__file__).parent.parent.parent / "lib"
+        lib_path = Path(__file__).parent.parent/ "madx_macros"
         shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
 
     @classmethod
