@@ -101,7 +101,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
 
     LOG.debug("f1001 = {}".format(f1001))
     one_over_N = 1 / len(f1001)
-    tune_sep = (tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
+    tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
     # old Cminus
     C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
@@ -131,8 +131,10 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
                               q1010_from_A,
                           ]).transpose())
 
+    rdt_df.sort_values(by="S", inplace=True)
+
     # adding model values and deltas
-    model_coupling = coupling_via_cmatrix(meas_input.accelerator.model)
+    model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
     RDTCOLS = ["F1001", "F1010"]
     for (domain, func) in [("I", np.imag),
                            ("R", np.real),
@@ -143,8 +145,6 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
             rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
             rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
 
-
-    rdt_df.sort_values(by="S", inplace=True)
     tfs.write(os.path.join(meas_input.outputdir, "coupling.tfs"),
               rdt_df, header_dict, save_index="NAME")
 
