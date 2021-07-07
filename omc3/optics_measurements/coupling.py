@@ -22,8 +22,10 @@ import pandas as pd
 from numpy import conj
 from omc3.utils import logging_tools, stats
 from numpy import sqrt
-from omc3.definitions.constants import PLANES, PI2I, PI2
-from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_TUNE
+from omc3.definitions.constants import PI2I, PI2
+from omc3.harpy.constants import COL_MU
+from optics_functions.coupling import coupling_via_cmatrix
+
 
 # column name constants
 COL_AMPX_SEC = "AMP01_X"     # amplitude of secondary line in horizontal spectrum
@@ -119,13 +121,28 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     if meas_input.compensation == "model":
         f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
     rdt_df = pd.DataFrame(index=joined_index,
-                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "q1001"],
+                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W", "q1001", "q1010"],
                           data=np.array([
                               meas_input.accelerator.model["S"].values[pairs_x],
                               np.real(f1001), np.real(f1010),
                               np.imag(f1001), np.imag(f1010),
+                              np.abs(f1001), np.abs(f1010),
                               q1001_from_A,
+                              q1010_from_A,
                           ]).transpose())
+
+    # adding model values and deltas
+    model_coupling = coupling_via_cmatrix(meas_input.accelerator.model)
+    RDTCOLS = ["F1001", "F1010"]
+    for (domain, func) in [("I", np.imag),
+                           ("R", np.real),
+                           ("W", np.abs)]:
+        for col in RDTCOLS:
+            mdlcol = func(model_coupling[col])
+            rdt_df[f"{col}{domain}MDL"] = mdlcol
+            rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
+            rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
+
 
     rdt_df.sort_values(by="S", inplace=True)
     tfs.write(os.path.join(meas_input.outputdir, "coupling.tfs"),
