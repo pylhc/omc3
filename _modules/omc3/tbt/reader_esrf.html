@@ -282,56 +282,70 @@
 <span class="sd">Data handling for tbt data from ``ESRF``.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">join</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
 
 <span class="kn">from</span> <span class="nn">omc3.tbt</span> <span class="kn">import</span> <span class="n">handler</span>
 
+<span class="n">BPM_NAMES_FILE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bpm_names.json&quot;</span>
 
-<div class="viewcode-block" id="read_tbt"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.reader_esrf.read_tbt">[docs]</a><span class="k">def</span> <span class="nf">read_tbt</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+
+<div class="viewcode-block" id="read_tbt"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.reader_esrf.read_tbt">[docs]</a><span class="k">def</span> <span class="nf">read_tbt</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads ESRF ``Matlab`` file.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        filepath: path to a file</span>
+<span class="sd">        filepath (Union[str, Path]): path to a file</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        `tbt.TbTData` object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="n">names</span><span class="p">,</span> <span class="n">matrix</span> <span class="o">=</span> <span class="n">load_esrf_mat_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">handler</span><span class="o">.</span><span class="n">numpy_to_tbts</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_esrf_mat_file"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.reader_esrf.load_esrf_mat_file">[docs]</a><span class="k">def</span> <span class="nf">load_esrf_mat_file</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="load_esrf_mat_file"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.reader_esrf.load_esrf_mat_file">[docs]</a><span class="k">def</span> <span class="nf">load_esrf_mat_file</span><span class="p">(</span><span class="n">infile</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads the ESRF TbT ``Matlab`` file, checks for nans and data duplicities from consecutive kicks.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        infile: path to file to be read</span>
+<span class="sd">        infile (Union[str, Path]): path to file to be read</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A Numpy array of BPM names and a 4D Numpy array [quantity, BPM, particle/bunch No.,</span>
 <span class="sd">        turn No.] quantities in order [x, y]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-    <span class="n">esrf_data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">esrf_data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>  <span class="c1"># accepts str or pathlib.Path</span>
     <span class="n">hor</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">esrf_data</span><span class="p">[</span><span class="s2">&quot;allx&quot;</span><span class="p">],</span> <span class="n">esrf_data</span><span class="p">[</span><span class="s2">&quot;allz&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">hor</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">ver</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of turns, BPMs or measurements in X and Y do not match&quot;</span><span class="p">)</span>
     <span class="c1"># TODO change for tfs file got from accelerator class</span>
-    <span class="n">bpm_names</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;bpm_names.json&quot;</span><span class="p">)),</span> <span class="s2">&quot;r&quot;</span><span class="p">))</span>
+    <span class="c1"># Need input for someone with ESRF files experience, where exactly should we look for this file?</span>
+    <span class="n">bpm_names</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">((</span><span class="n">Path</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="n">BPM_NAMES_FILE</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>  <span class="c1"># weird?</span>
     <span class="k">if</span> <span class="n">hor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bpm_names</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of bpms does not match with accelerator class&quot;</span><span class="p">)</span>
     <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">_check_esrf_tbt_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">hor</span><span class="p">,</span> <span class="n">ver</span><span class="p">]),</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bpm_names</span><span class="p">),</span> <span class="n">tbt_data</span></div>
 
 
-<span class="k">def</span> <span class="nf">_check_esrf_tbt_data</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_check_esrf_tbt_data</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">tbt_data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)),</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="c1"># check if contains the same data as in previous kick</span>
-    <span class="n">mask_prev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span>
-                                <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span>
+    <span class="n">mask_prev</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">==</span> <span class="mf">0.0</span>
+    <span class="p">)</span>
     <span class="n">tbt_data</span><span class="p">[</span><span class="n">mask_prev</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="k">return</span> <span class="n">tbt_data</span>
 </pre></div>

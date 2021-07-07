@@ -300,23 +300,38 @@ bunches/particles at all used BPMs.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.handler.numpy_to_tbts">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.handler.</span></span><span class="sig-name descname"><span class="pre">numpy_to_tbts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/handler.html#numpy_to_tbts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.handler.numpy_to_tbts" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.handler.</span></span><span class="sig-name descname"><span class="pre">numpy_to_tbts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#omc3.tbt.handler.TbtData" title="omc3.tbt.handler.TbtData"><span class="pre">omc3.tbt.handler.TbtData</span></a><a class="reference internal" href="../_modules/omc3/tbt/handler.html#numpy_to_tbts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.handler.numpy_to_tbts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts turn by turn data and names into TbTData.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>names</strong> -- Numpy array of BPM names.</p></li>
-<li><p><strong>matrix</strong> -- 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
+<li><p><strong>names</strong> (<em>np.ndarray</em>) -- Numpy array of BPM names.</p></li>
+<li><p><strong>matrix</strong> (<em>np.ndarray</em>) -- 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
 quantities in order [x, y].</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">TbtData</span></code> object loaded with the data in the provided numpy arrays.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.handler.read_tbt">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.handler.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lhc'</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#omc3.tbt.handler.TbtData" title="omc3.tbt.handler.TbtData"><span class="pre">omc3.tbt.handler.TbtData</span></a><a class="reference internal" href="../_modules/omc3/tbt/handler.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.handler.read_tbt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.handler.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'lhc'</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#omc3.tbt.handler.TbtData" title="omc3.tbt.handler.TbtData"><span class="pre">omc3.tbt.handler.TbtData</span></a><a class="reference internal" href="../_modules/omc3/tbt/handler.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.handler.read_tbt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls the appropriate loader for the provided data type and returns a TbtData object of the loaded data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to a file containing TbtData.</p></li>
+<li><p><strong>datatype</strong> (<em>str</em>) -- type of data in the file, determines the reader to use. Case-insensitive,
+defaults to <code class="docutils literal notranslate"><span class="pre">lhc</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">TbtData</span></code> object with the loaded data.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -325,11 +340,11 @@ quantities in order [x, y].</p></li>
 <p>Data handling for tbt data from <code class="docutils literal notranslate"><span class="pre">ESRF</span></code>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.reader_esrf.load_esrf_mat_file">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_esrf.</span></span><span class="sig-name descname"><span class="pre">load_esrf_mat_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="../_modules/omc3/tbt/reader_esrf.html#load_esrf_mat_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_esrf.load_esrf_mat_file" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_esrf.</span></span><span class="sig-name descname"><span class="pre">load_esrf_mat_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/omc3/tbt/reader_esrf.html#load_esrf_mat_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_esrf.load_esrf_mat_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the ESRF TbT <code class="docutils literal notranslate"><span class="pre">Matlab</span></code> file, checks for nans and data duplicities from consecutive kicks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>infile</strong> -- path to file to be read</p>
+<dd class="field-odd"><p><strong>infile</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to file to be read</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A Numpy array of BPM names and a 4D Numpy array [quantity, BPM, particle/bunch No.,
@@ -340,11 +355,11 @@ turn No.] quantities in order [x, y]</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.reader_esrf.read_tbt">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_esrf.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_esrf.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_esrf.read_tbt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_esrf.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_esrf.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_esrf.read_tbt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads ESRF <code class="docutils literal notranslate"><span class="pre">Matlab</span></code> file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filepath</strong> -- path to a file</p>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to a file</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><cite>tbt.TbTData</cite> object.</p>
@@ -360,14 +375,14 @@ Takes <code class="docutils literal notranslate"><span class="pre">hdf5</span></
 processed by <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.reader_iota.read_tbt">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_iota.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_iota.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_iota.read_tbt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_iota.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_iota.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_iota.read_tbt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads TbTData object from provided file_path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>file_path</strong> -- path to a file containing TbtData.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <cite>TbtData</cite> object with the loaded data.</p>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">TbtData</span></code> object with the loaded data.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -378,14 +393,14 @@ processed by <code class="docutils literal notranslate"><span class="pre">harpy<
 <p>Data handling for tbt data from the <code class="docutils literal notranslate"><span class="pre">LHC</span></code>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.reader_lhc.read_tbt">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_lhc.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_lhc.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_lhc.read_tbt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_lhc.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_lhc.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_lhc.read_tbt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads TbTData object from provided file_path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file_path</strong> -- path to a file containing TbtData.</p>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to a file containing TbtData.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <cite>TbtData</cite> object with the loaded data.</p>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">TbtData</span></code> object with the loaded data.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -431,14 +446,14 @@ processed by <code class="docutils literal notranslate"><span class="pre">harpy<
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.reader_ptc.read_tbt">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_ptc.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_ptc.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_ptc.read_tbt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_ptc.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_ptc.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_ptc.read_tbt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads TbtData object from <code class="docutils literal notranslate"><span class="pre">PTC</span></code> <strong>trackone</strong> output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file_path</strong> -- path to a file containing TbtData.</p>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to a file containing TbtData.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A <cite>TbtData</cite> object with the loaded data.</p>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">TbtData</span></code> object with the loaded data.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -446,24 +461,53 @@ processed by <code class="docutils literal notranslate"><span class="pre">harpy<
 </div>
 <span class="target" id="module-omc3.tbt.reader_trackone"></span><div class="section" id="trackone-tbt-data-handler">
 <h2>Trackone TbT Data Handler<a class="headerlink" href="#trackone-tbt-data-handler" title="Permalink to this headline">¶</a></h2>
-<p>Tbt data handling from <code class="docutils literal notranslate"><span class="pre">PTC</span></code> trackone.</p>
+<p>Tbt data handling from <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> trackone.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt.reader_trackone.get_structure_from_trackone">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_trackone.</span></span><span class="sig-name descname"><span class="pre">get_structure_from_trackone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nturns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'trackone'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_trackone.html#get_structure_from_trackone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_trackone.get_structure_from_trackone" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads the <strong>trackone</strong> file produced by <code class="docutils literal notranslate"><span class="pre">PTC</span></code>.</p>
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_trackone.</span></span><span class="sig-name descname"><span class="pre">get_structure_from_trackone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nturns</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npart</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'trackone'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/omc3/tbt/reader_trackone.html#get_structure_from_trackone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_trackone.get_structure_from_trackone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts BPM names and particle coordinates in the <strong>trackone</strong> file produced by <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nturns</strong> -- Number of turns tracked in the <strong>trackone</strong>, i.e. obtained from
+<li><p><strong>nturns</strong> (<em>int</em>) -- Number of turns tracked in the <strong>trackone</strong>, i.e. obtained from
 <code class="docutils literal notranslate"><span class="pre">get_trackone_stats()</span></code>.</p></li>
-<li><p><strong>npart</strong> -- Number of particles tracked in the <strong>trackone</strong>, i.e. obtained from
+<li><p><strong>npart</strong> (<em>int</em>) -- Number of particles tracked in the <strong>trackone</strong>, i.e. obtained from
 <code class="docutils literal notranslate"><span class="pre">get_trackone_stats()</span></code>.</p></li>
-<li><p><strong>infile</strong> -- path to trackone file to be read.</p></li>
+<li><p><strong>infile</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to trackone file to be read.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A Numpy array of BPM names and a 4D Numpy array [quantity, BPM, particle/bunch No.,
 turn No.] quantities in order [x, px, y, py, t, pt, s, E].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.tbt.reader_trackone.get_trackone_stats">
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_trackone.</span></span><span class="sig-name descname"><span class="pre">get_trackone_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/omc3/tbt/reader_trackone.html#get_trackone_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_trackone.get_trackone_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the number of particles and turns in the data from the provided <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code>
+<strong>trackone</strong> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>infile</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to a file containing TbtData.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple with the number of turns and particles.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.tbt.reader_trackone.read_tbt">
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt.reader_trackone.</span></span><span class="sig-name descname"><span class="pre">read_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt/reader_trackone.html#read_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt.reader_trackone.read_tbt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads TbtData object from <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> <strong>trackone</strong> output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>infile</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) -- path to a file containing TbtData.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">TbtData</span></code> object with the loaded data.</p>
 </dd>
 </dl>
 </dd></dl>

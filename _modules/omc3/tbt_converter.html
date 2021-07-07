@@ -285,9 +285,14 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">join</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">save_options_to_config</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">EntryPointParameters</span><span class="p">,</span>
+    <span class="n">entrypoint</span><span class="p">,</span>
+    <span class="n">save_options_to_config</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">omc3</span> <span class="kn">import</span> <span class="n">tbt</span>
 <span class="kn">from</span> <span class="nn">omc3.definitions</span> <span class="kn">import</span> <span class="n">formats</span>
@@ -309,7 +314,9 @@
         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">DATA_READERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype from which to import. &quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;realizations&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of copies with added noise&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;realizations&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of copies with added noise&quot;</span>
+    <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;noise_levels&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sigma of added Gaussian noise&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;use_average&quot;</span><span class="p">,</span>
@@ -365,7 +372,11 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of realizations lower than 1.&quot;</span><span class="p">)</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="n">save_options_to_config</span><span class="p">(</span>
-        <span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">DEFAULT_CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">))),</span>
+        <span class="nb">str</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+            <span class="o">/</span> <span class="n">DEFAULT_CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">))</span>
+        <span class="p">),</span>
+        <span class="c1"># join(opt.outputdir, DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))),</span>
         <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
     <span class="p">)</span>
     <span class="n">_read_and_write_files</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></div>
@@ -381,11 +392,14 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">realizations</span><span class="p">):</span>
             <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_r</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">realizations</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
             <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">noise_levels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">tbt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_file_name</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">tbt_data</span><span class="o">=</span><span class="n">tbt_data</span><span class="p">)</span>
+                <span class="n">tbt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_file_name_without_sdds</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">tbt_data</span><span class="o">=</span><span class="n">tbt_data</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">noise_level</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">noise_levels</span><span class="p">:</span>
                     <span class="n">tbt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                        <span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_file_name</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="si">}</span><span class="s2">_n</span><span class="si">{</span><span class="n">noise_level</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+                        <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_file_name_without_sdds</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="si">}</span><span class="s2">_n</span><span class="si">{</span><span class="n">noise_level</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="n">tbt_data</span><span class="o">=</span><span class="n">tbt_data</span><span class="p">,</span>
                         <span class="n">noise</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">noise_level</span><span class="p">),</span>
                     <span class="p">)</span>
@@ -403,21 +417,28 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A copied version of the provided TbtData object with the relevant element dropped from the matrices.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">copied_data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
+    <span class="n">copied_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropping the following unwanted elements: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elements_to_drop</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements_to_drop</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropping element &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">copied_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">dataframe</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>  <span class="c1"># X / Y dfs, BPMs as rows &amp; turn coordinates as columns</span>
+                <span class="k">for</span> <span class="p">(</span>
+                    <span class="n">dataframe</span>
+                <span class="p">)</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>  <span class="c1"># X / Y dfs, BPMs as rows &amp; turn coordinates as columns</span>
                     <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39; could not be found, skipped&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">copied_data</span>
 
 
-<span class="k">def</span> <span class="nf">_file_name</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.sdds&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_file_name_without_sdds</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the file name without suffix if the suffix is **.sdds**, else the filename.</span>
+<span class="sd">    Previous elements in the file path are discarded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span> <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.sdds&quot;</span> <span class="k">else</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

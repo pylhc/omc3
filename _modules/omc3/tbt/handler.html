@@ -284,14 +284,15 @@
 <span class="sd">functionality for these objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">sdds</span>
 
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span> <span class="nn">omc3.tbt</span> <span class="kn">import</span> <span class="p">(</span><span class="n">reader_esrf</span><span class="p">,</span> <span class="n">reader_iota</span><span class="p">,</span> <span class="n">reader_lhc</span><span class="p">,</span> <span class="n">reader_ptc</span><span class="p">,</span>
-                      <span class="n">reader_trackone</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.tbt</span> <span class="kn">import</span> <span class="n">reader_esrf</span><span class="p">,</span> <span class="n">reader_iota</span><span class="p">,</span> <span class="n">reader_lhc</span><span class="p">,</span> <span class="n">reader_ptc</span><span class="p">,</span> <span class="n">reader_trackone</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -300,17 +301,20 @@
 <span class="n">PLANE_TO_NUM</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 <span class="n">PRINT_PRECISION</span> <span class="o">=</span> <span class="mi">6</span>
 <span class="n">FORMAT_STRING</span> <span class="o">=</span> <span class="s2">&quot; {:.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">PRINT_PRECISION</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;f}&quot;</span>
-<span class="n">DATA_READERS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">lhc</span><span class="o">=</span><span class="n">reader_lhc</span><span class="p">,</span>
-                    <span class="n">iota</span><span class="o">=</span><span class="n">reader_iota</span><span class="p">,</span>
-                    <span class="n">esrf</span><span class="o">=</span><span class="n">reader_esrf</span><span class="p">,</span>
-                    <span class="n">ptc</span><span class="o">=</span><span class="n">reader_ptc</span><span class="p">,</span>
-                    <span class="n">trackone</span><span class="o">=</span><span class="n">reader_trackone</span><span class="p">)</span>
+<span class="n">DATA_READERS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">lhc</span><span class="o">=</span><span class="n">reader_lhc</span><span class="p">,</span>
+    <span class="n">iota</span><span class="o">=</span><span class="n">reader_iota</span><span class="p">,</span>
+    <span class="n">esrf</span><span class="o">=</span><span class="n">reader_esrf</span><span class="p">,</span>
+    <span class="n">ptc</span><span class="o">=</span><span class="n">reader_ptc</span><span class="p">,</span>
+    <span class="n">trackone</span><span class="o">=</span><span class="n">reader_trackone</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<div class="viewcode-block" id="TbtData"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.handler.TbtData">[docs]</a><span class="k">class</span> <span class="nc">TbtData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TbtData"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.handler.TbtData">[docs]</a><span class="k">class</span> <span class="nc">TbtData</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object holding a representation of a Turn-by-Turn Data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrices</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">bunch_ids</span><span class="p">,</span> <span class="n">nturns</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">matrices</span> <span class="o">=</span> <span class="n">matrices</span>  <span class="c1"># list per bunch containing dict per plane of DataFrames</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">date</span> <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
@@ -325,11 +329,18 @@
 <span class="sd">    bunches/particles at all used BPMs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">tbtdata</span><span class="o">.</span><span class="n">matrices</span>
-    <span class="n">bpm_names</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">bpm_names</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
 
-    <span class="n">matrices</span> <span class="o">=</span> <span class="p">[{</span><span class="n">plane</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">bpm_names</span><span class="p">,</span>
-                                     <span class="n">data</span><span class="o">=</span><span class="n">get_averaged_data</span><span class="p">(</span><span class="n">bpm_names</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tbtdata</span><span class="o">.</span><span class="n">nturns</span><span class="p">),</span>
-                                     <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">}]</span>
+    <span class="n">matrices</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="n">plane</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">bpm_names</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">get_averaged_data</span><span class="p">(</span><span class="n">bpm_names</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tbtdata</span><span class="o">.</span><span class="n">nturns</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
     <span class="k">return</span> <span class="n">TbtData</span><span class="p">(</span><span class="n">matrices</span><span class="p">,</span> <span class="n">tbtdata</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tbtdata</span><span class="o">.</span><span class="n">nturns</span><span class="p">)</span></div>
 
 
@@ -344,18 +355,28 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="read_tbt"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.handler.read_tbt">[docs]</a><span class="k">def</span> <span class="nf">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;lhc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TbtData</span><span class="p">:</span>
+<div class="viewcode-block" id="read_tbt"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.handler.read_tbt">[docs]</a><span class="k">def</span> <span class="nf">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">datatype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TbtData</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calls the appropriate loader for the provided data type and returns a TbtData object of the loaded data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (Union[str, Path]): path to a file containing TbtData.</span>
+<span class="sd">        datatype (str): type of data in the file, determines the reader to use. Case-insensitive,</span>
+<span class="sd">            defaults to ``lhc``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A ``TbtData`` object with the loaded data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading turn-by-turn data from &#39;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">DATA_READERS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">DATA_READERS</span><span class="p">[</span><span class="n">datatype</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">write_tbt</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;TbTdata is written in binary SDDS (LHC) format&#39;</span><span class="p">)</span>
-    <span class="n">defs</span> <span class="o">=</span> <span class="n">reader_lhc</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">_matrices_to_array</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">write_tbt</span><span class="p">(</span><span class="n">output_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">tbt_data</span><span class="p">:</span> <span class="n">TbtData</span><span class="p">,</span> <span class="n">noise</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing TbTdata in binary SDDS (LHC) format at &#39;</span><span class="si">{</span><span class="n">output_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">defs</span> <span class="o">=</span> <span class="n">reader_lhc</span>  <span class="c1"># loads the module</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">_matrices_to_array</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">noise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">_add_noise</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">noise</span><span class="p">)</span>
     <span class="n">definitions</span> <span class="o">=</span> <span class="p">[</span>
@@ -364,22 +385,22 @@
         <span class="n">sdds</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">defs</span><span class="o">.</span><span class="n">N_TURNS</span><span class="p">,</span> <span class="s2">&quot;long&quot;</span><span class="p">),</span>
         <span class="n">sdds</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="n">defs</span><span class="o">.</span><span class="n">BUNCH_ID</span><span class="p">,</span> <span class="s2">&quot;long&quot;</span><span class="p">),</span>
         <span class="n">sdds</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="n">defs</span><span class="o">.</span><span class="n">BPM_NAMES</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">),</span>
-        <span class="n">sdds</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="n">defs</span><span class="o">.</span><span class="n">POSITIONS</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="s2">&quot;float&quot;</span><span class="p">),</span>
-        <span class="n">sdds</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="n">defs</span><span class="o">.</span><span class="n">POSITIONS</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="s2">&quot;float&quot;</span><span class="p">)</span>
+        <span class="n">sdds</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="n">defs</span><span class="o">.</span><span class="n">POSITIONS</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="s2">&quot;float&quot;</span><span class="p">),</span>
+        <span class="n">sdds</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="n">defs</span><span class="o">.</span><span class="n">POSITIONS</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span> <span class="s2">&quot;float&quot;</span><span class="p">),</span>
     <span class="p">]</span>
     <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">tbt_data</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span><span class="o">*</span><span class="mf">1e9</span><span class="p">,</span>
+        <span class="n">tbt_data</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">,</span>
         <span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span><span class="p">,</span>
         <span class="n">tbt_data</span><span class="o">.</span><span class="n">nturns</span><span class="p">,</span>
         <span class="n">tbt_data</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">,</span>
         <span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]]),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]])</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]]),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]]),</span>
     <span class="p">]</span>
-    <span class="n">sdds</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sdds</span><span class="o">.</span><span class="n">SddsFile</span><span class="p">(</span><span class="s2">&quot;SDDS1&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span> <span class="n">values</span><span class="p">),</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">.sdds&#39;</span><span class="p">)</span>
+    <span class="n">sdds</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sdds</span><span class="o">.</span><span class="n">SddsFile</span><span class="p">(</span><span class="s2">&quot;SDDS1&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">definitions</span><span class="p">,</span> <span class="n">values</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">.sdds&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_matrices_to_array</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_matrices_to_array</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">TbtData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">nbpms</span> <span class="o">=</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">nbpms</span><span class="p">,</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span><span class="p">,</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nturns</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span><span class="p">):</span>
@@ -388,32 +409,35 @@
     <span class="k">return</span> <span class="n">data</span>
 
 
-<span class="k">def</span> <span class="nf">_add_noise</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">noise</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_add_noise</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">noise</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span> <span class="o">+</span> <span class="n">noise</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">write_lhc_ascii</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">tbt_data</span><span class="p">):</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;TbTdata is written in ascii SDDS (LHC) format&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">write_lhc_ascii</span><span class="p">(</span><span class="n">output_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">tbt_data</span><span class="p">:</span> <span class="n">TbtData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing TbTdata in ASCII SDDS (LHC) format at &#39;</span><span class="si">{</span><span class="n">output_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span><span class="p">):</span>
         <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">output_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
             <span class="n">_write_header</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
             <span class="n">_write_tbt_data</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_header</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_write_header</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">TbtData</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">output_file</span><span class="p">:</span> <span class="n">TextIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#SDDSASCIIFORMAT v1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#Created: </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> at %H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-                      <span class="sa">f</span><span class="s2">&quot;By: Python SDDS converter</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;#Created: </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> at %H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> By: Python SDDS converter</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
     <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#Number of turns: </span><span class="si">{</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">nturns</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;#Number of horizontal monitors: </span><span class="si">{</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="sa">f</span><span class="s2">&quot;#Number of horizontal monitors: </span><span class="si">{</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
     <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#Number of vertical monitors: </span><span class="si">{</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#Acquisition date: </span><span class="si">{</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> at %H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_tbt_data</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">bunch_id</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_write_tbt_data</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">TbtData</span><span class="p">,</span> <span class="n">bunch_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">output_file</span><span class="p">:</span> <span class="n">TextIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">row_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="n">FORMAT_STRING</span> <span class="o">*</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nturns</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">bpm_index</span><span class="p">,</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="n">bunch_id</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
@@ -421,22 +445,29 @@
             <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">bpm_name</span><span class="p">,</span> <span class="n">bpm_index</span><span class="p">,</span> <span class="o">*</span><span class="n">samples</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="numpy_to_tbts"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.handler.numpy_to_tbts">[docs]</a><span class="k">def</span> <span class="nf">numpy_to_tbts</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<div class="viewcode-block" id="numpy_to_tbts"><a class="viewcode-back" href="../../../modules/tbt.html#omc3.tbt.handler.numpy_to_tbts">[docs]</a><span class="k">def</span> <span class="nf">numpy_to_tbts</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TbtData</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts turn by turn data and names into TbTData.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        names: Numpy array of BPM names.</span>
-<span class="sd">        matrix: 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]</span>
+<span class="sd">        names (np.ndarray): Numpy array of BPM names.</span>
+<span class="sd">        matrix (np.ndarray): 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]</span>
 <span class="sd">            quantities in order [x, y].</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A ``TbtData`` object loaded with the data in the provided numpy arrays.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get list of TbTFile from 4D matrix ...</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">nbpms</span><span class="p">,</span> <span class="n">nbunches</span><span class="p">,</span> <span class="n">nturns</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">matrices</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbunches</span><span class="p">):</span>
-        <span class="n">matrices</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="n">index</span><span class="p">,</span> <span class="p">:]),</span>
-                         <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">index</span><span class="p">,</span> <span class="p">:])})</span>
+        <span class="n">matrices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="n">index</span><span class="p">,</span> <span class="p">:]),</span>
+                <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">index</span><span class="p">,</span> <span class="p">:]),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
         <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">TbtData</span><span class="p">(</span><span class="n">matrices</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">nturns</span><span class="p">)</span></div>
 </pre></div>
