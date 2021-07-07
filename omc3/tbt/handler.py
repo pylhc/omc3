@@ -67,7 +67,11 @@ def get_averaged_data(bpm_names, data, plane, turns):
     return np.nanmean(bpm_data, axis=1)
 
 
-def read_tbt(file_path, datatype="lhc"):
+def read_tbt(file_path, datatype="lhc") -> TbtData:
+    """
+    Calls the appropriate loader for the provided data type and returns a TbtData object of the loaded data.
+    """
+    LOGGER.info(f"Loading turn-by-turn data from '{file_path}'")
     return DATA_READERS[datatype].read_tbt(file_path)
 
 
