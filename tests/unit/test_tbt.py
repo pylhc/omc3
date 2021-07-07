@@ -1,6 +1,6 @@
-import os
 import tempfile
 from datetime import datetime
+from pathlib import Path
 
 import h5py
 import numpy as np
@@ -11,13 +11,13 @@ from omc3.definitions.constants import PLANES
 from omc3.tbt import handler, reader_iota, reader_ptc, reader_trackone
 from omc3.tbt_converter import converter_entrypoint
 
-CURRENT_DIR = os.path.dirname(__file__)
+INPUTS_DIR = Path(__file__).parent.parent / "inputs"
 ASCII_PRECISION = 0.5 / np.power(10, handler.PRINT_PRECISION)
 
 
 @pytest.mark.basic
 def test_converter_one_file(_sdds_file, _test_file):
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file))
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent)
     origin = handler.read_tbt(_sdds_file)
     new = handler.read_tbt(f'{_test_file}.sdds')
     _compare_tbt(origin, new, False)
@@ -27,7 +27,7 @@ def test_converter_one_file(_sdds_file, _test_file):
 def test_converter_one_file_with_noise(_sdds_file, _test_file):
     np.random.seed(2019)
     noiselevel = 0.0005
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), noise_levels=[noiselevel])
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, noise_levels=[noiselevel])
     origin = handler.read_tbt(_sdds_file)
     new = handler.read_tbt(f'{_test_file}_n{noiselevel}.sdds')
     _compare_tbt(origin, new, True, noiselevel*10)
@@ -36,7 +36,7 @@ def test_converter_one_file_with_noise(_sdds_file, _test_file):
 @pytest.mark.basic
 def test_converter_more_files(_sdds_file, _test_file):
     rep = 2
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep)
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, realizations=rep)
     origin = handler.read_tbt(_sdds_file)
     for i in range(rep):
         new = handler.read_tbt(f'{_test_file}_r{i}.sdds')
@@ -48,7 +48,7 @@ def test_converter_more_files_with_noise(_sdds_file, _test_file):
     np.random.seed(2019)
     rep = 2
     noiselevel = 0.0005
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep, noise_levels=[noiselevel])
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, realizations=rep, noise_levels=[noiselevel])
     origin = handler.read_tbt(_sdds_file)
     for i in range(rep):
         new = handler.read_tbt(f'{_test_file}_n{noiselevel}_r{i}.sdds')
@@ -199,7 +199,8 @@ def test_tbt_write_read_ascii(_sdds_file, _test_file):
     _compare_tbt(origin, new, True)
 
 
-def _compare_tbt(origin, new, no_binary, max_deviation=ASCII_PRECISION):
+def _compare_tbt(origin: handler.TbtData, new: handler.TbtData, no_binary: bool,
+                 max_deviation=ASCII_PRECISION) -> None:
     assert new.nturns == origin.nturns
     assert new.nbunches == origin.nbunches
     assert new.bunch_ids == origin.bunch_ids
@@ -214,7 +215,7 @@ def _compare_tbt(origin, new, no_binary, max_deviation=ASCII_PRECISION):
                 assert np.all(origin_mat == new_mat)
 
 
-def _original_trackone(track=False):
+def _original_trackone(track: bool = False) -> handler.TbtData:
     names = np.array(["C1.BPM1"])
     matrix = [
         dict(X=pd.DataFrame(index=names, data=[[0.001, -0.0003606, -0.00165823, -0.00266631]]),
@@ -227,19 +228,19 @@ def _original_trackone(track=False):
     return origin
 
 
-def _create_data(nturns, nbpm, function):
+def _create_data(nturns, nbpm, function) -> np.ndarray:
     return np.ones((nbpm, len(nturns))) * function(nturns)
 
 
 @pytest.fixture()
-def _sdds_file():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.sdds")
+def _sdds_file() -> Path:
+    return INPUTS_DIR / "test_file.sdds"
 
 
 @pytest.fixture()
-def _hdf5_file():
+def _hdf5_file() -> Path:
     with tempfile.TemporaryDirectory() as cwd:
-        with h5py.File(os.path.join(cwd, f'test_file.hdf5'), 'w') as hd5_file:
+        with h5py.File(Path(cwd) / "test_file.hdf5", 'w') as hd5_file:
             hd5_file.create_dataset("N:IBE2RH", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
             hd5_file.create_dataset("N:IBE2RV", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
             hd5_file.create_dataset("N:IBE2RS", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
@@ -248,13 +249,13 @@ def _hdf5_file():
             hd5_file.create_dataset("N:IBA1CV", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
             hd5_file.create_dataset("N:IBA1CS", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
 
-        yield os.path.join(cwd, f'test_file.hdf5')
+        yield Path(cwd) / "test_file.hdf5"
 
 
 @pytest.fixture()
-def _hdf5_file_v2():
+def _hdf5_file_v2() -> Path:
     with tempfile.TemporaryDirectory() as cwd:
-        with h5py.File(os.path.join(cwd, f'test_file_v2.hdf5'), 'w') as hd5_file:
+        with h5py.File(Path(cwd) / "test_file_v2.hdf5", 'w') as hd5_file:
 
             hd5_file.create_group('A1C')
             hd5_file['A1C'].create_dataset("Horizontal", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
@@ -266,25 +267,25 @@ def _hdf5_file_v2():
             hd5_file['E2R'].create_dataset("Vertical", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
             hd5_file['E2R'].create_dataset("Intensity", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
 
-        yield os.path.join(cwd, f'test_file_v2.hdf5')
+        yield Path(cwd) / "test_file_v2.hdf5"
 
 
 @pytest.fixture()
-def _test_file():
+def _test_file() -> Path:
     with tempfile.TemporaryDirectory() as cwd:
-        yield os.path.join(cwd, "test_file")
+        yield Path(cwd) / "test_file"
 
 
 @pytest.fixture()
-def _ptc_file():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone")
+def _ptc_file() -> Path:
+    return INPUTS_DIR / "test_trackone"
 
 
 @pytest.fixture()
-def _ptc_file_losses():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_losses")
+def _ptc_file_losses() -> Path:
+    return INPUTS_DIR / "test_trackone_losses"
 
 
 @pytest.fixture()
-def _ptc_file_sci():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_sci")
+def _ptc_file_sci() -> Path:
+    return INPUTS_DIR / "test_trackone_sci"
