@@ -7,6 +7,8 @@ Tools are provided to handle the different forms of turn-by-turn data, as well a
 functionality for these objects.
 """
 from datetime import datetime
+from pathlib import Path
+from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -30,7 +32,7 @@ DATA_READERS = dict(lhc=reader_lhc,
                     trackone=reader_trackone)
 
 
-class TbtData(object):
+class TbtData:
     """
     Object holding a representation of a Turn-by-Turn Data.
     """
@@ -67,18 +69,27 @@ def get_averaged_data(bpm_names, data, plane, turns):
     return np.nanmean(bpm_data, axis=1)
 
 
-def read_tbt(file_path, datatype="lhc") -> TbtData:
+def read_tbt(file_path: Union[str, Path], datatype: str = "lhc") -> TbtData:
     """
     Calls the appropriate loader for the provided data type and returns a TbtData object of the loaded data.
+
+    Args:
+        file_path (Union[str, Path]): path to a file containing TbtData.
+        datatype (str): type of data in the file, determines the reader to use. Defaults to ``lhc``.
+
+    Returns:
+        A ``TbtData`` object with the loaded data.
     """
+    file_path = Path(file_path)
     LOGGER.info(f"Loading turn-by-turn data from '{file_path}'")
     return DATA_READERS[datatype].read_tbt(file_path)
 
 
-def write_tbt(output_path, tbt_data, noise=None):
-    LOGGER.info('TbTdata is written in binary SDDS (LHC) format')
-    defs = reader_lhc
-    data = _matrices_to_array(tbt_data)
+def write_tbt(output_path: Union[str, Path], tbt_data: TbtData, noise: float = None) -> None:
+    output_path = Path(output_path)
+    LOGGER.info(f"Writing TbTdata in binary SDDS (LHC) format at '{output_path.absolute()}'")
+    defs = reader_lhc  # loads the module
+    data: np.ndarray = _matrices_to_array(tbt_data)
     if noise is not None:
         data = _add_noise(data, noise)
     definitions = [
@@ -99,10 +110,10 @@ def write_tbt(output_path, tbt_data, noise=None):
         np.ravel(data[PLANE_TO_NUM['X']]),
         np.ravel(data[PLANE_TO_NUM['Y']])
     ]
-    sdds.write(sdds.SddsFile("SDDS1", None, definitions, values), f'{output_path}.sdds')
+    sdds.write(sdds.SddsFile("SDDS1", None, definitions, values), f"{output_path}.sdds")
 
 
-def _matrices_to_array(tbt_data):
+def _matrices_to_array(tbt_data: TbtData) -> np.ndarray:
     nbpms = tbt_data.matrices[0]["X"].index.size
     data = np.empty((2, nbpms, tbt_data.nbunches, tbt_data.nturns), dtype=float)
     for index in range(tbt_data.nbunches):
@@ -111,7 +122,7 @@ def _matrices_to_array(tbt_data):
     return data
 
 
-def _add_noise(data, noise):
+def _add_noise(data: np.ndarray, noise: float) -> np.ndarray:
     return data + noise * np.random.standard_normal(data.shape)
 
 
@@ -144,14 +155,17 @@ def _write_tbt_data(tbt_data, bunch_id, output_file):
             output_file.write(row_format.format(PLANE_TO_NUM[plane], bpm_name, bpm_index, *samples))
 
 
-def numpy_to_tbts(names: np.ndarray, matrix: np.ndarray):
+def numpy_to_tbts(names: np.ndarray, matrix: np.ndarray) -> TbtData:
     """
     Converts turn by turn data and names into TbTData.
 
     Args:
-        names: Numpy array of BPM names.
-        matrix: 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
+        names (np.ndarray): Numpy array of BPM names.
+        matrix (np.ndarray): 4D Numpy array [quantity, BPM, particle/bunch No., turn No.]
             quantities in order [x, y].
+
+    Returns:
+        A ``TbtData`` object loaded with the data in the provided numpy arrays.
     """
     # get list of TbTFile from 4D matrix ...
     _, nbpms, nbunches, nturns = matrix.shape
