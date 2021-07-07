@@ -48,6 +48,7 @@ def load_esrf_mat_file(infile: Union[str, Path]) -> Tuple[np.ndarray, np.ndarray
     if hor.shape != ver.shape:
         raise ValueError("Number of turns, BPMs or measurements in X and Y do not match")
     # TODO change for tfs file got from accelerator class
+    # Need input for someone with ESRF files experience, where exactly should we look for this file?
     bpm_names = json.loads((Path(infile).parent / BPM_NAMES_FILE).read_text())  # weird?
     if hor.shape[1] != len(bpm_names):
         raise ValueError("Number of bpms does not match with accelerator class")
