@@ -24,6 +24,32 @@ def test_converter_one_file(_sdds_file, _test_file):
 
 
 @pytest.mark.basic
+@pytest.mark.parametrize("dropped_elements", [["BPMSX.4R2.B"], ["BPMSX.4L2.B1", "BPMSW.1R2.B1"]])
+def test_converter_drop_elements(_sdds_file, _test_file, dropped_elements):
+    converter_entrypoint(
+        files=[_sdds_file],
+        outputdir=_test_file.parent,
+        drop_elements=dropped_elements,
+    )
+    new = handler.read_tbt(f"{_test_file}.sdds")
+    for dictionary in new.matrices:
+        for dataframe in dictionary.values():
+            for element in dropped_elements:
+                assert element not in dataframe.index
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize("unknown_element", ["NOT_IN_DATA", "QBX.P4.T1", "INVALID"])
+def test_converter_warns_on_not_found_drop_elements(_sdds_file, _test_file, unknown_element, caplog):
+    converter_entrypoint(
+        files=[_sdds_file],
+        outputdir=_test_file.parent,
+        drop_elements=[unknown_element],
+    )
+    assert f"Element '{unknown_element}' could not be found, skipped" in caplog.text
+
+
+@pytest.mark.basic
 def test_converter_one_file_with_noise(_sdds_file, _test_file):
     np.random.seed(2019)
     noiselevel = 0.0005
