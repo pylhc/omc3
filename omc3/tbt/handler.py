@@ -8,7 +8,7 @@ functionality for these objects.
 """
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, Union
+from typing import TextIO, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -126,17 +126,18 @@ def _add_noise(data: np.ndarray, noise: float) -> np.ndarray:
     return data + noise * np.random.standard_normal(data.shape)
 
 
-def write_lhc_ascii(output_path, tbt_data):
-    LOGGER.info('TbTdata is written in ascii SDDS (LHC) format')
+def write_lhc_ascii(output_path: Union[str, Path], tbt_data: TbtData) -> None:
+    output_path = Path(output_path)
+    LOGGER.info(f"Writing TbTdata in ASCII SDDS (LHC) format at '{output_path.absolute()}'")
 
     for index in range(tbt_data.nbunches):
         suffix = f"_{tbt_data.bunch_ids[index]}" if tbt_data.nbunches > 1 else ""
-        with open(output_path + suffix, "w") as output_file:
+        with output_path.with_suffix(suffix).open("w") as output_file:
             _write_header(tbt_data, index, output_file)
             _write_tbt_data(tbt_data, index, output_file)
 
 
-def _write_header(tbt_data, index, output_file):
+def _write_header(tbt_data: TbtData, index: int, output_file: TextIO) -> None:
     output_file.write("#SDDSASCIIFORMAT v1\n")
     output_file.write(f"#Created: {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')} "
                       f"By: Python SDDS converter\n")
@@ -147,7 +148,7 @@ def _write_header(tbt_data, index, output_file):
     output_file.write(f"#Acquisition date: {tbt_data.date.strftime('%Y-%m-%d at %H:%M:%S')}\n")
 
 
-def _write_tbt_data(tbt_data, bunch_id, output_file):
+def _write_tbt_data(tbt_data: TbtData, bunch_id: int, output_file: TextIO) -> None:
     row_format = "{} {} {}  " + FORMAT_STRING * tbt_data.nturns + "\n"
     for plane in PLANES:
         for bpm_index, bpm_name in enumerate(tbt_data.matrices[bunch_id][plane].index):
