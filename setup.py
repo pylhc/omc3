@@ -29,6 +29,7 @@ DEPENDENCIES = [
     "sdds>=0.1.3",
     "h5py>=2.9.0",
     "uncertainties>=3.1.4",
+    "optics-functions"
 ]
 
 # Extra dependencies
