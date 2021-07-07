@@ -8,15 +8,14 @@ functionality for these objects.
 """
 from datetime import datetime
 from pathlib import Path
-from typing import TextIO, Tuple, Union
+from typing import TextIO, Union
 
 import numpy as np
 import pandas as pd
 import sdds
 
 from omc3.definitions.constants import PLANES
-from omc3.tbt import (reader_esrf, reader_iota, reader_lhc, reader_ptc,
-                      reader_trackone)
+from omc3.tbt import reader_esrf, reader_iota, reader_lhc, reader_ptc, reader_trackone
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
@@ -25,17 +24,20 @@ NUM_TO_PLANE = {"0": "X", "1": "Y"}
 PLANE_TO_NUM = {"X": 0, "Y": 1}
 PRINT_PRECISION = 6
 FORMAT_STRING = " {:." + str(PRINT_PRECISION) + "f}"
-DATA_READERS = dict(lhc=reader_lhc,
-                    iota=reader_iota,
-                    esrf=reader_esrf,
-                    ptc=reader_ptc,
-                    trackone=reader_trackone)
+DATA_READERS = dict(
+    lhc=reader_lhc,
+    iota=reader_iota,
+    esrf=reader_esrf,
+    ptc=reader_ptc,
+    trackone=reader_trackone,
+)
 
 
 class TbtData:
     """
     Object holding a representation of a Turn-by-Turn Data.
     """
+
     def __init__(self, matrices, date, bunch_ids, nturns):
         self.matrices = matrices  # list per bunch containing dict per plane of DataFrames
         self.date = date if date is not None else datetime.now()
@@ -50,11 +52,18 @@ def generate_average_tbtdata(tbtdata):
     bunches/particles at all used BPMs.
     """
     data = tbtdata.matrices
-    bpm_names = data[0]['X'].index
+    bpm_names = data[0]["X"].index
 
-    matrices = [{plane: pd.DataFrame(index=bpm_names,
-                                     data=get_averaged_data(bpm_names, data, plane, tbtdata.nturns),
-                                     dtype=float) for plane in PLANES}]
+    matrices = [
+        {
+            plane: pd.DataFrame(
+                index=bpm_names,
+                data=get_averaged_data(bpm_names, data, plane, tbtdata.nturns),
+                dtype=float,
+            )
+            for plane in PLANES
+        }
+    ]
     return TbtData(matrices, tbtdata.date, [1], tbtdata.nturns)
 
 
@@ -64,7 +73,7 @@ def get_averaged_data(bpm_names, data, plane, turns):
     bpm_data.fill(np.nan)
     for idx, bpm in enumerate(bpm_names):
         for i in range(len(data)):
-            bpm_data[idx, i, :len(data[i][plane].loc[bpm])] = data[i][plane].loc[bpm]
+            bpm_data[idx, i, : len(data[i][plane].loc[bpm])] = data[i][plane].loc[bpm]
 
     return np.nanmean(bpm_data, axis=1)
 
@@ -75,14 +84,15 @@ def read_tbt(file_path: Union[str, Path], datatype: str = "lhc") -> TbtData:
 
     Args:
         file_path (Union[str, Path]): path to a file containing TbtData.
-        datatype (str): type of data in the file, determines the reader to use. Defaults to ``lhc``.
+        datatype (str): type of data in the file, determines the reader to use. Case-insensitive,
+            defaults to ``lhc``.
 
     Returns:
         A ``TbtData`` object with the loaded data.
     """
     file_path = Path(file_path)
     LOGGER.info(f"Loading turn-by-turn data from '{file_path}'")
-    return DATA_READERS[datatype].read_tbt(file_path)
+    return DATA_READERS[datatype.lower()].read_tbt(file_path)
 
 
 def write_tbt(output_path: Union[str, Path], tbt_data: TbtData, noise: float = None) -> None:
@@ -98,17 +108,17 @@ def write_tbt(output_path: Union[str, Path], tbt_data: TbtData, noise: float = N
         sdds.classes.Parameter(defs.N_TURNS, "long"),
         sdds.classes.Array(defs.BUNCH_ID, "long"),
         sdds.classes.Array(defs.BPM_NAMES, "string"),
-        sdds.classes.Array(defs.POSITIONS['X'], "float"),
-        sdds.classes.Array(defs.POSITIONS['Y'], "float")
+        sdds.classes.Array(defs.POSITIONS["X"], "float"),
+        sdds.classes.Array(defs.POSITIONS["Y"], "float"),
     ]
     values = [
-        tbt_data.date.timestamp()*1e9,
+        tbt_data.date.timestamp() * 1e9,
         tbt_data.nbunches,
         tbt_data.nturns,
         tbt_data.bunch_ids,
         tbt_data.matrices[0]["X"].index.to_numpy(),
-        np.ravel(data[PLANE_TO_NUM['X']]),
-        np.ravel(data[PLANE_TO_NUM['Y']])
+        np.ravel(data[PLANE_TO_NUM["X"]]),
+        np.ravel(data[PLANE_TO_NUM["Y"]]),
     ]
     sdds.write(sdds.SddsFile("SDDS1", None, definitions, values), f"{output_path}.sdds")
 
@@ -139,11 +149,13 @@ def write_lhc_ascii(output_path: Union[str, Path], tbt_data: TbtData) -> None:
 
 def _write_header(tbt_data: TbtData, index: int, output_file: TextIO) -> None:
     output_file.write("#SDDSASCIIFORMAT v1\n")
-    output_file.write(f"#Created: {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')} "
-                      f"By: Python SDDS converter\n")
+    output_file.write(
+        f"#Created: {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')} By: Python SDDS converter\n"
+    )
     output_file.write(f"#Number of turns: {tbt_data.nturns}\n")
     output_file.write(
-        f"#Number of horizontal monitors: {tbt_data.matrices[index]['X'].index.size}\n")
+        f"#Number of horizontal monitors: {tbt_data.matrices[index]['X'].index.size}\n"
+    )
     output_file.write(f"#Number of vertical monitors: {tbt_data.matrices[index]['Y'].index.size}\n")
     output_file.write(f"#Acquisition date: {tbt_data.date.strftime('%Y-%m-%d at %H:%M:%S')}\n")
 
@@ -173,7 +185,11 @@ def numpy_to_tbts(names: np.ndarray, matrix: np.ndarray) -> TbtData:
     matrices = []
     indices = []
     for index in range(nbunches):
-        matrices.append({"X": pd.DataFrame(index=names, data=matrix[0, :, index, :]),
-                         "Y": pd.DataFrame(index=names, data=matrix[1, :, index, :])})
+        matrices.append(
+            {
+                "X": pd.DataFrame(index=names, data=matrix[0, :, index, :]),
+                "Y": pd.DataFrame(index=names, data=matrix[1, :, index, :]),
+            }
+        )
         indices.append(index)
     return TbtData(matrices, None, indices, nturns)
