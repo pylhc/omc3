@@ -25,6 +25,7 @@ from numpy import sqrt
 from omc3.definitions.constants import PI2I, PI2
 from omc3.harpy.constants import COL_MU
 from optics_functions.coupling import coupling_via_cmatrix
+from pathlib import Path
 
 
 # column name constants
@@ -56,8 +57,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
       header_dict (dict): dictionary of header items common for all output files
 
     """
-    # say hello
-    LOG.info("calculating coupling -fffe")
+    LOG.info("calculating coupling")
 
     # intersect measurements
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
@@ -145,8 +145,16 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
             rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
             rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
 
-    tfs.write(os.path.join(meas_input.outputdir, "coupling.tfs"),
-              rdt_df, header_dict, save_index="NAME")
+    _write_coupling_tfs(rdt_df, meas_input.outputdir, header_dict)
+
+
+def _write_coupling_tfs(rdt_df, outdir, header_dict):
+    common_cols = ["S"]
+    cols_to_print_f1001 = common_cols + [col for col in rdt_df.columns if "1001" in col]
+    cols_to_print_f1010 = common_cols + [col for col in rdt_df.columns if "1010" in col]
+
+    tfs.write(Path(outdir) / "f1001.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index="NAME")
+    tfs.write(Path(outdir) / "f1010.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index="NAME")
 
 
 def compensate_model(f1001, f1010, tune_dict):
@@ -154,7 +162,7 @@ def compensate_model(f1001, f1010, tune_dict):
     Compensation by model only.
 
     Args:
-        df (DataFrame): the pre-calculated driven coupling RDTs
+        f1001, f1010: the pre-calculated driven coupling RDTs
         tune_dict (TuneDict): the free and driven tunes
     """
     Qx = PI2 * tune_dict["X"]["QFM"]  # natural tunes
@@ -162,7 +170,6 @@ def compensate_model(f1001, f1010, tune_dict):
 
     dQx = PI2 * tune_dict["X"]["QM"]  # driven tunes
     dQy = PI2 * tune_dict["Y"]["QM"]
-
 
     factor1001 = np.sqrt(np.abs(sin(dQy - Qx)*sin(dQx - Qy)))/np.abs(sin(Qx - Qy))
     factor1010 = np.abs(np.sqrt(sin(Qx + dQy)*sin(Qy + dQx))/sin(Qx + Qy))
