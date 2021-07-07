@@ -73,7 +73,7 @@ def get_averaged_data(bpm_names, data, plane, turns):
     bpm_data.fill(np.nan)
     for idx, bpm in enumerate(bpm_names):
         for i in range(len(data)):
-            bpm_data[idx, i, : len(data[i][plane].loc[bpm])] = data[i][plane].loc[bpm]
+            bpm_data[idx, i, :len(data[i][plane].loc[bpm])] = data[i][plane].loc[bpm]
 
     return np.nanmean(bpm_data, axis=1)
 
