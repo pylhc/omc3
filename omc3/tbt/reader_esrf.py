@@ -48,7 +48,7 @@ def load_esrf_mat_file(infile: Union[str, Path]) -> Tuple[np.ndarray, np.ndarray
     if hor.shape != ver.shape:
         raise ValueError("Number of turns, BPMs or measurements in X and Y do not match")
     # TODO change for tfs file got from accelerator class
-    bpm_names = json.load((Path(__file__).parent / BPM_NAMES_FILE).open("r"))  # weird?
+    bpm_names = json.load((Path(infile).parent / BPM_NAMES_FILE).open("r"))
     if hor.shape[1] != len(bpm_names):
         raise ValueError("Number of bpms does not match with accelerator class")
     tbt_data = _check_esrf_tbt_data(np.transpose(np.array([hor, ver]), axes=[0, 2, 3, 1]))
