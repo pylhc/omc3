@@ -19,7 +19,6 @@ LOGGER = logging_tools.get_logger(__name__)
 
 def calculate(meas_input, input_files, tunes, plane, no_errors=False):
     if meas_input.compensation == "none":
-        LOGGER.info("no compensation")
         phase_advances, dfs = _calculate_with_compensation(meas_input,
                                                            input_files,
                                                            tunes,
@@ -29,7 +28,6 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
                                                            no_errors)
         uncompensated_phase_advances = phase_advances
     else:
-        LOGGER.info("compensated, run with compensation")
         phase_advances, free_dfs = _calculate_with_compensation(meas_input,
                                                                 input_files,
                                                                 tunes,

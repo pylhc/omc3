@@ -39,7 +39,6 @@ def measure_optics(input_files, measure_input):
     Returns:
     """
     LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
-    LOGGER.info(f"-- coupling branch --")
     iotools.create_dirs(measure_input.outputdir)
     logging_tools.add_module_handler(logging_tools.file_handler(
         os.path.join(measure_input.outputdir, LOG_FILE)))
@@ -65,6 +64,8 @@ def measure_optics(input_files, measure_input):
         if plane == "X":
             dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
     coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
+    if measure_input.only_coupling:
+        return
     if 'rdt' in measure_input.nonlinear:
         iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))
         rdt.calculate(measure_input, input_files, tune_dict, phase_dict, invariants, common_header)
