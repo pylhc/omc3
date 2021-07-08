@@ -31,14 +31,15 @@ class SegmentCreator(object):
             "NUM_BEAM": instance.beam,  # LHC only
             "PATH": output_path,  # all
             "OUTPUT": output_path,  # Booster only
-            "LABEL": instance.label,  # all
-            "BETAKIND": instance.kind,  # all
-            "STARTFROM": instance.start.name,  # all
-            "ENDAT": instance.end.name,  # all
-            "RING": instance.ring,  # Booster only
-            "KINETICENERGY": instance.energy,  # PS only
-            "FILES_DIR": instance.get_dir(),  # Booster and PS
+            #"LABEL": instance.label,  # all
+            #"BETAKIND": instance.kind,  # all
+            #"STARTFROM": instance.start.name,  # all
+            #"ENDAT": instance.end.name,  # all
+            #"RING": instance.ring,  # Booster only
+            #"KINETICENERGY": instance.energy,  # PS only
+            #"FILES_DIR": instance.get_dir(),  # Booster and PS
             "NAT_TUNE_X": instance.nat_tunes[0],  # Booster and PS
             "NAT_TUNE_Y": instance.nat_tunes[1],  # Booster and PS
         }
+        print(madx_template)
         return madx_template % replace_dict
