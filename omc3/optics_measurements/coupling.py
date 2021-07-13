@@ -91,16 +91,16 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         joined[COL_AMPY_SEC].values*exp(-joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
     )
 
-    q1001_from_A = np.angle(A01) - (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
-    q1010_from_A = np.angle(A0_1) + (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
-    q1010_from_B = np.angle(B_10) + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_A = np.angle(A01)  - (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_B = -np.angle(B10) + (joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
 
-    f1001 = .5 * sqrt(np.abs(A01 * B10))*exp(1.0j * q1001_from_A)
-    f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*exp(1.0j * q1010_from_A)
+    q1010_from_A = np.angle(A0_1) + (joined[f"{COL_MU}Y"].to_numpy() + 0.25) * PI2
+    q1010_from_B = np.angle(B_10) + (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
+
+    f1001 = .5 * sqrt(np.abs(A01 * B10))  *0.5*(exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B))
+    f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*0.5*(exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B))
 
     LOG.debug("f1001 = {}".format(f1001))
-    one_over_N = 1 / len(f1001)
     tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
     # old Cminus
@@ -113,22 +113,15 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     header_dict["newCminus"] = C_new
     LOG.info(f"abs NewCminus = {C_new}")
 
-    q1001_from_A = (q1001_from_A/PI2) % 1.0
-    q1001_from_B = (q1001_from_B/PI2) % 1.0
-    q1010_from_A = (q1010_from_A/PI2) % 1.0
-    q1010_from_B = (q1010_from_B/PI2) % 1.0
-
     if meas_input.compensation == "model":
         f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
     rdt_df = pd.DataFrame(index=joined_index,
-                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W", "q1001", "q1010"],
+                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W"],
                           data=np.array([
                               meas_input.accelerator.model["S"].values[pairs_x],
                               np.real(f1001), np.real(f1010),
                               np.imag(f1001), np.imag(f1010),
                               np.abs(f1001), np.abs(f1010),
-                              q1001_from_A,
-                              q1010_from_A,
                           ]).transpose())
 
     rdt_df.sort_values(by="S", inplace=True)
