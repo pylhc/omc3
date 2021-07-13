@@ -91,13 +91,13 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         joined[COL_AMPY_SEC].values*exp(-joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
     )
 
-    q1001_from_A = np.angle(A01)  - (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1001_from_B = -np.angle(B10) + (joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    q1001_from_A = -np.angle(A01)  + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
 
-    q1010_from_A = np.angle(A0_1) + (joined[f"{COL_MU}Y"].to_numpy() + 0.25) * PI2
-    q1010_from_B = np.angle(B_10) + (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
+    q1010_from_A = -np.angle(A0_1) - (joined[f"{COL_MU}Y"].to_numpy() + 0.25) * PI2
+    q1010_from_B = -np.angle(B_10) - (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
 
-    f1001 = .5 * sqrt(np.abs(A01 * B10))  *0.5*(exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B))
+    f1001 = -.5 * sqrt(np.abs(A01 * B10))  *0.5*(exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B))
     f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*0.5*(exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B))
 
     LOG.debug("f1001 = {}".format(f1001))
