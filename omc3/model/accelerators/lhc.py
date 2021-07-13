@@ -160,7 +160,7 @@ class Lhc(Accelerator):
         LOGGER.debug("Accelerator class verification")
         _ = self.beam
 
-        if self.model_dir is None and self.xing is Nont:
+        if self.model_dir is None and self.xing is None:
             raise AcceleratorDefinitionError("Crossing on or off not set.")
 
         if self.excitation is None:
