@@ -61,7 +61,7 @@
 
           
             
-            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -94,7 +94,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Main Entrypoints</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#hole-in-one">Hole in One</a></li>
@@ -123,7 +123,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Modules</span></p>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#constants">Constants</a></li>
@@ -312,7 +312,7 @@ calculated and written into the header, as well as logged.</p>
 </ul>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">get_kmod_ip_subdirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kmod_dirs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_kmod_ip_subdirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">get_kmod_ip_subdirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kmod_dirs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_kmod_ip_subdirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the paths to the ip-subdirectories in the kmod result directories.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -326,7 +326,7 @@ calculated and written into the header, as well as logged.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.merge_kmod_results.get_lumi_imbalance">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">get_lumi_imbalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tfs.handler.TfsDataFrame</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">uncertainties.core.AffineScalarFunc</span><span class="p"><span class="pre">,</span> </span><span class="pre">uncertainties.core.AffineScalarFunc</span><span class="p"><span class="pre">,</span> </span><span class="pre">uncertainties.core.AffineScalarFunc</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_lumi_imbalance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.get_lumi_imbalance" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">get_lumi_imbalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tfs.handler.TfsDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">uncertainties.core.AffineScalarFunc</span><span class="p"><span class="pre">,</span> </span><span class="pre">uncertainties.core.AffineScalarFunc</span><span class="p"><span class="pre">,</span> </span><span class="pre">uncertainties.core.AffineScalarFunc</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_lumi_imbalance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.get_lumi_imbalance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the IP1 / IP5 luminosity imbalance. The luminosity is taken as defined in
 <cite>Concept of luminosity</cite>, Eq(17): <a class="reference external" href="https://cds.cern.ch/record/941318/files/p361.pdf">https://cds.cern.ch/record/941318/files/p361.pdf</a></p>
 <p>The calculation of the luminosity imbalance is then:</p>
@@ -351,14 +351,14 @@ calculated and written into the header, as well as logged.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.merge_kmod_results.merge_kmod_results">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">merge_kmod_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tfs.handler.TfsDataFrame</span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_kmod_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.merge_kmod_results" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">merge_kmod_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.handler.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_kmod_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.merge_kmod_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main function to merge K-Mod output.
 See <a class="reference internal" href="#module-omc3.scripts.merge_kmod_results" title="omc3.scripts.merge_kmod_results"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.scripts.merge_kmod_results</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.merge_kmod_results.merge_tfs">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">merge_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tfs.handler.TfsDataFrame</span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.merge_tfs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">merge_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.handler.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.merge_tfs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge different kmod analysis results from a list of directories into a single <cite>TfsDataFrame</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

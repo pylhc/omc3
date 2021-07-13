@@ -60,7 +60,7 @@
 
           
             
-            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -93,7 +93,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Main Entrypoints</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/analysis.html">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
@@ -122,7 +122,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Modules</span></p>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
@@ -620,7 +620,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 <code class="docutils literal notranslate"><span class="pre">--trusted-host</span> <span class="pre">acc-py-repo.cern.ch</span></code> to your <code class="docutils literal notranslate"><span class="pre">pip</span></code> installation command).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.extract_between_times">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">extract_between_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tfs.handler.TfsDataFrame</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#extract_between_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.extract_between_times" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">extract_between_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.handler.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#extract_between_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.extract_between_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts data for keys between t_start and t_end from timber.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -637,7 +637,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.get_fill_times">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_fill_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_fill_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_fill_times" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_fill_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_fill_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_fill_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns start and end time of fill with fill number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -654,7 +654,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_tune_and_coupling_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_tune_and_coupling_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_tune_and_coupling_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_tune_and_coupling_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the tune and coupling variable names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -668,7 +668,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.lhc_fill_to_tfs">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">lhc_fill_to_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tfs.handler.TfsDataFrame</span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#lhc_fill_to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">lhc_fill_to_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.handler.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#lhc_fill_to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts data for keys of fill from <code class="docutils literal notranslate"><span class="pre">Timber</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
