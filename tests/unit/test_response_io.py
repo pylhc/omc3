@@ -113,4 +113,3 @@ def test_varmap_kvalues_fail():
         read_varmap(VARMAP_PATH, k_values=["K1S", "K0", "K1L"])
     assert "K0" in str(e.value)
     assert "K1S" in str(e.value)
-

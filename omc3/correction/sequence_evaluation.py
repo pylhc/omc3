@@ -263,16 +263,16 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[str], variables: S
 
     # create macro to create the full table with loop over elements
     job_content += (
-        "create_table(table_id) : macro = {{\n"
+        "create_table(table_id) : macro = {\n"
         f"    create, table=table_id, column=_name, L, {','.join(k_values):s};\n"
         "    i_elem = 0;\n"
-        "    while (i_elem < n_elem) {{\n"
+        "    while (i_elem < n_elem) {\n"
         "        i_elem = i_elem + 1;\n"
         "        setvars, table=mytable, row=i_elem;\n"  # mytable from above!
         "        exec, create_row(mytable, $i_elem);\n"  # mytable from above!
         "        fill,  table=table_id;\n"
-        "    }};\n"
-        "}};\n\n"
+        "    };\n"
+        "};\n\n"
     )
 
     # set all variables to zero

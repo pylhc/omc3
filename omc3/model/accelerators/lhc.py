@@ -319,7 +319,7 @@ class Lhc(Accelerator):
         high_beta = False
         ats_suffix = "_ats" if self.ats else ""
         madx_script = (
-            f"option, -echo;\n"
+            # f"option, -echo;\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
             f'title, "LHC Model created by OMC3";\n'
@@ -349,9 +349,15 @@ class Lhc(Accelerator):
             )
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
-        madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+
+        if self.year == "2018":  # to be checked for 2022 (jdilly, 2021)
+            madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+        else:
+            madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+
         if ats_md:
             madx_script += "exec, full_response_ats();\n"
+
         madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
         return madx_script
 

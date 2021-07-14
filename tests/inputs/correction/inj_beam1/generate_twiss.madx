@@ -1,0 +1,36 @@
+option, -echo;
+call, file = '../../../../omc3/model/madx_macros/general.macros.madx';
+call, file = '../../../../omc3/model/madx_macros/lhc.macros.madx';
+call, file = '../../../../omc3/model/accelerators/lhc/2018/main.seq';
+
+exec, define_nominal_beams();
+call, file = 'opticsfile.1'; !@modifier
+exec, cycle_sequences();
+exec, set_default_crossing_scheme();
+#exec, set_crossing_scheme_ON();
+
+use, sequence = LHCB1;
+option, echo;
+exec, match_tunes_ats(0.28, 0.31, 1);
+
+#exec, do_twiss_monitors(LHCB1, 'twiss_reference.dat', 0.0);
+
+! Quadrupole Error
+kq5.l4b1 = kq5.l4b1 + 0.0001;
+kq4.l8b1 = kq4.l8b1 + 0.00013;
+
+exec, do_twiss_monitors(LHCB1, 'twiss_quadrupole_error.dat', 0.0);
+
+kq5.l4b1 = kq5.l4b1 - 0.0001;
+kq4.l8b1 = kq4.l8b1 - 0.00013;
+
+
+! Skew Quadrupole Error
+
+kqs.l2b1 = kqs.l2b1 + 0.0001;
+kqs.l6b1 = kqs.l6b1 - 0.00023;
+
+exec, do_twiss_monitors(LHCB1, 'twiss_skew_quadrupole_error.dat', 0.0);
+
+kqs.l2b1 = kqs.l2b1 - 0.0001;
+kqs.l6b1 = kqs.l6b1 + 0.00023;

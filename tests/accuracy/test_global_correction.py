@@ -43,7 +43,7 @@ def get_skew_params(beam):
     twiss = CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_skew_quadrupole_error.dat"
     optics_params = OPTICS_PARAMS_CHOICES[8:]
     variables = ["MQSl"]
-    fullresponse = "fullresponse_skew.h5"
+    fullresponse = "fullresponse_MQSl.h5"
     seed = 2234
     return twiss, optics_params, variables, fullresponse, seed
 
@@ -52,7 +52,7 @@ def get_normal_params(beam):
     twiss = CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat"
     optics_params = OPTICS_PARAMS_CHOICES[:6]
     variables = ["MQY"]
-    fullresponse = "fullresponse.h5"
+    fullresponse = "fullresponse_MQY.h5"
     seed = 12368
     return twiss, optics_params, variables, fullresponse, seed
 

@@ -381,7 +381,7 @@ class TwissResponse:
                             bet_term *= tw.loc[el_in, col_disp]
 
                         disp_resp[out_str] = (
-                            coeff_sign * coeff[None, :] * bet_term[:, None] * np.cos(pi2tau)
+                            coeff_sign * coeff[None, :] * bet_term.to_numpy()[:, None] * np.cos(pi2tau)
                         ).transpose()
                     else:
                         LOG.debug(f"  No '{el_type}' variables found. "
@@ -437,7 +437,7 @@ class TwissResponse:
                         else:
                             bet_term *= tw.loc[el_in, col_disp]
 
-                        result = (coeff_sign * coeff * bet_term)[:, None] * np.cos(pi2tau)
+                        result = (coeff_sign * coeff * bet_term).to_numpy()[:, None] * np.cos(pi2tau)
 
                         # correction term
                         try:
@@ -447,8 +447,8 @@ class TwissResponse:
                         else:
                             norm_disp_corr = (tw.loc[el_out, col_disp] /
                                           np.sqrt(tw.loc[el_out, col_beta]))
-                            result += (sign_corr * coeff_corr * norm_disp_corr[None, :] *
-                                       beta_in[:, None] * np.cos(2 * pi2tau))
+                            result += (sign_corr * coeff_corr * norm_disp_corr.to_numpy()[None, :] *
+                                       beta_in.to_numpy()[:, None] * np.cos(2 * pi2tau))
 
                         disp_resp[out_str] = result.transpose()
                     else:
@@ -480,7 +480,7 @@ class TwissResponse:
             if len(k1_el) > 0:
                 dmu = dict.fromkeys(PLANES)
 
-                pi = pd.DataFrame(tw[f"{S}"][:, None] < tw[f"{S}"][None, :],  # pi(i,j) = s(i) < s(j)
+                pi = pd.DataFrame(tw[f"{S}"].to_numpy()[:, None] < tw[f"{S}"].to_numpy()[None, :],  # pi(i,j) = s(i) < s(j)
                                       index=tw.index, columns=tw.index, dtype=int)
 
                 pi_term = (
@@ -527,7 +527,7 @@ class TwissResponse:
             if len(k1_el) > 0:
                 dmu = dict.fromkeys(PLANES)
 
-                pi = pd.DataFrame(tw["S"][:, None] < tw["S"][None, :],  # pi(i,j) = s(i) < s(j)
+                pi = pd.DataFrame(tw["S"].to_numpy()[:, None] < tw["S"].to_numpy()[None, :],  # pi(i,j) = s(i) < s(j)
                                       index=tw.index, columns=tw.index, dtype=int)
 
                 pi_term = pi.loc[k1_el, el_out].to_numpy()
@@ -809,7 +809,7 @@ def get_phase_advances(twiss_df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             colmn_phase = f"{PHASE_ADV}{plane}"
             phases_mdl = twiss_df.loc[twiss_df.index, colmn_phase]
             # Same convention as in [1]: DAdv(i,j) = Phi(j) - Phi(i)
-            phase_advances = pd.DataFrame((phases_mdl[None, :] - phases_mdl[:, None]),
+            phase_advances = pd.DataFrame((phases_mdl.to_numpy()[None, :] - phases_mdl.to_numpy()[:, None]),
                                           index=twiss_df.index,
                                           columns=twiss_df.index)
             # Do not calculate dphi and tau here.

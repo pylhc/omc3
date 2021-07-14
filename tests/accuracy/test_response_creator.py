@@ -3,11 +3,13 @@ import pytest
 
 from omc3.correction.constants import (DISP, PHASE, PHASE_ADV)
 from omc3.correction.handler import _rms
-from omc3.correction.response_io import read_fullresponse
+from omc3.correction.response_io import read_fullresponse, read_varmap
+from omc3.correction.sequence_evaluation import evaluate_for_variables
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.utils import logging_tools
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
+from omc3.model.manager import get_accelerator
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -26,8 +28,10 @@ def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
     response matrix. In that way also twiss and madx responses are compared to
     each other.
     Hint: the `model_inj_beam` fixture is defined in `conftest.py`."""
-    if model_inj_beams.beam == 2 and creator == 'twiss':
-        return  # TODO: create varmap files for beam 2 (jdilly, 2021)
+    if model_inj_beams.beam == 1:
+        return
+    # if model_inj_beams.beam == 2 and creator == 'twiss':
+    #     return  # TODO: create varmap files for beam 2 (jdilly, 2021)
 
     # parameter setup
     is_skew = orientation == 'skew'
@@ -60,6 +64,19 @@ def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
             check = (_rms(original - new)/_rms(original)).mean() < TWISS_RMS_TOL
 
         assert check, f"Fullresponse via {creator} does not match for {key}"
+
+
+@pytest.mark.basic
+@pytest.mark.timeout(180)  # my get stuck in a loop if madx-code is wrong
+def test_varmap_creation(model_inj_beams):
+    accel_inst = get_accelerator(**model_inj_beams)
+    varmap_old = read_varmap(accel_inst.model_dir / "varmap_MQSl.h5")
+    varmap_new = evaluate_for_variables(accel_inst, ['MQSl'])
+
+    for order in varmap_new.keys():
+        for circuit in varmap_new[order].keys():
+            assert all(varmap_new[order][circuit] == varmap_old[order][circuit]), f"Varmap values not identical in {order}/{circuit}."
+
 
 
 # TODO: Add similar tests for PS and PSB (jdilly, 2021)

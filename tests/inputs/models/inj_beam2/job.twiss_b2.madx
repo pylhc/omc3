@@ -14,7 +14,7 @@ if(xing_angles==1){
 }
 use, sequence = LHCB2;
 option, echo;
-exec, match_tunes(0.28, 0.31, 2);
+exec, match_tunes_ats(0.28, 0.31, 2);
 exec, coupling_knob(2);
 exec, do_twiss_monitors(LHCB2, 'twiss.dat', 0.0);
 exec, do_twiss_elements(LHCB2, 'twiss_elements.dat', 0.0);
