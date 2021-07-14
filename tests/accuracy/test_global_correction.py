@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -14,8 +15,8 @@ from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
 
-# LOG = logging_tools.get_logger(__name__)
-LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
+LOG = logging_tools.get_logger(__name__)
+# LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
 
 # Paths ---
 INPUTS = Path(__file__).parent.parent / 'inputs'
@@ -32,10 +33,10 @@ RMS_TOL_DICT = {
     f"{DISP}Y": 0.0015,
     f"{NORM_DISP}X": 0.001,
     f"{TUNE}": 0.01,
-    f"{F1001}R": 0.001,
-    f"{F1001}I": 0.001,
-    f"{F1010}R": 0.001,
-    f"{F1010}I": 0.001,
+    f"{F1001}R": 0.0015,
+    f"{F1001}I": 0.0015,
+    f"{F1010}R": 0.002,
+    f"{F1010}I": 0.002,
 }
 
 
@@ -105,13 +106,16 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
         # print(f"ITERATION {iter_step}")
         # for param in optics_params:
         #     print(f"{param}: {diff_rms[param]}")
+        # print(f"Sum: {sum(diff_rms.values())}")
+        # print()
+        # continue
         # ########################################
 
         if iter_step > 0:
             # assert RMS after correction smaller than tolerances
             for param in optics_params:
                 assert diff_rms[param] < RMS_TOL_DICT[param], (
-                    f"RMS for {param} in iteration {iter_step} larger than tolerance."
+                    f"RMS for {param} in iteration {iter_step} larger than tolerance: "
                     f"{diff_rms[param]} >= {RMS_TOL_DICT[param]}."
                     )
 

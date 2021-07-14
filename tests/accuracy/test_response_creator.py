@@ -28,11 +28,6 @@ def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
     response matrix. In that way also twiss and madx responses are compared to
     each other.
     Hint: the `model_inj_beam` fixture is defined in `conftest.py`."""
-    if model_inj_beams.beam == 1:
-        return
-    # if model_inj_beams.beam == 2 and creator == 'twiss':
-    #     return  # TODO: create varmap files for beam 2 (jdilly, 2021)
-
     # parameter setup
     is_skew = orientation == 'skew'
     beam = model_inj_beams.beam

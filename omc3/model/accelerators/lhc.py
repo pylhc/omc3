@@ -327,7 +327,8 @@ class Lhc(Accelerator):
             f"exec, define_nominal_beams();\n"
         )
         madx_script += "".join(
-            f"call, file = '{modifier}'; {MODIFIER_TAG}\n" for modifier in self.modifiers
+            f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
+            for modifier in self.modifiers
         )
         madx_script += (
             f"exec, cycle_sequences();\n"

@@ -124,7 +124,7 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.correction.constants import BETA, DISP, F1001, F1010, NORM_DISP, PHASE_ADV, TUNE, S
+from omc3.correction.constants import BETA, DISP, F1001, F1010, NORM_DISP, PHASE_ADV, TUNE, S, PHASE
 from omc3.correction.response_io import read_varmap
 from omc3.correction.sequence_evaluation import check_varmap_file
 from omc3.model.accelerators.accelerator import Accelerator
@@ -164,6 +164,7 @@ class TwissResponse:
         with timeit(lambda t: LOG.debug(f"  Time initializing TwissResponse: {t} s")):
             # Get input
             self._twiss = self._get_model_twiss(accel_inst)
+            self._beam_sign = 1 if getattr(accel_inst, "beam", 1) == 1 else -1
             self._variables = accel_inst.get_variables(classes=variable_categories)
             self._var_to_el = self._get_variable_mapping(varmap_or_path)
             self._elements_in = self._get_input_elements()
@@ -728,7 +729,7 @@ class TwissResponse:
         else:
             return self._var_to_el[order]
 
-    def get_response_for(self, obs=None) -> dict:  # Dict[str, ???]
+    def get_response_for(self, observables=None) -> dict:  # Dict[str, ???]
         """ Calculates and returns only desired response matrices """
         # calling functions for the getters to call functions only if needed
         def caller(func, plane):
@@ -768,14 +769,19 @@ class TwissResponse:
             f"{F1010}I": (couple_caller, self.get_coupling, "1010I"),
         }
 
-        if obs is None:
-            obs = obs_map.keys()
+        if observables is None:
+            observables = list(obs_map.keys())
+        else:
+            # rename to PHASE to MU
+            observables = [f"{PHASE_ADV}{key[-1]}" if key.startswith(PHASE) else key for key in observables]
 
-        LOG.debug(f"Calculating responses for {obs}.")
+        LOG.debug(f"Calculating responses for {observables}.")
         with timeit(lambda t: LOG.debug(f"Total time getting responses: {t} s")):
-            response = dict.fromkeys(obs)
-            for key in obs:
-                response[key] = obs_map[key][0](*obs_map[key][1:3])
+            response = dict.fromkeys(observables)
+            for key in observables:
+                # response[key] = obs_map[key][0](*obs_map[key][1:3])
+                # I still don't know why there is a sign-change between B1 and B2 (jdilly, 2021)
+                response[key] = self._beam_sign * obs_map[key][0](*obs_map[key][1:3])
         return response
 
 

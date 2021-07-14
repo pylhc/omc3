@@ -15,10 +15,10 @@ _by jdilly_
   - more usages of constants for strings (e.g. column names)
   - introducing pathlib.Path in some places
   - output-paths in model job-files are relative
-
+  
 - Fixes:
   - Matplotlib warnings for `set_window_title`
-  - Excluded Windows and MacOS py3.9 from normal testing, due to installation issues of pyTables
+  - excluded Windows and MacOS py3.9 from normal testing, due to installation issues of pyTables
   - model creation accepts relative and absolute paths
 
 
