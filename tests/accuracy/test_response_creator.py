@@ -16,14 +16,14 @@ LOG = logging_tools.get_logger(__name__)
 
 DELTA_K = 2e-5
 MADX_RTOL = 1e-3
-MADX_ATOL = 1e-8 / DELTA_K  # tfs-precision / DELTA
+MADX_ATOL = (1e-8 / DELTA_K) * 1.0001  # (tfs-precision / DELTA) * numerical margin
 TWISS_RMS_TOL = 0.07
 
 
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
 @pytest.mark.parametrize('creator', ('madx', 'twiss'))
-def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
+def test_response_accuracy(model_inj_beams, orientation, creator):
     """ Tests the accuracy of a newly generated response against the saved
     response matrix. In that way also twiss and madx responses are compared to
     each other.
@@ -54,8 +54,11 @@ def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
         # ###########################################
 
         if creator == "madx":
+            # check for exact values
+            # allclose: all(abs(a - b) <= (atol + rtol * abs(b)))
             check = np.allclose(original, new, rtol=MADX_RTOL, atol=MADX_ATOL)
         else:
+            # check for approximate values
             check = (_rms(original - new)/_rms(original)).mean() < TWISS_RMS_TOL
 
         assert check, f"Fullresponse via {creator} does not match for {key}"
