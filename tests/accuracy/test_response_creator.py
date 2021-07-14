@@ -69,6 +69,8 @@ def test_response_accuracy(tmp_path, model_inj_beams, orientation, creator):
 @pytest.mark.basic
 @pytest.mark.timeout(180)  # my get stuck in a loop if madx-code is wrong
 def test_varmap_creation(model_inj_beams):
+    """ Tests the creation of varmap files and compares them with earlier created ones.
+    Hint: the `model_inj_beam` fixture is defined in `conftest.py`."""
     accel_inst = get_accelerator(**model_inj_beams)
     varmap_old = read_varmap(accel_inst.model_dir / "varmap_MQSl.h5")
     varmap_new = evaluate_for_variables(accel_inst, ['MQSl'])
