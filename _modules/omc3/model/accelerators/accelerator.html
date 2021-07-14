@@ -284,22 +284,31 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span>
 
-<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ERROR_DEFFS_TXT</span><span class="p">,</span> <span class="n">MODIFIERS_MADX</span><span class="p">,</span> <span class="n">MODIFIER_TAG</span><span class="p">,</span>
-                                  <span class="n">TWISS_AC_DAT</span><span class="p">,</span> <span class="n">TWISS_ADT_DAT</span><span class="p">,</span>
-                                  <span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span> <span class="n">TWISS_DAT</span><span class="p">,</span>
-                                  <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">,</span> <span class="n">JOB_MODEL_MADX</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ERROR_DEFFS_TXT</span><span class="p">,</span>
+    <span class="n">JOB_MODEL_MADX</span><span class="p">,</span>
+    <span class="n">MODIFIER_TAG</span><span class="p">,</span>
+    <span class="n">MODIFIERS_MADX</span><span class="p">,</span>
+    <span class="n">TWISS_AC_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_ADT_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
 
-<span class="k">class</span> <span class="nc">AccExcitationMode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">AccExcitationMode</span><span class="p">:</span>
     <span class="c1"># it is very important that FREE = 0</span>
     <span class="n">FREE</span><span class="p">,</span> <span class="n">ACD</span><span class="p">,</span> <span class="n">ADT</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
@@ -307,22 +316,25 @@
 <span class="n">DRIVEN_EXCITATIONS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">acd</span><span class="o">=</span><span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">,</span> <span class="n">adt</span><span class="o">=</span><span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ADT</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="AccElementTypes"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.AccElementTypes">[docs]</a><span class="k">class</span> <span class="nc">AccElementTypes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AccElementTypes"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.AccElementTypes">[docs]</a><span class="k">class</span> <span class="nc">AccElementTypes</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Defines the strings for the element types ``BPMS``, ``MAGNETS`` and ``ARC_BPMS``.&quot;&quot;&quot;</span>
+
     <span class="n">BPMS</span> <span class="o">=</span> <span class="s2">&quot;bpm&quot;</span>
     <span class="n">MAGNETS</span> <span class="o">=</span> <span class="s2">&quot;magnet&quot;</span>
     <span class="n">ARC_BPMS</span> <span class="o">=</span> <span class="s2">&quot;arc_bpm&quot;</span></div>
 
 
-<div class="viewcode-block" id="Accelerator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator">[docs]</a><span class="k">class</span> <span class="nc">Accelerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Accelerator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator">[docs]</a><span class="k">class</span> <span class="nc">Accelerator</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class to serve as an interface to implement the rest of the accelerators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
-               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
-               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span>
-               <span class="p">}</span>
-    <span class="n">BPM_INITIAL</span> <span class="o">=</span> <span class="s1">&#39;B&#39;</span>
+
+    <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">BPM_INITIAL</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">():</span>
@@ -330,44 +342,49 @@
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_dir&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to model directory; loads tunes and excitation from model!&quot;</span><span class="p">)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to model directory; loads tunes and excitation from model!&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nat_tunes&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
             <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Natural tunes without integer part.&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Natural tunes without integer part.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;drv_tunes&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
             <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Driven tunes without integer part.&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Driven tunes without integer part.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;driven_excitation&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;acd&quot;</span><span class="p">,</span> <span class="s2">&quot;adt&quot;</span><span class="p">),</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Denotes driven excitation by AC-dipole (acd) or by ADT (adt)&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Denotes driven excitation by AC-dipole (acd) or by ADT (adt)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dpp&quot;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delta p/p to use.&quot;</span><span class="p">,)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delta p/p to use.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Energy in Tev.&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Energy in Tev.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;modifiers&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
             <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the optics file to use (modifiers file).&quot;</span><span class="p">)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the optics file to use (modifiers file).&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;xing&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If True, x-ing angles will be applied to model&quot;</span><span class="p">)</span>
-
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;xing&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If True, x-ing angles will be applied to model&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="o">=</span> <span class="kc">None</span>
@@ -387,14 +404,16 @@
 
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">model_dir</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">nat_tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Arguments &#39;nat_tunes&#39; and &#39;driven_tunes&#39; are &quot;</span>
-                                                 <span class="s2">&quot;not allowed when loading from model directory.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                    <span class="s2">&quot;Arguments &#39;nat_tunes&#39; and &#39;driven_tunes&#39; are &quot;</span>
+                    <span class="s2">&quot;not allowed when loading from model directory.&quot;</span>
+                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_from_model_dir</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_from_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">init_from_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init_from_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">nat_tunes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Argument &#39;nat_tunes&#39; is required.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">driven_excitation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
@@ -413,9 +432,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">xing</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xing&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modifiers&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">init_from_model_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init_from_model_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating accelerator instance from model dir&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">model_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
 
         <span class="c1"># Elements #####################################</span>
         <span class="n">elements_path</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_DAT</span>
@@ -427,14 +446,15 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-            <span class="n">bpm_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">BPM_INITIAL</span><span class="p">)]</span>
+            <span class="n">bpm_index</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">BPM_INITIAL</span><span class="p">)</span>
+            <span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_index</span><span class="p">,</span> <span class="p">:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Q1&quot;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Q2&quot;</span><span class="p">])]</span>
         <span class="c1"># self.energy = float(self.model.headers[&quot;ENERGY&quot;]) * 1e-3  # TODO not the same Energy (jdilly, 2021)</span>
 
         <span class="c1"># Excitations #####################################</span>
-        <span class="n">driven_filenames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">acd</span><span class="o">=</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_AC_DAT</span><span class="p">,</span>
-                                <span class="n">adt</span><span class="o">=</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ADT_DAT</span><span class="p">)</span>
+        <span class="n">driven_filenames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">acd</span><span class="o">=</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_AC_DAT</span><span class="p">,</span> <span class="n">adt</span><span class="o">=</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ADT_DAT</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">driven_filenames</span><span class="p">[</span><span class="s2">&quot;acd&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">driven_filenames</span><span class="p">[</span><span class="s2">&quot;adt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;ADT as well as ACD models provided. Choose only one.&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">driven_filenames</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -461,7 +481,7 @@
     <span class="c1"># Class methods ###########################################</span>
 
 <div class="viewcode-block" id="Accelerator.get_element_types_mask"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_element_types_mask</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">list_of_elements</span><span class="p">,</span> <span class="n">types</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_element_types_mask</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">list_of_elements</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">types</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the</span>
 <span class="sd">        specified types.</span>
@@ -500,11 +520,11 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;A function should have been overwritten, check stack trace.&quot;</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">beam_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">beam_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beam_direction</span>
 
     <span class="nd">@beam_direction</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">beam_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">beam_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Beam direction has to be either 1 or -1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_beam_direction</span> <span class="o">=</span> <span class="n">value</span>
@@ -530,13 +550,13 @@
         <span class="k">return</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">model_driven</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">model_driven</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_driven</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No driven model given in this accelerator instance.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_driven</span>
 
 <div class="viewcode-block" id="Accelerator.get_dir"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_dir">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Default directory for accelerator. Should be overwritten if more specific.&quot;&quot;&quot;</span>
         <span class="n">dir_path</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span>
         <span class="k">if</span> <span class="n">dir_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -544,12 +564,14 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No directory for accelerator </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2"> available.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Accelerator.get_file"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_file">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Default location for accelerator files. Should be overwritten if more specific.&quot;&quot;&quot;</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span> <span class="o">/</span> <span class="n">filename</span>
         <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">file_path</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not available for accelerator </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not available for accelerator </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span></div>
 
     <span class="c1"># Jobs ###################################################################</span>
 
@@ -569,23 +591,25 @@
     <span class="c1">##########################################################################</span>
 
 
-<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Variable">[docs]</a><span class="k">class</span> <span class="nc">Variable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Variable">[docs]</a><span class="k">class</span> <span class="nc">Variable</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic corrector variable class that holds `name`, `position (s)` and physical elements it</span>
 <span class="sd">    affects. These variables should be logical variables that have and effect in the model if</span>
 <span class="sd">    modified.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">classes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">elements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">classes</span></div>
 
 
-<div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic corrector element class that holds `name` and `position (s)` of the corrector. This</span>
 <span class="sd">    element should represent a physical element of the accelerator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">s</span></div>
@@ -596,20 +620,25 @@
 <span class="sd">    Raised when an `Accelerator` instance is wrongly used, for example by calling a method that</span>
 <span class="sd">    should have been overwritten.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
 <span class="c1"># Helper ----</span>
 
-<span class="k">def</span> <span class="nf">_get_modifiers_from_modeldir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_get_modifiers_from_modeldir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Parse modifiers from job.create_model.madx or use modifiers.madx file.&quot;&quot;&quot;</span>
     <span class="n">job_file</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">JOB_MODEL_MADX</span>
     <span class="k">if</span> <span class="n">job_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">job_madx</span> <span class="o">=</span> <span class="n">job_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
 
         <span class="c1"># find modifier tag in lines and return called file in these lines</span>
-        <span class="n">modifiers</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;\s+call,\s*file\s*=\s*[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?([^;\&#39;</span><span class="se">\&quot;</span><span class="s2">]+)[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?\s*;\s*</span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">job_madx</span><span class="p">,</span>
-                               <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+        <span class="n">modifiers</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span>
+            <span class="sa">fr</span><span class="s2">&quot;\s+call,\s*file\s*=\s*[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?([^;\&#39;</span><span class="se">\&quot;</span><span class="s2">]+)[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?\s*;\s*</span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">job_madx</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">modifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">modifiers</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">modifiers</span> <span class="ow">or</span> <span class="kc">None</span>
 
