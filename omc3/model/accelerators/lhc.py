@@ -168,24 +168,6 @@ class Lhc(Accelerator):
         if (self.excitation != AccExcitationMode.FREE) and (self.drv_tunes is None):
             raise AcceleratorDefinitionError("An excitation mode was given but driven tunes are not set.")
 
-        if self.modifiers is None or not len(self.modifiers):
-            if self.model_dir is not None:
-                raise AcceleratorDefinitionError(
-                    "The accelerator definition is incomplete, no modifiers could be found."
-                )
-        else:
-            inexistent_modifiers: List[Path]
-            if self.model_dir is None:
-                inexistent_modifiers = [m for m in self.modifiers if not m.exists()]
-            else:
-                inexistent_modifiers = [m for m in self.modifiers if not (self.model_dir / m).exists()]
-
-            if len(inexistent_modifiers):
-                raise AcceleratorDefinitionError(
-                    "The following modifier files do not exist: "
-                    f"{', '.join([str(modifier.absolute()) for modifier in inexistent_modifiers])}"
-                )
-
         # TODO: write more output prints
         LOGGER.debug("... verification passed. \nSome information about the accelerator:")
         LOGGER.debug(f"Class name       {self.__class__.__name__}")
@@ -332,14 +314,14 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
-    def get_base_madx_script(self, model_directory: Path, best_knowledge: bool = False) -> str:
+    def get_base_madx_script(self, best_knowledge: bool = False) -> str:
         ats_md = False
         high_beta = False
         ats_suffix = "_ats" if self.ats else ""
         madx_script = (
             f"option, -echo;\n"
-            f"call, file = '{model_directory / MACROS_DIR / GENERAL_MACROS}';\n"
-            f"call, file = '{model_directory / MACROS_DIR / LHC_MACROS}';\n"
+            f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
+            f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
             f'title, "LHC Model created by OMC3";\n'
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n"
@@ -361,9 +343,9 @@ class Lhc(Accelerator):
         if best_knowledge:
             # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
             madx_script += (
-                f"readmytable, file = '{model_directory / B2_ERRORS_TFS}', table=errtab;\n"
+                f"readmytable, file = '{self.model_dir / B2_ERRORS_TFS}', table=errtab;\n"
                 f"seterr, table=errtab;\n"
-                f"call, file = '{model_directory / B2_SETTINGS_MADX}';\n"
+                f"call, file = '{self.model_dir / B2_SETTINGS_MADX}';\n"
             )
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
@@ -374,7 +356,7 @@ class Lhc(Accelerator):
         return madx_script
 
     def get_update_correction_script(self, outpath: Path, corr_file: Path) -> str:
-        madx_script = self.get_base_madx_script(self.model_dir)
+        madx_script = self.get_base_madx_script()
         madx_script += (
             f"call, file = '{str(corr_file)}';\n"
             f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"

@@ -229,7 +229,7 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[str], variables: S
         TEMPFILE needs to be replaced in the returned string.
     """
     # basic sequence creation
-    job_content: str = accel_inst.get_base_madx_script(accel_inst.model_dir)
+    job_content: str = accel_inst.get_base_madx_script()
 
     # create a survey and save it to a temporary file
     job_content += (
