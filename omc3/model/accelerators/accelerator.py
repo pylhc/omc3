@@ -7,22 +7,31 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 import re
 from pathlib import Path
+from typing import List
 
+import numpy
 import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters
 
-from omc3.model.constants import (ERROR_DEFFS_TXT, MODIFIERS_MADX, MODIFIER_TAG,
-                                  TWISS_AC_DAT, TWISS_ADT_DAT,
-                                  TWISS_BEST_KNOWLEDGE_DAT, TWISS_DAT,
-                                  TWISS_ELEMENTS_DAT, JOB_MODEL_MADX)
+from omc3.model.constants import (
+    ERROR_DEFFS_TXT,
+    JOB_MODEL_MADX,
+    MODIFIER_TAG,
+    MODIFIERS_MADX,
+    TWISS_AC_DAT,
+    TWISS_ADT_DAT,
+    TWISS_BEST_KNOWLEDGE_DAT,
+    TWISS_DAT,
+    TWISS_ELEMENTS_DAT,
+)
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
 
 
-class AccExcitationMode(object):
+class AccExcitationMode:
     # it is very important that FREE = 0
     FREE, ACD, ADT = range(3)
 
@@ -30,23 +39,25 @@ class AccExcitationMode(object):
 DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
 
 
-class AccElementTypes(object):
+class AccElementTypes:
     """Defines the strings for the element types ``BPMS``, ``MAGNETS`` and ``ARC_BPMS``."""
+
     BPMS = "bpm"
     MAGNETS = "magnet"
     ARC_BPMS = "arc_bpm"
 
 
-class Accelerator(object):
+class Accelerator:
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
     # RE_DICT needs to use MAD-X compatible patterns (jdilly, 2021)
-    RE_DICT = {AccElementTypes.BPMS: r".*",
-               AccElementTypes.MAGNETS: r".*",
-               AccElementTypes.ARC_BPMS: r".*"
-               }
-    BPM_INITIAL = 'B'
+    RE_DICT = {
+        AccElementTypes.BPMS: r".*",
+        AccElementTypes.MAGNETS: r".*",
+        AccElementTypes.ARC_BPMS: r".*",
+    }
+    BPM_INITIAL = "B"
 
     @staticmethod
     def get_parameters():
@@ -54,44 +65,49 @@ class Accelerator(object):
         params.add_parameter(
             name="model_dir",
             type=Path,
-            help="Path to model directory; loads tunes and excitation from model!")
+            help="Path to model directory; loads tunes and excitation from model!",
+        )
         params.add_parameter(
             name="nat_tunes",
             type=float,
             nargs=2,
-            help="Natural tunes without integer part.", )
+            help="Natural tunes without integer part.",
+        )
         params.add_parameter(
             name="drv_tunes",
             type=float,
             nargs=2,
-            help="Driven tunes without integer part.", )
+            help="Driven tunes without integer part.",
+        )
         params.add_parameter(
             name="driven_excitation",
             type=str,
             choices=("acd", "adt"),
-            help="Denotes driven excitation by AC-dipole (acd) or by ADT (adt)", )
+            help="Denotes driven excitation by AC-dipole (acd) or by ADT (adt)",
+        )
         params.add_parameter(
             name="dpp",
             default=0.0,
             type=float,
-            help="Delta p/p to use.",)
+            help="Delta p/p to use.",
+        )
         params.add_parameter(
             name="energy",
             type=float,
-            help="Energy in Tev.", )
+            help="Energy in Tev.",
+        )
         params.add_parameter(
             name="modifiers",
             type=Path,
             nargs="*",
-            help="Path to the optics file to use (modifiers file).")
+            help="Path to the optics file to use (modifiers file).",
+        )
         params.add_parameter(
-            name="xing",
-            action="store_true",
-            help="If True, x-ing angles will be applied to model")
-
+            name="xing", action="store_true", help="If True, x-ing angles will be applied to model"
+        )
         return params
 
-    def __init__(self, opt):
+    def __init__(self, opt) -> None:
         self.model_dir = None
         self.nat_tunes = None
         self.drv_tunes = None
@@ -111,14 +127,16 @@ class Accelerator(object):
 
         if opt.model_dir:
             if (opt.nat_tunes is not None) or (opt.drv_tunes is not None):
-                raise AcceleratorDefinitionError("Arguments 'nat_tunes' and 'driven_tunes' are "
-                                                 "not allowed when loading from model directory.")
+                raise AcceleratorDefinitionError(
+                    "Arguments 'nat_tunes' and 'driven_tunes' are "
+                    "not allowed when loading from model directory."
+                )
             self.init_from_model_dir(opt.model_dir)
 
         else:
             self.init_from_options(opt)
 
-    def init_from_options(self, opt):
+    def init_from_options(self, opt) -> None:
         if opt.nat_tunes is None:
             raise AcceleratorDefinitionError("Argument 'nat_tunes' is required.")
         if (opt.drv_tunes is None) and (opt.driven_excitation is not None):
@@ -137,9 +155,9 @@ class Accelerator(object):
         self.xing = opt.get("xing", None)
         self.modifiers = opt.get("modifiers", None)
 
-    def init_from_model_dir(self, model_dir: Path):
+    def init_from_model_dir(self, model_dir: Path) -> None:
         LOG.debug("Creating accelerator instance from model dir")
-        self.model_dir = model_dir
+        self.model_dir = Path(model_dir)
 
         # Elements #####################################
         elements_path = model_dir / TWISS_ELEMENTS_DAT
@@ -151,14 +169,15 @@ class Accelerator(object):
         try:
             self.model = tfs.read(model_dir / TWISS_DAT, index="NAME")
         except IOError:
-            bpm_index = [idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)]
+            bpm_index = [
+                idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)
+            ]
             self.model = self.elements.loc[bpm_index, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
         # self.energy = float(self.model.headers["ENERGY"]) * 1e-3  # TODO not the same Energy (jdilly, 2021)
 
         # Excitations #####################################
-        driven_filenames = dict(acd=model_dir / TWISS_AC_DAT,
-                                adt=model_dir / TWISS_ADT_DAT)
+        driven_filenames = dict(acd=model_dir / TWISS_AC_DAT, adt=model_dir / TWISS_ADT_DAT)
         if driven_filenames["acd"].is_file() and driven_filenames["adt"].is_file():
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
         for key in driven_filenames.keys():
@@ -185,7 +204,7 @@ class Accelerator(object):
     # Class methods ###########################################
 
     @classmethod
-    def get_element_types_mask(cls, list_of_elements, types):
+    def get_element_types_mask(cls, list_of_elements: List[str], types) -> numpy.ndarray:
         """
         Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
         specified types.
@@ -224,11 +243,11 @@ class Accelerator(object):
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     @property
-    def beam_direction(self):
+    def beam_direction(self) -> int:
         return self._beam_direction
 
     @beam_direction.setter
-    def beam_direction(self, value):
+    def beam_direction(self, value: int) -> None:
         if value not in (1, -1):
             raise AcceleratorDefinitionError("Beam direction has to be either 1 or -1")
         self._beam_direction = value
@@ -254,13 +273,13 @@ class Accelerator(object):
         return []
 
     @property
-    def model_driven(self):
+    def model_driven(self) -> tfs.TfsDataFrame:
         if self._model_driven is None:
             raise AttributeError("No driven model given in this accelerator instance.")
         return self._model_driven
 
     @classmethod
-    def get_dir(cls):
+    def get_dir(cls) -> Path:
         """Default directory for accelerator. Should be overwritten if more specific."""
         dir_path = CURRENT_DIR / cls.NAME
         if dir_path.exists():
@@ -268,12 +287,14 @@ class Accelerator(object):
         raise NotImplementedError(f"No directory for accelerator {cls.NAME} available.")
 
     @classmethod
-    def get_file(cls, filename):
+    def get_file(cls, filename: str) -> Path:
         """Default location for accelerator files. Should be overwritten if more specific."""
         file_path = CURRENT_DIR / cls.NAME / filename
         if file_path.exists():
             return file_path
-        raise NotImplementedError(f"File {file_path.name} not available for accelerator {cls.NAME}.")
+        raise NotImplementedError(
+            f"File {file_path.name} not available for accelerator {cls.NAME}."
+        )
 
     # Jobs ###################################################################
 
@@ -293,23 +314,25 @@ class Accelerator(object):
     ##########################################################################
 
 
-class Variable(object):
+class Variable:
     """
     Generic corrector variable class that holds `name`, `position (s)` and physical elements it
     affects. These variables should be logical variables that have and effect in the model if
     modified.
     """
+
     def __init__(self, name, elements, classes):
         self.name = name
         self.elements = elements
         self.classes = classes
 
 
-class Element(object):
+class Element:
     """
     Generic corrector element class that holds `name` and `position (s)` of the corrector. This
     element should represent a physical element of the accelerator.
     """
+
     def __init__(self, name, s):
         self.name = name
         self.s = s
@@ -320,20 +343,25 @@ class AcceleratorDefinitionError(Exception):
     Raised when an `Accelerator` instance is wrongly used, for example by calling a method that
     should have been overwritten.
     """
+
     pass
 
 
 # Helper ----
 
-def _get_modifiers_from_modeldir(model_dir: Path):
+
+def _get_modifiers_from_modeldir(model_dir: Path) -> List[Path]:
     """Parse modifiers from job.create_model.madx or use modifiers.madx file."""
     job_file = model_dir / JOB_MODEL_MADX
     if job_file.exists():
         job_madx = job_file.read_text()
 
         # find modifier tag in lines and return called file in these lines
-        modifiers = re.findall(fr"\s+call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}", job_madx,
-                               flags=re.IGNORECASE)
+        modifiers = re.findall(
+            fr"\s+call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
+            job_madx,
+            flags=re.IGNORECASE,
+        )
         modifiers = [Path(m) for m in modifiers]
         return modifiers or None
 

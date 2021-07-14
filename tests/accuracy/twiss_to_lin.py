@@ -89,7 +89,7 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0, beam_directio
         lin[f"AMP{plane}"] = lin.loc[:, f"AMP{plane}"].to_numpy() / 2
         lin[f"NATAMP{plane}"] = lin.loc[:, f"NATAMP{plane}"].to_numpy() / 2
 
-        lins[plane] = tfs.TfsDataFrame(lin, headers=_get_header(tune, nattune, plane)).set_index("NAME")
+        lins[plane] = tfs.TfsDataFrame(lin, headers=_get_header(tune, nattune, plane)).set_index("NAME", drop=False)
     return lins
 
 
