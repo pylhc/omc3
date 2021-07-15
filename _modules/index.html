@@ -58,7 +58,7 @@
 
           
             
-            <img src="../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -99,6 +99,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
@@ -117,11 +122,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#formats">Formats</a></li>
@@ -274,7 +292,16 @@
             
   <h1>All modules for which code is available</h1>
 <ul><li><a href="omc3/amplitude_detuning_analysis.html">omc3.amplitude_detuning_analysis</a></li>
+<li><a href="omc3/correction/filters.html">omc3.correction.filters</a></li>
+<li><a href="omc3/correction/handler.html">omc3.correction.handler</a></li>
+<li><a href="omc3/correction/model_appenders.html">omc3.correction.model_appenders</a></li>
+<li><a href="omc3/correction/model_diff.html">omc3.correction.model_diff</a></li>
+<li><a href="omc3/correction/response_io.html">omc3.correction.response_io</a></li>
+<li><a href="omc3/correction/response_madx.html">omc3.correction.response_madx</a></li>
+<li><a href="omc3/correction/response_twiss.html">omc3.correction.response_twiss</a></li>
+<li><a href="omc3/correction/sequence_evaluation.html">omc3.correction.sequence_evaluation</a></li>
 <li><a href="omc3/definitions/formats.html">omc3.definitions.formats</a></li>
+<li><a href="omc3/global_correction.html">omc3.global_correction</a></li>
 <li><a href="omc3/harpy/clean.html">omc3.harpy.clean</a></li>
 <li><a href="omc3/harpy/frequency.html">omc3.harpy.frequency</a></li>
 <li><a href="omc3/harpy/handler.html">omc3.harpy.handler</a></li>
@@ -315,7 +342,9 @@
 <li><a href="omc3/plotting/utils/colors.html">omc3.plotting.utils.colors</a></li>
 <li><a href="omc3/plotting/utils/lines.html">omc3.plotting.utils.lines</a></li>
 <li><a href="omc3/plotting/utils/style.html">omc3.plotting.utils.style</a></li>
+<li><a href="omc3/response_creator.html">omc3.response_creator</a></li>
 <li><a href="omc3/run_kmod.html">omc3.run_kmod</a></li>
+<li><a href="omc3/scripts/fake_measurement_from_model.html">omc3.scripts.fake_measurement_from_model</a></li>
 <li><a href="omc3/scripts/merge_kmod_results.html">omc3.scripts.merge_kmod_results</a></li>
 <li><a href="omc3/tbt/handler.html">omc3.tbt.handler</a></li>
 <li><a href="omc3/tbt/reader_esrf.html">omc3.tbt.reader_esrf</a></li>

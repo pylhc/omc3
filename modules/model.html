@@ -60,7 +60,7 @@
 
           
             
-            <img src="../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -101,6 +101,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
@@ -119,11 +124,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definitions.html#formats">Formats</a></li>
@@ -318,7 +336,7 @@ It contains entrypoint the parent <cite>Accelerator</cite> class as well as othe
 <dd><p>Abstract class to serve as an interface to implement the rest of the accelerators.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns job (string) to create the basic accelerator sequence.</p>
 </dd></dl>
 
@@ -557,7 +575,7 @@ modified.</p>
 <dd><p>Parent Class for LHC-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc.get_base_madx_script">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_directory</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns job (string) to create the basic accelerator sequence.</p>
 </dd></dl>
 
@@ -592,7 +610,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc.get_update_correction_script">
-<span class="sig-name descname"><span class="pre">get_update_correction_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_update_correction_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_update_correction_script" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_update_correction_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outpath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_update_correction_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_update_correction_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns job (string) to create an updated model from changeparameters input (used in
 iterative correction).</p>
 </dd></dl>
@@ -672,7 +690,7 @@ Will Raise an <code class="docutils literal notranslate"><span class="pre">Accel
 <dd><p>Parent Class for PS-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps.get_base_madx_script">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns job (string) to create the basic accelerator sequence.</p>
 </dd></dl>
 
@@ -770,7 +788,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dd><p>Parent Class for Psbooster-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster.get_base_madx_script">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster.get_base_madx_script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns job (string) to create the basic accelerator sequence.</p>
 </dd></dl>
 

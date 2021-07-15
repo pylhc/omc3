@@ -1,0 +1,1197 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>omc3.correction.response_twiss &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.correction.response_twiss</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.correction.response_twiss</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Response TWISS</span>
+<span class="sd">--------------</span>
+
+<span class="sd">Provides a class to get response matrices from Twiss parameters.</span>
+
+<span class="sd">.. warning::</span>
+<span class="sd">  The responses are only valid for MAD-X Beam 1 and Beam 2 twiss-files, **not for Beam 4** !!</span>
+<span class="sd">  Also, it only works properly for on-orbit twiss files.</span>
+
+
+<span class="sd">The calculation is based on formulas in [#FranchiAnalyticformulasrapid2017]_, [#TomasReviewlinearoptics2017]_</span>
+<span class="sd">and is summarized in [#DillyUpdatedGlobalOpticsCorrection2018]_, where the following</span>
+<span class="sd">equations can be found in Eq. 10 - Eq. 15.</span>
+
+
+<span class="sd">* Beta Response:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    \delta \beta_{z,j} = \mp \beta_{z,j} \sum_m \delta K_{1,m} \frac{\beta_{z,m}}{2}</span>
+<span class="sd">    \frac{cos(2\tau_{z,mj})}{sin(2\pi Q_z)}</span>
+
+
+<span class="sd">* Dispersion Response:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    \delta D_{x,j} =&amp;+ \sqrt{\beta_{x,j}} \sum_m (\delta K_{0,m} + \delta K_{1S,m} D_{y,m}</span>
+<span class="sd">    - \delta K_{1,m} D_{x,m}) \frac{\sqrt{\beta_{x,m}}}{2}</span>
+<span class="sd">    \frac{cos(\tau_{x,mj})}{sin(\pi Q_x)}</span>
+<span class="sd">    \\</span>
+<span class="sd">    \delta D_{y,j} =&amp;- \sqrt{\beta_{y,j}} \sum_m (\delta K_{0S,m}</span>
+<span class="sd">    - \delta K_{1S,m} D_{x,m} - \delta K_{1,m} D_{y,m}) \frac{\sqrt{\beta_{y,m}}}{2}</span>
+<span class="sd">    \frac{cos(\tau_{y,mj})}{sin(\pi Q_y)}</span>
+
+
+<span class="sd">* Norm. Dispersion Response: similar as above but with :math:`\frac{1}{\sqrt{\beta}}` linearized</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    \delta \frac{D_{x,j}}{\sqrt{\beta_{x,j}}} =&amp;+ \sum_m (\delta K_{0,m} + \delta K_{1S,m} D_{y,m}</span>
+<span class="sd">    - \delta K_{1,m} D_{x,m} ) \frac{\sqrt{\beta_{x,m}}}{2}</span>
+<span class="sd">    \frac{cos(\tau_{x,mj})}{sin(\pi Q_x)}</span>
+<span class="sd">    &amp;&amp;+ \frac{D_{x,j}}{\sqrt{\beta_{x,j}}} \delta K_{1,m}</span>
+<span class="sd">    \frac{\beta_{x,m}}{4}\frac{cos(2\tau_{x,mj})}{2sin(\pi Q_x)}</span>
+<span class="sd">    \\</span>
+<span class="sd">    \delta \frac{D_{y,j}}{\sqrt{\beta_{y,j}}} =&amp;- \sum_m (\delta K_{0S,m} - \delta K_{1S,m} D_{x,m}</span>
+<span class="sd">    - \delta K_{1,m} D_{y,m}) \frac{\sqrt{\beta_{y,m}}}{2}</span>
+<span class="sd">    \frac{cos(\tau_{y,mj})}{sin(\pi Q_y)}</span>
+<span class="sd">    &amp;&amp;- \frac{D_{y,j}}{\sqrt{\beta_{y,j}}} \delta K_{1,m}</span>
+<span class="sd">    \frac{\beta_{y,m}}{4}\frac{cos(2\tau_{y,mj})}{2sin(\pi Q_y)}</span>
+
+
+<span class="sd">* Phase Advance Response:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    \delta \Phi_{z,wj} = \pm \sum_m \delta K_{1,m} \frac{\beta_{z,m}}{4}</span>
+<span class="sd">    \left\{ 2\left[ \Pi_{mj} - \Pi_{mw} + \Pi_{jw} \right] +</span>
+<span class="sd">    \frac{sin(2\tau_{z,mj}) - sin(2\tau_{z,mw})}{sin(2\pi Q_z)} \right\}</span>
+
+
+<span class="sd">* Tune Response:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    \delta Q_z = \pm \sum_m \delta K_{1,m} \frac{\beta_{z,m}}{4\pi}</span>
+
+
+<span class="sd">* Coupling Response:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    \delta f_{\substack{\scriptscriptstyle 1001 \\ \scriptscriptstyle 1010},j} =</span>
+<span class="sd">    \sum_m \delta J_{1,m} \, \frac{\sqrt{\beta_{x,m}\beta_{y,m}}}{4} \,</span>
+<span class="sd">    \frac{\exp{(i(\Delta\Phi_{x,mj} \mp \Delta\Phi_{y,mj}))}}{1-\exp({2\pi i (Q_x \mp Q_y}))}</span>
+
+<span class="sd">For people reading the code, the response matrices are first calculated like:</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    |  Elements of interest (j) --&gt; ... |</span>
+<span class="sd">    |Magnets (m)                        |</span>
+<span class="sd">    |  |                                |</span>
+<span class="sd">    |  v                                |</span>
+<span class="sd">    |  .                                |</span>
+<span class="sd">    |  .                                |</span>
+<span class="sd">    |  .                                |</span>
+<span class="sd">    |                                   |</span>
+
+<span class="sd">This avoids transposing all vectors individually in the beginning.</span>
+<span class="sd">At the end (of the calculation) the matrix is then transposed</span>
+<span class="sd">to fit the :math:`M \cdot \delta K` orientation.</span>
+
+<span class="sd">Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be consistent.</span>
+
+
+<span class="sd">.. rubric:: References</span>
+
+<span class="sd">..  [#FranchiAnalyticformulasrapid2017]</span>
+<span class="sd">    A. Franchi et al.,</span>
+<span class="sd">    Analytic formulas for the rapid evaluation of the orbit response matrix</span>
+<span class="sd">    and chromatic functions from lattice parameters in circular accelerators. (2017)</span>
+<span class="sd">    https://arxiv.org/abs/1711.06589</span>
+
+<span class="sd">.. [#TomasReviewlinearoptics2017]</span>
+<span class="sd">    R. Tomas, et al.,</span>
+<span class="sd">    &#39;Review of linear optics measurement and correction for charged particle</span>
+<span class="sd">    accelerators.&#39;</span>
+<span class="sd">    Physical Review Accelerators and Beams, 20(5), 54801. (2017)</span>
+<span class="sd">    https://doi.org/10.1103/PhysRevAccelBeams.20.054801</span>
+
+<span class="sd">..  [#DillyUpdatedGlobalOpticsCorrection2018]</span>
+<span class="sd">    J. Dilly et al.,</span>
+<span class="sd">    An updated global optics correction scheme. (2018)</span>
+<span class="sd">    https://cds.cern.ch/record/2632945/</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">DISP</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span> <span class="n">NORM_DISP</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">PHASE</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.response_io</span> <span class="kn">import</span> <span class="n">read_varmap</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.sequence_evaluation</span> <span class="kn">import</span> <span class="n">check_varmap_file</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.contexts</span> <span class="kn">import</span> <span class="n">timeit</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">DUMMY_ID</span> <span class="o">=</span> <span class="s2">&quot;DUMMY_PLACEHOLDER&quot;</span>
+<span class="n">PLANES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+
+<span class="c1"># Twiss Response Class ########################################################</span>
+
+
+<div class="viewcode-block" id="TwissResponse"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse">[docs]</a><span class="k">class</span> <span class="nc">TwissResponse</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Provides Response Matrices calculated from sequence, model and given variables.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        accel_inst (accelerator): Accelerator Instance (needs to contain elements model).</span>
+<span class="sd">        variable_categories (list): List of variable categories to get from the accelerator class.</span>
+<span class="sd">        varmap_or_path (dict, string): mapping of the variables,</span>
+<span class="sd">            either as dict-structure of Series or path to a pickled-file.</span>
+<span class="sd">        at_elements (str): Get response matrix for these elements. Can be:</span>
+<span class="sd">            &#39;bpms&#39;: All BPMS (Default)</span>
+<span class="sd">            &#39;bpms+&#39;: BPMS+ used magnets (== magnets defined by variables in varfile)</span>
+<span class="sd">            &#39;all&#39;: All BPMS and Magnets given in the model (Markers are removed)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">################################</span>
+    <span class="c1">#            INIT</span>
+    <span class="c1">################################</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">,</span> <span class="n">variable_categories</span><span class="p">,</span> <span class="n">varmap_or_path</span><span class="p">,</span> <span class="n">at_elements</span><span class="o">=</span><span class="s2">&quot;bpms&quot;</span><span class="p">):</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing TwissResponse.&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time initializing TwissResponse: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="c1"># Get input</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_twiss</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beam_sign</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="s2">&quot;beam&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_variables</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">variable_categories</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_variable_mapping</span><span class="p">(</span><span class="n">varmap_or_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_input_elements</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_output_elements</span><span class="p">(</span><span class="n">at_elements</span><span class="p">)</span>
+
+            <span class="c1"># calculate all phase advances</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span> <span class="o">=</span> <span class="n">get_phase_advances</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span><span class="p">)</span>
+
+            <span class="c1"># All responses are calcluated as needed, see getters below!</span>
+            <span class="c1"># slots for response matrices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tune</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_coupling</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># slots for mapped response matrices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_coupling_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beta_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tune_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion_mapped</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_model_twiss</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load model, but keep only BPMs and Magnets &quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">elements</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing non-necessary entries:&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Entries total: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bpm&quot;</span><span class="p">,</span> <span class="s2">&quot;magnet&quot;</span><span class="p">])</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># make a copy to suppress &quot;SettingWithCopyWarning&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Entries left: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add Dummy for Phase Calculations</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">DUMMY_ID</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">_get_variable_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varmap_or_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get variable mapping as dictionary</span>
+
+<span class="sd">        Dev hint: Define _variables first!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting variables to magnet names.&quot;</span><span class="p">)</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No variables found. Maybe wrong categories?&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">read_varmap</span><span class="p">(</span><span class="n">varmap_or_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received varmap as dictionary.&quot;</span><span class="p">)</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">varmap_or_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded varmap from file &#39;</span><span class="si">{</span><span class="n">varmap_or_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if all variables can be found</span>
+        <span class="n">check_var</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span> <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">check_var</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variables &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">check_var</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; cannot be found in sequence!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># drop mapping for unused variables</span>
+        <span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">order</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">[</span><span class="n">order</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">mapping</span>
+
+    <span class="k">def</span> <span class="nf">_get_input_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return variable names of input elements.</span>
+
+<span class="sd">        Dev hint: Define _var_to_el and _twiss first!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v2e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span>
+        <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+
+        <span class="n">el_in</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">v2e</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">el_in</span><span class="p">:</span>
+            <span class="n">el_order</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">v2e</span><span class="p">[</span><span class="n">order</span><span class="p">]:</span>
+                <span class="n">el_order</span> <span class="o">+=</span> <span class="n">upper</span><span class="p">(</span><span class="n">v2e</span><span class="p">[</span><span class="n">order</span><span class="p">][</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">el_in</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">el_order</span><span class="p">)),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K0L&quot;</span><span class="p">,</span> <span class="s2">&quot;K0SL&quot;</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">el_in</span><span class="p">:</span>
+                <span class="n">el_in</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">el_in</span>
+
+    <span class="k">def</span> <span class="nf">_get_output_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at_elements</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return name-array of elements to use for output.</span>
+
+<span class="sd">        Dev hint: Define _elements_in first!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tw_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">at_elements</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># elements specified</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">el</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tw_idx</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">at_elements</span><span class="p">):</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;One or more specified elements are not in the model.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tw_idx</span> <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">at_elements</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">at_elements</span> <span class="o">==</span> <span class="s2">&quot;bpms&quot;</span><span class="p">:</span>
+            <span class="c1"># bpms only</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tw_idx</span> <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">at_elements</span> <span class="o">==</span> <span class="s2">&quot;bpms+&quot;</span><span class="p">:</span>
+            <span class="c1"># bpms and the used magnets</span>
+            <span class="n">el_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tw_idx</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;B&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">el_in</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">el_in</span><span class="p">))]</span>
+
+        <span class="k">if</span> <span class="n">at_elements</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="c1"># all, obviously</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tw_idx</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">!=</span> <span class="n">DUMMY_ID</span><span class="p">]</span>
+
+    <span class="c1">################################</span>
+    <span class="c1">#       Response Matrix</span>
+    <span class="c1">################################</span>
+
+    <span class="k">def</span> <span class="nf">_calc_coupling_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Response Matrix for coupling.&quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Coupling Matrix&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+            <span class="n">adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span>
+            <span class="n">el_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>
+            <span class="n">k1s_el</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span><span class="p">[</span><span class="s2">&quot;K1SL&quot;</span><span class="p">]</span>
+            <span class="n">dcoupl</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="s2">&quot;1001&quot;</span><span class="p">,</span> <span class="s2">&quot;1010&quot;</span><span class="p">])</span>
+
+            <span class="n">i2pi</span> <span class="o">=</span> <span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+            <span class="n">phx</span> <span class="o">=</span> <span class="n">dphi</span><span class="p">(</span><span class="n">adv</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1s_el</span><span class="p">,</span> <span class="n">el_out</span><span class="p">],</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q1</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">phy</span> <span class="o">=</span> <span class="n">dphi</span><span class="p">(</span><span class="n">adv</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1s_el</span><span class="p">,</span> <span class="n">el_out</span><span class="p">],</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q2</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">bet_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1s_el</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1s_el</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+
+            <span class="k">for</span> <span class="n">coupling_rdt</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;1001&quot;</span><span class="p">,</span> <span class="s2">&quot;1010&quot;</span><span class="p">]:</span>
+                <span class="n">phs_sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">coupling_rdt</span> <span class="o">==</span> <span class="s2">&quot;1001&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+                <span class="n">dcoupl</span><span class="p">[</span><span class="n">coupling_rdt</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="n">bet_term</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">i2pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">phx</span> <span class="o">+</span> <span class="n">phs_sign</span> <span class="o">*</span> <span class="n">phy</span><span class="p">))</span> <span class="o">/</span>
+                    <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">i2pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">Q1</span> <span class="o">+</span> <span class="n">phs_sign</span> <span class="o">*</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q2</span><span class="p">)))),</span>
+                    <span class="n">index</span><span class="o">=</span><span class="n">k1s_el</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">el_out</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dcoupl</span>
+
+    <span class="k">def</span> <span class="nf">_calc_beta_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Response Matrix for delta beta.&quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Beta Response Matrix&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+            <span class="n">adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span>
+            <span class="n">el_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>
+            <span class="n">k1_el</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">]</span>
+            <span class="n">dbeta</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+                <span class="n">col_beta</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q1</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q2</span>
+                <span class="n">coeff_sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+
+                <span class="n">pi2tau</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">tau</span><span class="p">(</span><span class="n">adv</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">el_out</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span>
+
+                <span class="n">dbeta</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_out</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+                    <span class="o">*</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span>
+                    <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi2tau</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">coeff_sign</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">q</span><span class="p">))),</span>
+                    <span class="n">index</span><span class="o">=</span><span class="n">k1_el</span><span class="p">,</span>
+                    <span class="n">columns</span><span class="o">=</span><span class="n">el_out</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">dbeta</span>
+
+    <span class="k">def</span> <span class="nf">_calc_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Dispersion Response Matrix&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+            <span class="n">adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span>
+            <span class="n">el_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>
+            <span class="n">els_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span>
+
+            <span class="n">sign_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K0L&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K0SL&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="n">col_disp_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">},</span>
+                <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="n">q_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q2</span><span class="p">}</span>
+            <span class="n">disp_resp</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sign_map</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sign_map</span><span class="p">[</span><span class="n">p</span><span class="p">]])</span>
+
+            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">sign_map</span><span class="p">:</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="n">q_map</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
+                <span class="n">col_beta</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">el_types</span> <span class="o">=</span> <span class="n">sign_map</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">els_per_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">els_in</span><span class="p">[</span><span class="n">el_type</span><span class="p">]</span> <span class="k">for</span> <span class="n">el_type</span> <span class="ow">in</span> <span class="n">el_types</span><span class="p">]</span>
+
+                <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_out</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">q</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">el_in</span><span class="p">,</span> <span class="n">el_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">els_per_type</span><span class="p">,</span> <span class="n">el_types</span><span class="p">):</span>
+                    <span class="n">coeff_sign</span> <span class="o">=</span> <span class="n">sign_map</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">el_type</span><span class="p">]</span>
+                    <span class="n">out_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">el_type</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">el_in</span><span class="p">):</span>
+                        <span class="n">pi2tau</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">tau</span><span class="p">(</span><span class="n">adv</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_in</span><span class="p">,</span> <span class="n">el_out</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span>
+                        <span class="n">bet_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_in</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">])</span>
+
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">col_disp</span> <span class="o">=</span> <span class="n">col_disp_map</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">el_type</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">bet_term</span> <span class="o">*=</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_in</span><span class="p">,</span> <span class="n">col_disp</span><span class="p">]</span>
+
+                        <span class="n">disp_resp</span><span class="p">[</span><span class="n">out_str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">coeff_sign</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">bet_term</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi2tau</span><span class="p">)</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  No &#39;</span><span class="si">{</span><span class="n">el_type</span><span class="si">}</span><span class="s2">&#39; variables found. &quot;</span>
+                                  <span class="sa">f</span><span class="s2">&quot;Dispersion Response &#39;</span><span class="si">{</span><span class="n">out_str</span><span class="si">}</span><span class="s2">&#39; will be empty.&quot;</span><span class="p">)</span>
+                        <span class="n">disp_resp</span><span class="p">[</span><span class="n">out_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">el_out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">disp_resp</span>
+
+    <span class="k">def</span> <span class="nf">_calc_norm_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Normalized Dispersion Response Matrix&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+            <span class="n">adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span>
+            <span class="n">el_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>
+            <span class="n">els_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span>
+
+            <span class="n">sign_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K0L&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K0SL&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="n">col_disp_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">},</span>
+                <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span> <span class="s2">&quot;K1SL&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="n">sign_correct_term</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;K1L&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="n">q_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q2</span><span class="p">}</span>
+            <span class="n">disp_resp</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{p:s}</span><span class="s2">_</span><span class="si">{t:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sign_map</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sign_map</span><span class="p">[</span><span class="n">p</span><span class="p">]])</span>
+
+            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">sign_map</span><span class="p">:</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="n">q_map</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
+                <span class="n">col_beta</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">el_types</span> <span class="o">=</span> <span class="n">sign_map</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">els_per_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">els_in</span><span class="p">[</span><span class="n">el_type</span><span class="p">]</span> <span class="k">for</span> <span class="n">el_type</span> <span class="ow">in</span> <span class="n">el_types</span><span class="p">]</span>
+
+                <span class="n">coeff</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">q</span><span class="p">))</span>
+                <span class="n">coeff_corr</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">q</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">el_in</span><span class="p">,</span> <span class="n">el_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">els_per_type</span><span class="p">,</span> <span class="n">el_types</span><span class="p">):</span>
+                    <span class="n">coeff_sign</span> <span class="o">=</span> <span class="n">sign_map</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">el_type</span><span class="p">]</span>
+                    <span class="n">out_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{p:s}</span><span class="s2">_</span><span class="si">{t:s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">plane</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">el_type</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">el_in</span><span class="p">):</span>
+                        <span class="n">pi2tau</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">tau</span><span class="p">(</span><span class="n">adv</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_in</span><span class="p">,</span> <span class="n">el_out</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span>
+                        <span class="n">beta_in</span> <span class="o">=</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_in</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">]</span>
+                        <span class="n">bet_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">beta_in</span><span class="p">)</span>
+
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">col_disp</span> <span class="o">=</span> <span class="n">col_disp_map</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">el_type</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">bet_term</span> <span class="o">*=</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_in</span><span class="p">,</span> <span class="n">col_disp</span><span class="p">]</span>
+
+                        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">coeff_sign</span> <span class="o">*</span> <span class="n">coeff</span> <span class="o">*</span> <span class="n">bet_term</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pi2tau</span><span class="p">)</span>
+
+                        <span class="c1"># correction term</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">sign_corr</span> <span class="o">=</span> <span class="n">sign_correct_term</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">el_type</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">norm_disp_corr</span> <span class="o">=</span> <span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_out</span><span class="p">,</span> <span class="n">col_disp</span><span class="p">]</span> <span class="o">/</span>
+                                          <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_out</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">]))</span>
+                            <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">sign_corr</span> <span class="o">*</span> <span class="n">coeff_corr</span> <span class="o">*</span> <span class="n">norm_disp_corr</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span>
+                                       <span class="n">beta_in</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi2tau</span><span class="p">))</span>
+
+                        <span class="n">disp_resp</span><span class="p">[</span><span class="n">out_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;  No &#39;</span><span class="si">{</span><span class="n">el_type</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39; variables found. &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Normalized Dispersion Response &#39;</span><span class="si">{</span><span class="n">out_str</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39; will be empty.&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">disp_resp</span><span class="p">[</span><span class="n">out_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">el_out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">disp_resp</span>
+
+    <span class="k">def</span> <span class="nf">_calc_phase_advance_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Response Matrix for delta DPhi.</span>
+
+<span class="sd">        Reduced to only phase advances between consecutive elements,</span>
+<span class="sd">        as the 3D-Matrix of all elements exceeds memory space</span>
+<span class="sd">        (~11000^3 = 1331 Giga Elements)</span>
+<span class="sd">        --&gt; w = j-1:  DPhi(z,j) = DPhi(x, (j-1)-&gt;j)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Phase Advance Response Matrix&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">elapsed</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+            <span class="n">adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span>
+            <span class="n">k1_el</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">]</span>
+
+            <span class="n">el_out_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">DUMMY_ID</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>  <span class="c1"># Add MU[XY] = 0.0 to the start</span>
+            <span class="n">el_out</span> <span class="o">=</span> <span class="n">el_out_all</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># in these we are actually interested</span>
+            <span class="n">el_out_mm</span> <span class="o">=</span> <span class="n">el_out_all</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># elements--</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k1_el</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dmu</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span>
+
+                <span class="n">pi</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tw</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tw</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span>  <span class="c1"># pi(i,j) = s(i) &lt; s(j)</span>
+                                      <span class="n">index</span><span class="o">=</span><span class="n">tw</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">tw</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+                <span class="n">pi_term</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">pi</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">el_out</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+                    <span class="o">-</span> <span class="n">pi</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">el_out_mm</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+                    <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pi</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_out</span><span class="p">,</span> <span class="n">el_out_mm</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+                    <span class="n">col_beta</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q1</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q2</span>
+                    <span class="n">coeff_sign</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+
+                    <span class="n">pi2tau</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">tau</span><span class="p">(</span><span class="n">adv</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">el_out_all</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span>
+                    <span class="n">brackets</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi_term</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi2tau</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">el_out</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+                         <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi2tau</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">el_out_mm</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">dmu</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                        <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">brackets</span> <span class="o">*</span> <span class="p">(</span><span class="n">coeff_sign</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)),</span>
+                        <span class="n">index</span><span class="o">=</span><span class="n">k1_el</span><span class="p">,</span>
+                        <span class="n">columns</span><span class="o">=</span><span class="n">el_out</span><span class="p">,</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  No &#39;K1L&#39; variables found. Phase Response will be empty.&quot;</span><span class="p">)</span>
+                <span class="n">dmu</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">el_out</span><span class="p">),</span>
+                       <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">el_out</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="n">dmu</span>
+
+    <span class="k">def</span> <span class="nf">_calc_phase_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Response Matrix for delta DPhi.</span>
+
+<span class="sd">        This calculation could also be achieved by applying np.cumsum to the DataFrames of</span>
+<span class="sd">        _calc_phase_adv_response() (tested!), but _calc_phase_response() is about 4x faster.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Phase Response Matrix&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+            <span class="n">adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span>
+            <span class="n">k1_el</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">]</span>
+            <span class="n">el_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k1_el</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dmu</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span>
+
+                <span class="n">pi</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tw</span><span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tw</span><span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span>  <span class="c1"># pi(i,j) = s(i) &lt; s(j)</span>
+                                      <span class="n">index</span><span class="o">=</span><span class="n">tw</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">tw</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+                <span class="n">pi_term</span> <span class="o">=</span> <span class="n">pi</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">el_out</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+                    <span class="n">col_beta</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q1</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="n">tw</span><span class="o">.</span><span class="n">Q2</span>
+                    <span class="n">coeff_sign</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+
+                    <span class="n">pi2tau</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">tau</span><span class="p">(</span><span class="n">adv</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="p">[</span><span class="n">DUMMY_ID</span><span class="p">]</span> <span class="o">+</span> <span class="n">el_out</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span>
+                    <span class="n">brackets</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi_term</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi2tau</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">el_out</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+                         <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi2tau</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">DUMMY_ID</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">])</span>
+                        <span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">dmu</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                        <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="n">col_beta</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">brackets</span> <span class="o">*</span> <span class="p">(</span><span class="n">coeff_sign</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)),</span>
+                        <span class="n">index</span><span class="o">=</span><span class="n">k1_el</span><span class="p">,</span>
+                        <span class="n">columns</span><span class="o">=</span><span class="n">el_out</span><span class="p">,</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  No &#39;K1L&#39; variables found. Phase Response will be empty.&quot;</span><span class="p">)</span>
+                <span class="n">dmu</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">el_out</span><span class="p">),</span>
+                       <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">el_out</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="n">dmu</span>
+
+    <span class="k">def</span> <span class="nf">_calc_tune_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Response vectors for Tune.&quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Tune Response Matrix&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+            <span class="n">k1_el</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_in</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">k1_el</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dtune</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span>
+
+                <span class="n">dtune</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+                <span class="n">dtune</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DQX&quot;</span><span class="p">]</span>
+
+                <span class="n">dtune</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">k1_el</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+                <span class="n">dtune</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DQY&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  No &#39;K1L&#39; variables found. Tune Response will be empty.&quot;</span><span class="p">)</span>
+                <span class="n">dtune</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DQX&quot;</span><span class="p">]),</span>
+                         <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DQY&quot;</span><span class="p">])}</span>
+        <span class="k">return</span> <span class="n">dtune</span>
+
+    <span class="c1">################################</span>
+    <span class="c1">#       Normalizing</span>
+    <span class="c1">################################</span>
+
+    <span class="k">def</span> <span class="nf">_normalize_beta_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Convert to Beta Beating &quot;&quot;&quot;</span>
+        <span class="n">el_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>
+        <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
+
+        <span class="n">beta_norm</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">beta</span><span class="p">:</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">beta_norm</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">el_out</span><span class="p">,</span> <span class="n">col</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">beta_norm</span>
+
+    <span class="c1">################################</span>
+    <span class="c1">#       Mapping</span>
+    <span class="c1">################################</span>
+
+    <span class="k">def</span> <span class="nf">_map_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Maps all dispersion matrices &quot;&quot;&quot;</span>
+        <span class="n">disp_mapped</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">disp</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">m2v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_variables</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">disp</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="n">plane</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">disp_mapped</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">m2v</span><span class="p">(</span><span class="n">disp</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">mapping</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">disp_mapped</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_map_to_variables</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Maps from magnets to variables using self._var_to_el.</span>
+<span class="sd">        Could actually be done by matrix multiplication :math:&#39;A \cdot var_to_el&#39;,</span>
+<span class="sd">         yet, as var_to_el is very sparsely populated, looping is easier.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df: DataFrame or dictionary of DataFrames to map</span>
+<span class="sd">            mapping: mapping to be applied (e.g. var_to_el[order])</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame or dictionary of mapped DataFrames</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">map_fun</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Actual mapping function &quot;&quot;&quot;</span>
+            <span class="n">df_map</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">magnets</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">df_map</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">upper</span><span class="p">(</span><span class="n">magnets</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">magnets</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">df_map</span>
+
+        <span class="c1"># convenience wrapper for dicts</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">mapped</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">mapped</span><span class="p">:</span>
+                <span class="n">mapped</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">map_fun</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">mapping</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mapped</span> <span class="o">=</span> <span class="n">map_fun</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mapped</span>
+
+    <span class="c1">################################</span>
+    <span class="c1">#          Getters</span>
+    <span class="c1">################################</span>
+
+<div class="viewcode-block" id="TwissResponse.get_beta_beat"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_beta_beat">[docs]</a>    <span class="k">def</span> <span class="nf">get_beta_beat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Beta Beating &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_beta_response</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_beta_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_beta</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat_mapped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat_mapped</span> <span class="k">if</span> <span class="n">mapped</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat</span></div>
+
+<div class="viewcode-block" id="TwissResponse.get_dispersion"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_dispersion">[docs]</a>    <span class="k">def</span> <span class="nf">get_dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Dispersion &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_dispersion_response</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion_mapped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion_mapped</span> <span class="k">if</span> <span class="n">mapped</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span></div>
+
+<div class="viewcode-block" id="TwissResponse.get_norm_dispersion"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_norm_dispersion">[docs]</a>    <span class="k">def</span> <span class="nf">get_norm_dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Normalized Dispersion &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_norm_dispersion_response</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion_mapped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion_mapped</span> <span class="k">if</span> <span class="n">mapped</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span></div>
+
+<div class="viewcode-block" id="TwissResponse.get_phase"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Total Phase &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_response</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_mapped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">mapped</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_mapped</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span></div>
+
+<div class="viewcode-block" id="TwissResponse.get_phase_adv"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_phase_adv">[docs]</a>    <span class="k">def</span> <span class="nf">get_phase_adv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Phase Advance &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_advance_response</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv_mapped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">mapped</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv_mapped</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span></div>
+
+<div class="viewcode-block" id="TwissResponse.get_tune"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_tune">[docs]</a>    <span class="k">def</span> <span class="nf">get_tune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for the Tunes &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tune</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tune</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_tune_response</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tune_mapped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tune_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tune</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">mapped</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tune_mapped</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tune</span></div>
+
+<div class="viewcode-block" id="TwissResponse.get_coupling"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_coupling">[docs]</a>    <span class="k">def</span> <span class="nf">get_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for the coupling &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupling</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_coupling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_coupling_response</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mapped</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupling_mapped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_coupling_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coupling</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="s2">&quot;K1SL&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">mapped</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupling_mapped</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupling</span></div>
+
+    <span class="k">def</span> <span class="nf">get_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span>
+
+    <span class="k">def</span> <span class="nf">get_variable_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+
+<div class="viewcode-block" id="TwissResponse.get_response_for"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_response_for">[docs]</a>    <span class="k">def</span> <span class="nf">get_response_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># Dict[str, ???]</span>
+        <span class="sd">&quot;&quot;&quot; Calculates and returns only desired response matrices &quot;&quot;&quot;</span>
+        <span class="c1"># calling functions for the getters to call functions only if needed</span>
+        <span class="k">def</span> <span class="nf">caller</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">()[</span><span class="n">plane</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">disp_caller</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+            <span class="n">disp</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">response_add</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">disp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">disp</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">plane</span><span class="p">)])</span>
+
+        <span class="k">def</span> <span class="nf">tune_caller</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">_unused</span><span class="p">):</span>
+            <span class="n">tune</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">tune</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tune</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">])</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+        <span class="k">def</span> <span class="nf">couple_caller</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+            <span class="c1"># apply() converts empty DataFrames to Series! Cast them back.</span>
+            <span class="c1"># Also: take care of minus-sign convention!</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">plane</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;R&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">part_func</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span> <span class="k">if</span> <span class="n">plane</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;R&quot;</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span>
+            <span class="k">return</span> <span class="n">sign</span> <span class="o">*</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">func</span><span class="p">()[</span><span class="n">plane</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">part_func</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+
+        <span class="c1"># to avoid if-elif-elif-...</span>
+        <span class="n">obs_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">tune_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tune</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_beta_beat</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_beta_beat</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_phase</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_phase</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">disp_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dispersion</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">disp_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dispersion</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">disp_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_norm_dispersion</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">disp_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_norm_dispersion</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">couple_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coupling</span><span class="p">,</span> <span class="s2">&quot;1001R&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">couple_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coupling</span><span class="p">,</span> <span class="s2">&quot;1001I&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">couple_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coupling</span><span class="p">,</span> <span class="s2">&quot;1010R&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">couple_caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coupling</span><span class="p">,</span> <span class="s2">&quot;1010I&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">observables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">observables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">obs_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># rename to PHASE to MU</span>
+            <span class="n">observables</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PHASE</span><span class="p">)</span> <span class="k">else</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">observables</span><span class="p">]</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculating responses for </span><span class="si">{</span><span class="n">observables</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time getting responses: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">observables</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">observables</span><span class="p">:</span>
+                <span class="c1"># response[key] = obs_map[key][0](*obs_map[key][1:3])</span>
+                <span class="c1"># I still don&#39;t know why there is a sign-change between B1 and B2 (jdilly, 2021)</span>
+                <span class="n">response</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beam_sign</span> <span class="o">*</span> <span class="n">obs_map</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">](</span><span class="o">*</span><span class="n">obs_map</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">response</span></div></div>
+
+
+<span class="c1"># Associated Functions #########################################################</span>
+
+
+<div class="viewcode-block" id="response_add"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.response_add">[docs]</a><span class="k">def</span> <span class="nf">response_add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Merges two or more Response Matrix DataFrames &quot;&quot;&quot;</span>
+    <span class="n">base_df</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">base_df</span> <span class="o">=</span> <span class="n">base_df</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base_df</span></div>
+
+
+<div class="viewcode-block" id="upper"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.upper">[docs]</a><span class="k">def</span> <span class="nf">upper</span><span class="p">(</span><span class="n">list_of_strings</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; Set all items of list to uppercase &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_of_strings</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_phase_advances"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.get_phase_advances">[docs]</a><span class="k">def</span> <span class="nf">get_phase_advances</span><span class="p">(</span><span class="n">twiss_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate phase advances between all elements</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Matrices similar to DPhi(i,j) = Phi(j) - Phi(i)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculating Phase Advances:&quot;</span><span class="p">)</span>
+    <span class="n">phase_advance_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">elapsed</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Phase Advances calculated in </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="n">colmn_phase</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">phases_mdl</span> <span class="o">=</span> <span class="n">twiss_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">twiss_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">colmn_phase</span><span class="p">]</span>
+            <span class="c1"># Same convention as in [1]: DAdv(i,j) = Phi(j) - Phi(i)</span>
+            <span class="n">phase_advances</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">((</span><span class="n">phases_mdl</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">phases_mdl</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]),</span>
+                                          <span class="n">index</span><span class="o">=</span><span class="n">twiss_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                          <span class="n">columns</span><span class="o">=</span><span class="n">twiss_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="c1"># Do not calculate dphi and tau here.</span>
+            <span class="c1"># only slices of phase_advances as otherwise super slow</span>
+            <span class="n">phase_advance_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_advances</span>
+    <span class="k">return</span> <span class="n">phase_advance_dict</span></div>
+
+
+<div class="viewcode-block" id="dphi"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.dphi">[docs]</a><span class="k">def</span> <span class="nf">dphi</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return dphi from phase advances in data, see Eq. 7 in [#DillyUpdatedGlobalOpticsCorrection2018]_&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">data</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># &#39;&lt;=&#39; seems to be what MAD-X does</span></div>
+
+
+<div class="viewcode-block" id="tau"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.tau">[docs]</a><span class="k">def</span> <span class="nf">tau</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return tau from phase advances in data, see Eq. 8 in [#DillyUpdatedGlobalOpticsCorrection2018]_&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">data</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">q</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># &#39;&lt;=&#39; seems to be what MAD-X does</span></div>
+
+
+<span class="c1"># Wrapper ##################################################################</span>
+
+
+<div class="viewcode-block" id="create_response"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.create_response">[docs]</a><span class="k">def</span> <span class="nf">create_response</span><span class="p">(</span>
+    <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span>
+    <span class="n">vars_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">optics_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Wrapper to create response via TwissResponse &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating response via TwissResponse.&quot;</span><span class="p">)</span>
+    <span class="n">varmap_path</span> <span class="o">=</span> <span class="n">check_varmap_file</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">vars_categories</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time getting TwissResponse: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+        <span class="n">tr</span> <span class="o">=</span> <span class="n">TwissResponse</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">vars_categories</span><span class="p">,</span> <span class="n">varmap_path</span><span class="p">)</span>
+        <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">get_response_for</span><span class="p">(</span><span class="n">optics_params</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">resp</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">values</span><span class="p">()]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Responses are all empty. &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;Are variables </span><span class="si">{</span><span class="n">tr</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">()</span><span class="si">}</span><span class="s2"> correct for &#39;</span><span class="si">{</span><span class="n">optics_params</span><span class="si">}</span><span class="s2">&#39;?&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -41,7 +41,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Definitions" href="../modules/definitions.html" />
+    <link rel="next" title="Correction" href="../modules/correction.html" />
     <link rel="prev" title="Plotting" href="plotting.html" /> 
 </head>
 
@@ -61,7 +61,7 @@
 
           
             
-            <img src="../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -102,6 +102,11 @@
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="other.html#model-creator">Model Creator</a></li>
@@ -120,11 +125,24 @@
 <li class="toctree-l2"><a class="reference internal" href="#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#formats">Formats</a></li>
@@ -425,6 +443,124 @@ then the omc3 filename convention will be used.</p>
 </li>
 </ul>
 </div>
+<span class="target" id="module-omc3.scripts.fake_measurement_from_model"></span><div class="section" id="fake-measurement-from-model">
+<h2>Fake Measurement from Model<a class="headerlink" href="#fake-measurement-from-model" title="Permalink to this headline">¶</a></h2>
+<p>Script to generate a pseudo-measurement from a twiss-model.</p>
+<p>The <cite>model</cite> the then generated measurement is compared to can be different
+from the <cite>twiss</cite> given, e.g. if the <cite>twiss</cite> incorporates errors.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>twiss</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>Twiss dataframe or path to twiss-file.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>model</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>Alternative Model (Dataframe or Path) to use. If not given, <cite>twiss</cite>
+will be used.</p>
+</div></blockquote>
+</li>
+<li><p><strong>outputdir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the output directory for the fake measurement.</p>
+</div></blockquote>
+</li>
+<li><p><strong>parameters</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Optics parameters to use</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'F1010',</span> <span class="pre">'F1001')</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'F1010',</span> <span class="pre">'F1001']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>randomize</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Randomize values and/or errors from gaussian distributions. If not
+randomized, measurement values will be equal to the model values and
+the errors will be equal to the relative error * measurement.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['values',</span> <span class="pre">'errors']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['values',</span> <span class="pre">'errors']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>relative_errors</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Relative errors. Either single value for all paramters orlist of
+values in order of parameters.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[0.0]</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>seed</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Set random seed.</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.append_model">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">append_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beat</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#append_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.append_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the values to the measurement.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_beta">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_beta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create both beta_amp and beta_phase measurements.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_coupling">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_coupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_coupling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_coupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates coupling measurements for either the difference or sum RDT.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_dispersion">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_dispersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates dispersion measurement.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_measurement">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.handler.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_measurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new measurement Dataframe from df_twiss from parameter.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_normalized_dispersion">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_normalized_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_disp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_beta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_normalized_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_normalized_dispersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates normalized dispersion from pre-created dispersion and beta dataframes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates both phase advance and total phase measurements.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_phase_advance">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_phase_advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_phase_advance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_phase_advance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates phase advance measurements.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_total_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_total_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_total_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_total_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates total phase measurements.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.generate">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">tfs.handler.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a twiss file and writes the parameters in optics_parameters to Output_dir in the format
+global_correction_entrypoint uses (same format you would get from hole_in_one).</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -433,7 +569,7 @@ then the omc3 filename convention will be used.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../modules/definitions.html" class="btn btn-neutral float-right" title="Definitions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../modules/correction.html" class="btn btn-neutral float-right" title="Correction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="plotting.html" class="btn btn-neutral float-left" title="Plotting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

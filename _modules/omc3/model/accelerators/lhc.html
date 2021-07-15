@@ -58,7 +58,7 @@
 
           
             
-            <img src="../../../../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -99,6 +99,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#model-creator">Model Creator</a></li>
@@ -117,11 +122,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#formats">Formats</a></li>
@@ -445,23 +463,6 @@
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;An excitation mode was given but driven tunes are not set.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
-                <span class="s2">&quot;The accelerator definition is incomplete, no modifiers could be found.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">inexistent_modifiers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">inexistent_modifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">inexistent_modifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span>
-
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inexistent_modifiers</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
-                    <span class="s2">&quot;The following modifier files do not exist: &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">modifier</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span> <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="n">inexistent_modifiers</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-
         <span class="c1"># TODO: write more output prints</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;... verification passed. </span><span class="se">\n</span><span class="s2">Some information about the accelerator:&quot;</span><span class="p">)</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class name       </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -608,20 +609,21 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="ow">in</span> <span class="n">index</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;BPMSW.33R8.B2&quot;</span><span class="p">:]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 
-<div class="viewcode-block" id="Lhc.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Lhc.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">ats_md</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">high_beta</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">ats_suffix</span> <span class="o">=</span> <span class="s2">&quot;_ats&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ats</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;option, -echo;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">model_directory</span> <span class="o">/</span> <span class="n">MACROS_DIR</span> <span class="o">/</span> <span class="n">GENERAL_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">model_directory</span> <span class="o">/</span> <span class="n">MACROS_DIR</span> <span class="o">/</span> <span class="n">LHC_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="c1"># f&quot;option, -echo;\n&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span> <span class="o">/</span> <span class="n">GENERAL_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span> <span class="o">/</span> <span class="n">LHC_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s1">&#39;title, &quot;LHC Model created by OMC3&quot;;</span><span class="se">\n</span><span class="s1">&#39;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">load_main_seq_madx</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;exec, define_nominal_beams();</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">modifier</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">modifier</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span>
         <span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;exec, cycle_sequences();</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -637,23 +639,29 @@
         <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
             <span class="c1"># madx_script += f&quot;exec, load_average_error_table({self.energy}, {self.beam});\n&quot;</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;readmytable, file = &#39;</span><span class="si">{</span><span class="n">model_directory</span> <span class="o">/</span> <span class="n">B2_ERRORS_TFS</span><span class="si">}</span><span class="s2">&#39;, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;readmytable, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_ERRORS_TFS</span><span class="si">}</span><span class="s2">&#39;, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;seterr, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">model_directory</span> <span class="o">/</span> <span class="n">B2_SETTINGS_MADX</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_SETTINGS_MADX</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">high_beta</span><span class="p">:</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;exec, high_beta_matcher();</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes</span><span class="si">{</span><span class="n">ats_suffix</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;2018&quot;</span><span class="p">:</span>  <span class="c1"># to be checked for 2022 (jdilly, 2021)</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes_ats(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes</span><span class="si">{</span><span class="n">ats_suffix</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+
         <span class="k">if</span> <span class="n">ats_md</span><span class="p">:</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;exec, full_response_ats();</span><span class="se">\n</span><span class="s2">&quot;</span>
+
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, coupling_knob</span><span class="si">{</span><span class="n">ats_suffix</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
-<div class="viewcode-block" id="Lhc.get_update_correction_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_update_correction_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_correction_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>
+<div class="viewcode-block" id="Lhc.get_update_correction_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_update_correction_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_correction_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outpath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">corr_file</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">outpath</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">corr_file</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div></div>
 

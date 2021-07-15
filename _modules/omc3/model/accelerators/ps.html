@@ -58,7 +58,7 @@
 
           
             
-            <img src="../../../../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -99,6 +99,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#model-creator">Model Creator</a></li>
@@ -117,11 +122,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#formats">Formats</a></li>
@@ -373,7 +391,7 @@
             <span class="k">raise</span> <span class="ne">KeyError</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP&quot;</span></div>
 
-<div class="viewcode-block" id="Ps.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_directory</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Ps.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best knowledge model not implemented for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 

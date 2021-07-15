@@ -1,0 +1,766 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Correction &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Definitions" href="definitions.html" />
+    <link rel="prev" title="Scripts" href="../entrypoints/scripts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Correction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/modules/correction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-omc3.correction.constants">
+<span id="correction"></span><h1>Correction<a class="headerlink" href="#module-omc3.correction.constants" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+<p>Specific constants to be used in correction, to help with consistency.</p>
+</div>
+<span class="target" id="module-omc3.correction.filters"></span><div class="section" id="filters">
+<h2>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h2>
+<p>Filters for different kind of measurement data, and to filter the entries
+in the response matrix based on (the presumably then filtered) measurement data.
+Measurement filters extract valid (or trustworthy) data, e.g. to be used in
+corrections.
+The main function is <a class="reference internal" href="#omc3.correction.filters.filter_measurement" title="omc3.correction.filters.filter_measurement"><code class="xref py py-meth docutils literal notranslate"><span class="pre">omc3.correction.filters.filter_measurement()</span></code></a>
+which decides on which filter to use for the given keys.</p>
+<p>In earlier implementations there was a split between all kinds of measures,
+i.e. beta, phase etc. In this implementation most of it is handled by
+the <cite>_get_filtered_generic</cite> function.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.filters.filter_measurement">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.filters.</span></span><span class="sig-name descname"><span class="pre">filter_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/correction/filters.html#filter_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.filters.filter_measurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters measurements in <cite>keys</cite> based on the dict-entries (keys as in <cite>keys</cite>)
+in <cite>opt.errorcut</cite>, <cite>opt.modelcut</cite> and <cite>opt.weights</cite> and unifies the
+data-column names to VALUE, ERROR, WEIGHT.
+If <cite>opt.use_errorbars</cite> is <cite>True</cite> the weights will be also based on the errors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.filters.filter_response_index">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.filters.</span></span><span class="sig-name descname"><span class="pre">filter_response_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/filters.html#filter_response_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.filters.filter_response_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters the index of the response matrices <cite>response</cite> by the respective entries in <cite>measurement</cite>.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.correction.handler"></span><div class="section" id="handler">
+<h2>Handler<a class="headerlink" href="#handler" title="Permalink to this headline">¶</a></h2>
+<p>This module contains high-level functions to manage most functionality of the corrections calculations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.handler.correct">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.handler.</span></span><span class="sig-name descname"><span class="pre">correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">omc3.model.accelerators.accelerator.Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/correction/handler.html#correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.handler.correct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform global correction as described in <a class="reference internal" href="../entrypoints/correction.html#module-omc3.global_correction" title="omc3.global_correction"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.global_correction</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel_inst</strong> (<a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance</p></li>
+<li><p><strong>opt</strong> (<em>DotDict</em>) -- Correction options,
+see <a class="reference internal" href="../entrypoints/correction.html#module-omc3.global_correction" title="omc3.global_correction"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.global_correction</span></code></a> for details.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.handler.get_measurement_data">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.handler.</span></span><span class="sig-name descname"><span class="pre">get_measurement_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">tfs.handler.TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/handler.html#get_measurement_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.handler.get_measurement_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all measurements defined by <cite>keys</cite> into a dictionary.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.correction.model_appenders"></span><div class="section" id="model-appenders">
+<h2>Model Appenders<a class="headerlink" href="#model-appenders" title="Permalink to this headline">¶</a></h2>
+<p>Utilities to append new columns to measurement and model dataframes.
+E.g. get differences between measurement and model and append those to
+the measurement data (for corrections).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.model_appenders.add_coupling_to_model">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.model_appenders.</span></span><span class="sig-name descname"><span class="pre">add_coupling_to_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/correction/model_appenders.html#add_coupling_to_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.model_appenders.add_coupling_to_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the coupling RDTs from the input model TfsDataFrame and returns a copy of said TfsDataFrame with
+columns for the real and imaginary parts of the computed coupling RDTs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>tfs.TfsDataFrame</em>) -- Twiss dataframe.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A TfsDataFrame with the added columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.model_appenders.add_differences_to_model_to_measurements">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.model_appenders.</span></span><span class="sig-name descname"><span class="pre">add_differences_to_model_to_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/model_appenders.html#add_differences_to_model_to_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.model_appenders.add_differences_to_model_to_measurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provided with DataFrames from a model and a measurement, and a number of keys to be found in both,
+returns a dictionary with the variation from measurement to model for each key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>pd.DataFrame</em>) -- DataFrame of the model.</p></li>
+<li><p><strong>measurement</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>pd.DataFrame</em><em>]</em>) -- DataFrames of the measurement.</p></li>
+<li><p><strong>keys</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) -- Parameters to get variation to model for. Optional.
+If omitted, all entries in <cite>measurement</cite> are used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of optics parameters and the resulting DataFrames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.correction.model_diff"></span><div class="section" id="model-diff">
+<h2>Model Diff<a class="headerlink" href="#model-diff" title="Permalink to this headline">¶</a></h2>
+<p>Calculate the differences in optics parameters between twiss-models.
+Similar to <a class="reference internal" href="#omc3.correction.model_appenders.add_differences_to_model_to_measurements" title="omc3.correction.model_appenders.add_differences_to_model_to_measurements"><code class="xref py py-func docutils literal notranslate"><span class="pre">omc3.correction.model_appenders.add_differences_to_model_to_measurements()</span></code></a>,
+yet operates on two twiss files instead.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.model_diff.diff_twiss_parameters">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.model_diff.</span></span><span class="sig-name descname"><span class="pre">diff_twiss_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_a</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tfs.handler.TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tfs.handler.TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.handler.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/correction/model_diff.html#diff_twiss_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.model_diff.diff_twiss_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a TfsDataFrame containing of the given parameters between
+model_a and model_b.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.correction.response_madx"></span><div class="section" id="response-mad-x">
+<h2>Response MAD-X<a class="headerlink" href="#response-mad-x" title="Permalink to this headline">¶</a></h2>
+<p>Provides a function to create the responses of beta, phase, dispersion, tune and coupling via iterative
+madx calls.</p>
+<p>The variables under investigation need to be provided as a list (which can be obtained from the accelerator
+class).</p>
+<p>For now, the response matrix is stored in a hdf5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>Lukas Malina, Joschua Dilly, Jaime (…) Coello de Portugal</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_madx.create_fullresponse">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_madx.</span></span><span class="sig-name descname"><span class="pre">create_fullresponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">omc3.model.accelerators.accelerator.Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_k</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_madx.html#create_fullresponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_madx.create_fullresponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a dictionary containing response matrices for
+beta, phase, dispersion, tune and coupling and saves it to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel_inst</strong> -- Accelerator Instance.</p></li>
+<li><p><strong>variable_categories</strong> (<em>list</em>) -- Categories of the variables/knobs to use. (from .json)</p></li>
+<li><p><strong>delta_k</strong> (<em>float</em>) -- delta K1L to be applied to quads for sensitivity matrix</p></li>
+<li><p><strong>num_proc</strong> (<em>int</em>) -- Number of processes to use in parallel.</p></li>
+<li><p><strong>temp_dir</strong> (<em>str</em>) -- temporary directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses folder of original_jobfile.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.correction.response_twiss"></span><div class="section" id="response-twiss">
+<h2>Response TWISS<a class="headerlink" href="#response-twiss" title="Permalink to this headline">¶</a></h2>
+<p>Provides a class to get response matrices from Twiss parameters.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The responses are only valid for MAD-X Beam 1 and Beam 2 twiss-files, <strong>not for Beam 4</strong> !!
+Also, it only works properly for on-orbit twiss files.</p>
+</div>
+<p>The calculation is based on formulas in <a class="footnote-reference brackets" href="#franchianalyticformulasrapid2017" id="id1">1</a>, <a class="footnote-reference brackets" href="#tomasreviewlinearoptics2017" id="id2">2</a>
+and is summarized in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id3">3</a>, where the following
+equations can be found in Eq. 10 - Eq. 15.</p>
+<ul class="simple">
+<li><p>Beta Response:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\delta \beta_{z,j} = \mp \beta_{z,j} \sum_m \delta K_{1,m} \frac{\beta_{z,m}}{2}
+\frac{cos(2\tau_{z,mj})}{sin(2\pi Q_z)}\]</div>
+<ul class="simple">
+<li><p>Dispersion Response:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}\delta D_{x,j} =&amp;+ \sqrt{\beta_{x,j}} \sum_m (\delta K_{0,m} + \delta K_{1S,m} D_{y,m}
+- \delta K_{1,m} D_{x,m}) \frac{\sqrt{\beta_{x,m}}}{2}
+\frac{cos(\tau_{x,mj})}{sin(\pi Q_x)}
+\\
+\delta D_{y,j} =&amp;- \sqrt{\beta_{y,j}} \sum_m (\delta K_{0S,m}
+- \delta K_{1S,m} D_{x,m} - \delta K_{1,m} D_{y,m}) \frac{\sqrt{\beta_{y,m}}}{2}
+\frac{cos(\tau_{y,mj})}{sin(\pi Q_y)}\end{split}\]</div>
+<ul class="simple">
+<li><p>Norm. Dispersion Response: similar as above but with <span class="math notranslate nohighlight">\(\frac{1}{\sqrt{\beta}}\)</span> linearized</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}\delta \frac{D_{x,j}}{\sqrt{\beta_{x,j}}} =&amp;+ \sum_m (\delta K_{0,m} + \delta K_{1S,m} D_{y,m}
+- \delta K_{1,m} D_{x,m} ) \frac{\sqrt{\beta_{x,m}}}{2}
+\frac{cos(\tau_{x,mj})}{sin(\pi Q_x)}
+&amp;&amp;+ \frac{D_{x,j}}{\sqrt{\beta_{x,j}}} \delta K_{1,m}
+\frac{\beta_{x,m}}{4}\frac{cos(2\tau_{x,mj})}{2sin(\pi Q_x)}
+\\
+\delta \frac{D_{y,j}}{\sqrt{\beta_{y,j}}} =&amp;- \sum_m (\delta K_{0S,m} - \delta K_{1S,m} D_{x,m}
+- \delta K_{1,m} D_{y,m}) \frac{\sqrt{\beta_{y,m}}}{2}
+\frac{cos(\tau_{y,mj})}{sin(\pi Q_y)}
+&amp;&amp;- \frac{D_{y,j}}{\sqrt{\beta_{y,j}}} \delta K_{1,m}
+\frac{\beta_{y,m}}{4}\frac{cos(2\tau_{y,mj})}{2sin(\pi Q_y)}\end{split}\]</div>
+<ul class="simple">
+<li><p>Phase Advance Response:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\delta \Phi_{z,wj} = \pm \sum_m \delta K_{1,m} \frac{\beta_{z,m}}{4}
+\left\{ 2\left[ \Pi_{mj} - \Pi_{mw} + \Pi_{jw} \right] +
+\frac{sin(2\tau_{z,mj}) - sin(2\tau_{z,mw})}{sin(2\pi Q_z)} \right\}\]</div>
+<ul class="simple">
+<li><p>Tune Response:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\delta Q_z = \pm \sum_m \delta K_{1,m} \frac{\beta_{z,m}}{4\pi}\]</div>
+<ul class="simple">
+<li><p>Coupling Response:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}\delta f_{\substack{\scriptscriptstyle 1001 \\ \scriptscriptstyle 1010},j} =
+\sum_m \delta J_{1,m} \, \frac{\sqrt{\beta_{x,m}\beta_{y,m}}}{4} \,
+\frac{\exp{(i(\Delta\Phi_{x,mj} \mp \Delta\Phi_{y,mj}))}}{1-\exp({2\pi i (Q_x \mp Q_y}))}\end{split}\]</div>
+<p>For people reading the code, the response matrices are first calculated like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span>  <span class="n">Elements</span> <span class="n">of</span> <span class="n">interest</span> <span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="o">...</span> <span class="o">|</span>
+<span class="o">|</span><span class="n">Magnets</span> <span class="p">(</span><span class="n">m</span><span class="p">)</span>                        <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>                                <span class="o">|</span>
+<span class="o">|</span>  <span class="n">v</span>                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">.</span>                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">.</span>                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">.</span>                                <span class="o">|</span>
+<span class="o">|</span>                                   <span class="o">|</span>
+</pre></div>
+</div>
+<p>This avoids transposing all vectors individually in the beginning.
+At the end (of the calculation) the matrix is then transposed
+to fit the <span class="math notranslate nohighlight">\(M \cdot \delta K\)</span> orientation.</p>
+<p>Also <span class="math notranslate nohighlight">\(\Delta \Phi_{z,wj}\)</span> needs to be multiplied by <span class="math notranslate nohighlight">\(2\pi\)</span> to be consistent.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="franchianalyticformulasrapid2017"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>A. Franchi et al.,
+Analytic formulas for the rapid evaluation of the orbit response matrix
+and chromatic functions from lattice parameters in circular accelerators. (2017)
+<a class="reference external" href="https://arxiv.org/abs/1711.06589">https://arxiv.org/abs/1711.06589</a></p>
+</dd>
+<dt class="label" id="tomasreviewlinearoptics2017"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>R. Tomas, et al.,
+‘Review of linear optics measurement and correction for charged particle
+accelerators.’
+Physical Review Accelerators and Beams, 20(5), 54801. (2017)
+<a class="reference external" href="https://doi.org/10.1103/PhysRevAccelBeams.20.054801">https://doi.org/10.1103/PhysRevAccelBeams.20.054801</a></p>
+</dd>
+<dt class="label" id="dillyupdatedglobalopticscorrection2018"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>,<a href="#id5">3</a>)</span></dt>
+<dd><p>J. Dilly et al.,
+An updated global optics correction scheme. (2018)
+<a class="reference external" href="https://cds.cern.ch/record/2632945/">https://cds.cern.ch/record/2632945/</a></p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">TwissResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varmap_or_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bpms'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides Response Matrices calculated from sequence, model and given variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel_inst</strong> (<em>accelerator</em>) -- Accelerator Instance (needs to contain elements model).</p></li>
+<li><p><strong>variable_categories</strong> (<em>list</em>) -- List of variable categories to get from the accelerator class.</p></li>
+<li><p><strong>varmap_or_path</strong> (<em>dict</em><em>, </em><em>string</em>) -- mapping of the variables,
+either as dict-structure of Series or path to a pickled-file.</p></li>
+<li><p><strong>at_elements</strong> (<em>str</em>) -- Get response matrix for these elements. Can be:
+‘bpms’: All BPMS (Default)
+‘bpms+’: BPMS+ used magnets (== magnets defined by variables in varfile)
+‘all’: All BPMS and Magnets given in the model (Markers are removed)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_beta_beat">
+<span class="sig-name descname"><span class="pre">get_beta_beat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_beta_beat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_beta_beat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Response Matrix for Beta Beating</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_coupling">
+<span class="sig-name descname"><span class="pre">get_coupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_coupling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_coupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Response Matrix for the coupling</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_dispersion">
+<span class="sig-name descname"><span class="pre">get_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_dispersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Response Matrix for Dispersion</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_norm_dispersion">
+<span class="sig-name descname"><span class="pre">get_norm_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_norm_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_norm_dispersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Response Matrix for Normalized Dispersion</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_phase">
+<span class="sig-name descname"><span class="pre">get_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Response Matrix for Total Phase</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_phase_adv">
+<span class="sig-name descname"><span class="pre">get_phase_adv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_phase_adv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_phase_adv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Response Matrix for Phase Advance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_response_for">
+<span class="sig-name descname"><span class="pre">get_response_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_response_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_response_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns only desired response matrices</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse.get_tune">
+<span class="sig-name descname"><span class="pre">get_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse.get_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse.get_tune" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Response Matrix for the Tunes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.create_response">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">create_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">omc3.model.accelerators.accelerator.Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vars_categories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics_params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#create_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.create_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper to create response via TwissResponse</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.dphi">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">dphi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#dphi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.dphi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return dphi from phase advances in data, see Eq. 7 in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id4">3</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.get_phase_advances">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">get_phase_advances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">twiss_df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#get_phase_advances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.get_phase_advances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate phase advances between all elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Matrices similar to DPhi(i,j) = Phi(j) - Phi(i)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.response_add">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">response_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#response_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.response_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges two or more Response Matrix DataFrames</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.tau">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">tau</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#tau"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tau from phase advances in data, see Eq. 8 in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id5">3</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_twiss.upper">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_strings</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#upper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.upper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all items of list to uppercase</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.correction.sequence_evaluation"></span><div class="section" id="sequence-evaluation">
+<h2>Sequence Evaluation<a class="headerlink" href="#sequence-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>Evaluates the variable responses from a sequence in MAD-X.</p>
+<p>First: Set all variables to 0
+Then: Set one variable at a time to 1</p>
+<p>Compare results with case all==0.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.sequence_evaluation.check_varmap_file">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.sequence_evaluation.</span></span><span class="sig-name descname"><span class="pre">check_varmap_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">omc3.model.accelerators.accelerator.Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vars_categories</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/sequence_evaluation.html#check_varmap_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.sequence_evaluation.check_varmap_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks on varmap file and creates it if not in model folder.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.sequence_evaluation.evaluate_for_variables">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.sequence_evaluation.</span></span><span class="sig-name descname"><span class="pre">evaluate_for_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">omc3.model.accelerators.accelerator.Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/correction/sequence_evaluation.html#evaluate_for_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.sequence_evaluation.evaluate_for_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a dictionary containing response matrices for
+beta, phase, dispersion, tune and coupling and saves it to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel_inst</strong> (<a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance.</p></li>
+<li><p><strong>variable_categories</strong> (<em>list</em>) -- Categories of the variables/knobs to use. (from .json)</p></li>
+<li><p><strong>order</strong> (<em>int</em><em> or </em><em>tuple</em>) -- Max or [min, max] of K-value order to use.</p></li>
+<li><p><strong>num_proc</strong> (<em>int</em>) -- Number of processes to use in parallel.</p></li>
+<li><p><strong>temp_dir</strong> (<em>Path</em>) -- temporary directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses model_dir.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-omc3.correction.response_io"></span><div class="section" id="response-matrix-io">
+<h2>Response Matrix IO<a class="headerlink" href="#response-matrix-io" title="Permalink to this headline">¶</a></h2>
+<p>Input and output functions for response matrices.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_io.read_fullresponse">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_io.</span></span><span class="sig-name descname"><span class="pre">read_fullresponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics_parameters</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_io.html#read_fullresponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_io.read_fullresponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the response matrices from disk.
+Beware: As empty DataFrames are skipped on write,
+default for not found entries are empty DataFrames.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_io.read_varmap">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_io.</span></span><span class="sig-name descname"><span class="pre">read_varmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_io.html#read_varmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_io.read_varmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the variable mapping file from disk.
+Beware: As empty DataFrames are skipped on write,
+default for not found entries are empty Series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_io.write_fullresponse">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_io.</span></span><span class="sig-name descname"><span class="pre">write_fullresponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullresponse</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_io.html#write_fullresponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_io.write_fullresponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the full response matrices to disk.
+Beware: Empty Dataframes are skipped! (HDF creates gigantic files otherwise)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_io.write_varmap">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_io.</span></span><span class="sig-name descname"><span class="pre">write_varmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varmap</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_io.html#write_varmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_io.write_varmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the  variable mapping file to disk.
+Beware: Empty Dataframes are skipped! (HDF creates gigantic files otherwise)</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="definitions.html" class="btn btn-neutral float-right" title="Definitions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../entrypoints/scripts.html" class="btn btn-neutral float-left" title="Scripts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

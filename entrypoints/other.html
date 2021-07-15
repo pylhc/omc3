@@ -41,7 +41,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plotting" href="plotting.html" />
-    <link rel="prev" title="Analysis" href="analysis.html" /> 
+    <link rel="prev" title="Correction" href="correction.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -60,7 +60,7 @@
 
           
             
-            <img src="../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -101,6 +101,11 @@
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-creator">Model Creator</a></li>
@@ -119,11 +124,24 @@
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#formats">Formats</a></li>
@@ -330,7 +348,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 <p>Entrypoint to run the model creator for LHC, PSBooster and PS models.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.model_creator.create_instance_and_model">
-<span class="sig-prename descclassname"><span class="pre">omc3.model_creator.</span></span><span class="sig-name descname"><span class="pre">create_instance_and_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model_creator.html#create_instance_and_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model_creator.create_instance_and_model" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.model_creator.</span></span><span class="sig-name descname"><span class="pre">create_instance_and_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">omc3.model.accelerators.accelerator.Accelerator</span></a></span></span><a class="reference internal" href="../_modules/omc3/model_creator.html#create_instance_and_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model_creator.create_instance_and_model" title="Permalink to this definition">¶</a></dt>
 <dd><dl>
 <dt>Manager Keyword Args:</dt><dd><p><em>--Required--</em></p>
 <ul>
@@ -430,7 +448,7 @@ provided it will be written to sys.stdout.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="plotting.html" class="btn btn-neutral float-right" title="Plotting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="analysis.html" class="btn btn-neutral float-left" title="Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="correction.html" class="btn btn-neutral float-left" title="Correction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

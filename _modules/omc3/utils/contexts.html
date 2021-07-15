@@ -58,7 +58,7 @@
 
           
             
-            <img src="../../../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -99,6 +99,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
@@ -117,11 +122,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
@@ -343,39 +361,6 @@
             <span class="p">),</span>
                 <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
             <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="temporary_dir"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.temporary_dir">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">temporary_dir</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Create a temporary dir and remove it afterwards.&quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
-        <span class="k">yield</span> <span class="n">dir_path</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="temporary_file_path"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.temporary_file_path">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">temporary_file_path</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns path to temporary file with content.&quot;&quot;&quot;</span>
-    <span class="n">fd</span><span class="p">,</span> <span class="n">file_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>  <span class="c1"># close file descriptor</span>
-    <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">file_path</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="suppress_exception"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.suppress_exception">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">suppress_exception</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Catch exception and ignore it.&quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">except</span> <span class="n">exception</span><span class="p">:</span>
-        <span class="k">pass</span></div>
 </pre></div>
 
            </div>

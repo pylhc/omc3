@@ -58,7 +58,7 @@
 
           
             
-            <img src="../../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -99,6 +99,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#model-creator">Model Creator</a></li>
@@ -117,11 +122,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/definitions.html#formats">Formats</a></li>
@@ -287,6 +305,7 @@
 
 <span class="kn">from</span> <span class="nn">omc3.madx_wrapper</span> <span class="kn">import</span> <span class="n">run_string</span>
 <span class="kn">from</span> <span class="nn">omc3.model</span> <span class="kn">import</span> <span class="n">manager</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
 <span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">JOB_MODEL_MADX</span>
 <span class="kn">from</span> <span class="nn">omc3.model.model_creators.lhc_model_creator</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa</span>
     <span class="n">LhcBestKnowledgeCreator</span><span class="p">,</span>
@@ -340,7 +359,7 @@
 
 
 <div class="viewcode-block" id="create_instance_and_model"><a class="viewcode-back" href="../../entrypoints/other.html#omc3.model_creator.create_instance_and_model">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">create_instance_and_model</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">create_instance_and_model</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manager Keyword Args:</span>
 <span class="sd">        *--Required--*</span>
@@ -397,13 +416,27 @@
 
     <span class="n">accel_inst</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator Instance </span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">, model type </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">accel_inst</span><span class="o">.</span><span class="n">verify_object</span><span class="p">()</span>
     <span class="n">creator</span> <span class="o">=</span> <span class="n">CREATORS</span><span class="p">[</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">NAME</span><span class="p">][</span><span class="n">opt</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
-    <span class="n">creator</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-    <span class="n">madx_script</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">get_madx_script</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+
+    <span class="c1"># Prepare model-dir output directory</span>
+    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span>
+    <span class="n">creator</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
+
+    <span class="c1"># get madx-script with relative output-paths</span>
+    <span class="c1"># as `cwd` changes run to correct directory.</span>
+    <span class="c1"># The resulting model-dir is then more self-contained. (jdilly)</span>
+    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span>
+    <span class="n">madx_script</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">get_madx_script</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
+
+    <span class="c1"># Run madx to create model</span>
     <span class="n">run_string</span><span class="p">(</span><span class="n">madx_script</span><span class="p">,</span>
                <span class="n">output_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">/</span> <span class="n">JOB_MODEL_MADX</span><span class="p">,</span>
-               <span class="n">log_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">logfile</span><span class="p">)</span></div>
+               <span class="n">log_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span>
+               <span class="n">cwd</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+
+    <span class="c1"># Return accelerator instance</span>
+    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span>
+    <span class="k">return</span> <span class="n">accel_inst</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

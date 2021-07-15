@@ -58,7 +58,7 @@
 
           
             
-            <img src="../../../../_static/_static/img/omc_logo.svg" class="logo" alt="Logo"/>
+            <img src="../../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -99,6 +99,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#model-creator">Model Creator</a></li>
@@ -117,11 +122,24 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#formats">Formats</a></li>
@@ -299,7 +317,7 @@
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ...creating Stem Plots&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">fig_id</span><span class="p">,</span> <span class="n">fig_cont</span> <span class="ow">in</span> <span class="n">figures</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;   Plotting Figure: </span><span class="si">{</span><span class="n">fig_id</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-        <span class="n">fig_cont</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">fig_id</span><span class="p">)</span>
+        <span class="n">fig_cont</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">fig_id</span><span class="p">)</span>
 
         <span class="n">_plot_stems</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">)</span>
         <span class="n">plot_lines</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span>
@@ -361,7 +379,7 @@
     <span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>  <span class="c1"># to get the legend extend</span>
 
     <span class="c1"># check if it is wider than the axes</span>
-    <span class="n">legend_width</span> <span class="o">=</span> <span class="n">leg</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">inverse_transformed</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span><span class="o">.</span><span class="n">width</span>
+    <span class="n">legend_width</span> <span class="o">=</span> <span class="n">leg</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">transformed</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">transAxes</span><span class="o">.</span><span class="n">inverted</span><span class="p">())</span><span class="o">.</span><span class="n">width</span>
     <span class="n">x_shift</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">legend_width</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">x_shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">legend_width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>  <span class="c1"># shift more into center</span>

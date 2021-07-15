@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>omc3.correction.handler &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.correction.handler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.correction.handler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Handler</span>
+<span class="sd">-------</span>
+
+<span class="sd">This module contains high-level functions to manage most functionality of the corrections calculations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">OrthogonalMatchingPursuit</span>
+
+<span class="kn">import</span> <span class="nn">omc3.madx_wrapper</span> <span class="k">as</span> <span class="nn">madx_wrapper</span>
+<span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">DISP</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span>
+                                       <span class="n">F1010</span><span class="p">,</span> <span class="n">NORM_DISP</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span>
+                                       <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.model_appenders</span> <span class="kn">import</span> <span class="n">add_coupling_to_model</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.response_io</span> <span class="kn">import</span> <span class="n">read_fullresponse</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span>
+                                                <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">NAME</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="correct"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.correct">[docs]</a><span class="k">def</span> <span class="nf">correct</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Perform global correction as described in :mod:`omc3.global_correction`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        accel_inst (Accelerator): Accelerator Instance</span>
+<span class="sd">        opt (DotDict): Correction options,</span>
+<span class="sd">                       see :mod:`omc3.global_correction` for details.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">method_options</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s2">&quot;svd_cut&quot;</span><span class="p">,</span> <span class="s2">&quot;n_correctors&quot;</span><span class="p">])</span>
+    <span class="c1"># read data from files</span>
+    <span class="n">vars_list</span> <span class="o">=</span> <span class="n">_get_varlist</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">)</span>
+    <span class="n">optics_params</span><span class="p">,</span> <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">get_measurement_data</span><span class="p">(</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">,</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">meas_dir</span><span class="p">,</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">beta_file_name</span><span class="p">,</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">fullresponse_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">_load_fullresponse</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">fullresponse_path</span><span class="p">,</span> <span class="n">vars_list</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+
+    <span class="c1"># the model in accel_inst is modified later, so save nominal model here to variables</span>
+    <span class="n">nominal_model</span> <span class="o">=</span> <span class="n">_maybe_add_coupling_to_model</span><span class="p">(</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+    <span class="c1"># apply filters to data</span>
+    <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">filter_measurement</span><span class="p">(</span><span class="n">optics_params</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">nominal_model</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span>
+    <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">model_appenders</span><span class="o">.</span><span class="n">add_differences_to_model_to_measurements</span><span class="p">(</span><span class="n">nominal_model</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">)</span>
+
+    <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">filter_response_index</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+    <span class="n">resp_matrix</span> <span class="o">=</span> <span class="n">_join_responses</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">,</span> <span class="n">vars_list</span><span class="p">)</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">vars_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">DELTA</span><span class="p">])</span>
+
+    <span class="c1"># ######### Iteration Phase ######### #</span>
+    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Correction Iteration </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">max_iter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ######### Update Model and Response ######### #</span>
+        <span class="k">if</span> <span class="n">iteration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating model via MADX.&quot;</span><span class="p">)</span>
+            <span class="n">corr_model_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;twiss_</span><span class="si">{</span><span class="n">iteration</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_create_corrected_model</span><span class="p">(</span><span class="n">corr_model_path</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">)</span>
+            <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_maybe_add_coupling_to_model</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+
+            <span class="n">bpms_index_mask</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bpm&quot;</span><span class="p">])</span>
+            <span class="n">corr_model</span> <span class="o">=</span> <span class="n">corr_model_elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpms_index_mask</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">model_appenders</span><span class="o">.</span><span class="n">add_differences_to_model_to_measurements</span><span class="p">(</span><span class="n">corr_model</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">update_response</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating response.&quot;</span><span class="p">)</span>
+                <span class="c1"># please look away for the next two lines.</span>
+                <span class="n">accel_inst</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">corr_model</span>
+                <span class="n">accel_inst</span><span class="o">.</span><span class="n">_elements</span> <span class="o">=</span> <span class="n">corr_model_elements</span>
+                <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+                <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">filter_response_index</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+                <span class="n">resp_matrix</span> <span class="o">=</span> <span class="n">_join_responses</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">,</span> <span class="n">vars_list</span><span class="p">)</span>
+
+        <span class="c1"># ######### Actual optimization ######### #</span>
+        <span class="n">delta</span> <span class="o">+=</span> <span class="n">_calculate_delta</span><span class="p">(</span><span class="n">resp_matrix</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">,</span> <span class="n">vars_list</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">method_options</span><span class="p">)</span>
+
+        <span class="c1"># remove unused correctors from vars_list</span>
+        <span class="n">delta</span><span class="p">,</span> <span class="n">resp_matrix</span><span class="p">,</span> <span class="n">vars_list</span> <span class="o">=</span> <span class="n">_filter_by_strength</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">resp_matrix</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">min_corrector_strength</span><span class="p">)</span>
+
+        <span class="n">writeparams</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+        <span class="n">writeparams</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_correct_path</span><span class="p">,</span> <span class="o">-</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cumulative delta: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">DELTA</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()))</span><span class="si">:</span><span class="s2">.5e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">write_knob</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished Iterative Global Correction.&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1"># Input ------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">meas_dir</span> <span class="o">/</span> <span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_measurement_data"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.get_measurement_data">[docs]</a><span class="k">def</span> <span class="nf">get_measurement_data</span><span class="p">(</span>
+        <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">meas_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">beta_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">w_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot; Loads all measurements defined by `keys` into a dictionary. &quot;&quot;&quot;</span>
+    <span class="n">measurement</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">filtered_keys</span> <span class="o">=</span> <span class="n">keys</span>
+    <span class="k">if</span> <span class="n">w_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filtered_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="n">w_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">filtered_keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_NAME</span><span class="si">}{</span><span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION_NAME</span><span class="si">}{</span><span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span>
+            <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP_NAME</span><span class="si">}{</span><span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">):</span>
+            <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>  <span class="c1"># Just fractional tunes:</span>
+                    <span class="n">VALUE</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="p">([</span><span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_NAME</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">],</span>
+                                         <span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_NAME</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]],</span>
+                                        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                    <span class="n">ERROR</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">])</span>  <span class="c1"># TODO measured errors not in the file</span>
+                <span class="p">},</span>
+                <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">beta_file_name</span><span class="si">}{</span><span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filtered_keys</span><span class="p">,</span> <span class="n">measurement</span></div>
+
+
+<span class="k">def</span> <span class="nf">_load_fullresponse</span><span class="p">(</span><span class="n">full_response_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Full response is dictionary of optics-parameter gradients upon</span>
+<span class="sd">    a change of a single quadrupole strength</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting loading Full Response optics&quot;</span><span class="p">)</span>
+    <span class="n">full_response_data</span> <span class="o">=</span> <span class="n">read_fullresponse</span><span class="p">(</span><span class="n">full_response_path</span><span class="p">)</span>
+
+    <span class="c1"># There is a check in read_fullresponse but there all variables need to be present.</span>
+    <span class="c1"># Here only some. So I leave it like that (jdilly 2021-06-03)</span>
+    <span class="n">loaded_variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">full_response_data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">var</span> <span class="ow">in</span> <span class="n">loaded_variables</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;None of the given variables found in response matrix. Are you using the right categories?&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">full_response_data</span>
+
+
+<span class="c1"># Data handling ----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_get_varlist</span><span class="p">(</span><span class="n">accel_cls</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>  <span class="c1"># TODO: Virtual?</span>
+    <span class="n">varlist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">accel_cls</span><span class="o">.</span><span class="n">get_variables</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">variables</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">varlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No variables found! Make sure your categories are valid!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">varlist</span>
+
+
+<span class="k">def</span> <span class="nf">_maybe_add_coupling_to_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Add coupling to the model, if terms corresponding to coupling RDTs are</span>
+<span class="sd">    found in the provided keys.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (tfs.TfsDataFrame): Twiss dataframe.</span>
+<span class="sd">        keys (Sequence[str]):</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A TfsDataFrame with the added columns.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;F1&quot;</span><span class="p">)]):</span>
+        <span class="k">return</span> <span class="n">add_coupling_to_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="k">def</span> <span class="nf">_create_corrected_model</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">change_params</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Use the calculated deltas in changeparameters.madx to create a corrected model &quot;&quot;&quot;</span>
+    <span class="n">madx_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_update_correction_script</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">change_params</span><span class="p">)</span>
+    <span class="n">twiss_out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">)</span>
+    <span class="n">madx_script</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;! Based on model &#39;</span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">madx_script</span>
+    <span class="n">madx_wrapper</span><span class="o">.</span><span class="n">run_string</span><span class="p">(</span>
+        <span class="n">madx_script</span><span class="p">,</span>
+        <span class="n">output_file</span><span class="o">=</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;job.create_</span><span class="si">{</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.madx&quot;</span><span class="p">,</span>
+        <span class="n">log_file</span><span class="o">=</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;job.create_</span><span class="si">{</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">,</span>
+        <span class="n">cwd</span><span class="o">=</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span>  <span class="c1"># models are always run from there</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_join_responses</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">varslist</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns matrix #BPMs * #Parameters x #variables &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">resp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">],</span>  <span class="c1"># dataframes</span>
+            <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span>  <span class="c1"># axis to join along</span>
+            <span class="n">join</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">,</span>  <span class="c1"># =[pd.Index(varslist)]</span>
+            <span class="c1"># other axes to use (pd Index obj required)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">varslist</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_join_columns</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">meas</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Retuns vector: N= #BPMs * #Parameters (BBX, MUX etc.) &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_by_strength</span><span class="p">(</span><span class="n">delta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">resp_matrix</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">min_strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Remove too small correctors &quot;&quot;&quot;</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">delta</span><span class="p">[</span><span class="n">DELTA</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">min_strength</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">delta</span><span class="p">,</span> <span class="n">resp_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">delta</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">delta</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+
+<span class="c1"># Optimization -----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_get_method_fun</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="n">method_to_function_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pinv&quot;</span><span class="p">:</span> <span class="n">_pseudo_inverse</span><span class="p">,</span> <span class="s2">&quot;omp&quot;</span><span class="p">:</span> <span class="n">_orthogonal_matching_pursuit</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">method_to_function_dict</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_pseudo_inverse</span><span class="p">(</span><span class="n">response_mat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">diff_vec</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculates the pseudo-inverse of the response via svd. (numpy) &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">svd_cut</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;svd_cut setting needed for pseudo inverse method.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">response_mat</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">svd_cut</span><span class="p">),</span> <span class="n">diff_vec</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_orthogonal_matching_pursuit</span><span class="p">(</span><span class="n">response_mat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">diff_vec</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculated n_correctors via orthogonal matching pursuit&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">n_correctors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_correctors setting needed for orthogonal matching pursuit.&quot;</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">OrthogonalMatchingPursuit</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">n_correctors</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">response_mat</span><span class="p">,</span> <span class="n">diff_vec</span><span class="p">)</span>
+    <span class="n">coef</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">coef_</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Orthogonal Matching Pursuit Results: </span><span class="se">\n</span><span class="s2">&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;  Chosen variables: </span><span class="si">{</span><span class="n">response_mat</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="n">coef</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;  Score: </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">response_mat</span><span class="p">,</span> <span class="n">diff_vec</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coef</span>
+
+
+<span class="k">def</span> <span class="nf">_calculate_delta</span><span class="p">(</span>
+        <span class="n">resp_matrix</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">meas_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">vars_list</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">meth_opt</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the deltas for the variables.</span>
+
+<span class="sd">    Output is Dataframe with one column &#39;DELTA&#39; and vars_list index.&quot;&quot;&quot;</span>
+    <span class="n">weight_vector</span> <span class="o">=</span> <span class="n">_join_columns</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">WEIGHT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+    <span class="n">diff_vector</span> <span class="o">=</span> <span class="n">_join_columns</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DIFF</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+    <span class="n">resp_weighted</span> <span class="o">=</span> <span class="n">resp_matrix</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">weight_vector</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+    <span class="n">diff_weighted</span> <span class="o">=</span> <span class="n">diff_vector</span> <span class="o">*</span> <span class="n">weight_vector</span>
+
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">_get_method_fun</span><span class="p">(</span><span class="n">method</span><span class="p">)(</span><span class="n">resp_weighted</span><span class="p">,</span> <span class="n">diff_weighted</span><span class="p">,</span> <span class="n">meth_opt</span><span class="p">)</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">vars_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">DELTA</span><span class="p">])</span>
+
+    <span class="c1"># check calculations</span>
+    <span class="n">update</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">resp_weighted</span><span class="p">,</span> <span class="n">delta</span><span class="p">[</span><span class="n">DELTA</span><span class="p">])</span>
+    <span class="n">_print_rms</span><span class="p">(</span><span class="n">meas_dict</span><span class="p">,</span> <span class="n">diff_weighted</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">delta</span>
+
+
+<span class="c1"># Print ------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_print_rms</span><span class="p">(</span><span class="n">meas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">diff_w</span><span class="p">,</span> <span class="n">r_delta_w</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Prints current RMS status &quot;&quot;&quot;</span>
+    <span class="n">f_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:&gt;20s}</span><span class="s2"> : </span><span class="si">{:.5e}</span><span class="s2">&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;RMS Measure - Model (before correction, w/o weigths):&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">meas</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_rms</span><span class="p">(</span><span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">DIFF</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())))</span>
+
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;RMS Measure - Model (before correction, w/ weigths):&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">meas</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_rms</span><span class="p">(</span><span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">DIFF</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">WEIGHT</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())))</span>
+
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;All&quot;</span><span class="p">,</span> <span class="n">_rms</span><span class="p">(</span><span class="n">diff_w</span><span class="p">)))</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;R * delta&quot;</span><span class="p">,</span> <span class="n">_rms</span><span class="p">(</span><span class="n">r_delta_w</span><span class="p">)))</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(Measure - Model) - (R * delta)   &quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_rms</span><span class="p">(</span><span class="n">diff_w</span> <span class="o">-</span> <span class="n">r_delta_w</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">_rms</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate root mean square error of a number or an ndarray.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+
+<span class="c1"># Output -----------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">write_knob</span><span class="p">(</span><span class="n">knob_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">delta_out</span> <span class="o">=</span> <span class="o">-</span><span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">DELTA</span><span class="p">]]</span>
+    <span class="n">delta_out</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">knob_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+    <span class="n">delta_out</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;DATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">knob_path</span><span class="p">,</span> <span class="n">delta_out</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">writeparams</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">madx_script</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">delta</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">():</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">var</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">]</span>
+            <span class="n">madx_script</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">+e</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

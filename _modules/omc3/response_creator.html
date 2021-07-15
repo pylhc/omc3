@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>omc3.response_creator &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.response_creator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.response_creator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Response Creator</span>
+<span class="sd">----------------</span>
+
+<span class="sd">Provides a response generation wrapper.</span>
+<span class="sd">The response matrices can be either created by :mod:`omc3.correction.response_madx`</span>
+<span class="sd">or analytically via :mod:`omc3.correction.response_twiss`.</span>
+
+<span class="sd">Input arguments are split into response creation arguments and accelerator arguments.</span>
+<span class="sd">The former are listed below, the latter depend on the accelerator you want</span>
+<span class="sd">to use. Check :ref:`modules/model:Model` to see which ones are needed.</span>
+
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Optional--*</span>
+
+
+<span class="sd">- **outfile_path** *(str)*:</span>
+
+<span class="sd">    Name of fullresponse file.</span>
+
+
+<span class="sd">- **creator** *(str)*:</span>
+
+<span class="sd">    Create either with madx or analytically from twiss file.</span>
+
+<span class="sd">    choices: ``(&#39;madx&#39;, &#39;twiss&#39;)``</span>
+
+<span class="sd">    default: ``madx``</span>
+
+
+<span class="sd">- **debug**:</span>
+
+<span class="sd">    Print debug information.</span>
+
+<span class="sd">    action: ``store_true``</span>
+
+
+<span class="sd">- **delta_k** *(float)*:</span>
+
+<span class="sd">    Delta K1 to be applied to quads for sensitivity matrix (madx-only).</span>
+
+<span class="sd">    default: ``2e-05``</span>
+
+
+<span class="sd">- **optics_params** *(str)*:</span>
+
+<span class="sd">    List of parameters to correct upon (e.g. BBX BBY; twiss-only).</span>
+
+
+<span class="sd">- **variable_categories**:</span>
+
+<span class="sd">    List of the variables classes to use.</span>
+
+<span class="sd">    default: ``[&#39;MQM&#39;, &#39;MQT&#39;, &#39;MQTL&#39;, &#39;MQY&#39;]``</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+
+<span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">response_madx</span><span class="p">,</span> <span class="n">response_twiss</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.response_io</span> <span class="kn">import</span> <span class="n">write_fullresponse</span>
+<span class="kn">from</span> <span class="nn">omc3.global_correction</span> <span class="kn">import</span> <span class="n">CORRECTION_DEFAULTS</span><span class="p">,</span> <span class="n">OPTICS_PARAMS_CHOICES</span>
+<span class="kn">from</span> <span class="nn">omc3.model</span> <span class="kn">import</span> <span class="n">manager</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">response_params</span><span class="p">():</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;creator&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;madx&quot;</span><span class="p">,</span> <span class="s2">&quot;twiss&quot;</span><span class="p">),</span>
+                         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;madx&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Create either with madx or analytically from twiss file.&quot;</span>
+                         <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of the variables classes to use.&quot;</span>
+                         <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outfile_path&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of fullresponse file.&quot;</span>
+                         <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta_k&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="mf">0.00002</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delta K1 to be applied to quads for sensitivity matrix (madx-only).&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;optics_params&quot;</span><span class="p">,</span>
+                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of parameters to correct upon (e.g. BBX BBY; twiss-only).&quot;</span><span class="p">,</span>
+                         <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print debug information.&quot;</span><span class="p">,</span>
+                         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">,</span>
+                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+                         <span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<div class="viewcode-block" id="create_response_entrypoint"><a class="viewcode-back" href="../../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">response_params</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">create_response_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Entry point for creating pandas-based response matrices.</span>
+
+<span class="sd">    The response matrices can be either created by response_madx or TwissResponse.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating response.&quot;</span><span class="p">)</span>
+    <span class="n">accel_inst</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">other_opt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span> <span class="o">==</span> <span class="s2">&quot;madx&quot;</span><span class="p">:</span>
+        <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_madx</span><span class="o">.</span><span class="n">create_fullresponse</span><span class="p">(</span>
+            <span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">delta_k</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">delta_k</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span> <span class="o">==</span> <span class="s2">&quot;twiss&quot;</span><span class="p">:</span>
+        <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span>
+            <span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">write_fullresponse</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span><span class="p">,</span> <span class="n">fullresponse</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fullresponse</span></div>
+
+
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">create_response_entrypoint</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

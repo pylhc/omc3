@@ -1,0 +1,823 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>omc3.scripts.fake_measurement_from_model &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.scripts.fake_measurement_from_model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.scripts.fake_measurement_from_model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Fake Measurement from Model</span>
+<span class="sd">---------------------------</span>
+
+<span class="sd">Script to generate a pseudo-measurement from a twiss-model.</span>
+
+<span class="sd">The `model` the then generated measurement is compared to can be different</span>
+<span class="sd">from the `twiss` given, e.g. if the `twiss` incorporates errors.</span>
+
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Required--*</span>
+
+<span class="sd">- **twiss** *(PathOrStrOrDataFrame)*:</span>
+
+<span class="sd">    Twiss dataframe or path to twiss-file.</span>
+
+
+<span class="sd">*--Optional--*</span>
+
+<span class="sd">- **model** *(PathOrStrOrDataFrame)*:</span>
+
+<span class="sd">    Alternative Model (Dataframe or Path) to use. If not given, `twiss`</span>
+<span class="sd">    will be used.</span>
+
+
+<span class="sd">- **outputdir** *(PathOrStr)*:</span>
+
+<span class="sd">    Path to the output directory for the fake measurement.</span>
+
+
+<span class="sd">- **parameters** *(str)*:</span>
+
+<span class="sd">    Optics parameters to use</span>
+
+<span class="sd">    choices: ``(&#39;PHASEX&#39;, &#39;PHASEY&#39;, &#39;BETX&#39;, &#39;BETY&#39;, &#39;DX&#39;, &#39;DY&#39;, &#39;NDX&#39;, &#39;F1010&#39;, &#39;F1001&#39;)``</span>
+
+<span class="sd">    default: ``[&#39;PHASEX&#39;, &#39;PHASEY&#39;, &#39;BETX&#39;, &#39;BETY&#39;, &#39;DX&#39;, &#39;DY&#39;, &#39;NDX&#39;, &#39;F1010&#39;, &#39;F1001&#39;]``</span>
+
+
+<span class="sd">- **randomize** *(str)*:</span>
+
+<span class="sd">    Randomize values and/or errors from gaussian distributions. If not</span>
+<span class="sd">    randomized, measurement values will be equal to the model values and</span>
+<span class="sd">    the errors will be equal to the relative error * measurement.</span>
+
+<span class="sd">    choices: ``[&#39;values&#39;, &#39;errors&#39;]``</span>
+
+<span class="sd">    default: ``[&#39;values&#39;, &#39;errors&#39;]``</span>
+
+
+<span class="sd">- **relative_errors** *(float)*:</span>
+
+<span class="sd">    Relative errors. Either single value for all paramters orlist of</span>
+<span class="sd">    values in order of parameters.</span>
+
+<span class="sd">    default: ``[0.0]``</span>
+
+
+<span class="sd">- **seed** *(int)*:</span>
+
+<span class="sd">    Set random seed.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">DISP</span><span class="p">,</span> <span class="n">NORM_DISP</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.model_appenders</span> <span class="kn">import</span> <span class="n">add_coupling_to_model</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">AMP_BETA_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span>
+                                                <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span>
+                                                <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
+                                                <span class="n">EXT</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span>
+                                                <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span>
+                                                <span class="n">TUNE</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">NAME2</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">MDL</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.toolbox</span> <span class="kn">import</span> <span class="n">df_rel_diff</span><span class="p">,</span> <span class="n">df_ratio</span><span class="p">,</span> <span class="n">df_diff</span><span class="p">,</span> <span class="n">df_ang_diff</span><span class="p">,</span> <span class="n">ang_interval_check</span><span class="p">,</span> <span class="n">ang_diff</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span> <span class="n">PathOrStr</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">OUTPUTNAMES_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Names to be output on input of certain parameters.</span>
+    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">x&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">AMP_BETA_NAME</span><span class="p">)),</span>
+    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">y&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">AMP_BETA_NAME</span><span class="p">)),</span>
+    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION_NAME</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">]),</span>
+    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION_NAME</span><span class="si">}</span><span class="s2">y&quot;</span><span class="p">]),</span>
+    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">x&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">)),</span>
+    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">y&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">)),</span>
+    <span class="n">F1010</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">F1010</span><span class="o">.</span><span class="n">lower</span><span class="p">()]),</span>
+    <span class="n">F1001</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">F1001</span><span class="o">.</span><span class="n">lower</span><span class="p">()]),</span>
+    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">x&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">AMP_BETA_NAME</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">)),</span>
+<span class="p">}</span>
+<span class="n">FAKED_HEADER</span> <span class="o">=</span> <span class="s2">&quot;FAKED_FROM&quot;</span>
+<span class="n">VALUES</span> <span class="o">=</span> <span class="s1">&#39;values&#39;</span>
+<span class="n">ERRORS</span> <span class="o">=</span> <span class="s1">&#39;errors&#39;</span>
+<span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1e-14</span>  <span class="c1"># smallest allowed relative error, empirical value</span>
+                 <span class="c1"># could be smaller but then normal(mean, err) == mean sometimes</span>
+
+
+<span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;twiss&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Twiss dataframe or path to twiss-file.&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Alternative Model (Dataframe or Path) to use. &quot;</span>
+             <span class="s2">&quot;If not given, `twiss` will be used.&quot;</span><span class="p">),</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;parameters&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optics parameters to use&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">OUTPUTNAMES_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="n">default</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">OUTPUTNAMES_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;relative_errors&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Relative errors. Either single value for all paramters or&quot;</span>
+              <span class="s2">&quot;list of values in order of parameters.&quot;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mf">0.</span><span class="p">,],</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;randomize&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Randomize values and/or errors from gaussian distributions.&quot;</span>
+              <span class="s2">&quot; If not randomized, measurement values will be equal to the model &quot;</span>
+              <span class="s2">&quot;values and the errors will be equal to the relative error * measurement.&quot;</span>
+              <span class="p">),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="n">VALUES</span><span class="p">,</span> <span class="n">ERRORS</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">VALUES</span><span class="p">,</span> <span class="n">ERRORS</span><span class="p">],</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the output directory for the fake measurement.&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;seed&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set random seed.&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<div class="viewcode-block" id="generate"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.generate">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes a twiss file and writes the parameters in optics_parameters to Output_dir in the format</span>
+<span class="sd">    global_correction_entrypoint uses (same format you would get from hole_in_one).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating fake measurements.&quot;</span><span class="p">)</span>
+    <span class="c1"># prepare data</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">randomize</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">randomize</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">randomize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">df_twiss</span><span class="p">,</span> <span class="n">df_model</span> <span class="o">=</span> <span class="n">_get_data</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">twiss</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                                   <span class="n">add_coupling</span><span class="o">=</span><span class="p">(</span><span class="n">F1001</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">F1010</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">parameters</span><span class="p">))</span>
+
+    <span class="c1"># headers</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">:</span> <span class="n">df_twiss</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">:</span> <span class="n">df_twiss</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]}</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">twiss</span><span class="p">,</span> <span class="n">PathOrStr</span><span class="p">):</span>
+        <span class="n">headers</span><span class="p">[</span><span class="n">FAKED_HEADER</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">twiss</span><span class="p">)</span>
+
+    <span class="c1"># create defaults</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">_get_loop_parameters</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">relative_errors</span><span class="p">):</span>
+        <span class="n">create</span> <span class="o">=</span> <span class="n">CREATOR_MAP</span><span class="p">[</span><span class="n">parameter</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">new_dfs</span> <span class="o">=</span> <span class="n">create</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span>
+                         <span class="n">relative_error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+                         <span class="n">randomize</span><span class="o">=</span><span class="n">randomize</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_dfs</span><span class="p">)</span>
+
+    <span class="c1"># maybe create normalized dispersion</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">nd_param</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">nd_param</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">nd_df</span> <span class="o">=</span> <span class="n">create_normalized_dispersion</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DISPERSION_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                                                 <span class="n">results</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                                                 <span class="n">df_model</span><span class="p">,</span>
+                                                 <span class="n">nd_param</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">nd_df</span><span class="p">)</span>
+
+    <span class="c1"># output</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing fake measurements to files.&quot;</span><span class="p">)</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">full_path</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<span class="c1"># Main Creator Functions -------------------------------------------------------</span>
+
+<div class="viewcode-block" id="create_beta"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_beta">[docs]</a><span class="k">def</span> <span class="nf">create_beta</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">relative_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">randomize</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Create both beta_amp and beta_phase measurements. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake beta for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">plane</span> <span class="o">=</span> <span class="n">parameter</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">create_measurement</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">,</span> <span class="n">randomize</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">parameter</span><span class="p">])</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">append_model</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">beat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">AMP_BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="create_dispersion"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_dispersion">[docs]</a><span class="k">def</span> <span class="nf">create_dispersion</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">relative_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">randomize</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates dispersion measurement. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake dispersion for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">plane</span> <span class="o">=</span> <span class="n">parameter</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">create_measurement</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">,</span> <span class="n">randomize</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">append_model</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DISPERSION_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">df</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="create_phase"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_phase">[docs]</a><span class="k">def</span> <span class="nf">create_phase</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">relative_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">randomize</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates both phase advance and total phase measurements. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake phases for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">dict_adv</span> <span class="o">=</span> <span class="n">create_phase_advance</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">,</span> <span class="n">randomize</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_adv</span><span class="p">)</span>
+
+    <span class="n">dict_tot</span> <span class="o">=</span> <span class="n">create_total_phase</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">,</span> <span class="n">randomize</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dict_tot</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="create_phase_advance"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_phase_advance">[docs]</a><span class="k">def</span> <span class="nf">create_phase_advance</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">relative_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">randomize</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates phase advance measurements. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake phase advance for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">plane</span> <span class="o">=</span> <span class="n">parameter</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_adv</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_twiss</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">df_adv</span><span class="p">[</span><span class="n">NAME2</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_twiss</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_phase_advances</span><span class="p">(</span><span class="n">df_source</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ang_diff</span><span class="p">(</span>
+                <span class="n">df_source</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_adv</span><span class="p">[</span><span class="n">NAME2</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+                <span class="n">df_source</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_adv</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="n">get_phase_advances</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">relative_error</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ERRORS</span> <span class="ow">in</span> <span class="n">randomize</span><span class="p">:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">_get_random_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">values</span><span class="p">))</span> <span class="o">%</span> <span class="mf">0.5</span>
+
+    <span class="k">if</span> <span class="n">VALUES</span> <span class="ow">in</span> <span class="n">randomize</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">ang_interval_check</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="n">df_adv</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+    <span class="n">df_adv</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">errors</span>
+
+    <span class="c1"># adv model</span>
+    <span class="n">df_adv</span><span class="p">[</span><span class="n">S</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_adv</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span>
+    <span class="n">df_adv</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s1">2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_adv</span><span class="p">[</span><span class="n">NAME2</span><span class="p">],</span> <span class="n">S</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">df_adv</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_phase_advances</span><span class="p">(</span><span class="n">df_model</span><span class="p">)</span>
+    <span class="n">df_adv</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_adv</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+
+    <span class="n">df_adv</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_adv</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+    <span class="n">df_adv</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ang_diff</span><span class="p">(</span><span class="n">df_adv</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">df_adv</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">df_adv</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="create_total_phase"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_total_phase">[docs]</a><span class="k">def</span> <span class="nf">create_total_phase</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">relative_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">randomize</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates total phase measurements. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake total phase for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">plane</span> <span class="o">=</span> <span class="n">parameter</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_tot</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_twiss</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">element0</span> <span class="o">=</span> <span class="n">df_twiss</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">df_tot</span><span class="p">[</span><span class="n">NAME2</span><span class="p">]</span> <span class="o">=</span> <span class="n">element0</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="n">df_twiss</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_twiss</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">element0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">relative_error</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ERRORS</span> <span class="ow">in</span> <span class="n">randomize</span><span class="p">:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">_get_random_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">values</span><span class="p">))</span> <span class="o">%</span> <span class="mf">0.5</span>
+    <span class="n">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="k">if</span> <span class="n">VALUES</span> <span class="ow">in</span> <span class="n">randomize</span><span class="p">:</span>
+        <span class="n">rand_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+        <span class="n">values</span> <span class="o">+=</span> <span class="n">ang_diff</span><span class="p">(</span><span class="n">rand_val</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+    <span class="n">df_tot</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="n">df_tot</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">errors</span>
+
+    <span class="c1"># tot model</span>
+    <span class="n">df_tot</span><span class="p">[</span><span class="n">S</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="p">[</span><span class="n">S</span><span class="p">]</span>
+    <span class="n">df_tot</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s1">2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_tot</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">]</span>
+    <span class="n">df_tot</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                          <span class="n">df_model</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                                          <span class="o">-</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">element0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                                  <span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="n">df_tot</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+
+    <span class="n">df_tot</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_tot</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+    <span class="n">df_tot</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ang_diff</span><span class="p">(</span><span class="n">df_tot</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">df_tot</span> <span class="o">=</span> <span class="n">df_tot</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">df_tot</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">TOTAL_PHASE_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">df_tot</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="create_coupling"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_coupling">[docs]</a><span class="k">def</span> <span class="nf">create_coupling</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">relative_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">randomize</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates coupling measurements for either the difference or sum RDT. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake coupling for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">re</span> <span class="o">=</span> <span class="n">create_measurement</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">R&#39;</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">,</span> <span class="n">randomize</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">create_measurement</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">I&#39;</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">,</span> <span class="n">randomize</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">re</span><span class="p">,</span> <span class="n">im</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">append_model</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">R&#39;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">append_model</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">I&#39;</span><span class="p">,</span> <span class="n">planes</span><span class="o">=</span><span class="s1">&#39;XY&#39;</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">df</span><span class="p">}</span></div>
+
+
+<span class="n">CREATOR_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">BETA</span><span class="p">:</span> <span class="n">create_beta</span><span class="p">,</span>
+    <span class="n">DISP</span><span class="p">:</span> <span class="n">create_dispersion</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">:</span> <span class="n">create_phase</span><span class="p">,</span>
+    <span class="n">F1010</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span> <span class="n">create_coupling</span><span class="p">,</span>
+    <span class="n">F1001</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span> <span class="n">create_coupling</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="c1"># Not mapped ---</span>
+
+<div class="viewcode-block" id="create_normalized_dispersion"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_normalized_dispersion">[docs]</a><span class="k">def</span> <span class="nf">create_normalized_dispersion</span><span class="p">(</span><span class="n">df_disp</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_beta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                                 <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates normalized dispersion from pre-created dispersion and beta dataframes. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake normalized dispersion for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">plane</span> <span class="o">=</span> <span class="n">parameter</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># &#39;X&#39;</span>
+
+    <span class="c1"># Measurement</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_disp</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">disp</span> <span class="o">=</span> <span class="n">df_disp</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">disp_err</span> <span class="o">=</span> <span class="n">df_disp</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DISP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">df_beta</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">beta_err</span> <span class="o">=</span> <span class="n">df_beta</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+    <span class="n">inv_beta</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">beta</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">disp</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="mf">0.25</span> <span class="o">*</span> <span class="n">disp</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">inv_beta</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">beta_err</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">inv_beta</span> <span class="o">*</span> <span class="n">disp_err</span><span class="o">**</span><span class="mi">2</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Model</span>
+    <span class="n">df_model</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_disp</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">df_beta</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">append_model</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">output_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">NORM_DISP_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">output_name</span><span class="p">:</span> <span class="n">df</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="create_measurement"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_measurement">[docs]</a><span class="k">def</span> <span class="nf">create_measurement</span><span class="p">(</span><span class="n">df_twiss</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                       <span class="n">randomize</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Create a new measurement Dataframe from df_twiss from parameter. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating fake measurement for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">df_twiss</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">parameter</span><span class="p">]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">relative_error</span> <span class="o">*</span> <span class="n">values</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">values</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All value for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2"> are zero. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Fake measurement will be zero as well.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ERRORS</span> <span class="ow">in</span> <span class="n">randomize</span><span class="p">:</span>
+            <span class="n">errors</span> <span class="o">=</span> <span class="n">_get_random_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">VALUES</span> <span class="ow">in</span> <span class="n">randomize</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">({</span><span class="n">parameter</span><span class="p">:</span> <span class="n">values</span><span class="p">,</span>
+                           <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">errors</span><span class="p">},</span>
+                          <span class="n">index</span><span class="o">=</span><span class="n">df_twiss</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="append_model"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.append_model">[docs]</a><span class="k">def</span> <span class="nf">append_model</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">planes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">beat</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Add the values to the measurement. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appending model to fake measurement for </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">S</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="p">[</span><span class="n">S</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">planes</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">beat</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_rel_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="c1"># Other Functions --------------------------------------------------------------</span>
+
+<span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="n">twiss</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">add_coupling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; Get&#39;s the input data as TfsDataFrames. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading data.&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">try_reading</span><span class="p">(</span><span class="n">df_or_path</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">df_or_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">df_or_path</span>
+
+    <span class="n">twiss</span> <span class="o">=</span> <span class="n">try_reading</span><span class="p">(</span><span class="n">twiss</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">add_coupling</span><span class="p">:</span>
+        <span class="n">twiss</span> <span class="o">=</span> <span class="n">add_coupling_to_model</span><span class="p">(</span><span class="n">twiss</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">twiss</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">try_reading</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">add_coupling</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">add_coupling_to_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">twiss</span><span class="p">,</span> <span class="n">model</span>
+
+
+<span class="k">def</span> <span class="nf">_get_loop_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">errors</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; Special care for normalized dispersion&quot;&quot;&quot;</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">errors</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">nd_param</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">nd_param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">nd_param</span><span class="p">)</span>
+            <span class="n">nd_error</span> <span class="o">=</span> <span class="n">errors</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">errors</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">parameters</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nd_param</span><span class="p">)</span>
+
+            <span class="n">add_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
+            <span class="n">parameters</span> <span class="o">+=</span> <span class="n">add_params</span>
+            <span class="n">errors</span> <span class="o">+=</span> <span class="p">[</span><span class="n">nd_error</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">add_params</span><span class="p">)</span>  <span class="c1"># not really knowable here</span>
+    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_random_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Creates normal distributed error-values that will not be lower than EPSILON. &quot;&quot;&quot;</span>
+    <span class="n">random_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+    <span class="n">too_small</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">while</span> <span class="nb">sum</span><span class="p">(</span><span class="n">too_small</span><span class="p">):</span>
+        <span class="n">random_errors</span><span class="p">[</span><span class="n">too_small</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">errors</span><span class="p">[</span><span class="n">too_small</span><span class="p">],</span> <span class="n">errors</span><span class="p">[</span><span class="n">too_small</span><span class="p">])</span>
+        <span class="n">too_small</span> <span class="o">=</span> <span class="n">random_errors</span> <span class="o">&lt;</span> <span class="n">EPSILON</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">random_errors</span>
+
+
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">generate</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
