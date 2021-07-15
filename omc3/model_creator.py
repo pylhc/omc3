@@ -10,6 +10,7 @@ from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
+from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.constants import JOB_MODEL_MADX
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
@@ -63,7 +64,7 @@ def _get_params():
 
 
 @entrypoint(_get_params())
-def create_instance_and_model(opt, accel_opt):
+def create_instance_and_model(opt, accel_opt) -> Accelerator:
     """
     Manager Keyword Args:
         *--Required--*
@@ -120,13 +121,27 @@ def create_instance_and_model(opt, accel_opt):
 
     accel_inst = manager.get_accelerator(accel_opt)
     LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
-    accel_inst.verify_object()
     creator = CREATORS[accel_inst.NAME][opt.type]
-    creator.prepare_run(accel_inst, opt.outputdir)
-    madx_script = creator.get_madx_script(accel_inst, opt.outputdir)
+
+    # Prepare model-dir output directory
+    accel_inst.model_dir = opt.outputdir
+    creator.prepare_run(accel_inst)
+
+    # get madx-script with relative output-paths
+    # as `cwd` changes run to correct directory.
+    # The resulting model-dir is then more self-contained. (jdilly)
+    accel_inst.model_dir = Path()
+    madx_script = creator.get_madx_script(accel_inst)
+
+    # Run madx to create model
     run_string(madx_script,
                output_file=opt.outputdir / JOB_MODEL_MADX,
-               log_file=opt.logfile)
+               log_file=opt.logfile,
+               cwd=opt.outputdir)
+
+    # Return accelerator instance
+    accel_inst.model_dir = opt.outputdir
+    return accel_inst
 
 
 if __name__ == "__main__":
