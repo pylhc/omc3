@@ -24,6 +24,7 @@ from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCrea
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
+from omc3.model_creator import create_instance_and_model
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -61,41 +62,41 @@ def _get_params():
 
 @entrypoint(_get_params())
 def create_segment(opt,accel_opt):
-    isTest = True
 
-    print(opt.first)
-    print(opt.last)
+    LHC_PATH = f"/afs/cern.ch/eng/lhc/optics/runII/2018/"
+    #OUTPUTFILE_DIR = f"outputfiles/"
+    OPTICSFILE = "/mnt/c/Users/tobia/codes/examples/lhc_ion/2018/PROTON/opticsfile.19"
+    QX = 0.313
+    QY = 0.317
+    BEAM = 1
+    OUTPUTFILE_DIR = Path(f"/afs/cern.ch/work/t/tpersson/public/omc3_exampleTest/outputdir/")
+    MODEL_DIR = Path(f"/mnt/c/Users/tobia/codes/examples/modelcreation/")
+    RESPONSEMATRIX = Path(f"/afs/cern.ch/work/t/tpersson/public/omc3_exampleTest/model/fullresponse/")
+    ACCEL_SETTINGS = dict(ats=True,beam=BEAM, model_dir=MODEL_DIR,year="2018", accel="lhc", energy=6.5)
+
+
+    isTest = True
     phase_beta_x = Path('beta_phase_x.tfs')
     phase_beta_y = Path('beta_phase_y.tfs')
     
-    df_betx = tfs.read(opt.resultdir / phase_beta_x)
-    df_bety = tfs.read(opt.resultdir / phase_beta_y)
+    df_betx = tfs.read(opt.resultdir / phase_beta_x, index="NAME")
+    df_bety = tfs.read(opt.resultdir / phase_beta_y, index="NAME")
+    
+    betx_start =  df_betx['BETX'].loc[opt.first]
+    betx_end   =  df_betx['BETX'].loc[opt.last]
 
+    alfx_start =  df_betx['ALFX'].loc[opt.first]
+    alfx_end   =  df_betx['ALFX'].loc[opt.last]
 
-    df_first_x = df_betx.loc[df_betx['NAME']==opt.first]
-    df_first_y = df_bety.loc[df_bety['NAME']==opt.first]
+    bety_start =  df_bety['BETY'].loc[opt.first]
+    bety_end   =  df_bety['BETY'].loc[opt.last]
 
-    df_last_x = df_betx.loc[df_betx['NAME']==opt.first]
-    df_last_y = df_bety.loc[df_bety['NAME']==opt.first]    
-    #print(df_bety.loc[df_bety['NAME']==opt.first]['BETY'])
-    #newpd = pd.concat([df_first, tmpy])
+    alfy_start =  df_bety['ALFY'].loc[opt.first]
+    alfy_end   =  df_bety['ALFY'].loc[opt.last]
 
     if(isTest):
-        f_ini=dict(
-        f1001r=0.001)
+        f_ini={}
         f_end={}
-        print(f_ini)
-        betx_ini=df_first_x["BETX"].values[0]
-        bety_ini=df_first_y["BETY"].values[0]
-        alfx_ini=df_first_x["ALFX"].values[0]
-        alfy_ini=df_first_y["ALFY"].values[0]
-
-
-        betx_end=df_last_x["BETX"].values[0]
-        bety_end=df_last_y["BETY"].values[0]
-        alfx_end=df_last_x["ALFX"].values[0]
-        alfy_end=df_last_y["ALFY"].values[0]
-
         f_ini['f1001r'] = 0.001
         f_ini["f1001i"] = 0.002
         f_ini["f1010r"] = 0.0001
@@ -107,7 +108,7 @@ def create_segment(opt,accel_opt):
         f_end["f1010i"] = 0.0002
 
     ini_r11, ini_r12, ini_r21, ini_r22 = _get_R_terms(
-        betx_ini, bety_ini, alfx_ini, alfy_ini,
+        betx_start, bety_start, alfx_start, alfy_start,
         f_ini["f1001r"], f_ini["f1001i"],
         f_ini["f1010r"], f_ini["f1010i"]
     )
@@ -118,10 +119,10 @@ def create_segment(opt,accel_opt):
     )
 
     measurement_dict = dict(
-        betx_ini=df_first_x["BETX"].values[0],
-        bety_ini=df_first_y["BETY"].values[0],
-        alfx_ini=df_first_x["ALFX"].values[0],
-        alfy_ini=df_first_y["ALFY"].values[0],
+        betx_ini=betx_start,
+        bety_ini=bety_start,
+        alfx_ini=alfx_start,
+        alfy_ini=alfy_start,
         dx_ini=0,
         dy_ini=0,
         dpx_ini=0,
@@ -142,10 +143,10 @@ def create_segment(opt,accel_opt):
         end_r12=end_r12,
         end_r21=end_r21,
         end_r22=end_r22,
-        betx_end=df_last_x["BETX"].values[0],
-        bety_end=df_last_y["BETY"].values[0],
-        alfx_end=df_last_x["ALFX"].values[0],
-        alfy_end=df_last_y["ALFY"].values[0],
+        betx_end=betx_end,
+        bety_end=bety_end,
+        alfx_end=alfx_end,
+        alfy_end=alfy_end,
         dx_end=0,
         dy_end=0,
         dpx_end=0,
@@ -153,10 +154,29 @@ def create_segment(opt,accel_opt):
     )
 
     #with open(os.path.join(save_path, "measurement"+betakind+"_" + accel_instance.label + ".madx"), "w") as measurement_file:
-    with open("betainput.madx", "w") as measurement_file:
+    betainputfile = f"{MODEL_DIR}/betainput.madx"
+    with open(betainputfile, "w") as measurement_file:
     
         for name, value in measurement_dict.items():
             measurement_file.write(name + " = " + str(value) + ";\n")
+    
+
+    create_instance_and_model(
+        accel = ACCEL_SETTINGS["accel"],
+        year = ACCEL_SETTINGS["year"],
+        energy = ACCEL_SETTINGS["energy"],
+        beam = ACCEL_SETTINGS["beam"],
+        type="segment",
+        ats = True,
+        nat_tunes = [QX, QX],
+        dpp = 0.,
+        modifiers = [Path(f"{OPTICSFILE}")],
+        outputdir = Path(f"{MODEL_DIR}"),
+        logfile= Path(f"{MODEL_DIR}madx_log.txt"),
+        startbpm = opt.first,
+        endbpm = opt.last,
+        betainputfile = betainputfile
+    )
 
 
 def _get_R_terms(betx, bety, alfx, alfy, f1001r, f1001i, f1010r, f1010i):

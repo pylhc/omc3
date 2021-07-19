@@ -605,6 +605,22 @@ coupling_knob(beam_number): macro = {
 }
 
 /*
+* Sets the beam corresponding to LHC beam 1 to "accel".
+*/
+beam_LHCB1(accel): macro = {
+    beam, particle = proton, sequence=accel, energy = 450.0, bv=1;
+};
+
+
+/*
+* Sets the beam corresponding to LHC beam 2 to "accel".
+*/
+beam_LHCB2(accel): macro = {
+    beam, particle = proton, sequence=accel, energy = 450.0, bv=-1;
+};
+
+
+/*
 * Coupling knobs convention for 2016 ATS optics
 */
 coupling_knob_ats(beam_number): macro = {
