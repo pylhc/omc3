@@ -10,6 +10,7 @@ import shutil
 from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
+from omc3.model.accelerators.ps import Ps
 from omc3.model.constants import ERROR_DEFFS_TXT
 
 LOGGER = logging.getLogger(__name__)
@@ -18,12 +19,12 @@ LOGGER = logging.getLogger(__name__)
 class PsModelCreator(object):
 
     @classmethod
-    def get_madx_script(cls, accel, output_path: Path):
-        madx_script = accel.get_base_madx_script(output_path)
+    def get_madx_script(cls, accel: Ps) -> str:
+        madx_script = accel.get_base_madx_script()
         replace_dict = {
             "USE_ACD": str(int(accel.excitation == AccExcitationMode.ACD)),
             "DPP": accel.dpp,
-            "OUTPUT": str(output_path),
+            "OUTPUT": str(accel.model_dir),
         }
         madx_template = accel.get_file("twiss.mask").read_text()
         madx_script += madx_template % replace_dict
@@ -47,11 +48,11 @@ class PsModelCreator(object):
     #     output_file.write_text(iterate_template % replace_dict)
 
     @classmethod
-    def prepare_run(cls, instance, output_path):
+    def prepare_run(cls, accel: Ps):
         # get path of file from PS model directory (without year at the end)
         shutil.copy(
-            instance.get_file("error_deff.txt"),
-            output_path / ERROR_DEFFS_TXT
+            accel.get_file("error_deff.txt"),
+            accel.model_dir / ERROR_DEFFS_TXT
         )
 
 

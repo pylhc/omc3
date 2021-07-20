@@ -96,7 +96,7 @@ class Ps(Accelerator):
             raise KeyError
         return (list(bpms).index(found_bpms[0]), found_bpms[0]), f"{PLANE_TO_HV[plane]}ACMAP"
 
-    def get_base_madx_script(self, model_directory, best_knowledge=False):
+    def get_base_madx_script(self, best_knowledge=False):
         if best_knowledge:
             raise NotImplementedError(f"Best knowledge model not implemented for accelerator {self.NAME}")
 

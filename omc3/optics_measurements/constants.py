@@ -28,9 +28,12 @@ MDL = "MDL"      # Model
 
 # Names
 S = 'S'
+NAME = 'NAME'
+NAME2 = f'{NAME}2'
 TUNE = 'Q'
 NAT_TUNE = 'NATQ'
 PEAK2PEAK = 'PK2PK'
+ALPHA = 'ALF'
 BETA = 'BET'
 DPP = 'DPP'
 DPPAMP = 'DPPAMP'
