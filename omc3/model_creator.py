@@ -21,9 +21,11 @@ from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCrea
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
+from omc3.utils.parsertools import print_help
 
 LOG = logging_tools.get_logger(__name__)
 
+DRY_RUN = "*** dry-run, no model created ***"
 
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
@@ -42,7 +44,8 @@ def _get_params():
     params.add_parameter(
         name="type",
         choices=("nominal", "best_knowledge", "coupling_correction"),
-        help="Type of model to create."
+        help="Type of model to create.",
+        required=True,
     )
     params.add_parameter(
         name="outputdir",
@@ -55,6 +58,17 @@ def _get_params():
         type=Path,
         help=("Path to the file where to write the MAD-X script output."
               "If not provided it will be written to sys.stdout.")
+    )
+    params.add_parameter(
+        name="fetch",
+        type=str,
+        help="select the fetcher which sets up the lattice definition (madx, seq, strength files)",
+        choices=["path", "afs"]  # ["path", "afs", "git", "lsa"]
+    )
+    params.add_parameter(
+        name="list-modifiers",
+        action="store_true",
+        help="if selected, a list of valid modifier files is printed",
     )
     return params
 
@@ -116,17 +130,29 @@ def create_instance_and_model(opt, accel_opt):
         JPARC: Not implemented
     """
     # Prepare paths
+
     create_dirs(opt.outputdir)
 
-    accel_inst = manager.get_accelerator(accel_opt)
-    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
-    accel_inst.verify_object()
+    accel_inst, help_requested = manager.get_accelerator(accel_opt)
+
+    if accel_inst is None:
+        print(DRY_RUN)
+        return
+
+    print(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     creator = CREATORS[accel_inst.NAME][opt.type]
-    creator.prepare_run(accel_inst, opt.outputdir)
-    madx_script = creator.get_madx_script(accel_inst, opt.outputdir)
-    run_string(madx_script,
-               output_file=opt.outputdir / JOB_MODEL_MADX,
-               log_file=opt.logfile)
+
+    if not help_requested and creator.get_opt(opt):
+        accel_inst.verify_object()
+        creator.prepare_run(accel_inst, opt.outputdir)
+        madx_script = creator.get_madx_script(accel_inst, opt.outputdir)
+        run_string(madx_script,
+                output_file=opt.outputdir / JOB_MODEL_MADX,
+                log_file=opt.logfile)
+    else:
+        print("\n--- Model Creator. Usage:\n")
+        print_help(_get_params())        
+        print(DRY_RUN)
 
 
 if __name__ == "__main__":

@@ -124,8 +124,10 @@ class Lhc(Accelerator):
         return params
 
     def __init__(self, *args, **kwargs):
+        print("init lhc")
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
+        print("parsed")
         super().__init__(opt)
         self.correctors_dir = "2012"
         self.year = opt.year
@@ -135,7 +137,6 @@ class Lhc(Accelerator):
         self.beam = opt.beam
         beam_to_beam_direction={1: 1, 2: -1}
         self.beam_direction = beam_to_beam_direction[self.beam]
-        self.verify_object()
 
     def verify_object(self):  # TODO: Maybe more checks?
         """Verifies if everything is defined which should be defined."""

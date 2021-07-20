@@ -48,6 +48,12 @@ class LhcModelCreator(object):
             )
         return madx_script
 
+    def get_opt(opt):
+        if opt.show_help:
+            print("show help of LhcModelCreator")
+            return False
+        return True
+
     @classmethod
     def get_madx_script(cls, accel, outdir):  # nominal
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"

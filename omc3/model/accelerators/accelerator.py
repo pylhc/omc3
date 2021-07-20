@@ -118,10 +118,6 @@ class Accelerator(object):
             self.init_from_options(opt)
 
     def init_from_options(self, opt):
-        if opt.nat_tunes is None:
-            raise AcceleratorDefinitionError("Argument 'nat_tunes' is required.")
-        if (opt.drv_tunes is None) and (opt.driven_excitation is not None):
-            raise AcceleratorDefinitionError("Argument 'drv_tunes' is required.")
         self.nat_tunes = opt.nat_tunes
 
         if opt.driven_excitation is not None:
