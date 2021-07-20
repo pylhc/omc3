@@ -1,5 +1,4 @@
 %(LIB)s
-!@require segments
 
 option, -echo;
 
@@ -25,7 +24,7 @@ exec, save_initial_and_final_values(
     LHCB%(NUM_BEAM)s,
     %(STARTFROM)s,
     %(ENDAT)s,
-    "%(BETAKIND)s%(LABEL)s",
+    "%(PATH)s/measurement_%(LABEL)s.madx",
     biniLHCB%(NUM_BEAM)s,
     bendLHCB%(NUM_BEAM)s
 );
@@ -39,10 +38,10 @@ exec, beam_LHCB%(NUM_BEAM)s(front_LHCB%(NUM_BEAM)s);
 exec, beam_LHCB%(NUM_BEAM)s(back_LHCB%(NUM_BEAM)s);
 
 
-exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s%(LABEL)s.dat", biniLHCB%(NUM_BEAM)s);
-exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s%(LABEL)s_back.dat", bendLHCB%(NUM_BEAM)s);
+exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s.dat", biniLHCB%(NUM_BEAM)s);
+exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s_back.dat", bendLHCB%(NUM_BEAM)s);
 
-call, file="%(PATH)s/corrections%(LABEL)s.madx";
+!call, file="%(PATH)s/corrections_%(LABEL)s.madx";
 
-exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s%(LABEL)s_cor.dat", biniLHCB%(NUM_BEAM)s);
-exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss%(BETAKIND)s%(LABEL)s_cor_back.dat", bendLHCB%(NUM_BEAM)s);
+exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s_cor.dat", biniLHCB%(NUM_BEAM)s);
+exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s_cor_back.dat", bendLHCB%(NUM_BEAM)s);

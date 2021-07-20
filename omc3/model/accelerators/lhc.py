@@ -120,22 +120,17 @@ class Lhc(Accelerator):
                              help="Year of the optics (or hllhc1.3).")
         params.add_parameter(name="ats", action="store_true",
                              help="Marks ATS optics")
-        #These are segment-by-segment options so they should be removed 
-        params.add_parameter(name="startbpm",type=str)
-        params.add_parameter(name="endbpm",type=str)
-        params.add_parameter(name="betainputfile",type=str)
         return params
 
     def __init__(self, *args, **kwargs):
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
+        print(opt)
         super().__init__(opt)
         self.correctors_dir = "2012"
         self.year = opt.year
         self.ats = opt.ats
-        self.startbpm = opt.startbpm
-        self.endbpm = opt.endbpm
-        self.betainputfile = opt.betainputfile
+
         if self.year == "hllhc1.3":
             self.correctors_dir = "hllhc1.3"
         self.beam = opt.beam
