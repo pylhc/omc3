@@ -14,7 +14,8 @@ from pathlib import Path
 class PsboosterModelCreator(object):
 
     @classmethod
-    def get_madx_script(cls, accel, output_path: Path):
+    def get_madx_script(cls, accel, opt):
+        output_path = opt.outputdir
         madx_script = accel.get_base_madx_script(output_path)
         replace_dict = {
             "USE_ACD": str(int(accel.excitation == AccExcitationMode.ACD)),

@@ -49,7 +49,8 @@ class LhcModelCreator(object):
         return madx_script
 
     @classmethod
-    def get_madx_script(cls, accel, outdir):  # nominal
+    def get_madx_script(cls, accel, opt):  # nominal
+        outdir = opt.outputdir
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
         madx_script = accel.get_base_madx_script(outdir)
@@ -95,7 +96,8 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     CORRECTIONS_FILENAME = 'corrections.madx'
 
     @classmethod
-    def get_madx_script(cls, accel, outdir: Path):
+    def get_madx_script(cls, accel, opt):
+        outdir = opt.outdir
         if accel.excitation is not AccExcitationMode.FREE:
             raise AcceleratorDefinitionError("Don't set ACD or ADT for best knowledge model.")
         if accel.energy is None:
@@ -124,5 +126,6 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 class LhcCouplingCreator(LhcModelCreator):
 
     @classmethod
-    def get_madx_script(cls, lhc_instance, output_path):
+    def get_madx_script(cls, lhc_instance, opt):
+        output_path = opt.outdir
         return cls.get_correction_check_script(lhc_instance, output_path)

@@ -15,11 +15,11 @@ from omc3.model.constants import MACROS_DIR, GENERAL_MACROS, LHC_MACROS
 from omc3.utils import logging_tools
 from omc3.utils.iotools import create_dirs
 from omc3.utils import iotools
-import omc3.sbs.sbs_phase_writer
+
 
 LOGGER = logging_tools.get_logger(__name__)
 
-def _get_R_terms(betx, bety, alfx, alfy, f1001r, f1001i, f1010r, f1010i):
+def get_R_terms(betx, bety, alfx, alfy, f1001r, f1001i, f1010r, f1010i):
 
     ga11 = 1 / numpy.sqrt(betx)
     ga12 = 0
@@ -86,12 +86,12 @@ def create_measurement_file(sbs_path, measurement_dir, betain_name, opt):
         f_end["f1010r"] = 0.00013
         f_end["f1010i"] = 0.0002
 
-    ini_r11, ini_r12, ini_r21, ini_r22 = _get_R_terms(
+    ini_r11, ini_r12, ini_r21, ini_r22 = get_R_terms(
         betx_start, bety_start, alfx_start, alfy_start,
         f_ini["f1001r"], f_ini["f1001i"],
         f_ini["f1010r"], f_ini["f1010i"]
     )
-    end_r11, end_r12, end_r21, end_r22 = _get_R_terms(
+    end_r11, end_r12, end_r21, end_r22 = get_R_terms(
         betx_end, bety_end, alfx_end, alfy_end,
         f_end["f1001r"], f_end["f1001i"],
         f_end["f1010r"], f_end["f1010i"]
@@ -142,10 +142,11 @@ class SegmentCreator(object):
 
     @classmethod
     def prepare_run(cls, instance, output_path):
-        macros_path = Path(output_path) /  MACROS_DIR
+        macros_path = Path(output_path) / MACROS_DIR
         create_dirs(macros_path)
         lib_path = Path(__file__).parent.parent/ "madx_macros"
         shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
+        shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
 
     @staticmethod
     def get_parameters():
@@ -155,25 +156,13 @@ class SegmentCreator(object):
 
     @classmethod
     def get_madx_script(cls, instance, opt):
-        
-        macros_path = Path(opt.outputdir) / MACROS_DIR
-        create_dirs(macros_path)
-        lib_path = Path(__file__).parent.parent/ "madx_macros"
-        shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
-        shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
-
-        sbs_path = opt.measuredir / "sbs"
-        iotools.create_dirs(sbs_path)
-        betain_name = Path("measurement_" + opt.ip + ".madx")
-        betain_path = betain_name / sbs_path
-        #write_beta_initial()
+        sbs_path = opt.outputdir
+        betain_name = Path("measurement_" + opt.label + ".madx")
         create_measurement_file(sbs_path, opt.measuredir, betain_name, opt)
 
         libs = f"call, file = '{opt.outputdir / MACROS_DIR / GENERAL_MACROS}';\n"
         libs = libs + f"call, file = '{opt.outputdir/ MACROS_DIR / LHC_MACROS}';\n"
         madx_template = instance.get_file("segment.madx").read_text()
-
-
 
         replace_dict = {
             "MAIN_SEQ": instance.load_main_seq_madx(),  # LHC only
@@ -182,7 +171,7 @@ class SegmentCreator(object):
             "PATH": sbs_path,  # all
             #"OUTPUT": opt.outputdir,  # Booster only
             "LIB": libs,
-            "LABEL": opt.ip,  # all
+            "LABEL": opt.label,  # all
             "BETAKIND": betain_name,  # all
             "STARTFROM": opt.start,  # all
             "ENDAT": opt.end,  # all
@@ -192,5 +181,4 @@ class SegmentCreator(object):
             #"NAT_TUNE_X": instance.nat_tunes[0],  # Booster and PS
             #"NAT_TUNE_Y": instance.nat_tunes[1],  # Booster and PS
         }
-        print(madx_template)
         return madx_template % replace_dict

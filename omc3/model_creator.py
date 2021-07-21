@@ -58,24 +58,24 @@ def _get_params():
               "If not provided it will be written to sys.stdout.")
     )
     params.add_parameter(
-        name="ip",
+        name="label",
         type=str,
         help=("The name of the segment of interest.")
     )
     params.add_parameter(
         name="start",
         type=str,
-        help=("The first BPM in the Segment")
+        help=("The first BPM in the segment")
     )
     params.add_parameter(
         name="end",
         type=str,
-        help=("The last BPM in the Segment")
+        help=("The last BPM in the segment")
     )
     params.add_parameter(
         name="measuredir",
         type=Path,
-        help=("The path to the measurement directory.")
+        help=("The path to the measurement directory for segment-by-segment.")
     )
 
     return params
@@ -139,24 +139,20 @@ def create_instance_and_model(opt, accel_opt):
     """
     # Prepare paths
     create_dirs(opt.outputdir)
-    print("ooopta",opt)
-    print("aaacc", accel_opt)
     accel_inst = manager.get_accelerator(accel_opt)
     LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     accel_inst.verify_object()
     creator = CREATORS[accel_inst.NAME][opt.type]
     creator.prepare_run(accel_inst, opt.outputdir)
 
-    print("opt.type", opt.type)
-    if(opt.type == "segment"):
-        madx_script = creator.get_madx_script(accel_inst, opt)
-    else:
-        madx_script = creator.get_madx_script(accel_inst, opt.outputdir)
+    
+    madx_script = creator.get_madx_script(accel_inst, opt)
     run_string(madx_script,
                output_file=opt.outputdir / JOB_MODEL_MADX,
                log_file=opt.logfile)
-
-    create_phase_segment(opt.outputdir.parent,opt.ip)
+    
+    if(opt.type == "segment"):
+        create_phase_segment(opt.measuredir, opt.outputdir, opt.label)
 
 if __name__ == "__main__":
     create_instance_and_model()
