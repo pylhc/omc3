@@ -111,7 +111,7 @@ def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH,
     """Starts the ``MAD-X`` process."""
     with _madx_input_wrapper(full_madx_script, output_file) as madx_jobfile:
         process = subprocess.Popen(
-            [str(madx_path), str(madx_jobfile)],
+            [str(Path(madx_path).absolute()), str(Path(madx_jobfile).absolute())],
             shell=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,

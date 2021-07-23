@@ -59,6 +59,18 @@ def model_inj_beam2(request, tmp_path_factory):
     return tmp_model(tmp_path_factory, beam=2, id_='inj')
 
 
+@pytest.fixture(scope="module")
+def model_25cm_beam1(request, tmp_path_factory):
+    """ Fixture for 25cm beam 1 model"""
+    return tmp_model(tmp_path_factory, beam=1, id_='25cm')
+
+
+@pytest.fixture(scope="module")
+def model_25cm_beam2(request, tmp_path_factory):
+    """ Fixture for 25cm beam 2 model"""
+    return tmp_model(tmp_path_factory, beam=2, id_='25cm')
+
+
 def tmp_model(factory, beam: int, id_: str):
     """Creates a temporary model directory based on the input/models/model_inj_beam#
     but with the addition of a macros/ directory containing the macros from
@@ -88,4 +100,5 @@ def tmp_model(factory, beam: int, id_: str):
         year="2018",
         accel="lhc",
         energy=0.45 if id_ == 'inj' else 6.5,
+        driven_excitation=None if id_ == 'inj' else 'acd'
     )
