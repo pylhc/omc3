@@ -4,10 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
+from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.manager import get_accelerator
-from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator
+from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
+from omc3.model.constants import TWISS_AC_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, TWISS_ADT_DAT
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 COMP_MODEL = INPUTS / "models" / "25cm_beam1"
@@ -167,7 +168,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path):
     assert "opticsfile.non_existent" in str(e.value)
 
 
-@pytest.mark.basic
+@pytest.mark.extended
 def test_lhc_creation_relative_modeldir_path(request, tmp_path):
     os.chdir(tmp_path)  # switch cwd to tmp_path
     model_dir_relpath = Path('test_model')
@@ -201,6 +202,28 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
                                     required_keys=['beam', 'year'])
 
     os.chdir(request.config.invocation_dir)  # return to original cwd
+
+
+@pytest.mark.extended
+def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
+    accel = get_accelerator(**model_25cm_beam1)
+    LhcModelCreator.check_run_output(accel)
+
+    for dat_file in (TWISS_AC_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, TWISS_ADT_DAT):
+        file_path: Path = accel.model_dir / dat_file
+        file_path_moved: Path = file_path.with_suffix(f"{file_path.suffix}0")
+        if dat_file == TWISS_ADT_DAT:
+            accel.excitation = AccExcitationMode.ADT  # Test ACD before
+        else:
+            shutil.move(file_path, file_path_moved)
+
+        # Run test:
+        with pytest.raises(IOError) as e:
+            LhcModelCreator.check_run_output(accel)
+        assert str(dat_file) in str(e.value)
+
+        if file_path_moved.exists():
+            shutil.move(file_path_moved, file_path)
 
 
 # Helper -----------------------------------------------------------------------

@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.model.accelerators.accelerator import AccExcitationMode, AcceleratorDefinitionError
+from omc3.model.accelerators.accelerator import AccExcitationMode, AcceleratorDefinitionError, Accelerator
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
                                   ERROR_DEFFS_TXT, GENERAL_MACROS,
@@ -21,6 +21,7 @@ from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
                                   TWISS_BEST_KNOWLEDGE_DAT, TWISS_DAT,
                                   TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
                                   TWISS_ELEMENTS_DAT)
+from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.utils import iotools
 
 LOGGER = logging.getLogger(__name__)
@@ -33,7 +34,28 @@ def _b2_columns():
     return cols_outer[:42] + cols_middle + cols_outer[42:]
 
 
-class LhcModelCreator(object):
+class LhcModelCreator(ModelCreator):
+
+    @classmethod
+    def get_madx_script(cls, accel: Lhc) -> str:  # nominal
+        use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
+        use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
+        madx_script = accel.get_base_madx_script()
+        madx_script +=(
+            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_DAT}', {accel.dpp});\n"
+        )
+        if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
+            # allow user to modify script and enable excitation, if driven tunes are given
+            madx_script +=(
+                f"use_acd={use_acd};\nuse_adt={use_adt};\n"
+                f"if(use_acd == 1){{\n"
+                f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_AC_DAT}', {accel.dpp});\n"
+                f"}}else if(use_adt == 1){{\n"
+                f"exec, twiss_adt({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_ADT_DAT}', {accel.dpp});\n"
+                f"}}\n"
+            )
+        return madx_script
 
     @classmethod
     def get_correction_check_script(cls, accel: Lhc, corr_file: str = "changeparameters_couple.madx", chrom: bool = False) -> str:
@@ -46,27 +68,6 @@ class LhcModelCreator(object):
             madx_script +=(
                 f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / 'twiss_cor_dpm.dat'}', %DELTAPM);\n"
                 f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / 'twiss_cor_dpp.dat'}', %DELTAPP);\n"
-            )
-        return madx_script
-
-    @classmethod
-    def get_madx_script(cls, accel: Lhc) -> str:  # nominal
-        use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
-        use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
-        madx_script = accel.get_base_madx_script()
-        madx_script +=(
-                f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_DAT}', {accel.dpp});\n"
-                f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_DAT}', {accel.dpp});\n"
-        )
-        if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
-            # allow user to modify script and enable excitation, if driven tunes are given
-            madx_script +=(
-                f"use_acd={use_acd};\nuse_adt={use_adt};\n"
-                f"if(use_acd == 1){{\n"
-                f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_AC_DAT}', {accel.dpp});\n"
-                f"}}else if(use_adt == 1){{\n"
-                f"exec, twiss_adt({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_ADT_DAT}', {accel.dpp});\n"
-                f"}}\n"
             )
         return madx_script
 
@@ -139,6 +140,11 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
             f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
         )
         return madx_script
+
+    @classmethod
+    def check_run_output(cls, accel: Lhc):
+        to_check = [TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
+        cls._check_files_exist(accel.model_dir, to_check)
 
 
 class LhcCouplingCreator(LhcModelCreator):

@@ -139,8 +139,9 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
                log_file=opt.logfile,
                cwd=opt.outputdir)
 
-    # Return accelerator instance
+    # Check output and return accelerator instance
     accel_inst.model_dir = opt.outputdir
+    creator.check_run_output(accel_inst)
     return accel_inst
 
 
