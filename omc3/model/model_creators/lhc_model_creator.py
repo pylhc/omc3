@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.model.accelerators.accelerator import AccExcitationMode, AcceleratorDefinitionError, Accelerator
+from omc3.model.accelerators.accelerator import AccExcitationMode, AcceleratorDefinitionError
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
                                   ERROR_DEFFS_TXT, GENERAL_MACROS,
