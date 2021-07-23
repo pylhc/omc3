@@ -169,6 +169,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path):
 
 
 @pytest.mark.extended
+@pytest.mark.timeout(60)  # madx might get stuck (seen on macos)
 def test_lhc_creation_relative_modeldir_path(request, tmp_path):
     os.chdir(tmp_path)  # switch cwd to tmp_path
     model_dir_relpath = Path('test_model')
