@@ -1,4 +1,5 @@
 import shutil
+import os
 from pathlib import Path
 
 import pytest
@@ -166,9 +167,44 @@ def test_lhc_creation_modifier_nonexistent(tmp_path):
     assert "opticsfile.non_existent" in str(e.value)
 
 
+@pytest.mark.basic
+def test_lhc_creation_relative_modeldir_path(request, tmp_path):
+    os.chdir(tmp_path)  # switch cwd to tmp_path
+    model_dir = Path('test_model')
+    model_dir.mkdir()
+    shutil.copy(COMP_MODEL / "opticsfile.24_ctpps2", model_dir / "opticsfile.24_ctpps2")
+
+    accel_opt = dict(
+        accel="lhc",
+        year="2018",
+        ats=True,
+        beam=1,
+        nat_tunes=[0.31, 0.32],
+        dpp=0.0,
+        energy=6.5,
+        modifiers=[Path("opticsfile.24_ctpps2")],
+    )
+
+    # in case this test fails, create_instance_and_model seems to run,
+    # but does not create twiss-files ...
+    accel = create_instance_and_model(
+        outputdir=model_dir,
+        type="nominal",
+        logfile=tmp_path / "madx_log.txt",
+        **accel_opt
+    )
+
+    # ... which is then caught here:
+    check_accel_from_dir_vs_options(model_dir, accel_opt, accel,
+                                    required_keys=['beam', 'year'])
+
+    os.chdir(request.config.invocation_dir)  # return to original cwd
+
+
 # Helper -----------------------------------------------------------------------
 
 def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, required_keys):
+    # ceation of model from dir tests, that all files are in place
     accel_from_dir = get_accelerator(
         accel=accel_options['accel'],
         model_dir=model_dir,
