@@ -41,7 +41,7 @@ exec, beam_LHCB%(NUM_BEAM)s(back_LHCB%(NUM_BEAM)s);
 exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s.dat", biniLHCB%(NUM_BEAM)s);
 exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s_back.dat", bendLHCB%(NUM_BEAM)s);
 
-!call, file="%(PATH)s/corrections_%(LABEL)s.madx";
+call, file="%(PATH)s/corrections_%(LABEL)s.madx";
 
 exec, twiss_segment(front_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s_cor.dat", biniLHCB%(NUM_BEAM)s);
 exec, twiss_segment(back_LHCB%(NUM_BEAM)s, "%(PATH)s/twiss_%(LABEL)s_cor_back.dat", bendLHCB%(NUM_BEAM)s);

@@ -65,14 +65,14 @@ def create_measurement_file(sbs_path, measurement_dir, betain_name, opt):
     betx_end   =  df_betx['BETX'].loc[opt.end]
 
     alfx_start =  df_betx['ALFX'].loc[opt.start]
-    alfx_end   =  df_betx['ALFX'].loc[opt.end]
+    alfx_end   =  -df_betx['ALFX'].loc[opt.end]
 
     bety_start =  df_bety['BETY'].loc[opt.start]
     bety_end   =  df_bety['BETY'].loc[opt.end]
 
     alfy_start =  df_bety['ALFY'].loc[opt.start]
-    alfy_end   =  df_bety['ALFY'].loc[opt.end]
-
+    alfy_end   =  -df_bety['ALFY'].loc[opt.end]
+    '''
     if(isTest):
         f_ini={}
         f_end={}
@@ -96,7 +96,7 @@ def create_measurement_file(sbs_path, measurement_dir, betain_name, opt):
         f_end["f1001r"], f_end["f1001i"],
         f_end["f1010r"], f_end["f1010i"]
     )
-
+    '''
     measurement_dict = dict(
         betx_ini=betx_start,
         bety_ini=bety_start,
@@ -114,14 +114,14 @@ def create_measurement_file(sbs_path, measurement_dir, betain_name, opt):
         phix_end=0,
         wy_end=0,
         phiy_end=0,
-        ini_r11=ini_r11,
-        ini_r12=ini_r12,
-        ini_r21=ini_r21,
-        ini_r22=ini_r22,
-        end_r11=end_r11,
-        end_r12=end_r12,
-        end_r21=end_r21,
-        end_r22=end_r22,
+        ini_r11=0,
+        ini_r12=0,
+        ini_r21=0,
+        ini_r22=0,
+        end_r11=0,
+        end_r12=0,
+        end_r21=0,
+        end_r22=0,
         betx_end=betx_end,
         bety_end=bety_end,
         alfx_end=alfx_end,
@@ -132,12 +132,20 @@ def create_measurement_file(sbs_path, measurement_dir, betain_name, opt):
         dpy_end=0,
     )
 
-    #with open(os.path.join(save_path, "measurement"+betakind+"_" + accel_instance.label + ".madx"), "w") as measurement_file:
     betainputfile = f"{sbs_path}/{betain_name}"
     with open(betainputfile, "w") as measurement_file:
-    
         for name, value in measurement_dict.items():
             measurement_file.write(name + " = " + str(value) + ";\n")
+
+def _create_correction_file(sbs_path, label):
+    corr_file = Path("corrections_" + label + ".madx")
+    corr_file = sbs_path / corr_file
+    if(corr_file.exists()==False):
+        f = open(corr_file, "w")
+        f.write("!Enter the corrections below:")
+
+
+
 class SegmentCreator(object):
 
     @classmethod
@@ -148,15 +156,10 @@ class SegmentCreator(object):
         shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
         shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
 
-    @staticmethod
-    def get_parameters():
-        params = super(Lhc, Lhc).get_parameters()
-        params.add_parameter(name="libs", type=str)
-        return params
-
     @classmethod
     def get_madx_script(cls, instance, opt):
         sbs_path = opt.outputdir
+        _create_correction_file(sbs_path, opt.label)
         betain_name = Path("measurement_" + opt.label + ".madx")
         create_measurement_file(sbs_path, opt.measuredir, betain_name, opt)
 
