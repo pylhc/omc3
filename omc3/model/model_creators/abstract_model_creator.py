@@ -65,7 +65,7 @@ class ModelCreator(ABC):
         """ Checks that the model-creation-madx-run was successful.
         I.e. checks that the directories are created, macros and other files are
         in place. Checks accelerator instance.
-        Called by the ``model_creator.create_accel_and_instance``
+        Called by the ``model_creator.create_instance_and_model``
 
         Args:
             accel (Accelerator): Accelerator Instance

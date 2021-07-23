@@ -229,7 +229,7 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
 # Helper -----------------------------------------------------------------------
 
 def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, required_keys):
-    # ceation of model from dir tests, that all files are in place
+    # creation via model_from_dir tests that all files are in place:
     accel_from_dir = get_accelerator(
         accel=accel_options['accel'],
         model_dir=model_dir,
