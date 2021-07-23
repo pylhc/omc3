@@ -170,9 +170,11 @@ def test_lhc_creation_modifier_nonexistent(tmp_path):
 @pytest.mark.basic
 def test_lhc_creation_relative_modeldir_path(request, tmp_path):
     os.chdir(tmp_path)  # switch cwd to tmp_path
-    model_dir = Path('test_model')
-    model_dir.mkdir()
-    shutil.copy(COMP_MODEL / "opticsfile.24_ctpps2", model_dir / "opticsfile.24_ctpps2")
+    model_dir_relpath = Path('test_model')
+    model_dir_relpath.mkdir()
+
+    optics_file_relpath = Path("opticsfile.24_ctpps2")
+    shutil.copy(COMP_MODEL / optics_file_relpath, model_dir_relpath / optics_file_relpath)
 
     accel_opt = dict(
         accel="lhc",
@@ -182,20 +184,20 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6.5,
-        modifiers=[Path("opticsfile.24_ctpps2")],
+        modifiers=[optics_file_relpath],
     )
 
     # in case this test fails, create_instance_and_model seems to run,
     # but does not create twiss-files ...
     accel = create_instance_and_model(
-        outputdir=model_dir,
+        outputdir=model_dir_relpath,
         type="nominal",
         logfile=tmp_path / "madx_log.txt",
         **accel_opt
     )
 
     # ... which is then caught here:
-    check_accel_from_dir_vs_options(model_dir, accel_opt, accel,
+    check_accel_from_dir_vs_options(model_dir_relpath, accel_opt, accel,
                                     required_keys=['beam', 'year'])
 
     os.chdir(request.config.invocation_dir)  # return to original cwd
