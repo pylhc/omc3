@@ -61,14 +61,14 @@ jobs:
 
       - name: Upload build artifacts  # upload artifacts so reviewers can have a quick look without building documentation from the branch locally
         uses: actions/upload-artifact@v2
-        if: ${{ success() }} && ${{ github.event_name == 'pull_request' }}  # only for pushes in PR
+        if: success() && github.event_name == 'pull_request'  # only for pushes in PR
         with:
           name: site-build
           path: doc_build
           retention-days: 5
 
       - name: Upload documentation to gh-pages
-        if: ${{ success() }} && ${{ github.ref == 'refs/heads/master' }}  # only for pushes to master
+        if: success() && github.ref == 'refs/heads/master'  # only for pushes to master
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
