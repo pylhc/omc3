@@ -16,7 +16,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 class PsModelCreator(ModelCreator):
-
     @classmethod
     def get_madx_script(cls, accel: Ps) -> str:
         madx_script = accel.get_base_madx_script()
@@ -34,13 +33,6 @@ class PsModelCreator(ModelCreator):
         raise NotImplemented("Correction check is not implemented for the Ps model creator yet. ")
 
     @classmethod
-    def prepare_run(cls, accel: Ps):
+    def prepare_run(cls, accel: Ps) -> None:
         # get path of file from PS model directory (without year at the end)
-        shutil.copy(
-            accel.get_file("error_deff.txt"),
-            accel.model_dir / ERROR_DEFFS_TXT
-        )
-
-
-
-
+        shutil.copy(accel.get_file("error_deff.txt"), accel.model_dir / ERROR_DEFFS_TXT)
