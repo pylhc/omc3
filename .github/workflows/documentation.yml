@@ -1,11 +1,14 @@
 # Build documentation
+# The build is uploaded as artifact if the triggering event is a push for a pull request
+# The build is published to github pages if the triggering event is a push to the master branch (PR merge)
 name: Build and upload documentation
 
 defaults:
   run:
     shell: bash
 
-on:  # Runs on any push event to master
+on:  # Runs on any push event in a PR or any push event to master
+  pull_request:
   push:
     branches:
       - 'master'
@@ -56,8 +59,16 @@ jobs:
       - name: Build documentation
         run: python -m sphinx -b html doc ./doc_build -d ./doc_build
 
+      - name: Upload build artifacts  # upload artifacts so reviewers can have a quick look without building documentation from the branch locally
+        uses: actions/upload-artifact@v2s
+        if: ${{ success() }} && ${{ github.event_name == 'pull_request' }}  # only for pushes in PR
+        with:
+          name: site-build
+          path: doc_build
+          retention-days: 5
+
       - name: Upload documentation to gh-pages
-        if: ${{ success() }}
+        if: ${{ success() }} && ${{ github.ref == 'refs/heads/master' }}  # only for pushes to master
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
