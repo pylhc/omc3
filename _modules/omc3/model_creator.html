@@ -434,8 +434,9 @@
                <span class="n">log_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span>
                <span class="n">cwd</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
 
-    <span class="c1"># Return accelerator instance</span>
+    <span class="c1"># Check output and return accelerator instance</span>
     <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span>
+    <span class="n">creator</span><span class="o">.</span><span class="n">check_run_output</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">accel_inst</span></div>
 
 

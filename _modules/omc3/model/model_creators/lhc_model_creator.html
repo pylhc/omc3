@@ -1,0 +1,515 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>omc3.model.model_creators.lhc_model_creator &mdash; omc3 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html">
+          
+
+          
+            
+            <img src="../../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">omc3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>omc3.model.model_creators.lhc_model_creator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for omc3.model.model_creators.lhc_model_creator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">LHC Model Creator</span>
+<span class="sd">-----------------</span>
+
+<span class="sd">This module provides convenience functions for model creation of the ``LHC``.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">AcceleratorDefinitionError</span><span class="p">,</span> <span class="n">AccExcitationMode</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.lhc</span> <span class="kn">import</span> <span class="n">Lhc</span>
+<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">B2_ERRORS_TFS</span><span class="p">,</span>
+    <span class="n">B2_SETTINGS_MADX</span><span class="p">,</span>
+    <span class="n">ERROR_DEFFS_TXT</span><span class="p">,</span>
+    <span class="n">GENERAL_MACROS</span><span class="p">,</span>
+    <span class="n">LHC_MACROS</span><span class="p">,</span>
+    <span class="n">MACROS_DIR</span><span class="p">,</span>
+    <span class="n">TWISS_AC_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_ADT_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span>
+    <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.model.model_creators.abstract_model_creator</span> <span class="kn">import</span> <span class="n">ModelCreator</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_b2_columns</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">cols_outer</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KP</span><span class="si">}{</span><span class="n">num</span><span class="si">}{</span><span class="n">S</span><span class="si">}</span><span class="s2">L&quot;</span> <span class="k">for</span> <span class="n">KP</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span> <span class="k">for</span> <span class="n">S</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">)]</span>
+    <span class="n">cols_middle</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DX&quot;</span><span class="p">,</span> <span class="s2">&quot;DY&quot;</span><span class="p">,</span> <span class="s2">&quot;DS&quot;</span><span class="p">,</span> <span class="s2">&quot;DPHI&quot;</span><span class="p">,</span> <span class="s2">&quot;DTHETA&quot;</span><span class="p">,</span> <span class="s2">&quot;DPSI&quot;</span><span class="p">,</span> <span class="s2">&quot;MREX&quot;</span><span class="p">,</span> <span class="s2">&quot;MREY&quot;</span><span class="p">,</span> <span class="s2">&quot;MREDX&quot;</span><span class="p">,</span> <span class="s2">&quot;MREDY&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;AREX&quot;</span><span class="p">,</span> <span class="s2">&quot;AREY&quot;</span><span class="p">,</span> <span class="s2">&quot;MSCALX&quot;</span><span class="p">,</span> <span class="s2">&quot;MSCALY&quot;</span><span class="p">,</span> <span class="s2">&quot;RFM_FREQ&quot;</span><span class="p">,</span> <span class="s2">&quot;RFM_HARMON&quot;</span><span class="p">,</span> <span class="s2">&quot;RFM_LAG&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">cols_outer</span><span class="p">[:</span><span class="mi">42</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols_middle</span> <span class="o">+</span> <span class="n">cols_outer</span><span class="p">[</span><span class="mi">42</span><span class="p">:]</span>
+
+
+<div class="viewcode-block" id="LhcModelCreator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator">[docs]</a><span class="k">class</span> <span class="nc">LhcModelCreator</span><span class="p">(</span><span class="n">ModelCreator</span><span class="p">):</span>
+<div class="viewcode-block" id="LhcModelCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># nominal</span>
+        <span class="n">use_acd</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
+        <span class="n">use_adt</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ADT</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span> <span class="ow">or</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># allow user to modify script and enable excitation, if driven tunes are given</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;use_acd=</span><span class="si">{</span><span class="n">use_acd</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">use_adt=</span><span class="si">{</span><span class="n">use_adt</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;if(use_acd == 1)</span><span class="se">{{\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;exec, twiss_ac_dipole(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_AC_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}</span><span class="s2">else if(use_adt == 1)</span><span class="se">{{\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;exec, twiss_adt(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ADT_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
+
+<div class="viewcode-block" id="LhcModelCreator.get_correction_check_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_correction_check_script">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_correction_check_script</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;changeparameters_couple.madx&quot;</span><span class="p">,</span> <span class="n">chrom</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors_and_ips(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s1">&#39;twiss_no.dat&#39;</span><span class="si">!s}</span><span class="s2">&#39;, 0.0);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">corr_file</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors_and_ips(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s1">&#39;twiss_cor.dat&#39;</span><span class="si">!s}</span><span class="s2">&#39;, 0.0);</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">chrom</span><span class="p">:</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors_and_ips(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s1">&#39;twiss_cor_dpm.dat&#39;</span><span class="si">}</span><span class="s2">&#39;, %DELTAPM);</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors_and_ips(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s1">&#39;twiss_cor_dpp.dat&#39;</span><span class="si">}</span><span class="s2">&#39;, %DELTAPP);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
+
+<div class="viewcode-block" id="LhcModelCreator.prepare_run"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.prepare_run">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">check_accelerator_instance</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Preparing model creation structure&quot;</span><span class="p">)</span>
+        <span class="n">macros_path</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span>
+        <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">macros_path</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Copying macros to model directory&quot;</span><span class="p">)</span>
+        <span class="n">lib_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;madx_macros&quot;</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">lib_path</span> <span class="o">/</span> <span class="n">GENERAL_MACROS</span><span class="p">,</span> <span class="n">macros_path</span> <span class="o">/</span> <span class="n">GENERAL_MACROS</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">lib_path</span> <span class="o">/</span> <span class="n">LHC_MACROS</span><span class="p">,</span> <span class="n">macros_path</span> <span class="o">/</span> <span class="n">LHC_MACROS</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Copying B2 error files for given energy in model directory&quot;</span><span class="p">)</span>
+            <span class="n">core</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">error_dir_path</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_lhc_error_dir</span><span class="p">()</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">error_dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">core</span><span class="si">}</span><span class="s2">GeV.tfs&quot;</span><span class="p">,</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
+                <span class="n">error_dir_path</span> <span class="o">/</span> <span class="s2">&quot;b2_errors_settings&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">core</span><span class="si">}</span><span class="s2">GeV.madx&quot;</span><span class="p">,</span>
+                <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_SETTINGS_MADX</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">b2_table</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">error_dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;b2_errors_beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">.tfs&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+            <span class="n">gen_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">b2_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_b2_columns</span><span class="p">()))),</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">b2_table</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">columns</span><span class="o">=</span><span class="n">_b2_columns</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="n">gen_df</span><span class="p">[</span><span class="s2">&quot;K1L&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b2_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;K1L_</span><span class="si">{</span><span class="n">core</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_ERRORS_TFS</span><span class="p">,</span>
+                <span class="n">gen_df</span><span class="p">,</span>
+                <span class="n">headers_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">},</span>
+                <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">accel</span><span class="o">.</span><span class="n">verify_object</span><span class="p">()</span>  <span class="c1"># should have been done anyway, but cannot hurt (jdilly)</span>
+
+        <span class="c1"># Creator specific checks</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="s2">&quot;The accelerator definition is incomplete: model directory (outputdir option) was not given.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="s2">&quot;The accelerator definition is incomplete: no modifiers could be found.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)</span>
+        <span class="n">inexistent_modifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inexistent_modifiers</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="s2">&quot;The following modifier files do not exist: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">modifier</span><span class="p">)</span> <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="n">inexistent_modifiers</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LhcBestKnowledgeCreator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator">[docs]</a><span class="k">class</span> <span class="nc">LhcBestKnowledgeCreator</span><span class="p">(</span><span class="n">LhcModelCreator</span><span class="p">):</span>
+    <span class="n">EXTRACTED_MQTS_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;extracted_mqts.str&quot;</span>
+    <span class="n">CORRECTIONS_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;corrections.madx&quot;</span>
+
+<div class="viewcode-block" id="LhcBestKnowledgeCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t set ACD or ADT for best knowledge model.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Best knowledge model requires energy.&quot;</span><span class="p">)</span>
+
+        <span class="n">corrections_file</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">CORRECTIONS_FILENAME</span>  <span class="c1"># existence is tested in madx</span>
+        <span class="n">mqts_file</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">EXTRACTED_MQTS_FILENAME</span>  <span class="c1"># existence is tested in madx</span>
+
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">(</span><span class="n">best_knowledge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">corrections_file</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">mqts_file</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
+
+<div class="viewcode-block" id="LhcBestKnowledgeCreator.check_run_output"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.check_run_output">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_run_output</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">files_to_check</span> <span class="o">=</span> <span class="p">[</span><span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span> <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_files_exist</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">files_to_check</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="LhcCouplingCreator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator">[docs]</a><span class="k">class</span> <span class="nc">LhcCouplingCreator</span><span class="p">(</span><span class="n">LhcModelCreator</span><span class="p">):</span>
+<div class="viewcode-block" id="LhcCouplingCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_correction_check_script</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
