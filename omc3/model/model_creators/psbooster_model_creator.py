@@ -13,7 +13,6 @@ from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 
 class PsboosterModelCreator(ModelCreator):
-
     @classmethod
     def get_madx_script(cls, accel: Psbooster) -> str:
         madx_script = accel.get_base_madx_script()
@@ -29,11 +28,12 @@ class PsboosterModelCreator(ModelCreator):
 
     @classmethod
     def get_correction_check_script(cls, accel: Psbooster, corr_file: str, chrom: bool) -> str:
-        raise NotImplemented("Correction check is not implemented for the PsBooster model creator yet. ")
+        raise NotImplemented(
+            "Correction check is not implemented for the PsBooster model creator yet. "
+        )
 
     @classmethod
     def prepare_run(cls, accel: Psbooster):
         shutil.copy(
-            accel.get_file(f"error_deff_ring{accel.ring}.txt"),
-            accel.model_dir / ERROR_DEFFS_TXT
+            accel.get_file(f"error_deff_ring{accel.ring}.txt"), accel.model_dir / ERROR_DEFFS_TXT
         )
