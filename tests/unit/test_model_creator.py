@@ -53,6 +53,25 @@ def test_ps_creation_nominal(tmp_path):
 
 
 @pytest.mark.basic
+def test_ps_creation_nominal(tmp_path):
+    accel_opt = dict(
+        accel="lhc",
+        nat_tunes=[6.32, 6.29],
+        drv_tunes=[0.325, 0.284],
+        driven_excitation="acd",
+        dpp=0.0, energy=1.4,
+        modifiers=[PS_MODEL / "elements.str", PS_MODEL / "PS_LE_LHC_low_chroma.str"],
+    )
+    create_instance_and_model(
+        type="nominal",
+        outputdir=tmp_path,
+        logfile=tmp_path / "madx_log.txt",
+        **accel_opt
+    )
+    check_accel_from_dir_vs_options(tmp_path, accel_opt,
+                                    required_keys=[])
+
+@pytest.mark.basic
 def test_lhc_creation_nominal_driven(tmp_path):
     accel_opt = dict(
         accel="lhc",
@@ -118,6 +137,25 @@ def test_lhc_creation_best_knowledge(tmp_path):
         **accel_opt
     )
 
+@pytest.mark.basic
+def test_lhc_creation_sbs(tmp_path):
+    accel_opt = dict(
+        accel="lhc",
+        year="2018",
+        type = "sbs",
+        ats=True,
+        beam=1,
+        nat_tunes=[0.31, 0.32],
+        dpp=0.0,
+        energy=6.5,
+        modifiers=[COMP_MODEL / "opticsfile.24_ctpps2"],
+    )
+    create_instance_and_model(
+        outputdir=tmp_path,
+        type="best_knowledge",
+        logfile=tmp_path / "madx_log.txt",
+        **accel_opt
+    )
 
 # Helper -----------------------------------------------------------------------
 

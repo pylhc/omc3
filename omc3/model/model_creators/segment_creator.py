@@ -143,6 +143,7 @@ def _create_correction_file(sbs_path, label):
     if(corr_file.exists()==False):
         f = open(corr_file, "w")
         f.write("!Enter the corrections below:")
+        f.close()
 
 
 

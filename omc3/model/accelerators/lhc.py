@@ -125,7 +125,6 @@ class Lhc(Accelerator):
     def __init__(self, *args, **kwargs):
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
-        print(opt)
         super().__init__(opt)
         self.correctors_dir = "2012"
         self.year = opt.year
