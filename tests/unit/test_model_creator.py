@@ -181,7 +181,7 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
 @pytest.mark.basic
 def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
     accel = get_accelerator(**model_25cm_beam1)
-    LhcModelCreator.check_run_output(accel)
+    LhcModelCreator.post_run(accel)
 
     for dat_file in (TWISS_AC_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, TWISS_ADT_DAT):
         file_path: Path = accel.model_dir / dat_file
@@ -193,7 +193,7 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
 
         # Run test
         with pytest.raises(FileNotFoundError) as creation_error:
-            LhcModelCreator.check_run_output(accel)
+            LhcModelCreator.post_run(accel)
         assert str(dat_file) in str(creation_error.value)
 
         if file_path_moved.exists():

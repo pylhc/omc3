@@ -19,7 +19,6 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
-from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
 from omc3.segment_by_segment.phase_writer import create_phase_segment
@@ -30,12 +29,10 @@ LOG = logging_tools.get_logger(__name__)
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
             "best_knowledge": LhcBestKnowledgeCreator,
-            "segment": SegmentCreator,
+            "segment": LhcSegmentCreator,
             "coupling_correction": LhcCouplingCreator},
-    "psbooster": {"nominal": PsboosterModelCreator,
-                  "segment": SegmentCreator},
-    "ps": {"nominal": PsModelCreator,
-           "segment": SegmentCreator},
+    "psbooster": {"nominal": PsboosterModelCreator},
+    "ps": {"nominal": PsModelCreator},
 }
 
 
@@ -61,22 +58,22 @@ def _get_params():
     params.add_parameter(
         name="label",
         type=str,
-        help=("The name of the segment of interest.")
+        help="The name of the segment of interest."
     )
     params.add_parameter(
         name="start",
         type=str,
-        help=("The first BPM in the segment")
+        help="The first BPM in the segment"
     )
     params.add_parameter(
         name="end",
         type=str,
-        help=("The last BPM in the segment")
+        help="The last BPM in the segment"
     )
     params.add_parameter(
         name="measuredir",
         type=Path,
-        help=("The path to the measurement directory for segment-by-segment.")
+        help="The path to the measurement directory for segment-by-segment."
     )
 
     return params
@@ -166,7 +163,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     # Check output and return accelerator instance
     accel_inst.model_dir = opt.outputdir
-    creator.check_run_output(accel_inst)
+    creator.post_run(accel_inst)
     return accel_inst
 
 

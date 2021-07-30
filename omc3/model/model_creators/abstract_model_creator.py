@@ -63,7 +63,7 @@ class ModelCreator(ABC):
         pass
 
     @classmethod
-    def check_run_output(cls, accel: Accelerator) -> None:
+    def post_run(cls, accel: Accelerator) -> None:
         """
         Checks that the model creation ``MAD-X`` run was successful. It should check that the
         appropriate directories are created, and that macros and other files are in place.

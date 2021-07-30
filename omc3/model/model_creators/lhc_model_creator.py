@@ -65,7 +65,7 @@ class LhcModelCreator(ModelCreator):
 
     @classmethod
     def get_correction_check_script(
-        cls, accel: Lhc, corr_file: str = "changeparameters_couple.madx", chrom: bool = False
+            cls, accel: Lhc, corr_file: str = "changeparameters_couple.madx", chrom: bool = False
     ) -> str:
         madx_script = accel.get_base_madx_script()
         madx_script += (
@@ -163,11 +163,130 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         return madx_script
 
     @classmethod
-    def check_run_output(cls, accel: Lhc) -> None:
+    def post_run(cls, accel: Lhc) -> None:
         files_to_check = [TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
         cls._check_files_exist(accel.model_dir, files_to_check)
 
 
+class SegmentCreator(object):
+    """ Creates Segment of a model. """
+
+    @classmethod
+    def get_madx_script(cls, accel, opt):
+        sbs_path = opt.outputdir
+        cls._create_correction_file(sbs_path, opt.label)
+        betain_name = Path("measurement_" + opt.label + ".madx")
+        cls.create_measurement_file(sbs_path, opt.measuredir, betain_name, opt)
+
+        libs = f"call, file = '{opt.outputdir / MACROS_DIR / GENERAL_MACROS}';\n"
+        libs = libs + f"call, file = '{opt.outputdir / MACROS_DIR / LHC_MACROS}';\n"
+
+        madx_template = accel.get_file("segment.madx").read_text()
+
+        replace_dict = {
+            "MAIN_SEQ": accel.load_main_seq_madx(),  # LHC only
+            "OPTICS_PATH": accel.modifiers,  # all
+            "NUM_BEAM": accel.beam,  # LHC only
+            "PATH": accel.model_dir,  # all
+            # "OUTPUT": accel.model_dir,  # Booster only
+            "LABEL": accel.label,  # all
+            "BETAKIND": accel.kind,  # all
+            "STARTFROM": accel.start.name,  # all
+            "ENDAT": accel.end.name,  # all
+            # "RING": accel.ring,  # Booster only
+            # "KINETICENERGY": accel.energy,  # PS only
+            # "FILES_DIR": accel.get_dir(),  # Booster and PS
+            # "NAT_TUNE_X": accel.nat_tunes[0],  # Booster and PS
+            # "NAT_TUNE_Y": accel.nat_tunes[1],  # Booster and PS
+        }
+        return madx_template % replace_dict
+
+    @staticmethod
+    def create_measurement_file(sbs_path, measurement_dir, betain_name, opt):
+        df_betx = tfs.read(measurement_dir / 'beta_phase_x.tfs', index="NAME")
+        df_bety = tfs.read(measurement_dir / 'beta_phase_y.tfs', index="NAME")
+
+        betx_start = df_betx.loc[opt.start, 'BETX']
+        betx_end = df_betx.loc[opt.end, 'BETX']
+
+        alfx_start = df_betx.loc[opt.start, 'ALFX']
+        alfx_end = -df_betx.locxopt.end, ['ALFX']
+
+        bety_start = df_bety.loc[opt.start, 'BETY']
+        bety_end = df_bety.loc[opt.end, 'BETY']
+
+        alfy_start = df_bety.loc[opt.start, 'ALFY']
+        alfy_end = -df_betx.locyopt.end, ['ALFY']
+
+        # # For Tests
+        # from optics_functions.coupling import rmatrix_from_coupling
+        # f_ini=pd.DataFrame()
+        # f_ini["BETX"] = betx_start
+        # f_ini["BETY"] = bety_start
+        # f_ini["ALFX"] = alfx_start
+        # f_ini["ALFy"] = alfy_start
+        # f_ini['F1001'] = 0.001 + 0.002j
+        # f_ini["F1010"] = 0.0001 + 0.0002
+        #
+        # f_end=pd.DataFrame()
+        # f_end["BETX"] = betx_end
+        # f_end["BETY"] = bety_end
+        # f_end["ALFX"] = alfx_end
+        # f_end["ALFy"] = alfy_end
+        # f_end["F1001"] = 0.0032 + 0.0012j
+        # f_end["F1010"] = 0.00013 + 0.0002j
+        #
+        # ini_r = rmatrix_from_coupling(f_ini)
+        # end_r = rmatrix_from_coupling(f_end)
+
+        measurement_dict = dict(
+            betx_ini=betx_start,
+            bety_ini=bety_start,
+            alfx_ini=alfx_start,
+            alfy_ini=alfy_start,
+            dx_ini=0,
+            dy_ini=0,
+            dpx_ini=0,
+            dpy_ini=0,
+            wx_ini=0,
+            phix_ini=0,
+            wy_ini=0,
+            phiy_ini=0,
+            wx_end=0,
+            phix_end=0,
+            wy_end=0,
+            phiy_end=0,
+            ini_r11=0,
+            ini_r12=0,
+            ini_r21=0,
+            ini_r22=0,
+            end_r11=0,
+            end_r12=0,
+            end_r21=0,
+            end_r22=0,
+            betx_end=betx_end,
+            bety_end=bety_end,
+            alfx_end=alfx_end,
+            alfy_end=alfy_end,
+            dx_end=0,
+            dy_end=0,
+            dpx_end=0,
+            dpy_end=0,
+        )
+        betainputfile = Path(sbs_path) / betain_name
+        betainputfile.write_text(
+            "\n".join(f"{name} = {value};" for name, value in measurement_dict.items())
+        )
+
+    @staticmethod
+    def _create_correction_file(sbs_path, label):
+        corr_file = Path("corrections_" + label + ".madx")
+        corr_file = sbs_path / corr_file
+        if not corr_file.is_file():
+            corr_file.write_text("! Enter the corrections below:")
+
+
+# TODO: Not sure what this is doing (jdilly 2021-07-30)
 class LhcCouplingCreator(LhcModelCreator):
     @classmethod
     def get_madx_script(cls, accel: Lhc) -> str:
