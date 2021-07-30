@@ -14,14 +14,14 @@ from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.constants import JOB_MODEL_MADX
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
-    LhcCouplingCreator,
+    LhcCorrectionCreator,
     LhcModelCreator,
+    LhcSegmentCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
-from omc3.segment_by_segment.phase_writer import create_phase_segment
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -30,7 +30,7 @@ CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
             "best_knowledge": LhcBestKnowledgeCreator,
             "segment": LhcSegmentCreator,
-            "coupling_correction": LhcCouplingCreator},
+            "correction": LhcCorrectionCreator},
     "psbooster": {"nominal": PsboosterModelCreator},
     "ps": {"nominal": PsModelCreator},
 }
@@ -40,8 +40,9 @@ def _get_params():
     params = EntryPointParameters()
     params.add_parameter(
         name="type",
-        choices=("nominal", "best_knowledge", "coupling_correction","segment"),
-        help="Type of model to create."
+        choices=("nominal", "best_knowledge", "coupling_correction", "segment"),
+        help="Type of model to create.",
+        default='nominal',
     )
     params.add_parameter(
         name="outputdir",
@@ -58,22 +59,22 @@ def _get_params():
     params.add_parameter(
         name="label",
         type=str,
-        help="The name of the segment of interest."
+        help="The name of the segment of interest. (For segment creators)"
     )
     params.add_parameter(
         name="start",
         type=str,
-        help="The first BPM in the segment"
+        help="The first BPM in the segment. (For segment creators)"
     )
     params.add_parameter(
         name="end",
         type=str,
-        help="The last BPM in the segment"
+        help="The last BPM in the segment. (For segment creators)"
     )
     params.add_parameter(
-        name="measuredir",
+        name="measurement_dir",
         type=Path,
-        help="The path to the measurement directory for segment-by-segment."
+        help="The path to the measurement directory. (For segment creators)"
     )
 
     return params
@@ -115,7 +116,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
             Type of model to create.
 
-            choices: ``('nominal', 'best_knowledge', 'coupling_correction')``
+            choices: ``('nominal', 'best_knowledge', 'correction', 'segment')``
 
 
     Accelerator Keyword Args:
@@ -135,34 +136,32 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
         JPARC: Not implemented
     """
+    outputdir = opt.pop("outputdir")
+    model_type = opt.pop("type")
+    logfile = opt.pop("logfile")
+
     # Prepare paths
-    create_dirs(opt.outputdir)
+    create_dirs(outputdir)
 
     accel_inst = manager.get_accelerator(accel_opt)
-    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
-    creator = CREATORS[accel_inst.NAME][opt.type]
+    accel_inst.model_dir = outputdir
+
+    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {model_type}")
+    creator = CREATORS[accel_inst.NAME][opt.type](accel_inst, **opt)
 
     # Prepare model-dir output directory
-    accel_inst.model_dir = opt.outputdir
-    creator.prepare_run(accel_inst)
+    creator.prepare_run()
 
     # get madx-script with relative output-paths
-    # as `cwd` changes run to correct directory.
-    # The resulting model-dir is then more self-contained. (jdilly)
-    accel_inst.model_dir = Path()
-    madx_script = creator.get_madx_script(accel_inst)
+    madx_script = creator.get_madx_script()
 
     # Run madx to create model
     run_string(madx_script,
-               output_file=opt.outputdir / JOB_MODEL_MADX,
-               log_file=opt.logfile,
-               cwd=opt.outputdir)
-
-    if(opt.type == "segment"):
-        create_phase_segment(opt.measuredir, opt.outputdir, opt.label)
+               output_file=outputdir / JOB_MODEL_MADX,
+               log_file=logfile,
+               cwd=outputdir)
 
     # Check output and return accelerator instance
-    accel_inst.model_dir = opt.outputdir
     creator.post_run(accel_inst)
     return accel_inst
 
