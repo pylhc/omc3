@@ -8,8 +8,10 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Sequence, Union
 
+from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
 from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
+from omc3.model.constants import JOB_MODEL_MADX
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -20,7 +22,7 @@ class ModelCreator(ABC):
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
     functions are defined here.
     """
-    def __init__(self, accel: Accelerator, *args, **kwargs):
+    def __init__(self, accel: Accelerator, logfile: Path = None, *args, **kwargs):
         """
         Initialize the Model Creator.
 
@@ -28,13 +30,39 @@ class ModelCreator(ABC):
             accel (Accelerator): Accelerator Instance
         """
         self.accel = accel
+        self.logfile = logfile
+
         cleaned_args = [arg for arg in args if arg is not None]
-        cleaned_kwargs = {k: v for k, v in kwargs if v is not None}
         if len(cleaned_args):
             LOG.warning(f"Unknown args for Model Creator: {', '.join(cleaned_args)}")
 
+        cleaned_kwargs = {k: v for k, v in kwargs.items() if v is not None}
         if len(cleaned_kwargs):
             LOG.warning(f"Unknown kwargs for Model Creator: {cleaned_kwargs!s}")
+
+    def full_run(self):
+        """ Does the full run: preparation, running madx, post_run. """
+        # Prepare model-dir output directory
+        self.prepare_run()
+
+        # get madx-script with relative output-paths
+        output_path = self.accel.model_dir
+        self.accel.model_dir = Path()
+        
+        madx_script = self.get_madx_script()
+
+        self.accel.model_dir = output_path
+
+        # Run madx to create model
+        run_string(
+            madx_script,
+            output_file=self.accel.model_dir / JOB_MODEL_MADX,
+            log_file=self.logfile,
+            cwd=self.accel.model_dir
+        )
+
+        # Check output and return accelerator instance
+        self.post_run()
 
     @abstractmethod
     def get_madx_script(self) -> str:
@@ -50,10 +78,7 @@ class ModelCreator(ABC):
         Prepares the model creation ``MAD-X`` run. It should check that the appropriate directories
         are created, and that macros and other files are in place.
         Should also check that all necessary data for model creation is available in the accelerator
-        instance. Called by the ``model_creator.create_accel_and_instance``
-
-        Args:
-            accel (Accelerator): Accelerator Instance used for the model creation.
+        instance.
         """
         pass
 
@@ -61,11 +86,7 @@ class ModelCreator(ABC):
         """
         Checks that the model creation ``MAD-X`` run was successful. It should check that the
         appropriate directories are created, and that macros and other files are in place.
-        Checks the accelerator instance. Called by the ``model_creator.create_instance_and_model``
-
-        Args:
-            opt:
-            accel (Accelerator): Accelerator Instance used for the model creation.
+        Checks the accelerator instance.
         """
         # These are the default files for most model creators for now.
         files_to_check: List[str] = [TWISS_DAT, TWISS_ELEMENTS_DAT]

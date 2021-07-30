@@ -52,8 +52,8 @@ class LhcModelCreator(ModelCreator):
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
         madx_script = accel.get_base_madx_script()
         madx_script += (
-            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{TWISS_DAT}', {accel.dpp});\n"
-            f"exec, do_twiss_elements(LHCB{accel.beam}, '{TWISS_ELEMENTS_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_DAT}', {accel.dpp});\n"
         )
         if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
@@ -139,10 +139,10 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 
         madx_script = accel.get_base_madx_script(best_knowledge=True)
         madx_script += (
-            f"call, file = '{self.CORRECTIONS_FILENAME}';\n"
-            f"call, file = '{self.EXTRACTED_MQTS_FILENAME}';\n"
-            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{TWISS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
-            f"exec, do_twiss_elements(LHCB{accel.beam}, '{TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
+            f"call, file = '{accel.model_dir / self.CORRECTIONS_FILENAME}';\n"
+            f"call, file = '{accel.model_dir / self.EXTRACTED_MQTS_FILENAME}';\n"
+            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
         )
         return madx_script
 
@@ -154,7 +154,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 class LhcSegmentCreator(LhcModelCreator):
     """ Creates Segment of a model. """
     def __init__(self, accel: Lhc, measurement_dir: Path, start: str, end: str, label: str, *args, **kwargs):
-        super().__init__(accel, *args, *kwargs)
+        super().__init__(accel, *args, **kwargs)
         self.start = start
         self.end = end
         self.label = label
@@ -172,9 +172,10 @@ class LhcSegmentCreator(LhcModelCreator):
         madx_template = accel.get_file("segment.madx").read_text()
         replace_dict = {
             "NUM_BEAM": accel.beam,  # LHC only
-            "LABEL": accel.label,  # all
-            "STARTFROM": accel.start,  # all
-            "ENDAT": accel.end,  # all
+            "LABEL": self.label,  # all
+            "STARTFROM": self.start,  # all
+            "ENDAT": self.end,  # all
+            "OUTPUT": str(self.accel.model_dir),  # all
         }
         madx_script += madx_template % replace_dict
         return madx_script
@@ -194,7 +195,7 @@ class LhcSegmentCreator(LhcModelCreator):
         bety_end = df_bety.loc[self.end, 'BETY']
 
         alfy_start = df_bety.loc[self.start, 'ALFY']
-        alfy_end = -df_betx.loc[self.end, 'ALFY']
+        alfy_end = -df_bety.loc[self.end, 'ALFY']
 
         # # For Tests
         # from optics_functions.coupling import rmatrix_from_coupling
@@ -272,8 +273,8 @@ class LhcCorrectionCreator(LhcModelCreator):
     TWISS_CORRECTED_DELTAP_MINUS_DAT = 'twiss_corr_dpm.dat'
     TWISS_CORRECTED_DELTAP_PLUS_DAT = 'twiss_corr_dpp.dat'
 
-    def __init__(self, accel: Lhc, chrom: bool = False, corrections: str = "changeparameters_couple.madx"):
-        super().__init__(accel)
+    def __init__(self, accel: Lhc, chrom: bool = False, corrections: str = "changeparameters_couple.madx", *args, **kwargs):
+        super().__init__(accel, *args, **kwargs)
         self.corrections = corrections
         self.chrom = chrom
 
@@ -291,13 +292,13 @@ class LhcCorrectionCreator(LhcModelCreator):
         accel = self.accel
         madx_script = accel.get_base_madx_script()
         madx_script += (
-            f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{self.TWISS_UNCORRECTED_DAT}', 0.0);\n"
+            f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / self.TWISS_UNCORRECTED_DAT}', 0.0);\n"
             f"call, file = '{self.corrections}';\n"
-            f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{self.TWISS_CORRECTED_DAT}', 0.0);\n"
+            f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / self.TWISS_CORRECTED_DAT}', 0.0);\n"
         )
         if self.chrom:
             madx_script += (
-                f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{self.TWISS_CORRECTED_DELTAP_MINUS_DAT}', %DELTAPM);\n"
-                f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{self.TWISS_CORRECTED_DELTAP_PLUS_DAT}', %DELTAPP);\n"
+                f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / self.TWISS_CORRECTED_DELTAP_MINUS_DAT}', %DELTAPM);\n"
+                f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / self.TWISS_CORRECTED_DELTAP_PLUS_DAT}', %DELTAPP);\n"
             )
         return madx_script

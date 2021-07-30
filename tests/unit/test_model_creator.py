@@ -181,7 +181,7 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
 @pytest.mark.basic
 def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
     accel = get_accelerator(**model_25cm_beam1)
-    LhcModelCreator.post_run(accel)
+    LhcModelCreator(accel).post_run()
 
     for dat_file in (TWISS_AC_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, TWISS_ADT_DAT):
         file_path: Path = accel.model_dir / dat_file
@@ -193,7 +193,7 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
 
         # Run test
         with pytest.raises(FileNotFoundError) as creation_error:
-            LhcModelCreator.post_run(accel)
+            LhcModelCreator(accel).post_run()
         assert str(dat_file) in str(creation_error.value)
 
         if file_path_moved.exists():
@@ -215,7 +215,7 @@ def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, re
     _check_arrays(accel_from_opt.drv_tunes, accel_from_dir.drv_tunes, eps=1e-4, tunes=True)
     _check_arrays(accel_from_opt.modifiers, accel_from_dir.modifiers)
     assert accel_from_opt.excitation == accel_from_dir.excitation
-    assert accel_from_opt.model_dir == accel_from_dir.model_dir
+    assert accel_from_opt.model_dir.absolute() == accel_from_dir.model_dir.absolute()
 
     # TODO: Energy not set in model ? (jdilly, 2021)
     # assert abs(accel_from_opt.energy - accel_from_dir.energy) < 1e-2

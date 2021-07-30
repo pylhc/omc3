@@ -11,7 +11,6 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCorrectionCreator,
@@ -137,8 +136,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         JPARC: Not implemented
     """
     outputdir = opt.pop("outputdir")
-    model_type = opt.pop("type")
-    logfile = opt.pop("logfile")
+    model_type = opt.pop("type", None)
 
     # Prepare paths
     create_dirs(outputdir)
@@ -147,22 +145,8 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     accel_inst.model_dir = outputdir
 
     LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {model_type}")
-    creator = CREATORS[accel_inst.NAME][opt.type](accel_inst, **opt)
-
-    # Prepare model-dir output directory
-    creator.prepare_run()
-
-    # get madx-script with relative output-paths
-    madx_script = creator.get_madx_script()
-
-    # Run madx to create model
-    run_string(madx_script,
-               output_file=outputdir / JOB_MODEL_MADX,
-               log_file=logfile,
-               cwd=outputdir)
-
-    # Check output and return accelerator instance
-    creator.post_run(accel_inst)
+    creator = CREATORS[accel_inst.NAME][model_type](accel_inst, **opt)
+    creator.full_run()
     return accel_inst
 
 
