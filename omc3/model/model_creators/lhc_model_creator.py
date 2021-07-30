@@ -97,7 +97,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 
     @classmethod
     def get_madx_script(cls, accel, opt):
-        outdir = opt.outdir
+        outdir = opt.outputdir
         if accel.excitation is not AccExcitationMode.FREE:
             raise AcceleratorDefinitionError("Don't set ACD or ADT for best knowledge model.")
         if accel.energy is None:
