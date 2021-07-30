@@ -1,6 +1,6 @@
-import os
 import tempfile
 from datetime import datetime
+from pathlib import Path
 
 import h5py
 import numpy as np
@@ -11,35 +11,61 @@ from omc3.definitions.constants import PLANES
 from omc3.tbt import handler, reader_iota, reader_ptc, reader_trackone
 from omc3.tbt_converter import converter_entrypoint
 
-CURRENT_DIR = os.path.dirname(__file__)
+INPUTS_DIR = Path(__file__).parent.parent / "inputs"
 ASCII_PRECISION = 0.5 / np.power(10, handler.PRINT_PRECISION)
 
 
 @pytest.mark.basic
 def test_converter_one_file(_sdds_file, _test_file):
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file))
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent)
     origin = handler.read_tbt(_sdds_file)
-    new = handler.read_tbt(f'{_test_file}.sdds')
+    new = handler.read_tbt(f"{_test_file}.sdds")
     _compare_tbt(origin, new, False)
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize("dropped_elements", [["BPMSX.4R2.B"], ["BPMSX.4L2.B1", "BPMSW.1R2.B1"]])
+def test_converter_drop_elements(_sdds_file, _test_file, dropped_elements):
+    converter_entrypoint(
+        files=[_sdds_file],
+        outputdir=_test_file.parent,
+        drop_elements=dropped_elements,
+    )
+    new = handler.read_tbt(f"{_test_file}.sdds")
+    for dictionary in new.matrices:
+        for dataframe in dictionary.values():
+            for element in dropped_elements:
+                assert element not in dataframe.index
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize("unknown_element", ["NOT_IN_DATA", "QBX.P4.T1", "INVALID"])
+def test_converter_warns_on_not_found_drop_elements(_sdds_file, _test_file, unknown_element, caplog):
+    converter_entrypoint(
+        files=[_sdds_file],
+        outputdir=_test_file.parent,
+        drop_elements=[unknown_element],
+    )
+    assert f"Element '{unknown_element}' could not be found, skipped" in caplog.text
 
 
 @pytest.mark.basic
 def test_converter_one_file_with_noise(_sdds_file, _test_file):
     np.random.seed(2019)
     noiselevel = 0.0005
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), noise_levels=[noiselevel])
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, noise_levels=[noiselevel])
     origin = handler.read_tbt(_sdds_file)
-    new = handler.read_tbt(f'{_test_file}_n{noiselevel}.sdds')
-    _compare_tbt(origin, new, True, noiselevel*10)
+    new = handler.read_tbt(f"{_test_file}_n{noiselevel}.sdds")
+    _compare_tbt(origin, new, True, noiselevel * 10)
 
 
 @pytest.mark.basic
 def test_converter_more_files(_sdds_file, _test_file):
     rep = 2
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep)
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, realizations=rep)
     origin = handler.read_tbt(_sdds_file)
     for i in range(rep):
-        new = handler.read_tbt(f'{_test_file}_r{i}.sdds')
+        new = handler.read_tbt(f"{_test_file}_r{i}.sdds")
         _compare_tbt(origin, new, False)
 
 
@@ -48,18 +74,20 @@ def test_converter_more_files_with_noise(_sdds_file, _test_file):
     np.random.seed(2019)
     rep = 2
     noiselevel = 0.0005
-    converter_entrypoint(files=[_sdds_file], outputdir=os.path.dirname(_test_file), realizations=rep, noise_levels=[noiselevel])
+    converter_entrypoint(
+        files=[_sdds_file], outputdir=_test_file.parent, realizations=rep, noise_levels=[noiselevel]
+    )
     origin = handler.read_tbt(_sdds_file)
     for i in range(rep):
-        new = handler.read_tbt(f'{_test_file}_n{noiselevel}_r{i}.sdds')
-        _compare_tbt(origin, new, True, noiselevel*10)
+        new = handler.read_tbt(f"{_test_file}_n{noiselevel}_r{i}.sdds")
+        _compare_tbt(origin, new, True, noiselevel * 10)
 
 
 @pytest.mark.basic
 def test_tbt_write_read_sdds_binary(_sdds_file, _test_file):
     origin = handler.read_tbt(_sdds_file)
     handler.write_tbt(_test_file, origin)
-    new = handler.read_tbt(f'{_test_file}.sdds')
+    new = handler.read_tbt(f"{_test_file}.sdds")
     _compare_tbt(origin, new, False)
 
 
@@ -68,17 +96,23 @@ def test_tbt_read_hdf5(_hdf5_file):
 
     origin = handler.TbtData(
         matrices=[
-                  {'X': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
+            {
+                "X": pd.DataFrame(
+                    index=["IBPMA1C", "IBPME2R"],
                     data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.sin),
-                    dtype=float),
-                   'Y': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
+                    dtype=float,
+                ),
+                "Y": pd.DataFrame(
+                    index=["IBPMA1C", "IBPME2R"],
                     data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.cos),
-                    dtype=float)}],
+                    dtype=float,
+                ),
+            }
+        ],
         date=datetime.now(),
         bunch_ids=[1],
-        nturns=2000)
+        nturns=2000,
+    )
     new = reader_iota.read_tbt(_hdf5_file)
     _compare_tbt(origin, new, False)
 
@@ -88,17 +122,23 @@ def test_tbt_read_hdf5_v2(_hdf5_file_v2):
 
     origin = handler.TbtData(
         matrices=[
-                  {'X': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
+            {
+                "X": pd.DataFrame(
+                    index=["IBPMA1C", "IBPME2R"],
                     data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.sin),
-                    dtype=float),
-                   'Y': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
+                    dtype=float,
+                ),
+                "Y": pd.DataFrame(
+                    index=["IBPMA1C", "IBPME2R"],
                     data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 2, np.cos),
-                    dtype=float)}],
+                    dtype=float,
+                ),
+            }
+        ],
         date=datetime.now(),
         bunch_ids=[1],
-        nturns=2000)
+        nturns=2000,
+    )
     new = reader_iota.read_tbt(_hdf5_file_v2)
     _compare_tbt(origin, new, False)
 
@@ -106,41 +146,42 @@ def test_tbt_read_hdf5_v2(_hdf5_file_v2):
 @pytest.mark.basic
 def test_compare_average_Tbtdata():
     npart = 10
-    data = {plane: np.concatenate(
-                                  [[_create_data(np.linspace(1, 10, 10, endpoint=False, dtype=int), 2, (lambda x: np.random.randn(len(x))))]
-                                   for _ in range(npart)
-                                   ],
-                                  axis=0)
-            for plane in PLANES}
+    data = {
+        plane: np.concatenate(
+            [[_create_data(np.linspace(1, 10, 10, endpoint=False, dtype=int), 2, (lambda x: np.random.randn(len(x))),)]
+             for _ in range(npart)], axis=0,
+        )
+        for plane in PLANES
+    }
 
     origin = handler.TbtData(
         matrices=[
-                  {'X': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
-                    data=data['X'][i],
-                    dtype=float),
-                   'Y': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
-                    data=data['Y'][i],
-                    dtype=float)}
-                  for i in range(npart)],
+            {
+                "X": pd.DataFrame(index=["IBPMA1C", "IBPME2R"], data=data["X"][i], dtype=float),
+                "Y": pd.DataFrame(index=["IBPMA1C", "IBPME2R"], data=data["Y"][i], dtype=float),
+            }
+            for i in range(npart)
+        ],
         date=datetime.now(),
         bunch_ids=range(npart),
-        nturns=10)
+        nturns=10,
+    )
 
     new = handler.TbtData(
         matrices=[
-                  {'X': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
-                    data=np.mean(data['X'], axis=0),
-                    dtype=float),
-                   'Y': pd.DataFrame(
-                    index=['IBPMA1C', 'IBPME2R'],
-                    data=np.mean(data['Y'], axis=0),
-                    dtype=float)}],
+            {
+                "X": pd.DataFrame(
+                    index=["IBPMA1C", "IBPME2R"], data=np.mean(data["X"], axis=0), dtype=float
+                ),
+                "Y": pd.DataFrame(
+                    index=["IBPMA1C", "IBPME2R"], data=np.mean(data["Y"], axis=0), dtype=float
+                ),
+            }
+        ],
         date=datetime.now(),
         bunch_ids=[1],
-        nturns=10)
+        nturns=10,
+    )
 
     _compare_tbt(handler.generate_average_tbtdata(origin), new, False)
 
@@ -199,7 +240,9 @@ def test_tbt_write_read_ascii(_sdds_file, _test_file):
     _compare_tbt(origin, new, True)
 
 
-def _compare_tbt(origin, new, no_binary, max_deviation=ASCII_PRECISION):
+def _compare_tbt(
+    origin: handler.TbtData, new: handler.TbtData, no_binary: bool, max_deviation=ASCII_PRECISION
+) -> None:
     assert new.nturns == origin.nturns
     assert new.nbunches == origin.nbunches
     assert new.bunch_ids == origin.bunch_ids
@@ -214,32 +257,35 @@ def _compare_tbt(origin, new, no_binary, max_deviation=ASCII_PRECISION):
                 assert np.all(origin_mat == new_mat)
 
 
-def _original_trackone(track=False):
+def _original_trackone(track: bool = False) -> handler.TbtData:
     names = np.array(["C1.BPM1"])
     matrix = [
-        dict(X=pd.DataFrame(index=names, data=[[0.001, -0.0003606, -0.00165823, -0.00266631]]),
-             Y=pd.DataFrame(index=names, data=[[0.001, 0.00070558, -0.00020681, -0.00093807]])),
+        dict(
+            X=pd.DataFrame(index=names, data=[[0.001, -0.0003606, -0.00165823, -0.00266631]]),
+            Y=pd.DataFrame(index=names, data=[[0.001, 0.00070558, -0.00020681, -0.00093807]]),
+        ),
         dict(
             X=pd.DataFrame(index=names, data=[[0.0011, -0.00039666, -0.00182406, -0.00293294]]),
-            Y=pd.DataFrame(index=names,
-                           data=[[0.0011, 0.00077614, -0.00022749, -0.00103188]]))]
+            Y=pd.DataFrame(index=names, data=[[0.0011, 0.00077614, -0.00022749, -0.00103188]]),
+        ),
+    ]
     origin = handler.TbtData(matrix, None, [0, 1] if track else [1, 2], 4)
     return origin
 
 
-def _create_data(nturns, nbpm, function):
+def _create_data(nturns, nbpm, function) -> np.ndarray:
     return np.ones((nbpm, len(nturns))) * function(nturns)
 
 
 @pytest.fixture()
-def _sdds_file():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_file.sdds")
+def _sdds_file() -> Path:
+    return INPUTS_DIR / "test_file.sdds"
 
 
 @pytest.fixture()
-def _hdf5_file():
+def _hdf5_file() -> Path:
     with tempfile.TemporaryDirectory() as cwd:
-        with h5py.File(os.path.join(cwd, f'test_file.hdf5'), 'w') as hd5_file:
+        with h5py.File(Path(cwd) / "test_file.hdf5", 'w') as hd5_file:
             hd5_file.create_dataset("N:IBE2RH", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
             hd5_file.create_dataset("N:IBE2RV", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
             hd5_file.create_dataset("N:IBE2RS", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
@@ -248,43 +294,69 @@ def _hdf5_file():
             hd5_file.create_dataset("N:IBA1CV", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
             hd5_file.create_dataset("N:IBA1CS", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
 
-        yield os.path.join(cwd, f'test_file.hdf5')
+        yield Path(cwd) / "test_file.hdf5"
 
 
 @pytest.fixture()
-def _hdf5_file_v2():
+def _hdf5_file_v2() -> Path:
     with tempfile.TemporaryDirectory() as cwd:
-        with h5py.File(os.path.join(cwd, f'test_file_v2.hdf5'), 'w') as hd5_file:
+        with h5py.File(Path(cwd) / "test_file_v2.hdf5", "w") as hd5_file:
 
-            hd5_file.create_group('A1C')
-            hd5_file['A1C'].create_dataset("Horizontal", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
-            hd5_file['A1C'].create_dataset("Vertical", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
-            hd5_file['A1C'].create_dataset("Intensity", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
+            hd5_file.create_group("A1C")
+            hd5_file["A1C"].create_dataset(
+                "Horizontal",
+                data=_create_data(
+                    np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin
+                ).flatten(),
+            )
+            hd5_file["A1C"].create_dataset(
+                "Vertical",
+                data=_create_data(
+                    np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos
+                ).flatten(),
+            )
+            hd5_file["A1C"].create_dataset(
+                "Intensity",
+                data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten(),
+            )
 
-            hd5_file.create_group('E2R')
-            hd5_file['E2R'].create_dataset("Horizontal", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin).flatten())
-            hd5_file['E2R'].create_dataset("Vertical", data=_create_data(np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos).flatten())
-            hd5_file['E2R'].create_dataset("Intensity", data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten())
+            hd5_file.create_group("E2R")
+            hd5_file["E2R"].create_dataset(
+                "Horizontal",
+                data=_create_data(
+                    np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.sin
+                ).flatten(),
+            )
+            hd5_file["E2R"].create_dataset(
+                "Vertical",
+                data=_create_data(
+                    np.linspace(-np.pi, np.pi, 2000, endpoint=False), 1, np.cos
+                ).flatten(),
+            )
+            hd5_file["E2R"].create_dataset(
+                "Intensity",
+                data=_create_data(np.linspace(0, 20, 2000, endpoint=False), 1, np.exp).flatten(),
+            )
 
-        yield os.path.join(cwd, f'test_file_v2.hdf5')
+        yield Path(cwd) / "test_file_v2.hdf5"
 
 
 @pytest.fixture()
-def _test_file():
+def _test_file() -> Path:
     with tempfile.TemporaryDirectory() as cwd:
-        yield os.path.join(cwd, "test_file")
+        yield Path(cwd) / "test_file"
 
 
 @pytest.fixture()
-def _ptc_file():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone")
+def _ptc_file() -> Path:
+    return INPUTS_DIR / "test_trackone"
 
 
 @pytest.fixture()
-def _ptc_file_losses():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_losses")
+def _ptc_file_losses() -> Path:
+    return INPUTS_DIR / "test_trackone_losses"
 
 
 @pytest.fixture()
-def _ptc_file_sci():
-    return os.path.join(CURRENT_DIR, os.pardir, "inputs", "test_trackone_sci")
+def _ptc_file_sci() -> Path:
+    return INPUTS_DIR / "test_trackone_sci"

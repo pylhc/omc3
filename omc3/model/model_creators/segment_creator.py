@@ -6,7 +6,6 @@ This module provides convenience functions for model creation of a ``segment``.
 """
 import shutil
 import tfs
-import pandas as pd
 import numpy
 
 from pathlib import Path
@@ -14,7 +13,6 @@ from pathlib import Path
 from omc3.model.constants import MACROS_DIR, GENERAL_MACROS, LHC_MACROS
 from omc3.utils import logging_tools
 from omc3.utils.iotools import create_dirs
-from omc3.utils import iotools
 
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -57,10 +55,10 @@ def create_measurement_file(sbs_path, measurement_dir, betain_name, opt):
     isTest = True
     phase_beta_x = Path('beta_phase_x.tfs')
     phase_beta_y = Path('beta_phase_y.tfs')
-    
+
     df_betx = tfs.read(measurement_dir / phase_beta_x, index="NAME")
     df_bety = tfs.read(measurement_dir / phase_beta_y, index="NAME")
-    
+
     betx_start =  df_betx['BETX'].loc[opt.start]
     betx_end   =  df_betx['BETX'].loc[opt.end]
 
@@ -146,19 +144,19 @@ def _create_correction_file(sbs_path, label):
         f.close()
 
 
-
 class SegmentCreator(object):
 
     @classmethod
-    def prepare_run(cls, instance, output_path):
-        macros_path = Path(output_path) / MACROS_DIR
+    def prepare_run(cls, accel):
+        macros_path = accel.model_dir / MACROS_DIR
         create_dirs(macros_path)
         lib_path = Path(__file__).parent.parent/ "madx_macros"
         shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
         shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
 
     @classmethod
-    def get_madx_script(cls, instance, opt):
+    def get_madx_script(cls, accel, opt):
+
         sbs_path = opt.outputdir
         _create_correction_file(sbs_path, opt.label)
         betain_name = Path("measurement_" + opt.label + ".madx")
@@ -166,23 +164,23 @@ class SegmentCreator(object):
 
         libs = f"call, file = '{opt.outputdir / MACROS_DIR / GENERAL_MACROS}';\n"
         libs = libs + f"call, file = '{opt.outputdir/ MACROS_DIR / LHC_MACROS}';\n"
-        madx_template = instance.get_file("segment.madx").read_text()
+
+        madx_template = accel.get_file("segment.madx").read_text()
 
         replace_dict = {
-            "MAIN_SEQ": instance.load_main_seq_madx(),  # LHC only
-            "OPTICS_PATH": str(instance.modifiers[0]),  # all
-            "NUM_BEAM": instance.beam,  # LHC only
-            "PATH": sbs_path,  # all
-            #"OUTPUT": opt.outputdir,  # Booster only
-            "LIB": libs,
-            "LABEL": opt.label,  # all
-            "BETAKIND": betain_name,  # all
-            "STARTFROM": opt.start,  # all
-            "ENDAT": opt.end,  # all
-            #"RING": instance.ring,  # Booster only
-            #"KINETICENERGY": instance.energy,  # PS only
-            #"FILES_DIR": instance.get_dir(),  # Booster and PS
-            #"NAT_TUNE_X": instance.nat_tunes[0],  # Booster and PS
-            #"NAT_TUNE_Y": instance.nat_tunes[1],  # Booster and PS
+            "MAIN_SEQ": accel.load_main_seq_madx(),  # LHC only
+            "OPTICS_PATH": accel.modifiers,  # all
+            "NUM_BEAM": accel.beam,  # LHC only
+            "PATH": accel.model_dir,  # all
+            # "OUTPUT": accel.model_dir,  # Booster only
+            "LABEL": accel.label,  # all
+            "BETAKIND": accel.kind,  # all
+            "STARTFROM": accel.start.name,  # all
+            "ENDAT": accel.end.name,  # all
+            # "RING": accel.ring,  # Booster only
+            # "KINETICENERGY": accel.energy,  # PS only
+            # "FILES_DIR": accel.get_dir(),  # Booster and PS
+            # "NAT_TUNE_X": accel.nat_tunes[0],  # Booster and PS
+            # "NAT_TUNE_Y": accel.nat_tunes[1],  # Booster and PS
         }
         return madx_template % replace_dict
