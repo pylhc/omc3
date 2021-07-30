@@ -22,7 +22,7 @@ from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCrea
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
-from omc3.sbs.sbs_phase_writer import create_phase_segment
+from omc3.segment_by_segment.phase_writer import create_phase_segment
 
 LOG = logging_tools.get_logger(__name__)
 
