@@ -18,6 +18,7 @@ LOG = logging.getLogger(__name__)
 
 
 class ModelCreator(ABC):
+    JOBFILE = JOB_MODEL_MADX
     """
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
     functions are defined here.
@@ -56,7 +57,7 @@ class ModelCreator(ABC):
         # Run madx to create model
         run_string(
             madx_script,
-            output_file=self.accel.model_dir / JOB_MODEL_MADX,
+            output_file=self.accel.model_dir / self.JOBFILE,
             log_file=self.logfile,
             cwd=self.accel.model_dir
         )

@@ -26,7 +26,7 @@ from omc3.model.constants import (
     TWISS_BEST_KNOWLEDGE_DAT,
     TWISS_DAT,
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
-    TWISS_ELEMENTS_DAT,
+    TWISS_ELEMENTS_DAT, JOB_MODEL_MADX,
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.segment_by_segment.phase_writer import create_phase_segment
@@ -127,6 +127,7 @@ class LhcModelCreator(ModelCreator):
 
 
 class LhcBestKnowledgeCreator(LhcModelCreator):
+    JOBFILE = JOB_MODEL_MADX.replace("model", "best_knowledge_model")
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
     CORRECTIONS_FILENAME: str = "corrections.madx"
 
@@ -152,6 +153,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 
 
 class LhcSegmentCreator(LhcModelCreator):
+    JOBFILE = JOB_MODEL_MADX.replace("model", "segment")
     """ Creates Segment of a model. """
     def __init__(self, accel: Lhc, measurement_dir: Path, start: str, end: str, label: str, *args, **kwargs):
         super().__init__(accel, *args, **kwargs)
@@ -268,6 +270,7 @@ class LhcSegmentCreator(LhcModelCreator):
 
 
 class LhcCorrectionCreator(LhcModelCreator):
+    JOBFILE = JOB_MODEL_MADX.replace("model", "correction_model")
     TWISS_UNCORRECTED_DAT = 'twiss_no.dat'
     TWISS_CORRECTED_DAT = 'twiss_corr.dat'
     TWISS_CORRECTED_DELTAP_MINUS_DAT = 'twiss_corr_dpm.dat'
