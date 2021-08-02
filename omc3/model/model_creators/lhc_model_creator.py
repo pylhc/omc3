@@ -6,6 +6,7 @@ This module provides convenience functions for model creation of the ``LHC``.
 """
 import logging
 import shutil
+import os
 from pathlib import Path
 
 import numpy as np
@@ -20,7 +21,8 @@ from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
                                   TWISS_AC_DAT, TWISS_ADT_DAT,
                                   TWISS_BEST_KNOWLEDGE_DAT, TWISS_DAT,
                                   TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
-                                  TWISS_ELEMENTS_DAT)
+                                  TWISS_ELEMENTS_DAT,
+                                  PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER)
 from omc3.utils import iotools
 
 LOGGER = logging.getLogger(__name__)
@@ -49,10 +51,21 @@ class LhcModelCreator(object):
             )
         return madx_script
 
-    def get_opt(opt):
-        if opt.show_help:
-            print("show help of LhcModelCreator")
+    def get_opt(accel_inst, opt):
+        if opt.fetch == PATHFETCHER:
+            accel_inst.acc_model_path = opt.path
+
+        if opt.list_modifiers:
+            print("Listing Modifiers")
+            for root, subdirs, files in os.walk(Path(accel_inst.acc_model_path) / "strengths"):
+                for f in files:
+                    if os.path.splitext(f)[1] == ".madx":
+                        print(Path(root)/f)
             return False
+
+        # adjust modifier paths
+        accel_inst.modifiers = [Path(accel_inst.acc_model_path) / "strengths" / m for m in accel_inst.modifiers]
+        
         return True
 
     @classmethod

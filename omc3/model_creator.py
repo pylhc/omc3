@@ -11,7 +11,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX
+from omc3.model.constants import JOB_MODEL_MADX, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
@@ -26,7 +26,7 @@ from omc3.utils.parsertools import print_help
 
 LOG = logging_tools.get_logger(__name__)
 
-DRY_RUN = "*** dry-run, no model created ***"
+DRY_RUN = "*** ==> dry-run, no model created ***"
 
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
@@ -63,11 +63,17 @@ def _get_params():
     params.add_parameter(
         name="fetch",
         type=str,
-        help="select the fetcher which sets up the lattice definition (madx, seq, strength files)",
-        choices=["path", "afs"]  # ["path", "afs", "git", "lsa"]
+        help=("Select the fetcher which sets up the lattice definition (madx, seq, strength files)."
+              "Note: not all fetchers might be available for the chosen Model Creator"),
+        choices=[PATHFETCHER, AFSFETCHER]  # [PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER]
     )
     params.add_parameter(
-        name="list-modifiers",
+        name="path",
+        type=str,
+        help=("If path fetcher is selected, this option sets the path"),
+    )
+    params.add_parameter(
+        name="list_modifiers",
         action="store_true",
         help="if selected, a list of valid modifier files is printed",
     )
@@ -147,11 +153,11 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     print(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     creator = CREATORS[accel_inst.NAME][opt.type]
 
-    if not help_requested and creator.get_opt(opt):
+    if not help_requested and creator.get_opt(accel_inst, opt):
         accel_inst.verify_object()
         # Prepare model-dir output directory
         accel_inst.model_dir = opt.outputdir
-        creator.prepare_run(accel_inst, opt.outputdir)
+        creator.prepare_run(accel_inst)
 
         # get madx-script with relative output-paths
         # as `cwd` changes run to correct directory.
@@ -159,14 +165,14 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         accel_inst.model_dir = Path()
         madx_script = creator.get_madx_script(accel_inst)
         run_string(madx_script,
-                output_file=opt.outputdir / JOB_MODEL_MADX,
-                log_file=opt.logfile)
+                   output_file=opt.outputdir / JOB_MODEL_MADX,
+                   log_file=opt.logfile)
 
         # Run madx to create model
         run_string(madx_script,
-                output_file=opt.outputdir / JOB_MODEL_MADX,
-                log_file=opt.logfile,
-                cwd=opt.outputdir)
+                   output_file=opt.outputdir / JOB_MODEL_MADX,
+                   log_file=opt.logfile,
+                   cwd=opt.outputdir)
         # Return accelerator instance
         accel_inst.model_dir = opt.outputdir
         return accel_inst

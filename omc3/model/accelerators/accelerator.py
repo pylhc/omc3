@@ -117,6 +117,7 @@ class Accelerator:
         self.model_best_knowledge = None
         self.elements = None
         self.error_defs_file = None
+        self.acc_model_path = None
         self.modifiers = None
         self._beam_direction = 1
         self._beam = None

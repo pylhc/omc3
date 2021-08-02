@@ -132,7 +132,7 @@ class Lhc(Accelerator):
             name="year",
             type=str,
             required=True,
-            choices=("2012", "2015", "2016", "2017", "2018", "hllhc1.3"),
+            choices=("2012", "2015", "2016", "2017", "2018", "2022", "hllhc1.3"),
             help="Year of the optics (or hllhc1.3).",
         )
         params.add_parameter(name="ats", action="store_true", help="Marks ATS optics")

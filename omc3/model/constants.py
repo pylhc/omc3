@@ -18,6 +18,12 @@ TWISS_DAT = "twiss.dat"
 ERROR_DEFFS_TXT = "error_deffs.txt"
 JOB_MODEL_MADX = "job.create_model.madx"
 
+# fetcher command names
+PATHFETCHER = "path"
+AFSFETCHER = "afs"
+GITFETCHER = "git"
+LSAFETCHER = "lsa"
+
 GENERAL_MACROS = "general.macros.madx"
 LHC_MACROS = "lhc.macros.madx"
 
