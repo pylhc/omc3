@@ -405,7 +405,10 @@
 
 
 <span class="k">def</span> <span class="nf">_get_madx_job</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">model_dir_backup</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span>  <span class="c1"># use relative paths as we use model_dir as cwd</span>
+    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span>
     <span class="n">job_content</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
+    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">model_dir_backup</span>
     <span class="n">job_content</span> <span class="o">+=</span> <span class="p">(</span>
         <span class="s2">&quot;select, flag=twiss, clear;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="sa">f</span><span class="s2">&quot;select, flag=twiss, pattern=&#39;</span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">RE_DICT</span><span class="p">[</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
