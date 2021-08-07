@@ -8,6 +8,8 @@ Specific constants to be used in optics_measurements, to help with consistency.
 EXT = ".tfs"
 AMP_BETA_NAME = "beta_amplitude_"
 BETA_NAME = "beta_phase_"
+KMOD_BETA_NAME = "beta_kmod_"
+KMOD_BETASTAR_NAME = "betastar_kmod"
 CHROM_BETA_NAME = "chrom_beta_"
 PHASE_NAME = "phase_"
 SPECIAL_PHASE_NAME = "special_phase_"
@@ -17,6 +19,8 @@ NORM_DISP_NAME = "normalised_dispersion_"
 ORBIT_NAME = "orbit_"
 KICK_NAME = "kick_"
 IP_NAME = "interaction_point_"
+F1001_NAME = "f1001"
+F1010_NAME = "f1010"
 
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe

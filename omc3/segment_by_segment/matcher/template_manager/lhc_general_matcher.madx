@@ -1,0 +1,39 @@
+!@require {LIB}
+!@require segments
+
+!!! Sequences definition
+option, -echo, -warn;
+    {MAIN_SEQ}
+    exec, cycle_sequences();
+    exec, define_nominal_beams();
+    exec, set_default_crossing_scheme();
+option, echo, warn;
+
+!!! Extract segments sequences
+{EXTRACT_SEQUENCES}
+
+!!! Initial values gathering
+{SET_INITIAL_VALUES}
+
+{DEFINE_CONSTRAINTS_AUX_VALS}
+
+
+!!!!!! Matching !!!!!!
+
+{START_MATCH}
+
+{DEFINE_VARIABLES}
+
+option, -warn;
+{SET_MATCHING_MACROS}
+option, warn;
+
+{END_MATCH}
+
+!!! Generating final changeparameters file
+select, flag=save, clear;
+{GEN_CHANGEPARAMETERS}
+{SAVE_CHANGEPARAMETERS}
+
+!!! Running corrected twiss
+{RUN_CORRECTED_TWISS}

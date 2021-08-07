@@ -6,7 +6,7 @@ This module provides the template for all model creators.
 """
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Sequence, Union
+from typing import List, Sequence, Union, Iterable
 
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
@@ -14,11 +14,17 @@ from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_E
 from omc3.model.constants import JOB_MODEL_MADX
 import logging
 
+from omc3.optics_measurements.io_filehandler import OpticsMeasurement
+from omc3.segment_by_segment.constants import jobfile, twiss_forward_corrected, twiss_backward_corrected, \
+    twiss_backward, twiss_forward, corrections_madx, measurement_madx
+from omc3.segment_by_segment.propagables import Propagable
+from omc3.segment_by_segment.segments import Segment
+
 LOG = logging.getLogger(__name__)
 
 
 class ModelCreator(ABC):
-    JOBFILE = JOB_MODEL_MADX
+    jobfile = JOB_MODEL_MADX
     """
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
     functions are defined here.
@@ -32,6 +38,7 @@ class ModelCreator(ABC):
         """
         self.accel = accel
         self.logfile = logfile
+        self.output_dir = accel.model_dir
 
         cleaned_args = [arg for arg in args if arg is not None]
         if len(cleaned_args):
@@ -47,17 +54,14 @@ class ModelCreator(ABC):
         self.prepare_run()
 
         # get madx-script with relative output-paths
-        output_path = self.accel.model_dir
         self.accel.model_dir = Path()
-        
         madx_script = self.get_madx_script()
-
-        self.accel.model_dir = output_path
+        self.accel.model_dir = self.output_dir
 
         # Run madx to create model
         run_string(
             madx_script,
-            output_file=self.accel.model_dir / self.JOBFILE,
+            output_file=self.accel.model_dir / self.jobfile,
             log_file=self.logfile,
             cwd=self.accel.model_dir
         )
@@ -117,3 +121,34 @@ class ModelCreator(ABC):
                 raise FileNotFoundError(
                     f"Model Creation Failed. The file '{file_path.absolute()}' was not created."
                 )
+
+
+class SegmentCreator(ModelCreator, ABC):
+    jobfile = None  # set in init
+
+    """ Creates Segment of a model. """
+    def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], *args, **kwargs):
+        super(SegmentCreator, self).__init__(accel, *args, **kwargs)
+        self.segment = segment
+        self.measurables = measurables
+
+        # Filenames
+        self.jobfile = jobfile.format(segment.name)
+        self.measurement_madx = measurement_madx.format(segment.name)
+        self.corrections_madx = corrections_madx.format(segment.name)
+        self.twiss_forward = twiss_forward.format(segment.name)
+        self.twiss_backward = twiss_backward.format(segment.name)
+        self.twiss_forward_corrected = twiss_forward_corrected.format(segment.name)
+        self.twiss_backward_corrected = twiss_backward_corrected.format(segment.name)
+
+    def prepare_run(self) -> None:
+        super(SegmentCreator, self).prepare_run()
+        self._create_measurement_file()
+
+    def _create_measurement_file(self):
+        meas_dict = {}
+        for measurable in self.measurables:
+            meas_dict.update(measurable.init_conditions_dict())
+        meas_file_content = "\n".join(f"{k} = {v};" for k, v in meas_dict.items())
+        output_file = self.output_dir / self.measurement_madx
+        output_file.write_text(meas_file_content)

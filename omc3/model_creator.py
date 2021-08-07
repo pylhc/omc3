@@ -28,7 +28,6 @@ LOG = logging_tools.get_logger(__name__)
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
             "best_knowledge": LhcBestKnowledgeCreator,
-            "segment": LhcSegmentCreator,
             "correction": LhcCorrectionCreator},
     "psbooster": {"nominal": PsboosterModelCreator},
     "ps": {"nominal": PsModelCreator},
@@ -55,27 +54,6 @@ def _get_params():
         help=("Path to the file where to write the MAD-X script output."
               "If not provided it will be written to sys.stdout.")
     )
-    params.add_parameter(
-        name="label",
-        type=str,
-        help="The name of the segment of interest. (For segment creators)"
-    )
-    params.add_parameter(
-        name="start",
-        type=str,
-        help="The first BPM in the segment. (For segment creators)"
-    )
-    params.add_parameter(
-        name="end",
-        type=str,
-        help="The last BPM in the segment. (For segment creators)"
-    )
-    params.add_parameter(
-        name="measurement_dir",
-        type=Path,
-        help="The path to the measurement directory. (For segment creators)"
-    )
-
     return params
 
 
@@ -135,17 +113,14 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
         JPARC: Not implemented
     """
-    outputdir = opt.pop("outputdir")
-    model_type = opt.pop("type", None)
-
     # Prepare paths
-    create_dirs(outputdir)
+    create_dirs(opt.outputdir)
 
     accel_inst = manager.get_accelerator(accel_opt)
-    accel_inst.model_dir = outputdir
+    accel_inst.model_dir = opt.outputdir
 
-    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {model_type}")
-    creator = CREATORS[accel_inst.NAME][model_type](accel_inst, **opt)
+    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.model_type}")
+    creator = CREATORS[accel_inst.NAME][opt.model_type](accel_inst, logfile=opt.logfile)
     creator.full_run()
     return accel_inst
 

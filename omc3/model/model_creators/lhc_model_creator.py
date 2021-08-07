@@ -28,8 +28,7 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT, JOB_MODEL_MADX,
 )
-from omc3.model.model_creators.abstract_model_creator import ModelCreator
-from omc3.segment_by_segment.phase_writer import create_phase_segment
+from omc3.model.model_creators.abstract_model_creator import ModelCreator, SegmentCreator
 from omc3.utils import iotools
 
 LOGGER = logging.getLogger(__name__)
@@ -44,25 +43,31 @@ def _b2_columns() -> List[str]:
 
 class LhcModelCreator(ModelCreator):
     def __init__(self, accel: Lhc, *args, **kwargs):
-        super().__init__(accel, *args, **kwargs)
+        super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
 
     def get_madx_script(self) -> str:  # nominal
         accel = self.accel
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
+
+        # get relative output paths in base-madx script
+        output_dir = accel.model_dir
+        accel.model_dir = Path()
         madx_script = accel.get_base_madx_script()
+        accel.model_dir = output_dir
+
         madx_script += (
-            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_DAT}', {accel.dpp});\n"
-            f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{TWISS_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_elements(LHCB{accel.beam}, '{TWISS_ELEMENTS_DAT}', {accel.dpp});\n"
         )
         if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
             madx_script += (
                 f"use_acd={use_acd};\nuse_adt={use_adt};\n"
                 f"if(use_acd == 1){{\n"
-                f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_AC_DAT}', {accel.dpp});\n"
+                f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{TWISS_AC_DAT}', {accel.dpp});\n"
                 f"}}else if(use_adt == 1){{\n"
-                f"exec, twiss_adt({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_ADT_DAT}', {accel.dpp});\n"
+                f"exec, twiss_adt({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{TWISS_ADT_DAT}', {accel.dpp});\n"
                 f"}}\n"
             )
         return madx_script
@@ -127,7 +132,7 @@ class LhcModelCreator(ModelCreator):
 
 
 class LhcBestKnowledgeCreator(LhcModelCreator):
-    JOBFILE = JOB_MODEL_MADX.replace("model", "best_knowledge_model")
+    jobfile = JOB_MODEL_MADX.replace("model", "best_knowledge_model")
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
     CORRECTIONS_FILENAME: str = "corrections.madx"
 
@@ -142,8 +147,8 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         madx_script += (
             f"call, file = '{accel.model_dir / self.CORRECTIONS_FILENAME}';\n"
             f"call, file = '{accel.model_dir / self.EXTRACTED_MQTS_FILENAME}';\n"
-            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
-            f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{TWISS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
+            f"exec, do_twiss_elements(LHCB{accel.beam}, '{TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
         )
         return madx_script
 
@@ -152,125 +157,62 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         self._check_files_exist(self.accel.model_dir, files_to_check)
 
 
-class LhcSegmentCreator(LhcModelCreator):
-    JOBFILE = JOB_MODEL_MADX.replace("model", "segment")
-    """ Creates Segment of a model. """
-    def __init__(self, accel: Lhc, measurement_dir: Path, start: str, end: str, label: str, *args, **kwargs):
-        super().__init__(accel, *args, **kwargs)
-        self.start = start
-        self.end = end
-        self.label = label
-        self.measurement_dir = measurement_dir
-
-    def prepare_run(self):
-        super().prepare_run()
-        self._create_correction_file()
-        self.create_measurement_file()
+class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
 
     def get_madx_script(self):
         accel = self.accel
         madx_script = accel.get_base_madx_script()
 
-        madx_template = accel.get_file("segment.madx").read_text()
-        replace_dict = {
-            "NUM_BEAM": accel.beam,  # LHC only
-            "LABEL": self.label,  # all
-            "STARTFROM": self.start,  # all
-            "ENDAT": self.end,  # all
-            "OUTPUT": str(self.accel.model_dir),  # all
-        }
-        madx_script += madx_template % replace_dict
+        madx_script += "\n".join([
+            f"use, period = LHCB{accel.beam};",
+            f"option, echo;",
+            f"",
+            f"twiss;",
+            f"exec, save_initial_and_final_values(",
+            f"    LHCB{accel.beam},",
+            f"    {self.segment.start},",
+            f"    {self.segment.end}, ",
+            f"    {accel.model_dir / self.measurement_madx!s},",
+            f"    biniLHCB{accel.beam},",
+            f"    bendLHCB{accel.beam}",
+            f");",
+            f"",
+            f"exec, extract_segment_sequence(",
+            f"    LHCB%(NUM_BEAM)s,",
+            f"    front_LHCB%(NUM_BEAM)s,",
+            f"    back_LHCB%(NUM_BEAM)s,",
+            f"    {self.segment.start},",
+            f"    {self.segment.end},",
+            f");",
+            f"",
+            f"exec, beam_LHCB{accel.beam}(front_LHCB{accel.beam});",
+            f"exec, beam_LHCB{accel.beam}(back_LHCB{accel.beam});",
+            f"exec, twiss_segment(front_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",
+            f"exec, twiss_segment(back_LHCB{accel.beam}, \"{self.twiss_backward!s}\", bendLHCB{accel.beam});",
+            "",
+        ])
+
+        if (self.output_dir / self.corrections_madx).is_file():
+            madx_script += "\n".join([
+                f"call, file=\"{self.corrections_madx!s}\";",
+                f"exec, twiss_segment(front_LHCB{accel.beam}, "
+                f"\"{self.twiss_forward_corrected}\", biniLHCB{accel.beam});",
+                f"exec, twiss_segment(back_LHCB{accel.beam}, "
+                f"\"{self.twiss_backward_corrected}\", bendLHCB{accel.beam});",
+                "",
+            ])
+
         return madx_script
 
-    def create_measurement_file(self):
-        betain_name = f"measurement_{self.label}.madx"
-        df_betx = tfs.read(self.measurement_dir / 'beta_phase_x.tfs', index="NAME")
-        df_bety = tfs.read(self.measurement_dir / 'beta_phase_y.tfs', index="NAME")
-
-        betx_start = df_betx.loc[self.start, 'BETX']
-        betx_end = df_betx.loc[self.end, 'BETX']
-
-        alfx_start = df_betx.loc[self.start, 'ALFX']
-        alfx_end = -df_betx.loc[self.end, 'ALFX']
-
-        bety_start = df_bety.loc[self.start, 'BETY']
-        bety_end = df_bety.loc[self.end, 'BETY']
-
-        alfy_start = df_bety.loc[self.start, 'ALFY']
-        alfy_end = -df_bety.loc[self.end, 'ALFY']
-
-        # # For Tests
-        # from optics_functions.coupling import rmatrix_from_coupling
-        # f_ini=pd.DataFrame()
-        # f_ini["BETX"] = betx_start
-        # f_ini["BETY"] = bety_start
-        # f_ini["ALFX"] = alfx_start
-        # f_ini["ALFy"] = alfy_start
-        # f_ini['F1001'] = 0.001 + 0.002j
-        # f_ini["F1010"] = 0.0001 + 0.0002
-        #
-        # f_end=pd.DataFrame()
-        # f_end["BETX"] = betx_end
-        # f_end["BETY"] = bety_end
-        # f_end["ALFX"] = alfx_end
-        # f_end["ALFy"] = alfy_end
-        # f_end["F1001"] = 0.0032 + 0.0012j
-        # f_end["F1010"] = 0.00013 + 0.0002j
-        #
-        # ini_r = rmatrix_from_coupling(f_ini)
-        # end_r = rmatrix_from_coupling(f_end)
-
-        measurement_dict = dict(
-            betx_ini=betx_start,
-            bety_ini=bety_start,
-            alfx_ini=alfx_start,
-            alfy_ini=alfy_start,
-            dx_ini=0,
-            dy_ini=0,
-            dpx_ini=0,
-            dpy_ini=0,
-            wx_ini=0,
-            phix_ini=0,
-            wy_ini=0,
-            phiy_ini=0,
-            wx_end=0,
-            phix_end=0,
-            wy_end=0,
-            phiy_end=0,
-            ini_r11=0,
-            ini_r12=0,
-            ini_r21=0,
-            ini_r22=0,
-            end_r11=0,
-            end_r12=0,
-            end_r21=0,
-            end_r22=0,
-            betx_end=betx_end,
-            bety_end=bety_end,
-            alfx_end=alfx_end,
-            alfy_end=alfy_end,
-            dx_end=0,
-            dy_end=0,
-            dpx_end=0,
-            dpy_end=0,
-        )
-        betainputfile = self.accel.model_dir / betain_name
-        betainputfile.write_text(
-            "\n".join(f"{name} = {value};" for name, value in measurement_dict.items())
-        )
-
-    def _create_correction_file(self):
-        corr_file = Path("corrections_" + self.label + ".madx")
-        corr_file = self.accel.model_dir / corr_file
-        if not corr_file.is_file():
-            corr_file.write_text("! Enter the corrections below:")
-
     def post_run(self):
-        create_phase_segment(self.measurement_dir, self.accel.model_dir, self.label)
+        check_files = [self.twiss_forward, self.twiss_backward]
+        if (self.output_dir / self.corrections_madx).is_file():
+            check_files += [self.twiss_backward_corrected, self.twiss_backward_corrected]
+        self._check_files_exist(self.accel.model_dir, check_files)
 
 
 class LhcCorrectionCreator(LhcModelCreator):
-    JOBFILE = JOB_MODEL_MADX.replace("model", "correction_model")
+    jobfile = JOB_MODEL_MADX.replace("model", "correction_model")
     TWISS_UNCORRECTED_DAT = 'twiss_no.dat'
     TWISS_CORRECTED_DAT = 'twiss_corr.dat'
     TWISS_CORRECTED_DELTAP_MINUS_DAT = 'twiss_corr_dpm.dat'

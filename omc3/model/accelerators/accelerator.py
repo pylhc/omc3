@@ -51,6 +51,7 @@ class Accelerator:
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
+    NAME: str
     # RE_DICT needs to use MAD-X compatible patterns (jdilly, 2021)
     RE_DICT = {
         AccElementTypes.BPMS: r".*",

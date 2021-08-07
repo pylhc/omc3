@@ -141,10 +141,3 @@ class Psbooster(Accelerator):
             replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
         mask = self.get_file('base.mask').read_text()
         return mask % replace_dict
-
-
-class _PsboosterSegmentMixin(object):
-
-    def __init__(self):
-        self._start = None
-        self._end = None
