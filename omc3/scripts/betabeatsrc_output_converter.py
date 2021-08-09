@@ -50,18 +50,31 @@ def converter_params():
 @entrypoint(converter_params(), strict=True)
 def converter_entrypoint(opt: EntryPointParameters) -> None:
     """
-    TODO: write here
-    Converts optics output files from GetLLM to new form.
+    Looks for expected ``BetaBeat.src`` output files in the provided input directory, converts them to
+    the format used in ``omc3`` and writes the converted files in the provided output directory.
 
-    Converter Kwargs:
-      - **outputdir**: Output directory.
+    *--Required--*
 
-        Flags: **--outputdir**
-        Required: ``True``
-      - **suffix** *(str)*: Choose compensation suffix.
+    - **inputdir** *(str)*:
 
-        Flags: **--suffix**
-        Default: ``_free2``
+        Directory with BetaBeat.src output files.
+
+
+    - **outputdir** *(str)*:
+
+        Output directory for converted files.
+
+
+    *--Optional--*
+
+    - **suffix** *(str)*:
+
+        Compensation suffix used in the provided BetaBeat.src output. Defaults
+        to '_free2'.
+
+        choices: ``('', '_free', '_free2')``
+
+        default: ``_free2``
 
     """
     save_options_to_config(
