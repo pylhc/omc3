@@ -21,7 +21,7 @@ from omc3.optics_measurements.constants import (AMP_BETA_NAME, BETA_NAME, DELTA,
                                                 EXT, MDL, NORM_DISP_NAME, ORBIT_NAME, PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import df_ang_diff, df_diff, df_err_sum, df_ratio, df_rel_diff
-from omc3.utils import logging_tools
+from omc3.utils import iotools, logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 OLD_EXT = ".out"
@@ -29,14 +29,23 @@ DEFAULT_CONFIG_FILENAME = "old_measurement_converter_{time:s}.ini"
 
 
 def converter_params():
+    # TODO: add inputdir and outputdir
     params = EntryPointParameters()
-    params.add_parameter(name="outputdir", required=True, help="Output directory.")
+    params.add_parameter(
+        name="inputdir",
+        required=True,
+        type=str,
+        help="Input directory with BetaBeat.src output files"
+    )
+    params.add_parameter(
+        name="outputdir", required=True, type=str, help="Output directory for converted files."
+    )
     params.add_parameter(
         name="suffix",
         type=str,
         default="_free2",
         choices=("", "_free", "_free2"),
-        help="Choose compensation suffix. ",
+        help="Compensation suffix used in the provided BetaBeat.src output.",
     )
     return params
 
@@ -76,6 +85,7 @@ def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
     Args:
         opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
     """
+    iotools.create_dirs(str(Path(opt.outputdir).absolute()))
     # TODO check if new files are present?
     for plane in PLANES:
         convert_old_beta_from_amplitude(opt, plane)
@@ -108,17 +118,17 @@ def convert_old_beta_from_amplitude(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}")
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    df.rename(
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+
+    dframe = tfs.read(old_file)
+    dframe = dframe.rename(
         columns={f"BET{plane}STD": f"{ERR}BET{plane}", f"BET{plane}STDRES": f"{ERR}BET{plane}RES"},
-        inplace=True,
     )
-    df[f"{DELTA}BET{plane}"] = df_rel_diff(df, f"BET{plane}", f"BET{plane}{MDL}")
-    df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
-    tfs.write(join(opt.outputdir, f"{new_file_name}{plane.lower()}{EXT}"), df)
+    dframe[f"{DELTA}BET{plane}"] = df_rel_diff(dframe, f"BET{plane}", f"BET{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}BET{plane}"] = df_ratio(dframe, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
+    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_beta_from_phase(
@@ -141,30 +151,24 @@ def convert_old_beta_from_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}")
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    if "CORR_ALFABETA" in df.columns.to_numpy():
-        df.drop(
-            columns=[
-                f"STATBET{plane}",
-                f"SYSBET{plane}",
-                "CORR_ALFABETA",
-                f"STATALF{plane}",
-                f"SYSALF{plane}",
-            ],
-            inplace=True,
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+
+    dframe = tfs.read(old_file)
+    if "CORR_ALFABETA" in dframe.columns.to_numpy():
+        dframe = dframe.drop(
+            columns=[f"STATBET{plane}", f"SYSBET{plane}", "CORR_ALFABETA", f"STATALF{plane}", f"SYSALF{plane}"]
         )
     else:
-        df[f"{ERR}BET{plane}"] = df_err_sum(df, f"{ERR}BET{plane}", f"STDBET{plane}")
-        df[f"{ERR}ALF{plane}"] = df_err_sum(df, f"{ERR}ALF{plane}", f"STDALF{plane}")
+        dframe[f"{ERR}BET{plane}"] = df_err_sum(dframe, f"{ERR}BET{plane}", f"STDBET{plane}")
+        dframe[f"{ERR}ALF{plane}"] = df_err_sum(dframe, f"{ERR}ALF{plane}", f"STDALF{plane}")
 
-    df[f"{DELTA}BET{plane}"] = df_rel_diff(df, f"BET{plane}", f"BET{plane}{MDL}")
-    df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
-    df[f"{DELTA}ALF{plane}"] = df_diff(df, f"ALF{plane}", f"ALF{plane}{MDL}")
-    df[f"{ERR}{DELTA}ALF{plane}"] = df.loc[:, f"{ERR}ALF{plane}"].values
-    tfs.write(join(opt.outputdir, f"{new_file_name}{plane.lower()}{EXT}"), df)
+    dframe[f"{DELTA}BET{plane}"] = df_rel_diff(dframe, f"BET{plane}", f"BET{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}BET{plane}"] = df_ratio(dframe, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
+    dframe[f"{DELTA}ALF{plane}"] = df_diff(dframe, f"ALF{plane}", f"ALF{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}ALF{plane}"] = dframe.loc[:, f"{ERR}ALF{plane}"].values
+    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_phase(
@@ -349,36 +353,10 @@ def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple
         return
     df = tfs.read(old_file)
     dfs = {
-        "1001": df.loc[
-            :,
-            [
-                "S",
-                "COUNT",
-                "F1001W",
-                "FWSTD1",
-                "F1001R",
-                "F1001I",
-                "Q1001",
-                "Q1001STD",
-                "MDLF1001R",
-                "MDLF1001I",
-            ],
-        ],
-        "1010": df.loc[
-            :,
-            [
-                "S",
-                "COUNT",
-                "F1010W",
-                "FWSTD2",
-                "F1010R",
-                "F1010I",
-                "Q1010",
-                "Q1010STD",
-                "MDLF1010R",
-                "MDLF1010I",
-            ],
-        ],
+        "1001": df.loc[: , ["S", "COUNT", "F1001W", "FWSTD1", "F1001R", "F1001I", "Q1001",
+                            "Q1001STD", "MDLF1001R", "MDLF1001I"]],
+        "1010": df.loc[: , ["S", "COUNT", "F1010W", "FWSTD2", "F1010R", "F1010I", "Q1010",
+                            "Q1010STD", "MDLF1010R", "MDLF1010I"]],
     }
 
     for i, rdt in enumerate(("1001", "1010")):
