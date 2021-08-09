@@ -130,7 +130,7 @@ def convert_old_beta_from_amplitude(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old beta from amplitude file")
+    LOGGER.info("Converting old beta from amplitude file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -165,7 +165,7 @@ def convert_old_beta_from_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old beta from phase file")
+    LOGGER.info("Converting old beta from phase file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -206,7 +206,7 @@ def convert_old_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old phase file")
+    LOGGER.info("Converting old phase file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -244,7 +244,7 @@ def convert_old_total_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old total phase file")
+    LOGGER.info("Converting old total phase file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -282,7 +282,7 @@ def convert_old_closed_orbit(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old closed orbit file")
+    LOGGER.info("Converting old closed orbit file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -314,7 +314,7 @@ def convert_old_dispersion(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old dispersion file")
+    LOGGER.info("Converting old dispersion file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -346,7 +346,7 @@ def convert_old_normalised_dispersion(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old normalized dispersion file")
+    LOGGER.info("Converting old normalized dispersion file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -382,7 +382,7 @@ def convert_old_coupling(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    LOGGER.debug("Converting old coupling files")
+    LOGGER.info("Converting old coupling files")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
