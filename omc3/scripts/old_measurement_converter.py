@@ -118,6 +118,7 @@ def convert_old_beta_from_amplitude(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file_path)
     dframe = dframe.rename(
@@ -152,6 +153,7 @@ def convert_old_beta_from_phase(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file_path)
     if "CORR_ALFABETA" in dframe.columns.to_numpy():
@@ -192,6 +194,7 @@ def convert_old_phase(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file_path)
     dframe = dframe.rename(
@@ -229,6 +232,7 @@ def convert_old_total_phase(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file_path)
     dframe = dframe.rename(
@@ -266,6 +270,7 @@ def convert_old_closed_orbit(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file)
     dframe = dframe.rename(columns={f"STD{plane}": f"{ERR}{plane}"})
@@ -297,6 +302,7 @@ def convert_old_dispersion(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file)
     dframe = dframe.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"})
@@ -328,6 +334,7 @@ def convert_old_normalised_dispersion(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file)
     dframe = dframe.rename(columns={f"STDND{plane}": f"{ERR}ND{plane}"})
@@ -363,6 +370,7 @@ def convert_old_coupling(
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+        return
 
     dframe = tfs.read(old_file)
     rdt_dfs = {
