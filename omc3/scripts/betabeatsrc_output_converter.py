@@ -156,8 +156,8 @@ def convert_old_beta_from_phase(
     plane, converts it to the output format used by ``omc3`` and  write them to the new location.
 
     The file naming should be getbeta(x,y).out, with the following expected columns: NAME, S, COUNT,
-     BETX, SYSBETX, STATBETX, ERRBETX, CORR_ALFABETA, ALFX, SYSALFX, STATALFX, ERRALFX, BETXMDL, ALFXMDL,
-     MUXMDL, NCOMBINATIONS.
+    BETX, SYSBETX, STATBETX, ERRBETX, CORR_ALFABETA, ALFX, SYSALFX, STATALFX, ERRALFX, BETXMDL, ALFXMDL,
+    MUXMDL, NCOMBINATIONS.
 
     Args:
         opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
