@@ -4,50 +4,46 @@ import numpy as np
 import pytest
 import tfs
 
-from omc3.scripts import betabeatsrc_output_converter
+from omc3.optics_measurements.constants import DELTA, ERR, MDL
+from omc3.definitions.constants import PLANES
+from omc3.scripts.betabeatsrc_output_converter import converter_entrypoint
+
 from tests.conftest import cli_args
 
-INPUT_DIR = Path(__file__).parent.parent / "inputs" / "merge_kmod"
-
-
-# Full test --------------------------------------------------------------------
-@pytest.mark.basic
-def test_betabeatsrc_output_converter(tmp_path):
-    # paths = [INPUT_DIR / "kmod_ip1", INPUT_DIR / "kmod_ip5"]
-    #
-    # res_tfs_passed = merge_kmod_results.merge_kmod_results(
-    #     kmod_dirs=paths, outputdir=tmp_path
-    # )
-    # filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
-    # res_lsa_tfs = tfs.read_tfs(tmp_path / filename, index=merge_kmod_results.NAME)
-    # control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
-    #
-    # assert_frame_equal(res_lsa_tfs, control_tfs)
-    # assert_dict_equal(res_lsa_tfs.headers, control_tfs.headers, compare_keys=True)
-    # assert_frame_equal(res_tfs_passed, control_tfs, check_exact=False)
-    # assert_dict_equal(res_tfs_passed.headers, control_tfs.headers, compare_keys=True)
-    pass
+INPUT_DIR = Path(__file__).parent.parent / "inputs"
+BBRSC_OUTPUTS = INPUT_DIR / "bbsrc_output_converter"
 
 
 @pytest.mark.basic
-def test_betabeatsrc_output_converter_commandline(tmp_path):
-    # paths = [str(INPUT_DIR / "kmod_ip1"), str(INPUT_DIR / "kmod_ip5")]
-    #
-    # with cli_args("--kmod_dirs", *paths, "--outputdir", str(tmp_path)):
-    #     merge_kmod_results.merge_kmod_results()
-    #
-    # filename = f"{merge_kmod_results.LSA_RESULTS}{merge_kmod_results.EXT}"
-    # res_lsa_tfs = tfs.read_tfs(tmp_path / filename, index=merge_kmod_results.NAME)
-    # control_tfs = tfs.read_tfs(INPUT_DIR / "lsa_results_merged.tfs", index=merge_kmod_results.NAME)
-    #
-    # assert_frame_equal(res_lsa_tfs, control_tfs)
-    # assert_dict_equal(res_lsa_tfs.headers, control_tfs.headers, compare_keys=True)
-    pass
+@pytest.mark.parametrize("suffix", ["_free", "_free2"])
+def test_betabeatsrc_output_converter(tmp_path, suffix):
+    converter_entrypoint(inputdir=str(BBRSC_OUTPUTS), outputdir=str(tmp_path), suffix=suffix)
+
+    _assert_correct_files_are_present(tmp_path)
 
 
-# Helper -----------------------------------------------------------------------
+@pytest.mark.basic
+@pytest.mark.parametrize("suffix", ["_free", "_free2"])
+def test_betabeatsrc_output_converter_commandline(tmp_path, suffix):
+    with cli_args("--inputdir", str(BBRSC_OUTPUTS.absolute()),
+                  "--outputdir", str(tmp_path),
+                  "--suffix", suffix):
+        converter_entrypoint()
+
+    _assert_correct_files_are_present(tmp_path)
 
 
-@pytest.fixture
-def _tfs_file():
-    return tfs.read_tfs(INPUT_DIR / "test_imbalance.tfs", index=merge_kmod_results.NAME)
+# ----- Helpers ----- #
+
+
+def _assert_correct_files_are_present(outputdir: Path) -> None:
+    """Simply checks the expected converted files are present in the outputdir"""
+    for plane in PLANES:
+        assert (outputdir / f"beta_amplitude_{plane.lower()}.tfs").is_file()
+        assert (outputdir / f"beta_phase_{plane.lower()}.tfs").is_file()
+        assert (outputdir / f"orbit_{plane.lower()}.tfs").is_file()
+        assert (outputdir / f"phase_{plane.lower()}.tfs").is_file()
+        assert (outputdir / f"total_phase_{plane.lower()}.tfs").is_file()
+
+    for rdt in ["1001", "1010"]:
+        assert (outputdir / f"coupling_f{rdt}.tfs").is_file()
