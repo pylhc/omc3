@@ -262,14 +262,15 @@ def convert_old_closed_orbit(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{plane.lower()}{OLD_EXT}")
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    df.rename(columns={f"STD{plane}": f"{ERR}{plane}"}, inplace=True)
-    df[f"{DELTA}{plane}"] = df_diff(df, f"{plane}", f"{plane}{MDL}")
-    df[f"{ERR}{DELTA}{plane}"] = df.loc[:, f"{ERR}{plane}"].values
-    tfs.write(join(opt.outputdir, f"{new_file_name}{plane.lower()}{EXT}"), df)
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+
+    dframe = tfs.read(old_file)
+    dframe = dframe.rename(columns={f"STD{plane}": f"{ERR}{plane}"})
+    dframe[f"{DELTA}{plane}"] = df_diff(dframe, f"{plane}", f"{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}{plane}"] = dframe.loc[:, f"{ERR}{plane}"].to_numpy()
+    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_dispersion(
@@ -291,14 +292,15 @@ def convert_old_dispersion(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{plane.lower()}{OLD_EXT}")
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    df.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"}, inplace=True)
-    df[f"{DELTA}D{plane}"] = df_diff(df, f"D{plane}", f"D{plane}{MDL}")
-    df[f"{ERR}{DELTA}D{plane}"] = df.loc[:, f"{ERR}D{plane}"].values
-    tfs.write(join(opt.outputdir, f"{new_file_name}{plane.lower()}{EXT}"), df)
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+
+    dframe = tfs.read(old_file)
+    dframe = dframe.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"})
+    dframe[f"{DELTA}D{plane}"] = df_diff(dframe, f"D{plane}", f"D{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}D{plane}"] = dframe.loc[:, f"{ERR}D{plane}"].to_numpy()
+    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_normalised_dispersion(
@@ -320,18 +322,20 @@ def convert_old_normalised_dispersion(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{plane.lower()}{OLD_EXT}")
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    df.rename(columns={f"STDND{plane}": f"{ERR}ND{plane}"}, inplace=True)
-    df[f"{DELTA}ND{plane}"] = df_diff(df, f"ND{plane}", f"ND{plane}{MDL}")
-    df[f"{ERR}{DELTA}ND{plane}"] = df.loc[:, f"{ERR}ND{plane}"].values
-    if f"D{plane}" in df.columns:
-        df.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"}, inplace=True)
-        df[f"{DELTA}D{plane}"] = df_diff(df, f"D{plane}", f"D{plane}{MDL}")
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
 
-    tfs.write(join(opt.outputdir, f"{new_file_name}{plane.lower()}{EXT}"), df)
+    dframe = tfs.read(old_file)
+    dframe = dframe.rename(columns={f"STDND{plane}": f"{ERR}ND{plane}"})
+    dframe[f"{DELTA}ND{plane}"] = df_diff(dframe, f"ND{plane}", f"ND{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}ND{plane}"] = dframe.loc[:, f"{ERR}ND{plane}"].to_numpy()
+
+    if f"D{plane}" in dframe.columns:
+        dframe = dframe.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"})
+        dframe[f"{DELTA}D{plane}"] = df_diff(dframe, f"D{plane}", f"D{plane}{MDL}")
+
+    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple") -> None:
