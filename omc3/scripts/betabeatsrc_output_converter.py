@@ -80,6 +80,7 @@ def converter_entrypoint(opt: EntryPointParameters) -> None:
         default: ``_free2``
 
     """
+    iotools.create_dirs(Path(opt.outputdir))
     save_options_to_config(
         Path(opt.outputdir) / DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME)),
         OrderedDict(sorted(opt.items())),
@@ -96,7 +97,6 @@ def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
         opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
     """
     LOGGER.info(f"Converting old BetaBeat.src outputs at '{Path(opt.inputdir).absolute()}' to omc3 format")
-    iotools.create_dirs(str(Path(opt.outputdir).absolute()))
 
     with contexts.timeit(lambda spanned: LOGGER.info(f"Total time for conversion: {spanned}s")):
         for plane in PLANES:
@@ -288,7 +288,7 @@ def convert_old_closed_orbit(
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
 
-    dframe = tfs.read(old_file)
+    dframe = tfs.read(old_file_path)
     dframe = dframe.rename(columns={f"STD{plane}": f"{ERR}{plane}"})
     dframe[f"{DELTA}{plane}"] = df_diff(dframe, f"{plane}", f"{plane}{MDL}")
     dframe[f"{ERR}{DELTA}{plane}"] = dframe.loc[:, f"{ERR}{plane}"].to_numpy()
@@ -320,7 +320,7 @@ def convert_old_dispersion(
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
 
-    dframe = tfs.read(old_file)
+    dframe = tfs.read(old_file_path)
     dframe = dframe.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"})
     dframe[f"{DELTA}D{plane}"] = df_diff(dframe, f"D{plane}", f"D{plane}{MDL}")
     dframe[f"{ERR}{DELTA}D{plane}"] = dframe.loc[:, f"{ERR}D{plane}"].to_numpy()
@@ -352,7 +352,7 @@ def convert_old_normalised_dispersion(
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
 
-    dframe = tfs.read(old_file)
+    dframe = tfs.read(old_file_path)
     dframe = dframe.rename(columns={f"STDND{plane}": f"{ERR}ND{plane}"})
     dframe[f"{DELTA}ND{plane}"] = df_diff(dframe, f"ND{plane}", f"ND{plane}{MDL}")
     dframe[f"{ERR}{DELTA}ND{plane}"] = dframe.loc[:, f"{ERR}ND{plane}"].to_numpy()
@@ -388,7 +388,7 @@ def convert_old_coupling(
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
 
-    dframe = tfs.read(old_file)
+    dframe = tfs.read(old_file_path)
     rdt_dfs = {
         "1001": dframe.loc[: , ["S", "COUNT", "F1001W", "FWSTD1", "F1001R", "F1001I",
                                 "Q1001", "Q1001STD", "MDLF1001R", "MDLF1001I"]],
