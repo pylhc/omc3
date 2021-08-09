@@ -79,6 +79,7 @@ def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
     Args:
         opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
     """
+    LOGGER.info(f"Converting old BetaBeat.src outputs at '{Path(opt.inputdir).absolute()}' to omc3 format")
     iotools.create_dirs(str(Path(opt.outputdir).absolute()))
 
     with contexts.timeit(lambda spanned: LOGGER.info(f"Total time for conversion: {spanned}s")):
@@ -113,6 +114,7 @@ def convert_old_beta_from_amplitude(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old beta from amplitude file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -146,6 +148,7 @@ def convert_old_beta_from_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old beta from phase file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -185,6 +188,7 @@ def convert_old_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old phase file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -221,6 +225,7 @@ def convert_old_total_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old total phase file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -257,6 +262,7 @@ def convert_old_closed_orbit(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old closed orbit file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -287,6 +293,7 @@ def convert_old_dispersion(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old dispersion file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -317,6 +324,7 @@ def convert_old_normalised_dispersion(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old normalized dispersion file")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -333,7 +341,11 @@ def convert_old_normalised_dispersion(
     tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
-def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple", new_file_name: str = "coupling_f") -> None:
+def convert_old_coupling(
+    opt: EntryPointParameters,
+    old_file_name: str = "couple",
+    new_file_name: str = "coupling_f"
+) -> None:
     """
     Looks in the provided directory for expected coupling file from ``BetaBeat.src``, converts it to the
     output format used by ``omc3`` and  write them to the new location.
@@ -347,6 +359,7 @@ def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
+    LOGGER.debug("Converting old coupling files")
     old_file_path = Path(opt.inputdir) / f"get{old_file_name}{opt.suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
@@ -360,6 +373,7 @@ def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple
     }
 
     for i, rdt in enumerate(("1001", "1010")):
+        LOGGER.debug(f"Converting F{rdt} file")
         rdt_dfs[rdt] = rdt_dfs[rdt].drop(columns=[f"MDLF{rdt}R", f"MDLF{rdt}I"])
         rdt_dfs[rdt] = rdt_dfs[rdt].rename(
             columns={
