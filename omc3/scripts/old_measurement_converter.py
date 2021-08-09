@@ -338,7 +338,7 @@ def convert_old_normalised_dispersion(
     tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
-def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple") -> None:
+def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple", new_file_name: str = "coupling_f") -> None:
     """
     Looks in the provided directory for expected coupling file from ``BetaBeat.src``, converts it to the
     output format used by ``omc3`` and  write them to the new location.
@@ -350,22 +350,23 @@ def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple
     Args:
         opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
         old_file_name (str): the standard naming for the old output file.
+        new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{opt.suffix}{OLD_EXT}")
-    new_file_name = "coupling_f"
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    dfs = {
-        "1001": df.loc[: , ["S", "COUNT", "F1001W", "FWSTD1", "F1001R", "F1001I", "Q1001",
-                            "Q1001STD", "MDLF1001R", "MDLF1001I"]],
-        "1010": df.loc[: , ["S", "COUNT", "F1010W", "FWSTD2", "F1010R", "F1010I", "Q1010",
-                            "Q1010STD", "MDLF1010R", "MDLF1010I"]],
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{opt.suffix}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+
+    dframe = tfs.read(old_file)
+    rdt_dfs = {
+        "1001": dframe.loc[: , ["S", "COUNT", "F1001W", "FWSTD1", "F1001R", "F1001I",
+                                "Q1001", "Q1001STD", "MDLF1001R", "MDLF1001I"]],
+        "1010": dframe.loc[: , ["S", "COUNT", "F1010W", "FWSTD2", "F1010R", "F1010I",
+                                "Q1010", "Q1010STD", "MDLF1010R", "MDLF1010I"]],
     }
 
     for i, rdt in enumerate(("1001", "1010")):
-        dfs[rdt].drop(columns=[f"MDLF{rdt}R", f"MDLF{rdt}I"], inplace=True)
-        dfs[rdt].rename(
+        rdt_dfs[rdt] = rdt_dfs[rdt].drop(columns=[f"MDLF{rdt}R", f"MDLF{rdt}I"])
+        rdt_dfs[rdt] = rdt_dfs[rdt].rename(
             columns={
                 f"F{rdt}W": "AMP",
                 f"FWSTD{i+1}": f"{ERR}AMP",
@@ -373,10 +374,9 @@ def convert_old_coupling(opt: EntryPointParameters, old_file_name: str = "couple
                 f"Q{rdt}STD": f"{ERR}PHASE",
                 f"F{rdt}R": "REAL",
                 f"F{rdt}I": "IMAG",
-            },
-            inplace=True,
+            }
         )
-        tfs.write(join(opt.outputdir, f"{new_file_name}{rdt}{EXT}"), dfs[rdt])
+        tfs.write(Path(opt.outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
 
 
 if __name__ == "__main__":
