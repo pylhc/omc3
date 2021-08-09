@@ -122,7 +122,7 @@ def convert_old_beta_from_amplitude(
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
 
-    dframe = tfs.read(old_file)
+    dframe = tfs.read(old_file_path)
     dframe = dframe.rename(
         columns={f"BET{plane}STD": f"{ERR}BET{plane}", f"BET{plane}STDRES": f"{ERR}BET{plane}RES"},
     )
@@ -155,7 +155,7 @@ def convert_old_beta_from_phase(
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
 
-    dframe = tfs.read(old_file)
+    dframe = tfs.read(old_file_path)
     if "CORR_ALFABETA" in dframe.columns.to_numpy():
         dframe = dframe.drop(
             columns=[f"STATBET{plane}", f"SYSBET{plane}", "CORR_ALFABETA", f"STATALF{plane}", f"SYSALF{plane}"]
@@ -167,7 +167,7 @@ def convert_old_beta_from_phase(
     dframe[f"{DELTA}BET{plane}"] = df_rel_diff(dframe, f"BET{plane}", f"BET{plane}{MDL}")
     dframe[f"{ERR}{DELTA}BET{plane}"] = df_ratio(dframe, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
     dframe[f"{DELTA}ALF{plane}"] = df_diff(dframe, f"ALF{plane}", f"ALF{plane}{MDL}")
-    dframe[f"{ERR}{DELTA}ALF{plane}"] = dframe.loc[:, f"{ERR}ALF{plane}"].values
+    dframe[f"{ERR}{DELTA}ALF{plane}"] = dframe.loc[:, f"{ERR}ALF{plane}"].to_numpy()
     tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
@@ -190,21 +190,21 @@ def convert_old_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}")
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    df.rename(
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+
+    dframe = tfs.read(old_file_path)
+    dframe = dframe.rename(
         columns={
             f"STDPH{plane}": f"{ERR}PHASE{plane}",
             f"PH{plane}{MDL}": f"PHASE{plane}{MDL}",
             "S1": "S2",
         },
-        inplace=True,
     )
-    df[f"{DELTA}PHASE{plane}"] = df_ang_diff(df, f"PHASE{plane}", f"PHASE{plane}{MDL}")
-    df[f"{ERR}{DELTA}PHASE{plane}"] = df.loc[:, f"{ERR}PHASE{plane}"].values
-    tfs.write(join(opt.outputdir, f"{new_file_name}{plane.lower()}{EXT}"), df)
+    dframe[f"{DELTA}PHASE{plane}"] = df_ang_diff(dframe, f"PHASE{plane}", f"PHASE{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}PHASE{plane}"] = dframe.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
+    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_total_phase(
@@ -226,21 +226,21 @@ def convert_old_total_phase(
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
-    old_file = join(opt.outputdir, f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}")
-    if not isfile(old_file):
-        return
-    df = tfs.read(old_file)
-    df.rename(
+    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    if not old_file_path.is_file():
+        LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
+
+    dframe = tfs.read(old_file_path)
+    dframe = dframe.rename(
         columns={
             f"STDPH{plane}": f"{ERR}PHASE{plane}",
             f"PH{plane}{MDL}": f"PHASE{plane}{MDL}",
             "S1": "S2",
         },
-        inplace=True,
     )
-    df[f"{DELTA}PHASE{plane}"] = df_ang_diff(df, f"PHASE{plane}", f"PHASE{plane}{MDL}")
-    df[f"{ERR}{DELTA}PHASE{plane}"] = df.loc[:, f"{ERR}PHASE{plane}"].values
-    tfs.write(join(opt.outputdir, f"{new_file_name}{plane.lower()}{EXT}"), df)
+    dframe[f"{DELTA}PHASE{plane}"] = df_ang_diff(dframe, f"PHASE{plane}", f"PHASE{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}PHASE{plane}"] = dframe.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
+    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_closed_orbit(
