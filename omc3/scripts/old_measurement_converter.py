@@ -4,9 +4,7 @@ to allow straight forward comparison.
 """
 from collections import OrderedDict
 from datetime import datetime
-from os.path import isfile, join
 from pathlib import Path
-from typing import Dict, List, Sequence, Tuple
 
 import tfs
 from generic_parser.entrypoint_parser import (
@@ -24,18 +22,17 @@ from omc3.optics_measurements.toolbox import df_ang_diff, df_diff, df_err_sum, d
 from omc3.utils import iotools, logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
-OLD_EXT = ".out"
-DEFAULT_CONFIG_FILENAME = "old_measurement_converter_{time:s}.ini"
+OLD_EXT: str = ".out"
+DEFAULT_CONFIG_FILENAME: str = "old_measurement_converter_{time:s}.ini"
 
 
-def converter_params():
-    # TODO: add inputdir and outputdir
+def converter_params() -> EntryPointParameters:
     params = EntryPointParameters()
     params.add_parameter(
         name="inputdir",
         required=True,
         type=str,
-        help="Input directory with BetaBeat.src output files"
+        help="Directory with BetaBeat.src output files."
     )
     params.add_parameter(
         name="outputdir", required=True, type=str, help="Output directory for converted files."
@@ -45,7 +42,7 @@ def converter_params():
         type=str,
         default="_free2",
         choices=("", "_free", "_free2"),
-        help="Compensation suffix used in the provided BetaBeat.src output.",
+        help="Compensation suffix used in the provided BetaBeat.src output. Defaults to '_free2'.",
     )
     return params
 
@@ -68,10 +65,7 @@ def converter_entrypoint(opt: EntryPointParameters) -> None:
 
     """
     save_options_to_config(
-        join(
-            opt.outputdir,
-            DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME)),
-        ),
+        Path(opt.outputdir) / DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME)),
         OrderedDict(sorted(opt.items())),
     )
     convert_old_directory_to_new(opt)
@@ -86,7 +80,7 @@ def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
         opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
     """
     iotools.create_dirs(str(Path(opt.outputdir).absolute()))
-    # TODO check if new files are present?
+
     for plane in PLANES:
         convert_old_beta_from_amplitude(opt, plane)
         convert_old_beta_from_phase(opt, plane)
