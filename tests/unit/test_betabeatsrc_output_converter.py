@@ -38,8 +38,8 @@ def test_betabeatsrc_output_converter(tmp_path, suffix):
         _assert_correct_phase_columns(tmp_path, plane)
         _assert_correct_total_phase_columns(tmp_path, plane)
         _assert_correct_closed_orbit_columns(tmp_path, plane)
-    _assert_correct_dispersion_columns(tmp_path, "X")  # no disp in Y plane
-    _assert_correct_normalized_dispersion_columns(tmp_path, "X")  # no disp in Y plane
+        _assert_correct_dispersion_columns(tmp_path, "X")
+    _assert_correct_normalized_dispersion_columns(tmp_path, "X")  # no norm disp in Y plane
 
     for rdt in ["1001", "1010"]:
         _assert_correct_coupling_columns(tmp_path, rdt)
@@ -52,15 +52,17 @@ def test_betabeatsrc_output_converter_commandline(tmp_path, suffix):
         "--inputdir", str(BBRSC_OUTPUTS.absolute()), "--outputdir", str(tmp_path), "--suffix", suffix
     ):
         converter_entrypoint()
-
     _assert_correct_files_are_present(tmp_path)
+
     for plane in PLANES:
         _assert_correct_beta_amp_columns(tmp_path, plane)
         _assert_correct_beta_phase_columns(tmp_path, plane)
         _assert_correct_phase_columns(tmp_path, plane)
         _assert_correct_total_phase_columns(tmp_path, plane)
-        # _assert_correct_dispersion_columns(tmp_path, plane)
-        # _assert_correct_normalized_dispersion_columns(tmp_path, plane)
+        _assert_correct_closed_orbit_columns(tmp_path, plane)
+        _assert_correct_dispersion_columns(tmp_path, "X")
+    _assert_correct_normalized_dispersion_columns(tmp_path, "X")  # no norm disp in Y plane
+
     for rdt in ["1001", "1010"]:
         _assert_correct_coupling_columns(tmp_path, rdt)
 
@@ -75,9 +77,8 @@ def _assert_correct_files_are_present(outputdir: Path) -> None:
         assert (outputdir / f"{PHASE_NAME}{plane.lower()}.tfs").is_file()
         assert (outputdir / f"{TOTAL_PHASE_NAME}{plane.lower()}.tfs").is_file()
         assert (outputdir / f"{ORBIT_NAME}{plane.lower()}.tfs").is_file()
-
-    assert (outputdir / f"{DISPERSION_NAME}x.tfs").is_file()  # no disp in Y plane
-    assert (outputdir / f"{NORM_DISP_NAME}x.tfs").is_file()  # no disp in Y plane
+        assert (outputdir / f"{DISPERSION_NAME}x.tfs").is_file()
+    assert (outputdir / f"{NORM_DISP_NAME}x.tfs").is_file()  # no norm disp in Y plane
 
     for rdt in ["1001", "1010"]:
         assert (outputdir / f"coupling_f{rdt}.tfs").is_file()
