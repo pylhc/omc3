@@ -140,6 +140,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
             rdt_df[f"{col}{domain}MDL"] = mdlcol
             rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
             rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
+            rdt_df[f"ERR{col}{domain}"] = 0.0
 
     _write_coupling_tfs(rdt_df, meas_input.outputdir, header_dict)
 
