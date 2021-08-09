@@ -1,6 +1,9 @@
 """
-Converts most important measurements produced by GetLLM into a more unified form
-to allow straight forward comparison.
+BetaBeat.src Output Converter
+-------------
+
+Script to convert most important output files produced by ``BetaBeat.src`` / ``GetLLM`` into the standard
+format used in ``omc3`` to allow straight forward comparison of the two.
 """
 from collections import OrderedDict
 from datetime import datetime
@@ -86,7 +89,7 @@ def converter_entrypoint(opt: EntryPointParameters) -> None:
 
 def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
     """
-    Looks ni the provided directory for expected ``BetaBeat.src`` output files, converts it to the output
+    Looks in the provided directory for expected ``BetaBeat.src`` output files, converts it to the output
     format used by ``omc3`` and  write them to the new location.
 
     Args:
