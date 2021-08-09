@@ -15,7 +15,7 @@ class FigureContainer:
     """Container for attaching additional information to one figure."""
     def __init__(self, id_: str, path: Path, axes_ids: Iterable[str]) -> None:
         self.fig, axs = plt.subplots(nrows=len(axes_ids))
-        self.fig.canvas.set_window_title(id_)
+        self.fig.canvas.manager.set_window_title(id_)
 
         if len(axes_ids) == 1:
             axs = [axs]

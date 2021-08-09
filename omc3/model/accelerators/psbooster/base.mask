@@ -1,0 +1,69 @@
+/******************************************************************************************
+*
+* MAD-X File for PS Booster optics calculations
+*
+*
+* PSB Extraction working point:
+* New working point: QX = 4.172 and QY = 4.23.  21 Dec 2006 O.Berrig
+*
+*
+* This file is for protons at 0.348 GeV/c at time c = 301
+*
+*
+* Execute with:  >madx < psb_orbit.madx
+*
+******************************************************************************************/
+
+ title, 'BOOSTER lattice';
+
+ !for the time being not used
+ beam_Ek=%(KINETICENERGY)s;
+ beam_Etot = beam_Ek + pmass;
+ beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+ 
+
+ option, echo;
+ option, RBARC=FALSE;
+
+/******************************************************************************************
+ * BOOSTER
+ ******************************************************************************************/
+ call, file = '%(FILES_DIR)s/psb.ele';
+ call, file = '%(FILES_DIR)s/psb.seq';
+ call, file = '%(FILES_DIR)s/defseries.seq';
+ call, file = '%(FILES_DIR)s/powering.seq';
+ call, file = '%(FILES_DIR)s/psb.dbx';
+ call, file = '%(FILES_DIR)s/psb_orbit.str';
+
+
+/******************************************************************************************
+ * beam, use
+ ******************************************************************************************/
+ 
+ 
+ beam, particle=PROTON, pc=beam_pc;  ! change depending on c-time of orbit measurement; pc=momentum
+
+ 
+ use, sequence=psb%(RING)s;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+ Qxd = %(DRV_TUNE_X)s;
+ Qyd = %(DRV_TUNE_Y)s;
+
+ ! diable acdipole element, redefine correctly when needed under if (ac_s == 1)
+ !   this avoids division by zero errors
+ hacmap21 = 0;
+ vacmap43 = 0;
+
+
+ MATCH,sequence=psb%(RING)s;
+  vary, NAME=kKF, step = 0.0001;
+  vary, NAME=kKD, step = 0.0001;
+  constraint, range=#E, MUX=Qx, MUY=Qy;
+  lmdif, calls = 10000, tolerance = 1.0E-21;
+ ENDMATCH;

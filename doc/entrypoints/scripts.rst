@@ -12,3 +12,6 @@ Scripts
 
 .. automodule:: omc3.scripts.write_madx_macros
     :members:
+
+.. automodule:: omc3.scripts.fake_measurement_from_model
+    :members:

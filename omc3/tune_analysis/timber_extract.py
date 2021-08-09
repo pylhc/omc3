@@ -2,29 +2,35 @@
 Timber Extraction
 -----------------
 
-Tools to extract data from ``Timber``.
+Tools to extract data from ``Timber``. It is a bit heavy on the LHC side at the moment.
 
-It is a bit heavy on the LHC side at the moment.
+**Please note**: this module requires the ``pytimber`` package to access ``Timber`` functionality,
+both of which are only possible from inside the CERN network.
+
+To install ``pytimber`` along ``omc3``, please do so from inside the CERN network by using the [cern] extra
+dependency and installing from the ``acc-py`` package index (by specifying ``--index-url
+https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
+``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).
 """
 import re
 
 import numpy as np
-import pytimber
 import tfs
 
 from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime
+from omc3.utils.mock import cern_network_import
 
 TIME_COL = const.get_time_col()
 START_TIME = const.get_tstart_head()
 END_TIME = const.get_tend_head()
 
-
 LOG = logging_tools.get_logger(__name__)
+pytimber = cern_network_import("pytimber")
 
 
-def lhc_fill_to_tfs(fill_number, keys=None, names=None):
+def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
     """
     Extracts data for keys of fill from ``Timber``.
 
@@ -35,13 +41,13 @@ def lhc_fill_to_tfs(fill_number, keys=None, names=None):
 
     Returns: tfs pandas dataframe.
     """
-    db = pytimber.LoggingDB()
+    db = pytimber.LoggingDB(source="nxcals")
     t_start, t_end = get_fill_times(db, fill_number)
     out_df = extract_between_times(t_start, t_end, keys, names)
     return out_df
 
 
-def extract_between_times(t_start, t_end, keys=None, names=None):
+def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataFrame:
     """
     Extracts data for keys between t_start and t_end from timber.
 
@@ -53,7 +59,7 @@ def extract_between_times(t_start, t_end, keys=None, names=None):
 
     Returns: tfs pandas dataframe.
     """
-    db = pytimber.LoggingDB()
+    db = pytimber.LoggingDB(source="nxcals")
     if keys is None:
         keys = get_tune_and_coupling_variables(db)
 
@@ -77,12 +83,12 @@ def extract_between_times(t_start, t_end, keys=None, names=None):
     return out_df
 
 
-def get_tune_and_coupling_variables(db):
+def get_tune_and_coupling_variables(db) -> list:
     """
     Returns the tune and coupling variable names.
 
     Args:
-        db: pytimber database.
+        db (pytimber.LoggingDB): pytimber database.
 
     Returns:
         `list` of variable names.
@@ -96,13 +102,13 @@ def get_tune_and_coupling_variables(db):
     return bbq_vars
 
 
-def get_fill_times(db, fill_number):
+def get_fill_times(db, fill_number: int) -> tuple:
     """
     Returns start and end time of fill with fill number.
 
     Args:
-        db: pytimber database.
-        fill_number: fill number.
+        db (pytimber.LoggingDB): pytimber database.
+        fill_number (int): fill number.
 
     Returns:
        `Tuple` of start and end time.

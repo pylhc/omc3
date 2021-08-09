@@ -158,9 +158,9 @@ def set_name(name, fig_or_ax=None):
     if not fig_or_ax:
         fig_or_ax = plt.gcf()
     try:
-        fig_or_ax.figure.canvas.set_window_title(name)
+        fig_or_ax.figure.canvas.manager.set_window_title(name)
     except AttributeError:
-        fig_or_ax.canvas.set_window_title(name)
+        fig_or_ax.canvas.manager.set_window_title(name)
 
 
 def get_name(fig_or_ax=None):

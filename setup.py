@@ -28,12 +28,16 @@ DEPENDENCIES = [
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
     "h5py>=2.9.0",
-    "pytimber>=2.8.0",
+    "tables>=3.6.0",
     "uncertainties>=3.1.4",
+    "optics-functions>=0.1.0",
 ]
 
 # Extra dependencies
 EXTRA_DEPENDENCIES = {
+    "cern": [
+        "pytimber>=2.8.0",
+    ],
     "test": [
         "pytest>=5.2",
         "pytest-cov>=2.7",
@@ -72,6 +76,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering :: Physics",
         "Topic :: Scientific/Engineering :: Visualization",
     ],

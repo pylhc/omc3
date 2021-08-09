@@ -38,9 +38,11 @@ After installing, codes can be run with either `python -m omc3.SCRIPT --FLAG ARG
 #### Main Scripts
 
 Main scripts to be executed lie in the [`/omc3`](omc3) directory. These include:
+- `global_correction.py` to calculate corrections from measurement files.
 - `hole_in_one.py` to perform frequency analysis on turn by turn BPM data and infer optics (and more) for a given accelerator.
 - `madx_wrapper.py` to start a `MAD-X` run with a file or string as input.
 - `model_creator.py` to provide optics models required for optics analysis.
+- `response_creator.py` to provide correction response files.
 - `run_kmod.py` to analyse data from K-modulation and return the measured optics functions.
 - `tbt_converter.py` to convert different turn by turn datatypes to sdds, and add noise.
 - `amplitude_detuning_analysis.py` to perform amp. det. analysis on optics data with tune correction.
@@ -60,6 +62,7 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 - `update_nattune_in_linfile.py` to update the natural tune columns in the lin files by finding the highest peak in the spectrum in a given interval.
 - `write_madx_macros.py` to generate `MAD-X` tracking macros with observation points from a twiss file.
 - `merge_kmod_results.py` to merge lsa_results files created by kmod, and add the luminosity imbalance if the 4 needed IP/Beam files combination are present.
+- `fake_measurement_from_model.py` to create a fake measurement based on a model twiss file.
 
 Example use for these scripts can be found in the [`tests`](tests) files.
 
@@ -92,6 +95,7 @@ pip install --editable omc3
 
 You can install extra dependencies (as defined in `setup.py`) suited to your use case with the following commands:
 ```
+pip install --editable omc3[cern]  # requires to be inside the CERN network
 pip install --editable omc3[test]
 pip install --editable omc3[test,doc]
 pip install --editable omc3[all]
