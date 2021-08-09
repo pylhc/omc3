@@ -19,14 +19,14 @@ from omc3.optics_measurements.constants import (AMP_BETA_NAME, BETA_NAME, DELTA,
                                                 EXT, MDL, NORM_DISP_NAME, ORBIT_NAME, PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import df_ang_diff, df_diff, df_err_sum, df_ratio, df_rel_diff
-from omc3.utils import iotools, logging_tools
+from omc3.utils import contexts, iotools, logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 OLD_EXT: str = ".out"
 DEFAULT_CONFIG_FILENAME: str = "old_measurement_converter_{time:s}.ini"
 
 
-def converter_params() -> EntryPointParameters:
+def converter_params():
     params = EntryPointParameters()
     params.add_parameter(
         name="inputdir",
@@ -81,16 +81,17 @@ def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
     """
     iotools.create_dirs(str(Path(opt.outputdir).absolute()))
 
-    for plane in PLANES:
-        convert_old_beta_from_amplitude(opt, plane)
-        convert_old_beta_from_phase(opt, plane)
-        convert_old_phase(opt, plane)
-        convert_old_total_phase(opt, plane)
-        # TODO phase vs phasetot inconsistent naming NAME S , first and second BPMs swapped locations
-        convert_old_closed_orbit(opt, plane)
-        convert_old_dispersion(opt, plane)
-    convert_old_coupling(opt)
-    convert_old_normalised_dispersion(opt, "X")
+    with contexts.timeit(lambda spanned: LOGGER.info(f"Total time for conversion: {spanned}s")):
+        for plane in PLANES:
+            convert_old_beta_from_amplitude(opt, plane)
+            convert_old_beta_from_phase(opt, plane)
+            convert_old_phase(opt, plane)
+            convert_old_total_phase(opt, plane)
+            # TODO phase vs phasetot inconsistent naming NAME S , first and second BPMs swapped locations
+            convert_old_closed_orbit(opt, plane)
+            convert_old_dispersion(opt, plane)
+        convert_old_coupling(opt)
+        convert_old_normalised_dispersion(opt, "X")
 
 
 def convert_old_beta_from_amplitude(
