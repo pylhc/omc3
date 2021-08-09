@@ -62,7 +62,10 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     # intersect measurements
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
     joined = _joined_frames(input_files)
-    joined_index = joined.index
+    joined_index = joined.index \
+        .intersection(phase_dict['X'][compensation]["MEAS"].index) \
+        .intersection(phase_dict['Y'][compensation]["MEAS"].index)
+    joined = joined.loc[joined_index]
 
     phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
     phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
