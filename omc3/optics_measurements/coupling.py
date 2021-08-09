@@ -119,28 +119,28 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     if meas_input.compensation == "model":
         f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
     rdt_df = pd.DataFrame(index=joined_index,
-                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W"],
+                          columns=["S"],
                           data=np.array([
                               meas_input.accelerator.model["S"].values[pairs_x],
-                              np.real(f1001), np.real(f1010),
-                              np.imag(f1001), np.imag(f1010),
-                              np.abs(f1001), np.abs(f1010),
                           ]).transpose())
 
     rdt_df.sort_values(by="S", inplace=True)
 
     # adding model values and deltas
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
-    RDTCOLS = ["F1001", "F1010"]
-    for (domain, func) in [("I", np.imag),
-                           ("R", np.real),
-                           ("W", np.abs)]:
-        for col in RDTCOLS:
-            mdlcol = func(model_coupling[col])
-            rdt_df[f"{col}{domain}MDL"] = mdlcol
-            rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
-            rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
-            rdt_df[f"ERR{col}{domain}"] = 0.0
+    RDTCOLS = [("1001", f1001), ("1010", f1001)]
+    for (col, rdt) in RDTCOLS:
+        for (basename, func) in [(f"F{col}I", np.imag),
+                           (f"F{col}R", np.real),
+                           (f"F{col}W", np.abs),
+                           (f"Q{col}", lambda x: np.angle(x) / PI2)]:
+            mdlcol = func(model_coupling[f"F{col}"])
+            meascol = func(rdt)
+            rdt_df[basename] = meascol
+            rdt_df[f"{basename}MDL"] = mdlcol
+            rdt_df[f"ERR{basename}"] = 0.0
+            rdt_df[f"DELTA{basename}"] = meascol - mdlcol
+            rdt_df[f"ERRDELTA{basename}"] = 0.0
 
     _write_coupling_tfs(rdt_df, meas_input.outputdir, header_dict)
 
