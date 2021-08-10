@@ -16,15 +16,33 @@ from tests.accuracy.twiss_to_lin import optics_measurement_test_files
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__')  # debugging
 
+PHASE_LIM = 1.0e-4
+ALF_LIM = 6.0e-3
+BET_LIM = 3.0e-3
+D_LIM = 1.1e-2
+ND_LIM = 5.0e-3
+COUPL_LIM = 5.0e-3,
+Q_LIM = 5.0e-3,
+
 LIMITS = {
-    'PHASE': 1e-4,
-    'ALF': 6e-3,
-    'BET': 3e-3,
-    'D': 1.1e-2,
-    'ND': 5e-3,
-    'F1001': 5e-3,
-    'F1010': 5e-3,
-    '': 5e-3  # orbit
+    'PHASEX': PHASE_LIM,
+    'PHASEY': PHASE_LIM,
+    'ALFX': ALF_LIM,
+    'ALFY': ALF_LIM,
+    'BETX': BET_LIM,
+    'BETY': BET_LIM,
+    'DX': D_LIM,
+    'DY': D_LIM,
+    'NDX': ND_LIM,
+    'NDY': ND_LIM,
+    'F1001R': COUPL_LIM,
+    'F1001I': COUPL_LIM,
+    'F1001W': COUPL_LIM,
+    'F1010R': COUPL_LIM,
+    'F1010I': COUPL_LIM,
+    'F1010W': COUPL_LIM,
+    'X': 5e-3,  # orbit
+    'Y': 5e-3  # orbit
 }
 BASE_PATH = Path(__file__).parent.parent / "results"
 INPUTS = Path(__file__).parent.parent / 'inputs'
@@ -83,17 +101,19 @@ def test_measure_optics(
 
 def evaluate_accuracy(meas_path, limits):
     for f in meas_path.glob("*.tfs"):
+        if "phase_driven" in f.name:
+            continue
         df = tfs.read(f)
         cols = df.columns[df.columns.str.startswith('DELTA')]
         for col in cols:
-            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD') or "phase_driven" in f.name:
+            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD') or col.startswith("DELTAQ"):
                 continue
 
             rms = stats.weighted_rms(
                 data=df.loc[:, col].to_numpy(),
                 errors=df.loc[:, f"ERR{col}"].to_numpy()
             )
-            assert rms < limits[col[5:-1]], f"\n{f.name:25}  {col:15}   RMS: {rms:.1e}"
+            assert rms < limits[col[5:]], f"\n{f.name:25}  {col:15}   RMS: {rms:.1e}"
             LOG.info(f"{f.name:25}  {col[5:]:15}   RMS: {rms:.1e}")
 
 
