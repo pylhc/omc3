@@ -192,13 +192,10 @@ def _assert_correct_normalized_dispersion_columns(outputdir: Path, plane: str) -
 def _assert_correct_coupling_columns(outputdir: Path, rdt: str) -> None:
     """Checks the expected columns are present in the normalized dispersion file in outputdir"""
     dframe = tfs.read(outputdir / f"coupling_f{rdt}.tfs")
-    expected_converted_columns = ["AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]    # replace renamed
-    expected_removed_columns = [f"MDLF{rdt}R", f"MDLF{rdt}I"]  # disappeared
+    expected_converted_columns = ["AMP", f"{ERR}AMP", "PHASE", f"{ERR}PHASE", "REAL", "IMAG", "MDLREAL", "MDLIMAG"]    # replace renamed
     expected_renamed_columns = [f"F{rdt}W", f"Q{rdt}", f"Q{rdt}STD", f"F{rdt}R", f"F{rdt}I"]  # disappeared
 
     for col in expected_converted_columns:
         assert col in dframe.columns
-    for col in expected_removed_columns:
-        assert col not in dframe.columns
     for col in expected_renamed_columns:
         assert col not in dframe.columns

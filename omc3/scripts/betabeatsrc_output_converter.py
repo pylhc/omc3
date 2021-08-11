@@ -399,7 +399,6 @@ def convert_old_coupling(
 
     for i, rdt in enumerate(("1001", "1010")):
         LOGGER.debug(f"Converting F{rdt} file")
-        rdt_dfs[rdt] = rdt_dfs[rdt].drop(columns=[f"MDLF{rdt}R", f"MDLF{rdt}I"])
         rdt_dfs[rdt] = rdt_dfs[rdt].rename(
             columns={
                 f"F{rdt}W": "AMP",
@@ -408,6 +407,8 @@ def convert_old_coupling(
                 f"Q{rdt}STD": f"{ERR}PHASE",
                 f"F{rdt}R": "REAL",
                 f"F{rdt}I": "IMAG",
+                f"MDLF{rdt}R": "MDLREAL",
+                f"MDLF{rdt}I": "MDLIMAG"
             }
         )
         tfs.write(Path(opt.outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
