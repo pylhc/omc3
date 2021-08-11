@@ -401,14 +401,14 @@ def convert_old_coupling(
         LOGGER.debug(f"Converting F{rdt} file")
         rdt_dfs[rdt] = rdt_dfs[rdt].rename(
             columns={
-                f"F{rdt}W": f"{AMPLITUDE}",
+                f"F{rdt}W": AMPLITUDE,
                 f"FWSTD{i+1}": f"{ERR}{AMPLITUDE}",
-                f"Q{rdt}": "{PHASE}",
+                f"Q{rdt}": PHASE,
                 f"Q{rdt}STD": f"{ERR}{PHASE}",
-                f"F{rdt}R": f"{REAL}",
-                f"F{rdt}I": f"{IMAG}",
-                f"MDLF{rdt}R": f"{MDL}{REAL}",
-                f"MDLF{rdt}I": f"{MDL}{IMAG}",
+                f"F{rdt}R": REAL,
+                f"F{rdt}I": IMAG,
+                f"MDLF{rdt}R": f"{REAL}{MDL}",
+                f"MDLF{rdt}I": f"{IMAG}{MDL}",
             }
         )
         tfs.write(Path(opt.outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
