@@ -254,6 +254,16 @@ def hole_in_one_entrypoint(opt, rest):
       - **three_d_excitation**: Use 3D kicks to calculate dispersion.
         Action: ``store_true``
 
+      - **isolation_forest**: If present, remove outlying BPMs with isolation forest.
+
+        Flags: **--isolation_forest**
+        Action: ``store_true``
+
+      - **second_order_dispersion**: If present, calculate second order dispersion.
+
+        Flags: **--second_order_dispersion**
+        Action: ``store_true``
+
       - **union**: If present, the phase advances are calculate for union of BPMs
         with at least 3 valid measurements, instead of intersection .
 
