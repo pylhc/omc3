@@ -19,9 +19,9 @@ from generic_parser.entrypoint_parser import (
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import (AMP_BETA_NAME, BETA_NAME, DELTA, DISPERSION_NAME, ERR,
-                                                EXT, MDL, NORM_DISP_NAME, ORBIT_NAME, PHASE_NAME,
-                                                TOTAL_PHASE_NAME)
+from omc3.optics_measurements.constants import (AMPLITUDE, AMP_BETA_NAME,BETA_NAME, DELTA, DISPERSION_NAME,
+                                                ERR, EXT, IMAG, MDL, NORM_DISP_NAME, ORBIT_NAME, PHASE,
+                                                PHASE_NAME, REAL, TOTAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import df_ang_diff, df_diff, df_err_sum, df_ratio, df_rel_diff
 from omc3.utils import contexts, iotools, logging_tools
 
@@ -216,13 +216,13 @@ def convert_old_phase(
     dframe = tfs.read(old_file_path)
     dframe = dframe.rename(
         columns={
-            f"STDPH{plane}": f"{ERR}PHASE{plane}",
-            f"PH{plane}{MDL}": f"PHASE{plane}{MDL}",
+            f"STDPH{plane}": f"{ERR}{PHASE}{plane}",
+            f"PH{plane}{MDL}": f"{PHASE}{plane}{MDL}",
             "S1": "S2",
         },
     )
-    dframe[f"{DELTA}PHASE{plane}"] = df_ang_diff(dframe, f"PHASE{plane}", f"PHASE{plane}{MDL}")
-    dframe[f"{ERR}{DELTA}PHASE{plane}"] = dframe.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
+    dframe[f"{DELTA}{PHASE}{plane}"] = df_ang_diff(dframe, f"{PHASE}{plane}", f"{PHASE}{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}{PHASE}{plane}"] = dframe.loc[:, f"{ERR}{PHASE}{plane}"].to_numpy()
     tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
@@ -254,13 +254,13 @@ def convert_old_total_phase(
     dframe = tfs.read(old_file_path)
     dframe = dframe.rename(
         columns={
-            f"STDPH{plane}": f"{ERR}PHASE{plane}",
-            f"PH{plane}{MDL}": f"PHASE{plane}{MDL}",
+            f"STDPH{plane}": f"{ERR}{PHASE}{plane}",
+            f"PH{plane}{MDL}": f"{PHASE}{plane}{MDL}",
             "S1": "S2",
         },
     )
-    dframe[f"{DELTA}PHASE{plane}"] = df_ang_diff(dframe, f"PHASE{plane}", f"PHASE{plane}{MDL}")
-    dframe[f"{ERR}{DELTA}PHASE{plane}"] = dframe.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
+    dframe[f"{DELTA}{PHASE}{plane}"] = df_ang_diff(dframe, f"{PHASE}{plane}", f"{PHASE}{plane}{MDL}")
+    dframe[f"{ERR}{DELTA}{PHASE}{plane}"] = dframe.loc[:, f"{ERR}{PHASE}{plane}"].to_numpy()
     tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
@@ -401,14 +401,14 @@ def convert_old_coupling(
         LOGGER.debug(f"Converting F{rdt} file")
         rdt_dfs[rdt] = rdt_dfs[rdt].rename(
             columns={
-                f"F{rdt}W": "AMP",
-                f"FWSTD{i+1}": f"{ERR}AMP",
-                f"Q{rdt}": "PHASE",
-                f"Q{rdt}STD": f"{ERR}PHASE",
-                f"F{rdt}R": "REAL",
-                f"F{rdt}I": "IMAG",
-                f"MDLF{rdt}R": "MDLREAL",
-                f"MDLF{rdt}I": "MDLIMAG"
+                f"F{rdt}W": f"{AMPLITUDE}",
+                f"FWSTD{i+1}": f"{ERR}{AMPLITUDE}",
+                f"Q{rdt}": "{PHASE}",
+                f"Q{rdt}STD": f"{ERR}{PHASE}",
+                f"F{rdt}R": f"{REAL}",
+                f"F{rdt}I": f"{IMAG}",
+                f"MDLF{rdt}R": f"{MDL}{REAL}",
+                f"MDLF{rdt}I": f"{MDL}{IMAG}",
             }
         )
         tfs.write(Path(opt.outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
