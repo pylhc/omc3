@@ -8,6 +8,7 @@ format used in ``omc3`` to allow straight forward comparison of the two.
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
+from typing import Union
 
 import tfs
 from generic_parser.entrypoint_parser import (
@@ -95,25 +96,30 @@ def convert_old_directory_to_new(opt: DotDict) -> None:
     format used by ``omc3`` and  write them to the new location.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        opt (DotDict): The entrypoint parameters parsed from the command line.
     """
-    LOGGER.info(f"Converting old BetaBeat.src outputs at '{Path(opt.inputdir).absolute()}' to omc3 format")
+    inputdir_path = Path(opt.inputdir)
+    outputdir_path = Path(opt.outputdir)
+    suffix = opt.suffix
+    LOGGER.info(f"Converting old BetaBeat.src outputs at '{inputdir_path.absolute()}' to omc3 format")
 
     with contexts.timeit(lambda spanned: LOGGER.info(f"Total time for conversion: {spanned}s")):
         for plane in PLANES:
-            convert_old_beta_from_amplitude(opt, plane)
-            convert_old_beta_from_phase(opt, plane)
-            convert_old_phase(opt, plane)
-            convert_old_total_phase(opt, plane)
+            convert_old_beta_from_amplitude(inputdir_path, outputdir_path, suffix, plane)
+            convert_old_beta_from_phase(inputdir_path, outputdir_path, suffix, plane)
+            convert_old_phase(inputdir_path, outputdir_path, suffix, plane)
+            convert_old_total_phase(inputdir_path, outputdir_path, suffix, plane)
             # TODO phase vs phasetot inconsistent naming NAME S , first and second BPMs swapped locations
-            convert_old_closed_orbit(opt, plane)
-            convert_old_dispersion(opt, plane)
-        convert_old_coupling(opt)
-        convert_old_normalised_dispersion(opt, "X")
+            convert_old_closed_orbit(inputdir_path, outputdir_path, plane)
+            convert_old_dispersion(inputdir_path, outputdir_path, plane)
+        convert_old_coupling(inputdir_path, outputdir_path, suffix)
+        convert_old_normalised_dispersion(inputdir_path, outputdir_path, "X")
 
 
 def convert_old_beta_from_amplitude(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
+    suffix: str,
     plane: str,
     old_file_name: str = "ampbeta",
     new_file_name: str = AMP_BETA_NAME,
@@ -126,13 +132,15 @@ def convert_old_beta_from_amplitude(
     BETX, BETXSTD, BETXMDL, MUXMDL, BETXRES, BETXSTDRES.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
+        suffix (str): Compensation suffix used in the provided BetaBeat.src output files.
         plane (str): the transverse plane for which to look for the output file.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old beta from amplitude file")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{plane.lower()}{suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -143,11 +151,13 @@ def convert_old_beta_from_amplitude(
     )
     dframe[f"{DELTA}BET{plane}"] = df_rel_diff(dframe, f"BET{plane}", f"BET{plane}{MDL}")
     dframe[f"{ERR}{DELTA}BET{plane}"] = df_ratio(dframe, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
-    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
+    tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_beta_from_phase(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
+    suffix: str,
     plane: str,
     old_file_name: str = "beta",
     new_file_name: str = BETA_NAME,
@@ -161,13 +171,15 @@ def convert_old_beta_from_phase(
     MUXMDL, NCOMBINATIONS.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
+        suffix (str): Compensation suffix used in the provided BetaBeat.src output files.
         plane (str): the transverse plane for which to look for the output file.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old beta from phase file")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{plane.lower()}{suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -185,11 +197,13 @@ def convert_old_beta_from_phase(
     dframe[f"{ERR}{DELTA}BET{plane}"] = df_ratio(dframe, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
     dframe[f"{DELTA}ALF{plane}"] = df_diff(dframe, f"ALF{plane}", f"ALF{plane}{MDL}")
     dframe[f"{ERR}{DELTA}ALF{plane}"] = dframe.loc[:, f"{ERR}ALF{plane}"].to_numpy()
-    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
+    tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_phase(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
+    suffix: str,
     plane: str,
     old_file_name: str = "phase",
     new_file_name: str = PHASE_NAME,
@@ -202,13 +216,15 @@ def convert_old_phase(
     COUNT, PHASEX, STDPHX, PHXMDL, MUXMDL.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
+        suffix (str): Compensation suffix used in the provided BetaBeat.src output files.
         plane (str): the transverse plane for which to look for the output file.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old phase file")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{plane.lower()}{suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -223,11 +239,13 @@ def convert_old_phase(
     )
     dframe[f"{DELTA}{PHASE}{plane}"] = df_ang_diff(dframe, f"{PHASE}{plane}", f"{PHASE}{plane}{MDL}")
     dframe[f"{ERR}{DELTA}{PHASE}{plane}"] = dframe.loc[:, f"{ERR}{PHASE}{plane}"].to_numpy()
-    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
+    tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_total_phase(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
+    suffix: str,
     plane: str,
     old_file_name: str = "phasetot",
     new_file_name: str = TOTAL_PHASE_NAME,
@@ -240,13 +258,15 @@ def convert_old_total_phase(
     S1, COUNT, PHASEX, STDPHX, PHXMDL, MUXMDL.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
+        suffix (str): Compensation suffix used in the provided BetaBeat.src output files.
         plane (str): the transverse plane for which to look for the output file.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old total phase file")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{opt.suffix}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{plane.lower()}{suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -261,11 +281,12 @@ def convert_old_total_phase(
     )
     dframe[f"{DELTA}{PHASE}{plane}"] = df_ang_diff(dframe, f"{PHASE}{plane}", f"{PHASE}{plane}{MDL}")
     dframe[f"{ERR}{DELTA}{PHASE}{plane}"] = dframe.loc[:, f"{ERR}{PHASE}{plane}"].to_numpy()
-    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
+    tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_closed_orbit(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
     plane: str,
     old_file_name: str = "CO",
     new_file_name: str = ORBIT_NAME,
@@ -278,13 +299,14 @@ def convert_old_closed_orbit(
     X, STDX, XMDL, MUXMDL.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
         plane (str): the transverse plane for which to look for the output file.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old closed orbit file")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -293,11 +315,12 @@ def convert_old_closed_orbit(
     dframe = dframe.rename(columns={f"STD{plane}": f"{ERR}{plane}"})
     dframe[f"{DELTA}{plane}"] = df_diff(dframe, f"{plane}", f"{plane}{MDL}")
     dframe[f"{ERR}{DELTA}{plane}"] = dframe.loc[:, f"{ERR}{plane}"].to_numpy()
-    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
+    tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_dispersion(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
     plane: str,
     old_file_name: str = "D",
     new_file_name: str = DISPERSION_NAME,
@@ -310,13 +333,14 @@ def convert_old_dispersion(
     STDDX, DPX, DXMDL, DPXMDL, MUXMDL.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
         plane (str): the transverse plane for which to look for the output file.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old dispersion file")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -325,11 +349,12 @@ def convert_old_dispersion(
     dframe = dframe.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"})
     dframe[f"{DELTA}D{plane}"] = df_diff(dframe, f"D{plane}", f"D{plane}{MDL}")
     dframe[f"{ERR}{DELTA}D{plane}"] = dframe.loc[:, f"{ERR}D{plane}"].to_numpy()
-    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
+    tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_normalised_dispersion(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
     plane: str,
     old_file_name: str = "ND",
     new_file_name: str = NORM_DISP_NAME,
@@ -342,13 +367,14 @@ def convert_old_normalised_dispersion(
     STDNDX, DX, DPX, NDXMDL, DXMDL, DPXMDL, MUXMDL.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
         plane (str): the transverse plane for which to look for the output file.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old normalized dispersion file")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{plane.lower()}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -362,11 +388,13 @@ def convert_old_normalised_dispersion(
         dframe = dframe.rename(columns={f"STDD{plane}": f"{ERR}D{plane}"})
         dframe[f"{DELTA}D{plane}"] = df_diff(dframe, f"D{plane}", f"D{plane}{MDL}")
 
-    tfs.write(Path(opt.outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
+    tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
 def convert_old_coupling(
-    opt: DotDict,
+    inputdir: Union[Path, str],
+    outputdir: Union[Path, str],
+    suffix: str,
     old_file_name: str = "couple",
     new_file_name: str = "coupling_f"
 ) -> None:
@@ -379,12 +407,14 @@ def convert_old_coupling(
     MDLF1001R, MDLF1001I, MDLF1010R, MDLF1010I.
 
     Args:
-        opt (EntryPointParameters): The entrypoint parameters parsed from the command line.
+        inputdir (Union[Path, str]): Location of the directory with BetaBeat.src output files.
+        outputdir (Union[Path, str]): Location of the output directory for converted files.
+        suffix (str): Compensation suffix used in the provided BetaBeat.src output files.
         old_file_name (str): the standard naming for the old output file.
         new_file_name (str): the standard naming for the new converted file.
     """
     LOGGER.info("Converting old coupling files")
-    old_file_path = Path(opt.inputdir) / f"get{old_file_name}{opt.suffix}{OLD_EXT}"
+    old_file_path = Path(inputdir) / f"get{old_file_name}{suffix}{OLD_EXT}"
     if not old_file_path.is_file():
         LOGGER.debug(f"Expected BetaBeat.src output at '{old_file_path.absolute()}' is not a file, skipping")
         return
@@ -411,7 +441,7 @@ def convert_old_coupling(
                 f"MDLF{rdt}I": f"{IMAG}{MDL}",
             }
         )
-        tfs.write(Path(opt.outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
+        tfs.write(Path(outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
 
 
 if __name__ == "__main__":
