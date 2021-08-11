@@ -14,6 +14,7 @@ from generic_parser.entrypoint_parser import (
     EntryPointParameters,
     entrypoint,
     save_options_to_config,
+    DotDict,
 )
 
 from omc3.definitions import formats
@@ -51,7 +52,7 @@ def converter_params():
 
 
 @entrypoint(converter_params(), strict=True)
-def converter_entrypoint(opt: EntryPointParameters) -> None:
+def converter_entrypoint(opt: DotDict) -> None:
     """
     Looks for expected ``BetaBeat.src`` output files in the provided input directory, converts them to
     the format used in ``omc3`` and writes the converted files in the provided output directory.
@@ -88,7 +89,7 @@ def converter_entrypoint(opt: EntryPointParameters) -> None:
     convert_old_directory_to_new(opt)
 
 
-def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
+def convert_old_directory_to_new(opt: DotDict) -> None:
     """
     Looks in the provided directory for expected ``BetaBeat.src`` output files, converts it to the output
     format used by ``omc3`` and  write them to the new location.
@@ -112,7 +113,7 @@ def convert_old_directory_to_new(opt: EntryPointParameters) -> None:
 
 
 def convert_old_beta_from_amplitude(
-    opt: EntryPointParameters,
+    opt: DotDict,
     plane: str,
     old_file_name: str = "ampbeta",
     new_file_name: str = AMP_BETA_NAME,
@@ -146,7 +147,7 @@ def convert_old_beta_from_amplitude(
 
 
 def convert_old_beta_from_phase(
-    opt: EntryPointParameters,
+    opt: DotDict,
     plane: str,
     old_file_name: str = "beta",
     new_file_name: str = BETA_NAME,
@@ -188,7 +189,7 @@ def convert_old_beta_from_phase(
 
 
 def convert_old_phase(
-    opt: EntryPointParameters,
+    opt: DotDict,
     plane: str,
     old_file_name: str = "phase",
     new_file_name: str = PHASE_NAME,
@@ -226,7 +227,7 @@ def convert_old_phase(
 
 
 def convert_old_total_phase(
-    opt: EntryPointParameters,
+    opt: DotDict,
     plane: str,
     old_file_name: str = "phasetot",
     new_file_name: str = TOTAL_PHASE_NAME,
@@ -264,7 +265,7 @@ def convert_old_total_phase(
 
 
 def convert_old_closed_orbit(
-    opt: EntryPointParameters,
+    opt: DotDict,
     plane: str,
     old_file_name: str = "CO",
     new_file_name: str = ORBIT_NAME,
@@ -296,7 +297,7 @@ def convert_old_closed_orbit(
 
 
 def convert_old_dispersion(
-    opt: EntryPointParameters,
+    opt: DotDict,
     plane: str,
     old_file_name: str = "D",
     new_file_name: str = DISPERSION_NAME,
@@ -328,7 +329,7 @@ def convert_old_dispersion(
 
 
 def convert_old_normalised_dispersion(
-    opt: EntryPointParameters,
+    opt: DotDict,
     plane: str,
     old_file_name: str = "ND",
     new_file_name: str = NORM_DISP_NAME,
@@ -365,7 +366,7 @@ def convert_old_normalised_dispersion(
 
 
 def convert_old_coupling(
-    opt: EntryPointParameters,
+    opt: DotDict,
     old_file_name: str = "couple",
     new_file_name: str = "coupling_f"
 ) -> None:
