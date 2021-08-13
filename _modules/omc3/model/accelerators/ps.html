@@ -395,10 +395,10 @@
         <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best knowledge model not implemented for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">use_acd</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)),</span>
+        <span class="n">use_acd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;FILES_DIR&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()),</span>
-            <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="n">use_acd</span><span class="p">,</span>
+            <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">use_acd</span><span class="p">)),</span>
             <span class="s2">&quot;NAT_TUNE_X&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="s2">&quot;NAT_TUNE_Y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
             <span class="s2">&quot;KINETICENERGY&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
