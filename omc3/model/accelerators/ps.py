@@ -100,10 +100,10 @@ class Ps(Accelerator):
         if best_knowledge:
             raise NotImplementedError(f"Best knowledge model not implemented for accelerator {self.NAME}")
 
-        use_acd = str(int(self.excitation == AccExcitationMode.ACD)),
+        use_acd = self.excitation == AccExcitationMode.ACD
         replace_dict = {
             "FILES_DIR": str(self.get_dir()),
-            "USE_ACD": use_acd,
+            "USE_ACD": str(int(use_acd)),
             "NAT_TUNE_X": self.nat_tunes[0],
             "NAT_TUNE_Y": self.nat_tunes[1],
             "KINETICENERGY": self.energy,
