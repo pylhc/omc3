@@ -10,18 +10,17 @@ import numpy as np
 from pandas import Series
 
 
-def propagate_error_beta(errbeta0: float, erralpha0: float, beta0: float, alpha0: float,
-                         dphi: Union[Series, np.array, float], beta: Union[Series, np.array, float]
-                         ) -> np.array:
+def propagate_error_beta(beta: Union[Series, np.array, float], dphi: Union[Series, np.array, float], beta0: float,
+                         errbeta0: float, alpha0: float, erralpha0: float) -> np.array:
     """Propagates the beta-error from beta0 to beta with dphi phaseadvance.
 
         Args:
-            errbeta0 (float): Error on the beta function at initial position
-            erralpha0 (float): Error on the alpha function at initial position
-            dphi (float, np.array, Series): Phase advances from initial to final positions
             beta (float, np.array, Series): Beta function at final positions
+            dphi (float, np.array, Series): Phase advances from initial to final positions
             beta0 (float): Beta function at the initial position
+            errbeta0 (float): Error on the beta function at initial position
             alpha0 (float): Alpha function at the initial position
+            erralpha0 (float): Error on the alpha function at initial position
     """
     return np.sqrt(
         (
@@ -32,18 +31,17 @@ def propagate_error_beta(errbeta0: float, erralpha0: float, beta0: float, alpha0
     )
 
 
-def propagate_error_alfa(errbeta0: float, erralpha0: float, beta0: float, alpha0: float,
-                         dphi: Union[Series, np.array, float], alpha: Union[Series, np.array, float]
-                         ) -> np.array:
+def propagate_error_alfa(alpha: Union[Series, np.array, float], dphi: Union[Series, np.array, float], beta0: float,
+                         errbeta0: float, alpha0: float, erralpha0: float) -> np.array:
     """Propagates the alpha-error from alpha0 to alpha with dphi phaseadvance.
 
         Args:
-            errbeta0 (float): Error on the beta function at initial position
-            erralpha0 (float): Error on the alpha function at initial position
-            beta0 (float): Beta function at the initial position
-            alpha0 (float): Alpha function at the initial position
-            dphi (float, np.array, Series): Phase advances from initial to final positions
             alpha (float, np.array, Series): alpha function at final positions
+            dphi (float, np.array, Series): Phase advances from initial to final positions
+            beta0 (float): Beta function at the initial position
+            errbeta0 (float): Error on the beta function at initial position
+            alpha0 (float): Alpha function at the initial position
+            erralpha0 (float): Error on the alpha function at initial position
     """
     return np.sqrt(
         (
@@ -54,17 +52,16 @@ def propagate_error_alfa(errbeta0: float, erralpha0: float, beta0: float, alpha0
     )
 
 
-def propagate_error_phase(errbeta0: float, erralpha0: float, beta0: float, alpha0: float,
-                          dphi: Union[Series, np.array, float]
-                          ) -> np.array:
+def propagate_error_phase(dphi: Union[Series, np.array, float], beta0: float, errbeta0: float, alpha0: float,
+                          erralpha0: float) -> np.array:
     """Propagates the phase-error.
 
         Args:
-            errbeta0 (float): Error on the beta function at initial position
-            erralpha0 (float): Error on the alpha function at initial position
-            beta0 (float): Beta function at the initial position
-            alpha0 (float): Alpha function at the initial position
             dphi (float, np.array, Series): Phase advances from initial to final positions
+            beta0 (float): Beta function at the initial position
+            errbeta0 (float): Error on the beta function at initial position
+            alpha0 (float): Alpha function at the initial position
+            erralpha0 (float): Error on the alpha function at initial position
     """
     return np.sqrt(
         (

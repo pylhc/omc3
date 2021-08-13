@@ -205,8 +205,7 @@ class Phase(Propagable):
 
     def _compute_measured(self, plane, seg_model, sign):
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
-        beta0, errbeta0 = self.beta0[plane], self.errbeta0[plane]
-        alpha0, erralpha0 = self.alpha0[plane], self.erralpha0[plane]
+        init_condition = self.beta0[plane], self.errbeta0[plane], self.alpha0[plane], self.erralpha0[plane]
         if not self._segment.element:
             # Segment
             meas_phase, meas_err = Phase.get_at(slice(None), self._meas, plane)  # slice(None) gives all, i.e. `:`
@@ -219,28 +218,26 @@ class Phase(Propagable):
             phase_beating[phase_beating > 0.5] = phase_beating[phase_beating > 0.5] - 1
 
             # propagate the error
-            propagated_err = sbs_math.propagate_error_phase(errbeta0, erralpha0, beta0, alpha0, model_phase)
+            propagated_err = sbs_math.propagate_error_phase(model_phase, *init_condition)
             total_err = _quadratic_add(meas_err, propagated_err)
             return phase_beating, total_err
         else:
             # Element segment
             propagated_phase = model_phase.iloc[0]
-            propagated_err = sbs_math.propagate_error_phase(errbeta0, erralpha0, beta0, alpha0, model_phase.iloc[0])
+            propagated_err = sbs_math.propagate_error_phase(propagated_phase, *init_condition)
             return propagated_phase, propagated_err
 
     def _compute_corrected(self, plane, seg_model, seg_model_corr):
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
         corrected_phase = seg_model_corr.loc[:, f"{PHASE_ADV}{plane}"]
-        beta0, errbeta0 = self.beta0[plane], self.errbeta0[plane]
-        alpha0, erralpha0 = self.alpha0[plane], self.erralpha0[plane]
+        init_condition = self.beta0[plane], self.errbeta0[plane], self.alpha0[plane], self.erralpha0[plane]
         if not self._segment.element:
             phase_beating = (corrected_phase - model_phase) % 1.
-            propagated_err = sbs_math.propagate_error_phase(errbeta0, erralpha0, beta0, alpha0, model_phase)
+            propagated_err = sbs_math.propagate_error_phase(model_phase, *init_condition)
             return phase_beating, propagated_err
         else:
             propagated_phase = model_phase.iloc[0]
-            propagated_err = sbs_math.propagate_error_phase(errbeta0, erralpha0, beta0, alpha0,
-                                                            model_phase[model_phase.index[0]])
+            propagated_err = sbs_math.propagate_error_phase(propagated_phase, *init_condition)
             return propagated_phase, propagated_err
 
 
@@ -264,7 +261,7 @@ class BetaPhase(Propagable):
 
     @_buffered
     def measured_backward(self, plane):
-        pass
+        return self._compute_measured(plane, self.segment_models.backward)
 
     @_buffered
     def corrected_backward(self, plane):
@@ -273,8 +270,7 @@ class BetaPhase(Propagable):
     def _compute_measured(self, plane, seg_model):
         model_beta = seg_model.loc[:, f"{BETA}{plane}"]
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
-        beta0, errbeta0 = self.beta0[plane], self.errbeta0[plane]
-        alpha0, erralpha0 = self.alpha0[plane], self.erralpha0[plane]
+        init_condition = self.beta0[plane], self.errbeta0[plane], self.alpha0[plane], self.erralpha0[plane]
         if not self._segment.element:
             beta, err_beta = BetaPhase.get_at(slice(None), self._meas, plane)
 
@@ -288,12 +284,12 @@ class BetaPhase(Propagable):
 
             # propagate the error
             err_beta = err_beta / model_beta
-            propagated_err = sbs_math.propagate_error_beta(errbeta0, erralpha0, beta0, alpha0, model_phase, model_beta)
+            propagated_err = sbs_math.propagate_error_beta(model_beta, model_phase, *init_condition)
             total_err = _quadratic_add(err_beta, propagated_err)
             return beta_beating, total_err
         else:
             prop_beta = model_beta.iloc[0]
-            propagated_err = sbs_math.propagate_error_phase(errbeta0, erralpha0, beta0, alpha0, prop_beta)
+            propagated_err = sbs_math.propagate_error_beta(prop_beta, model_phase.iloc[0], *init_condition)
             return prop_beta, propagated_err
 
 
