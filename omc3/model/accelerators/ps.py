@@ -78,9 +78,9 @@ class Ps(Accelerator):
         params = super(Ps, Ps).get_parameters()
         params.add_parameter(
             name="year",
-            type=str,
+            type=int,
             required=True,
-            choices=("2018", "2021"),
+            choices=(2018, 2021),
             help="Year of the optics.",
         )
         return params
