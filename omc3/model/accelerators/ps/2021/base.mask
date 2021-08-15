@@ -1,0 +1,131 @@
+/******************************************************************************************
+*
+* MAD-X File for PS  optics calculations
+*
+*
+*
+******************************************************************************************/
+
+title, "PS Ring lattice";
+
+/******************************************************************
+ * Energy and particle type definition
+ ******************************************************************/
+
+%(BEAM_FILE)s
+BRHO      := BEAM->PC * 3.3356;
+
+/******************************************************************
+ * Call lattice files
+ ******************************************************************/
+
+ call, file = '%(FILES_DIR)s/PS.ele';
+ call, file = '%(FILES_DIR)s/PS.seq';
+ call, file = '%(FILES_DIR)s/macros.madx';
+
+ /*Strength files*/
+%(MODIFIERS)s
+
+
+/******************************************************************************************
+ * Install AC dipole
+ ******************************************************************************************/
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+ Qxd = %(DRV_TUNE_X)s;
+ Qyd = %(DRV_TUNE_Y)s;
+
+ 
+ hacmap21 = 0;
+ vacmap43 = 0;
+ hacmap: matrix, l=0, rm21 := hacmap21;
+ vacmap: matrix, l=0, rm43 := vacmap43;
+
+ seqedit, sequence=PS;
+  flatten;
+
+  install, element=hacmap, at=0.5, from=PR.KFB97;
+  install, element=vacmap, at=0.5, from=PR.KFB97;
+
+  !cycle, start=PS43$START;
+  cycle, start=PI.SMH42.ENDMARKER;
+ endedit;
+ 
+
+ use, sequence=PS;
+
+/******************************************************************************************
+ * Match for new working point
+ ******************************************************************************************/
+
+match, use_macro;
+  vary,   name=kf, step=1.0E-6 ;
+  vary,   name=kd, step=1.0E-6 ;
+  
+  !USE_MACRO, name=ptc_twiss_tune_macro;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu1)= Qx;
+  !CONSTRAINT, expr=  table(ptc_twiss, ps$end , mu2)= Qy;
+  
+  mq: macro
+   {
+     twiss;
+   }
+  CONSTRAINT, expr=  table(summ , q1)= Qx; 
+  CONSTRAINT, expr=  table(summ , q2)= Qy;
+  
+  lmdif,calls=1000,TOLERANCE=1.0E-21;
+ENDMATCH;
+
+
+
+
+/*
+
+! Qx = 0.21122 + 0.73706*x + 49.71225*x^2
+Qx := 0.21122;
+Qxp := 0.73706;
+Qxp2 := 49.71225;
+
+! Qy = 0.32396 + -2.92869*x + 4.99208*x^2
+Qy := 0.32396;
+Qyp := -2.92869;
+Qyp2 := 4.99208;
+
+use, sequence=PS;
+match, use_macro;
+        vary, name = k1prpfwf;
+        vary, name = k1prpfwd;
+        vary, name = k2prpfwf;
+        vary, name = k2prpfwd;
+        use_macro, name = ptc_twiss_macro(2,0,0);
+        constraint, expr = table(ptc_twiss_summary,Q1)  = Qx;
+        constraint, expr = table(ptc_twiss_summary,Q2)  = Qy;
+        constraint, expr = table(ptc_twiss_summary,DQ1) = Qxp;
+        constraint, expr = table(ptc_twiss_summary,DQ2) = Qyp;
+jacobian,calls=50000,bisec=3,tolerance=1e-15;
+ENDMATCH;
+
+use, sequence=PS;
+match, use_macro;
+        vary, name = k3prpfwf;
+        vary, name = k3prpfwd;
+        use_macro, name = ptc_twiss_macro(3,0,0);
+        constraint, expr = table(nonlin,value,5)  = Qxp2;
+        constraint, expr = table(nonlin,value,10) = Qyp2;
+jacobian,calls=50000,bisec=3,tolerance=1e-15;
+ENDMATCH;
+
+
+Qx := 0.210;
+Qy := 0.245;
+
+Qx = %(NAT_TUNE_X)s;
+Qy = %(NAT_TUNE_Y)s;
+
+use, sequence=PS;
+exec, match_tunes_ptc(Qx, Qy);
+
+
+exec, tunes_leq_knob_factors(Qx, Qy);
+*/
