@@ -79,7 +79,7 @@ class Ps(Accelerator):
         params.add_parameter(
             name="year",
             type=int,
-            required=True,
+            default=2021,
             choices=(2018, 2021),
             help="Year of the optics.",
         )
