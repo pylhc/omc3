@@ -121,7 +121,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     rdt_df = pd.DataFrame(index=joined_index,
                           columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W"],
                           data=np.array([
-                              meas_input.accelerator.model["S"].values[pairs_x],
+                              meas_input.accelerator.model.loc[joined_index, "S"],
                               np.real(f1001), np.real(f1010),
                               np.imag(f1001), np.imag(f1010),
                               np.abs(f1001), np.abs(f1010),
