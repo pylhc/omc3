@@ -20,34 +20,34 @@ IP_NAME = "interaction_point_"
 
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe
-ERR = "ERR"      # Error of the measurement
-RMS = 'RMS'      # Root-Mean-Square
-RES = "RES"      # Rescaled measurement
+ERR = "ERR"  # Error of the measurement
+RMS = "RMS"  # Root-Mean-Square
+RES = "RES"  # Rescaled measurement
 DELTA = "DELTA"  # Delta between measurement and model (sometimes beating)
-MDL = "MDL"      # Model
+MDL = "MDL"  # Model
 
 # Names
-S = 'S'
-NAME = 'NAME'
-NAME2 = f'{NAME}2'
-TUNE = 'Q'
-NAT_TUNE = 'NATQ'
-PEAK2PEAK = 'PK2PK'
-ALPHA = 'ALF'
-BETA = 'BET'
-DPP = 'DPP'
-DPPAMP = 'DPPAMP'
-AMPLITUDE = 'AMP'
-PHASE = 'PHASE'
-PHASE_ADV = 'MU'
-REAL = 'REAL'
-IMAG = 'IMAG'
+S = "S"
+NAME = "NAME"
+NAME2 = f"{NAME}2"
+TUNE = "Q"
+NAT_TUNE = "NATQ"
+PEAK2PEAK = "PK2PK"
+ALPHA = "ALF"
+BETA = "BET"
+DPP = "DPP"
+DPPAMP = "DPPAMP"
+AMPLITUDE = "AMP"
+PHASE = "PHASE"
+PHASE_ADV = "MU"
+REAL = "REAL"
+IMAG = "IMAG"
 
 
-TIME = 'TIME'
-ACTION = '2J'
-SQRT_ACTION = 'sqrt2J'
+TIME = "TIME"
+ACTION = "2J"
+SQRT_ACTION = "sqrt2J"
 
 
 # Headers ----------------------------------------------------------------------
-RESCALE_FACTOR = 'RescalingFactor'
+RESCALE_FACTOR = "RescalingFactor"
