@@ -92,7 +92,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     )
     B_10 = .5 * _get_complex(
         joined[COL_AMPY_SEC].values*exp(-joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
-    )
+    print(joined)
 
     q1001_from_A = -np.angle(A01)  + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
@@ -246,12 +246,14 @@ def _joined_frames(input_files):
         
         joined_dfs.append(merged_df)
 
-    return reduce(lambda a,b: pd.merge(a, b, how='inner', on=['NAME', 'S'],sort=False), joined_dfs).set_index("NAME")
+    reduced = reduce(lambda a,b: pd.merge(a, b, how='inner', on=['NAME', 'S'],sort=False), joined_dfs).set_index("NAME")
+    reduced.rename(columns={"MUX_X_0": "MUX", "MUY_Y_0": "MUY"}, inplace=True)
+    return reduced
 
 
 def rename_col(plane, index):
     def fn(column):
-        if column in ["NAME", "S", "MUX", "MUY"]:
+        if column in ["NAME", "S"]:
             return column
         return f"{column}_{plane}_{index}" 
 

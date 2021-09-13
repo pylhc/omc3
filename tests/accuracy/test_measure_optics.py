@@ -12,6 +12,7 @@ from omc3.utils import logging_tools
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
 from tests.accuracy.twiss_to_lin import optics_measurement_test_files
+from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__')  # debugging
@@ -95,6 +96,8 @@ def evaluate_accuracy(meas_path, limits):
             )
             assert rms < limits[col[5:-1]], f"\n{f.name:25}  {col:15}   RMS: {rms:.1e}"
             LOG.info(f"{f.name:25}  {col[5:]:15}   RMS: {rms:.1e}")
+    assert ((meas_path / f"{SPECIAL_PHASE_NAME}x.tfs").is_file() and (meas_path / f"{SPECIAL_PHASE_NAME}y.tfs").is_file())
+
 
 
 @pytest.fixture(scope="module", params=(1,), ids=("Beam1",))
