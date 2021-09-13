@@ -110,7 +110,10 @@ def _generate_madx_jobs(
 
 
 def _get_madx_job(accel_inst: Accelerator) -> str:
+    model_dir_backup = accel_inst.model_dir  # use relative paths as we use model_dir as cwd
+    accel_inst.model_dir = Path()
     job_content = accel_inst.get_base_madx_script()
+    accel_inst.model_dir = model_dir_backup
     job_content += (
         "select, flag=twiss, clear;\n"
         f"select, flag=twiss, pattern='{accel_inst.RE_DICT[AccElementTypes.BPMS]}', "

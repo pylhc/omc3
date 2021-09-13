@@ -12,11 +12,11 @@ from omc3.model_creator import create_instance_and_model
 INPUTS = Path(__file__).parent.parent / "inputs"
 COMP_MODEL = INPUTS / "models" / "25cm_beam1"
 CODEBASE_PATH = Path(__file__).parent.parent.parent / "omc3"
-PS_MODEL = CODEBASE_PATH / "model" / "accelerators" / "ps" / "2018" / "strength"
+PS_MODEL = CODEBASE_PATH / "model" / "accelerators" / "ps"
 
 
 @pytest.mark.basic
-def test_booster_creation_nominal(tmp_path):
+def test_booster_creation_nominal_driven(tmp_path):
     accel_opt = dict(
         accel="psbooster",
         ring=1,
@@ -32,9 +32,24 @@ def test_booster_creation_nominal(tmp_path):
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
 
-
 @pytest.mark.basic
-def test_ps_creation_nominal(tmp_path):
+def test_booster_creation_nominal_free(tmp_path):
+    accel_opt = dict(
+        accel="psbooster",
+        ring=1,
+        nat_tunes=[4.21, 4.27],
+        dpp=0.0,
+        energy=0.16,
+        modifiers=None,
+    )
+    accel = create_instance_and_model(
+        type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
+
+        
+@pytest.mark.basic
+def test_ps_creation_nominal_driven_2018(tmp_path):
     accel_opt = dict(
         accel="ps",
         nat_tunes=[6.32, 6.29],
@@ -42,12 +57,45 @@ def test_ps_creation_nominal(tmp_path):
         driven_excitation="acd",
         dpp=0.0,
         energy=1.4,
-        modifiers=[PS_MODEL / "elements.str", PS_MODEL / "PS_LE_LHC_low_chroma.str"],
+        year=2018,
+        modifiers=[PS_MODEL / "2018" / "strength" / "PS_LE_LHC_low_chroma.str"],
     )
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=[])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+
+    
+@pytest.mark.basic
+def test_ps_creation_nominal_free_2018(tmp_path):
+    accel_opt = dict(
+        accel="ps",
+        nat_tunes=[6.32, 6.29],
+        dpp=0.0,
+        energy=1.4,
+        year=2018,
+        modifiers=[PS_MODEL / "2018" / "strength" / "PS_LE_LHC_low_chroma.str"],
+    )
+    accel = create_instance_and_model(
+        type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+
+
+@pytest.mark.basic
+def test_ps_creation_nominal_free_2021(tmp_path):
+    accel_opt = dict(
+        accel="ps",
+        nat_tunes=[6.32, 6.29],
+        dpp=0.0,
+        energy=1.4,
+        year=2021,
+        modifiers=[PS_MODEL / "2021" / "strength" / "ps_fb_lhc.str"],
+    )
+    accel = create_instance_and_model(
+        type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
 
 
 @pytest.mark.basic

@@ -18,7 +18,7 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "matplotlib>=3.2.0",
+    "matplotlib>=3.2.0,<3.4.3",  # temporary limitations, try run test!
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
     "numpy>=1.19.0",
     "pandas>=1.0",

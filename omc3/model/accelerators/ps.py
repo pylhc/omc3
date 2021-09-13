@@ -67,25 +67,49 @@ CURRENT_DIR = Path(__file__).parent
 class Ps(Accelerator):
     """Parent Class for PS-types."""
     NAME = "ps"
-    YEAR = 2018
     RE_DICT = {AccElementTypes.BPMS: r"PR\.BPM",
                AccElementTypes.MAGNETS: r".*",
                AccElementTypes.ARC_BPMS: r"PR\.BPM"
                }
 
     # Public Methods ##########################################################
+    @staticmethod
+    def get_parameters():
+        params = super(Ps, Ps).get_parameters()
+        params.add_parameter(
+            name="year",
+            type=int,
+            default=2021,
+            choices=(2018, 2021),
+            help="Year of the optics.",
+        )
+        return params
 
     def __init__(self, *args, **kwargs):
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
+        self.year = opt.year
 
     def verify_object(self):
         pass
 
-    @classmethod
-    def get_dir(cls):
-        return CURRENT_DIR / cls.NAME / str(cls.YEAR)
+    def get_dir(self):
+        return CURRENT_DIR / self.NAME / str(self.year)
+
+    def get_file(self, filename: str) -> Path:
+        """Get filepaths for PS files."""
+        ps_dir = CURRENT_DIR / self.NAME
+        ps_year_dir = self.get_dir()
+
+        for dir_ in (ps_year_dir, ps_dir):
+            file_path = dir_ / filename
+            if file_path.is_file():
+                return file_path
+
+        raise NotImplementedError(
+            f"File {file_path.name} not available for accelerator {self.NAME}."
+        )
 
     def get_exciter_bpm(self, plane, bpms):
         if not self.excitation:
@@ -100,19 +124,21 @@ class Ps(Accelerator):
         if best_knowledge:
             raise NotImplementedError(f"Best knowledge model not implemented for accelerator {self.NAME}")
 
-        use_acd = str(int(self.excitation == AccExcitationMode.ACD)),
+        use_acd = self.excitation == AccExcitationMode.ACD
         replace_dict = {
             "FILES_DIR": str(self.get_dir()),
-            "USE_ACD": use_acd,
+            "USE_ACD": str(int(use_acd)),
             "NAT_TUNE_X": self.nat_tunes[0],
             "NAT_TUNE_Y": self.nat_tunes[1],
             "KINETICENERGY": self.energy,
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
             "MODIFIERS": "",
+            "BEAM_FILE": "",  # From 2021
         }
         if self.modifiers:
             replace_dict["MODIFIERS"] = '\n'.join([f" call, file = '{m}'; {MODIFIER_TAG}" for m in self.modifiers])
+            replace_dict["BEAM_FILE"] = '\n'.join([f" call, file = '{m.with_suffix('.beam')}';" for m in self.modifiers])
         if use_acd:
             replace_dict["DRV_TUNE_X"] = self.drv_tunes[0]
             replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]

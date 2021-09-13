@@ -62,7 +62,10 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     # intersect measurements
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
     joined = _joined_frames(input_files)
-    joined_index = joined.index
+    joined_index = joined.index \
+        .intersection(phase_dict['X'][compensation]["MEAS"].index) \
+        .intersection(phase_dict['Y'][compensation]["MEAS"].index)
+    joined = joined.loc[joined_index]
 
     phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
     phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
@@ -118,7 +121,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     rdt_df = pd.DataFrame(index=joined_index,
                           columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W"],
                           data=np.array([
-                              meas_input.accelerator.model["S"].values[pairs_x],
+                              meas_input.accelerator.model.loc[joined_index, "S"],
                               np.real(f1001), np.real(f1010),
                               np.imag(f1001), np.imag(f1010),
                               np.abs(f1001), np.abs(f1010),
