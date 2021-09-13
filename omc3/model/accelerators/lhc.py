@@ -126,6 +126,9 @@ class Lhc(Accelerator):
                              help="Year of the optics (or hllhc1.3).")
         params.add_parameter(name="ats", action="store_true",
                              help="Marks ATS optics")
+        params.add_parameter(name="fetch", type=str, required=True,
+                             choices=("afs"),
+                             help="Fetcher to be used")
 
         return params
 
@@ -141,6 +144,9 @@ class Lhc(Accelerator):
         self.beam = opt.beam
         beam_to_beam_direction={1: 1, 2: -1}
         self.beam_direction = beam_to_beam_direction[self.beam]
+        self.optics_path = LHC_DIR
+        if opt.fetch == "afs":
+            self.fetch_afs(opt)
         self.verify_object()
 
     def verify_object(self):  # TODO: Maybe more checks?
@@ -309,6 +315,28 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
+    # Model creation ###########################################################
+
+    def fetch_afs(self, options):
+        AFS_OPTICS_ROOT = "/afs/cern.ch/eng/lhc/optics"
+
+        # perhaps parse additional fetcher options
+        if year == "2012":  # runI
+            self.optics_path = os.path.join(AFS_OPTICS_ROOT, "runI", "2012")
+            self.call_main = (_call_in_madx(os.path.join(self.optics_path, "lhc-as_built.seq"))
+                              + _call_in_madx(os.path.join(self.optics_path, "install_additional_elements.madx")))
+        elif year == "hllhc1.3":
+            self.call_main = (_call_in_madx(os.path.join(self.optics_path, "lhc-as_built.seq"))
+                              + _call_in_madx(os.path.join(LHC_DIR, "hllhc1.3", "main_update.seq")))
+        else:  # runII --> recent
+            self.call_main = _call_in_madx(os.path.join(self.optics_path, "lhc-as_built.seq"))
+
+        self.get_opticsfile_from_afs()
+
+    def get_opticsfile_from_afs():
+        self.modifiers = self.optics_path + self.modifiers
+
+
     def get_base_madx_script(self, outdir, best_knowledge=False):
         ats_md = False
         high_beta = False
@@ -318,7 +346,7 @@ class Lhc(Accelerator):
             f"{_call_in_madx(os.path.join(outdir, MACROS_DIR, GENERAL_MACROS))}"
             f"{_call_in_madx(os.path.join(outdir, MACROS_DIR, LHC_MACROS))}"
             f'title, "Model from Lukas :-)";\n'
-            f"{self.load_main_seq_madx()}\n"
+            f"{self.call_main}\n"
             f"exec, define_nominal_beams();\n"
             f"{_call_in_madx(self.modifiers)}"
             f"exec, cycle_sequences();\n"
@@ -356,11 +384,6 @@ class Lhc(Accelerator):
 
 
 def _get_call_main_for_year(year):
-    call_main = _call_in_madx(_get_file_for_year(year, "main.seq"))
-    if year == "2012":
-        call_main += _call_in_madx(os.path.join(LHC_DIR, "2012", "install_additional_elements.madx"))
-    if year == "hllhc1.3":
-        call_main += _call_in_madx(os.path.join(LHC_DIR, "hllhc1.3", "main_update.seq"))
     return call_main
 
 
