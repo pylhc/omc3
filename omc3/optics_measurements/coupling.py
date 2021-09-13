@@ -10,7 +10,9 @@ Coupling calculations
 
 """
 
+from abc import abstractclassmethod
 from functools import reduce
+from posixpath import join
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from collections import namedtuple
 import numpy as np
@@ -60,26 +62,36 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     LOG.info("calculating coupling")
 
     # intersect measurements
+    # we need vertical and horizontal spectra, so we have to intersect first all inputs with X and Y phase output
+    # furthermore the output has to be rearranged in the order of the model (important for e.g. LHC beam 2)
+    # and thus we need to intersect the *model* index with all the above. Since the first index of the .intersect chain
+    # dictates the order, we have to start with the model index
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
     joined = _joined_frames(input_files)
-    joined_index = joined.index \
+    joined_index = meas_input.accelerator.model.index \
+        .intersection(joined.index) \
         .intersection(phase_dict['X'][compensation]["MEAS"].index) \
         .intersection(phase_dict['Y'][compensation]["MEAS"].index)
     joined = joined.loc[joined_index]
 
+    LOG.warning(f"beam direction: {meas_input.accelerator.beam_direction}")
     phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
     phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
 
+    bd = meas_input.accelerator.beam_direction
+
     # averaging
+    # standard arithmetic mean for amplitude columns
+    # and circular mean (beware the period=1) for frequency columns
     for col in [COL_AMPX_SEC, COL_AMPY_SEC]:
         cols = [c for c in joined if c.startswith(col)]
         joined[col] = stats.weighted_mean(joined[cols], axis=1)
     for col in [COL_FREQX_SEC, COL_FREQY_SEC]:
         cols = [x for x in joined if x.startswith(col)]
-        joined[col] = stats.circular_mean(joined[cols], axis=1)
+        joined[col] = bd * stats.circular_mean(joined[cols], period=1.0, axis=1)
 
-    pairs_x, deltas_x = _find_pair(phases_x)
-    pairs_y, deltas_y = _find_pair(phases_y)
+    pairs_x, deltas_x = _find_pair(phases_x, 1)
+    pairs_y, deltas_y = _find_pair(phases_y, 1)
 
     A01 = .5*_get_complex(
         joined[COL_AMPX_SEC].values*exp(joined[COL_FREQX_SEC].values * PI2I), deltas_x, pairs_x
@@ -94,14 +106,18 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         joined[COL_AMPY_SEC].values*exp(-joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
     )
 
-    q1001_from_A = -np.angle(A01)  + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    # columns in `joined` that haven't been swapped before, need to be now
+    q1001_from_A = -np.angle(A01) + (bd*joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_B = np.angle(B10) - (bd*joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    eq1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
 
-    q1010_from_A = -np.angle(A0_1) - (joined[f"{COL_MU}Y"].to_numpy() + 0.25) * PI2
-    q1010_from_B = -np.angle(B_10) - (joined[f"{COL_MU}X"].to_numpy() + 0.25) * PI2
+    q1010_from_A = -np.angle(A0_1) - (bd*joined[f"{COL_MU}Y"].to_numpy() + bd*0.25) * PI2
+    q1010_from_B = -np.angle(B_10) - (bd*joined[f"{COL_MU}X"].to_numpy() + bd*0.25) * PI2
+    eq1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
-    f1001 = -.5 * sqrt(np.abs(A01 * B10))  *0.5*(exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B))
-    f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*0.5*(exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B))
+    # `eq / abs(eq)` to get the average
+    f1001 = -.5 * sqrt(np.abs(A01 * B10)) * eq1001 / abs(eq1001)
+    f1010 = .5 * sqrt(np.abs(A0_1 * B_10)) * eq1010 / abs(eq1010)
 
     LOG.debug("f1001 = {}".format(f1001))
     tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
@@ -119,12 +135,13 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     if meas_input.compensation == "model":
         f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
     rdt_df = pd.DataFrame(index=joined_index,
-                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W"],
+                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W", "F1001A", "F1010A"],
                           data=np.array([
                               meas_input.accelerator.model.loc[joined_index, "S"],
                               np.real(f1001), np.real(f1010),
                               np.imag(f1001), np.imag(f1010),
                               np.abs(f1001), np.abs(f1010),
+                              np.angle(f1001) / PI2, np.angle(f1010) / PI2,
                           ]).transpose())
 
     rdt_df.sort_values(by="S", inplace=True)
@@ -178,6 +195,7 @@ def compensate_model(f1001, f1010, tune_dict):
 
     return f1001, f1010
 
+
 def compensate_ryoichi():
     pass
 
@@ -194,7 +212,7 @@ def _take_next(phases, shift=1):
     return indices, phases.values[np.arange(phases.values.shape[0]), indices] - 0.25
 
 
-def _find_pair(phases):
+def _find_pair(phases, bd):
     """ finds the best candidate for momentum reconstruction
 
     Args:
@@ -202,8 +220,10 @@ def _find_pair(phases):
     """
     slice = _tilt_slice_matrix(phases.values, 0, 2*CUTOFF) - 0.25
     indices = (np.argmin(abs(slice), axis=0))
+    #deltas = bd * slice[indices, range(len(indices))] + bd * 0.25 - 0.25
     deltas = slice[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)
+    LOG.warning(indices)
     #deltas = [phases[col][indices] for col in phases.columns]
 
     return np.array(indices), deltas
