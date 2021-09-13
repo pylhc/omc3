@@ -308,7 +308,7 @@
 
 
 <div class="viewcode-block" id="PsboosterModelCreator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator">[docs]</a><span class="k">class</span> <span class="nc">PsboosterModelCreator</span><span class="p">(</span><span class="n">ModelCreator</span><span class="p">):</span>
-<div class="viewcode-block" id="PsboosterModelCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Psbooster</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
@@ -319,19 +319,19 @@
         <span class="p">}</span>
         <span class="n">madx_template</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;twiss.mask&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="n">madx_template</span> <span class="o">%</span> <span class="n">replace_dict</span>
-        <span class="k">return</span> <span class="n">madx_script</span></div>
+        <span class="k">return</span> <span class="n">madx_script</span>
 
-<div class="viewcode-block" id="PsboosterModelCreator.get_correction_check_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.get_correction_check_script">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_correction_check_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Psbooster</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chrom</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span>
             <span class="s2">&quot;Correction check is not implemented for the PsBooster model creator yet. &quot;</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="PsboosterModelCreator.prepare_run"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.prepare_run">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Psbooster</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
             <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error_deff_ring</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">ring</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">),</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
 </pre></div>
 
            </div>
