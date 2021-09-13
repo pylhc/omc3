@@ -60,7 +60,7 @@ def change_color_brightness(color, amount=0.5):
         c = colorsys.rgb_to_hls(*mc.ColorConverter().to_rgb(c))  # matplotlib 1.5
     except AttributeError:
         c = colorsys.rgb_to_hls(*mc.to_rgb(c))  # matplotlib > 2
-    return colorsys.hls_to_rgb(c[0], 1-amount * (1-c[1]), c[2])
+    return colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
 
 
 def change_ebar_alpha_for_line(ebar, alpha):

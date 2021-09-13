@@ -1,0 +1,163 @@
+/**********************************************************************************
+*                             SBENDs and MULTIPOLES in MUs
+***********************************************************************************/
+
+k1prbhf            =      0.05705266952 ;
+k1prbhd            =     -0.05711581728 ;
+k2prbhf            =                  0 ;
+k2prbhd            =                  0 ;
+k2prmp             =     -0.01858039299 ;
+k2prmpj            =      0.03934772381 ;
+k3prmpf            =      0.05812457857 ;
+k3prmpd            =      -0.1320148496 ;
+
+/**********************************************************************************
+*                                    PFW and F8L
+***********************************************************************************/
+
+k1prpfwf           =    6.326682428e-05 ;
+k1prpfwd           =   -8.431151543e-05 ;
+k2prpfwf           =      0.02803443696 ;
+k2prpfwd           =     -0.03354583647 ;
+k3prpfwf           =       -0.168419701 ;
+k3prpfwd           =     -0.06902649778 ;
+k1prf8l            =                  0 ;
+
+/**********************************************************************************
+*                                    Injection dipoles
+***********************************************************************************/
+
+kpibsw26           =                  0 ;
+kpibsw40           =                  0 ;
+kpibsw41           =                  0 ;
+kpibsw42           =                  0 ;
+kpibsw43           =                  0 ;
+kpibsw44           =                  0 ;
+
+/**********************************************************************************
+*                                    Extraction dipoles
+***********************************************************************************/
+
+kpebsw12           =     0.002747671793 ;
+kpebsw14           =    -0.002800810305 ;
+kpebsw20           =     0.002484762657 ;
+kpebsw22           =    -0.002562948861 ;
+kpebsw23           =                  0 ;
+kpebsw57           =                  0 ;
+
+/**********************************************************************************
+*                                      Quadrupoles
+***********************************************************************************/
+
+kf                 =     0.007197879276 ;
+kd                 =    -0.003980086619 ;
+kprqse             =                  0 ;
+kpeqke16           =                  0 ;
+kpiqlb             =                  0 ;
+
+/**********************************************************************************
+*                                       Sextupoles
+***********************************************************************************/
+
+kprxno39           =          -0.817896 ;
+kprxno55           =          -1.189667 ;
+kprxno             =                  0 ;
+kprxse             =                  0 ;
+
+/**********************************************************************************
+*                                       Octupoles
+***********************************************************************************/
+
+kprono39           =         -9.7962365 ;
+kprono55           =        -36.0659641 ;
+kprodn             =         18.5023863 ;
+
+/**********************************************************************************
+*                                   KNOBS
+***********************************************************************************/
+
+!-------------------------------------------------
+! Proton injection bump
+!-------------------------------------------------
+
+bsw42_x_mm_abs_active  =              0 ;
+
+
+!-------------------------------------------------
+! Ion injection bump
+!-------------------------------------------------
+
+smh26_x_mm_abs_active  =              0 ;
+
+
+!-------------------------------------------------
+! Extraction bump
+!-------------------------------------------------
+
+smh16_x_mm_abs_active  =                  1 ;
+smh16_x_mm_abs         =                 11 ;
+smh16_x_mm             =       0.0000000000 ;
+smh16_px_urad          =       0.0000000000 ;
+tps15_ortho_x_mm       =       0.0000000000 ;
+smh16_ortho_x_mm       =       0.0000000000 ;
+
+dkPEBSW12_x_abs        =    0.0002497883448 ;
+dkPEBSW14_x_abs        =   -0.0002546191186 ;
+dkPEBSW20_x_abs        =    0.0002258875143 ;
+dkPEBSW22_x_abs        =    -0.000232995351 ;
+
+dkPEBSW12_x            =    8.603873076e-05 ;
+dkPEBSW14_x            =   -1.189237598e-06 ;
+dkPEBSW20_x            =    7.914314873e-05 ;
+dkPEBSW22_x            =     6.56396535e-06 ;
+
+dkPEBSW12_px           =    -8.98283263e-07 ;
+dkPEBSW14_px           =    1.384339244e-06 ;
+dkPEBSW20_px           =   -8.179218083e-07 ;
+dkPEBSW22_px           =     1.31904646e-06 ;
+
+dkPEBSW12_ortho_x15    =    0.0001677711748 ;
+dkPEBSW14_ortho_x15    =   -0.0002585324508 ;
+dkPEBSW20_ortho_x15    =    0.0001534362742 ;
+dkPEBSW22_ortho_x15    =   -0.0002466050592 ;
+
+dkPEBSW12_ortho_x16    =   -0.0001228044376 ;
+dkPEBSW14_ortho_x16    =    0.0003206144578 ;
+dkPEBSW20_ortho_x16    =   -0.0001103175818 ;
+dkPEBSW22_ortho_x16    =    0.0003129135405 ;
+
+kPEBSW12 := dkPEBSW12_x_abs * smh16_x_mm_abs + dkPEBSW12_x * smh16_x_mm + dkPEBSW12_px * smh16_px_urad + dkPEBSW12_ortho_x15 * tps15_ortho_x_mm + dkPEBSW12_ortho_x16 * smh16_ortho_x_mm;
+kPEBSW14 := dkPEBSW14_x_abs * smh16_x_mm_abs + dkPEBSW14_x * smh16_x_mm + dkPEBSW14_px * smh16_px_urad + dkPEBSW14_ortho_x15 * tps15_ortho_x_mm + dkPEBSW14_ortho_x16 * smh16_ortho_x_mm;
+kPEBSW20 := dkPEBSW20_x_abs * smh16_x_mm_abs + dkPEBSW20_x * smh16_x_mm + dkPEBSW20_px * smh16_px_urad + dkPEBSW20_ortho_x15 * tps15_ortho_x_mm + dkPEBSW20_ortho_x16 * smh16_ortho_x_mm;
+kPEBSW22 := dkPEBSW22_x_abs * smh16_x_mm_abs + dkPEBSW22_x * smh16_x_mm + dkPEBSW22_px * smh16_px_urad + dkPEBSW22_ortho_x15 * tps15_ortho_x_mm + dkPEBSW22_ortho_x16 * smh16_ortho_x_mm;
+
+
+!-------------------------------------------------
+! High-energy corrector knobs
+!-------------------------------------------------
+
+dhzoc_smh16_x_mm     =                    0 ;
+dhzoc_qsk19_x_mm     =                    0 ;
+dhzoc_smh16_px_urad  =                    0 ;
+dhzoc_qsk19_px_urad  =                    0 ;
+
+dkPRDHZOC05_SMH16_x      =    -4.33899216e-05 ;
+dkPRDHZOC18_SMH16_x      =    3.980245436e-05 ;
+dkPRDHZOC60_SMH16_x      =   -3.887899929e-05 ;
+
+dkPRDHZOC05_QSK19_x      =    1.316856561e-06 ;
+dkPRDHZOC18_QSK19_x      =    5.197589053e-05 ;
+dkPRDHZOC60_QSK19_x      =   -4.874729119e-05 ;
+
+dkPRDHZOC05_SMH16_px     =    8.719854767e-07 ;
+dkPRDHZOC18_SMH16_px     =    2.667932354e-08 ;
+dkPRDHZOC60_SMH16_px     =   -1.597196076e-06 ;
+
+dkPRDHZOC05_QSK19_px     =    1.218795336e-06 ;
+dkPRDHZOC18_QSK19_px     =    3.552865342e-07 ;
+dkPRDHZOC60_QSK19_px     =    4.304461651e-07 ;
+
+kPRDHZOC05 := dkPRDHZOC05_SMH16_x * dhzoc_smh16_x_mm + dkPRDHZOC05_QSK19_x * dhzoc_qsk19_x_mm + dkPRDHZOC05_SMH16_px * dhzoc_smh16_px_urad + dkPRDHZOC05_QSK19_px * dhzoc_qsk19_px_urad;
+kPRDHZOC18 := dkPRDHZOC18_SMH16_x * dhzoc_smh16_x_mm + dkPRDHZOC18_QSK19_x * dhzoc_qsk19_x_mm + dkPRDHZOC18_SMH16_px * dhzoc_smh16_px_urad + dkPRDHZOC18_QSK19_px * dhzoc_qsk19_px_urad;
+kPRDHZOC60 := dkPRDHZOC60_SMH16_x * dhzoc_smh16_x_mm + dkPRDHZOC60_QSK19_x * dhzoc_qsk19_x_mm + dkPRDHZOC60_SMH16_px * dhzoc_smh16_px_urad + dkPRDHZOC60_QSK19_px * dhzoc_qsk19_px_urad;
+

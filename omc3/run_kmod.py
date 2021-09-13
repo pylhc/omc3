@@ -5,7 +5,7 @@ Run Kmod
 Top-level script to analyse Kmod-results from the ``LHC`` and creating files for GUI and plotting
 as well as returning beta-star and waist shift.
 """
-from os.path import join
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -17,7 +17,7 @@ from omc3.kmod.constants import (BETA, ERR, EXT, FIT_PLOTS_NAME, INSTRUMENTS_FIL
                                  LSA_FILE_NAME, RESULTS_FILE_NAME, SEQUENCES_PATH, STAR)
 from omc3.utils import iotools, logging_tools
 
-LOG = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
+LOG = logging_tools.get_logger(__name__)
 
 LSA_COLUMNS = ['NAME', f'{BETA}X', f'{ERR}{BETA}X', f'{BETA}Y', f'{ERR}{BETA}Y']
 
@@ -29,13 +29,13 @@ def kmod_params():
                          required=True, nargs='+',
                          help='Estimated beta star of measurements and waist shift',)
     parser.add_parameter(name='working_directory',
-                         type=str,
+                         type=Path,
                          required=True,
                          help='path to working directory with stored KMOD measurement files',)
     parser.add_parameter(name='beam',
-                         type=str,
-                         choices=['B1', 'B2'], required=True,
-                         help='define beam used: B1 or B2',)
+                         type=int,
+                         choices=[1, 2], required=True,
+                         help='define beam used: 1 or 2',)
     parser.add_parameter(name='cminus', 
                          type=float,                         
                          help='C Minus',)
@@ -81,7 +81,7 @@ def kmod_params():
                          choices=['ip1', 'ip2', 'ip5', 'ip8', 'IP1', 'IP2', 'IP5', 'IP8'],
                          help='define interaction point')
     parser.add_parameter(name='measurement_dir',
-                         type=str,                         
+                         type=Path,
                          help='give an optics measurement directory to include phase constraint in penalty function')
     parser.add_parameter(name='phase_weight',
                          type=float,
@@ -89,9 +89,11 @@ def kmod_params():
                          help='weight in penalty function between phase and beta.'
                               'If weight=0 phase is not used as a constraint.')
     parser.add_parameter(name='model_dir',
-                         type=str,
+                         type=Path,
                          help='twiss model that contains phase')
-    parser.add_parameter(name="outputdir", help="Path where outputfiles will be stored, defaults "
+    parser.add_parameter(name="outputdir",
+                         type=Path,
+                         help="Path where outputfiles will be stored, defaults "
                                                 "to the given working_directory")
 
     return parser
@@ -105,11 +107,11 @@ def analyse_kmod(opt):
     Kmod Keyword Arguments:
         *--Required--*
 
-        - **beam** *(str)*:
+        - **beam** *(int)*:
 
-            define beam used: B1 or B2
+            define beam used: 1 or 2
 
-            choices: ``['B1', 'B2']``
+            choices: ``[1, 2]``
 
 
         - **betastar_and_waist** *(float)*:
@@ -117,7 +119,7 @@ def analyse_kmod(opt):
             Estimated beta star of measurements and waist shift
 
 
-        - **working_directory** *(str)*:
+        - **working_directory** *(Path)*:
 
             path to working directory with stored KMOD measurement files
 
@@ -166,7 +168,7 @@ def analyse_kmod(opt):
             action: ``store_true``
 
 
-        - **measurement_dir** *(str)*:
+        - **measurement_dir** *(Path)*:
 
             give an optics measurement directory to include phase constraint in
             penalty function
@@ -177,7 +179,7 @@ def analyse_kmod(opt):
             misalignment of the modulated quadrupoles in m
 
 
-        - **model_dir** *(str)*:
+        - **model_dir** *(Path)*:
 
             twiss model that contains phase
 
@@ -203,7 +205,7 @@ def analyse_kmod(opt):
             action: ``store_true``
 
 
-        - **outputdir**:
+        - **outputdir** *(Path)*:
 
             Path where outputfiles will be stored, defaults to the given
             working_directory
@@ -248,10 +250,10 @@ def analyse_kmod(opt):
     LOG.info(f"{'IP trim' if opt.interaction_point is not None else 'Individual magnets'} analysis")
     opt['magnets'] = MAGNETS_IP[opt.interaction_point.upper()] if opt.interaction_point is not None else [
         find_magnet(opt.beam, circuit) for circuit in opt.circuits]
-    opt['label'] = f'{opt.interaction_point}{opt.beam}' if opt.interaction_point is not None else f'{opt.magnets[0]}-{opt.magnets[1]}'
+    opt['label'] = f'{opt.interaction_point}B{opt.beam:d}' if opt.interaction_point is not None else f'{opt.magnets[0]}-{opt.magnets[1]}'
     opt['instruments'] = list(map(str.upper, opt.instruments.split(",")))
 
-    output_dir = join(opt.outputdir, opt.label)
+    output_dir = opt.outputdir / opt.label
     iotools.create_dirs(output_dir)
 
     LOG.info('Get inputfiles')
@@ -263,16 +265,16 @@ def analyse_kmod(opt):
 
     LOG.info('Plot tunes and fit')
     if opt.no_plots:
-        helper.plot_cleaned_data([magnet1_df, magnet2_df], join(output_dir, FIT_PLOTS_NAME), interactive_plot=False)
+        helper.plot_cleaned_data([magnet1_df, magnet2_df], output_dir / FIT_PLOTS_NAME, interactive_plot=False)
 
     LOG.info('Write magnet dataframes and results')
     for magnet_df in [magnet1_df, magnet2_df]:
-        tfs.write(join(output_dir, f"{magnet_df.headers['QUADRUPOLE']}{EXT}"), magnet_df)
+        tfs.write(output_dir / f"{magnet_df.headers['QUADRUPOLE']}{EXT}", magnet_df)
 
-    tfs.write(join(output_dir, f'{RESULTS_FILE_NAME}{EXT}'), results_df)
+    tfs.write(output_dir / f'{RESULTS_FILE_NAME}{EXT}', results_df)
 
     if opt.instruments_found:
-        tfs.write(join(output_dir, f'{INSTRUMENTS_FILE_NAME}{EXT}'), instrument_beta_df)
+        tfs.write(output_dir / f'{INSTRUMENTS_FILE_NAME}{EXT}', instrument_beta_df)
 
     create_lsa_results_file(betastar_required, opt.instruments_found, results_df, instrument_beta_df, output_dir)
 
@@ -286,7 +288,7 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
         lsa_results_df = lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
 
     if not lsa_results_df.empty:
-        tfs.write(join(output_dir, f'{LSA_FILE_NAME}{EXT}'), lsa_results_df)
+        tfs.write(output_dir / f'{LSA_FILE_NAME}{EXT}', lsa_results_df)
 
 
 def convert_betastar_and_waist(bs):
@@ -304,7 +306,7 @@ def check_default_error(options, error):
 
 
 def find_magnet(beam, circuit):
-    sequence = tfs.read(join(SEQUENCES_PATH, f"twiss_lhc{beam.lower()}.dat"))
+    sequence = tfs.read(SEQUENCES_PATH / f"twiss_lhcb{beam:d}.dat")
     circuit = circuit.split('.')
     magnetname = sequence[sequence['NAME'].str.contains(r'MQ\w+\.{:s}{:s}{:s}\.\w+'.format(circuit[0][-1], circuit[1][0], circuit[1][1]))]['NAME'].values[0]
     return magnetname
@@ -313,7 +315,7 @@ def find_magnet(beam, circuit):
 def define_params(options, magnet1_df, magnet2_df):
     LOG.debug(' adding additional parameters to header ')
     beta_star_required = False
-    sequence = tfs.read(join(SEQUENCES_PATH, f"twiss_lhc{options.beam.lower()}.dat"), index='NAME')
+    sequence = tfs.read(SEQUENCES_PATH / f"twiss_lhcb{options.beam:d}.dat", index='NAME')
 
     for magnet_df in [magnet1_df, magnet2_df]:
         magnet_df.headers['LENGTH'] = sequence.loc[magnet_df.headers['QUADRUPOLE'], 'L']

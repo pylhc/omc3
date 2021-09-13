@@ -17,8 +17,8 @@ LIMITS = {"Accuracy": 1e-5, "Meas Accuracy": 0.05, "Num Precision": 1e-15, "Meas
 def test_kmod_phase_simulation_ip5b1(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[19.2, 0.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B1",
+        working_directory=_kmod_inputs_path,
+        beam=1,
         simulation=True,
         no_sig_digits=True,
         no_plots=False,
@@ -29,8 +29,8 @@ def test_kmod_phase_simulation_ip5b1(tmp_path, _kmod_inputs_path):
         errorL=0.0,
         tune_uncertainty=0.0e-5,
         phase_weight=0.5,
-        model_dir=str(_kmod_inputs_path),
-        outputdir=str(tmp_path),
+        model_dir=_kmod_inputs_path,
+        outputdir=tmp_path,
     )
     results = tfs.read(tmp_path / "ip5B1" / f"{RESULTS_FILE_NAME}{EXT}")
     beta_twiss = {"X": 19.2, "Y": 19.2}
@@ -47,8 +47,8 @@ def test_kmod_phase_simulation_ip5b1(tmp_path, _kmod_inputs_path):
 def test_kmod_phase_measured_ip5b1(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[19.2, 0.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B1",
+        working_directory=_kmod_inputs_path,
+        beam=1,
         simulation=True,
         no_sig_digits=True,
         no_plots=False,
@@ -59,8 +59,8 @@ def test_kmod_phase_measured_ip5b1(tmp_path, _kmod_inputs_path):
         errorL=0.0,
         tune_uncertainty=0.0e-5,
         phase_weight=0.5,
-        measurement_dir=str(_kmod_inputs_path),
-        outputdir=str(tmp_path),
+        measurement_dir=_kmod_inputs_path,
+        outputdir=tmp_path,
     )
     results = tfs.read(tmp_path / "ip5B1" / f"{RESULTS_FILE_NAME}{EXT}")
     beta_twiss = {"X": 19.2, "Y": 19.2}
@@ -77,8 +77,8 @@ def test_kmod_phase_measured_ip5b1(tmp_path, _kmod_inputs_path):
 def test_kmod_simulation_ip1b1(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[0.25, 0.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B1",
+        working_directory=_kmod_inputs_path,
+        beam=1,
         simulation=True,
         no_sig_digits=True,
         no_plots=False,
@@ -88,7 +88,7 @@ def test_kmod_simulation_ip1b1(tmp_path, _kmod_inputs_path):
         errorK=0.0,
         errorL=0.0,
         tune_uncertainty=0.0e-5,
-        outputdir=str(tmp_path),
+        outputdir=tmp_path,
     )
     results = tfs.read(tmp_path / "ip1B1" / f"{RESULTS_FILE_NAME}{EXT}")
     beta_twiss = {"X": 0.25, "Y": 0.25}
@@ -105,8 +105,8 @@ def test_kmod_simulation_ip1b1(tmp_path, _kmod_inputs_path):
 def test_kmod_simulation_ip1b2(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[0.25, 0.25, 0.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B2",
+        working_directory=_kmod_inputs_path,
+        beam=2,
         simulation=True,
         no_sig_digits=True,
         no_plots=False,
@@ -117,7 +117,7 @@ def test_kmod_simulation_ip1b2(tmp_path, _kmod_inputs_path):
         errorK=0.0,
         errorL=0.0,
         tune_uncertainty=0.0e-5,
-        outputdir=str(tmp_path),
+        outputdir=tmp_path,
     )
     results = tfs.read(tmp_path / "ip1B2" / f"{RESULTS_FILE_NAME}{EXT}")
     beta_twiss = {"X": 0.25, "Y": 0.25}
@@ -134,8 +134,8 @@ def test_kmod_simulation_ip1b2(tmp_path, _kmod_inputs_path):
 def test_kmod_meas_ip1b1(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[0.44, 0.44, 0.0, 0.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B1",
+        working_directory=_kmod_inputs_path,
+        beam=1,
         simulation=False,
         no_sig_digits=True,
         no_plots=False,
@@ -145,7 +145,7 @@ def test_kmod_meas_ip1b1(tmp_path, _kmod_inputs_path):
         errorK=0.0,
         errorL=0.0,
         tune_uncertainty=2.5e-5,
-        outputdir=str(tmp_path),
+        outputdir=tmp_path,
     )
     results = tfs.read(tmp_path / "ip1B1" / f"{RESULTS_FILE_NAME}{EXT}")
     beta_prev = {"X": 0.45, "Y": 0.43}
@@ -161,8 +161,8 @@ def test_kmod_meas_ip1b1(tmp_path, _kmod_inputs_path):
 def test_kmod_meas_ip1b2(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[0.44, 0.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B2",
+        working_directory=_kmod_inputs_path,
+        beam=2,
         simulation=False,
         no_sig_digits=True,
         no_plots=False,
@@ -172,7 +172,7 @@ def test_kmod_meas_ip1b2(tmp_path, _kmod_inputs_path):
         errorK=0.0,
         errorL=0.0,
         tune_uncertainty=2.5e-5,
-        outputdir=str(tmp_path),
+        outputdir=tmp_path,
     )
     results = tfs.read(tmp_path / "ip1B2" / f"{RESULTS_FILE_NAME}{EXT}")
     beta_prev = {"X": 0.387, "Y": 0.410}
@@ -188,8 +188,8 @@ def test_kmod_meas_ip1b2(tmp_path, _kmod_inputs_path):
 def test_kmod_meas_ip4b1(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[200.0, -100.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B1",
+        working_directory=_kmod_inputs_path,
+        beam=1,
         simulation=False,
         no_sig_digits=True,
         no_plots=False,
@@ -199,7 +199,7 @@ def test_kmod_meas_ip4b1(tmp_path, _kmod_inputs_path):
         errorK=0.0,
         errorL=0.0,
         tune_uncertainty=0.5e-5,
-        outputdir=str(tmp_path),
+        outputdir=tmp_path,
     )
     results = tfs.read(
         tmp_path / "MQY.6R4.B1-MQM.7R4.B1" / f"{INSTRUMENTS_FILE_NAME}{EXT}", index="NAME"
@@ -226,8 +226,8 @@ def test_kmod_meas_ip4b1(tmp_path, _kmod_inputs_path):
 def test_kmod_simulation_ip4b1(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[200.0, -100.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B1",
+        working_directory=_kmod_inputs_path,
+        beam=1,
         simulation=True,
         no_sig_digits=True,
         no_plots=False,
@@ -237,7 +237,7 @@ def test_kmod_simulation_ip4b1(tmp_path, _kmod_inputs_path):
         errorK=0.0,
         errorL=0.0,
         tune_uncertainty=0.5e-5,
-        outputdir=str(tmp_path),
+        outputdir=tmp_path,
     )
     results = tfs.read(
         tmp_path / "MQY.6R4.B1-MQM.7R4.B1" / f"{INSTRUMENTS_FILE_NAME}{EXT}", index="NAME"
@@ -263,8 +263,8 @@ def test_kmod_simulation_ip4b1(tmp_path, _kmod_inputs_path):
 def test_kmod_meas_ip4b2(tmp_path, _kmod_inputs_path):
     analyse_kmod(
         betastar_and_waist=[200.0, -100.0],
-        working_directory=str(_kmod_inputs_path),
-        beam="B2",
+        working_directory=_kmod_inputs_path,
+        beam=2,
         simulation=False,
         no_sig_digits=True,
         no_plots=False,
@@ -274,7 +274,7 @@ def test_kmod_meas_ip4b2(tmp_path, _kmod_inputs_path):
         errorK=0.0,
         errorL=0.0,
         tune_uncertainty=0.5e-5,
-        outputdir=str(tmp_path),
+        outputdir=tmp_path,
     )
     results = tfs.read(
         tmp_path / "MQM.7L4.B2-MQY.6L4.B2" / f"{INSTRUMENTS_FILE_NAME}{EXT}", index="NAME"
@@ -306,8 +306,8 @@ def test_kmod_outputdir_default(tmp_path, _kmod_inputs_path):
     [shutil.copy(kmod_input, tmp_path) for kmod_input in _kmod_inputs_path.glob("*L4B2*")]
     analyse_kmod(
         betastar_and_waist=[200.0, -100.0],
-        working_directory=str(tmp_path),
-        beam="B2",
+        working_directory=tmp_path,
+        beam=2,
         simulation=False,
         no_sig_digits=True,
         no_plots=False,

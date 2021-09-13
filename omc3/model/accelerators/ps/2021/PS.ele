@@ -1,0 +1,1105 @@
+/**********************************************************************************
+*
+* Elements description and sequence file for each PS main unit (MU).
+*
+* 07/10/2020 - Alexander Huschauer
+************************************************************************************/
+
+/************************************************************************************
+*
+*         DEFINITION OF FOCUSING AND DEFOCUSING HALF-UNITS OF THE MU               
+*
+*************************************************************************************/
+
+/************************************************************************************
+*        							 F HALF-UNITS     					            
+*************************************************************************************/
+
+LF   = +2.1260;				! iron length of F half-unit
+DLF := +0.0715925;          ! theoretical bending length correction; value has been rounded on drawing PS_LM___0013 (MU01 assembly) to 0.0716 m
+L_F := LF + DLF;			! total magnetic length
+
+k0PRBHF :=  0.03135884818;  ! angle calculated taking into account the difference between D and F half-units
+k1PRBHF := +0.05705266952;	! rematched for the bare machine
+k2PRBHF :=  0.0;			! to be used in the presence of saturation effects in the MUs
+
+/************************************************************************************
+*        							 D HALF-UNITS     					            
+*************************************************************************************/
+
+LD   = +2.1340;          	! iron length of D half-unit
+DLD := +0.0715925;          ! theoretical bending length correction; value has been rounded on drawing PS_LM___0013 (MU01 assembly) to 0.0716 m
+L_D := LD + DLD;			! total magnetic length
+
+k0PRBHD :=  0.03147300489;  ! angle calculated taking into account the difference between D and F half-units
+k1PRBHD := -0.05711581728;	! rematched for the bare machine
+k2PRBHD :=  0.0;			! to be used in the presence of saturation effects in the MUs
+
+/************************************************************************************
+*        							 PFW and F8L    					            
+*************************************************************************************/
+
+k1PRPFWF := 0.0; 			! representing the quadrupolar effect of the PFW
+k2PRPFWF := 0.0;			! representing the sextupolar effect of the PFW
+k3PRPFWF := 0.0;			! representing the octupolar effect of the PFW
+
+k1PRPFWD := 0.0; 			! representing the quadrupolar effect of the PFW
+k2PRPFWD := 0.0;			! representing the sextupolar effect of the PFW
+k3PRPFWD := 0.0;			! representing the octupolar effect of the PFW
+
+k1PRF8L  := 0.0;			! representing the quadrupolar effect of the Figure-of-Eight-Loop
+
+/************************************************************************************
+*
+*                           MULTIPOLES INSIDE THE MAIN UNITS               
+* 
+*************************************************************************************/
+
+! TODO: discuss whether inside or outside yoke description should still be retained
+! ideally, information from the magnetic model to be incorporated here
+! TODO: explain disappearance of the junction, being replaced by only a MULTIPOLE
+
+! sextupole components matched for the bare machine
+k2PRMP    := -0.01858039299;
+k2PRMPJ  :=  0.03934772381;
+
+! octupole components matched for the bare machine
+k3PRMPF  :=  0.05812457857;
+k3PRMPD  := -0.13201484960;
+
+PR_MPF: MULTIPOLE, knl := {0, 0, k2PRMP, k3PRMPF + k3PRPFWF, k4PRMPF, k5PRMPF};
+PR_MPJ: MULTIPOLE, knl := {0, 0, k2PRMPJ, 0, k4PRMPJ, k5PRMPJ};
+PR_MPD: MULTIPOLE, knl := {0, 0, k2PRMP, k3PRMPD + k3PRPFWD, k4PRMPD, k5PRMPD};
+
+/************************************************************************************
+*
+*     DEFINITION OF HORIZONTAL ORBIT CORRECTORS REPRESENTING THE BACKLEG WINDINGS               
+*
+*************************************************************************************/
+
+! In reality each DHZ corresponds to a cable around the yoke of two adjacent MUs. 
+! For example, PR.DHZXX provides a correction along MU(XX-1) and MUXX.
+! In this model, the effect of each PR.DHZXX is represented by kicks at the location 
+! of the juntion of MU(XX-1) and MUXX.
+
+PR_DHZ  : HKICKER  , L := 0;
+
+/************************************************************************************
+*
+*         						DEFINITION OF EACH MU               
+*
+*************************************************************************************/
+
+!R          ! D-F unit, yoke outside
+!S          ! F-D unit, yoke outside
+!T          ! F-D unit, yoke inside
+!U          ! D-F unit, yoke inside
+
+MU_L = L_F + L_D;		! Total magnetic length of one MU
+PR_BHF: SBEND, L = L_F, ANGLE := k0PRBHF, K1 := k1PRBHF + k1PRPFWF - k1PRF8L, K2 := k2PRBHF + k2PRPFWF;
+PR_BHD: SBEND, L = L_D, ANGLE := k0PRBHD, K1 := k1PRBHD + k1PRPFWD + k1PRF8L, K2 := k2PRBHD + k2PRPFWD;
+
+PR.BHT01: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP01.F:  PR_MPF,  AT = 0.0;
+ PR.BHT01.F: PR_BHF,  AT = L_F/2;
+ PR.MP01.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ01.B: PR_DHZ,  AT = L_F;
+ PR.BHT01.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP01.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU02: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP02.D:  PR_MPD,  AT = 0.0;
+ PR.BHU02.D: PR_BHD,  AT = L_D/2;
+ PR.MP02.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ03.A: PR_DHZ,  AT = L_D;
+ PR.BHU02.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP02.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT03: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP03.F:  PR_MPF,  AT = 0.0;
+ PR.BHT03.F: PR_BHF,  AT = L_F/2;
+ PR.MP03.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ03.B: PR_DHZ,  AT = L_F;
+ PR.BHT03.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP03.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR04: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP04.D:  PR_MPD,  AT = 0.0;
+ PR.BHR04.D: PR_BHD,  AT = L_D/2;
+ PR.MP04.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ05.A: PR_DHZ,  AT = L_D;
+ PR.BHR04.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP04.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT05: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP05.F:  PR_MPF,  AT = 0.0;
+ PR.BHT05.F: PR_BHF,  AT = L_F/2;
+ PR.MP05.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ05.B: PR_DHZ,  AT = L_F;
+ PR.BHT05.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP05.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR06: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP06.D:  PR_MPD,  AT = 0.0;
+ PR.BHR06.D: PR_BHD,  AT = L_D/2;
+ PR.MP06.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ07.A: PR_DHZ,  AT = L_D;
+ PR.BHR06.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP06.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS07: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP07.F:  PR_MPF,  AT = 0.0;
+ PR.BHS07.F: PR_BHF,  AT = L_F/2;
+ PR.MP07.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ07.B: PR_DHZ,  AT = L_F;
+ PR.BHS07.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP07.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR08: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP08.D:  PR_MPD,  AT = 0.0;
+ PR.BHR08.D: PR_BHD,  AT = L_D/2;
+ PR.MP08.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ09.A: PR_DHZ,  AT = L_D;
+ PR.BHR08.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP08.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT09: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP09.F:  PR_MPF,  AT = 0.0;
+ PR.BHT09.F: PR_BHF,  AT = L_F/2;
+ PR.MP09.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ09.B: PR_DHZ,  AT = L_F;
+ PR.BHT09.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP09.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR10: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP10.D:  PR_MPD,  AT = 0.0;
+ PR.BHR10.D: PR_BHD,  AT = L_D/2;
+ PR.MP10.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ11.A: PR_DHZ,  AT = L_D;
+ PR.BHR10.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP10.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS11: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP11.F:  PR_MPF,  AT = 0.0;
+ PR.BHS11.F: PR_BHF,  AT = L_F/2;
+ PR.MP11.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ11.B: PR_DHZ,  AT = L_F;
+ PR.BHS11.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP11.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR12: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP12.D:  PR_MPD,  AT = 0.0;
+ PR.BHR12.D: PR_BHD,  AT = L_D/2;
+ PR.MP12.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ13.A: PR_DHZ,  AT = L_D;
+ PR.BHR12.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP12.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS13: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP13.F:  PR_MPF,  AT = 0.0;
+ PR.BHS13.F: PR_BHF,  AT = L_F/2;
+ PR.MP13.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ13.B: PR_DHZ,  AT = L_F;
+ PR.BHS13.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP13.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU14: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP14.D:  PR_MPD,  AT = 0.0;
+ PR.BHU14.D: PR_BHD,  AT = L_D/2;
+ PR.MP14.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ15.A: PR_DHZ,  AT = L_D;
+ PR.BHU14.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP14.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT15: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP15.F:  PR_MPF,  AT = 0.0;
+ PR.BHT15.F: PR_BHF,  AT = L_F/2;
+ PR.MP15.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ15.B: PR_DHZ,  AT = L_F;
+ PR.BHT15.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP15.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU16: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP16.D:  PR_MPD,  AT = 0.0;
+ PR.BHU16.D: PR_BHD,  AT = L_D/2;
+ PR.MP16.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ17.A: PR_DHZ,  AT = L_D;
+ PR.BHU16.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP16.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT17: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP17.F:  PR_MPF,  AT = 0.0;
+ PR.BHT17.F: PR_BHF,  AT = L_F/2;
+ PR.MP17.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ17.B: PR_DHZ,  AT = L_F;
+ PR.BHT17.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP17.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU18: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP18.D:  PR_MPD,  AT = 0.0;
+ PR.BHU18.D: PR_BHD,  AT = L_D/2;
+ PR.MP18.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ19.A: PR_DHZ,  AT = L_D;
+ PR.BHU18.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP18.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS19: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP19.F:  PR_MPF,  AT = 0.0;
+ PR.BHS19.F: PR_BHF,  AT = L_F/2;
+ PR.MP19.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ19.B: PR_DHZ,  AT = L_F;
+ PR.BHS19.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP19.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR20: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP20.D:  PR_MPD,  AT = 0.0;
+ PR.BHR20.D: PR_BHD,  AT = L_D/2;
+ PR.MP20.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ21.A: PR_DHZ,  AT = L_D;
+ PR.BHR20.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP20.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT21: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP21.F:  PR_MPF,  AT = 0.0;
+ PR.BHT21.F: PR_BHF,  AT = L_F/2;
+ PR.MP21.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ21.B: PR_DHZ,  AT = L_F;
+ PR.BHT21.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP21.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR22: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP22.D:  PR_MPD,  AT = 0.0;
+ PR.BHR22.D: PR_BHD,  AT = L_D/2;
+ PR.MP22.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ23.A: PR_DHZ,  AT = L_D;
+ PR.BHR22.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP22.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT23: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP23.F:  PR_MPF,  AT = 0.0;
+ PR.BHT23.F: PR_BHF,  AT = L_F/2;
+ PR.MP23.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ23.B: PR_DHZ,  AT = L_F;
+ PR.BHT23.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP23.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU24: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP24.D:  PR_MPD,  AT = 0.0;
+ PR.BHU24.D: PR_BHD,  AT = L_D/2;
+ PR.MP24.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ25.A: PR_DHZ,  AT = L_D;
+ PR.BHU24.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP24.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT25: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP25.F:  PR_MPF,  AT = 0.0;
+ PR.BHT25.F: PR_BHF,  AT = L_F/2;
+ PR.MP25.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ25.B: PR_DHZ,  AT = L_F;
+ PR.BHT25.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP25.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR26: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP26.D:  PR_MPD,  AT = 0.0;
+ PR.BHR26.D: PR_BHD,  AT = L_D/2;
+ PR.MP26.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ27.A: PR_DHZ,  AT = L_D;
+ PR.BHR26.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP26.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS27: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP27.F:  PR_MPF,  AT = 0.0;
+ PR.BHS27.F: PR_BHF,  AT = L_F/2;
+ PR.MP27.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ27.B: PR_DHZ,  AT = L_F;
+ PR.BHS27.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP27.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU28: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP28.D:  PR_MPD,  AT = 0.0;
+ PR.BHU28.D: PR_BHD,  AT = L_D/2;
+ PR.MP28.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ29.A: PR_DHZ,  AT = L_D;
+ PR.BHU28.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP28.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT29: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP29.F:  PR_MPF,  AT = 0.0;
+ PR.BHT29.F: PR_BHF,  AT = L_F/2;
+ PR.MP29.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ29.B: PR_DHZ,  AT = L_F;
+ PR.BHT29.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP29.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR30: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP30.D:  PR_MPD,  AT = 0.0;
+ PR.BHR30.D: PR_BHD,  AT = L_D/2;
+ PR.MP30.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ31.A: PR_DHZ,  AT = L_D;
+ PR.BHR30.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP30.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT31: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP31.F:  PR_MPF,  AT = 0.0;
+ PR.BHT31.F: PR_BHF,  AT = L_F/2;
+ PR.MP31.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ31.B: PR_DHZ,  AT = L_F;
+ PR.BHT31.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP31.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR32: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP32.D:  PR_MPD,  AT = 0.0;
+ PR.BHR32.D: PR_BHD,  AT = L_D/2;
+ PR.MP32.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ33.A: PR_DHZ,  AT = L_D;
+ PR.BHR32.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP32.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS33: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP33.F:  PR_MPF,  AT = 0.0;
+ PR.BHS33.F: PR_BHF,  AT = L_F/2;
+ PR.MP33.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ33.B: PR_DHZ,  AT = L_F;
+ PR.BHS33.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP33.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR34: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP34.D:  PR_MPD,  AT = 0.0;
+ PR.BHR34.D: PR_BHD,  AT = L_D/2;
+ PR.MP34.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ35.A: PR_DHZ,  AT = L_D;
+ PR.BHR34.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP34.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT35: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP35.F:  PR_MPF,  AT = 0.0;
+ PR.BHT35.F: PR_BHF,  AT = L_F/2;
+ PR.MP35.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ35.B: PR_DHZ,  AT = L_F;
+ PR.BHT35.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP35.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR36: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP36.D:  PR_MPD,  AT = 0.0;
+ PR.BHR36.D: PR_BHD,  AT = L_D/2;
+ PR.MP36.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ37.A: PR_DHZ,  AT = L_D;
+ PR.BHR36.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP36.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT37: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP37.F:  PR_MPF,  AT = 0.0;
+ PR.BHT37.F: PR_BHF,  AT = L_F/2;
+ PR.MP37.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ37.B: PR_DHZ,  AT = L_F;
+ PR.BHT37.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP37.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR38: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP38.D:  PR_MPD,  AT = 0.0;
+ PR.BHR38.D: PR_BHD,  AT = L_D/2;
+ PR.MP38.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ39.A: PR_DHZ,  AT = L_D;
+ PR.BHR38.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP38.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT39: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP39.F:  PR_MPF,  AT = 0.0;
+ PR.BHT39.F: PR_BHF,  AT = L_F/2;
+ PR.MP39.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ39.B: PR_DHZ,  AT = L_F;
+ PR.BHT39.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP39.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU40: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP40.D:  PR_MPD,  AT = 0.0;
+ PR.BHU40.D: PR_BHD,  AT = L_D/2;
+ PR.MP40.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ41.A: PR_DHZ,  AT = L_D;
+ PR.BHU40.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP40.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT41: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP41.F:  PR_MPF,  AT = 0.0;
+ PR.BHT41.F: PR_BHF,  AT = L_F/2;
+ PR.MP41.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ41.B: PR_DHZ,  AT = L_F;
+ PR.BHT41.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP41.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR42: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP42.D:  PR_MPD,  AT = 0.0;
+ PR.BHR42.D: PR_BHD,  AT = L_D/2;
+ PR.MP42.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ43.A: PR_DHZ,  AT = L_D;
+ PR.BHR42.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP42.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT43: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP43.F:  PR_MPF,  AT = 0.0;
+ PR.BHT43.F: PR_BHF,  AT = L_F/2;
+ PR.MP43.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ43.B: PR_DHZ,  AT = L_F;
+ PR.BHT43.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP43.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR44: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP44.D:  PR_MPD,  AT = 0.0;
+ PR.BHR44.D: PR_BHD,  AT = L_D/2;
+ PR.MP44.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ45.A: PR_DHZ,  AT = L_D;
+ PR.BHR44.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP44.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT45: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP45.F:  PR_MPF,  AT = 0.0;
+ PR.BHT45.F: PR_BHF,  AT = L_F/2;
+ PR.MP45.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ45.B: PR_DHZ,  AT = L_F;
+ PR.BHT45.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP45.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR46: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP46.D:  PR_MPD,  AT = 0.0;
+ PR.BHR46.D: PR_BHD,  AT = L_D/2;
+ PR.MP46.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ47.A: PR_DHZ,  AT = L_D;
+ PR.BHR46.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP46.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS47: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP47.F:  PR_MPF,  AT = 0.0;
+ PR.BHS47.F: PR_BHF,  AT = L_F/2;
+ PR.MP47.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ47.B: PR_DHZ,  AT = L_F;
+ PR.BHS47.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP47.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR48: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP48.D:  PR_MPD,  AT = 0.0;
+ PR.BHR48.D: PR_BHD,  AT = L_D/2;
+ PR.MP48.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ49.A: PR_DHZ,  AT = L_D;
+ PR.BHR48.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP48.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT49: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP49.F:  PR_MPF,  AT = 0.0;
+ PR.BHT49.F: PR_BHF,  AT = L_F/2;
+ PR.MP49.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ49.B: PR_DHZ,  AT = L_F;
+ PR.BHT49.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP49.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR50: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP50.D:  PR_MPD,  AT = 0.0;
+ PR.BHR50.D: PR_BHD,  AT = L_D/2;
+ PR.MP50.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ51.A: PR_DHZ,  AT = L_D;
+ PR.BHR50.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP50.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT51: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP51.F:  PR_MPF,  AT = 0.0;
+ PR.BHT51.F: PR_BHF,  AT = L_F/2;
+ PR.MP51.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ51.B: PR_DHZ,  AT = L_F;
+ PR.BHT51.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP51.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR52: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP52.D:  PR_MPD,  AT = 0.0;
+ PR.BHR52.D: PR_BHD,  AT = L_D/2;
+ PR.MP52.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ53.A: PR_DHZ,  AT = L_D;
+ PR.BHR52.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP52.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS53: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP53.F:  PR_MPF,  AT = 0.0;
+ PR.BHS53.F: PR_BHF,  AT = L_F/2;
+ PR.MP53.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ53.B: PR_DHZ,  AT = L_F;
+ PR.BHS53.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP53.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR54: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP54.D:  PR_MPD,  AT = 0.0;
+ PR.BHR54.D: PR_BHD,  AT = L_D/2;
+ PR.MP54.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ55.A: PR_DHZ,  AT = L_D;
+ PR.BHR54.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP54.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT55: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP55.F:  PR_MPF,  AT = 0.0;
+ PR.BHT55.F: PR_BHF,  AT = L_F/2;
+ PR.MP55.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ55.B: PR_DHZ,  AT = L_F;
+ PR.BHT55.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP55.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU56: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP56.D:  PR_MPD,  AT = 0.0;
+ PR.BHU56.D: PR_BHD,  AT = L_D/2;
+ PR.MP56.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ57.A: PR_DHZ,  AT = L_D;
+ PR.BHU56.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP56.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT57: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP57.F:  PR_MPF,  AT = 0.0;
+ PR.BHT57.F: PR_BHF,  AT = L_F/2;
+ PR.MP57.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ57.B: PR_DHZ,  AT = L_F;
+ PR.BHT57.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP57.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU58: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP58.D:  PR_MPD,  AT = 0.0;
+ PR.BHU58.D: PR_BHD,  AT = L_D/2;
+ PR.MP58.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ59.A: PR_DHZ,  AT = L_D;
+ PR.BHU58.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP58.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT59: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP59.F:  PR_MPF,  AT = 0.0;
+ PR.BHT59.F: PR_BHF,  AT = L_F/2;
+ PR.MP59.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ59.B: PR_DHZ,  AT = L_F;
+ PR.BHT59.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP59.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU60: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP60.D:  PR_MPD,  AT = 0.0;
+ PR.BHU60.D: PR_BHD,  AT = L_D/2;
+ PR.MP60.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ61.A: PR_DHZ,  AT = L_D;
+ PR.BHU60.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP60.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT61: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP61.F:  PR_MPF,  AT = 0.0;
+ PR.BHT61.F: PR_BHF,  AT = L_F/2;
+ PR.MP61.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ61.B: PR_DHZ,  AT = L_F;
+ PR.BHT61.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP61.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU62: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP62.D:  PR_MPD,  AT = 0.0;
+ PR.BHU62.D: PR_BHD,  AT = L_D/2;
+ PR.MP62.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ63.A: PR_DHZ,  AT = L_D;
+ PR.BHU62.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP62.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT63: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP63.F:  PR_MPF,  AT = 0.0;
+ PR.BHT63.F: PR_BHF,  AT = L_F/2;
+ PR.MP63.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ63.B: PR_DHZ,  AT = L_F;
+ PR.BHT63.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP63.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU64: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP64.D:  PR_MPD,  AT = 0.0;
+ PR.BHU64.D: PR_BHD,  AT = L_D/2;
+ PR.MP64.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ65.A: PR_DHZ,  AT = L_D;
+ PR.BHU64.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP64.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT65: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP65.F:  PR_MPF,  AT = 0.0;
+ PR.BHT65.F: PR_BHF,  AT = L_F/2;
+ PR.MP65.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ65.B: PR_DHZ,  AT = L_F;
+ PR.BHT65.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP65.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR66: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP66.D:  PR_MPD,  AT = 0.0;
+ PR.BHR66.D: PR_BHD,  AT = L_D/2;
+ PR.MP66.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ67.A: PR_DHZ,  AT = L_D;
+ PR.BHR66.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP66.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS67: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP67.F:  PR_MPF,  AT = 0.0;
+ PR.BHS67.F: PR_BHF,  AT = L_F/2;
+ PR.MP67.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ67.B: PR_DHZ,  AT = L_F;
+ PR.BHS67.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP67.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU68: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP68.D:  PR_MPD,  AT = 0.0;
+ PR.BHU68.D: PR_BHD,  AT = L_D/2;
+ PR.MP68.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ69.A: PR_DHZ,  AT = L_D;
+ PR.BHU68.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP68.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT69: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP69.F:  PR_MPF,  AT = 0.0;
+ PR.BHT69.F: PR_BHF,  AT = L_F/2;
+ PR.MP69.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ69.B: PR_DHZ,  AT = L_F;
+ PR.BHT69.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP69.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR70: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP70.D:  PR_MPD,  AT = 0.0;
+ PR.BHR70.D: PR_BHD,  AT = L_D/2;
+ PR.MP70.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ71.A: PR_DHZ,  AT = L_D;
+ PR.BHR70.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP70.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT71: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP71.F:  PR_MPF,  AT = 0.0;
+ PR.BHT71.F: PR_BHF,  AT = L_F/2;
+ PR.MP71.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ71.B: PR_DHZ,  AT = L_F;
+ PR.BHT71.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP71.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR72: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP72.D:  PR_MPD,  AT = 0.0;
+ PR.BHR72.D: PR_BHD,  AT = L_D/2;
+ PR.MP72.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ73.A: PR_DHZ,  AT = L_D;
+ PR.BHR72.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP72.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS73: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP73.F:  PR_MPF,  AT = 0.0;
+ PR.BHS73.F: PR_BHF,  AT = L_F/2;
+ PR.MP73.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ73.B: PR_DHZ,  AT = L_F;
+ PR.BHS73.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP73.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU74: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP74.D:  PR_MPD,  AT = 0.0;
+ PR.BHU74.D: PR_BHD,  AT = L_D/2;
+ PR.MP74.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ75.A: PR_DHZ,  AT = L_D;
+ PR.BHU74.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP74.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT75: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP75.F:  PR_MPF,  AT = 0.0;
+ PR.BHT75.F: PR_BHF,  AT = L_F/2;
+ PR.MP75.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ75.B: PR_DHZ,  AT = L_F;
+ PR.BHT75.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP75.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR76: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP76.D:  PR_MPD,  AT = 0.0;
+ PR.BHR76.D: PR_BHD,  AT = L_D/2;
+ PR.MP76.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ77.A: PR_DHZ,  AT = L_D;
+ PR.BHR76.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP76.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT77: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP77.F:  PR_MPF,  AT = 0.0;
+ PR.BHT77.F: PR_BHF,  AT = L_F/2;
+ PR.MP77.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ77.B: PR_DHZ,  AT = L_F;
+ PR.BHT77.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP77.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR78: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP78.D:  PR_MPD,  AT = 0.0;
+ PR.BHR78.D: PR_BHD,  AT = L_D/2;
+ PR.MP78.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ79.A: PR_DHZ,  AT = L_D;
+ PR.BHR78.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP78.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS79: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP79.F:  PR_MPF,  AT = 0.0;
+ PR.BHS79.F: PR_BHF,  AT = L_F/2;
+ PR.MP79.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ79.B: PR_DHZ,  AT = L_F;
+ PR.BHS79.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP79.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR80: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP80.D:  PR_MPD,  AT = 0.0;
+ PR.BHR80.D: PR_BHD,  AT = L_D/2;
+ PR.MP80.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ81.A: PR_DHZ,  AT = L_D;
+ PR.BHR80.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP80.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT81: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP81.F:  PR_MPF,  AT = 0.0;
+ PR.BHT81.F: PR_BHF,  AT = L_F/2;
+ PR.MP81.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ81.B: PR_DHZ,  AT = L_F;
+ PR.BHT81.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP81.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR82: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP82.D:  PR_MPD,  AT = 0.0;
+ PR.BHR82.D: PR_BHD,  AT = L_D/2;
+ PR.MP82.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ83.A: PR_DHZ,  AT = L_D;
+ PR.BHR82.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP82.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS83: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP83.F:  PR_MPF,  AT = 0.0;
+ PR.BHS83.F: PR_BHF,  AT = L_F/2;
+ PR.MP83.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ83.B: PR_DHZ,  AT = L_F;
+ PR.BHS83.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP83.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR84: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP84.D:  PR_MPD,  AT = 0.0;
+ PR.BHR84.D: PR_BHD,  AT = L_D/2;
+ PR.MP84.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ85.A: PR_DHZ,  AT = L_D;
+ PR.BHR84.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP84.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT85: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP85.F:  PR_MPF,  AT = 0.0;
+ PR.BHT85.F: PR_BHF,  AT = L_F/2;
+ PR.MP85.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ85.B: PR_DHZ,  AT = L_F;
+ PR.BHT85.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP85.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR86: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP86.D:  PR_MPD,  AT = 0.0;
+ PR.BHR86.D: PR_BHD,  AT = L_D/2;
+ PR.MP86.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ87.A: PR_DHZ,  AT = L_D;
+ PR.BHR86.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP86.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS87: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP87.F:  PR_MPF,  AT = 0.0;
+ PR.BHS87.F: PR_BHF,  AT = L_F/2;
+ PR.MP87.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ87.B: PR_DHZ,  AT = L_F;
+ PR.BHS87.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP87.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU88: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP88.D:  PR_MPD,  AT = 0.0;
+ PR.BHU88.D: PR_BHD,  AT = L_D/2;
+ PR.MP88.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ89.A: PR_DHZ,  AT = L_D;
+ PR.BHU88.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP88.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT89: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP89.F:  PR_MPF,  AT = 0.0;
+ PR.BHT89.F: PR_BHF,  AT = L_F/2;
+ PR.MP89.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ89.B: PR_DHZ,  AT = L_F;
+ PR.BHT89.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP89.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR90: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP90.D:  PR_MPD,  AT = 0.0;
+ PR.BHR90.D: PR_BHD,  AT = L_D/2;
+ PR.MP90.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ91.A: PR_DHZ,  AT = L_D;
+ PR.BHR90.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP90.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT91: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP91.F:  PR_MPF,  AT = 0.0;
+ PR.BHT91.F: PR_BHF,  AT = L_F/2;
+ PR.MP91.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ91.B: PR_DHZ,  AT = L_F;
+ PR.BHT91.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP91.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR92: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP92.D:  PR_MPD,  AT = 0.0;
+ PR.BHR92.D: PR_BHD,  AT = L_D/2;
+ PR.MP92.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ93.A: PR_DHZ,  AT = L_D;
+ PR.BHR92.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP92.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS93: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP93.F:  PR_MPF,  AT = 0.0;
+ PR.BHS93.F: PR_BHF,  AT = L_F/2;
+ PR.MP93.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ93.B: PR_DHZ,  AT = L_F;
+ PR.BHS93.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP93.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR94: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP94.D:  PR_MPD,  AT = 0.0;
+ PR.BHR94.D: PR_BHD,  AT = L_D/2;
+ PR.MP94.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ95.A: PR_DHZ,  AT = L_D;
+ PR.BHR94.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP94.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT95: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP95.F:  PR_MPF,  AT = 0.0;
+ PR.BHT95.F: PR_BHF,  AT = L_F/2;
+ PR.MP95.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ95.B: PR_DHZ,  AT = L_F;
+ PR.BHT95.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP95.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR96: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP96.D:  PR_MPD,  AT = 0.0;
+ PR.BHR96.D: PR_BHD,  AT = L_D/2;
+ PR.MP96.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ97.A: PR_DHZ,  AT = L_D;
+ PR.BHR96.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP96.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT97: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP97.F:  PR_MPF,  AT = 0.0;
+ PR.BHT97.F: PR_BHF,  AT = L_F/2;
+ PR.MP97.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ97.B: PR_DHZ,  AT = L_F;
+ PR.BHT97.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP97.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR98: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP98.D:  PR_MPD,  AT = 0.0;
+ PR.BHR98.D: PR_BHD,  AT = L_D/2;
+ PR.MP98.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ99.A: PR_DHZ,  AT = L_D;
+ PR.BHR98.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP98.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS99: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP99.F:  PR_MPF,  AT = 0.0;
+ PR.BHS99.F: PR_BHF,  AT = L_F/2;
+ PR.MP99.J:  PR_MPJ,  AT = L_F;
+ PR.DHZ99.B: PR_DHZ,  AT = L_F;
+ PR.BHS99.D: PR_BHD,  AT = L_F + L_D/2;
+ PR.MP99.D:  PR_MPD,  AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR00: SEQUENCE, refer = CENTRE,  L = MU_L;
+ PR.MP00.D:  PR_MPD,  AT = 0.0;
+ PR.BHR00.D: PR_BHD,  AT = L_D/2;
+ PR.MP00.J:  PR_MPJ,  AT = L_D;
+ PR.DHZ01.A: PR_DHZ,  AT = L_D;
+ PR.BHR00.F: PR_BHF,  AT = L_D + L_F/2;
+ PR.MP00.F:  PR_MPF,  AT = MU_L;
+ENDSEQUENCE;
+
+/************************************************************************************/
+/*                       STRENGTH DEFINITIONS                                       */
+/************************************************************************************/
+
+PR.DHZ01.A, KICK := kPRDHZ01;
+PR.DHZ01.B, KICK := kPRDHZ01;
+PR.DHZ03.A, KICK := kPRDHZ03;
+PR.DHZ03.B, KICK := kPRDHZ03;
+PR.DHZ05.A, KICK := kPRDHZ05;
+PR.DHZ05.B, KICK := kPRDHZ05;
+PR.DHZ07.A, KICK := kPRDHZ07;
+PR.DHZ07.B, KICK := kPRDHZ07;
+PR.DHZ09.A, KICK := kPRDHZ09;
+PR.DHZ09.B, KICK := kPRDHZ09;
+PR.DHZ11.A, KICK := kPRDHZ11;
+PR.DHZ11.B, KICK := kPRDHZ11;
+PR.DHZ13.A, KICK := kPRDHZ13;
+PR.DHZ13.B, KICK := kPRDHZ13;
+PR.DHZ15.A, KICK := kPRDHZ15;
+PR.DHZ15.B, KICK := kPRDHZ15;
+PR.DHZ17.A, KICK := kPRDHZ17;
+PR.DHZ17.B, KICK := kPRDHZ17;
+PR.DHZ19.A, KICK := kPRDHZ19;
+PR.DHZ19.B, KICK := kPRDHZ19;
+PR.DHZ21.A, KICK := kPRDHZ21;
+PR.DHZ21.B, KICK := kPRDHZ21;
+PR.DHZ23.A, KICK := kPRDHZ23;
+PR.DHZ23.B, KICK := kPRDHZ23;
+PR.DHZ25.A, KICK := kPRDHZ25;
+PR.DHZ25.B, KICK := kPRDHZ25;
+PR.DHZ27.A, KICK := kPRDHZ27;
+PR.DHZ27.B, KICK := kPRDHZ27;
+PR.DHZ29.A, KICK := kPRDHZ29;
+PR.DHZ29.B, KICK := kPRDHZ29;
+PR.DHZ31.A, KICK := kPRDHZ31;
+PR.DHZ31.B, KICK := kPRDHZ31;
+PR.DHZ33.A, KICK := kPRDHZ33;
+PR.DHZ33.B, KICK := kPRDHZ33;
+PR.DHZ35.A, KICK := kPRDHZ35;
+PR.DHZ35.B, KICK := kPRDHZ35;
+PR.DHZ37.A, KICK := kPRDHZ37;
+PR.DHZ37.B, KICK := kPRDHZ37;
+PR.DHZ39.A, KICK := kPRDHZ39;
+PR.DHZ39.B, KICK := kPRDHZ39;
+PR.DHZ41.A, KICK := kPRDHZ41;
+PR.DHZ41.B, KICK := kPRDHZ41;
+PR.DHZ43.A, KICK := kPRDHZ43;
+PR.DHZ43.B, KICK := kPRDHZ43;
+PR.DHZ45.A, KICK := kPRDHZ45;
+PR.DHZ45.B, KICK := kPRDHZ45;
+PR.DHZ47.A, KICK := kPRDHZ47;
+PR.DHZ47.B, KICK := kPRDHZ47;
+PR.DHZ49.A, KICK := kPRDHZ49;
+PR.DHZ49.B, KICK := kPRDHZ49;
+PR.DHZ51.A, KICK := kPRDHZ51;
+PR.DHZ51.B, KICK := kPRDHZ51;
+PR.DHZ53.A, KICK := kPRDHZ53;
+PR.DHZ53.B, KICK := kPRDHZ53;
+PR.DHZ55.A, KICK := kPRDHZ55;
+PR.DHZ55.B, KICK := kPRDHZ55;
+PR.DHZ57.A, KICK := kPRDHZ57;
+PR.DHZ57.B, KICK := kPRDHZ57;
+PR.DHZ59.A, KICK := kPRDHZ59;
+PR.DHZ59.B, KICK := kPRDHZ59;
+PR.DHZ61.A, KICK := kPRDHZ61;
+PR.DHZ61.B, KICK := kPRDHZ61;
+PR.DHZ63.A, KICK := kPRDHZ63;
+PR.DHZ63.B, KICK := kPRDHZ63;
+PR.DHZ65.A, KICK := kPRDHZ65;
+PR.DHZ65.B, KICK := kPRDHZ65;
+PR.DHZ67.A, KICK := kPRDHZ67;
+PR.DHZ67.B, KICK := kPRDHZ67;
+PR.DHZ69.A, KICK := kPRDHZ69;
+PR.DHZ69.B, KICK := kPRDHZ69;
+PR.DHZ71.A, KICK := kPRDHZ71;
+PR.DHZ71.B, KICK := kPRDHZ71;
+PR.DHZ73.A, KICK := kPRDHZ73;
+PR.DHZ73.B, KICK := kPRDHZ73;
+PR.DHZ75.A, KICK := kPRDHZ75;
+PR.DHZ75.B, KICK := kPRDHZ75;
+PR.DHZ77.A, KICK := kPRDHZ77;
+PR.DHZ77.B, KICK := kPRDHZ77;
+PR.DHZ79.A, KICK := kPRDHZ79;
+PR.DHZ79.B, KICK := kPRDHZ79;
+PR.DHZ81.A, KICK := kPRDHZ81;
+PR.DHZ81.B, KICK := kPRDHZ81;
+PR.DHZ83.A, KICK := kPRDHZ83;
+PR.DHZ83.B, KICK := kPRDHZ83;
+PR.DHZ85.A, KICK := kPRDHZ85;
+PR.DHZ85.B, KICK := kPRDHZ85;
+PR.DHZ87.A, KICK := kPRDHZ87;
+PR.DHZ87.B, KICK := kPRDHZ87;
+PR.DHZ89.A, KICK := kPRDHZ89;
+PR.DHZ89.B, KICK := kPRDHZ89;
+PR.DHZ91.A, KICK := kPRDHZ91;
+PR.DHZ91.B, KICK := kPRDHZ91;
+PR.DHZ93.A, KICK := kPRDHZ93;
+PR.DHZ93.B, KICK := kPRDHZ93;
+PR.DHZ95.A, KICK := kPRDHZ95;
+PR.DHZ95.B, KICK := kPRDHZ95;
+PR.DHZ97.A, KICK := kPRDHZ97;
+PR.DHZ97.B, KICK := kPRDHZ97;
+PR.DHZ99.A, KICK := kPRDHZ99;
+PR.DHZ99.B, KICK := kPRDHZ99;

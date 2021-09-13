@@ -18,7 +18,7 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "matplotlib>=3.2.0",
+    "matplotlib>=3.2.0,<3.4.3",  # temporary limitations, try run test!
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
     "numpy>=1.19.0",
     "pandas>=1.0",
@@ -28,7 +28,9 @@ DEPENDENCIES = [
     "generic-parser>=1.0.6",
     "sdds>=0.1.3",
     "h5py>=2.9.0",
+    "tables>=3.6.0",
     "uncertainties>=3.1.4",
+    "optics-functions>=0.1.0",
 ]
 
 # Extra dependencies

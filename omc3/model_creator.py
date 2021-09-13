@@ -4,13 +4,14 @@ Model Creator
 
 Entrypoint to run the model creator for LHC, PSBooster and PS models.
 """
-import logging
-import sys
+from pathlib import Path
 
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
+from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.constants import JOB_MODEL_MADX
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
@@ -20,8 +21,10 @@ from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
+from omc3.utils import logging_tools
 
-LOGGER = logging.getLogger(__name__)
+LOG = logging_tools.get_logger(__name__)
+
 
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
@@ -37,15 +40,23 @@ CREATORS = {
 
 def _get_params():
     params = EntryPointParameters()
-    params.add_parameter(name="type", choices=("nominal", "best_knowledge", "coupling_correction"),
-                         help="Type of model to create, either nominal or best_knowledge")
-    params.add_parameter(name="outputdir", required=True, type=str,
-                         help="Output path for model, twiss files will be writen here.")
-    params.add_parameter(name="writeto", type=str,
-                         help="Path to the file where to write the resulting MAD-X script.")
-    params.add_parameter(name="logfile", type=str,
-                         help=("Path to the file where to write the MAD-X script output."
-                               "If not provided it will be written to sys.stdout."))
+    params.add_parameter(
+        name="type",
+        choices=("nominal", "best_knowledge", "coupling_correction"),
+        help="Type of model to create."
+    )
+    params.add_parameter(
+        name="outputdir",
+        required=True,
+        type=Path,
+        help="Output path for model, twiss files will be writen here."
+    )
+    params.add_parameter(
+        name="logfile",
+        type=Path,
+        help=("Path to the file where to write the MAD-X script output."
+              "If not provided it will be written to sys.stdout.")
+    )
     return params
 
 
@@ -53,7 +64,7 @@ def _get_params():
 
 
 @entrypoint(_get_params())
-def create_instance_and_model(opt, accel_opt):
+def create_instance_and_model(opt, accel_opt) -> Accelerator:
     """
     Manager Keyword Args:
         *--Required--*
@@ -83,14 +94,9 @@ def create_instance_and_model(opt, accel_opt):
 
         - **type**:
 
-            Type of model to create, either nominal or best_knowledge
+            Type of model to create.
 
             choices: ``('nominal', 'best_knowledge', 'coupling_correction')``
-
-
-        - **writeto** *(str)*:
-
-            Path to the file where to write the resulting MAD-X script.
 
 
     Accelerator Keyword Args:
@@ -110,26 +116,33 @@ def create_instance_and_model(opt, accel_opt):
 
         JPARC: Not implemented
     """
-    if sys.flags.debug:
-        numeric_level = getattr(logging, "DEBUG", None)
-        ch = logging.StreamHandler(sys.stdout)
-        formatter = logging.Formatter(' %(asctime)s %(levelname)s | %(name)s : %(message)s')
-        ch.setFormatter(formatter)
-        logging.getLogger().addHandler(ch)
-        logging.getLogger().setLevel(numeric_level)
-        
-    else:
-        numeric_level = getattr(logging, "WARNING", None)
-        logging.basicConfig(level=numeric_level) # warning level to stderr
-
+    # Prepare paths
     create_dirs(opt.outputdir)
+
     accel_inst = manager.get_accelerator(accel_opt)
-    LOGGER.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
-    accel_inst.verify_object()
+    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     creator = CREATORS[accel_inst.NAME][opt.type]
-    creator.prepare_run(accel_inst, opt.outputdir)
-    madx_script = creator.get_madx_script(accel_inst, opt.outputdir)
-    run_string(madx_script, output_file=opt.writeto, log_file=opt.logfile)
+
+    # Prepare model-dir output directory
+    accel_inst.model_dir = opt.outputdir
+    creator.prepare_run(accel_inst)
+
+    # get madx-script with relative output-paths
+    # as `cwd` changes run to correct directory.
+    # The resulting model-dir is then more self-contained. (jdilly)
+    accel_inst.model_dir = Path()
+    madx_script = creator.get_madx_script(accel_inst)
+
+    # Run madx to create model
+    run_string(madx_script,
+               output_file=opt.outputdir / JOB_MODEL_MADX,
+               log_file=opt.logfile,
+               cwd=opt.outputdir)
+
+    # Check output and return accelerator instance
+    accel_inst.model_dir = opt.outputdir
+    creator.check_run_output(accel_inst)
+    return accel_inst
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ import os
 import subprocess
 import sys
 import warnings
-from os.path import abspath, dirname, join, pardir
+from pathlib import Path
 from tempfile import mkstemp
 
 from generic_parser import EntryPointParameters, entrypoint
@@ -20,7 +20,7 @@ from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
-_LOCAL_PATH = join(dirname(__file__), "bin")
+_LOCAL_PATH = Path(__file__).parent / "bin"
 
 if "darwin" in sys.platform:
     _MADX_BIN = "madx-macosx64-gnu"
@@ -29,7 +29,7 @@ elif "win" in sys.platform:
 else:
     _MADX_BIN = "madx-linux64-gnu"
 
-MADX_PATH = abspath(join(_LOCAL_PATH, _MADX_BIN))
+MADX_PATH = _LOCAL_PATH / _MADX_BIN
 warnings.simplefilter('always', DeprecationWarning)
 
 
@@ -39,24 +39,44 @@ class MadxError(Exception):
 
 def madx_wrapper_params():
     params = EntryPointParameters()
-    params.add_parameter(name="file", required=True,
-                         help="The file with the annotated MADX input to run.")
-    params.add_parameter(name="output",
-                         help="Path to a file where to write the MADX script.")
-    params.add_parameter(name="log", help="Path to a file where to write the MADX log output.")
-    params.add_parameter(name="madx_path", default=MADX_PATH,
-                         help="Path to the MAD-X executable to use")
-    params.add_parameter(name="cwd", help="Set current working directory")
+    params.add_parameter(
+        name="file",
+        required=True,
+        help="The file with the annotated MADX input to run."
+    )
+    params.add_parameter(
+        name="output",
+        help="Path to a file where to write the MADX script."
+    )
+    params.add_parameter(
+        name="log",
+        help="Path to a file where to write the MADX log output."
+    )
+    params.add_parameter(
+        name="madx_path",
+        default=MADX_PATH,
+        help="Path to the MAD-X executable to use"
+    )
+    params.add_parameter(
+        name="cwd",
+        help="Set current working directory"
+    )
     return params
 
 
 @entrypoint(madx_wrapper_params(), strict=True)
 def main(opt):
-    run_file(opt.file, output_file=opt.output, log_file=opt.log,
-             madx_path=opt.madx_path, cwd=opt.cwd)
+    run_file(
+        input_file=Path(opt.file),
+        output_file=Path(opt.output),
+        log_file=Path(opt.log),
+        madx_path=Path(opt.madx_path),
+        cwd=Path(opt.cwd)
+    )
 
 
-def run_file(input_file, output_file=None, log_file=None, madx_path=MADX_PATH, cwd=None):
+def run_file(input_file: Path, output_file: Path = None, log_file: Path = None,
+             madx_path: Path = MADX_PATH, cwd: Path = None):
     """
     Runs ``MAD-X`` on a given script in a subprocess.
 
@@ -66,12 +86,14 @@ def run_file(input_file, output_file=None, log_file=None, madx_path=MADX_PATH, c
         log_file: If given writes ``MAD-X`` logging output.
         madx_path: Path to the ``MAD-X`` executable.
     """
-    input_string = _read_input_file(input_file)
+    input_string = input_file.read_text()
     run_string(input_string, output_file=output_file, log_file=log_file,
                madx_path=madx_path, cwd=cwd)
 
 
-def run_string(input_string, output_file=None, log_file=None, madx_path=MADX_PATH, cwd=None):
+def run_string(input_string: str,
+               output_file: Path = None, log_file: Path = None,
+               madx_path: Path = MADX_PATH, cwd: Path = None):
     """
     Runs ``MAD-X`` on a given string in a subprocess.
 
@@ -88,8 +110,13 @@ def run_string(input_string, output_file=None, log_file=None, madx_path=MADX_PAT
 def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH, cwd=None):
     """Starts the ``MAD-X`` process."""
     with _madx_input_wrapper(full_madx_script, output_file) as madx_jobfile:
-        process = subprocess.Popen([madx_path, madx_jobfile], shell=False,
-                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
+        process = subprocess.Popen(
+            [str(Path(madx_path).absolute()), str(Path(madx_jobfile).absolute())],
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=None if cwd is None else str(cwd),
+        )
         with _logfile_wrapper(log_file) as log_handler, process.stdout:
             for line in process.stdout:
                 log_handler(line.decode('utf-8'))
@@ -101,12 +128,8 @@ def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH,
 # Wrapper ####################################################################
 
 
-def _read_input_file(input_file):
-    with open(input_file) as text_file:
-        return text_file.read()
-
-
 def _check_log_and_output_files(output_file, log_file):
+    """Check read/write access. The EAFP way."""
     if output_file is not None:
         open(output_file, "a").close()
     if log_file is not None:
@@ -120,7 +143,7 @@ def _logfile_wrapper(file_path=None):
         def log_handler(line):
             line = line.rstrip()
             if len(line):
-                LOG.info(line)
+                LOG.log(logging_tools.MADX, line)
         yield log_handler
     else:
         with open(file_path, "w") as log_file:
@@ -128,7 +151,7 @@ def _logfile_wrapper(file_path=None):
                 log_file.write(line)
                 line = line.rstrip()
                 if len(line):
-                    LOG.debug(line)
+                    LOG.log(logging_tools.MADX, line)
             yield log_handler
 
 

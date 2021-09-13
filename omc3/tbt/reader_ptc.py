@@ -6,19 +6,21 @@ Tbt data handling from the ``PTC`` code.
 """
 from collections import namedtuple
 from datetime import datetime
+from pathlib import Path
+from typing import List, Union
 
 import numpy as np
 import pandas as pd
 
 from omc3.definitions.constants import PLANES
 from omc3.tbt import handler
-from omc3.utils.logging_tools import get_logger
+from omc3.utils import logging_tools
 
 HEADER = "@"
 NAMES = "*"
 TYPES = "$"
 SEGMENTS = "#segment"
-SEGMENT_MARKER = ('start', 'end')
+SEGMENT_MARKER = ("start", "end")
 COLX = "X"
 COLY = "Y"
 COLTURN = "TURN"
@@ -29,23 +31,22 @@ TIME_FORMAT = "%d/%m/%y %H.%M.%S"
 
 Segment = namedtuple("Segment", ["number", "turns", "particles", "element", "name"])
 
-LOGGER = get_logger(__name__)
+LOGGER = logging_tools.get_logger(__name__)
 
 
-def read_tbt(file_path):
+def read_tbt(file_path: Union[str, Path]):
     """
     Reads TbtData object from ``PTC`` **trackone** output.
 
     Args:
-        file_path: path to a file containing TbtData.
+        file_path (Union[str, Path]): path to a file containing TbtData.
 
     Returns:
-        A `TbtData` object with the loaded data.
+        A ``TbtData`` object with the loaded data.
     """
-    LOGGER.debug(f"Reading path: {file_path}")
-
-    with open(file_path, "r") as tfs_data:
-        lines = tfs_data.readlines()
+    file_path = Path(file_path)
+    LOGGER.debug(f"Reading path: '{file_path.absolute()}'")
+    lines: List[str] = file_path.read_text().splitlines()
 
     # header
     date, header_length = _read_header(lines)
@@ -55,20 +56,22 @@ def read_tbt(file_path):
     bpms, particles, column_indices, n_turns, n_particles = _read_from_first_turn(lines)
 
     # data (read into dict first for speed, then convert to DF)
-    matrices = [{p: {bpm: np.zeros(n_turns) for bpm in bpms} for p in PLANES} for _ in range(n_particles)]
+    matrices = [
+        {p: {bpm: np.zeros(n_turns) for bpm in bpms} for p in PLANES} for _ in range(n_particles)
+    ]
     matrices = _read_data(lines, matrices, column_indices)
     for bunch in range(n_particles):
         for plane in PLANES:
             matrices[bunch][plane] = pd.DataFrame(matrices[bunch][plane]).transpose()
 
-    LOGGER.debug(f"Read Tbt data from : {file_path}")
+    LOGGER.debug(f"Read Tbt data from: '{file_path.absolute()}'")
     return handler.TbtData(matrices, date, particles, n_turns)
 
 
 # Read all lines ---------------------------------------------------------------
 
 
-def _read_header(lines):
+def _read_header(lines: List[str]) -> datetime:
     """Reads header length and datetime from header."""
     idx_line = 0
     date_str = {k: None for k in [DATE, TIME]}
@@ -81,7 +84,7 @@ def _read_header(lines):
             break
 
         if parts[1] in date_str.keys():
-            date_str[parts[1]] = parts[-1].strip("\'\" ")
+            date_str[parts[1]] = parts[-1].strip("'\" ")
 
     if any(ds is None for ds in date_str.keys()):
         LOGGER.warning("Date and Time could not be read from Tbt File! Using now()!")
@@ -90,7 +93,7 @@ def _read_header(lines):
     return datetime.strptime(f"{date_str[DATE]} {date_str[TIME]}", TIME_FORMAT), idx_line
 
 
-def _read_from_first_turn(lines):
+def _read_from_first_turn(lines: List[str]) -> tuple:
     """
     Reads the BPMs, particles, column indices and number of turns and particles from the data of
     the first turn.
@@ -140,7 +143,7 @@ def _read_from_first_turn(lines):
     return bpms, particles, column_indices, n_turns, n_particles
 
 
-def _read_data(lines, matrices, column_indices):
+def _read_data(lines: List[str], matrices, column_indices):
     """Read the data into the matrices."""
     LOGGER.debug("Reading data.")
     segment = None
@@ -172,12 +175,12 @@ def _read_data(lines, matrices, column_indices):
 # Parse single lines -----------------------------------------------------------
 
 
-def _parse_data(column_indices, parts):
+def _parse_data(column_indices, parts) -> dict:
     """Converts the ``parts`` into a dictionary based on the indices in ``column_indices``."""
     return {col: parts[col_idx] for col, col_idx in column_indices.items()}
 
 
-def _parse_column_names_to_indices(parts):
+def _parse_column_names_to_indices(parts) -> dict:
     """Parses the column names from the line into a dictionary with indices."""
     col_idx = {k: None for k in [COLX, COLY, COLTURN, COLPARTICLE]}
     LOGGER.debug("Setting column names.")

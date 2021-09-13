@@ -1,0 +1,17 @@
+@ Energy	%s	6500GeV
+@ Info		%s	Created on 22.9.2016. Preliminary guesses for the errors. Has to be verified!
+@ RELATIVE 	%s	MAINFIELD
+@ RADIUS 	%le	0.017
+
+*	PATTERN		dK1		dX		dS		MAINFIELD
+$	%s			%le		%le		%le		%s
+
+	^MQ\.		0		0		0.		QUAD
+	^MQM		0		0		0.		QUAD
+	^MQY		0		0		0.		QUAD
+	^MQX		0		0		0.		QUAD
+	^MQW		0		0		0.		QUAD
+	^MQT		0		0		0.		QUAD
+	^MQS		0		0		0.		QUAD
+	^MS\.		0		0		0		SEXT
+	^BPM		0		0		0.		BPM

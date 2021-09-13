@@ -12,7 +12,7 @@ for free motion and for driven motion. The twisses should contain the chromatic 
 """
 from collections import OrderedDict
 from datetime import datetime
-from os.path import join
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -48,9 +48,11 @@ def optics_measurement_test_files(modeldir, dpps, motion, beam_direction):
         raise ValueError("Beam direction has to be either 1 or -1")
     model, tune, nattune = get_combined_model_and_tunes(modeldir)
     lins = []
-    np.random.seed(12345678)
     for dpp_value in dpps:
-        lins.append(generate_lin_files(model, tune, nattune, MOTION[motion], dpp=dpp_value, beam_direction=beam_direction))
+        lins.append(
+            generate_lin_files(model, tune, nattune, MOTION[motion],
+                               dpp=dpp_value, beam_direction=beam_direction)
+        )
     return lins
 
 
@@ -87,13 +89,13 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0, beam_directio
         lin[f"AMP{plane}"] = lin.loc[:, f"AMP{plane}"].to_numpy() / 2
         lin[f"NATAMP{plane}"] = lin.loc[:, f"NATAMP{plane}"].to_numpy() / 2
 
-        lins[plane] = tfs.TfsDataFrame(lin, headers=_get_header(tune, nattune, plane)).set_index("NAME")
+        lins[plane] = tfs.TfsDataFrame(lin, headers=_get_header(tune, nattune, plane)).set_index("NAME", drop=False)
     return lins
 
 
-def get_combined_model_and_tunes(model_dir):
-    free = tfs.read(join(model_dir, 'twiss.dat'))
-    driven = tfs.read(join(model_dir, 'twiss_ac.dat'))
+def get_combined_model_and_tunes(model_dir: Path):
+    free = tfs.read(model_dir / 'twiss.dat')
+    driven = tfs.read(model_dir / 'twiss_ac.dat')
     nattune = {"X": np.remainder(free.headers['Q1'], 1), "Y": np.remainder(free.headers['Q2'], 1)}
     tune = {"X": np.remainder(driven.headers['Q1'], 1), "Y": np.remainder(driven.headers['Q2'], 1)}
     model = pd.merge(free, driven, how='inner', on='NAME', suffixes=MOTION.values())
@@ -102,10 +104,10 @@ def get_combined_model_and_tunes(model_dir):
 
 
 def _get_header(tunes, nattunes, plane):
-    header = OrderedDict()
-    header[f"Q{PLANE_TO_NUM[plane]}"] = tunes[plane]
-    header[f"Q{PLANE_TO_NUM[plane]}RMS"] = 1e-7
-    header[f"NATQ{PLANE_TO_NUM[plane]}"] = nattunes[plane]
-    header[f"NATQ{PLANE_TO_NUM[plane]}RMS"] = 1e-6
-    header["TIME"] = datetime.utcnow().strftime(formats.TIME)
-    return header
+    return {
+        f"Q{PLANE_TO_NUM[plane]}": tunes[plane],
+        f"Q{PLANE_TO_NUM[plane]}RMS": 1e-7,
+        f"NATQ{PLANE_TO_NUM[plane]}": nattunes[plane],
+        f"NATQ{PLANE_TO_NUM[plane]}RMS": 1e-6,
+        "TIME": datetime.utcnow().strftime(formats.TIME),
+    }

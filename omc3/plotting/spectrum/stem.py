@@ -22,7 +22,7 @@ def create_stem_plots(figures: dict, opt: DotDict) -> None:
     LOG.debug(f"  ...creating Stem Plots")
     for fig_id, fig_cont in figures.items():
         LOG.debug(f'   Plotting Figure: {fig_id}.')
-        fig_cont.fig.canvas.set_window_title(fig_id)
+        fig_cont.fig.canvas.manager.set_window_title(fig_id)
 
         _plot_stems(fig_cont)
         plot_lines(fig_cont, opt.lines)
@@ -84,7 +84,7 @@ def _create_legend(ax, labels, lines, ncol):
     leg.axes.figure.canvas.draw()  # to get the legend extend
 
     # check if it is wider than the axes
-    legend_width = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).width
+    legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
     x_shift = 0
     if legend_width > 1:
         x_shift = (legend_width - 1) / 2.  # shift more into center

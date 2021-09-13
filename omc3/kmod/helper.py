@@ -6,7 +6,6 @@ This module contains helper functionality for ``kmod``.
 It provides functions to perform data cleaning, IO loading and plotting.
 """
 import datetime
-from os.path import join
 
 import numpy as np
 import tfs
@@ -49,8 +48,8 @@ def get_input_data(opt):
 
 
 def get_simulation_files(working_directory, beam, magnets):
-    magnet1_df = tfs.read(join(working_directory, f"{magnets[0]}.{beam}{EXT}"))
-    magnet2_df = tfs.read(join(working_directory, f"{magnets[1]}.{beam}{EXT}"))
+    magnet1_df = tfs.read(working_directory / f"{magnets[0]}.B{beam:d}{EXT}")
+    magnet2_df = tfs.read(working_directory / f"{magnets[1]}.B{beam:d}{EXT}")
     magnet1_df.headers['QUADRUPOLE'] = magnet1_df.headers['NAME']
     magnet2_df.headers['QUADRUPOLE'] = magnet2_df.headers['NAME']
     return magnet1_df, magnet2_df
@@ -78,9 +77,9 @@ def return_ip_filename(working_directory, ip, beam):
     LOG.debug('Setting IP trim file names')
     all_filepaths = []
     for side in SIDES:
-        path_tunex = join(working_directory, f"{ip.lower()}{beam.lower()}{side}X{EXT}")
-        path_tuney = join(working_directory, f"{ip.lower()}{beam.lower()}{side}Y{EXT}")
-        path_k = join(working_directory, f"{ip.lower()}{side}K{EXT}")
+        path_tunex = working_directory / f"{ip.lower()}b{beam:d}{side}X{EXT}"
+        path_tuney = working_directory / f"{ip.lower()}b{beam:d}{side}Y{EXT}"
+        path_k = working_directory / f"{ip.lower()}{side}K{EXT}"
         all_filepaths.append([path_tunex, path_tuney, path_k])
     return all_filepaths
 
@@ -89,9 +88,9 @@ def return_circuit_filename(working_directory, circuits_1_and_2, beam):
     LOG.debug('Setting Circuit trim file names')
     all_filepaths = []
     for circuit in circuits_1_and_2:
-        path_tunex = join(working_directory, f"{circuit}_tune_x_{beam.lower()}{EXT}")
-        path_tuney = join(working_directory, f"{circuit}_tune_y_{beam.lower()}{EXT}")
-        path_k = join(working_directory, f"{circuit}_k{EXT}")
+        path_tunex = working_directory / f"{circuit}_tune_x_b{beam}{EXT}"
+        path_tuney = working_directory / f"{circuit}_tune_y_b{beam}{EXT}"
+        path_k = working_directory / f"{circuit}_k{EXT}"
         all_filepaths.append([path_tunex, path_tuney, path_k])
     return all_filepaths
 

@@ -38,7 +38,7 @@ MEASURE_OPTICS_SETTINGS = dict(
     ats=True,
     beam=1,
     dpp=0.0,
-    model_dir=str(Path(__file__).parent.parent / "inputs" / "models" / "inj_beam1"),
+    model_dir=Path(__file__).parent.parent / "inputs" / "models" / "inj_beam1",
     year="2018",
 )
 
@@ -72,7 +72,7 @@ def test_crdt_amp(order, _create_input):
 
     for crdt_dict in crdt.CRDTS:
         if order == crdt_dict["order"]:
-            hio_crdt = tfs.read(optics_opt["outputdir"] / "crdt" / order /  f'{crdt_dict["term"]}.tfs',
+            hio_crdt = tfs.read(optics_opt["outputdir"] / "crdt" / order / f'{crdt_dict["term"]}.tfs',
                                 index="NAME")
             assert _max_dev(hio_crdt["AMP"].to_numpy(),
                             ptc_crdt[f"{crdt_dict['term']}_ABS"].to_numpy(),
@@ -88,7 +88,7 @@ def test_crdt_complex(order, _create_input):
 
     for crdt_dict in crdt.CRDTS:
         if order == crdt_dict["order"]:
-            hio_crdt = tfs.read(optics_opt["outputdir"] / "crdt" /  order / f'{crdt_dict["term"]}.tfs',
+            hio_crdt = tfs.read(optics_opt["outputdir"] / "crdt" / order / f'{crdt_dict["term"]}.tfs',
                                 index="NAME")
 
             assert _max_dev(hio_crdt["REAL"].to_numpy(),
