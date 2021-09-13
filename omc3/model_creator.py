@@ -11,15 +11,14 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
-    LhcCouplingCreator,
+    LhcCorrectionCreator,
     LhcModelCreator,
+    LhcSegmentCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
-from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
 
@@ -29,12 +28,10 @@ LOG = logging_tools.get_logger(__name__)
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
             "best_knowledge": LhcBestKnowledgeCreator,
-            "segment": SegmentCreator,
-            "coupling_correction": LhcCouplingCreator},
-    "psbooster": {"nominal": PsboosterModelCreator,
-                  "segment": SegmentCreator},
-    "ps": {"nominal": PsModelCreator,
-           "segment": SegmentCreator},
+            "segment": LhcSegmentCreator,
+            "correction": LhcCorrectionCreator},
+    "psbooster": {"nominal": PsboosterModelCreator},
+    "ps": {"nominal": PsModelCreator},
 }
 
 
@@ -42,8 +39,9 @@ def _get_params():
     params = EntryPointParameters()
     params.add_parameter(
         name="type",
-        choices=("nominal", "best_knowledge", "coupling_correction"),
-        help="Type of model to create."
+        choices=("nominal", "best_knowledge", "coupling_correction", "segment"),
+        help="Type of model to create.",
+        default='nominal',
     )
     params.add_parameter(
         name="outputdir",
@@ -57,6 +55,27 @@ def _get_params():
         help=("Path to the file where to write the MAD-X script output."
               "If not provided it will be written to sys.stdout.")
     )
+    params.add_parameter(
+        name="label",
+        type=str,
+        help="The name of the segment of interest. (For segment creators)"
+    )
+    params.add_parameter(
+        name="start",
+        type=str,
+        help="The first BPM in the segment. (For segment creators)"
+    )
+    params.add_parameter(
+        name="end",
+        type=str,
+        help="The last BPM in the segment. (For segment creators)"
+    )
+    params.add_parameter(
+        name="measurement_dir",
+        type=Path,
+        help="The path to the measurement directory. (For segment creators)"
+    )
+
     return params
 
 
@@ -96,7 +115,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
             Type of model to create.
 
-            choices: ``('nominal', 'best_knowledge', 'coupling_correction')``
+            choices: ``('nominal', 'best_knowledge', 'correction', 'segment')``
 
 
     Accelerator Keyword Args:
@@ -116,32 +135,18 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
         JPARC: Not implemented
     """
+    outputdir = opt.pop("outputdir")
+    model_type = opt.pop("type", None)
+
     # Prepare paths
-    create_dirs(opt.outputdir)
+    create_dirs(outputdir)
 
     accel_inst = manager.get_accelerator(accel_opt)
-    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
-    creator = CREATORS[accel_inst.NAME][opt.type]
+    accel_inst.model_dir = outputdir
 
-    # Prepare model-dir output directory
-    accel_inst.model_dir = opt.outputdir
-    creator.prepare_run(accel_inst)
-
-    # get madx-script with relative output-paths
-    # as `cwd` changes run to correct directory.
-    # The resulting model-dir is then more self-contained. (jdilly)
-    accel_inst.model_dir = Path()
-    madx_script = creator.get_madx_script(accel_inst)
-
-    # Run madx to create model
-    run_string(madx_script,
-               output_file=opt.outputdir / JOB_MODEL_MADX,
-               log_file=opt.logfile,
-               cwd=opt.outputdir)
-
-    # Check output and return accelerator instance
-    accel_inst.model_dir = opt.outputdir
-    creator.check_run_output(accel_inst)
+    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {model_type}")
+    creator = CREATORS[accel_inst.NAME][model_type](accel_inst, **opt)
+    creator.full_run()
     return accel_inst
 
 

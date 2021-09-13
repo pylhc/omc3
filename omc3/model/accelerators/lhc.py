@@ -126,7 +126,11 @@ class Lhc(Accelerator):
     def get_parameters():
         params = super(Lhc, Lhc).get_parameters()
         params.add_parameter(
-            name="beam", type=int, choices=(1, 2), required=True, help="Beam to use."
+            name="beam",
+            type=int,
+            choices=(1, 2),
+            required=True,
+            help="Beam to use."
         )
         params.add_parameter(
             name="year",
@@ -135,7 +139,11 @@ class Lhc(Accelerator):
             choices=("2012", "2015", "2016", "2017", "2018","2021","2022", "hllhc1.3"),
             help="Year of the optics (or hllhc1.3).",
         )
-        params.add_parameter(name="ats", action="store_true", help="Marks ATS optics")
+        params.add_parameter(
+            name="ats",
+            action="store_true",
+            help="Marks ATS optics"
+        )
         return params
 
     def __init__(self, *args, **kwargs):
