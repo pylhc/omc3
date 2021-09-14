@@ -74,7 +74,6 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         .intersection(phase_dict['Y'][compensation]["MEAS"].index)
     joined = joined.loc[joined_index]
 
-    LOG.warning(f"beam direction: {meas_input.accelerator.beam_direction}")
     phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
     phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
 
@@ -82,7 +81,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
 
     # averaging
     # standard arithmetic mean for amplitude columns
-    # and circular mean (beware the period=1) for frequency columns
+    # and circular mean (beware the `period=1`) for frequency columns
     for col in [COL_AMPX_SEC, COL_AMPY_SEC]:
         cols = [c for c in joined if c.startswith(col)]
         joined[col] = stats.weighted_mean(joined[cols], axis=1)
@@ -111,29 +110,28 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     q1001_from_B = np.angle(B10) - (bd*joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
     eq1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
 
-    q1010_from_A = -np.angle(A0_1) - (bd*joined[f"{COL_MU}Y"].to_numpy() + bd*0.25) * PI2
-    q1010_from_B = -np.angle(B_10) - (bd*joined[f"{COL_MU}X"].to_numpy() + bd*0.25) * PI2
+    q1010_from_A = -np.angle(A0_1) - (bd*joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1010_from_B = -np.angle(B_10) - (bd*joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
     eq1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
     # `eq / abs(eq)` to get the average
     f1001 = -.5 * sqrt(np.abs(A01 * B10)) * eq1001 / abs(eq1001)
     f1010 = .5 * sqrt(np.abs(A0_1 * B_10)) * eq1010 / abs(eq1010)
 
-    LOG.debug("f1001 = {}".format(f1001))
     tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
-    # old Cminus
+    # old Cminus, approximate formula without rdt phases
     C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
-    header_dict["OldCminus"] = C_old
-    LOG.info(f"abs OldCminus = {C_old}, tune_sep = {tune_sep}")
+    header_dict["Cminus_approx"] = C_old
+    LOG.info(f"|C-| (approx) = {C_old}")
 
     # new Cminus
-    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
-    header_dict["newCminus"] = C_new
-    LOG.info(f"abs NewCminus = {C_new}")
+    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(-1.0j * PI2 * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    header_dict["Cminus_exact"] = C_new
+    LOG.info(f"|C-| (exact)  = {C_new}")
 
     if meas_input.compensation == "model":
-        f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
+        f1001, f1010 = compensate_model(f1001, f1010, tune_dict)
     rdt_df = pd.DataFrame(index=joined_index,
                           columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W", "F1001A", "F1010A"],
                           data=np.array([
@@ -155,6 +153,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         for col in RDTCOLS:
             mdlcol = func(model_coupling[col])
             rdt_df[f"{col}{domain}MDL"] = mdlcol
+            rdt_df[f"ERR{col}{domain}"] = 0.0
             rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
             rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
 
@@ -220,11 +219,8 @@ def _find_pair(phases, bd):
     """
     slice = _tilt_slice_matrix(phases.values, 0, 2*CUTOFF) - 0.25
     indices = (np.argmin(abs(slice), axis=0))
-    #deltas = bd * slice[indices, range(len(indices))] + bd * 0.25 - 0.25
     deltas = slice[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)
-    LOG.warning(indices)
-    #deltas = [phases[col][indices] for col in phases.columns]
 
     return np.array(indices), deltas
 
