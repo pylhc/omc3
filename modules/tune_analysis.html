@@ -1,79 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Tune Analysis &mdash; omc3 0.2.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Utils" href="utils.html" />
     <link rel="prev" title="Turn-by-Turn" href="tbt.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html">
-          
-
-          
-            
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.2
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -81,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/analysis.html">Analysis</a><ul>
@@ -231,209 +178,168 @@
 </li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">omc3</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Tune Analysis</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/modules/tune_analysis.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-omc3.tune_analysis.constants">
-<span id="tune-analysis"></span><h1>Tune Analysis<a class="headerlink" href="#module-omc3.tune_analysis.constants" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="constants">
-<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="module-omc3.tune_analysis.constants">
+<span id="tune-analysis"></span><h1>Tune Analysis<a class="headerlink" href="#module-omc3.tune_analysis.constants" title="Permalink to this headline"></a></h1>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline"></a></h2>
 <p>Specific constants and helpers to be used in <code class="docutils literal notranslate"><span class="pre">tune_analysis</span></code>, to help with consistency.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_action_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_action_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_action_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_action_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_action_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_action_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_action_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the action column.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_action_err_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_action_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_action_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_action_err_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_action_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_action_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_action_err_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the action error column.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_bbq_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_bbq_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_bbq_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_bbq_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_bbq_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_bbq_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_bbq_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the BBQ column</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_corr_natq_err_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_corr_natq_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_corr_natq_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_corr_natq_err_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_corr_natq_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_corr_natq_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_corr_natq_err_col" title="Permalink to this definition"></a></dt>
 <dd><p>Return the standard deviation for the corrected natural tune.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_detuning_exponent_for_order">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_detuning_exponent_for_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_detuning_exponent_for_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_detuning_exponent_for_order" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_detuning_exponent_for_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_detuning_exponent_for_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_detuning_exponent_for_order" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the default exponent for detuning orders. Highly Empirical.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_mav_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_mav_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_mav_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_mav_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_mav_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_mav_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_mav_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the moving average BBQ column.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_mav_err_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_mav_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_mav_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_mav_err_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_mav_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_mav_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_mav_err_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the standard deviation of the moving average data.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_mav_window_header">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_mav_window_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_mav_window_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_mav_window_header" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_mav_window_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_mav_window_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_mav_window_header" title="Permalink to this definition"></a></dt>
 <dd><p>Header to store the moving average window length</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_natq_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_natq_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_natq_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_natq_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_natq_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_natq_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_natq_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the natural tune column.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_natq_corr_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_natq_corr_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_natq_corr_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_natq_corr_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_natq_corr_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_natq_corr_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_natq_corr_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the corrected natural tune column.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_natq_err_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_natq_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_natq_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_natq_err_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_natq_err_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_natq_err_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_natq_err_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the natural tune error column.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_odr_header_coeff">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_coeff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_coeff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_coeff" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_coeff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_coeff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_coeff" title="Permalink to this definition"></a></dt>
 <dd><p>Header key for odr coefficient for term of given order (i.e. beta[order])</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_odr_header_coeff_corrected">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_coeff_corrected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_coeff_corrected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_coeff_corrected" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_coeff_corrected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_coeff_corrected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_coeff_corrected" title="Permalink to this definition"></a></dt>
 <dd><p>Header key for corrected odr coefficient for term of given order (i.e. beta[order])</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_odr_header_err_coeff">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_err_coeff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_err_coeff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_err_coeff" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_err_coeff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_err_coeff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_err_coeff" title="Permalink to this definition"></a></dt>
 <dd><p>Header key for odr coefficient standard deviation for term of given order (i.e. sd_beta[order])</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_odr_header_err_coeff_corrected">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_err_coeff_corrected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_err_coeff_corrected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_err_coeff_corrected" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_odr_header_err_coeff_corrected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_odr_header_err_coeff_corrected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_odr_header_err_coeff_corrected" title="Permalink to this definition"></a></dt>
 <dd><p>Header key for corrected odr coefficient standard deviation for term of given order (i.e. sd_beta[order])</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_paired_lables">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_paired_lables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_paired_lables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_paired_lables" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_paired_lables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_paired_lables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_paired_lables" title="Permalink to this definition"></a></dt>
 <dd><p>Labels for the action/tune plots.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_tend_head">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_tend_head</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_tend_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_tend_head" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_tend_head</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_tend_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_tend_head" title="Permalink to this definition"></a></dt>
 <dd><p>Label for fill end time from header.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_timber_bbq_key">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_timber_bbq_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_timber_bbq_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_timber_bbq_key" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_timber_bbq_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_timber_bbq_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_timber_bbq_key" title="Permalink to this definition"></a></dt>
 <dd><p>Key to extract bbq from timber.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_time_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_time_col</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_time_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_time_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_time_col</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_time_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_time_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the TIME column.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_tstart_head">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_tstart_head</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_tstart_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_tstart_head" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_tstart_head</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_tstart_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_tstart_head" title="Permalink to this definition"></a></dt>
 <dd><p>Label for fill start time from header.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.constants.get_used_in_mav_col">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_used_in_mav_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_used_in_mav_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_used_in_mav_col" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.constants.</span></span><span class="sig-name descname"><span class="pre">get_used_in_mav_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/constants.html#get_used_in_mav_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.constants.get_used_in_mav_col" title="Permalink to this definition"></a></dt>
 <dd><p>Label for the column showing if BBQ value was used in moving average.</p>
 </dd></dl>
 
-</div>
-<span class="target" id="module-omc3.tune_analysis.bbq_tools"></span><div class="section" id="bbq-tools">
-<h2>BBQ Tools<a class="headerlink" href="#bbq-tools" title="Permalink to this headline">¶</a></h2>
+</section>
+<span class="target" id="module-omc3.tune_analysis.bbq_tools"></span><section id="bbq-tools">
+<h2>BBQ Tools<a class="headerlink" href="#bbq-tools" title="Permalink to this headline"></a></h2>
 <p>Tools to handle BBQ data.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.bbq_tools.clean_outliers_moving_average">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.bbq_tools.</span></span><span class="sig-name descname"><span class="pre">clean_outliers_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/bbq_tools.html#clean_outliers_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.bbq_tools.</span></span><span class="sig-name descname"><span class="pre">clean_outliers_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/bbq_tools.html#clean_outliers_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average" title="Permalink to this definition"></a></dt>
 <dd><p>Get a moving average of the <code class="docutils literal notranslate"><span class="pre">data_series</span></code> over <code class="docutils literal notranslate"><span class="pre">length</span></code> entries, by means of
 <a class="reference internal" href="utils.html#omc3.utils.outliers.get_filter_mask" title="omc3.utils.outliers.get_filter_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">outlier</span> <span class="pre">filter</span></code></a>.
 The values are shifted, so that the averaged value takes ceil((length-1)/2) values previous
@@ -451,7 +357,7 @@ and floor((length-1)/2) following values into account.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.bbq_tools.get_moving_average">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.bbq_tools.</span></span><span class="sig-name descname"><span class="pre">get_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fine_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fine_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/bbq_tools.html#get_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.bbq_tools.get_moving_average" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.bbq_tools.</span></span><span class="sig-name descname"><span class="pre">get_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fine_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fine_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/bbq_tools.html#get_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.bbq_tools.get_moving_average" title="Permalink to this definition"></a></dt>
 <dd><p>Get a moving average of the <code class="docutils literal notranslate"><span class="pre">data_series</span></code> over <code class="docutils literal notranslate"><span class="pre">length</span></code> entries. The data can be filtered
 beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)
 values previous and floor((length-1)/2) following values into account.</p>
@@ -472,9 +378,9 @@ values previous and floor((length-1)/2) following values into account.</p>
 </dl>
 </dd></dl>
 
-</div>
-<span class="target" id="module-omc3.tune_analysis.fitting_tools"></span><div class="section" id="fitting-tools">
-<h2>Fitting Tools<a class="headerlink" href="#fitting-tools" title="Permalink to this headline">¶</a></h2>
+</section>
+<span class="target" id="module-omc3.tune_analysis.fitting_tools"></span><section id="fitting-tools">
+<h2>Fitting Tools<a class="headerlink" href="#fitting-tools" title="Permalink to this headline"></a></h2>
 <p>This module contains fitting functionality for <code class="docutils literal notranslate"><span class="pre">tune_analysis</span></code>.
 It provides tools for fitting functions, mainly via odr.</p>
 <dl class="simple">
@@ -487,7 +393,7 @@ It provides tools for fitting functions, mainly via odr.</p>
 </dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.do_odr">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">do_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xerr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yerr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#do_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.do_odr" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">do_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xerr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yerr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#do_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.do_odr" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the odr fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -505,17 +411,17 @@ It provides tools for fitting functions, mainly via odr.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.get_poly_fun">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">get_poly_fun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#get_poly_fun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.get_poly_fun" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">get_poly_fun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#get_poly_fun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.get_poly_fun" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the function of polynomial order. (is this pythonic enough?).</p>
 </dd></dl>
 
-</div>
-<span class="target" id="module-omc3.tune_analysis.kick_file_modifiers"></span><div class="section" id="kick-file-modifiers">
-<h2>Kick File Modifiers<a class="headerlink" href="#kick-file-modifiers" title="Permalink to this headline">¶</a></h2>
+</section>
+<span class="target" id="module-omc3.tune_analysis.kick_file_modifiers"></span><section id="kick-file-modifiers">
+<h2>Kick File Modifiers<a class="headerlink" href="#kick-file-modifiers" title="Permalink to this headline"></a></h2>
 <p>Functions to add data to or extract data from <strong>kick_ac</strong> files.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.add_bbq_data">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_bbq_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kick_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbq_series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_bbq_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_bbq_data" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_bbq_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kick_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbq_series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_bbq_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_bbq_data" title="Permalink to this definition"></a></dt>
 <dd><p>Add BBQ values from series to kickac dataframe into column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -534,7 +440,7 @@ It provides tools for fitting functions, mainly via odr.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_corrected_natural_tunes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_corrected_natural_tunes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_corrected_natural_tunes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_corrected_natural_tunes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes" title="Permalink to this definition"></a></dt>
 <dd><p>Adds the corrected natural tunes to <code class="docutils literal notranslate"><span class="pre">kickac_df</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -548,13 +454,13 @@ It provides tools for fitting functions, mainly via odr.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.add_moving_average">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbq_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_moving_average" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbq_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_moving_average" title="Permalink to this definition"></a></dt>
 <dd><p>Adds the moving average of the bbq data to kickac_df and bbq_df.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.add_odr">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odr_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_odr" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odr_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_odr" title="Permalink to this definition"></a></dt>
 <dd><p>Adds the odr fit of the (un)corrected data to the header of the <code class="docutils literal notranslate"><span class="pre">kickac_df</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -574,7 +480,7 @@ It provides tools for fitting functions, mainly via odr.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.add_total_natq_std">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_total_natq_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_total_natq_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_total_natq_std" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_total_natq_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_total_natq_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_total_natq_std" title="Permalink to this definition"></a></dt>
 <dd><p>Add the total standard deviation of the natural tune to the kickac. The total standard
 deviation is here defined as the standard deviation of the measurement plus the standard
 deviation of the moving average.</p>
@@ -590,7 +496,7 @@ deviation of the moving average.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.get_ampdet_data">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">get_ampdet_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#get_ampdet_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">get_ampdet_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#get_ampdet_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data" title="Permalink to this definition"></a></dt>
 <dd><p>Extract the data needed for the (un)corrected amplitude detuning from <code class="docutils literal notranslate"><span class="pre">kickac_df</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -608,7 +514,7 @@ deviation of the moving average.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.get_odr_data">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">get_odr_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#get_odr_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.get_odr_data" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">get_odr_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#get_odr_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.get_odr_data" title="Permalink to this definition"></a></dt>
 <dd><p>Extract the data from kickac.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -626,9 +532,9 @@ deviation of the moving average.</p>
 </dl>
 </dd></dl>
 
-</div>
-<span class="target" id="module-omc3.tune_analysis.timber_extract"></span><div class="section" id="timber-extraction">
-<h2>Timber Extraction<a class="headerlink" href="#timber-extraction" title="Permalink to this headline">¶</a></h2>
+</section>
+<span class="target" id="module-omc3.tune_analysis.timber_extract"></span><section id="timber-extraction">
+<h2>Timber Extraction<a class="headerlink" href="#timber-extraction" title="Permalink to this headline"></a></h2>
 <p>Tools to extract data from <code class="docutils literal notranslate"><span class="pre">Timber</span></code>. It is a bit heavy on the LHC side at the moment.</p>
 <p><strong>Please note</strong>: this module requires the <code class="docutils literal notranslate"><span class="pre">pytimber</span></code> package to access <code class="docutils literal notranslate"><span class="pre">Timber</span></code> functionality,
 both of which are only possible from inside the CERN network.</p>
@@ -638,7 +544,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 <code class="docutils literal notranslate"><span class="pre">--trusted-host</span> <span class="pre">acc-py-repo.cern.ch</span></code> to your <code class="docutils literal notranslate"><span class="pre">pip</span></code> installation command).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.extract_between_times">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">extract_between_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.frame.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#extract_between_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.extract_between_times" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">extract_between_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.frame.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#extract_between_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.extract_between_times" title="Permalink to this definition"></a></dt>
 <dd><p>Extracts data for keys between t_start and t_end from timber.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -655,7 +561,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.get_fill_times">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_fill_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_fill_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_fill_times" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_fill_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_fill_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_fill_times" title="Permalink to this definition"></a></dt>
 <dd><p>Returns start and end time of fill with fill number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -672,7 +578,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_tune_and_coupling_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_tune_and_coupling_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">get_tune_and_coupling_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#get_tune_and_coupling_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the tune and coupling variable names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -686,7 +592,7 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.timber_extract.lhc_fill_to_tfs">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">lhc_fill_to_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.frame.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#lhc_fill_to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.timber_extract.</span></span><span class="sig-name descname"><span class="pre">lhc_fill_to_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.frame.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/timber_extract.html#lhc_fill_to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs" title="Permalink to this definition"></a></dt>
 <dd><p>Extracts data for keys of fill from <code class="docutils literal notranslate"><span class="pre">Timber</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -700,55 +606,38 @@ dependency and installing from the <code class="docutils literal notranslate"><s
 <p>Returns: tfs pandas dataframe.</p>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="tbt.html" class="btn btn-neutral float-left" title="Turn-by-Turn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright .
-
-    </p>
+    <p>&#169; Copyright .</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
