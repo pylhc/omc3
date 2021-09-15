@@ -85,8 +85,13 @@ class LhcModelCreator(ModelCreator):
 
     @classmethod
     def prepare_run(cls, accel: Lhc) -> None:
-        if accel.year in ["2018, 2022"]:  # this should be handled by the fetcher
-            os.symlink(f"{ACCMDLS}/{accel.year}", f"{accel.model_dir}/acc-models-lhc")
+        print(f"year: {accel.year}")
+        if accel.year in ["2018", "2022"]:  # this should be handled by the fetcher
+            symlink_dst = Path(f"{accel.model_dir}/acc-models-lhc")
+            print(f"symlink dst: {symlink_dst}")
+            if symlink_dst.is_symlink():
+                os.unlink(symlink_dst)
+            os.symlink(f"{ACCMDLS}/{accel.year}", symlink_dst.absolute())
         cls.check_accelerator_instance(accel)
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
