@@ -57,7 +57,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
       header_dict (dict): dictionary of header items common for all output files
 
     """
-    LOG.info("calculating coupling")
+    LOG.info("Calculating coupling.")
 
     # intersect measurements
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
@@ -103,7 +103,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     f1001 = -.5 * sqrt(np.abs(A01 * B10))  *0.5*(exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B))
     f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*0.5*(exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B))
 
-    LOG.debug("f1001 = {}".format(f1001))
+    LOG.debug(f"f1001 = {f1001}")
     tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
     # old Cminus
@@ -172,7 +172,7 @@ def compensate_model(f1001, f1010, tune_dict):
     f1001 *= factor1001
     f1010 *= factor1010
 
-    LOG.info("compensation by model")
+    LOG.info("Compensation by model")
     LOG.info(f"f1001 factor: {factor1001}")
     LOG.info(f"f1010 factor: {factor1010}")
 
@@ -204,8 +204,6 @@ def _find_pair(phases):
     indices = (np.argmin(abs(slice), axis=0))
     deltas = slice[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)
-    #deltas = [phases[col][indices] for col in phases.columns]
-
     return np.array(indices), deltas
 
 
