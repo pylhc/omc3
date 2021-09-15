@@ -6,6 +6,7 @@ This module provides convenience functions for model creation of the ``LHC``.
 """
 import logging
 import shutil
+import os
 from pathlib import Path
 from typing import List
 
@@ -30,6 +31,8 @@ from omc3.model.constants import (
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.utils import iotools
+
+ACCMDLS = "/afs/cern.ch/eng/acc-models/lhc"
 
 LOGGER = logging.getLogger(__name__)
 
@@ -82,6 +85,8 @@ class LhcModelCreator(ModelCreator):
 
     @classmethod
     def prepare_run(cls, accel: Lhc) -> None:
+        if accel.year in ["2018, 2022"]:  # this should be handled by the fetcher
+            os.symlink(f"{ACCMDLS}/{accel.year}", f"{accel.model_dir}/acc-models-lhc")
         cls.check_accelerator_instance(accel)
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
