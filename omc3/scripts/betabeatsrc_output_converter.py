@@ -45,9 +45,9 @@ def converter_params():
     params.add_parameter(
         name="suffix",
         type=str,
-        default="_free2",
+        default="_free",
         choices=("", "_free", "_free2"),
-        help="Compensation suffix used in the provided BetaBeat.src output. Defaults to '_free2'.",
+        help="Compensation suffix used in the provided BetaBeat.src output. Defaults to '_free'.",
     )
     return params
 
