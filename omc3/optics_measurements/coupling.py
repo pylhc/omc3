@@ -10,8 +10,6 @@ Coupling calculations
 
 """
 
-import os
-import sys
 from collections import namedtuple
 from functools import reduce
 from pathlib import Path
@@ -34,8 +32,8 @@ COL_AMPY_SEC: str = "AMP10_Y"  # amplitude of secondary line in vertical spectru
 COL_FREQX_SEC: str = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
 COL_FREQY_SEC: str = "PHASE10_Y"  # frequency of secondary line in vertical spectrum
 
-COLS_TO_KEEP_X: Tuple[str] = ("NAME", "S", "AMP01", "PHASE01", "MUX")
-COLS_TO_KEEP_Y: Tuple[str] = ("NAME", "S", "AMP10", "PHASE10", "MUY")
+COLS_TO_KEEP_X = ["NAME", "S", "AMP01", "PHASE01", "MUX"]
+COLS_TO_KEEP_Y = ["NAME", "S", "AMP10", "PHASE10", "MUY"]
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -63,9 +61,9 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     # intersect measurements
     compensation = "uncompensated" if meas_input.compensation == "model" else "free"
     joined = _joined_frames(input_files)
-    joined_index = joined.index.intersection(phase_dict["X"][compensation]["MEAS"].index).intersection(
-        phase_dict["Y"][compensation]["MEAS"].index
-    )
+    joined_index = joined.index \
+        .intersection(phase_dict["X"][compensation]["MEAS"].index) \
+        .intersection(phase_dict["Y"][compensation]["MEAS"].index)
     joined = joined.loc[joined_index]
 
     phases_x = phase_dict["X"][compensation]["MEAS"].loc[joined_index]
@@ -141,9 +139,8 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     RDTCOLS = ["F1001", "F1010"]
     for (domain, func) in [("I", np.imag), ("R", np.real), ("W", np.abs)]:
         for col in RDTCOLS:
-            # mdlcol = func(model_coupling[col])
             rdt_df[f"{col}{domain}MDL"] = model_coupling[col].apply(func)
-            rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
+            rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - rdt_df[f"{col}{domain}MDL"] 
             rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
 
     _write_coupling_tfs(rdt_df, meas_input.outputdir, header_dict)
