@@ -105,12 +105,12 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     # old Cminus
     C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
     header_dict["OldCminus"] = C_old
-    LOG.info(f"abs OldCminus = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
+    LOG.info(f"|OldCminus| = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
 
     # new Cminus
     C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["newCminus"] = C_new
-    LOG.info(f"abs NewCminus = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
+    LOG.info(f"|NewCminus| = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == "model":
         f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)

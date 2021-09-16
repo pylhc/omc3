@@ -7,7 +7,6 @@ Optionally, it can replicate files with added noise.
 """
 import copy
 from datetime import datetime
-from os.path import basename, join
 from pathlib import Path
 from typing import Sequence, Union
 
@@ -99,7 +98,6 @@ def converter_entrypoint(opt):
             Path(opt.outputdir)
             / DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
         ),
-        # join(opt.outputdir, DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))),
         dict(sorted(opt.items())),
     )
     _read_and_write_files(opt)
