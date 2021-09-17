@@ -4,6 +4,10 @@ BetaBeat.src Output Converter
 
 Script to convert most important output files produced by ``BetaBeat.src`` / ``GetLLM`` into the standard
 format used in ``omc3`` to allow straight forward comparison of the two.
+
+Good to know: in ``BetaBeat.src`` the ``_free`` files correspond to AC dipole (or ADT-AC dipole)
+compensation by analytic equation while ``_free2`` corresponds to compensation via effective model. It is
+written in GetLLM (at least once) here: https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606
 """
 from collections import OrderedDict
 from datetime import datetime
