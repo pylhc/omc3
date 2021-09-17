@@ -69,6 +69,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
@@ -203,9 +204,226 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-omc3.scripts.merge_kmod_results">
-<span id="scripts"></span><h1>Scripts<a class="headerlink" href="#module-omc3.scripts.merge_kmod_results" title="Permalink to this headline"></a></h1>
-<section id="merge-kmod-results">
+  <section id="module-omc3.scripts.betabeatsrc_output_converter">
+<span id="scripts"></span><h1>Scripts<a class="headerlink" href="#module-omc3.scripts.betabeatsrc_output_converter" title="Permalink to this headline"></a></h1>
+<section id="betabeat-src-output-converter">
+<h2>BetaBeat.src Output Converter<a class="headerlink" href="#betabeat-src-output-converter" title="Permalink to this headline"></a></h2>
+<p>Script to convert most important output files produced by <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> / <code class="docutils literal notranslate"><span class="pre">GetLLM</span></code> into the standard
+format used in <code class="docutils literal notranslate"><span class="pre">omc3</span></code> to allow straight forward comparison of the two.</p>
+<p>Good to know: in <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> the <code class="docutils literal notranslate"><span class="pre">_free</span></code> files correspond to AC dipole (or ADT-AC dipole)
+compensation by analytic equation while <code class="docutils literal notranslate"><span class="pre">_free2</span></code> corresponds to compensation via effective model. It is
+written in GetLLM (at least once) here: <a class="reference external" href="https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606">https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606</a></p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_beta_from_amplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ampbeta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'beta_amplitude_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_beta_from_amplitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected beta from amplitude file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a given
+plane, converts it to the output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getampbeta(x,y).out, with the following expected columns: NAME, S, COUNT,
+BETX, BETXSTD, BETXMDL, MUXMDL, BETXRES, BETXSTDRES.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) -- Compensation suffix used in the provided BetaBeat.src output files.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- the transverse plane for which to look for the output file.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_beta_from_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'beta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'beta_phase_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_beta_from_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected beta from phase file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a given
+plane, converts it to the output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getbeta(x,y).out, with the following expected columns: NAME, S, COUNT,
+BETX, SYSBETX, STATBETX, ERRBETX, CORR_ALFABETA, ALFX, SYSALFX, STATALFX, ERRALFX, BETXMDL, ALFXMDL,
+MUXMDL, NCOMBINATIONS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) -- Compensation suffix used in the provided BetaBeat.src output files.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- the transverse plane for which to look for the output file.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_closed_orbit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'CO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'orbit_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_closed_orbit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected closed orbit file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a given
+plane, converts it to the output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getCO(x,y).out, with the following expected columns: NAME, S, COUNT,
+X, STDX, XMDL, MUXMDL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- the transverse plane for which to look for the output file.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_coupling">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_coupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'couple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'coupling_f'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_coupling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_coupling" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected coupling file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code>, converts it to the
+output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getcouple(x,y).out, with the following expected columns: NAME, S, COUNT,
+F1001W, FWSTD1, F1001R, F1001I, F1010W, FWSTD2, F1010R, F1010I, Q1001, Q1001STD, Q1010, Q1010STD,
+MDLF1001R, MDLF1001I, MDLF1010R, MDLF1010I.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) -- Compensation suffix used in the provided BetaBeat.src output files.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_directory_to_new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_directory_to_new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> output files, converts it to the output
+format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>opt</strong> (<em>DotDict</em>) -- The entrypoint parameters parsed from the command line.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'D'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'dispersion_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected dispersion file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a given
+plane, converts it to the output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getD(x,y).out, with the following expected columns: NAME, S, COUNT, DX,
+STDDX, DPX, DXMDL, DPXMDL, MUXMDL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- the transverse plane for which to look for the output file.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_normalised_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ND'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'normalised_dispersion_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_normalised_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected normalized dispersion file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a
+given plane, converts it to the output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getND(x,y).out, with the following expected columns: NAME, S, COUNT, NDX,
+STDNDX, DX, DPX, NDXMDL, DXMDL, DPXMDL, MUXMDL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- the transverse plane for which to look for the output file.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'phase'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'phase_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_phase" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected phase file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a given
+plane, converts it to the output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getphase(x,y).out, with the following expected columns: NAME, NAME2, S, S1,
+COUNT, PHASEX, STDPHX, PHXMDL, MUXMDL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) -- Compensation suffix used in the provided BetaBeat.src output files.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- the transverse plane for which to look for the output file.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_total_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'phasetot'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'total_phase_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_total_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase" title="Permalink to this definition"></a></dt>
+<dd><p>Looks in the provided directory for expected total phase file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a given
+plane, converts it to the output format used by <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and  write them to the new location.</p>
+<p>The file naming should be getphasetot(x,y).out, with the following expected columns: NAME, NAME2, S,
+S1, COUNT, PHASEX, STDPHX, PHXMDL, MUXMDL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the directory with BetaBeat.src output files.</p></li>
+<li><p><strong>outputdir</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Location of the output directory for converted files.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) -- Compensation suffix used in the provided BetaBeat.src output files.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- the transverse plane for which to look for the output file.</p></li>
+<li><p><strong>old_file_name</strong> (<em>str</em>) -- the standard naming for the old output file.</p></li>
+<li><p><strong>new_file_name</strong> (<em>str</em>) -- the standard naming for the new converted file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.converter_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">converter_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#converter_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.converter_entrypoint" title="Permalink to this definition"></a></dt>
+<dd><p>Looks for expected <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> output files in the provided input directory, converts them to
+the format used in <code class="docutils literal notranslate"><span class="pre">omc3</span></code> and writes the converted files in the provided output directory.</p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>inputdir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Directory with BetaBeat.src output files.</p>
+</div></blockquote>
+</li>
+<li><p><strong>outputdir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Output directory for converted files.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>suffix</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>AC dipole compensation suffix used in the provided BetaBeat.src output (‘_free’ for
+compensation by equation, ‘_free2’ by model.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('',</span> <span class="pre">'_free',</span> <span class="pre">'_free2')</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">_free</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+</section>
+<span class="target" id="module-omc3.scripts.merge_kmod_results"></span><section id="merge-kmod-results">
 <h2>Merge KMOD Results<a class="headerlink" href="#merge-kmod-results" title="Permalink to this headline"></a></h2>
 <p>Script to merge the results from KMOD into one <cite>TfsDataFrame</cite>.
 The script takes the kmod-results folders as input and merges the lsa-result tfs-files in these

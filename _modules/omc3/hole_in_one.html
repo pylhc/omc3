@@ -65,6 +65,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
@@ -272,11 +273,10 @@
 
 <span class="sd">        Flags: **--harpy**</span>
 <span class="sd">        Action: ``store_true``</span>
-<span class="sd">      - **optics**: Measures the lattice optics</span>
 
+<span class="sd">      - **optics**: Measures the lattice optics</span>
 <span class="sd">        Flags: **--optics**</span>
 <span class="sd">        Action: ``store_true``</span>
-
 
 <span class="sd">    Harpy Kwargs:</span>
 <span class="sd">      - **files**: TbT files to analyse</span>
@@ -425,6 +425,11 @@
 
 <span class="sd">        Flags: **--chromatic_beating**</span>
 <span class="sd">        Action: ``store_true``</span>
+<span class="sd">      -  **compensation** *(str)*: Mode of compensation for the analysis after driven beam excitation.</span>
+
+<span class="sd">        Flags: **-compensation**</span>
+<span class="sd">        Choices: ``(&quot;model&quot;, &quot;equation&quot;, &quot;none&quot;)``</span>
+<span class="sd">        Default: ``model``</span>
 <span class="sd">      - **coupling_method** *(int)*: Coupling analysis option: disabled, 1 BPM or 2 BPMs method</span>
 
 <span class="sd">        Flags: **--coupling_method**</span>
@@ -448,6 +453,20 @@
 
 <span class="sd">        Flags: **--three_bpm_method**</span>
 <span class="sd">        Action: ``store_true``</span>
+
+<span class="sd">      - **three_d_excitation**: Use 3D kicks to calculate dispersion.</span>
+<span class="sd">        Action: ``store_true``</span>
+
+<span class="sd">      - **isolation_forest**: If present, remove outlying BPMs with isolation forest.</span>
+
+<span class="sd">        Flags: **--isolation_forest**</span>
+<span class="sd">        Action: ``store_true``</span>
+
+<span class="sd">      - **second_order_dispersion**: If present, calculate second order dispersion.</span>
+
+<span class="sd">        Flags: **--second_order_dispersion**</span>
+<span class="sd">        Action: ``store_true``</span>
+
 <span class="sd">      - **union**: If present, the phase advances are calculate for union of BPMs</span>
 <span class="sd">        with at least 3 valid measurements, instead of intersection .</span>
 

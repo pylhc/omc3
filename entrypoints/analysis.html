@@ -68,6 +68,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
@@ -269,10 +270,9 @@ by a different set of files:</p>
 <p>Flags: <strong>--harpy</strong>
 Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </li>
-<li><p><strong>optics</strong>: Measures the lattice optics</p>
-<p>Flags: <strong>--optics</strong>
-Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</li>
+<li><p><strong>optics</strong>: Measures the lattice optics
+Flags: <strong>--optics</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p></li>
 </ul>
 </dd>
 <dt>Harpy Kwargs:</dt><dd><ul>
@@ -422,6 +422,14 @@ Required: <code class="docutils literal notranslate"><span class="pre">True</spa
 <p>Flags: <strong>--chromatic_beating</strong>
 Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </li>
+<li><p><strong>compensation</strong> <em>(str)</em>: Mode of compensation for the analysis after driven beam excitation.</p></li>
+</ul>
+<blockquote>
+<div><p>Flags: <strong>-compensation</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">(&quot;model&quot;,</span> <span class="pre">&quot;equation&quot;,</span> <span class="pre">&quot;none&quot;)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">model</span></code></p>
+</div></blockquote>
+<ul>
 <li><p><strong>coupling_method</strong> <em>(int)</em>: Coupling analysis option: disabled, 1 BPM or 2 BPMs method</p>
 <p>Flags: <strong>--coupling_method</strong>
 Choices: <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></code>
@@ -443,6 +451,16 @@ Default: <code class="docutils literal notranslate"><span class="pre">11</span><
 </li>
 <li><p><strong>three_bpm_method</strong>: Use 3 BPM method in beta from phase</p>
 <p>Flags: <strong>--three_bpm_method</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>three_d_excitation</strong>: Use 3D kicks to calculate dispersion.
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p></li>
+<li><p><strong>isolation_forest</strong>: If present, remove outlying BPMs with isolation forest.</p>
+<p>Flags: <strong>--isolation_forest</strong>
+Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</li>
+<li><p><strong>second_order_dispersion</strong>: If present, calculate second order dispersion.</p>
+<p>Flags: <strong>--second_order_dispersion</strong>
 Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
 </li>
 <li><p><strong>union</strong>: If present, the phase advances are calculate for union of BPMs

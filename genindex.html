@@ -65,6 +65,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
@@ -342,8 +343,6 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.stats.circular_nanmean">circular_nanmean() (in module omc3.utils.stats)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/harpy.html#omc3.harpy.clean.clean">clean() (in module omc3.harpy.clean)</a>
 </li>
       <li><a href="modules/harpy.html#omc3.harpy.frequency.clean_by_tune">clean_by_tune() (in module omc3.harpy.frequency)</a>
@@ -352,10 +351,34 @@
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.rdt.complex_secondary_lines">complex_secondary_lines() (in module omc3.optics_measurements.rdt)</a>
 </li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude">convert_old_beta_from_amplitude() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase">convert_old_beta_from_phase() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit">convert_old_closed_orbit() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_coupling">convert_old_coupling() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new">convert_old_directory_to_new() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion">convert_old_dispersion() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion">convert_old_normalised_dispersion() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_phase">convert_old_phase() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase">convert_old_total_phase() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.iotools.convert_paths_in_dict_to_strings">convert_paths_in_dict_to_strings() (in module omc3.utils.iotools)</a>
 </li>
-      <li><a href="entrypoints/other.html#omc3.tbt_converter.converter_entrypoint">converter_entrypoint() (in module omc3.tbt_converter)</a>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.converter_entrypoint">converter_entrypoint() (in module omc3.scripts.betabeatsrc_output_converter)</a>
+
+      <ul>
+        <li><a href="entrypoints/other.html#omc3.tbt_converter.converter_entrypoint">(in module omc3.tbt_converter)</a>
 </li>
+      </ul></li>
       <li><a href="modules/utils.html#omc3.utils.iotools.copy_content_of_dir">copy_content_of_dir() (in module omc3.utils.iotools)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.iotools.copy_item">copy_item() (in module omc3.utils.iotools)</a>
@@ -958,6 +981,8 @@
 </li>
         <li><a href="entrypoints/analysis.html#module-omc3.run_kmod">omc3.run_kmod</a>
 </li>
+        <li><a href="entrypoints/scripts.html#module-omc3.scripts.betabeatsrc_output_converter">omc3.scripts.betabeatsrc_output_converter</a>
+</li>
         <li><a href="entrypoints/scripts.html#module-omc3.scripts.fake_measurement_from_model">omc3.scripts.fake_measurement_from_model</a>
 </li>
         <li><a href="entrypoints/scripts.html#module-omc3.scripts.merge_kmod_results">omc3.scripts.merge_kmod_results</a>
@@ -1357,8 +1382,6 @@
         <li><a href="modules/optics_measurements.html#module-omc3.optics_measurements.iforest">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     omc3.optics_measurements.interaction_point
 
@@ -1366,6 +1389,8 @@
         <li><a href="modules/optics_measurements.html#module-omc3.optics_measurements.interaction_point">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     omc3.optics_measurements.kick
 
@@ -1518,6 +1543,13 @@
 
       <ul>
         <li><a href="entrypoints/analysis.html#module-omc3.run_kmod">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.scripts.betabeatsrc_output_converter
+
+      <ul>
+        <li><a href="entrypoints/scripts.html#module-omc3.scripts.betabeatsrc_output_converter">module</a>
 </li>
       </ul></li>
       <li>
