@@ -47,7 +47,8 @@ def converter_params():
         type=str,
         default="_free",
         choices=("", "_free", "_free2"),
-        help="Compensation suffix used in the provided BetaBeat.src output. Defaults to '_free'.",
+        help="AC dipole compensation suffix used in the provided BetaBeat.src output ('_free' "
+             "for compensation by equation, '_free2' by model. Defaults to '_free'.",
     )
     return params
 
@@ -74,12 +75,12 @@ def converter_entrypoint(opt: DotDict) -> None:
 
     - **suffix** *(str)*:
 
-        Compensation suffix used in the provided BetaBeat.src output. Defaults
-        to '_free2'.
+        AC dipole compensation suffix used in the provided BetaBeat.src output ('_free' for
+        compensation by equation, '_free2' by model.
 
         choices: ``('', '_free', '_free2')``
 
-        default: ``_free2``
+        default: ``_free``
 
     """
     iotools.create_dirs(Path(opt.outputdir))
