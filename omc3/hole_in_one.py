@@ -70,11 +70,10 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--harpy**
         Action: ``store_true``
-      - **optics**: Measures the lattice optics
 
+      - **optics**: Measures the lattice optics
         Flags: **--optics**
         Action: ``store_true``
-
 
     Harpy Kwargs:
       - **files**: TbT files to analyse
@@ -223,6 +222,11 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--chromatic_beating**
         Action: ``store_true``
+      -  **compensation** *(str)*: Mode of compensation for the analysis after driven beam excitation.
+
+        Flags: **-compensation**
+        Choices: ``("model", "equation", "none")``
+        Default: ``model``
       - **coupling_method** *(int)*: Coupling analysis option: disabled, 1 BPM or 2 BPMs method
 
         Flags: **--coupling_method**
@@ -246,6 +250,20 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--three_bpm_method**
         Action: ``store_true``
+
+      - **three_d_excitation**: Use 3D kicks to calculate dispersion.
+        Action: ``store_true``
+
+      - **isolation_forest**: If present, remove outlying BPMs with isolation forest.
+
+        Flags: **--isolation_forest**
+        Action: ``store_true``
+
+      - **second_order_dispersion**: If present, calculate second order dispersion.
+
+        Flags: **--second_order_dispersion**
+        Action: ``store_true``
+
       - **union**: If present, the phase advances are calculate for union of BPMs
         with at least 3 valid measurements, instead of intersection .
 
