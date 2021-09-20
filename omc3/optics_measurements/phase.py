@@ -93,7 +93,8 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
     df[input_files.get_columns(df, f"MU{plane}")] = (input_files.get_data(df, f"MU{plane}")
-                                                     * meas_input.accelerator.beam_direction)
+                                                     * meas_input.accelerator.beam_direction
+                                                     )
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
     phase_advances = {"MODEL": _get_square_data_frame(
         (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
