@@ -92,6 +92,7 @@ def converter_entrypoint(opt: DotDict) -> None:
         Path(opt.outputdir) / DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME)),
         OrderedDict(sorted(opt.items())),
     )
+    LOGGER.warning("Be aware that the input units in the BetaBeat.src outputs may not be SI")
     convert_old_directory_to_new(opt)
 
 
