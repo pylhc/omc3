@@ -283,7 +283,7 @@
 <span class="sd">    - **suffix** *(str)*:</span>
 
 <span class="sd">        AC dipole compensation suffix used in the provided BetaBeat.src output (&#39;_free&#39; for</span>
-<span class="sd">        compensation by equation, &#39;_free2&#39; by model.</span>
+<span class="sd">        compensation by equation, &#39;_free2&#39; by model).</span>
 
 <span class="sd">        choices: ``(&#39;&#39;, &#39;_free&#39;, &#39;_free2&#39;)``</span>
 
@@ -295,6 +295,7 @@
         <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="n">DEFAULT_CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">)),</span>
         <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
     <span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Be aware that the input units in the BetaBeat.src outputs may not be SI&quot;</span><span class="p">)</span>
     <span class="n">convert_old_directory_to_new</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></div>
 
 
@@ -604,7 +605,7 @@
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;couple&quot;</span><span class="p">,</span>
-    <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;coupling_f&quot;</span>
+    <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;f&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected coupling file from ``BetaBeat.src``, converts it to the</span>
