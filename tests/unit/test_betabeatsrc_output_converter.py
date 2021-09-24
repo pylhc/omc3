@@ -85,7 +85,7 @@ def _assert_correct_files_are_present(outputdir: Path) -> None:
     assert (outputdir / f"{NORM_DISP_NAME}x.tfs").is_file()  # no norm disp in Y plane
 
     for rdt in ["1001", "1010"]:
-        assert (outputdir / f"coupling_f{rdt}.tfs").is_file()
+        assert (outputdir / f"f{rdt}.tfs").is_file()
 
 
 def _assert_correct_beta_amp_columns(outputdir: Path, plane: str) -> None:
@@ -195,7 +195,7 @@ def _assert_correct_normalized_dispersion_columns(outputdir: Path, plane: str) -
 
 def _assert_correct_coupling_columns(outputdir: Path, rdt: str) -> None:
     """Checks the expected columns are present in the normalized dispersion file in outputdir"""
-    dframe = tfs.read(outputdir / f"coupling_f{rdt}.tfs")
+    dframe = tfs.read(outputdir / f"f{rdt}.tfs")
     expected_converted_columns = [AMPLITUDE, f"{ERR}AMP", PHASE, f"{ERR}{PHASE}", f"{REAL}",
                                   f"{IMAG}", f"{REAL}{MDL}", f"{IMAG}{MDL}"]    # replace renamed
     expected_renamed_columns = [f"F{rdt}W", f"Q{rdt}", f"Q{rdt}STD", f"F{rdt}R", f"F{rdt}I"]  # disappeared
