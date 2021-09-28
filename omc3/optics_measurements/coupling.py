@@ -12,30 +12,31 @@ Coupling calculations
 
 from functools import reduce
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
-from collections import namedtuple
+from typing import List
 import numpy as np
 from numpy import exp, tan, cos, sin
-import os
-import sys
 import tfs
 import pandas as pd
-from numpy import conj
 from omc3.utils import logging_tools, stats
 from numpy import sqrt
 from omc3.definitions.constants import PI2I, PI2
+from omc3.optics_measurements.constants import (
+    AMPLITUDE,
+    NAME,
+    S,
+    PHASE,
+    PHASE_ADV,
+    SECONDARY_AMPLITUDE_X,
+    SECONDARY_AMPLITUDE_Y,
+    SECONDARY_FREQUENCY_X,
+    SECONDARY_FREQUENCY_Y
+)
 from omc3.harpy.constants import COL_MU
 from optics_functions.coupling import coupling_via_cmatrix
 from pathlib import Path
 
-
-# column name constants
-COL_AMPX_SEC = "AMP01_X"     # amplitude of secondary line in horizontal spectrum
-COL_AMPY_SEC = "AMP10_Y"     # amplitude of secondary line in vertical spectrum
-COL_FREQX_SEC = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
-COL_FREQY_SEC = "PHASE10_Y"  # frequency of secondary line in vertical spectrum
-
-COLS_TO_KEEP_X = ["NAME", "S", "AMP01", "PHASE01", "MUX"]
-COLS_TO_KEEP_Y = ["NAME", "S", "AMP10", "PHASE10", "MUY"]
+COLS_TO_KEEP_X: List[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
+COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -57,7 +58,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
       header_dict (dict): dictionary of header items common for all output files
 
     """
-    LOG.info("calculating coupling")
+    LOG.info("Calculating coupling.")
 
     # intersect measurements
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
@@ -65,36 +66,36 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     joined_index = joined.index \
         .intersection(phase_dict['X'][compensation]["MEAS"].index) \
         .intersection(phase_dict['Y'][compensation]["MEAS"].index)
-    joined = joined.loc[joined_index]
 
-    phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index]
-    phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index]
+    joined = joined.loc[joined_index].copy()
+    phases_x = phase_dict['X'][compensation]["MEAS"].loc[joined_index].copy()
+    phases_y = phase_dict['Y'][compensation]["MEAS"].loc[joined_index].copy()
 
     # averaging
-    for col in [COL_AMPX_SEC, COL_AMPY_SEC]:
-        cols = [c for c in joined if c.startswith(col)]
+    for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
+        cols = [c for c in joined.columns if c.startswith(col)]
         joined[col] = stats.weighted_mean(joined[cols], axis=1)
-    for col in [COL_FREQX_SEC, COL_FREQY_SEC]:
-        cols = [x for x in joined if x.startswith(col)]
+    for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
+        cols = [x for x in joined.columns if x.startswith(col)]
         joined[col] = stats.circular_mean(joined[cols], axis=1)
 
     pairs_x, deltas_x = _find_pair(phases_x)
     pairs_y, deltas_y = _find_pair(phases_y)
 
     A01 = .5*_get_complex(
-        joined[COL_AMPX_SEC].values*exp(joined[COL_FREQX_SEC].values * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X].values*exp(joined[SECONDARY_FREQUENCY_X].values * PI2I), deltas_x, pairs_x
     )
     B10 = .5 * _get_complex(
-        joined[COL_AMPY_SEC].values*exp(joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y].values*exp(joined[SECONDARY_FREQUENCY_Y].values * PI2I), deltas_y, pairs_y
     )
     A0_1 = .5*_get_complex(
-        joined[COL_AMPX_SEC].values*exp(-joined[COL_FREQX_SEC].values * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X].values*exp(-joined[SECONDARY_FREQUENCY_X].values * PI2I), deltas_x, pairs_x
     )
     B_10 = .5 * _get_complex(
-        joined[COL_AMPY_SEC].values*exp(-joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y].values*exp(-joined[SECONDARY_FREQUENCY_Y].values * PI2I), deltas_y, pairs_y
     )
 
-    q1001_from_A = -np.angle(A01)  + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_A = -np.angle(A01) + (joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1001_from_B = np.angle(B10) - (joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
 
     q1010_from_A = -np.angle(A0_1) - (joined[f"{COL_MU}Y"].to_numpy() + 0.25) * PI2
@@ -103,18 +104,18 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     f1001 = -.5 * sqrt(np.abs(A01 * B10))  *0.5*(exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B))
     f1010 = .5 * sqrt(np.abs(A0_1 * B_10))*0.5*(exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B))
 
-    LOG.debug("f1001 = {}".format(f1001))
+    LOG.debug(f"f1001 = {f1001}")
     tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
     # old Cminus
     C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
     header_dict["OldCminus"] = C_old
-    LOG.info(f"abs OldCminus = {C_old}, tune_sep = {tune_sep}")
+    LOG.info(f"|OldCminus| = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
 
     # new Cminus
     C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["newCminus"] = C_new
-    LOG.info(f"abs NewCminus = {C_new}")
+    LOG.info(f"|NewCminus| = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == "model":
         f1001, f1010 =  compensate_model(f1001, f1010, tune_dict)
@@ -172,7 +173,7 @@ def compensate_model(f1001, f1010, tune_dict):
     f1001 *= factor1001
     f1010 *= factor1010
 
-    LOG.info("compensation by model")
+    LOG.info("Compensation by model")
     LOG.info(f"f1001 factor: {factor1001}")
     LOG.info(f"f1010 factor: {factor1010}")
 
@@ -204,8 +205,6 @@ def _find_pair(phases):
     indices = (np.argmin(abs(slice), axis=0))
     deltas = slice[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)
-    #deltas = [phases[col][indices] for col in phases.columns]
-
     return np.array(indices), deltas
 
 
