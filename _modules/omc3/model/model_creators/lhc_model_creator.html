@@ -209,7 +209,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
@@ -231,11 +230,12 @@
     <span class="n">TWISS_DAT</span><span class="p">,</span>
     <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span>
     <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">,</span>
+    <span class="n">ACCELERATOR_MODEL_REPOSITORY</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.model.model_creators.abstract_model_creator</span> <span class="kn">import</span> <span class="n">ModelCreator</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span>
 
-<span class="n">ACCMDLS</span> <span class="o">=</span> <span class="s2">&quot;/afs/cern.ch/eng/acc-models/lhc&quot;</span>
+<span class="n">LHC_REPOSITORY_NAME</span> <span class="o">=</span> <span class="s2">&quot;acc-models-lhc&quot;</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -288,13 +288,12 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;year: </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;2018&quot;</span><span class="p">,</span> <span class="s2">&quot;2022&quot;</span><span class="p">]:</span>  <span class="c1"># this should be handled by the fetcher</span>
-            <span class="n">symlink_dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="si">}</span><span class="s2">/acc-models-lhc&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;symlink dst: </span><span class="si">{</span><span class="n">symlink_dst</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;2018&quot;</span><span class="p">,</span> <span class="s2">&quot;2022&quot;</span><span class="p">]:</span>  <span class="c1"># these years should be handled by the fetcher</span>
+            <span class="n">symlink_dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span><span class="o">/</span><span class="n">LHC_REPOSITORY_NAME</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Symlink destination: </span><span class="si">{</span><span class="n">symlink_dst</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">symlink_dst</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">():</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">symlink_dst</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ACCMDLS</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">symlink_dst</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
+                <span class="n">symlink_dst</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+            <span class="n">symlink_dst</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">symlink_to</span><span class="p">((</span><span class="n">ACCELERATOR_MODEL_REPOSITORY</span><span class="o">/</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">check_accelerator_instance</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Preparing model creation structure&quot;</span><span class="p">)</span>
         <span class="n">macros_path</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span>
