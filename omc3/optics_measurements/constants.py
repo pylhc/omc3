@@ -43,6 +43,10 @@ PHASE_ADV = 'MU'
 REAL = 'REAL'
 IMAG = 'IMAG'
 
+SECONDARY_AMPLITUDE_X = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
+SECONDARY_AMPLITUDE_Y = "AMP10_Y"  # amplitude of secondary line in vertical spectrum
+SECONDARY_FREQUENCY_X = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
+SECONDARY_FREQUENCY_Y = "PHASE10_Y"  # frequency of secondary line in vertical spectrum
 
 TIME = 'TIME'
 ACTION = '2J'
