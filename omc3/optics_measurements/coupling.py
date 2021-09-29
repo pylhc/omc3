@@ -50,7 +50,15 @@ CUTOFF: int = 5
 
 def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict):
     """
-       Calculates the coupling
+        Calculates the coupling RDTs f1001 and f1010 and Cminus.
+        This represents the "2 BPM method" in [this paper](https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf)
+        (quite old reference, stay tuned for a more up-to-date version).
+
+        Cminus corresponds to the closest tune approach. Two formulae are used to calculate it,
+        (see [this paper](http://cds.cern.ch/record/2135848/files/PhysRevSTAB.17.051004.pdf))
+        The first (Eq(1) in the above paper, denoted by `Cminus_approx`) is an approximated one,
+        using the amplitude of the RDTs only.
+        The second one (Eq(2)) is more exact but needs also the phase of the RDT.
 
     Args:
       meas_input (OpticsInput): programm arguments
