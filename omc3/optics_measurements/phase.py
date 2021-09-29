@@ -35,7 +35,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
                                                                 meas_input.accelerator.model,
                                                                 meas_input.compensation,
                                                                 no_errors)
-        LOGGER.info("-- run uncompensated")
+        LOGGER.info("-- Run uncompensated")
         uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(meas_input,
                                                                              input_files,
                                                                              tunes,
@@ -154,7 +154,7 @@ def _compensate_by_model(input_files, meas_input, df, plane):
 
 
 def write(dfs, headers, output, plane):
-    LOGGER.info(f"writing phases: {len(dfs)}")
+    LOGGER.info(f"Writing phases: {len(dfs)}")
     for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME, PHASE_NAME+"driven_", TOTAL_PHASE_NAME+"driven_")):
         tfs.write(join(output, f"{name}{plane.lower()}{EXT}"), df, head)
         LOGGER.info(f"Phase advance beating in {name}{plane.lower()}{EXT} = "

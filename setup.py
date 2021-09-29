@@ -41,6 +41,7 @@ EXTRA_DEPENDENCIES = {
     "test": [
         "pytest>=5.2",
         "pytest-cov>=2.7",
+        "pytest-timeout>=1.4",
         "hypothesis>=5.0.0",
         "attrs>=19.2.0",
     ],

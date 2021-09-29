@@ -80,7 +80,7 @@ def converter_entrypoint(opt: DotDict) -> None:
     - **suffix** *(str)*:
 
         AC dipole compensation suffix used in the provided BetaBeat.src output ('_free' for
-        compensation by equation, '_free2' by model.
+        compensation by equation, '_free2' by model).
 
         choices: ``('', '_free', '_free2')``
 
@@ -92,6 +92,7 @@ def converter_entrypoint(opt: DotDict) -> None:
         Path(opt.outputdir) / DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME)),
         OrderedDict(sorted(opt.items())),
     )
+    LOGGER.warning("Be aware that the input units in the BetaBeat.src outputs may not be SI")
     convert_old_directory_to_new(opt)
 
 
@@ -401,7 +402,7 @@ def convert_old_coupling(
     outputdir: Union[Path, str],
     suffix: str,
     old_file_name: str = "couple",
-    new_file_name: str = "coupling_f"
+    new_file_name: str = "f"
 ) -> None:
     """
     Looks in the provided directory for expected coupling file from ``BetaBeat.src``, converts it to the

@@ -12,32 +12,38 @@ Coupling calculations
 
 from abc import abstractclassmethod
 from functools import reduce
-from posixpath import join
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
-from collections import namedtuple
-from functools import reduce
-from pathlib import Path
-from typing import List, Tuple
-
+from typing import List
 import numpy as np
-import pandas as pd
+from numpy import exp, tan, cos, sin
+import os
+import sys
 import tfs
-from numpy import conj, cos, exp, sin, sqrt, tan
+import pandas as pd
+from omc3.utils import logging_tools, stats
+from numpy import sqrt
+from omc3.definitions.constants import PI2I, PI2
+from omc3.optics_measurements.constants import (
+    AMPLITUDE,
+    NAME,
+    S,
+    PHASE,
+    PHASE_ADV,
+    SECONDARY_AMPLITUDE_X,
+    SECONDARY_AMPLITUDE_Y,
+    SECONDARY_FREQUENCY_X,
+    SECONDARY_FREQUENCY_Y
+)
+from omc3.harpy.constants import COL_MU
 from optics_functions.coupling import coupling_via_cmatrix
+from pathlib import Path
 
+COLS_TO_KEEP_X: List[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
+COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
 from omc3.definitions.constants import PI2, PI2I
 from omc3.harpy.constants import COL_MU
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from omc3.utils import logging_tools, stats
-
-# column name constants
-COL_AMPX_SEC: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
-COL_AMPY_SEC: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum
-COL_FREQX_SEC: str = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
-COL_FREQY_SEC: str = "PHASE10_Y"  # frequency of secondary line in vertical spectrum
-
-COLS_TO_KEEP_X = ["NAME", "S", "AMP01", "PHASE01", "MUX"]
-COLS_TO_KEEP_Y = ["NAME", "S", "AMP10", "PHASE10", "MUY"]
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -68,7 +74,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
       header_dict (dict): dictionary of header items common for all output files
 
     """
-    LOG.info("calculating coupling")
+    LOG.info("Calculating coupling.")
 
     # intersect measurements
     # we need vertical and horizontal spectra, so we have to intersect first all inputs with X and Y phase output
@@ -81,37 +87,37 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         .intersection(joined.index) \
         .intersection(phase_dict['X'][compensation]["MEAS"].index) \
         .intersection(phase_dict['Y'][compensation]["MEAS"].index)
-    joined = joined.loc[joined_index]
 
-    phases_x = phase_dict["X"][compensation]["MEAS"].loc[joined_index]
-    phases_y = phase_dict["Y"][compensation]["MEAS"].loc[joined_index]
+    joined = joined.loc[joined_index].copy()
+    phases_x = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
+    phases_y = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
 
     bd = meas_input.accelerator.beam_direction
 
     # averaging
     # standard arithmetic mean for amplitude columns
     # and circular mean (beware the `period=1`) for frequency columns
-    for col in [COL_AMPX_SEC, COL_AMPY_SEC]:
-        cols = [c for c in joined if c.startswith(col)]
+    for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
+        cols = [c for c in joined.columns if c.startswith(col)]
         joined[col] = stats.weighted_mean(joined[cols], axis=1)
-    for col in [COL_FREQX_SEC, COL_FREQY_SEC]:
-        cols = [x for x in joined if x.startswith(col)]
-        joined[col] = bd * stats.circular_mean(joined[cols], period=1.0, axis=1)
+    for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
+        cols = [x for x in joined.columns if x.startswith(col)]
+        joined[col] = bd * stats.circular_mean(joined[cols], axis=1)
 
     pairs_x, deltas_x = _find_pair(phases_x, 1)
     pairs_y, deltas_y = _find_pair(phases_y, 1)
 
     A01 = 0.5 * _get_complex(
-        joined[COL_AMPX_SEC].values * exp(joined[COL_FREQX_SEC].values * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X].values*exp(joined[SECONDARY_FREQUENCY_X].values * PI2I), deltas_x, pairs_x
     )
     B10 = 0.5 * _get_complex(
-        joined[COL_AMPY_SEC].values * exp(joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y].values*exp(joined[SECONDARY_FREQUENCY_Y].values * PI2I), deltas_y, pairs_y
     )
     A0_1 = 0.5 * _get_complex(
-        joined[COL_AMPX_SEC].values * exp(-joined[COL_FREQX_SEC].values * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X].values*exp(-joined[SECONDARY_FREQUENCY_X].values * PI2I), deltas_x, pairs_x
     )
     B_10 = 0.5 * _get_complex(
-        joined[COL_AMPY_SEC].values * exp(-joined[COL_FREQY_SEC].values * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y].values*exp(-joined[SECONDARY_FREQUENCY_Y].values * PI2I), deltas_y, pairs_y
     )
 
     # columns in `joined` that haven't been swapped before, need to be now
@@ -132,12 +138,12 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     # old Cminus, approximate formula without rdt phases
     C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
     header_dict["Cminus_approx"] = C_old
-    LOG.info(f"|C-| (approx) = {C_old}")
+    LOG.info(f"|C-| (approx) = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
 
     # new Cminus
-    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(-1.0j * PI2 * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["Cminus_exact"] = C_new
-    LOG.info(f"|C-| (exact)  = {C_new}")
+    LOG.info(f"|C-| (exact)  = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == "model":
         f1001, f1010 = compensate_model(f1001, f1010, tune_dict)
@@ -196,7 +202,7 @@ def compensate_model(f1001, f1010, tune_dict):
     f1001 *= factor1001
     f1010 *= factor1010
 
-    LOG.info("compensation by model")
+    LOG.info("Compensation by model")
     LOG.info(f"f1001 factor: {factor1001}")
     LOG.info(f"f1010 factor: {factor1010}")
 
