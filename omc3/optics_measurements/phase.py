@@ -192,7 +192,7 @@ def _get_square_data_frame(data, index):
 def write_special(meas_input, phase_advances, plane_tune, plane):
     # TODO REFACTOR AND SIMPLIFY
     accel = meas_input.accelerator
-    meas = phase_advances['free']["MEAS"]
+    meas = phase_advances["MEAS"]
     bd = accel.beam_direction
     elements = accel.elements
     special_phase_columns = ['ELEMENT1',
@@ -219,7 +219,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         if (elements.loc[elem1, "S"] - elements.loc[elem2, "S"]) * bd > 0.0:
             bpm_phase_advance += plane_tune
             model_value += plane_tune
-        bpm_err = phase_advances['free']["ERRMEAS"].loc[minmu1, minmu2]
+        bpm_err = phase_advances["ERRMEAS"].loc[minmu1, minmu2]
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
         ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
         model_value = (model_value * bd) % 1
