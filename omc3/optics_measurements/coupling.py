@@ -20,8 +20,10 @@ import os
 import sys
 import tfs
 import pandas as pd
-from omc3.utils import logging_tools, stats
+from pathlib import Path
 from numpy import sqrt
+
+from omc3.utils import logging_tools, stats
 from omc3.definitions.constants import PI2I, PI2
 from omc3.optics_measurements.constants import (
     AMPLITUDE,
@@ -35,19 +37,24 @@ from omc3.optics_measurements.constants import (
     SECONDARY_FREQUENCY_Y
 )
 from omc3.harpy.constants import COL_MU
-from optics_functions.coupling import coupling_via_cmatrix
-from pathlib import Path
-
-COLS_TO_KEEP_X: List[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
-COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
 from omc3.definitions.constants import PI2, PI2I
 from omc3.harpy.constants import COL_MU
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from omc3.utils import logging_tools, stats
+from optics_functions.coupling import coupling_via_cmatrix
+
+COLS_TO_KEEP_X: List[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
+COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
+CUTOFF: int = 5
+# methods for finding BPM pairings for momentum reconstruction
+# why not use C-style integer constants?
+COUPLING_USE_NEAREST = "nearest_neighbour"
+COUPLING_USE_JUMP_ONE = "jump_one"
+COUPLING_USE_90DEG = "use_90_degrees"
+
 
 LOG = logging_tools.get_logger(__name__)
 
-CUTOFF: int = 5
 
 # --------------------------------------------------------------------------------------------------
 # ---- main part -----------------------------------------------------------------------------------
@@ -104,8 +111,15 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         cols = [x for x in joined.columns if x.startswith(col)]
         joined[col] = bd * stats.circular_mean(joined[cols], axis=1)
 
-    pairs_x, deltas_x = _find_pair(phases_x, 1)
-    pairs_y, deltas_y = _find_pair(phases_y, 1)
+    # me wants `match`!!
+    pairing = _take_next
+    if meas_input.coupling_pairing == COUPLING_USE_JUMP_ONE:
+        pairing = _jump_one
+    elif meas_input.coupling_pairing == COUPLING_USE_90DEG:
+        pairing = _find_pair
+
+    pairs_x, deltas_x = pairing(phases_x)
+    pairs_y, deltas_y = pairing(phases_y)
 
     A01 = 0.5 * _get_complex(
         joined[SECONDARY_AMPLITUDE_X].values*exp(joined[SECONDARY_FREQUENCY_X].values * PI2I), deltas_x, pairs_x
@@ -218,6 +232,11 @@ def compensate_ryoichi():
 # --------------------------------------------------------------------------------------------------
 
 
+def _jump_one(phases):
+    """Convenience function for skipping one BPM for momentum reconstruction"""
+    return _take_next(phases, 2)
+
+
 def _take_next(phases, shift=1):
     """
     Takes the following BPM for momentum reconstruction by a given shift
@@ -226,7 +245,7 @@ def _take_next(phases, shift=1):
     return indices, phases.values[np.arange(phases.values.shape[0]), indices] - 0.25
 
 
-def _find_pair(phases, bd):
+def _find_pair(phases):
     """ finds the best candidate for momentum reconstruction
 
     Args:

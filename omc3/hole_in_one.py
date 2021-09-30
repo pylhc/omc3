@@ -46,6 +46,7 @@ from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
+from omc3.optics_measurements.coupling import COUPLING_USE_NEAREST, COUPLING_USE_JUMP_ONE, COUPLING_USE_90DEG
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -520,6 +521,11 @@ def optics_params():
     params.add_parameter(name="three_bpm_method", action="store_true",
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")
+    params.add_parameter(name="coupling_pairing", type=str,
+                         choices=[COUPLING_USE_NEAREST,
+                                  COUPLING_USE_JUMP_ONE, COUPLING_USE_90DEG],
+                         default=COUPLING_USE_90DEG,
+                         help="Select which method to use for the pairing of BPMs for momentum reconstruction")
     params.add_parameter(name="compensation", type=str, default=OPTICS_DEFAULTS["compensation"],
                          choices=("model", "equation", "none"),
                          help="Mode of compensation for the analysis after driven beam excitation")
