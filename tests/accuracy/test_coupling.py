@@ -9,17 +9,47 @@ IN_DIR = Path(__file__).parent.parent / "inputs/coupling"
 LIMIT = 1.0e-3
 
 
-@pytest.mark.basic
-def test_coupling_beam_1(tmpdir):
-    _test_coupling_beam_b(tmpdir, 1, "beam1")
+def test_coupling_beam_1_against_getllm(tmpdir):
+    f1001, f1010 = _run_analysis(tmpdir, 1, "beam1")
+    coupling_getllm = tfs.read(IN_DIR / f"getllm_{input}.tfs", index='NAME')
+
+    assert _rms_arc(f1001["F1001I"] - coupling_getllm["F1001I"]) < LIMIT, "f1001_imag didn't match getllm output"
+    assert _rms_arc(f1001["F1001R"] - coupling_getllm["F1001R"]) < LIMIT, "f1001_real didn't match getllm output"
+    assert _rms_arc(f1010["F1010I"] - coupling_getllm["F1010I"]) < LIMIT, "f1010_imag didn't match getllm output"
+    assert _rms_arc(f1010["F1010R"] - coupling_getllm["F1010R"]) < LIMIT, "f1010_real didn't match getllm output"
 
 
-@pytest.mark.basic
-def test_coupling_beam_4(tmpdir):
-    _test_coupling_beam_b(tmpdir, 2, "beam4")
+def test_coupling_beam_1_against_optics_functions(tmpdir):
+    f1001, f1010 = _run_analysis(tmpdir, 1, "beam1")
+    coupling_cmatrix = tfs.read(IN_DIR / f"cmatrix_{input}.tfs", index='NAME')
+
+    assert _rms_arc(f1001["F1001I"] - coupling_cmatrix["F1001I"]) < LIMIT, "f1001_imag didn't match optics_functions output"
+    assert _rms_arc(f1001["F1001R"] - coupling_cmatrix["F1001R"]) < LIMIT, "f1001_real didn't match optics_functions output"
+    assert _rms_arc(f1010["F1010I"] - coupling_cmatrix["F1010I"]) < LIMIT, "f1010_imag didn't match optics_functions output"
+    assert _rms_arc(f1010["F1010R"] - coupling_cmatrix["F1010R"]) < LIMIT, "f1010_real didn't match optics_functions output"
 
 
-def _test_coupling_beam_b(tmpdir, beam, input):
+def test_coupling_beam_4_against_getllm(tmpdir):
+    f1001, f1010 = _run_analysis(tmpdir, 2, "beam4")
+    coupling_getllm = tfs.read(IN_DIR / f"getllm_{input}.tfs", index='NAME')
+
+    assert _rms_arc(f1001["F1001I"] - coupling_getllm["F1001I"]) < LIMIT, "f1001_imag didn't match getllm output"
+    assert _rms_arc(f1001["F1001R"] - coupling_getllm["F1001R"]) < LIMIT, "f1001_real didn't match getllm output"
+    assert _rms_arc(f1010["F1010I"] - coupling_getllm["F1010I"]) < LIMIT, "f1010_imag didn't match getllm output"
+    assert _rms_arc(f1010["F1010R"] - coupling_getllm["F1010R"]) < LIMIT, "f1010_real didn't match getllm output"
+
+
+def test_coupling_beam_4_against_optics_functions(tmpdir):
+    f1001, f1010 = _run_analysis(tmpdir, 2, "beam4")
+    coupling_cmatrix = tfs.read(IN_DIR / f"cmatrix_{input}.tfs", index='NAME')
+
+    assert _rms_arc(f1001["F1001I"] - coupling_cmatrix["F1001I"]) < LIMIT, "f1001_imag didn't match optics_functions output"
+    assert _rms_arc(f1001["F1001R"] - coupling_cmatrix["F1001R"]) < LIMIT, "f1001_real didn't match optics_functions output"
+    assert _rms_arc(f1010["F1010I"] - coupling_cmatrix["F1010I"]) < LIMIT, "f1010_imag didn't match optics_functions output"
+    assert _rms_arc(f1010["F1010R"] - coupling_cmatrix["F1010R"]) < LIMIT, "f1010_real didn't match optics_functions output"
+
+
+def _run_analysis(tmpdir, beam, input):
     hole_in_one_entrypoint(
         optics=True,
         accel="lhc",
@@ -33,18 +63,8 @@ def _test_coupling_beam_b(tmpdir, beam, input):
     )
     f1001 = tfs.read(tmpdir / "f1001.tfs", index='NAME')
     f1010 = tfs.read(tmpdir / "f1010.tfs", index='NAME')
-    coupling_getllm = tfs.read(IN_DIR / f"getllm_{input}.tfs", index='NAME')
-    coupling_cmatrix = tfs.read(IN_DIR / f"cmatrix_{input}.tfs", index='NAME')
 
-    assert _rms_arc(f1001["F1001I"] - coupling_getllm["F1001I"]) < LIMIT, "f1001_imag didn't match getllm output"
-    assert _rms_arc(f1001["F1001R"] - coupling_getllm["F1001R"]) < LIMIT, "f1001_real didn't match getllm output"
-    assert _rms_arc(f1010["F1010I"] - coupling_getllm["F1010I"]) < LIMIT, "f1010_imag didn't match getllm output"
-    assert _rms_arc(f1010["F1010R"] - coupling_getllm["F1010R"]) < LIMIT, "f1010_real didn't match getllm output"
-
-    assert _rms_arc(f1001["F1001I"] - coupling_cmatrix["F1001I"]) < LIMIT, "f1001_imag didn't match optics_functions output"
-    assert _rms_arc(f1001["F1001R"] - coupling_cmatrix["F1001R"]) < LIMIT, "f1001_real didn't match optics_functions output"
-    assert _rms_arc(f1010["F1010I"] - coupling_cmatrix["F1010I"]) < LIMIT, "f1010_imag didn't match optics_functions output"
-    assert _rms_arc(f1010["F1010R"] - coupling_cmatrix["F1010R"]) < LIMIT, "f1010_real didn't match optics_functions output"
+    return f1001, f1010
 
 
 # --------------------------------------------------------------------------------------------------
@@ -55,6 +75,8 @@ def _rms_arc(data):
     return sqrt(mean(square(arc_data)))
 
 
+# select LHC arc BPMs (meaning BPM number > 12) from regular expression.
+# the regex filters out the BPM number e.g. 12 from BPM.12R8.B1
 def _select_arc(names):
     bpm_matches = [(name, re.match(r"BPM[^.]*\.(\d+)[LR]\d\.B[12]", name)) for name in names]
     return [name for (name, x) in bpm_matches if x is not None and int(x[1]) > 12]
