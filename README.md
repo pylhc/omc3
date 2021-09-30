@@ -1,6 +1,6 @@
-# <img src="https://twiki.cern.ch/twiki/pub/BEABP/Logos/OMC_logo.png" height="28"> 3
+# <img src="https://raw.githubusercontent.com/pylhc/pylhc.github.io/master/docs/assets/logos/OMC_logo.svg" height="28"> 3
 
-[![Cron Testing](https://github.com/pylhc/omc3/workflows/Cron%20Testing/badge.svg)](https://github.com/pylhc/omc3/actions?query=workflow%3A%22Cron+Testing%22)
+[![Cron Testing](https://github.com/pylhc/omc3/workflows/Coverage/badge.svg)](https://github.com/pylhc/omc3/actions/workflows/coverage.yml?query=branch%3Amaster)
 [![Code Climate coverage](https://img.shields.io/codeclimate/coverage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)
 [![Code Climate maintainability (percentage)](https://img.shields.io/codeclimate/maintainability-percentage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)
 [![GitHub last commit](https://img.shields.io/github/last-commit/pylhc/omc3.svg?style=popout)](https://github.com/pylhc/omc3/)
