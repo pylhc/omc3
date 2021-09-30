@@ -1,5 +1,6 @@
 import tfs
 import re
+import pytest
 from pathlib import Path
 from omc3.hole_in_one import hole_in_one_entrypoint
 from numpy import sqrt, mean, square
@@ -8,10 +9,12 @@ IN_DIR = Path(__file__).parent.parent / "inputs/coupling"
 LIMIT = 1.0e-3
 
 
+@pytest.mark.basic
 def test_coupling_beam_1(tmpdir):
     _test_coupling_beam_b(tmpdir, 1, "beam1")
 
 
+@pytest.mark.basic
 def test_coupling_beam_4(tmpdir):
     _test_coupling_beam_b(tmpdir, 2, "beam4")
 
