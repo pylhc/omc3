@@ -1,7 +1,8 @@
 import re
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
+import pandas as pd
 import pytest
 import tfs
 from numpy import mean, sqrt, square
@@ -79,13 +80,13 @@ def _run_analysis(output_dir: Union[str, Path], beam: int, sdds_input: str):
 # ----- Helpers ----- #
 
 
-def _rms_arc(data):
-    arc_data = data[_select_arc(data.index)].copy()
+def _rms_arc(data: pd.DataFrame) -> pd.DataFrame:
+    """Get rms of the provided data in LHC arcs BPMs."""
+    arc_data = data[_select_arc_bpms(data.index)].copy()
     return sqrt(mean(square(arc_data)))
 
 
-# select LHC arc BPMs (meaning BPM number > 12) from regular expression.
-# the regex filters out the BPM number e.g. 12 from BPM.12R8.B1
-def _select_arc(names):
+def _select_arc_bpms(names: pd.Series) -> List[str]:
+    """Select LHC arc BPMs (number >12)."""
     bpm_matches = [(name, re.match(r"BPM[^.]*\.(\d+)[LR]\d\.B[12]", name)) for name in names]
     return [name for (name, x) in bpm_matches if x is not None and int(x[1]) > 12]
