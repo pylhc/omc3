@@ -104,8 +104,8 @@ def calculate_coupling(
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
         circularly_averaved_columns = [x for x in joined.columns if x.startswith(col)]
         joined[col] = bd * stats.circular_mean(
-            joined[circularly_averaved_columns], axis=1
-        )  # TODO: check  with andreas for the period=1 in comment but not in code
+            joined[circularly_averaved_columns], axis=1, period=1
+        )
 
     LOGGER.debug("Finding BPM pairs for momentum reconstruction")
     bpm_pairs_x, deltas_x = _find_pair(phases_x, 1)
@@ -271,8 +271,7 @@ def compensate_rdts_ryoichi():
 #     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
 
-# TODO: bd is not used? check with andreas
-def _find_pair(phases: tfs.TfsDataFrame, bd: int) -> Tuple[np.ndarray, np.ndarray]:
+def _find_pair(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:
     """
     Finds the best candidate for momentum reconstruction.
 
