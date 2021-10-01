@@ -75,35 +75,35 @@ def calculate_coupling(
             will be attached as the header to the **f1001.tfs** and **f1010.tfs** files..
     """
     LOGGER.info("Calculating coupling")
+    bd = meas_input.accelerator.beam_direction
+    compensation = "uncompensated" if meas_input.compensation == "model" else "free"
 
     # We need vertical and horizontal spectra, so we have to intersect first all inputs with X and Y phase
     # output furthermore the output has to be rearranged in the order of the model (important for e.g. LHC
     # beam 2) and thus we need to intersect the *model* index with all the above. Since the first index of
     # the .intersect chain dictates the order, we have to start with the model index.
     LOGGER.debug("Intersecting measurements, starting with model")
-    compensation = "uncompensated" if meas_input.compensation == "model" else "free"
-    joined: tfs.TfsDataFrame = _joined_frames(input_files)
+    joined: tfs.TfsDataFrame = _joined_frames(input_files)  # merge transverse input frames
     joined_index = (
         meas_input.accelerator.model.index.intersection(joined.index)
         .intersection(phase_dict["X"][compensation]["MEAS"].index)
         .intersection(phase_dict["Y"][compensation]["MEAS"].index)
     )
-
     joined = joined.loc[joined_index].copy()
+
     phases_x = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
     phases_y = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
 
-    bd = meas_input.accelerator.beam_direction
-
     # standard arithmetic mean for amplitude columns, circular mean (`period=1`) for frequency columns
-    LOGGER.debug("Averaging amplitude and frequency columns")
+    LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
         arithmetically_averaved_columns = [c for c in joined.columns if c.startswith(col)]
         joined[col] = stats.weighted_mean(joined[arithmetically_averaved_columns], axis=1)
 
+    LOGGER.debug("Averaging (circular mean) frequency columns")
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
         circularly_averaved_columns = [x for x in joined.columns if x.startswith(col)]
-        joined[col] = bd * stats.circular_mean(joined[circularly_averaved_columns], axis=1)
+        joined[col] = bd * stats.circular_mean(joined[circularly_averaved_columns], axis=1)  # TODO: check  with andreas for the period=1 in comment but not in code
 
     pairs_x, deltas_x = _find_pair(phases_x, 1)
     pairs_y, deltas_y = _find_pair(phases_y, 1)
@@ -244,28 +244,34 @@ def compensate_ryoichi():
 
 # ----- Helpers ----- #
 
-# TODO: th
-def _take_next(phases, shift=1):
-    """
-    Takes the following BPM for momentum reconstruction by a given shift
-    """
-    indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
-    return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
+# def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
+#     """
+#     Takes the following BPM for momentum reconstruction by a given shift.
+#
+#     Args:
+#         phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
+#         shift (int): ???
+#     """
+#     indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
+#     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
 
-# TODO: th
-def _find_pair(phases, bd) -> tuple:
-    """finds the best candidate for momentum reconstruction
+# TODO: bd is not used? check with andreas
+def _find_pair(phases: tfs.TfsDataFrame, bd: int) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Finds the best candidate for momentum reconstruction.
 
     Args:
-      phases (matrix): phase advance matrix
+      phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
       bd (int): beam direction, will be negative for beam 2.
+
+    Returns:
+        The indices of best candidates, and the corresponding deltas of momentum.
     """
-    slice_ = _tilt_slice_matrix(phases.to_numpy(), 0, 2 * CUTOFF) - 0.25  # do not overwrite builting 'slice'
+    slice_ = _tilt_slice_matrix(phases.to_numpy(), 0, 2 * CUTOFF) - 0.25  # do not overwrite built-in 'slice'
     indices = np.argmin(abs(slice_), axis=0)
     deltas = slice_[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)
-
     return np.array(indices), deltas
 
 
