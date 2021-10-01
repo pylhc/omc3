@@ -177,7 +177,7 @@ def calculate_coupling(
         ).transpose(),
     )
 
-    rdt_df.sort_values(by="S", inplace=True)
+    rdt_df = rdt_df.sort_values(by=S)
 
     # adding model values and deltas
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
@@ -300,21 +300,23 @@ def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
         linx = linx[COLS_TO_KEEP_X].copy()
         liny = liny[COLS_TO_KEEP_Y].copy()
 
-        linx.rename(columns=rename_col("X", i), inplace=True)
-        liny.rename(columns=rename_col("Y", i), inplace=True)
+        linx = linx.rename(columns=rename_col("X", i))
+        liny = liny.rename(columns=rename_col("Y", i))
 
-        merged_df = pd.merge(
+        merged_transverse_lins_df = pd.merge(
             left=linx,
             right=liny,
             on=["NAME", "S"],
             how="inner",
             sort=False,
         )
-        joined_dfs.append(merged_df)
+        joined_dfs.append(merged_transverse_lins_df)
 
     partial_merge = partial(pd.merge, how="inner", on=["NAME", "S"], sort=False)
     reduced = reduce(partial_merge, joined_dfs).set_index("NAME")
-    reduced.rename(columns={"MUX_X_0": "MUX", "MUY_Y_0": "MUY"}, inplace=True)  # TODO: constants
+    reduced = reduced.rename(
+        columns={f"{PHASE_ADV}X_X_0": f"{PHASE_ADV}X", f"{PHASE_ADV}Y_Y_0": f"{PHASE_ADV}Y"}
+    )
     return tfs.TfsDataFrame(reduced)
 
 
