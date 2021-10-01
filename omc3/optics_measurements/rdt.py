@@ -185,7 +185,7 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     for i, bpm_rdt_data in enumerate(line_amp):
         popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
         amps[i] = popt[0]
-        err_amps[i] = np.sqrt(pcov)[0] if np.sqrt(pcov)[0] != np.Inf else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
+        err_amps[i] = np.sqrt(pcov)[0] if np.isfinite(np.sqrt(pcov)[0]) else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
     return amps, err_amps
 
 
