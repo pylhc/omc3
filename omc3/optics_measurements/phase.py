@@ -6,18 +6,39 @@ This module contains phase calculation functionality of ``optics_measurements``.
 It provides functions to compute betatron phase advances and structures to store them.
 """
 from os.path import join
+from typing import Dict, Tuple
+
 import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL,
-                                                PHASE_NAME, TOTAL_PHASE_NAME, SPECIAL_PHASE_NAME)
+from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
+                                                TOTAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
 LOGGER = logging_tools.get_logger(__name__)
 
-def calculate(meas_input, input_files, tunes, plane, no_errors=False):
+
+def calculate(
+    meas_input: dict, input_files: dict, tunes, plane, no_errors=False
+) -> Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
+    """
+    Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
+    dictionary combining the results for each transverse plane.
+
+    Args:
+        meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
+        input_files (dict): `InputFiles` object containing frequency spectra files (linx/y).
+        tunes:
+        plane:
+        no_errors:
+
+    Returns:
+        A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry
+        is a dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
+        the location of the output ``TfsDataFrames`` for the phases.
+    """
     if meas_input.compensation == "none":
         phase_advances, dfs = _calculate_with_compensation(meas_input,
                                                            input_files,
