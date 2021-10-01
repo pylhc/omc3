@@ -55,7 +55,7 @@ def calculate_coupling(
     (a more up-to-date reference will come in the near future).
 
     Two formulae are used to calculate the Cminus, taken from the following reference:
-    http://cds.cern.ch/record/2135848/files/PhysRevSTAB.17.051004.pdf
+    https://cds.cern.ch/record/2135848/files/PhysRevSTAB.17.051004.pdf
     The first one (Eq(1)) is an approximation using only the amplitudes of the RDTs, while the second one
     (Eq(2) in the same paper) is more exact but needs also the phase of the RDT.
 
@@ -144,19 +144,21 @@ def calculate_coupling(
     LOGGER.debug("Calculating approximated Cminus")
     C_approx = 4.0 * tune_separation * np.mean(np.abs(f1001))
     header_dict["Cminus_approx"] = C_approx
-    LOGGER.info(f"|C-| (approx) = {C_approx}, tune_sep = {tune_separation}, from Eq.1 in PRSTAB 17,051004")
+    LOGGER.info(
+        f"|C-| (approx) = {C_approx:.5f}, tune_sep = {tune_separation:.3f}, from Eq.1 in PRSTAB 17,051004"
+    )
 
     LOGGER.debug("Calculating exact Cminus")
     C_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["Cminus_exact"] = C_exact
-    LOGGER.info(f"|C-| (exact)  = {C_exact}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
+    LOGGER.info(f"|C-| (exact)  = {C_exact:.5f}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == "model":
         LOGGER.debug("Compensating coupling RDT values by model")
-        f1001, f1010 = compensate_model(f1001, f1010, tune_dict)
+        f1001, f1010 = compensate_rdts_by_model(f1001, f1010, tune_dict)
 
-    LOGGER.debug("Creating final RDT dataframe")
-    rdt_df = pd.DataFrame(  # TODO: take care of column names
+    LOGGER.debug("Combining RDTs into a single dataframe")
+    rdt_df = pd.DataFrame(  # TODO: take care of column names (next PR)
         index=joined_index,
         columns=[S, f"{F1001}R", f"{F1010}R", f"{F1001}I", f"{F1010}I", f"{F1001}W", f"{F1010}W", f"{F1001}A", f"{F1010}A"],
         data=np.array(
@@ -178,8 +180,7 @@ def calculate_coupling(
     LOGGER.debug("Adding model values and deltas")
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
     RDTCOLS = [F1001, F1010]
-    # TODO: take care of column names
-    # TODO: considering doing 2 dataframes here and then writing to file directly?
+    # TODO: take care of column names (next PR)
     for (domain, func) in [("I", np.imag), ("R", np.real), ("W", np.abs)]:
         for col in RDTCOLS:
             mdlcol = func(model_coupling[col])
@@ -196,12 +197,12 @@ def _write_coupling_files(rdt_df: tfs.TfsDataFrame, outdir: Union[str, Path], he
     Write out to file both coupling RDTs data (sum and difference resonance terms)
 
     Args:
-        rdt_df (tfs.TfsDataFrame): complete dataframe with both sum and difference resonance RDT values.
+        rdt_df (tfs.TfsDataFrame): complete dataframe with both sum and difference resonance RDT values,
+            and comparison to model. Relevant columns are selected for output.
         outdir (Union[str, Path]): location of the output directory as queried from the commandline.
         header_dict (dict): headers dictionary to attach to the output dataframes.
     """
     common_cols = [S]
-    # TODO: unify columns with (C)RDTs
     cols_to_print_f1001 = common_cols + [col for col in rdt_df.columns if "1001" in col]
     cols_to_print_f1010 = common_cols + [col for col in rdt_df.columns if "1010" in col]
 
@@ -213,36 +214,47 @@ def _write_coupling_files(rdt_df: tfs.TfsDataFrame, outdir: Union[str, Path], he
     )
 
 
-# TODO: th
-def compensate_model(f1001, f1010, tune_dict):
+def compensate_rdts_by_model(
+    f1001: np.ndarray, f1010: np.ndarray, tune_dict: Dict[str, float]
+) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Compensation by model only.
+    Compensate coupling RDTs by model (equation) only, implies we're providing a driven model (ACD / ATD
+    kick). The scaling factors are calculated from the model's free and driven tunes, and the scaled RDTs
+    are returned.
 
     Args:
-        f1001: the pre-calculated driven coupling RDTs
-        f1010: the pre-calculated driven coupling RDTs
-        tune_dict (TuneDict): the free and driven tunes
+        f1001 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
+        f1010 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
+        tune_dict (Dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
+            calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
+
+    Returns:
+        The scaled RDTs.
     """
-    Qx = PI2 * tune_dict["X"]["QFM"]  # natural tunes
+    f1001 = np.array(f1001)  # make sure we don't modify inplace
+    f1010 = np.array(f1010)
+
+    LOGGER.debug("Retrieving model's natural tunes")  # QFM is free since model is ACD/ADT- driven model
+    Qx = PI2 * tune_dict["X"]["QFM"]
     Qy = PI2 * tune_dict["Y"]["QFM"]
 
-    dQx = PI2 * tune_dict["X"]["QM"]  # driven tunes
-    dQy = PI2 * tune_dict["Y"]["QM"]
+    LOGGER.debug("Retrieving model's driven tunes")  # QM is driven as model is ACD/ADT-driven model
+    Qx_driven = PI2 * tune_dict["X"]["QM"]
+    Qy_driven = PI2 * tune_dict["Y"]["QM"]
 
-    factor1001 = np.sqrt(np.abs(sin(dQy - Qx) * sin(dQx - Qy))) / np.abs(sin(Qx - Qy))
-    factor1010 = np.abs(np.sqrt(sin(Qx + dQy) * sin(Qy + dQx)) / sin(Qx + Qy))
-    # TODO: might act in-place, check and fix
-    f1001 *= factor1001
-    f1010 *= factor1010
+    LOGGER.debug("Computing scaling factor from driven model")
+    f1001_scaling_factor = np.sqrt(np.abs(sin(Qy_driven - Qx) * sin(Qx_driven - Qy))) / np.abs(sin(Qx - Qy))
+    f1010_scaling_factor = np.abs(np.sqrt(sin(Qx + Qy_driven) * sin(Qy + Qx_driven)) / sin(Qx + Qy))
+    f1001 *= f1001_scaling_factor
+    f1010 *= f1010_scaling_factor
 
-    LOGGER.info("Compensation by model")
-    LOGGER.info(f"f1001 factor: {factor1001}")
-    LOGGER.info(f"f1010 factor: {factor1010}")
-
+    LOGGER.info("Compensation by model:")
+    LOGGER.info(f"\t f1001 scaling factor: {f1001_scaling_factor:.5f}")
+    LOGGER.info(f"\t f1010 scaling factor: {f1010_scaling_factor:.5f}")
     return f1001, f1010
 
 
-def compensate_ryoichi():
+def compensate_rdts_ryoichi():
     pass
 
 
