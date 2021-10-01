@@ -112,7 +112,6 @@ def calculate_coupling(
     bpm_pairs_y, deltas_y = _find_pair(phases_y, 1)
 
     LOGGER.debug("Computing complex lines from spectra")
-    # _get_complex_line makes sure not to modify data in-place
     A01: np.ndarray = 0.5 * _get_complex_line(
         joined[SECONDARY_AMPLITUDE_X] * exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
