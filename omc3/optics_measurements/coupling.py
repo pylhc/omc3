@@ -6,10 +6,10 @@ This module contains linear coupling calculations related functionality of ``opt
 It provides functions to computes and the coupling resonance driving terms, which are part of the standard
 optics outputs.
 """
-
+from collections import OrderedDict
 from functools import reduce
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -42,7 +42,13 @@ COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_A
 CUTOFF: int = 5
 
 
-def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict: dict) -> None:
+def calculate_coupling(
+    meas_input: dict,
+    input_files: dict,
+    phase_dict: Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], Sequence[tfs.TfsDataFrame]]],
+    tune_dict: Dict[str, float],
+    header_dict: OrderedDict
+) -> None:
     """
     Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
     This represents the "2 BPM method" in https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf
@@ -56,19 +62,23 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     The results are written down in the optics_measurements outputs as **f1001.tfs** and **f1010.tfs** files.
 
     Args:
-        meas_input (OpticsInput): programm arguments
-        input_files (TfsDataFrames): sdds input files
-        phase_dict (PhaseDict): contains measured phase advances
-        tune_dict (TuneDict): contains measured tunes
-        header_dict (dict): dictionary of header items common for all output files.
+        meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
+        input_files (dict): `InputFiles` (dict) object containing frequency spectra files (linx/y).
+        phase_dict (Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]): dictionary containing
+            the measured phase advances, with an entry for each transverse plane. In said entry is a
+            dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
+            the location of the output ``TfsDataFrames`` for the phases.
+        tune_dict (Dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
+            calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
+        header_dict (OrderedDict): header dictionary of common items for coupling output files,
+            will be attached as the header to the **f1001.tfs** and **f1010.tfs** files..
     """
     LOGGER.info("Calculating coupling")
 
-    # Intersect measurements: we need vertical and horizontal spectra, so we have to intersect first all
-    # inputs with X and Y phase output furthermore the output has to be rearranged in the order of the
-    # model (important for e.g. LHC beam 2) and thus we need to intersect the *model* index with all the
-    # above. Since the first index of the .intersect chain dictates the order, we have to start with the
-    # model index
+    # We need vertical and horizontal spectra, so we have to intersect first all inputs with X and Y phase
+    # output furthermore the output has to be rearranged in the order of the model (important for e.g. LHC
+    # beam 2) and thus we need to intersect the *model* index with all the above. Since the first index of
+    # the .intersect chain dictates the order, we have to start with the model index.
     LOGGER.debug("Intersecting measurements, starting with model")
     compensation = "uncompensated" if meas_input.compensation == "model" else "free"
     joined = _joined_frames(input_files)
