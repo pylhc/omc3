@@ -42,7 +42,7 @@ COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_A
 CUTOFF: int = 5
 
 
-def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict: dict):
+def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict: dict) -> None:
     """
     Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
     This represents the "2 BPM method" in https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf
@@ -53,15 +53,16 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     The first one (Eq(1)) is an approximation using only the amplitudes of the RDTs, while the second one
     (Eq(2) in the same paper) is more exact but needs also the phase of the RDT.
 
+    The results are written down in the optics_measurements outputs as **f1001.tfs** and **f1010.tfs** files.
+
     Args:
         meas_input (OpticsInput): programm arguments
         input_files (TfsDataFrames): sdds input files
         phase_dict (PhaseDict): contains measured phase advances
         tune_dict (TuneDict): contains measured tunes
         header_dict (dict): dictionary of header items common for all output files.
-
     """
-    LOGGER.info("Calculating coupling.")
+    LOGGER.info("Calculating coupling")
 
     # Intersect measurements: we need vertical and horizontal spectra, so we have to intersect first all
     # inputs with X and Y phase output furthermore the output has to be rearranged in the order of the
