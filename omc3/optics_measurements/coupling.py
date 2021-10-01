@@ -63,7 +63,8 @@ def calculate_coupling(
 
     Args:
         meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
-        input_files (dict): `InputFiles` (dict) object containing frequency spectra files (linx/y).
+        input_files (dict): `InputFiles` (dict) object containing frequency spectra files (linx/y) for
+            each transverse plane (as keys).
         phase_dict (Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]): dictionary containing
             the measured phase advances, with an entry for each transverse plane. In said entry is a
             dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
@@ -247,12 +248,14 @@ def _take_next(phases, shift=1):
     indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
+
 # TODO: th
 def _find_pair(phases, bd) -> tuple:
     """finds the best candidate for momentum reconstruction
 
     Args:
       phases (matrix): phase advance matrix
+      bd (int): beam direction, will be negative for beam 2.
     """
     slice_ = _tilt_slice_matrix(phases.to_numpy(), 0, 2 * CUTOFF) - 0.25  # do not overwrite builting 'slice'
     indices = np.argmin(abs(slice_), axis=0)
@@ -260,6 +263,7 @@ def _find_pair(phases, bd) -> tuple:
     indices = (indices + np.arange(len(indices))) % len(indices)
 
     return np.array(indices), deltas
+
 
 # TODO: th, rename
 def _get_complex(spectral_lines, deltas, pairs):
@@ -276,19 +280,25 @@ def _get_complex(spectral_lines, deltas, pairs):
         pairs
     ]
 
-# TODO: th
-def _joined_frames(input_files):
+
+def _joined_frames(input_files: dict):
     """
     Merges spectrum data from the two planes from all the input files.
+
+    Args:
+        input_files (dict): `InputFiles` (dict) object containing frequency spectra files (linx/y) for each
+            transverse plane (as keys).
     """
     joined_dfs = []
     assert len(input_files["X"]) == len(input_files["Y"])
 
     for i, (linx, liny) in enumerate(zip(input_files["X"], input_files["Y"])):
-        linx = linx[COLS_TO_KEEP_X]
-        liny = liny[COLS_TO_KEEP_Y]
+        linx = linx[COLS_TO_KEEP_X].copy()
+        liny = liny[COLS_TO_KEEP_Y].copy()
+
         linx.rename(columns=rename_col("X", i), inplace=True)
         liny.rename(columns=rename_col("Y", i), inplace=True)
+
         merged_df = pd.merge(
             left=linx,
             right=liny,
@@ -302,11 +312,21 @@ def _joined_frames(input_files):
     reduced = reduce(
         lambda a, b: pd.merge(a, b, how="inner", on=["NAME", "S"], sort=False), joined_dfs
     ).set_index("NAME")
-    reduced.rename(columns={"MUX_X_0": "MUX", "MUY_Y_0": "MUY"}, inplace=True)
+    reduced.rename(columns={"MUX_X_0": "MUX", "MUY_Y_0": "MUY"}, inplace=True)  # TODO: constants
     return reduced
 
-# TODO: yikes
-def rename_col(plane, index):
+
+def rename_col(plane: str, index: int) -> str:
+    """
+    Generate appropriate column name for renaming before merging dataframes from InputFiles.
+
+    Args:
+        plane (str): plane for which to apply the renaming.
+        index (int): index location of the df which columns are renamed in the input files.
+
+    Returns:
+        Generated name as string.
+    """
     def fn(column):
         if column in ["NAME", "S"]:
             return column
