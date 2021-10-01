@@ -25,6 +25,8 @@ RMS = "RMS"  # Root-Mean-Square
 RES = "RES"  # Rescaled measurement
 DELTA = "DELTA"  # Delta between measurement and model (sometimes beating)
 MDL = "MDL"  # Model
+REAL = "REAL"
+IMAG = "IMAG"
 
 # Names
 S = "S"
@@ -40,8 +42,8 @@ DPPAMP = "DPPAMP"
 AMPLITUDE = "AMP"
 PHASE = "PHASE"
 PHASE_ADV = "MU"
-REAL = "REAL"
-IMAG = "IMAG"
+F1001: str = "f1001.tfs"
+F1010: str = "f1010.tfs"
 
 SECONDARY_AMPLITUDE_X = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y = "AMP10_Y"  # amplitude of secondary line in vertical spectrum

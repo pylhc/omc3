@@ -20,9 +20,19 @@ from optics_functions.coupling import coupling_via_cmatrix
 from omc3.definitions.constants import PI2, PI2I
 from omc3.harpy.constants import COL_MU
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
-from omc3.optics_measurements.constants import (AMPLITUDE, NAME, PHASE, PHASE_ADV, S, SECONDARY_AMPLITUDE_X,
-                                                SECONDARY_AMPLITUDE_Y, SECONDARY_FREQUENCY_X,
-                                                SECONDARY_FREQUENCY_Y)
+from omc3.optics_measurements.constants import (
+    AMPLITUDE,
+    F1001,
+    F1010,
+    NAME,
+    PHASE,
+    PHASE_ADV,
+    SECONDARY_AMPLITUDE_X,
+    SECONDARY_AMPLITUDE_Y,
+    SECONDARY_FREQUENCY_X,
+    SECONDARY_FREQUENCY_Y,
+    S,
+)
 from omc3.utils import logging_tools, stats
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -32,7 +42,7 @@ COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_A
 CUTOFF: int = 5
 
 
-def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict):
+def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict: dict):
     """
     Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
     This represents the "2 BPM method" in https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf
@@ -48,7 +58,7 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
         input_files (TfsDataFrames): sdds input files
         phase_dict (PhaseDict): contains measured phase advances
         tune_dict (TuneDict): contains measured tunes
-        header_dict (dict): dictionary of header items common for all output files
+        header_dict (dict): dictionary of header items common for all output files.
 
     """
     LOGGER.info("Calculating coupling.")
@@ -59,12 +69,13 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     # above. Since the first index of the .intersect chain dictates the order, we have to start with the
     # model index
     LOGGER.debug("Intersecting measurements, starting with model")
-    compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
+    compensation = "uncompensated" if meas_input.compensation == "model" else "free"
     joined = _joined_frames(input_files)
-    joined_index = meas_input.accelerator.model.index \
-        .intersection(joined.index) \
-        .intersection(phase_dict['X'][compensation]["MEAS"].index) \
-        .intersection(phase_dict['Y'][compensation]["MEAS"].index)
+    joined_index = (
+        meas_input.accelerator.model.index.intersection(joined.index)
+        .intersection(phase_dict["X"][compensation]["MEAS"].index)
+        .intersection(phase_dict["Y"][compensation]["MEAS"].index)
+    )
 
     joined = joined.loc[joined_index].copy()
     phases_x = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
@@ -72,12 +83,12 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
 
     bd = meas_input.accelerator.beam_direction
 
-    # averaging
-    # standard arithmetic mean for amplitude columns
-    # and circular mean (beware the `period=1`) for frequency columns
+    # standard arithmetic mean for amplitude columns, circular mean (`period=1`) for frequency columns
+    LOGGER.debug("Averaging amplitude and frequency columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
         cols = [c for c in joined.columns if c.startswith(col)]
         joined[col] = stats.weighted_mean(joined[cols], axis=1)
+
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
         cols = [x for x in joined.columns if x.startswith(col)]
         joined[col] = bd * stats.circular_mean(joined[cols], axis=1)
@@ -86,30 +97,38 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     pairs_y, deltas_y = _find_pair(phases_y, 1)
 
     A01 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_X].values*exp(joined[SECONDARY_FREQUENCY_X].values * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X].to_numpy() * exp(joined[SECONDARY_FREQUENCY_X].to_numpy() * PI2I),
+        deltas_x,
+        pairs_x,
     )
     B10 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_Y].values*exp(joined[SECONDARY_FREQUENCY_Y].values * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y].to_numpy() * exp(joined[SECONDARY_FREQUENCY_Y].to_numpy() * PI2I),
+        deltas_y,
+        pairs_y,
     )
     A0_1 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_X].values*exp(-joined[SECONDARY_FREQUENCY_X].values * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X].to_numpy() * exp(-joined[SECONDARY_FREQUENCY_X].to_numpy() * PI2I),
+        deltas_x,
+        pairs_x,
     )
     B_10 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_Y].values*exp(-joined[SECONDARY_FREQUENCY_Y].values * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y].to_numpy() * exp(-joined[SECONDARY_FREQUENCY_Y].to_numpy() * PI2I),
+        deltas_y,
+        pairs_y,
     )
 
     # columns in `joined` that haven't been swapped before, need to be now
-    q1001_from_A = -np.angle(A01) + (bd*joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1001_from_B = np.angle(B10) - (bd*joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    q1001_from_A = -np.angle(A01) + (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_B = np.angle(B10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
     eq1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
 
-    q1010_from_A = -np.angle(A0_1) - (bd*joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1010_from_B = -np.angle(B_10) - (bd*joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
+    q1010_from_B = -np.angle(B_10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
     eq1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
     # `eq / abs(eq)` to get the average
-    f1001 = -.5 * sqrt(np.abs(A01 * B10)) * eq1001 / abs(eq1001)
-    f1010 = .5 * sqrt(np.abs(A0_1 * B_10)) * eq1010 / abs(eq1010)
+    f1001 = -0.5 * sqrt(np.abs(A01 * B10)) * eq1001 / abs(eq1001)
+    f1010 = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq1010 / abs(eq1010)
 
     tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
@@ -119,27 +138,39 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     LOGGER.info(f"|C-| (approx) = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
 
     # new Cminus
-    C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    C_new = np.abs(
+        4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"])))
+    )
     header_dict["Cminus_exact"] = C_new
     LOGGER.info(f"|C-| (exact)  = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == "model":
         f1001, f1010 = compensate_model(f1001, f1010, tune_dict)
-    rdt_df = pd.DataFrame(index=joined_index,
-                          columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W", "F1001A", "F1010A"],
-                          data=np.array([
-                              meas_input.accelerator.model.loc[joined_index, "S"],
-                              np.real(f1001), np.real(f1010),
-                              np.imag(f1001), np.imag(f1010),
-                              np.abs(f1001), np.abs(f1010),
-                              np.angle(f1001) / PI2, np.angle(f1010) / PI2,
-                          ]).transpose())
+
+    rdt_df = pd.DataFrame(
+        index=joined_index,
+        columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W", "F1001A", "F1010A"],
+        data=np.array(
+            [
+                meas_input.accelerator.model.loc[joined_index, "S"],
+                np.real(f1001),
+                np.real(f1010),
+                np.imag(f1001),
+                np.imag(f1010),
+                np.abs(f1001),
+                np.abs(f1010),
+                np.angle(f1001) / PI2,
+                np.angle(f1010) / PI2,
+            ]
+        ).transpose(),
+    )
 
     rdt_df.sort_values(by="S", inplace=True)
 
     # adding model values and deltas
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
-    RDTCOLS = ["F1001", "F1010"]
+    RDTCOLS = [F1001, F1010]
+    # TODO: yikes, uniify with (C)RDTs
     for (domain, func) in [("I", np.imag), ("R", np.real), ("W", np.abs)]:
         for col in RDTCOLS:
             mdlcol = func(model_coupling[col])
@@ -151,15 +182,18 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     _write_coupling_tfs(rdt_df, meas_input.outputdir, header_dict)
 
 
+# TODO: th
 def _write_coupling_tfs(rdt_df, outdir, header_dict):
-    common_cols = ["S"]
+    common_cols = [S]
+    # TODO: unify columns with (C)RDTs
     cols_to_print_f1001 = common_cols + [col for col in rdt_df.columns if "1001" in col]
     cols_to_print_f1010 = common_cols + [col for col in rdt_df.columns if "1010" in col]
 
-    tfs.write(Path(outdir) / "f1001.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index="NAME")
-    tfs.write(Path(outdir) / "f1010.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index="NAME")
+    tfs.write(Path(outdir) / f"{F1001}.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index="NAME")
+    tfs.write(Path(outdir) / f"{F1001}.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index="NAME")
 
 
+# TODO: th
 def compensate_model(f1001, f1010, tune_dict):
     """
     Compensation by model only.
@@ -177,6 +211,7 @@ def compensate_model(f1001, f1010, tune_dict):
 
     factor1001 = np.sqrt(np.abs(sin(dQy - Qx) * sin(dQx - Qy))) / np.abs(sin(Qx - Qy))
     factor1010 = np.abs(np.sqrt(sin(Qx + dQy) * sin(Qy + dQx)) / sin(Qx + Qy))
+    # TODO: might act in-place, check and fix
     f1001 *= factor1001
     f1010 *= factor1010
 
@@ -191,33 +226,31 @@ def compensate_ryoichi():
     pass
 
 
-# --------------------------------------------------------------------------------------------------
-# ---- helper functions ----------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------
+# ----- Helpers ----- #
 
-
+# TODO: th
 def _take_next(phases, shift=1):
     """
     Takes the following BPM for momentum reconstruction by a given shift
     """
-    indices = np.roll(np.arange(phases.values.shape[0]), shift)
-    return indices, phases.values[np.arange(phases.values.shape[0]), indices] - 0.25
+    indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
+    return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
-
-def _find_pair(phases, bd):
-    """ finds the best candidate for momentum reconstruction
+# TODO: th
+def _find_pair(phases, bd) -> tuple:
+    """finds the best candidate for momentum reconstruction
 
     Args:
       phases (matrix): phase advance matrix
     """
-    slice_ = _tilt_slice_matrix(phases.values, 0, 2 * CUTOFF) - 0.25  # do not overwrite builting 'slice'
+    slice_ = _tilt_slice_matrix(phases.to_numpy(), 0, 2 * CUTOFF) - 0.25  # do not overwrite builting 'slice'
     indices = np.argmin(abs(slice_), axis=0)
     deltas = slice_[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)
 
     return np.array(indices), deltas
 
-
+# TODO: th, rename
 def _get_complex(spectral_lines, deltas, pairs):
     """
     calculates the complex line from the real lines at positions i and j, where j is determined by
@@ -228,14 +261,14 @@ def _get_complex(spectral_lines, deltas, pairs):
       deltas (vector): phase advances minus 90deg
       pairs (vector): indices for pairing
     """
-    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[pairs]
+    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
+        pairs
+    ]
 
-
+# TODO: th
 def _joined_frames(input_files):
     """
     Merges spectrum data from the two planes from all the input files.
-
-    TODO: unify with CRDT
     """
     joined_dfs = []
     assert len(input_files["X"]) == len(input_files["Y"])
@@ -254,11 +287,14 @@ def _joined_frames(input_files):
         )
         joined_dfs.append(merged_df)
 
-    reduced = reduce(lambda a, b: pd.merge(a, b, how="inner", on=["NAME", "S"], sort=False), joined_dfs).set_index("NAME")
+    # TODO: make this call pythonic
+    reduced = reduce(
+        lambda a, b: pd.merge(a, b, how="inner", on=["NAME", "S"], sort=False), joined_dfs
+    ).set_index("NAME")
     reduced.rename(columns={"MUX_X_0": "MUX", "MUY_Y_0": "MUY"}, inplace=True)
     return reduced
 
-
+# TODO: yikes
 def rename_col(plane, index):
     def fn(column):
         if column in ["NAME", "S"]:
