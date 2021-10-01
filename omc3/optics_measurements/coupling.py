@@ -1,86 +1,64 @@
 """
-Module coupling.nw
-------------------------------------
+Coupling
+--------
 
-@author: awegsche
-
-@version: 1.0
-
-Coupling calculations
-
+This module contains linear coupling calculations related functionality of ``optics_measurements``.
+It provides functions to computes and the coupling resonance driving terms, which are part of the standard
+optics outputs.
 """
 
-from abc import abstractclassmethod
 from functools import reduce
-from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
-from typing import List
-import numpy as np
-from numpy import exp, tan, cos, sin
-import os
-import sys
-import tfs
-import pandas as pd
-from omc3.utils import logging_tools, stats
-from numpy import sqrt
-from omc3.definitions.constants import PI2I, PI2
-from omc3.optics_measurements.constants import (
-    AMPLITUDE,
-    NAME,
-    S,
-    PHASE,
-    PHASE_ADV,
-    SECONDARY_AMPLITUDE_X,
-    SECONDARY_AMPLITUDE_Y,
-    SECONDARY_FREQUENCY_X,
-    SECONDARY_FREQUENCY_Y
-)
-from omc3.harpy.constants import COL_MU
-from optics_functions.coupling import coupling_via_cmatrix
 from pathlib import Path
+from typing import List
 
-COLS_TO_KEEP_X: List[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
-COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
+import numpy as np
+import pandas as pd
+import tfs
+from numpy import cos, exp, sin, sqrt, tan
+from optics_functions.coupling import coupling_via_cmatrix
+
 from omc3.definitions.constants import PI2, PI2I
 from omc3.harpy.constants import COL_MU
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
+from omc3.optics_measurements.constants import (AMPLITUDE, NAME, PHASE, PHASE_ADV, S, SECONDARY_AMPLITUDE_X,
+                                                SECONDARY_AMPLITUDE_Y, SECONDARY_FREQUENCY_X,
+                                                SECONDARY_FREQUENCY_Y)
 from omc3.utils import logging_tools, stats
 
-LOG = logging_tools.get_logger(__name__)
+LOGGER = logging_tools.get_logger(__name__)
 
+COLS_TO_KEEP_X: List[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
+COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
 CUTOFF: int = 5
-
-# --------------------------------------------------------------------------------------------------
-# ---- main part -----------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------
 
 
 def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_dict):
     """
-        Calculates the coupling RDTs f1001 and f1010 and Cminus.
-        This represents the "2 BPM method" in [this paper](https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf)
-        (quite old reference, stay tuned for a more up-to-date version).
+    Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
+    This represents the "2 BPM method" in https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf
+    (a more up-to-date reference will come in the near future).
 
-        Cminus corresponds to the closest tune approach. Two formulae are used to calculate it,
-        (see [this paper](http://cds.cern.ch/record/2135848/files/PhysRevSTAB.17.051004.pdf))
-        The first (Eq(1) in the above paper, denoted by `Cminus_approx`) is an approximated one,
-        using the amplitude of the RDTs only.
-        The second one (Eq(2)) is more exact but needs also the phase of the RDT.
+    Two formulae are used to calculate the Cminus, taken from the following reference:
+    http://cds.cern.ch/record/2135848/files/PhysRevSTAB.17.051004.pdf
+    The first one (Eq(1)) is an approximation using only the amplitudes of the RDTs, while the second one
+    (Eq(2) in the same paper) is more exact but needs also the phase of the RDT.
 
     Args:
-      meas_input (OpticsInput): programm arguments
-      input_files (TfsDataFrames): sdds input files
-      phase_dict (PhaseDict): contains measured phase advances
-      tune_dict (TuneDict): contains measured tunes
-      header_dict (dict): dictionary of header items common for all output files
+        meas_input (OpticsInput): programm arguments
+        input_files (TfsDataFrames): sdds input files
+        phase_dict (PhaseDict): contains measured phase advances
+        tune_dict (TuneDict): contains measured tunes
+        header_dict (dict): dictionary of header items common for all output files
 
     """
-    LOG.info("Calculating coupling.")
+    LOGGER.info("Calculating coupling.")
 
-    # intersect measurements
-    # we need vertical and horizontal spectra, so we have to intersect first all inputs with X and Y phase output
-    # furthermore the output has to be rearranged in the order of the model (important for e.g. LHC beam 2)
-    # and thus we need to intersect the *model* index with all the above. Since the first index of the .intersect chain
-    # dictates the order, we have to start with the model index
+    # Intersect measurements: we need vertical and horizontal spectra, so we have to intersect first all
+    # inputs with X and Y phase output furthermore the output has to be rearranged in the order of the
+    # model (important for e.g. LHC beam 2) and thus we need to intersect the *model* index with all the
+    # above. Since the first index of the .intersect chain dictates the order, we have to start with the
+    # model index
+    LOGGER.debug("Intersecting measurements, starting with model")
     compensation = 'uncompensated' if meas_input.compensation == 'model' else 'free'
     joined = _joined_frames(input_files)
     joined_index = meas_input.accelerator.model.index \
@@ -138,12 +116,12 @@ def calculate_coupling(meas_input, input_files, phase_dict, tune_dict, header_di
     # old Cminus, approximate formula without rdt phases
     C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
     header_dict["Cminus_approx"] = C_old
-    LOG.info(f"|C-| (approx) = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
+    LOGGER.info(f"|C-| (approx) = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
 
     # new Cminus
     C_new = np.abs(4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["Cminus_exact"] = C_new
-    LOG.info(f"|C-| (exact)  = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
+    LOGGER.info(f"|C-| (exact)  = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == "model":
         f1001, f1010 = compensate_model(f1001, f1010, tune_dict)
@@ -202,9 +180,9 @@ def compensate_model(f1001, f1010, tune_dict):
     f1001 *= factor1001
     f1010 *= factor1010
 
-    LOG.info("Compensation by model")
-    LOG.info(f"f1001 factor: {factor1001}")
-    LOG.info(f"f1010 factor: {factor1010}")
+    LOGGER.info("Compensation by model")
+    LOGGER.info(f"f1001 factor: {factor1001}")
+    LOGGER.info(f"f1010 factor: {factor1010}")
 
     return f1001, f1010
 
