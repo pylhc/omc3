@@ -94,13 +94,12 @@ def calculate_coupling(
     phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
     phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
 
-    # standard arithmetic mean for amplitude columns, circular mean (`period=1`) for frequency columns
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
         arithmetically_averaved_columns = [c for c in joined.columns if c.startswith(col)]
         joined[col] = stats.weighted_mean(joined[arithmetically_averaved_columns], axis=1)
 
-    LOGGER.debug("Averaging (circular mean) frequency columns")
+    LOGGER.debug("Averaging (circular mean) frequency columns")  # make sure to use period=1 here
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
         circularly_averaved_columns = [x for x in joined.columns if x.startswith(col)]
         joined[col] = bd * stats.circular_mean(
@@ -108,8 +107,8 @@ def calculate_coupling(
         )
 
     LOGGER.debug("Finding BPM pairs for momentum reconstruction")
-    bpm_pairs_x, deltas_x = _find_pair(phases_x, 1)
-    bpm_pairs_y, deltas_y = _find_pair(phases_y, 1)
+    bpm_pairs_x, deltas_x = _find_pair(phases_x)
+    bpm_pairs_y, deltas_y = _find_pair(phases_y)
 
     LOGGER.debug("Computing complex lines from spectra")
     A01: np.ndarray = 0.5 * _get_complex_line(
@@ -118,7 +117,7 @@ def calculate_coupling(
     B10: np.ndarray = 0.5 * _get_complex_line(
         joined[SECONDARY_AMPLITUDE_Y] * exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
-    A0_1: np.ndarray = 0.5 * _get_complex_line(  # TODO: check this underscore position with andreas
+    A0_1: np.ndarray = 0.5 * _get_complex_line(
         joined[SECONDARY_AMPLITUDE_X] * exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
     B_10: np.ndarray = 0.5 * _get_complex_line(
