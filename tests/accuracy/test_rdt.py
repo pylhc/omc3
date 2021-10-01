@@ -1,12 +1,15 @@
 from pathlib import Path
+
 import numpy as np
 import pytest
 import tfs
+
 from omc3.hole_in_one import hole_in_one_entrypoint
 
-
-# the coupling test for real and imaginary are skipped for now as the tests fail
-SKIP_REASON = "Coupling is skipped as there, Real and Imag are not aligned with model. Issue to be looked into."
+# The coupling tests for real and imaginary parts are skipped for now as the tests fail because the results
+# are in anti-phase with those from optics_functions. Amplitudes are correct though (and coupling.py is
+# also here)
+SKIP_REASON = "Coupling is skipped as there, Real and Imag are not aligned with model. To be looked into."
 
 # accuracy limits of rdt to ptc
 ACCURACY_LIMIT = dict(
@@ -18,9 +21,9 @@ ACCURACY_LIMIT = dict(
 MEASURE_OPTICS_SETTINGS = dict(
     harpy=False,
     optics=True,
-    nonlinear=['rdt'],
+    nonlinear=["rdt"],
     compensation="none",
-    accel='lhc',
+    accel="lhc",
     ats=True,
     dpp=0.0,
     year="2018",
@@ -28,19 +31,19 @@ MEASURE_OPTICS_SETTINGS = dict(
 
 
 RDTS = (
-    {'order': "skew_quadrupole", 'jklm': [1,0,0,1], 'plane': 'X'},
-    {'order': "skew_quadrupole", 'jklm': [1,0,1,0], 'plane': 'X'},
-    {'order': "skew_quadrupole", 'jklm': [0,1,1,0], 'plane': 'Y'},
-    {'order': "skew_quadrupole", 'jklm': [1,0,1,0], 'plane': 'Y'},
-
-    {'order': "normal_sextupole", 'jklm': [3,0,0,0], 'plane': 'X'},
-    {'order': "normal_sextupole", 'jklm': [1,2,0,0], 'plane': 'X'},
-    {'order': "normal_sextupole", 'jklm': [1,0,2,0], 'plane': 'X'},
-    {'order': "normal_sextupole", 'jklm': [1,0,0,2], 'plane': 'X'},
-    {'order': "normal_sextupole", 'jklm': [0,1,1,1], 'plane': 'Y'},
-    {'order': "normal_sextupole", 'jklm': [1,0,2,0], 'plane': 'Y'},
-    {'order': "normal_sextupole", 'jklm': [0,1,2,0], 'plane': 'Y'},
-    {'order': "normal_sextupole", 'jklm': [1,0,1,1], 'plane': 'Y'},
+    {"order": "skew_quadrupole", "jklm": [1, 0, 0, 1], "plane": "X"},
+    {"order": "skew_quadrupole", "jklm": [1, 0, 1, 0], "plane": "X"},
+    {"order": "skew_quadrupole", "jklm": [0, 1, 1, 0], "plane": "Y"},
+    {"order": "skew_quadrupole", "jklm": [1, 0, 1, 0], "plane": "Y"},
+    # ------------------------------------------------------------- #
+    {"order": "normal_sextupole", "jklm": [3, 0, 0, 0], "plane": "X"},
+    {"order": "normal_sextupole", "jklm": [1, 2, 0, 0], "plane": "X"},
+    {"order": "normal_sextupole", "jklm": [1, 0, 2, 0], "plane": "X"},
+    {"order": "normal_sextupole", "jklm": [1, 0, 0, 2], "plane": "X"},
+    {"order": "normal_sextupole", "jklm": [0, 1, 1, 1], "plane": "Y"},
+    {"order": "normal_sextupole", "jklm": [1, 0, 2, 0], "plane": "Y"},
+    {"order": "normal_sextupole", "jklm": [0, 1, 2, 0], "plane": "Y"},
+    {"order": "normal_sextupole", "jklm": [1, 0, 1, 1], "plane": "Y"},
 )
 
 # BPMs are given for each test allow to avoid edge effects
@@ -55,24 +58,28 @@ USE_BPMS = {
     }
 }
 
-# test data is generated using the scripts in https://github.com/pylhc/MESS/tree/master/LHC/Coupling_RDT_Bump and https://github.com/pylhc/MESS/tree/master/LHC/Sextupole_RDT_Bump
+# test data is generated using the scripts in
+# - https://github.com/pylhc/MESS/tree/master/LHC/Coupling_RDT_Bump, and
+# - https://github.com/pylhc/MESS/tree/master/LHC/Sextupole_RDT_Bump
 LIN_DIR = Path(__file__).parent.parent / "inputs" / "rdt"
-ORDERS = ['skew_quadrupole', 'normal_sextupole']
+ORDERS = ["skew_quadrupole", "normal_sextupole"]
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def _create_input(tmp_path_factory, request):
     omc3_input = {}
 
     for order in ORDERS:
         path_to_lin = LIN_DIR / order
         optics_opt = MEASURE_OPTICS_SETTINGS.copy()
-        optics_opt.update({
-            'files': [str(path_to_lin / f'B{request.param}_{order}{idx}') for idx in range(1, 4)],
-            'outputdir': tmp_path_factory.mktemp(order).resolve(),
-            'beam': request.param,
-            'model_dir': Path(__file__).parent.parent / "inputs" / "models" / f"inj_beam{request.param}",
-            })
+        optics_opt.update(
+            {
+                "files": [str(path_to_lin / f"B{request.param}_{order}{idx}") for idx in range(1, 4)],
+                "outputdir": tmp_path_factory.mktemp(order).resolve(),
+                "beam": request.param,
+                "model_dir": Path(__file__).parent.parent / "inputs" / "models" / f"inj_beam{request.param}",
+            }
+        )
         hole_in_one_entrypoint(**optics_opt)
         omc3_input[order] = (optics_opt, path_to_lin)
     yield omc3_input
@@ -89,22 +96,31 @@ def test_crdt_amp(order, _create_input):
     for rdt_dict in RDTS:
         if order == rdt_dict["order"]:
             jklm = "".join(map(str, rdt_dict["jklm"]))
-            hio_rdt = tfs.read(optics_opt["outputdir"] / "rdt" / order / f'f{jklm}_{rdt_dict["plane"].lower()}.tfs',
-                                index="NAME")
-            bpms= USE_BPMS[f'B{optics_opt["beam"]}'][order]
+            hio_rdt = tfs.read(
+                optics_opt["outputdir"] / "rdt" / order / f'f{jklm}_{rdt_dict["plane"].lower()}.tfs',
+                index="NAME",
+            )
+            bpms = USE_BPMS[f'B{optics_opt["beam"]}'][order]
 
-            assert _max_dev(hio_rdt["AMP"][bpms].to_numpy(),
-                            model_rdt[f"F{jklm}AMP"][bpms].to_numpy(),
-                            0.0) < ACCURACY_LIMIT[order]
+            assert _max_deviation(hio_rdt["AMP"][bpms].to_numpy(),
+                                  model_rdt[f"F{jklm}AMP"][bpms].to_numpy(),
+                                  0.0) < ACCURACY_LIMIT[order]
 
 
 @pytest.mark.extended
 @pytest.mark.parametrize("_create_input", (1, 2), ids=["Beam1", "Beam2"], indirect=True)
-@pytest.mark.parametrize("order", 
-    [pytest.param(order,
-                  marks=pytest.mark.skip(reason=SKIP_REASON) if order=='skew_quadrupole' else pytest.mark.extended
-                  ) for order in ORDERS]
-                        )
+@pytest.mark.parametrize(
+    "order",
+    [
+        pytest.param(
+            order,
+            marks=pytest.mark.skip(reason=SKIP_REASON)  # check SKIP_REASON for an explanation
+            if order == "skew_quadrupole"
+            else pytest.mark.extended,
+        )
+        for order in ORDERS
+    ],
+)
 def test_crdt_complex(order, _create_input):
     omc3_input = _create_input
     (optics_opt, path_to_lin) = omc3_input[order]
@@ -113,26 +129,27 @@ def test_crdt_complex(order, _create_input):
     for rdt_dict in RDTS:
         if order == rdt_dict["order"]:
             jklm = "".join(map(str, rdt_dict["jklm"]))
+            hio_rdt = tfs.read(
+                optics_opt["outputdir"] / "rdt" / order / f'f{jklm}_{rdt_dict["plane"].lower()}.tfs',
+                index="NAME",
+            )
 
-            hio_rdt = tfs.read(optics_opt["outputdir"] / "rdt" / order / f'f{jklm}_{rdt_dict["plane"].lower()}.tfs',
-                                index="NAME")
-            
-            bpms= USE_BPMS[f'B{optics_opt["beam"]}'][order]
-
-            assert _max_dev(hio_rdt["REAL"][bpms].to_numpy(),
-                            model_rdt[f"F{jklm}REAL"][bpms].to_numpy(),
-                            0.0) < ACCURACY_LIMIT[order]
-
-            assert _max_dev(hio_rdt["IMAG"][bpms].to_numpy(),
-                            model_rdt[f"F{jklm}IMAG"][bpms].to_numpy(),
-                            0.0) < ACCURACY_LIMIT[order]
+            bpms = USE_BPMS[f'B{optics_opt["beam"]}'][order]
+            assert (
+                    _max_deviation(hio_rdt["REAL"][bpms].to_numpy(), model_rdt[f"F{jklm}REAL"][bpms].to_numpy(), 0.0)
+                    < ACCURACY_LIMIT[order]
+            )
+            assert (
+                    _max_deviation(hio_rdt["IMAG"][bpms].to_numpy(), model_rdt[f"F{jklm}IMAG"][bpms].to_numpy(), 0.0)
+                    < ACCURACY_LIMIT[order]
+            )
 
 
-def _rel_dev(a, b, limit):
+def _relative_deviation(a, b, limit):
     a = a[np.abs(b) > limit]
     b = b[np.abs(b) > limit]
-    return np.abs((a-b)/b)
+    return np.abs((a - b) / b)
 
 
-def _max_dev(a, b, limit):
-    return np.max(_rel_dev(a, b, limit))
+def _max_deviation(a, b, limit):
+    return np.max(_relative_deviation(a, b, limit))
