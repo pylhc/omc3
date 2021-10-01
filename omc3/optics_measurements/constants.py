@@ -42,8 +42,8 @@ DPPAMP: str = "DPPAMP"
 AMPLITUDE: str = "AMP"
 PHASE: str = "PHASE"
 PHASE_ADV: str = "MU"
-F1001: str = "f1001.tfs"
-F1010: str = "f1010.tfs"
+F1001: str = "F1001"
+F1010: str = "F1010"
 
 SECONDARY_AMPLITUDE_X: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum

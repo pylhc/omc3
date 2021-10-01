@@ -7,7 +7,7 @@ It provides functions to computes and the coupling resonance driving terms, whic
 optics outputs.
 """
 from collections import OrderedDict
-from functools import reduce
+from functools import partial, reduce
 from pathlib import Path
 from typing import Callable, Dict, List, Sequence, Tuple
 
@@ -82,7 +82,7 @@ def calculate_coupling(
     # the .intersect chain dictates the order, we have to start with the model index.
     LOGGER.debug("Intersecting measurements, starting with model")
     compensation = "uncompensated" if meas_input.compensation == "model" else "free"
-    joined = _joined_frames(input_files)
+    joined: tfs.TfsDataFrame = _joined_frames(input_files)
     joined_index = (
         meas_input.accelerator.model.index.intersection(joined.index)
         .intersection(phase_dict["X"][compensation]["MEAS"].index)
@@ -201,8 +201,12 @@ def _write_coupling_tfs(rdt_df, outdir, header_dict):
     cols_to_print_f1001 = common_cols + [col for col in rdt_df.columns if "1001" in col]
     cols_to_print_f1010 = common_cols + [col for col in rdt_df.columns if "1010" in col]
 
-    tfs.write(Path(outdir) / f"{F1001}.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index="NAME")
-    tfs.write(Path(outdir) / f"{F1001}.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index="NAME")
+    tfs.write(
+        Path(outdir) / f"{F1001.lower()}.tfs", rdt_df[cols_to_print_f1001], header_dict,save_index="NAME"
+    )
+    tfs.write(
+        Path(outdir) / f"{F1010.lower()}.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index="NAME"
+    )
 
 
 # TODO: th
@@ -281,7 +285,7 @@ def _get_complex(spectral_lines, deltas, pairs):
     ]
 
 
-def _joined_frames(input_files: dict):
+def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
     """
     Merges spectrum data from the two planes from all the input files.
 
@@ -308,12 +312,10 @@ def _joined_frames(input_files: dict):
         )
         joined_dfs.append(merged_df)
 
-    # TODO: make this call pythonic
-    reduced = reduce(
-        lambda a, b: pd.merge(a, b, how="inner", on=["NAME", "S"], sort=False), joined_dfs
-    ).set_index("NAME")
+    partial_merge = partial(pd.merge, how="inner", on=["NAME", "S"], sort=False)
+    reduced = reduce(partial_merge, joined_dfs).set_index("NAME")
     reduced.rename(columns={"MUX_X_0": "MUX", "MUY_Y_0": "MUY"}, inplace=True)  # TODO: constants
-    return reduced
+    return tfs.TfsDataFrame(reduced)
 
 
 def rename_col(plane: str, index: int) -> Callable:
