@@ -9,7 +9,7 @@ optics outputs.
 from collections import OrderedDict
 from functools import reduce
 from pathlib import Path
-from typing import Dict, List, Sequence, Tuple
+from typing import Callable, Dict, List, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -316,7 +316,7 @@ def _joined_frames(input_files: dict):
     return reduced
 
 
-def rename_col(plane: str, index: int) -> str:
+def rename_col(plane: str, index: int) -> Callable:
     """
     Generate appropriate column name for renaming before merging dataframes from InputFiles.
 
@@ -325,7 +325,7 @@ def rename_col(plane: str, index: int) -> str:
         index (int): index location of the df which columns are renamed in the input files.
 
     Returns:
-        Generated name as string.
+        The renaming function callable to be given to pandas.
     """
     def fn(column):
         if column in ["NAME", "S"]:
