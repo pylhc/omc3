@@ -16,8 +16,10 @@ RDT_LIMIT = 1.0e-3
 
 
 @pytest.mark.basic
-def test_coupling_beam_1_against_getllm(tmpdir):
-    f1001, f1010 = _run_analysis(tmpdir, 1, "beam1")
+def test_coupling_beam_1_against_getllm(tmp_path):
+    output_dir = tmp_path / "optics_outputs"
+    output_dir.mkdir()
+    f1001, f1010 = _run_analysis(output_dir, 1, "beam1")
     coupling_getllm = tfs.read(COUPLING_INPUTS / "getllm_beam1.tfs", index="NAME")
 
     assert _rms_arc(f1001["F1001I"] - coupling_getllm["F1001I"]) < RDT_LIMIT, "f1001_imag didn't match getllm output"
@@ -27,8 +29,10 @@ def test_coupling_beam_1_against_getllm(tmpdir):
 
 
 @pytest.mark.basic
-def test_coupling_beam_1_against_optics_functions(tmpdir):
-    f1001, f1010 = _run_analysis(tmpdir, 1, "beam1")
+def test_coupling_beam_1_against_optics_functions(tmp_path):
+    output_dir = tmp_path / "optics_outputs"
+    output_dir.mkdir()
+    f1001, f1010 = _run_analysis(output_dir, 1, "beam1")
     coupling_cmatrix = tfs.read(COUPLING_INPUTS / "cmatrix_beam1.tfs", index="NAME")
 
     assert _rms_arc(f1001["F1001I"] - coupling_cmatrix["F1001I"]) < RDT_LIMIT, "f1001_imag didn't match optics_functions output"
@@ -38,8 +42,10 @@ def test_coupling_beam_1_against_optics_functions(tmpdir):
 
 
 @pytest.mark.basic
-def test_coupling_beam_4_against_getllm(tmpdir):
-    f1001, f1010 = _run_analysis(tmpdir, 2, "beam4")
+def test_coupling_beam_4_against_getllm(tmp_path):
+    output_dir = tmp_path / "optics_outputs"
+    output_dir.mkdir()
+    f1001, f1010 = _run_analysis(output_dir, 2, "beam4")
     coupling_getllm = tfs.read(COUPLING_INPUTS / "getllm_beam4.tfs", index="NAME")
 
     assert _rms_arc(f1001["F1001I"] - coupling_getllm["F1001I"]) < RDT_LIMIT, "f1001_imag didn't match getllm output"
@@ -49,14 +55,19 @@ def test_coupling_beam_4_against_getllm(tmpdir):
 
 
 @pytest.mark.basic
-def test_coupling_beam_4_against_optics_functions(tmpdir):
-    f1001, f1010 = _run_analysis(tmpdir, 2, "beam4")
+def test_coupling_beam_4_against_optics_functions(tmp_path):
+    output_dir = tmp_path / "optics_outputs"
+    output_dir.mkdir()
+    f1001, f1010 = _run_analysis(output_dir, 2, "beam4")
     coupling_cmatrix = tfs.read(COUPLING_INPUTS / "cmatrix_beam4.tfs", index="NAME")
 
     assert _rms_arc(f1001["F1001I"] - coupling_cmatrix["F1001I"]) < RDT_LIMIT, "f1001_imag didn't match optics_functions output"
     assert _rms_arc(f1001["F1001R"] + coupling_cmatrix["F1001R"]) < RDT_LIMIT, "f1001_real didn't match optics_functions output"
     assert _rms_arc(f1010["F1010I"] - coupling_cmatrix["F1010I"]) < RDT_LIMIT, "f1010_imag didn't match optics_functions output"
     assert _rms_arc(f1010["F1010R"] + coupling_cmatrix["F1010R"]) < RDT_LIMIT, "f1010_real didn't match optics_functions output"
+
+
+# ----- Helpers ----- #
 
 
 def _run_analysis(output_dir: Union[str, Path], beam: int, sdds_input: str):
@@ -75,9 +86,6 @@ def _run_analysis(output_dir: Union[str, Path], beam: int, sdds_input: str):
     f1001 = tfs.read(output_dir / f"{F1001.lower()}.tfs", index="NAME")
     f1010 = tfs.read(output_dir / f"{F1010.lower()}.tfs", index="NAME")
     return f1001, f1010
-
-
-# ----- Helpers ----- #
 
 
 def _rms_arc(data: pd.DataFrame) -> pd.DataFrame:
