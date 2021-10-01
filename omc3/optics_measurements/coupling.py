@@ -9,7 +9,7 @@ optics outputs.
 from collections import OrderedDict
 from functools import partial, reduce
 from pathlib import Path
-from typing import Callable, Dict, List, Sequence, Tuple
+from typing import Callable, Dict, List, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -47,7 +47,7 @@ def calculate_coupling(
     input_files: dict,
     phase_dict: Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], Sequence[tfs.TfsDataFrame]]],
     tune_dict: Dict[str, float],
-    header_dict: OrderedDict
+    header_dict: OrderedDict,
 ) -> None:
     """
     Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
@@ -103,30 +103,27 @@ def calculate_coupling(
     LOGGER.debug("Averaging (circular mean) frequency columns")
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
         circularly_averaved_columns = [x for x in joined.columns if x.startswith(col)]
-        joined[col] = bd * stats.circular_mean(joined[circularly_averaved_columns], axis=1)  # TODO: check  with andreas for the period=1 in comment but not in code
+        joined[col] = bd * stats.circular_mean(
+            joined[circularly_averaved_columns], axis=1
+        )  # TODO: check  with andreas for the period=1 in comment but not in code
 
+    LOGGER.debug("Finding BPM pairs for momentum reconstruction")
     pairs_x, deltas_x = _find_pair(phases_x, 1)
     pairs_y, deltas_y = _find_pair(phases_y, 1)
 
-    A01 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_X].to_numpy() * exp(joined[SECONDARY_FREQUENCY_X].to_numpy() * PI2I),
-        deltas_x,
-        pairs_x,
+    LOGGER.debug("Computing complex lines from spectra")
+    # _get_complex_line makes sure not to modify data in-place
+    A01: np.ndarray = 0.5 * _get_complex_line(
+        joined[SECONDARY_AMPLITUDE_X] * exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, pairs_x
     )
-    B10 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_Y].to_numpy() * exp(joined[SECONDARY_FREQUENCY_Y].to_numpy() * PI2I),
-        deltas_y,
-        pairs_y,
+    B10: np.ndarray = 0.5 * _get_complex_line(
+        joined[SECONDARY_AMPLITUDE_Y] * exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, pairs_y
     )
-    A0_1 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_X].to_numpy() * exp(-joined[SECONDARY_FREQUENCY_X].to_numpy() * PI2I),
-        deltas_x,
-        pairs_x,
+    A0_1: np.ndarray = 0.5 * _get_complex_line(  # TODO: check this underscore position with andreas
+        joined[SECONDARY_AMPLITUDE_X] * exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, pairs_x
     )
-    B_10 = 0.5 * _get_complex(
-        joined[SECONDARY_AMPLITUDE_Y].to_numpy() * exp(-joined[SECONDARY_FREQUENCY_Y].to_numpy() * PI2I),
-        deltas_y,
-        pairs_y,
+    B_10: np.ndarray = 0.5 * _get_complex_line(
+        joined[SECONDARY_AMPLITUDE_Y] * exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, pairs_y
     )
 
     # columns in `joined` that haven't been swapped before, need to be now
@@ -194,7 +191,7 @@ def calculate_coupling(
     _write_coupling_tfs(rdt_df, meas_input.outputdir, header_dict)
 
 
-# TODO: th
+# TODO: th, rename
 def _write_coupling_tfs(rdt_df, outdir, header_dict):
     common_cols = [S]
     # TODO: unify columns with (C)RDTs
@@ -202,7 +199,7 @@ def _write_coupling_tfs(rdt_df, outdir, header_dict):
     cols_to_print_f1010 = common_cols + [col for col in rdt_df.columns if "1010" in col]
 
     tfs.write(
-        Path(outdir) / f"{F1001.lower()}.tfs", rdt_df[cols_to_print_f1001], header_dict,save_index="NAME"
+        Path(outdir) / f"{F1001.lower()}.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index="NAME"
     )
     tfs.write(
         Path(outdir) / f"{F1010.lower()}.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index="NAME"
@@ -266,7 +263,7 @@ def _find_pair(phases: tfs.TfsDataFrame, bd: int) -> Tuple[np.ndarray, np.ndarra
       bd (int): beam direction, will be negative for beam 2.
 
     Returns:
-        The indices of best candidates, and the corresponding deltas of momentum.
+        The indices of best candidates, and the corresponding phase advances between these indices.
     """
     slice_ = _tilt_slice_matrix(phases.to_numpy(), 0, 2 * CUTOFF) - 0.25  # do not overwrite built-in 'slice'
     indices = np.argmin(abs(slice_), axis=0)
@@ -275,18 +272,29 @@ def _find_pair(phases: tfs.TfsDataFrame, bd: int) -> Tuple[np.ndarray, np.ndarra
     return np.array(indices), deltas
 
 
-# TODO: th, rename
-def _get_complex(spectral_lines, deltas, pairs):
+def _get_complex_line(
+    spectral_lines: Union[pd.Series, np.ndarray],
+    deltas: Union[pd.Series, np.ndarray],
+    pairs: Union[pd.Series, np.ndarray],
+) -> np.ndarray:
     """
-    calculates the complex line from the real lines at positions i and j, where j is determined by
+    Calculates the complex line from the real lines at positions i and j, where j is determined by
     taking the next BPM with a phase advance sufficiently close to pi/2
 
     Args:
-      spectral_lines (vector): measured (real) spectral lines
-      deltas (vector): phase advances minus 90deg
-      pairs (vector): indices for pairing
+      spectral_lines (Union[pd.Series, np.ndarray]): vector with measured (real) spectral lines.
+      deltas (Union[pd.Series, np.ndarray]): vector with phase advances minus 90deg.
+      pairs (Union[pd.Series, np.ndarray]): vector with indices for pairing.
+
+    Returns:
+        A numpy array with the results at all given positions from the inputs.
     """
-    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[pairs]
+    spectral_lines = np.array(spectral_lines)  # make sure we avoid any inplace modification of data
+    deltas = np.array(deltas)
+    pairs = np.array(pairs)
+    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
+        pairs
+    ]
 
 
 def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
@@ -335,8 +343,10 @@ def rename_col(plane: str, index: int) -> Callable:
     Returns:
         The renaming function callable to be given to pandas.
     """
+
     def fn(column):
         if column in ["NAME", "S"]:
             return column
         return f"{column}_{plane}_{index}"
+
     return fn
