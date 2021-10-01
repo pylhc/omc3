@@ -98,12 +98,12 @@ def calculate_coupling(
     # standard arithmetic mean for amplitude columns, circular mean (`period=1`) for frequency columns
     LOGGER.debug("Averaging amplitude and frequency columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
-        cols = [c for c in joined.columns if c.startswith(col)]
-        joined[col] = stats.weighted_mean(joined[cols], axis=1)
+        arithmetically_averaved_columns = [c for c in joined.columns if c.startswith(col)]
+        joined[col] = stats.weighted_mean(joined[arithmetically_averaved_columns], axis=1)
 
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
-        cols = [x for x in joined.columns if x.startswith(col)]
-        joined[col] = bd * stats.circular_mean(joined[cols], axis=1)
+        circularly_averaved_columns = [x for x in joined.columns if x.startswith(col)]
+        joined[col] = bd * stats.circular_mean(joined[circularly_averaved_columns], axis=1)
 
     pairs_x, deltas_x = _find_pair(phases_x, 1)
     pairs_y, deltas_y = _find_pair(phases_y, 1)
@@ -280,9 +280,7 @@ def _get_complex(spectral_lines, deltas, pairs):
       deltas (vector): phase advances minus 90deg
       pairs (vector): indices for pairing
     """
-    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
-        pairs
-    ]
+    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[pairs]
 
 
 def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
