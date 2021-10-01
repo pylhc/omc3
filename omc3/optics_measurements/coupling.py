@@ -179,6 +179,7 @@ def calculate_coupling(
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
     RDTCOLS = [F1001, F1010]
     # TODO: take care of column names
+    # TODO: considering doing 2 dataframes here and then writing to file directly?
     for (domain, func) in [("I", np.imag), ("R", np.real), ("W", np.abs)]:
         for col in RDTCOLS:
             mdlcol = func(model_coupling[col])
@@ -190,18 +191,25 @@ def calculate_coupling(
     _write_coupling_files(rdt_df, meas_input.outputdir, header_dict)
 
 
-# TODO: th, rename
-def _write_coupling_files(rdt_df, outdir, header_dict):
+def _write_coupling_files(rdt_df: tfs.TfsDataFrame, outdir: Union[str, Path], header_dict: dict) -> None:
+    """
+    Write out to file both coupling RDTs data (sum and difference resonance terms)
+
+    Args:
+        rdt_df (tfs.TfsDataFrame): complete dataframe with both sum and difference resonance RDT values.
+        outdir (Union[str, Path]): location of the output directory as queried from the commandline.
+        header_dict (dict): headers dictionary to attach to the output dataframes.
+    """
     common_cols = [S]
     # TODO: unify columns with (C)RDTs
     cols_to_print_f1001 = common_cols + [col for col in rdt_df.columns if "1001" in col]
     cols_to_print_f1010 = common_cols + [col for col in rdt_df.columns if "1010" in col]
 
     tfs.write(
-        Path(outdir) / f"{F1001.lower()}.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index="NAME"
+        Path(outdir) / f"{F1001.lower()}.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index=NAME
     )
     tfs.write(
-        Path(outdir) / f"{F1010.lower()}.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index="NAME"
+        Path(outdir) / f"{F1010.lower()}.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index=NAME
     )
 
 
@@ -317,14 +325,14 @@ def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
         merged_transverse_lins_df = pd.merge(
             left=linx,
             right=liny,
-            on=["NAME", "S"],
+            on=[NAME, S],
             how="inner",
             sort=False,
         )
         joined_dfs.append(merged_transverse_lins_df)
 
-    partial_merge = partial(pd.merge, how="inner", on=["NAME", "S"], sort=False)
-    reduced = reduce(partial_merge, joined_dfs).set_index("NAME")
+    partial_merge = partial(pd.merge, how="inner", on=[NAME, S], sort=False)
+    reduced = reduce(partial_merge, joined_dfs).set_index(NAME)
     reduced = reduced.rename(
         columns={f"{PHASE_ADV}X_X_0": f"{PHASE_ADV}X", f"{PHASE_ADV}Y_Y_0": f"{PHASE_ADV}Y"}
     )
@@ -344,7 +352,7 @@ def rename_col(plane: str, index: int) -> Callable:
     """
 
     def fn(column):
-        if column in ["NAME", "S"]:
+        if column in [NAME, S]:
             return column
         return f"{column}_{plane}_{index}"
 
