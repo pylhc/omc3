@@ -91,8 +91,8 @@ def calculate_coupling(
     )
     joined = joined.loc[joined_index].copy()
 
-    phases_x = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
-    phases_y = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
+    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
+    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
 
     # standard arithmetic mean for amplitude columns, circular mean (`period=1`) for frequency columns
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
@@ -108,60 +108,60 @@ def calculate_coupling(
         )  # TODO: check  with andreas for the period=1 in comment but not in code
 
     LOGGER.debug("Finding BPM pairs for momentum reconstruction")
-    pairs_x, deltas_x = _find_pair(phases_x, 1)
-    pairs_y, deltas_y = _find_pair(phases_y, 1)
+    bpm_pairs_x, deltas_x = _find_pair(phases_x, 1)
+    bpm_pairs_y, deltas_y = _find_pair(phases_y, 1)
 
     LOGGER.debug("Computing complex lines from spectra")
     # _get_complex_line makes sure not to modify data in-place
     A01: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_X] * exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X] * exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
     B10: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_Y] * exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y] * exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
     A0_1: np.ndarray = 0.5 * _get_complex_line(  # TODO: check this underscore position with andreas
-        joined[SECONDARY_AMPLITUDE_X] * exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, pairs_x
+        joined[SECONDARY_AMPLITUDE_X] * exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
     B_10: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_Y] * exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, pairs_y
+        joined[SECONDARY_AMPLITUDE_Y] * exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
 
-    # columns in `joined` that haven't been swapped before, need to be now
     q1001_from_A = -np.angle(A01) + (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1001_from_B = np.angle(B10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
-    eq1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
+    eq_1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
 
     q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1010_from_B = -np.angle(B_10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
-    eq1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
+    eq_1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
-    # `eq / abs(eq)` to get the average
-    f1001 = -0.5 * sqrt(np.abs(A01 * B10)) * eq1001 / abs(eq1001)
-    f1010 = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq1010 / abs(eq1010)
+    LOGGER.debug("Computing average of coupling RDTs")
+    f1001 = -0.5 * sqrt(np.abs(A01 * B10)) * eq_1001 / abs(eq_1001)
+    f1010 = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq_1010 / abs(eq_1010)
 
-    tune_sep = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
+    LOGGER.debug("Getting tune separation from measurements")
+    tune_separation = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
-    # old Cminus, approximate formula without rdt phases
-    C_old = 4.0 * tune_sep * np.mean(np.abs(f1001))
-    header_dict["Cminus_approx"] = C_old
-    LOGGER.info(f"|C-| (approx) = {C_old}, tune_sep = {tune_sep}, from Eq.1 in PRSTAB 17,051004")
+    LOGGER.debug("Calculating approximated Cminus")
+    C_approx = 4.0 * tune_separation * np.mean(np.abs(f1001))
+    header_dict["Cminus_approx"] = C_approx
+    LOGGER.info(f"|C-| (approx) = {C_approx}, tune_sep = {tune_separation}, from Eq.1 in PRSTAB 17,051004")
 
-    # new Cminus
-    C_new = np.abs(
-        4.0 * tune_sep * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"])))
-    )
-    header_dict["Cminus_exact"] = C_new
-    LOGGER.info(f"|C-| (exact)  = {C_new}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
+    LOGGER.debug("Calculating exact Cminus")
+    C_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    header_dict["Cminus_exact"] = C_exact
+    LOGGER.info(f"|C-| (exact)  = {C_exact}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == "model":
+        LOGGER.debug("Compensating coupling RDT values by model")
         f1001, f1010 = compensate_model(f1001, f1010, tune_dict)
 
-    rdt_df = pd.DataFrame(
+    LOGGER.debug("Creating final RDT dataframe")
+    rdt_df = pd.DataFrame(  # TODO: take care of column names
         index=joined_index,
-        columns=["S", "F1001R", "F1010R", "F1001I", "F1010I", "F1001W", "F1010W", "F1001A", "F1010A"],
+        columns=[S, f"{F1001}R", f"{F1010}R", f"{F1001}I", f"{F1010}I", f"{F1001}W", f"{F1010}W", f"{F1001}A", f"{F1010}A"],
         data=np.array(
             [
-                meas_input.accelerator.model.loc[joined_index, "S"],
+                meas_input.accelerator.model.loc[joined_index, S],
                 np.real(f1001),
                 np.real(f1010),
                 np.imag(f1001),
@@ -173,13 +173,12 @@ def calculate_coupling(
             ]
         ).transpose(),
     )
-
     rdt_df = rdt_df.sort_values(by=S)
 
-    # adding model values and deltas
+    LOGGER.debug("Adding model values and deltas")
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
     RDTCOLS = [F1001, F1010]
-    # TODO: yikes, uniify with (C)RDTs
+    # TODO: take care of column names
     for (domain, func) in [("I", np.imag), ("R", np.real), ("W", np.abs)]:
         for col in RDTCOLS:
             mdlcol = func(model_coupling[col])
@@ -188,11 +187,11 @@ def calculate_coupling(
             rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
             rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
 
-    _write_coupling_tfs(rdt_df, meas_input.outputdir, header_dict)
+    _write_coupling_files(rdt_df, meas_input.outputdir, header_dict)
 
 
 # TODO: th, rename
-def _write_coupling_tfs(rdt_df, outdir, header_dict):
+def _write_coupling_files(rdt_df, outdir, header_dict):
     common_cols = [S]
     # TODO: unify columns with (C)RDTs
     cols_to_print_f1001 = common_cols + [col for col in rdt_df.columns if "1001" in col]
