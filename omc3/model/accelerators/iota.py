@@ -31,13 +31,6 @@ Model Creation Keyword Args:
         Energy in **Tev**.
 
 
-    - **fullresponse**:
-
-        If True, outputs also fullresponse madx file.
-
-        action: ``store_true``
-
-
     - **model_dir** *(str)*:
 
         Path to model directory; loads tunes and excitation from model!

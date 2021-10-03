@@ -15,7 +15,6 @@ from scipy.optimize import curve_fit
 from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements import phase
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
@@ -40,7 +39,7 @@ DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Skew Quadrupole
                            )}
 
 
-def calculate(measure_input, input_files, tunes, invariants, header):
+def calculate(measure_input, input_files, tunes, phases, invariants, header):
     """
 
     Args:
@@ -55,9 +54,7 @@ def calculate(measure_input, input_files, tunes, invariants, header):
     LOGGER.info(f"Start of RDT analysis")
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
-    phases = {}
     for plane in PLANES:
-        phases[plane], _ = phase.calculate(meas_input, input_files, tunes, plane)
         bpm_names = input_files.bpms(plane=plane, dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
@@ -93,7 +90,7 @@ def _rdt_to_order_and_type(rdt):
 
 
 def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
-    filtered = phases[plane]["MEAS"].loc[bpm_names, bpm_names]
+    filtered = phases[plane]["uncompensated"]["MEAS"].loc[bpm_names, bpm_names]
     phase_meas = pd.concat(
         (filtered % 1, (filtered.iloc[:, :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1), axis=1)
     second_bmps = np.abs(phase_meas * _get_n_upper_diagonals(NBPMS_FOR_90, phase_meas.shape)
@@ -101,7 +98,7 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
     filtered.iloc[-NBPMS_FOR_90:, :NBPMS_FOR_90] = (filtered.iloc[-NBPMS_FOR_90:,
                                                     :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1
     filtered["NAME2"], filtered["MEAS"], filtered["ERRMEAS"] = second_bmps, filtered.lookup(
-        bpm_names, second_bmps), phases[plane]["ERRMEAS"].lookup(bpm_names, second_bmps)
+        bpm_names, second_bmps), phases[plane]["uncompensated"]["ERRMEAS"].lookup(bpm_names, second_bmps)
     for_rdts = pd.merge(filtered.loc[:, ["NAME2", "MEAS", "ERRMEAS"]],
                         meas_input.accelerator.model.loc[:, ["S"]], how="inner",
                         left_index=True, right_index=True)
@@ -187,7 +184,8 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
 
     for i, bpm_rdt_data in enumerate(line_amp):
         popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
-        amps[i], err_amps[i] = popt[0], np.sqrt(pcov)[0]
+        amps[i] = popt[0]
+        err_amps[i] = np.sqrt(pcov)[0] if np.isfinite(np.sqrt(pcov)[0]) else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
     return amps, err_amps
 
 

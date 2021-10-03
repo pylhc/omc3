@@ -14,6 +14,10 @@ Utils
     :members:
 
 
+.. automodule:: omc3.utils.mock
+    :members:
+
+
 .. automodule:: omc3.utils.outliers
     :members:
 

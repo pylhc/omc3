@@ -22,7 +22,7 @@ def create_waterfall_plots(figures: dict, opt: DotDict) -> None:
 
     for fig_id, fig_cont in figures.items():
         LOG.debug(f'   Plotting Figure: {fig_id}.')
-        fig_cont.fig.canvas.set_window_title(fig_id)
+        fig_cont.fig.canvas.manager.set_window_title(fig_id)
 
         _plot_waterfall(fig_cont, opt.line_width, opt.cmap, opt.common_plane_colors)
         plot_lines(fig_cont, opt.lines)

@@ -5,6 +5,8 @@ LHC TbT Data Handler
 Data handling for tbt data from the ``LHC``.
 """
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -38,15 +40,15 @@ ACQ_STAMP = "acqStamp"
 BPM_NAMES = "bpmNames"
 
 
-def read_tbt(file_path):
+def read_tbt(file_path: Union[str, Path]):
     """
     Reads TbTData object from provided file_path.
 
     Args:
-        file_path: path to a file containing TbtData.
+        file_path (Union[str, Path]): path to a file containing TbtData.
 
     Returns:
-        A `TbtData` object with the loaded data.
+        A ``TbtData`` object with the loaded data.
     """
     if _is_ascii_file(file_path):
         matrices, date = _read_ascii(file_path)
@@ -68,11 +70,11 @@ def read_tbt(file_path):
     return handler.TbtData(matrices, date, bunch_ids, nturns)
 
 
-def _is_ascii_file(file_path) -> bool:
+def _is_ascii_file(file_path: Union[str, Path]) -> bool:
     """
-    Returns ``True`` only if the file looks like a readable tbt ASCII file.
+    Returns ``True`` only if the file looks like a readable tbt ASCII file, else ``False``.
     """
-    with open(file_path, "r") as file_data:
+    with Path(file_path).open("r") as file_data:
         try:
             for line in file_data:
                 if line.strip() == "":
@@ -83,9 +85,9 @@ def _is_ascii_file(file_path) -> bool:
     return False
 
 
-def _read_ascii(file_path):
+def _read_ascii(file_path: Union[str, Path]) -> Tuple[List[Dict[str, pd.DataFrame]], datetime]:
     """Read the ascii file."""
-    with open(file_path, "r") as file_data:
+    with Path(file_path).open("r") as file_data:
         data_lines = file_data.readlines()
 
     bpm_names = {"X": [], "Y": []}
@@ -119,7 +121,7 @@ def _read_ascii(file_path):
 
 # ASCII-File Helper ------------------------------------------------------------
 
-def _parse_samples(line):
+def _parse_samples(line: str) -> Tuple[str, str, np.ndarray]:
     parts = line.split()
     plane_num = parts[0]
     bpm_name = parts[1]
@@ -128,7 +130,7 @@ def _parse_samples(line):
     return plane_num, bpm_name, bpm_samples
 
 
-def _parse_date(line):
+def _parse_date(line: str) -> datetime:
     date_str = line.replace(_ACQ_DATE_PREFIX, "").replace(_ASCII_COMMENT, "").strip()
     try:
         return datetime.strptime(date_str, _ACQ_DATE_FORMAT)

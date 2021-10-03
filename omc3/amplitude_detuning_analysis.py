@@ -31,9 +31,9 @@ the measurements.
 
   Choices: ``['cut', 'minmax', 'outliers']``
   Default: ``outliers``
-- **bbq_in**: Fill number of desired data to extract from timber
-  or path to presaved bbq-tfs-file. Use the string 'kick' to use the timestamps
-  in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.
+- **bbq_in**: Fill number of desired data to extract from ``Timber`` (requires installing with the [cern]
+  extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string 'kick' to use the
+  timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.
 
 - **debug**: Activates Debug mode
 
@@ -81,6 +81,7 @@ from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
                                                     read_two_kick_files_from_folder
                                                     )
 from omc3.utils.logging_tools import get_logger, list2str, DebugMode
+
 
 # Globals ----------------------------------------------------------------------
 
@@ -320,8 +321,8 @@ def _get_bbq_data(beam, input_, kick_df):
         if input_ == "kick":
             LOG.debug("Getting timber data from kick-times.")
             timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
-            t_start = min(kick_df.index.values)
-            t_end = max(kick_df.index.values)
+            t_start = min(kick_df.index.to_numpy())
+            t_end = max(kick_df.index.to_numpy())
             data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME,
                                                         keys=timber_keys,
                                                         names=dict(zip(timber_keys, bbq_cols)))
