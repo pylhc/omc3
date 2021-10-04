@@ -13,12 +13,10 @@ import tfs
 from tfs import tools as tfstools
 
 from omc3.definitions import formats
-from omc3.definitions.constants import PLANES
+from omc3.definitions.constants import EXT, PHASE_NAME, PLANES
 from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE, \
-    SEQUENCES_PATH
+from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE, SEQUENCES_PATH
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import PHASE_NAME, EXT
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
