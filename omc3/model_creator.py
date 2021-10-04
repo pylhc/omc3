@@ -8,10 +8,10 @@ from pathlib import Path
 
 from generic_parser import EntryPointParameters, entrypoint
 
+from omc3.definitions.constants import JOB_MODEL_MADX
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
