@@ -32,6 +32,7 @@ from omc3.definitions.constants import (
     SECONDARY_FREQUENCY_Y,
     S,
 )
+from omc3.definitions.structures import TuneDict
 from omc3.harpy.constants import COL_MU
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from omc3.utils import logging_tools, stats
@@ -47,7 +48,7 @@ def calculate_coupling(
     meas_input: dict,
     input_files: dict,
     phase_dict: Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], Sequence[tfs.TfsDataFrame]]],
-    tune_dict: Dict[str, float],
+    tune_dict: TuneDict,
     header_dict: OrderedDict,
 ) -> None:
     """
@@ -70,7 +71,7 @@ def calculate_coupling(
             the measured phase advances, with an entry for each transverse plane. In said entry is a
             dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
             the location of the output ``TfsDataFrames`` for the phases.
-        tune_dict (Dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
+        tune_dict (TuneDict): `TuneDict` object containing measured tunes. There is an entry
             calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
         header_dict (OrderedDict): header dictionary of common items for coupling output files,
             will be attached as the header to the **f1001.tfs** and **f1010.tfs** files..
