@@ -11,8 +11,7 @@ import pandas as pd
 import tfs
 from generic_parser.dict_parser import DotDict
 
-from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import KICK_NAME
+from omc3.definitions.constants import KICK_NAME, PLANES
 from omc3.tune_analysis import bbq_tools
 from omc3.tune_analysis.constants import (get_odr_header_coeff_corrected,
                                           get_odr_header_err_coeff_corrected,
