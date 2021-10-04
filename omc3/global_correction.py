@@ -171,8 +171,7 @@ from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import handler
-from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
-                                       NORM_DISP, PHASE, TUNE)
+from omc3.definitions.constants import BETA, BETABEAT, DISP, F1001, F1010, NORM_DISP, PHASE, TUNE
 from omc3.model import manager
 from omc3.utils import logging_tools
 
