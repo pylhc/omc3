@@ -12,7 +12,7 @@ from typing import Sequence
 
 import tfs
 
-from omc3.correction.constants import DISP, BETA, PHASE_ADV, TUNE, PHASE, NORM_DISP, DELTA
+from omc3.definitions.constants import BETA, DELTA, DISP, NORM_DISP, PHASE, PHASE_ADV, TUNE
 from omc3.optics_measurements.toolbox import ang_diff
 import numpy as np
 
