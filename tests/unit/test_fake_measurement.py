@@ -5,37 +5,11 @@ import pytest
 import tfs
 from scipy import stats
 
-from omc3.correction.constants import (
-    NORM_DISP,
-    DISP,
-    BETA,
-    F1010,
-    F1001,
-    PHASE,
-    TUNE,
-    PHASE_ADV,
-)
 from omc3.correction.model_appenders import add_coupling_to_model
-from omc3.definitions.constants import (
-    NAME,
-    S,
-    ERR,
-    MDL,
-    DELTA,
-    EXT,
-    NORM_DISP_NAME,
-    PHASE_NAME,
-    TOTAL_PHASE_NAME,
-    BETA_NAME,
-    AMP_BETA_NAME,
-    DISPERSION_NAME,
-)
-from omc3.scripts.fake_measurement_from_model import (
-    _get_data,
-    OUTPUTNAMES_MAP,
-    VALUES,
-    ERRORS,
-)
+from omc3.definitions.constants import (AMP_BETA_NAME, BETA, BETA_NAME, DELTA, DISP, DISPERSION_NAME, ERR,
+                                        EXT, F1001, F1010, MDL, NAME, NORM_DISP, NORM_DISP_NAME, PHASE,
+                                        PHASE_ADV, PHASE_NAME, TOTAL_PHASE_NAME, TUNE, S)
+from omc3.scripts.fake_measurement_from_model import ERRORS, OUTPUTNAMES_MAP, VALUES, _get_data
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 
 INPUT_DIR = Path(__file__).parent.parent / "inputs"
