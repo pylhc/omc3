@@ -23,9 +23,8 @@ from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
                                        VALUE, WEIGHT)
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
+from omc3.definitions.constants import DISPERSION_NAME, EXT, NORM_DISP_NAME, PHASE_NAME, NAME
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT,
-                                                NORM_DISP_NAME, PHASE_NAME, NAME)
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
