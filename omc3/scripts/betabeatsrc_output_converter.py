@@ -23,10 +23,9 @@ from generic_parser.entrypoint_parser import (
 )
 
 from omc3.definitions import formats
-from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import (AMPLITUDE, AMP_BETA_NAME,BETA_NAME, DELTA, DISPERSION_NAME,
-                                                ERR, EXT, IMAG, MDL, NORM_DISP_NAME, ORBIT_NAME, PHASE,
-                                                PHASE_NAME, REAL, TOTAL_PHASE_NAME)
+from omc3.definitions.constants import (AMPLITUDE, AMP_BETA_NAME, BETA_NAME, DELTA, DISPERSION_NAME,
+                                        ERR, EXT, IMAG, MDL, NORM_DISP_NAME, ORBIT_NAME, PHASE,
+                                        PHASE_NAME, PLANES, REAL, TOTAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import df_ang_diff, df_diff, df_err_sum, df_ratio, df_rel_diff
 from omc3.utils import contexts, iotools, logging_tools
 
