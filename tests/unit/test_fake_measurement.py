@@ -16,7 +16,7 @@ from omc3.correction.constants import (
     PHASE_ADV,
 )
 from omc3.correction.model_appenders import add_coupling_to_model
-from omc3.optics_measurements.constants import (
+from omc3.definitions.constants import (
     NAME,
     S,
     ERR,
