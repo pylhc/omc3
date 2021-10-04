@@ -12,12 +12,12 @@ import numpy as np
 import pandas as pd
 import tfs
 import scipy.odr
-from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE, MDL, PHASE, REAL, IMAG
+
+from omc3.definitions.constants import AMPLITUDE, ERR, EXT, MDL, PHASE, PI2, PLANES, REAL, IMAG
+from omc3.optics_measurements.rdt import get_line_sign_and_suffix
+from omc3.harpy.constants import COL_AMP, COL_PHASE, COL_ERR
 from omc3.utils import iotools, logging_tools
 from omc3.utils.stats import circular_nanmean, circular_nanerror
-from omc3.definitions.constants import PLANES, PI2
-from omc3.harpy.constants import COL_AMP, COL_PHASE, COL_ERR
-from omc3.optics_measurements.rdt import get_line_sign_and_suffix
 
 LOGGER = logging_tools.get_logger(__name__)
 
