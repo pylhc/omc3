@@ -17,10 +17,9 @@ import tfs
 from numpy import cos, exp, sin, sqrt, tan
 from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.definitions.constants import PI2, PI2I
-from omc3.harpy.constants import COL_MU
-from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
-from omc3.optics_measurements.constants import (
+from omc3.definitions.constants import (
+    PI2,
+    PI2I,
     AMPLITUDE,
     F1001,
     F1010,
@@ -33,6 +32,8 @@ from omc3.optics_measurements.constants import (
     SECONDARY_FREQUENCY_Y,
     S,
 )
+from omc3.harpy.constants import COL_MU
+from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from omc3.utils import logging_tools, stats
 
 LOGGER = logging_tools.get_logger(__name__)
