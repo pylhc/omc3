@@ -7,9 +7,9 @@ This module provides convenience functions for model creation of the ``PS``.
 import logging
 import shutil
 
+from omc3.definitions.constants import ERROR_DEFFS_TXT
 from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.accelerators.ps import Ps
-from omc3.model.constants import ERROR_DEFFS_TXT
 from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 LOGGER = logging.getLogger(__name__)
