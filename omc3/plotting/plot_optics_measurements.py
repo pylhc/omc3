@@ -96,12 +96,9 @@ import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 
-from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import ERR, DELTA, AMPLITUDE, PHASE, EXT
+from omc3.definitions.constants import AMPLITUDE, DELTA, ERR, EXT, PHASE, PLANES
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
-from omc3.plotting.optics_measurements.constants import (DEFAULTS,
-                                                         XAXIS, YAXIS,
-                                                         IP_POS_DEFAULT)
+from omc3.plotting.optics_measurements.constants import DEFAULTS, XAXIS, YAXIS, IP_POS_DEFAULT
 from omc3.plotting.plot_tfs import plot as plot_tfs, float_or_none
 from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
