@@ -12,9 +12,8 @@ from typing import List
 import numpy as np
 import pandas as pd
 import tfs
-from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
-from omc3.model.accelerators.lhc import Lhc
-from omc3.model.constants import (
+
+from omc3.definitions.constants import (
     B2_ERRORS_TFS,
     B2_SETTINGS_MADX,
     ERROR_DEFFS_TXT,
@@ -29,6 +28,8 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_DAT,
     ACCELERATOR_MODEL_REPOSITORY
 )
+from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
+from omc3.model.accelerators.lhc import Lhc
 from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.utils import iotools
 

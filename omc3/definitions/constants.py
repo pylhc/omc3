@@ -117,5 +117,5 @@ LHC_MACROS: str = "lhc.macros.madx"
 B2_SETTINGS_MADX: str = "b2_settings.madx"
 B2_ERRORS_TFS: str = "b2_errors.tfs"
 
-# Afs acc-models repo
+# Afs acc-models lhc repo
 ACCELERATOR_MODEL_REPOSITORY: Path = Path("/afs/cern.ch/eng/acc-models/lhc")
