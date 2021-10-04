@@ -7,8 +7,8 @@ import pytest
 import tfs
 from numpy import mean, sqrt, square
 
+from omc3.definitions.constants import F1001, F1010
 from omc3.hole_in_one import hole_in_one_entrypoint
-from omc3.optics_measurements.constants import F1001, F1010
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 COUPLING_INPUTS = INPUTS / "coupling"
