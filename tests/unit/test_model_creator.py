@@ -3,8 +3,8 @@ import shutil
 from pathlib import Path
 
 import pytest
+from omc3.definitions.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
-from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
