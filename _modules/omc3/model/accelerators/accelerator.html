@@ -229,6 +229,7 @@
     <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
@@ -267,7 +268,7 @@
         <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model_dir&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to model directory; loads tunes and excitation from model!&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
@@ -334,7 +335,7 @@
                     <span class="s2">&quot;Arguments &#39;nat_tunes&#39; and &#39;driven_tunes&#39; are &quot;</span>
                     <span class="s2">&quot;not allowed when loading from model directory.&quot;</span>
                 <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">init_from_model_dir</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_from_model_dir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">model_dir</span><span class="p">))</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_from_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
@@ -360,8 +361,7 @@
 
     <span class="k">def</span> <span class="nf">init_from_model_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating accelerator instance from model dir&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">model_dir</span>
         <span class="c1"># Elements #####################################</span>
         <span class="n">elements_path</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_DAT</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">elements_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>

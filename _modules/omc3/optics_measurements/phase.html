@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.optics_measurements.phase &mdash; omc3 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html">
+            <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tbt.html">Turn-by-Turn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>omc3.optics_measurements.phase</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.optics_measurements.phase</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Phase Advance</span>
+<span class="sd">-------------</span>
+
+<span class="sd">This module contains phase calculation functionality of ``optics_measurements``.</span>
+<span class="sd">It provides functions to compute betatron phase advances and structures to store them.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">MDL</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">SPECIAL_PHASE_NAME</span><span class="p">,</span>
+                                                <span class="n">TOTAL_PHASE_NAME</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.toolbox</span> <span class="kn">import</span> <span class="n">ang_sum</span><span class="p">,</span> <span class="n">df_ang_diff</span><span class="p">,</span> <span class="n">df_diff</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">stats</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="calculate"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.phase.calculate">[docs]</a><span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span>
+    <span class="n">meas_input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">no_errors</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate phases for &#39;free&#39; and &#39;uncompensated&#39; cases from the measurement files, and return a</span>
+<span class="sd">    dictionary combining the results for each transverse plane.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.</span>
+<span class="sd">        input_files (dict): `InputFiles` object containing frequency spectra files (linx/y).</span>
+<span class="sd">        tunes:</span>
+<span class="sd">        plane:</span>
+<span class="sd">        no_errors:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry</span>
+<span class="sd">        is a dictionary with the measured phase advances for &#39;free&#39; and &#39;uncompensated&#39; cases, as well as</span>
+<span class="sd">        the location of the output ``TfsDataFrames`` for the phases.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">compensation</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+        <span class="n">phase_advances</span><span class="p">,</span> <span class="n">dfs</span> <span class="o">=</span> <span class="n">_calculate_with_compensation</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span>
+                                                           <span class="n">input_files</span><span class="p">,</span>
+                                                           <span class="n">tunes</span><span class="p">,</span>
+                                                           <span class="n">plane</span><span class="p">,</span>
+                                                           <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                                                           <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+                                                           <span class="n">no_errors</span><span class="p">)</span>
+        <span class="n">uncompensated_phase_advances</span> <span class="o">=</span> <span class="n">phase_advances</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">phase_advances</span><span class="p">,</span> <span class="n">free_dfs</span> <span class="o">=</span> <span class="n">_calculate_with_compensation</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span>
+                                                                <span class="n">input_files</span><span class="p">,</span>
+                                                                <span class="n">tunes</span><span class="p">,</span>
+                                                                <span class="n">plane</span><span class="p">,</span>
+                                                                <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                                                                <span class="n">meas_input</span><span class="o">.</span><span class="n">compensation</span><span class="p">,</span>
+                                                                <span class="n">no_errors</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;-- Run uncompensated&quot;</span><span class="p">)</span>
+        <span class="n">uncompensated_phase_advances</span><span class="p">,</span> <span class="n">drv_dfs</span> <span class="o">=</span> <span class="n">_calculate_with_compensation</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span>
+                                                                             <span class="n">input_files</span><span class="p">,</span>
+                                                                             <span class="n">tunes</span><span class="p">,</span>
+                                                                             <span class="n">plane</span><span class="p">,</span>
+                                                                             <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_driven</span><span class="p">,</span>
+                                                                             <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+                                                                             <span class="n">no_errors</span><span class="p">)</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="n">free_dfs</span> <span class="o">+</span> <span class="n">drv_dfs</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;free&#39;</span><span class="p">:</span> <span class="n">phase_advances</span><span class="p">,</span> <span class="s1">&#39;uncompensated&#39;</span><span class="p">:</span> <span class="n">uncompensated_phase_advances</span><span class="p">},</span> <span class="n">dfs</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_calculate_with_compensation</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">model_df</span><span class="p">,</span> <span class="n">compensation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">no_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates phase advances.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        meas_input: the input object including settings and the accelerator class.</span>
+<span class="sd">        input_files: includes measurement tfs.</span>
+<span class="sd">        tunes: `TunesDict` object containing measured and model tunes and ac2bpm object</span>
+<span class="sd">        plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
+<span class="sd">        no_errors: if ``True``, measured errors shall not be propagated (only their spread).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `dictionary` of `TfsDataFrames` indexed (BPMi x BPMj) yielding phase advance `phi_ij`.</span>
+
+<span class="sd">         - &quot;MEAS&quot;: measured phase advances,</span>
+<span class="sd">         - &quot;ERRMEAS&quot;: errors of measured phase advances,</span>
+<span class="sd">         - &quot;MODEL&quot;: model phase advances.</span>
+
+<span class="sd">        +------++--------+--------+--------+--------+</span>
+<span class="sd">        |      ||  BPM1  |  BPM2  |  BPM3  |  BPM4  |</span>
+<span class="sd">        +======++========+========+========+========+</span>
+<span class="sd">        | BPM1 ||   0    | phi_12 | phi_13 | phi_14 |</span>
+<span class="sd">        +------++--------+--------+--------+--------+</span>
+<span class="sd">        | BPM2 || phi_21 |    0   | phi_23 | phi_24 |</span>
+<span class="sd">        +------++--------+--------+--------+--------+</span>
+<span class="sd">        | BPM3 || phi_31 | phi_32 |   0    | phi_34 |</span>
+<span class="sd">        +------++--------+--------+--------+--------+</span>
+<span class="sd">        | BPM4 || phi_41 | phi_42 | phi_43 |    0   |</span>
+<span class="sd">        +------++--------+--------+--------+--------+</span>
+
+<span class="sd">        The phase advance between BPM_i and BPM_j can be obtained via:</span>
+<span class="sd">        phase_advances[&quot;MEAS&quot;].loc[BPMi,BPMj]</span>
+<span class="sd">        list of output data frames(for files)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Calculating phase advances&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Measured tune in plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s1">&#39;Q&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">model_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span>
+    <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;outer&#39;</span> <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">union</span> <span class="k">else</span> <span class="s1">&#39;inner&#39;</span>
+    <span class="n">dpp_value</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">dpp</span> <span class="k">if</span> <span class="s2">&quot;dpp&quot;</span> <span class="ow">in</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                                               <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">),</span>
+                  <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                                                     <span class="o">*</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">beam_direction</span>
+                                                     <span class="p">)</span>
+    <span class="n">phases_mdl</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">phase_advances</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;MODEL&quot;</span><span class="p">:</span> <span class="n">_get_square_data_frame</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">phases_mdl</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">phases_mdl</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span> <span class="o">%</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)}</span>
+    <span class="k">if</span> <span class="n">compensation</span> <span class="o">==</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">_compensate_by_model</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+    <span class="n">phases_meas</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">compensation</span> <span class="o">==</span> <span class="s2">&quot;equation&quot;</span><span class="p">:</span>
+        <span class="n">phases_meas</span> <span class="o">=</span> <span class="n">_compensate_by_equation</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">)</span>
+
+    <span class="n">phases_errors</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">phases_meas</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_square_data_frame</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">phases_meas</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">phases_meas</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span> <span class="o">%</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_square_data_frame</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">))),</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">phase_advances</span>
+    <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">union</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">)</span>
+        <span class="n">phases_meas</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">phases_errors</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">if</span> <span class="n">no_errors</span><span class="p">:</span>
+            <span class="n">phases_errors</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-10</span>
+    <span class="k">elif</span> <span class="n">no_errors</span><span class="p">:</span>
+        <span class="n">phases_errors</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">phases_3d</span> <span class="o">=</span> <span class="n">phases_meas</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">phases_meas</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">if</span> <span class="n">phases_errors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">errors_3d</span> <span class="o">=</span> <span class="n">phases_errors</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">phases_errors</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">errors_3d</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_square_data_frame</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">circular_mean</span><span class="p">(</span>
+            <span class="n">phases_3d</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors_3d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_square_data_frame</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">circular_error</span><span class="p">(</span>
+            <span class="n">phases_3d</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors_3d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">phase_advances</span><span class="p">,</span> <span class="p">[</span><span class="n">_create_output_df</span><span class="p">(</span><span class="n">phase_advances</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">),</span>
+                            <span class="n">_create_output_df</span><span class="p">(</span><span class="n">phase_advances</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tot</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">_compensate_by_equation</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">):</span>
+    <span class="n">driven_tune</span><span class="p">,</span> <span class="n">free_tune</span><span class="p">,</span> <span class="n">ac2bpmac</span> <span class="o">=</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;Q&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;ac2bpm&quot;</span><span class="p">]</span>
+    <span class="n">k_bpmac</span> <span class="o">=</span> <span class="n">ac2bpmac</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">phase_corr</span> <span class="o">=</span> <span class="n">ac2bpmac</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">phases_meas</span><span class="p">[</span><span class="n">k_bpmac</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">driven_tune</span><span class="p">)</span>
+    <span class="n">phases_meas</span> <span class="o">=</span> <span class="n">phases_meas</span> <span class="o">+</span> <span class="n">phase_corr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">tunes</span><span class="o">.</span><span class="n">get_lambda</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+    <span class="n">phases_meas</span><span class="p">[</span><span class="n">k_bpmac</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">phases_meas</span><span class="p">[</span><span class="n">k_bpmac</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">driven_tune</span>
+    <span class="n">psi</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">phases_meas</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">%</span> <span class="mf">0.5</span>
+    <span class="n">phases_meas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">phases_meas</span> <span class="o">%</span> <span class="mf">1.0</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">psi</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">psi</span><span class="p">)</span>
+    <span class="n">phases_meas</span><span class="p">[</span><span class="n">k_bpmac</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">phases_meas</span><span class="p">[</span><span class="n">k_bpmac</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">free_tune</span>
+    <span class="k">return</span> <span class="n">phases_meas</span>
+
+
+<span class="k">def</span> <span class="nf">_compensate_by_model</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_driven</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]),</span>
+                  <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;comp&quot;</span><span class="p">))</span>
+    <span class="n">phase_compensation</span> <span class="o">=</span> <span class="n">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">comp&quot;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ang_sum</span><span class="p">(</span>
+        <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">phase_compensation</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+
+<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing phases: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="n">dfs</span><span class="p">,</span> <span class="p">(</span><span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="o">+</span><span class="s2">&quot;driven_&quot;</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="o">+</span><span class="s2">&quot;driven_&quot;</span><span class="p">)):</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">df</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase advance beating in </span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2"> = &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">weighted_rms</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}</span><span class="s1">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create_output_df</span><span class="p">(</span><span class="n">phase_advances</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">meas</span> <span class="o">=</span> <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">]</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">tot</span><span class="p">:</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_data</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="n">output_data</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">S2</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="n">NAME2</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_data</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="n">output_data</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">S2</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;S&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">NAME2</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">meas</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">output_data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_ang_diff</span><span class="p">(</span><span class="n">output_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">output_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}</span><span class="s2">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">output_data</span>
+
+
+<span class="k">def</span> <span class="nf">_get_square_data_frame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">write_special</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase_advances</span><span class="p">,</span> <span class="n">plane_tune</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="c1"># TODO REFACTOR AND SIMPLIFY</span>
+    <span class="n">accel</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span>
+    <span class="n">meas</span> <span class="o">=</span> <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span>
+    <span class="n">bd</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">beam_direction</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">elements</span>
+    <span class="n">special_phase_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ELEMENT1&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;ELEMENT2&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s1">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">_DEG&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s1">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">_DEG&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">_DEG&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;BPM1&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;BPM2&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;BPM_PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s1">&#39;BPM_</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s1">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,]</span>
+    <span class="n">special_phase_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">special_phase_columns</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">elem1</span><span class="p">,</span> <span class="n">elem2</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">important_phase_advances</span><span class="p">():</span>
+        <span class="n">mus1</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">elem1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">minmu1</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mus1</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">meas</span><span class="o">.</span><span class="n">index</span><span class="p">])</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+        <span class="n">mus2</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">elem2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">minmu2</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mus2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">meas</span><span class="o">.</span><span class="n">index</span><span class="p">])</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+        <span class="n">bpm_phase_advance</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">minmu1</span><span class="p">,</span> <span class="n">minmu2</span><span class="p">]</span>
+        <span class="n">model_value</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">elem2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">elem1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">elem1</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">elem2</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">bd</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">bpm_phase_advance</span> <span class="o">+=</span> <span class="n">plane_tune</span>
+            <span class="n">model_value</span> <span class="o">+=</span> <span class="n">plane_tune</span>
+        <span class="n">bpm_err</span> <span class="o">=</span> <span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">minmu1</span><span class="p">,</span> <span class="n">minmu2</span><span class="p">]</span>
+        <span class="n">elems_to_bpms</span> <span class="o">=</span> <span class="o">-</span><span class="n">mus1</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">minmu1</span><span class="p">]</span> <span class="o">-</span> <span class="n">mus2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">minmu2</span><span class="p">]</span>
+        <span class="n">ph_result</span> <span class="o">=</span> <span class="p">((</span><span class="n">bpm_phase_advance</span> <span class="o">+</span> <span class="n">elems_to_bpms</span><span class="p">)</span> <span class="o">*</span> <span class="n">bd</span><span class="p">)</span>
+        <span class="n">model_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_value</span> <span class="o">*</span> <span class="n">bd</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+        <span class="n">special_phase_df</span><span class="o">=</span><span class="n">special_phase_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">special_phase_columns</span><span class="p">,[</span>
+                                                            <span class="n">elem1</span><span class="p">,</span>
+                                                            <span class="n">elem2</span><span class="p">,</span>
+                                                            <span class="n">ph_result</span> <span class="o">%</span> <span class="mi">1</span><span class="p">,</span>
+                                                            <span class="n">bpm_err</span><span class="p">,</span>
+                                                            <span class="n">_to_deg</span><span class="p">(</span><span class="n">ph_result</span><span class="p">),</span>
+                                                            <span class="n">bpm_err</span> <span class="o">*</span> <span class="mi">360</span><span class="p">,</span>
+                                                            <span class="n">model_value</span><span class="p">,</span>
+                                                            <span class="n">_to_deg</span><span class="p">(</span><span class="n">model_value</span><span class="p">),</span>
+                                                            <span class="n">minmu1</span><span class="p">,</span>
+                                                            <span class="n">minmu2</span><span class="p">,</span>
+                                                            <span class="n">bpm_phase_advance</span><span class="p">,</span>
+                                                            <span class="n">elems_to_bpms</span><span class="p">,</span>
+        <span class="p">])),</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SPECIAL_PHASE_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">special_phase_df</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_to_deg</span><span class="p">(</span><span class="n">phase</span><span class="p">):</span>  <span class="c1"># -90 to 90 degrees</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">phase</span> <span class="o">%</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mi">360</span>
+    <span class="k">if</span> <span class="n">phase</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">phase</span>
+    <span class="k">return</span> <span class="n">phase</span> <span class="o">-</span> <span class="mi">180</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

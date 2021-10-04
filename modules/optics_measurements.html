@@ -702,6 +702,29 @@ It provides functions to compute kick actions.</p>
 <h2>Phase Advance<a class="headerlink" href="#phase-advance" title="Permalink to this headline"></a></h2>
 <p>This module contains phase calculation functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute betatron phase advances and structures to store them.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.optics_measurements.phase.calculate">
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">tfs.frame.TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">tfs.frame.TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.phase.calculate" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate phases for ‘free’ and ‘uncompensated’ cases from the measurement files, and return a
+dictionary combining the results for each transverse plane.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>meas_input</strong> (<em>dict</em>) -- <cite>OpticsInput</cite> object containing analysis settings from the command-line.</p></li>
+<li><p><strong>input_files</strong> (<em>dict</em>) -- <cite>InputFiles</cite> object containing frequency spectra files (linx/y).</p></li>
+<li><p><strong>tunes</strong> -- </p></li>
+<li><p><strong>plane</strong> -- </p></li>
+<li><p><strong>no_errors</strong> -- </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry
+is a dictionary with the measured phase advances for ‘free’ and ‘uncompensated’ cases, as well as
+the location of the output <code class="docutils literal notranslate"><span class="pre">TfsDataFrames</span></code> for the phases.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <span class="target" id="module-omc3.optics_measurements.rdt"></span><section id="resonance-driving-terms">
 <h2>Resonance Driving Terms<a class="headerlink" href="#resonance-driving-terms" title="Permalink to this headline"></a></h2>
