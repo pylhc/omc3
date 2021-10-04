@@ -14,11 +14,9 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 
+from omc3.definitions.constants import (AMPLITUDE, COL_NATAMP, COL_NATMU, COL_NATTUNE, COL_TUNE, FREQ, PHASE,
+                                        PHASE_ADV, PI2, PLANES)
 from omc3.utils import logging_tools, outliers
-from omc3.definitions.constants import PLANES, PI2
-from omc3.harpy.constants import (COL_TUNE, AMPLITUDE, PHASE_ADV,
-                                  COL_NATTUNE, COL_NATAMP, COL_NATMU,
-                                  FREQ, PHASE)
 
 LOGGER = logging_tools.getLogger(__name__)
 
