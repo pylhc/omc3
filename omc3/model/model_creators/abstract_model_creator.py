@@ -8,8 +8,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Sequence, Union
 
+from omc3.definitions.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
-from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 
 
 class ModelCreator(ABC):
