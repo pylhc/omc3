@@ -9,8 +9,7 @@ decaying) oscillations are analysed.
 import numpy as np
 
 from omc3.utils import logging_tools
-from omc3.harpy.constants import COL_TUNE, PHASE_ADV
-from omc3.definitions.constants import PI2
+from omc3.definitions.constants import COL_TUNE, PI2, PHASE_ADV
 
 LOGGER = logging_tools.getLogger(__name__)
 
