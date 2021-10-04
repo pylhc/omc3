@@ -10,7 +10,7 @@ from omc3.correction.handler import get_measurement_data, _rms
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import global_correction_entrypoint as global_correction, OPTICS_PARAMS_CHOICES
-from omc3.optics_measurements.constants import NAME
+from omc3.definitions.constants import NAME
 from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
