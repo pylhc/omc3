@@ -11,8 +11,7 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.optics_measurements.constants import (AMP_BETA_NAME, DELTA, ERR, EXT,
-                                                MDL, RES)
+from omc3.definitions.constants import AMP_BETA_NAME, DELTA, ERR, EXT, MDL, RES
 from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
 
