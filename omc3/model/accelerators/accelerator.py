@@ -14,7 +14,7 @@ import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters
 
-from omc3.model.constants import (
+from omc3.definitions.constants import (
     ERROR_DEFFS_TXT,
     JOB_MODEL_MADX,
     MODIFIER_TAG,
