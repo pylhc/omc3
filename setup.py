@@ -2,7 +2,6 @@ import pathlib
 
 import setuptools
 
-
 # The directory containing this file
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.absolute()
 ABOUT_FILE = TOPLEVEL_DIR / "omc3" / "__init__.py"
@@ -45,14 +44,10 @@ EXTRA_DEPENDENCIES = {
         "hypothesis>=5.0.0",
         "attrs>=19.2.0",
     ],
-    "doc": [
-        "sphinx",
-        "travis-sphinx",
-        "sphinx_rtd_theme"
-    ],
+    "doc": ["sphinx", "travis-sphinx", "sphinx_rtd_theme"],
 }
 EXTRA_DEPENDENCIES.update(
-    {'all': [elem for list_ in EXTRA_DEPENDENCIES.values() for elem in list_]}
+    {"all": [elem for list_ in EXTRA_DEPENDENCIES.values() for elem in list_]}
 )
 
 
@@ -82,6 +77,6 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Visualization",
     ],
     install_requires=DEPENDENCIES,
-    tests_require=EXTRA_DEPENDENCIES['test'],
+    tests_require=EXTRA_DEPENDENCIES["test"],
     extras_require=EXTRA_DEPENDENCIES,
 )
