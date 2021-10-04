@@ -124,9 +124,9 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.correction.constants import BETA, DISP, F1001, F1010, NORM_DISP, PHASE_ADV, TUNE, S, PHASE
 from omc3.correction.response_io import read_varmap
 from omc3.correction.sequence_evaluation import check_varmap_file
+from omc3.definitions.constants import BETA, DISP, F1001, F1010, NORM_DISP, PHASE_ADV, TUNE, S, PHASE
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
