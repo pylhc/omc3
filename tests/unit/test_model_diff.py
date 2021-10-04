@@ -1,13 +1,12 @@
 from pathlib import Path
 
 import numpy as np
-import tfs
 import pytest
+import tfs
 
-from omc3.correction.constants import DELTA, BETA, TUNE, NORM_DISP, DISP, PHASE_ADV, PHASE
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
-from omc3.definitions.constants import NAME
+from omc3.definitions.constants import BETA, DELTA, DISP, NAME, PHASE, PHASE_ADV, TUNE, NORM_DISP
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.optics_measurements.toolbox import ang_diff, ang_sum
 
