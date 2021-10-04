@@ -6,6 +6,7 @@ Custom objects used throughout ``omc3`` for specific needs.
 """
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
 from omc3.definitions.constants import PLANES
