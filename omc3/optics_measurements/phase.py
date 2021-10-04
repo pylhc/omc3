@@ -12,8 +12,8 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
-                                                TOTAL_PHASE_NAME)
+from omc3.definitions.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
+                                        TOTAL_PHASE_NAME)
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
