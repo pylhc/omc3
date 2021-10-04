@@ -8,13 +8,19 @@ from typing import Dict, Tuple
 
 import numpy as np
 
-# File Names -------------------------------------------------------------------
+# Numbers -------------------------------------------------------------------
 PI: float = np.pi
 PI2: float = 2 * np.pi
 PI2I: float = 2j * np.pi
 
 # File Names -------------------------------------------------------------------
+# Extensions
 EXT: str = ".tfs"
+FILE_AMPS_EXT = ".amps{plane}"  # for harpy
+FILE_FREQS_EXT = ".freqs{plane}"  # for harpy
+FILE_LIN_EXT = ".lin{plane}"  # for harpy
+
+# Names
 AMP_BETA_NAME: str = "beta_amplitude_"
 BETA_NAME: str = "beta_phase_"
 CHROM_BETA_NAME: str = "chrom_beta_"
@@ -33,10 +39,10 @@ ERR: str = "ERR"  # Error of the measurement
 ERROR: str = "ERROR"  # for omc3.correction
 DELTA: str = "DELTA"  # Delta between measurement and model (sometimes beating)
 DIFF: str = "DIFF"  # for omc3.correction
-IMAG: str = "IMAG"
+IMAG: str = "IMAG"  # Imaginary part of complex
 MDL: str = "MDL"  # Model
 MODEL: str = "MODEL"  # for omc3.correction
-REAL: str = "REAL"
+REAL: str = "REAL"  # Real part of complex
 RES: str = "RES"  # Rescaled measurement
 RMS: str = "RMS"  # Root-Mean-Square
 VALUE: str = "VALUE"  # for omc3.correction
@@ -69,6 +75,13 @@ SQRT_ACTION: str = f"sqrt{ACTION}"
 TIME: str = "TIME"
 TUNE: str = "Q"
 NAT_TUNE: str = f"NAT{TUNE}"
+
+# harpy specific, unfortunately
+COL_TUNE = "TUNE"
+COL_NATTUNE = f"NAT{COL_TUNE}"
+COL_NATAMP = f"NAT{AMPLITUDE}"
+COL_NATMU = f"NAT{PHASE_ADV}"
+FREQ = "FREQ"
 
 # Headers ----------------------------------------------------------------------
 RESCALE_FACTOR: str = "RescalingFactor"
