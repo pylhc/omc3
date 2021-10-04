@@ -5,6 +5,7 @@ Constants
 General constants to use throughout ``omc3``, to help with consistency.
 """
 from typing import Dict, Tuple
+from pathlib import Path
 
 import numpy as np
 
@@ -93,3 +94,28 @@ PLANE_TO_HV: Dict[str, str] = dict(X="H", Y="V")
 UNIT_IN_METERS: Dict[str, float] = dict(
     km=1e3, m=1e0, mm=1e-3, um=1e-6, nm=1e-9, pm=1e-12, fm=1e-15, am=1e-18
 )
+
+# Model creator specifics ------------------------------------------------------
+MACROS_DIR: str = "macros"
+OBS_POINTS: str = "observation_points.def"
+MODIFIERS_MADX: str = "modifiers.madx"
+MODIFIER_TAG: str = "!@modifier"
+TWISS_BEST_KNOWLEDGE_DAT: str = "twiss_best_knowledge.dat"
+TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT: str = "twiss_elements_best_knowledge.dat"
+TWISS_ADT_DAT: str = "twiss_adt.dat"
+TWISS_AC_DAT: str = "twiss_ac.dat"
+TWISS_ELEMENTS_DAT: str = "twiss_elements.dat"
+TWISS_DAT: str = "twiss.dat"
+ERROR_DEFFS_TXT: str = "error_deffs.txt"
+JOB_MODEL_MADX: str = "job.create_model.madx"
+
+# Macros
+GENERAL_MACROS: str = "general.macros.madx"
+LHC_MACROS: str = "lhc.macros.madx"
+
+# Settings files
+B2_SETTINGS_MADX: str = "b2_settings.madx"
+B2_ERRORS_TFS: str = "b2_errors.tfs"
+
+# Afs acc-models repo
+ACCELERATOR_MODEL_REPOSITORY: Path = Path("/afs/cern.ch/eng/acc-models/lhc")
