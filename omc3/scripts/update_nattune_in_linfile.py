@@ -49,7 +49,7 @@ from generic_parser.entrypoint_parser import save_options_to_config
 
 from omc3.definitions import formats
 from omc3.definitions.constants import COL_NATTUNE, COL_NATAMP, FILE_LIN_EXT, FREQ, NAME, PLANES
-from omc3.plotting.spectrum.utils import load_spectrum_data, get_bpms, LIN, AMPS
+from omc3.plotting.spectrum.utils import load_spectrum_data, get_bpms, LIN, AMPS, FREQS
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
