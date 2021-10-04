@@ -5,10 +5,6 @@ Harpy
     :members:
 
 
-.. automodule:: omc3.harpy.constants
-    :members:
-
-
 .. automodule:: omc3.harpy.frequency
     :members:
 
