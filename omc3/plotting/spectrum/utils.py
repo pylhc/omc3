@@ -15,11 +15,12 @@ import numpy as np
 import pandas as pd
 import tfs
 from generic_parser import DotDict
-from matplotlib import transforms, axes, pyplot as plt
+from matplotlib import axes, transforms
+from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
-from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, NAME
+from omc3.definitions.constants import (FILE_AMPS_EXT, FILE_FREQS_EXT,
+                                        FILE_LIN_EXT, NAME, PLANES)
 from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools
 
