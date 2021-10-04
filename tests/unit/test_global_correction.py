@@ -2,10 +2,10 @@ import numpy as np
 import pytest
 from pandas.testing import assert_frame_equal
 
-from omc3.correction.constants import (BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE)
+from omc3.correction.constants import BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE
 from omc3.correction.handler import get_measurement_data, _rms
+from omc3.definitions.constants import DISPERSION_NAME, BETA_NAME, PHASE_NAME, NORM_DISP_NAME
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
-from omc3.optics_measurements.constants import (DISPERSION_NAME, BETA_NAME, PHASE_NAME, NORM_DISP_NAME)
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
 
