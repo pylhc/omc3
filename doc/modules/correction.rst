@@ -1,9 +1,6 @@
 Correction
 **************************
 
-.. automodule:: omc3.correction.constants
-    :members:
-
 
 .. automodule:: omc3.correction.filters
     :members:
