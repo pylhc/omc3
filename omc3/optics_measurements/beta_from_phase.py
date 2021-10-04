@@ -14,9 +14,7 @@ import tfs
 from scipy.linalg import circulant
 
 from omc3 import __version__ as VERSION
-from omc3.definitions.constants import PI2
-from omc3.optics_measurements.constants import (BETA_NAME, DELTA, ERR, EXT,
-                                                MDL)
+from omc3.definitions.constants import BETA_NAME, DELTA, ERR, EXT, MDL, PI2
 from omc3.optics_measurements.toolbox import df_diff, df_ratio, df_rel_diff
 from omc3.utils import logging_tools, stats
 
