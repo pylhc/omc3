@@ -18,12 +18,11 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
-from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
-                                       F1010, NORM_DISP, PHASE, TUNE,
-                                       VALUE, WEIGHT)
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
-from omc3.definitions.constants import DISPERSION_NAME, EXT, NORM_DISP_NAME, PHASE_NAME, NAME
+from omc3.definitions.constants import (BETA, DELTA, DIFF, DISP, DISPERSION_NAME, ERROR, EXT, F1001,
+                                        F1010, NAME, NORM_DISP, NORM_DISP_NAME, PHASE, PHASE_NAME, TUNE,
+                                        VALUE, WEIGHT)
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
 
