@@ -8,7 +8,7 @@ It provides functions to compute various chromatic beam properties.
 import numpy as np
 import pandas as pd
 
-from omc3.optics_measurements.constants import DELTA, ERR, MDL
+from omc3.definitions.constants import DELTA, ERR, MDL
 from omc3.optics_measurements.toolbox import df_prod, df_ratio
 
 
