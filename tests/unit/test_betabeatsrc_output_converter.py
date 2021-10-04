@@ -3,8 +3,7 @@ from pathlib import Path
 import pytest
 import tfs
 
-from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import (
+from omc3.definitions.constants import (
     AMPLITUDE,
     AMP_BETA_NAME,
     BETA_NAME,
@@ -17,6 +16,7 @@ from omc3.optics_measurements.constants import (
     ORBIT_NAME,
     PHASE,
     PHASE_NAME,
+    PLANES,
     REAL,
     TOTAL_PHASE_NAME,
 )
