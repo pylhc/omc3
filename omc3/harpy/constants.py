@@ -6,25 +6,23 @@ Specific constants to be used in ``harpy``, to help with consistency.
 """
 # Output Fileextensions --------------------------------------------------------
 
-FILE_AMPS_EXT = ".amps{plane}"
-FILE_FREQS_EXT = ".freqs{plane}"
-FILE_LIN_EXT = ".lin{plane}"
+FILE_AMPS_EXT = ".amps{plane}"  # add
+FILE_FREQS_EXT = ".freqs{plane}"  # add
+FILE_LIN_EXT = ".lin{plane}"  # add
 
 # Column Names -----------------------------------------------------------------
-# TODO use these everywhere (jdilly)
-
 # Basic ---
-COL_NAME = "NAME"
+NAME = "NAME"
 
 # Lin Files ---
-COL_TUNE = "TUNE"
-COL_AMP = "AMP"
-COL_MU = "MU"
+COL_TUNE = "TUNE"  # add
+AMPLITUDE = "AMP"
+PHASE_ADV = "MU"
 
-COL_NATTUNE = "NATTUNE"
-COL_NATAMP = "NATAMP"
-COL_NATMU = "NATMU"
+COL_NATTUNE = f"NAT{COL_TUNE}"  # add
+COL_NATAMP = f"NAT{AMPLITUDE}"  # add
+COL_NATMU = f"NAT{PHASE_ADV}"  # add
 
-COL_FREQ = "FREQ"
-COL_PHASE = "PHASE"
-COL_ERR = "ERR"
+FREQ = "FREQ"  # add
+PHASE = "PHASE"
+ERR = "ERR"

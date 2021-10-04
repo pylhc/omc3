@@ -16,9 +16,9 @@ import pandas as pd
 
 from omc3.utils import logging_tools, outliers
 from omc3.definitions.constants import PLANES, PI2
-from omc3.harpy.constants import (COL_TUNE, COL_AMP, COL_MU,
+from omc3.harpy.constants import (COL_TUNE, AMPLITUDE, PHASE_ADV,
                                   COL_NATTUNE, COL_NATAMP, COL_NATMU,
-                                  COL_FREQ, COL_PHASE)
+                                  FREQ, PHASE)
 
 LOGGER = logging_tools.getLogger(__name__)
 
@@ -89,7 +89,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"{COL_TUNE}{plane}"], harpy_input.tune_clean_limit)
     panda = panda.loc[panda.index.difference(cleaned_by_tune_bpms)]
 
-    panda[f"{COL_MU}{plane}"] = _realign_phases(panda.loc[:, f"{COL_MU}{plane}"].to_numpy(),
+    panda[f"{PHASE_ADV}{plane}"] = _realign_phases(panda.loc[:, f"{PHASE_ADV}{plane}"].to_numpy(),
                                           panda.loc[:, f"{COL_TUNE}{plane}"].to_numpy(), bpm_matrix.shape[1])
 
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
@@ -134,11 +134,11 @@ def find_resonances(tunes, nturns, plane, spectra):
         max_coefs, max_freqs = _search_highest_coefs(resonances_freqs[resonance], tolerance,
                                                      spectra["FREQS"], spectra["COEFFS"])
         resstr = _get_resonance_suffix(resonance)
-        df[f"{COL_FREQ}{resstr}"], df[f"{COL_AMP}{resstr}"], df[f"{COL_PHASE}{resstr}"] = _get_freqs_amps_phases(
+        df[f"{FREQ}{resstr}"], df[f"{AMPLITUDE}{resstr}"], df[f"{PHASE}{resstr}"] = _get_freqs_amps_phases(
             max_freqs, max_coefs, resonances_freqs[resonance])
 
-        df[f"{COL_PHASE}{resstr}"] = _realign_phases(df.loc[:, f"{COL_PHASE}{resstr}"].to_numpy(),
-                                               df.loc[:, f"{COL_FREQ}{resstr}"].to_numpy(), nturns)
+        df[f"{PHASE}{resstr}"] = _realign_phases(df.loc[:, f"{PHASE}{resstr}"].to_numpy(),
+                                                 df.loc[:, f"{FREQ}{resstr}"].to_numpy(), nturns)
 
     return df
 
@@ -150,7 +150,7 @@ def _get_main_resonances(tunes, spectra, plane, tolerance, df):
         raise ValueError(f"No main {plane} resonances found, "
                          f"try to increase the tolerance or adjust the tunes")
     bad_bpms_by_tune = spectra["COEFFS"].loc[max_coefs == 0.].index
-    df[f"{COL_TUNE}{plane}"], df[f"{COL_AMP}{plane}"], df[f"{COL_MU}{plane}"] = _get_freqs_amps_phases(
+    df[f"{COL_TUNE}{plane}"], df[f"{AMPLITUDE}{plane}"], df[f"{PHASE_ADV}{plane}"] = _get_freqs_amps_phases(
         max_freqs, max_coefs, freq)
     if plane != "Z":
         df = df.loc[df.index.difference(bad_bpms_by_tune)]

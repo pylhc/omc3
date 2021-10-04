@@ -33,7 +33,7 @@ from omc3.definitions.constants import (
     S,
 )
 from omc3.definitions.structures import TuneDict
-from omc3.harpy.constants import COL_MU
+from omc3.harpy.constants import PHASE_ADV
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from omc3.utils import logging_tools, stats
 
@@ -126,12 +126,12 @@ def calculate_coupling(
         joined[SECONDARY_AMPLITUDE_Y] * exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
 
-    q1001_from_A = -np.angle(A01) + (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1001_from_B = np.angle(B10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    q1001_from_A = -np.angle(A01) + (bd * joined[f"{PHASE_ADV}Y"].to_numpy() - 0.25) * PI2
+    q1001_from_B = np.angle(B10) - (bd * joined[f"{PHASE_ADV}X"].to_numpy() - 0.25) * PI2
     eq_1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
 
-    q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1010_from_B = -np.angle(B_10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{PHASE_ADV}Y"].to_numpy() - 0.25) * PI2
+    q1010_from_B = -np.angle(B_10) - (bd * joined[f"{PHASE_ADV}X"].to_numpy() - 0.25) * PI2
     eq_1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
     LOGGER.debug("Computing average of coupling RDTs")
@@ -149,7 +149,7 @@ def calculate_coupling(
     )
 
     LOGGER.debug("Calculating exact Cminus")
-    C_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    C_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * exp(1.0j * (joined[f"{PHASE_ADV}X"] - joined[f"{PHASE_ADV}Y"]))))
     header_dict["Cminus_exact"] = C_exact
     LOGGER.info(f"|C-| (exact)  = {C_exact:.5f}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 

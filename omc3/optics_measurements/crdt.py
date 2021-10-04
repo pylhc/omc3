@@ -15,7 +15,7 @@ import scipy.odr
 
 from omc3.definitions.constants import AMPLITUDE, ERR, EXT, MDL, PHASE, PI2, PLANES, REAL, IMAG
 from omc3.optics_measurements.rdt import get_line_sign_and_suffix
-from omc3.harpy.constants import COL_AMP, COL_PHASE, COL_ERR
+from omc3.harpy.constants import AMPLITUDE, PHASE, ERR
 from omc3.utils import iotools, logging_tools
 from omc3.utils.stats import circular_nanmean, circular_nanerror
 
@@ -112,10 +112,10 @@ def write(df, header, meas_input, order, crdt):
 
 
 def get_column_names(line):
-    return dict(zip(CRDT_COLUMNS, [f'{COL_AMP}{line}',
-                                   f'{COL_ERR}{COL_AMP}{line}',
-                                   f'{COL_PHASE}{line}',
-                                   f'{COL_ERR}{COL_PHASE}{line}']))
+    return dict(zip(CRDT_COLUMNS, [f'{AMPLITUDE}{line}',
+                                   f'{ERR}{AMPLITUDE}{line}',
+                                   f'{PHASE}{line}',
+                                   f'{ERR}{PHASE}{line}']))
 
 
 def get_crdt_invariant(crdt, invariants):

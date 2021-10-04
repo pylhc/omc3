@@ -17,8 +17,8 @@ from omc3.definitions import formats
 from omc3.definitions.constants import PLANES, PLANE_TO_NUM as P2N
 from omc3.harpy import clean, frequency, kicker
 from omc3.harpy.constants import (FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT,
-                                  COL_NAME, COL_TUNE, COL_AMP, COL_MU,
-                                  COL_NATTUNE, COL_NATAMP, COL_PHASE, COL_ERR)
+                                  NAME, COL_TUNE, AMPLITUDE, PHASE_ADV,
+                                  COL_NATTUNE, COL_NATAMP, PHASE, ERR)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
@@ -38,7 +38,7 @@ def run_per_bunch(tbt_data, harpy_input):
     Returns:
         Dictionary with a `TfsDataFrame` per plane.
     """
-    model = None if harpy_input.model is None else tfs.read(harpy_input.model, index=COL_NAME).loc[:, 'S']
+    model = None if harpy_input.model is None else tfs.read(harpy_input.model, index=NAME).loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
     output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
@@ -96,7 +96,7 @@ def _scale_to_meters(bpm_data, unit):
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
     lin_frame = pd.DataFrame(index=bpm_data.index.to_numpy(),
-                             data=OrderedDict([(COL_NAME, bpm_data.index.to_numpy()),
+                             data=OrderedDict([(NAME, bpm_data.index.to_numpy()),
                                                ("S", np.arange(bpm_data.index.size) if model is None
                                                else model.loc[bpm_data.index])]))
     lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
@@ -118,11 +118,11 @@ def _add_calculated_phase_errors(lin_frame):
     noise = lin_frame.loc[:, 'NOISE'].to_numpy()
     if np.max(noise) == 0.0:
         return lin_frame   # Do not calculated errors when no noise was calculated
-    for name_root in (COL_MU, COL_PHASE):
+    for name_root in (PHASE_ADV, PHASE):
         cols = [col for col in lin_frame.columns.to_numpy() if name_root in col]
         for col in cols:
-            lin_frame[f"{COL_ERR}{col}"] = _get_spectral_phase_error(
-                lin_frame.loc[:, f"{col.replace(name_root, COL_AMP)}"], noise)
+            lin_frame[f"{ERR}{col}"] = _get_spectral_phase_error(
+                lin_frame.loc[:, f"{col.replace(name_root, AMPLITUDE)}"], noise)
     return lin_frame
 
 
@@ -143,9 +143,9 @@ def _sync_phase(lin_frame, plane):
     BPM at index 0 is always 0. It allows to compare phases of consecutive measurements and if
     some measurements stick out remove them from the data set. Original author is **skowron**.
     """
-    phase = lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy()
+    phase = lin_frame.loc[:, f"{PHASE_ADV}{plane}"].to_numpy()
     phase = phase - phase[0]
-    lin_frame[f"{COL_MU}{plane}SYNC"] = np.where(np.abs(phase) > 0.5, phase - np.sign(phase), phase)
+    lin_frame[f"{PHASE_ADV}{plane}SYNC"] = np.where(np.abs(phase) > 0.5, phase - np.sign(phase), phase)
     return lin_frame
 
 
@@ -188,13 +188,13 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
-    cols = [col for col in panda.columns.to_numpy() if col.startswith(COL_AMP)]
-    cols.remove(f"{COL_AMP}{plane}")
-    panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"{COL_AMP}{plane}"], axis="index")
-    amps = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy()
+    cols = [col for col in panda.columns.to_numpy() if col.startswith(AMPLITUDE)]
+    cols.remove(f"{AMPLITUDE}{plane}")
+    panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"{AMPLITUDE}{plane}"], axis="index")
+    amps = panda.loc[:, f"{AMPLITUDE}{plane}"].to_numpy()
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
     # TODO  later remove
-    panda[f"{COL_AMP}{plane}"] = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy() / 2
+    panda[f"{AMPLITUDE}{plane}"] = panda.loc[:, f"{AMPLITUDE}{plane}"].to_numpy() / 2
     if f"{COL_NATAMP}{plane}" in panda.columns:
         panda[f"{COL_NATAMP}{plane}"] = panda.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
 
@@ -202,10 +202,10 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
         return panda  # Do not calculated errors when no noise was calculated
     noise_scaled = panda.loc[:, 'NOISE'] / amps
     panda.loc[:, "NOISE_SCALED"] = noise_scaled
-    panda.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = panda.loc[:, 'NOISE']
+    panda.loc[:, f"{ERR}{AMPLITUDE}{plane}"] = panda.loc[:, 'NOISE']
     if f"{COL_NATTUNE}{plane}" in panda.columns:
-        panda.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = panda.loc[:, 'NOISE']
+	    panda.loc[:, f"{ERR}{COL_NATAMP}{plane}"] = panda.loc[:, 'NOISE']
     for col in cols:
         this_amp = panda.loc[:, col]
-        panda.loc[:, f"{COL_ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
+        panda.loc[:, f"{ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
     return panda

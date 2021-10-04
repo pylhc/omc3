@@ -49,7 +49,7 @@ from generic_parser.entrypoint_parser import save_options_to_config
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_NAME, FILE_LIN_EXT
+from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, NAME, FILE_LIN_EXT
 from omc3.plotting.spectrum.utils import (load_spectrum_data, get_bpms,
                                           LIN, AMPS, FREQS
                                           )
@@ -172,7 +172,7 @@ def _get_peak_in_interval(freqs, amps, interval):
 def _save_linfiles(lin_data, file_path, planes, id_suffix):
     for plane in planes:
         out_path = file_path.with_name(f'{file_path.name}{id_suffix}{FILE_LIN_EXT.format(plane=plane.lower())}')
-        tfs.write(str(out_path), lin_data[plane], save_index=COL_NAME)
+        tfs.write(str(out_path), lin_data[plane], save_index=NAME)
 
 
 def _save_options_to_config(opt):

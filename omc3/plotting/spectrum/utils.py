@@ -19,7 +19,7 @@ from matplotlib import transforms, axes, pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, NAME
 from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools
 
@@ -456,7 +456,7 @@ def _get_harpy_data(file_path, planes):
     return {
         AMPS: _get_planed_files(file_path, ext=FILE_AMPS_EXT, planes=planes),
         FREQS: _get_planed_files(file_path, ext=FILE_FREQS_EXT, planes=planes),
-        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, planes=planes, index=COL_NAME),
+        LIN: _get_planed_files(file_path, ext=FILE_LIN_EXT, planes=planes, index=NAME),
     }
 
 
@@ -478,7 +478,7 @@ def _get_sussix_data(file_path, bpms, planes):
     for plane in planes:
         files[LIN][plane] = tfs.read(
             str(file_path.with_name(f'{file_path.name}_lin{plane.lower()}')),
-            index=COL_NAME)
+            index=NAME)
         for id_ in (FREQS, AMPS):
             files[id_][plane] = tfs.TfsDataFrame(columns=bpms)
         for bpm in bpms:
