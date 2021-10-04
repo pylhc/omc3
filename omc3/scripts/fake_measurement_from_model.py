@@ -74,13 +74,9 @@ from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.correction.constants import DISP, NORM_DISP, F1001, F1010
 from omc3.correction.model_appenders import add_coupling_to_model
-from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_NAME,
-                                                TOTAL_PHASE_NAME,
-                                                DISPERSION_NAME, NORM_DISP_NAME,
-                                                EXT, DELTA, ERR,
-                                                PHASE_ADV, BETA, PHASE,
-                                                TUNE, NAME, NAME2, S, MDL)
+from omc3.definitions.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_NAME, TOTAL_PHASE_NAME,
+                                        DISPERSION_NAME, NORM_DISP_NAME, EXT, DELTA, ERR,
+                                        PHASE_ADV, PLANES, BETA, PHASE, TUNE, NAME, NAME2, S, MDL)
 from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check, ang_diff
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
