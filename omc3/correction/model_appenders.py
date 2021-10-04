@@ -13,8 +13,8 @@ import numpy as np
 import pandas as pd
 from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.correction.constants import (BETA, DIFF, MODEL, NORM_DISP, PHASE_ADV,
-                                       TUNE, VALUE, F1001, F1010, PHASE)
+from omc3.definitions.constants import (BETA, DIFF, MODEL, NORM_DISP, PHASE_ADV,
+                                        TUNE, VALUE, F1001, F1010, PHASE)
 from omc3.utils import logging_tools
 from omc3.optics_measurements.toolbox import df_diff, df_rel_diff
 
