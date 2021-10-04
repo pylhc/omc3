@@ -4,7 +4,7 @@ Constants
 
 Constants and definitions for the ``plotting`` module.
 """
-from omc3.optics_measurements.constants import (
+from omc3.definitions.constants import (
     S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
     AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,
     SPECIAL_PHASE_NAME, TOTAL_PHASE_NAME, DISPERSION_NAME,
