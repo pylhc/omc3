@@ -5,8 +5,8 @@ PETRA
 Accelerator-Class for the ``PETRA`` machine.
 Model creation not implemented yet.
 """
+from omc3.definitions.constants import PLANE_TO_HV
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
-from omc3.model.constants import PLANE_TO_HV
 
 EXCITER_BPM = "BPM_SOR_13"
 
