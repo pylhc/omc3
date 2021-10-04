@@ -5,10 +5,6 @@ Model
     :members:
 
 
-.. automodule:: omc3.model.constants
-    :members:
-
-
 .. automodule:: omc3.model.accelerators.accelerator
     :members:
 
