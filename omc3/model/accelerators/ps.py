@@ -57,8 +57,8 @@ from pathlib import Path
 
 from generic_parser import EntryPoint
 
+from omc3.definitions.constants import PLANE_TO_HV, MODIFIER_TAG
 from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes, AccExcitationMode
-from omc3.model.constants import PLANE_TO_HV, MODIFIER_TAG
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent
