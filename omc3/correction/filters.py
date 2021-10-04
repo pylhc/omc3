@@ -21,10 +21,9 @@ import pandas as pd
 import tfs
 from generic_parser import DotDict
 
-from omc3.correction.constants import (
-    NAME2, DELTA, ERR, ERROR, PHASE, TUNE, VALUE, WEIGHT, PHASE_ADV
+from omc3.definitions.constants import (
+    NAME2, DELTA, ERR, ERROR, PHASE, PLANES, TUNE, VALUE, WEIGHT, PHASE_ADV
 )
-from omc3.definitions.constants import PLANES
 from omc3.utils import logging_tools, stats
 
 LOG = logging_tools.get_logger(__name__)
