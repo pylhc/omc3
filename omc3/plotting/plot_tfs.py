@@ -113,8 +113,7 @@ from generic_parser import EntryPointParameters, entrypoint, DotDict
 from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from matplotlib import pyplot as plt, rcParams
 
-from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import EXT
+from omc3.definitions.constants import EXT, PLANES
 from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import FigureCollector
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
