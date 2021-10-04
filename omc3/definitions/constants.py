@@ -36,6 +36,11 @@ DELTA: str = "DELTA"  # Delta between measurement and model (sometimes beating)
 MDL: str = "MDL"  # Model
 REAL: str = "REAL"
 IMAG: str = "IMAG"
+VALUE: str = "VALUE"  # for omc3.correction
+WEIGHT: str = "WEIGHT"  # for omc3.correction
+ERROR: str = "ERROR"  # for omc3.correction
+MODEL: str = "MODEL"  # for omc3.correction
+DIFF: str = "DIFF"  # for omc3.correction
 
 # Names
 S: str = "S"
@@ -46,9 +51,13 @@ NAT_TUNE: str = "NATQ"
 PEAK2PEAK: str = "PK2PK"
 ALPHA: str = "ALF"
 BETA: str = "BET"
+BETABEAT: str = "BB"
+DISP: str = "D"
+NORM_DISP: str = "ND"
 DPP: str = "DPP"
 DPPAMP: str = "DPPAMP"
 AMPLITUDE: str = "AMP"
+INCR: str = "incr"
 PHASE: str = "PHASE"
 PHASE_ADV: str = "MU"
 F1001: str = "F1001"
