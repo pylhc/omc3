@@ -7,7 +7,7 @@ This module provides convenience functions for model creation of a ``segment``.
 import shutil
 from pathlib import Path
 
-from omc3.model.constants import MACROS_DIR, GENERAL_MACROS
+from omc3.definitions.constants import MACROS_DIR, GENERAL_MACROS
 from omc3.utils import logging_tools
 from omc3.utils.iotools import create_dirs
 
