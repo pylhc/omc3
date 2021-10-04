@@ -2,12 +2,12 @@ import numpy as np
 import pytest
 from pandas.testing import assert_frame_equal
 
-from omc3.correction.constants import BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE
-from omc3.correction.handler import get_measurement_data, _rms
-from omc3.definitions.constants import DISPERSION_NAME, BETA_NAME, PHASE_NAME, NORM_DISP_NAME
+from omc3.correction.handler import _rms, get_measurement_data
+from omc3.definitions.constants import (BETA, BETA_NAME, DISP, DISPERSION_NAME, F1001, F1010, NORM_DISP,
+                                        NORM_DISP_NAME, PHASE, PHASE_NAME, TUNE, VALUE)
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
-from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
+from tests.accuracy.test_global_correction import get_normal_params, get_skew_params
 
 FILENAME_MAP = {
     # Names to be output on input of certain parameters.
