@@ -23,8 +23,7 @@ import tfs
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction.constants import (BETA, DISP, F1001, F1010, INCR,
-                                       NORM_DISP, PHASE_ADV, TUNE, PHASE)
+from omc3.definitions.constants import BETA, DISP, F1001, F1010, INCR, NORM_DISP, PHASE, PHASE_ADV, TUNE
 from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
