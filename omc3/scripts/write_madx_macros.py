@@ -16,11 +16,13 @@ Write out madx scripts for the tracking macros.
 
     Path to twissfile with observationspoint in the NAME column.
 """
+from pathlib import Path
 
 import tfs
-from pathlib import Path
-from omc3.model.constants import OBS_POINTS
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+
+from omc3.definitions.constants import OBS_POINTS
+
 
 def get_params():
     params = EntryPointParameters()
