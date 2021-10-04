@@ -14,11 +14,10 @@ import pandas as pd
 import tfs
 
 from omc3.definitions import formats
-from omc3.definitions.constants import PLANES, PLANE_TO_NUM as P2N
+from omc3.definitions.constants import (AMPLITUDE, COL_NATAMP, COL_NATTUNE, COL_TUNE, ERR, FILE_AMPS_EXT,
+                                        FILE_FREQS_EXT, FILE_LIN_EXT, NAME, PHASE, PLANES, PHASE_ADV)
+from omc3.definitions.constants import PLANE_TO_NUM as P2N
 from omc3.harpy import clean, frequency, kicker
-from omc3.harpy.constants import (FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT,
-                                  NAME, COL_TUNE, AMPLITUDE, PHASE_ADV,
-                                  COL_NATTUNE, COL_NATAMP, PHASE, ERR)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
