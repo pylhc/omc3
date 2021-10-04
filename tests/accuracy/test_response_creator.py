@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 
-from omc3.correction.constants import (DISP, PHASE, PHASE_ADV)
 from omc3.correction.handler import _rms
 from omc3.correction.response_io import read_fullresponse, read_varmap
 from omc3.correction.sequence_evaluation import evaluate_for_variables
+from omc3.definitions.constants import DISP, PHASE, PHASE_ADV
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.utils import logging_tools
