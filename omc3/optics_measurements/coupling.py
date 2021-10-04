@@ -33,7 +33,7 @@ from omc3.definitions.constants import (
     S,
 )
 from omc3.definitions.structures import TuneDict
-from omc3.harpy.constants import PHASE_ADV
+from omc3.definitions.constants import PHASE_ADV
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from omc3.utils import logging_tools, stats
 
