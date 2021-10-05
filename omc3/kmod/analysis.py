@@ -13,9 +13,9 @@ import tfs
 from tfs import tools as tfstools
 
 from omc3.definitions import formats
-from omc3.definitions.constants import EXT, PHASE_NAME, PLANES, TWISS_DAT
+from omc3.definitions.constants import (AVERAGE, BETA, CLEANED, COL_TUNE, ERR, EXT, KMOD_SEQUENCES_PATH,
+                                        PHASE_NAME, PHASEADV, PLANES, STAR, TWISS_DAT, WAIST, K)
 from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, K, COL_TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE, SEQUENCES_PATH
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -283,7 +283,7 @@ def get_BPM(kmod_input_params):
 
 def get_BPM_distance(kmod_input_params, BPML, BPMR):
     twiss_df = tfs.read(
-        SEQUENCES_PATH / f"twiss_lhcb{kmod_input_params.beam:d}.dat", index='NAME'
+        KMOD_SEQUENCES_PATH / f"twiss_lhcb{kmod_input_params.beam:d}.dat", index='NAME'
     )
     return np.abs(twiss_df.loc[BPMR, 'S'] - twiss_df.loc[BPML, 'S']) / 2
 
