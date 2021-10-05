@@ -119,3 +119,6 @@ B2_ERRORS_TFS: str = "b2_errors.tfs"
 
 # Afs acc-models lhc repo
 ACCELERATOR_MODEL_REPOSITORY: Path = Path("/afs/cern.ch/eng/acc-models/lhc")
+
+
+# Tune analysis specifics ------------------------------------------------------
