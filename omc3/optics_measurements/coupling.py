@@ -35,6 +35,7 @@ from omc3.optics_measurements.constants import (
     SECONDARY_FREQUENCY_Y,
     S,
     ERR,
+    EXT,
     MDL,
     DELTA
 )
@@ -89,7 +90,7 @@ def calculate_coupling(
     # the .intersect chain dictates the order, we have to start with the model index.
     LOGGER.debug("Intersecting measurements, starting with model")
     joined: tfs.TfsDataFrame = _joined_frames(input_files)  # merge transverse input frames
-    joined_index = (
+    joined_index: pd.Index = (
         meas_input.accelerator.model.index.intersection(joined.index)
         .intersection(phase_dict["X"][compensation]["MEAS"].index)
         .intersection(phase_dict["Y"][compensation]["MEAS"].index)
@@ -138,8 +139,8 @@ def calculate_coupling(
     eq_1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
     LOGGER.debug("Computing average of coupling RDTs")
-    f1001 = -0.5 * sqrt(np.abs(A01 * B10)) * eq_1001 / abs(eq_1001)
-    f1010 = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq_1010 / abs(eq_1010)
+    f1001: np.ndarray = -0.5 * sqrt(np.abs(A01 * B10)) * eq_1001 / abs(eq_1001)
+    f1010: np.ndarray = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq_1010 / abs(eq_1010)
 
     LOGGER.debug("Getting tune separation from measurements")
     tune_separation = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
@@ -164,11 +165,11 @@ def calculate_coupling(
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[joined_index]
     LOGGER.error(model_coupling)
 
-    f1001_df = _rdt_to_df(f1001, model_coupling["F1001"], meas_input.accelerator.model, joined_index)
-    f1010_df = _rdt_to_df(f1010, model_coupling["F1010"], meas_input.accelerator.model, joined_index)
+    f1001_df = _rdt_to_output_df(f1001, model_coupling[F1001], meas_input.accelerator.model, joined_index)
+    f1010_df = _rdt_to_output_df(f1010, model_coupling[F1010], meas_input.accelerator.model, joined_index)
 
-    tfs.write(Path(meas_input.outputdir) / f"{F1001.lower()}.tfs", f1001_df, header_dict)
-    tfs.write(Path(meas_input.outputdir) / f"{F1010.lower()}.tfs", f1010_df, header_dict)
+    tfs.write(Path(meas_input.outputdir) / f"{F1001.lower()}{EXT}", f1001_df, header_dict)
+    tfs.write(Path(meas_input.outputdir) / f"{F1010.lower()}{EXT}", f1010_df, header_dict)
 
 
 def compensate_rdts_by_model(
@@ -272,54 +273,58 @@ def _get_complex_line(
     ]
 
 
-def _rdt_to_df(fterm: ndarray,  # or something else vector-like
-               fterm_mdl,  #: decltype(df['COL']), or something more general, vector-like
-               model: tfs.TfsDataFrame,
-               index,  #: pd.Index ?
+def _rdt_to_output_df(
+    fterm: Union[pd.Series, np.ndarray],
+    fterm_mdl: Union[pd.Series, np.ndarray],
+    model_df: tfs.TfsDataFrame,
+    index: pd.Index,
 ) -> pd.DataFrame:
-    """Creates a `pd.DataFrame` from the given RDT (`fterm`) and its model counterpart `fterm_mdl`
-    Combines all the needed columns (`S`, `NAME`, `AMP`, `PHASE`, `REAL`, `IMAG`, and the `ERR*` and `*MDL` columns)
+    """
+    Creates the output coupling RDT dataframe from the given RDT and its model-calculated counterpart.
+    Combines all the needed columns (``S``, ``NAME``, ``AMP``, ``PHASE``, ``REAL``, ``IMAG``, and the
+    ``ERR*`` and ``*MDL`` columns).
 
     Args:
-        fterm (ndarray): the calculated rdt
-        fterm_mdl ([type]): the model rdt (e.g. calculated via cmatrix from the model)
-        model ([type]): the model, used to get the `S` position
-        index ([type]): the index, in order to align everything
+        fterm (Union[pd.Series, np.ndarray]): the calculated coupling RDT.
+        fterm_mdl (Union[pd.Series, np.ndarray]): corresponding RDT values calculated from the model (e.g.
+            calculated via cmatrix from the model_df).
+        model_df (tfs.TfsDataFrame): the model dataframe attached to the accelerator object, used to get the
+            ``S`` position.
+        index (pd.Index): the joined intersected index used to align everything.
 
     Returns:
         pd.DataFrame: dataframe ready to be written to the out file `.tfs`
     """
     df = pd.DataFrame()
-    df[S] = model.loc[index, S]
+    df[S] = model_df.loc[index, S]
     df[NAME] = index
 
-    # amplitude and phase with their respective model values
+    LOGGER.debug("Computing RDT amplitude values")
     df[AMPLITUDE] = np.abs(fterm)
     df[AMPLITUDE + MDL] = np.abs(fterm_mdl)
 
+    LOGGER.debug("Computing phase values")
     df[PHASE] = np.angle(fterm)
     df[PHASE + MDL] = np.angle(fterm_mdl)
 
-    # difference to model
+    LOGGER.debug("Computing deviation from model")
     df[DELTA + AMPLITUDE] = df[AMPLITUDE] - df[AMPLITUDE + MDL]
     df[DELTA + PHASE] = df[PHASE] - df[PHASE + MDL]
 
-    # errors
-    df[ERR + AMPLITUDE] = 0
+    LOGGER.debug("Computing error values")
+    df[ERR + AMPLITUDE] = 0  # TODO: will need to implement this calculation later
     df[ERR + PHASE] = 0
 
-    # imag and real
+    LOGGER.debug("Adding real and imaginary parts columns")
     df[REAL] = np.real(fterm)
     df[REAL + MDL] = np.real(fterm_mdl)
-    df[ERR + REAL] = 0
+    df[ERR + REAL] = 0  # TODO: same
 
     df[IMAG] = np.imag(fterm)
     df[IMAG + MDL] = np.imag(fterm_mdl)
-    df[ERR + IMAG] = 0
+    df[ERR + IMAG] = 0  # TODO: same
 
-    df.sort_values(by=S)
-
-    return df
+    return df.sort_values(by=S)
 
 
 def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
