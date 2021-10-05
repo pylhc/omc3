@@ -61,7 +61,7 @@ from tfs.tools import significant_digits
 
 from omc3.definitions import formats
 from omc3.definitions.constants import (UNIT_IN_METERS, PLANES, get_detuning_exponent_for_order,
-                                        get_paired_lables)
+                                        get_paired_labels)
 from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
 from omc3.tune_analysis import kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
@@ -188,7 +188,7 @@ def main(opt):
                                color=pcolors.get_mpl_color(idx),
                                action_unit=opt.action_plot_unit, tune_scale=10**opt.tune_scale)
 
-            ax_labels = get_paired_lables(tune_plane, kick_plane, opt.tune_scale)
+            ax_labels = get_paired_labels(tune_plane, kick_plane, opt.tune_scale)
             id_str = f"dQ{tune_plane.upper():s}d2J{kick_plane.upper():s}{corr_label:s}"
             pannot.set_name(id_str, fig)
             _format_axes(ax, labels=ax_labels, limits=limits)

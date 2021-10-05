@@ -252,7 +252,7 @@ def get_action_err_col(plane: str) -> str:
 
 
 # Plotting
-def get_paired_lables(tune_plane: str, action_plane: str, tune_scale: int = None) -> Tuple[str, str]:
+def get_paired_labels(tune_plane: str, action_plane: str, tune_scale: int = None) -> Tuple[str, str]:
     """ Labels for the action/tune plots. """
     tune_unit = ""
     if tune_scale:
