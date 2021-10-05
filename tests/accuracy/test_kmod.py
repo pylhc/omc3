@@ -5,8 +5,7 @@ import numpy as np
 import pytest
 import tfs
 
-from omc3.definitions.constants import EXT, PLANES
-from omc3.kmod.constants import BETA, ERR, STAR
+from omc3.definitions.constants import BETA, ERR, EXT, PLANES, STAR
 from omc3.run_kmod import INSTRUMENTS_FILE_NAME, RESULTS_FILE_NAME, analyse_kmod
 
 LIMITS = {"Accuracy": 1e-5, "Meas Accuracy": 0.05, "Num Precision": 1e-15, "Meas Precision": 0.1}
