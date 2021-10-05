@@ -12,7 +12,7 @@ import numpy as np
 # Numbers -------------------------------------------------------------------
 PI: float = np.pi
 PI2: float = 2 * np.pi
-PI2I: float = 2j * np.pi
+PI2I: complex = 2j * np.pi
 
 # File Names -------------------------------------------------------------------
 # Extensions
@@ -22,20 +22,25 @@ FILE_FREQS_EXT = ".freqs{plane}"  # for harpy
 FILE_LIN_EXT = ".lin{plane}"  # for harpy
 
 # Names
-AMP_BETA_NAME: str = "beta_amplitude_"
-BETA_NAME: str = "beta_phase_"
-CHROM_BETA_NAME: str = "chrom_beta_"
-DISPERSION_NAME: str = "dispersion_"
-IP_NAME: str = "interaction_point_"
-KICK_NAME: str = "kick_"
-NORM_DISP_NAME: str = "normalised_dispersion_"
-ORBIT_NAME: str = "orbit_"
-PHASE_NAME: str = "phase_"
-SPECIAL_PHASE_NAME: str = "special_phase_"
-TOTAL_PHASE_NAME: str = "total_phase_"
+AMP_BETA_NAME: str = "beta_amplitude_"  # for optics_measurements
+BETA_NAME: str = "beta_phase_"  # for optics_measurements
+CHROM_BETA_NAME: str = "chrom_beta_"  # for optics_measurements
+DISPERSION_NAME: str = "dispersion_"  # for optics_measurements
+FIT_PLOTS_NAME: str = "fit_plots.pdf"  # for kmod
+INSTRUMENTS_FILE_NAME: str = "beta_instrument"  # for kmod
+IP_NAME: str = "interaction_point_"  # for optics_measurements
+KICK_NAME: str = "kick_"  # for optics_measurements
+LSA_FILE_NAME: str = "lsa_results"  # for kmod
+NORM_DISP_NAME: str = "normalised_dispersion_"  # for optics_measurements
+ORBIT_NAME: str = "orbit_"  # for optics_measurements
+PHASE_NAME: str = "phase_"  # for optics_measurements
+RESULTS_FILE_NAME: str = "results"  # for kmod
+SPECIAL_PHASE_NAME: str = "special_phase_"  # for optics_measurements
+TOTAL_PHASE_NAME: str = "total_phase_"  # for optics_measurements
 
 # Column Names -----------------------------------------------------------------
 # Prefixes and Suffixes
+CLEANED: str = "CLEANED_"  # for kmod
 ERR: str = "ERR"  # Error of the measurement
 ERROR: str = "ERROR"  # for omc3.correction
 DELTA: str = "DELTA"  # Delta between measurement and model (sometimes beating)
@@ -46,13 +51,16 @@ MODEL: str = "MODEL"  # for omc3.correction
 REAL: str = "REAL"  # Real part of complex
 RES: str = "RES"  # Rescaled measurement
 RMS: str = "RMS"  # Root-Mean-Square
+STAR: str = "STAR"  # for kmod
 VALUE: str = "VALUE"  # for omc3.correction
+WAIST: str = "WAIST"  # for kmod
 WEIGHT: str = "WEIGHT"  # for omc3.correction
 
 # Names
 ACTION: str = "2J"
 ALPHA: str = "ALF"
 AMPLITUDE: str = "AMP"
+AVERAGE: str = "AVERAGE"  # for kmod
 BETA: str = "BET"
 BETABEAT: str = "BB"
 DISP: str = "D"
@@ -61,12 +69,14 @@ DPPAMP: str = f"DPP{AMPLITUDE}"
 F1001: str = "F1001"
 F1010: str = "F1010"
 INCR: str = "incr"
+K: str = "K"  # for kmod
 NAME: str = "NAME"
 NAME2: str = f"{NAME}2"
 NORM_DISP: str = f"N{DISP}"
 PEAK2PEAK: str = "PK2PK"
 PHASE: str = "PHASE"
 PHASE_ADV: str = "MU"
+PHASEADV = "PHASEADV"  # for kmod
 S: str = "S"
 SECONDARY_AMPLITUDE_X: str = f"{AMPLITUDE}01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = f"{AMPLITUDE}10_Y"  # amplitude of secondary line in vertical spectrum
@@ -91,6 +101,7 @@ RESCALE_FACTOR: str = "RescalingFactor"
 PLANES: Tuple[str] = ("X", "Y")
 PLANE_TO_NUM: Dict[str, int] = dict(X=1, Y=2)
 PLANE_TO_HV: Dict[str, str] = dict(X="H", Y="V")
+SIDES: Tuple[str, str] = ("L", "R")
 UNIT_IN_METERS: Dict[str, float] = dict(km=1e3, m=1e0, mm=1e-3, um=1e-6, nm=1e-9, pm=1e-12, fm=1e-15, am=1e-18)
 
 # Model creator specifics ------------------------------------------------------
@@ -115,9 +126,12 @@ LHC_MACROS: str = "lhc.macros.madx"
 B2_SETTINGS_MADX: str = "b2_settings.madx"
 B2_ERRORS_TFS: str = "b2_errors.tfs"
 
+# Important files locations ----------------------------------------------------
 # Afs acc-models lhc repo
 ACCELERATOR_MODEL_REPOSITORY: Path = Path("/afs/cern.ch/eng/acc-models/lhc")
 
+# K-Mod sequences
+KMOD_SEQUENCES_PATH: Path = Path(__file__).parent.parent / "kmod" / "sequences"
 
 # Tune analysis specifics ------------------------------------------------------
 ODR_PREF: str = "ODR_"
