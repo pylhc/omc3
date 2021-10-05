@@ -11,16 +11,12 @@ import pandas as pd
 import tfs
 from generic_parser.dict_parser import DotDict
 
-from omc3.definitions.constants import KICK_NAME, PLANES
+from omc3.definitions.constants import (KICK_NAME, PLANES, get_action_col, get_action_err_col, get_bbq_col,
+                                        get_corr_natq_err_col, get_mav_col, get_mav_err_col, get_natq_col,
+                                        get_natq_corr_col, get_natq_err_col, get_odr_header_coeff,
+                                        get_odr_header_coeff_corrected, get_odr_header_err_coeff,
+                                        get_odr_header_err_coeff_corrected, get_time_col, get_used_in_mav_col)
 from omc3.tune_analysis import bbq_tools
-from omc3.tune_analysis.constants import (get_odr_header_coeff_corrected,
-                                          get_odr_header_err_coeff_corrected,
-                                          get_odr_header_err_coeff, get_odr_header_coeff,
-                                          get_natq_corr_col, get_corr_natq_err_col,
-                                          get_natq_err_col, get_natq_col, get_bbq_col,
-                                          get_mav_col, get_mav_err_col, get_used_in_mav_col,
-                                          get_time_col, get_action_col, get_action_err_col
-                                          )
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
 
