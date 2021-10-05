@@ -12,9 +12,9 @@ import pandas as pd
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
+from omc3.definitions.constants import (BETA, ERR, EXT, FIT_PLOTS_NAME, INSTRUMENTS_FILE_NAME,
+                                        KMOD_SEQUENCES_PATH, LSA_FILE_NAME, RESULTS_FILE_NAME, STAR)
 from omc3.kmod import analysis, helper
-from omc3.kmod.constants import (BETA, ERR, EXT, FIT_PLOTS_NAME, INSTRUMENTS_FILE_NAME,
-                                 LSA_FILE_NAME, RESULTS_FILE_NAME, SEQUENCES_PATH, STAR)
 from omc3.utils import iotools, logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -306,7 +306,7 @@ def check_default_error(options, error):
 
 
 def find_magnet(beam, circuit):
-    sequence = tfs.read(SEQUENCES_PATH / f"twiss_lhcb{beam:d}.dat")
+    sequence = tfs.read(KMOD_SEQUENCES_PATH / f"twiss_lhcb{beam:d}.dat")
     circuit = circuit.split('.')
     magnetname = sequence[sequence['NAME'].str.contains(r'MQ\w+\.{:s}{:s}{:s}\.\w+'.format(circuit[0][-1], circuit[1][0], circuit[1][1]))]['NAME'].values[0]
     return magnetname
@@ -315,7 +315,7 @@ def find_magnet(beam, circuit):
 def define_params(options, magnet1_df, magnet2_df):
     LOG.debug(' adding additional parameters to header ')
     beta_star_required = False
-    sequence = tfs.read(SEQUENCES_PATH / f"twiss_lhcb{options.beam:d}.dat", index='NAME')
+    sequence = tfs.read(KMOD_SEQUENCES_PATH / f"twiss_lhcb{options.beam:d}.dat", index='NAME')
 
     for magnet_df in [magnet1_df, magnet2_df]:
         magnet_df.headers['LENGTH'] = sequence.loc[magnet_df.headers['QUADRUPOLE'], 'L']
