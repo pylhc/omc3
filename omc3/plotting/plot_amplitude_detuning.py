@@ -60,9 +60,10 @@ from matplotlib import pyplot as plt
 from tfs.tools import significant_digits
 
 from omc3.definitions import formats
-from omc3.definitions.constants import UNIT_IN_METERS, PLANES
+from omc3.definitions.constants import (UNIT_IN_METERS, PLANES, get_detuning_exponent_for_order,
+                                        get_paired_lables)
 from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
-from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
+from omc3.tune_analysis import kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -187,7 +188,7 @@ def main(opt):
                                color=pcolors.get_mpl_color(idx),
                                action_unit=opt.action_plot_unit, tune_scale=10**opt.tune_scale)
 
-            ax_labels = const.get_paired_lables(tune_plane, kick_plane, opt.tune_scale)
+            ax_labels = get_paired_lables(tune_plane, kick_plane, opt.tune_scale)
             id_str = f"dQ{tune_plane.upper():s}d2J{kick_plane.upper():s}{corr_label:s}"
             pannot.set_name(id_str, fig)
             _format_axes(ax, labels=ax_labels, limits=limits)
@@ -222,7 +223,7 @@ def _get_odr_label(odr_fit, action_unit, tune_scale):
     str_list = [None] * order
     for o in range(order):
         str_list[o] = _get_scaled_odr_label(odr_fit, o+1, action_unit, tune_scale,
-                                            magnitude_exponent=const.get_detuning_exponent_for_order(o+1))
+                                            magnitude_exponent=get_detuning_exponent_for_order(o+1))
     return ", ".join(str_list)
 
 
