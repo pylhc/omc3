@@ -42,7 +42,7 @@ from uncertainties import UFloat
 from uncertainties import unumpy as up
 
 from omc3.definitions.constants import BETA, ERR, EXT, PLANES
-from omc3.kmod.constants import LSA_FILE_NAME as LSA_RESULTS
+from omc3.definitions.constants import LSA_FILE_NAME as LSA_RESULTS
 from omc3.utils.iotools import save_config
 from omc3.utils.logging_tools import get_logger
 
