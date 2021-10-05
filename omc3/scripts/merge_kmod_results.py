@@ -38,10 +38,10 @@ from typing import Dict, List, Tuple
 import numpy as np
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-from uncertainties import UFloat, unumpy as up
+from uncertainties import UFloat
+from uncertainties import unumpy as up
 
-from omc3.definitions.constants import PLANES
-from omc3.kmod.constants import ERR, BETA, EXT
+from omc3.definitions.constants import BETA, ERR, EXT, PLANES
 from omc3.kmod.constants import LSA_FILE_NAME as LSA_RESULTS
 from omc3.utils.iotools import save_config
 from omc3.utils.logging_tools import get_logger
