@@ -17,14 +17,14 @@ import re
 import numpy as np
 import tfs
 
-from omc3.definitions import constants as const
+from omc3.definitions.constants import get_tend_head, get_time_col, get_tstart_head
 from omc3.utils import logging_tools
-from omc3.utils.time_tools import CERNDatetime
 from omc3.utils.mock import cern_network_import
+from omc3.utils.time_tools import CERNDatetime
 
-TIME_COL = const.get_time_col()
-START_TIME = const.get_tstart_head()
-END_TIME = const.get_tend_head()
+TIME_COL: str = get_time_col()
+START_TIME: str = get_tstart_head()
+END_TIME: str = get_tend_head()
 
 LOG = logging_tools.get_logger(__name__)
 pytimber = cern_network_import("pytimber")
