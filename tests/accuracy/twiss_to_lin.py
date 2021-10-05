@@ -66,7 +66,7 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0, beam_directio
         lin['CO'] = dpp * model.loc[:, f"D{plane}{motion}"] + np.random.randn(nbpms) * (NOISE / np.sqrt(NTURNS))
         lin['CORMS'] = np.abs(np.random.randn(nbpms) * 3e-6 + 3e-6)  # TODO
         lin['PK2PK'] = 2 * (np.sqrt(model.loc[:, f"BET{plane}{motion}"] * ACTION) + 3 * NOISE)
-        lin[f"TUNE{plane}"] = tune[plane] + ERRTUNE * np.random.randn(nbpms)
+        lin[f"COL_TUNE{plane}"] = tune[plane] + ERRTUNE * np.random.randn(nbpms)
         lin[f"NATTUNE{plane}"] = nattune[plane] + (ERRTUNE / np.sqrt(NAT_OVER_DRV)) * np.random.randn(nbpms)
         lin[f"MU{plane}"] = np.remainder(model.loc[:, f"MU{plane}{motion}"]
                                          + dpp * model.loc[:, f"DMU{plane}{motion}"]

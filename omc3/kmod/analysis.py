@@ -15,7 +15,7 @@ from tfs import tools as tfstools
 from omc3.definitions import formats
 from omc3.definitions.constants import EXT, PHASE_NAME, PLANES, TWISS_DAT
 from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE, SEQUENCES_PATH
+from omc3.kmod.constants import CLEANED, K, COL_TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE, SEQUENCES_PATH
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -193,8 +193,8 @@ np.vectorize(average_beta_defocussing_quadrupole)
 
 def calc_tune(magnet_df):
     for plane in PLANES:
-        magnet_df.headers[f"{TUNE}{plane}"] = np.average(magnet_df.where(
-            magnet_df[f"{CLEANED}{plane}"])[f"{TUNE}{plane}"].dropna())
+        magnet_df.headers[f"{COL_TUNE}{plane}"] = np.average(magnet_df.where(
+            magnet_df[f"{CLEANED}{plane}"])[f"{COL_TUNE}{plane}"].dropna())
     return magnet_df
 
 
@@ -211,7 +211,7 @@ def return_fit_input(magnet_df, plane):
     x[0, :] = sign*(
             magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[K].dropna() -
             magnet_df.headers[K]) * magnet_df.headers['LENGTH']
-    x[1, :] = magnet_df.headers[f"{TUNE}{plane}"]
+    x[1, :] = magnet_df.headers[f"{COL_TUNE}{plane}"]
 
     return x
 
@@ -222,7 +222,7 @@ def do_fit(magnet_df, plane, use_approx=False):
     elif use_approx:
         fun = fit_approx
     
-    sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{TUNE}{plane}"].dropna()
+    sigma = magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[f"{ERR}{COL_TUNE}{plane}"].dropna()
     if not np.any(sigma):
         sigma = 1.E-22 * np.ones(len(sigma))
 
@@ -230,7 +230,7 @@ def do_fit(magnet_df, plane, use_approx=False):
         fun,
         xdata=return_fit_input(magnet_df, plane),
         ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
-            f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
+            f"{COL_TUNE}{plane}"].dropna() - magnet_df.headers[f"{COL_TUNE}{plane}"],
         sigma=sigma,
         absolute_sigma=True,
         p0=1

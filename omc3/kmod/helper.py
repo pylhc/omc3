@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.kmod import analysis
-from omc3.kmod.constants import SIDES, ERR, TUNE, EXT, CLEANED, K, AVERAGE, BETA
+from omc3.kmod.constants import SIDES, ERR, COL_TUNE, EXT, CLEANED, K, AVERAGE, BETA
 from omc3.utils import logging_tools, outliers
 
 LOG = logging_tools.get_logger(__name__)
@@ -29,14 +29,14 @@ def clean_data(magnet_df, no_autoclean):
         LOG.debug('Automatic Tune cleaning')
         for plane in PLANES:
             magnet_df[f"{CLEANED}{plane}"] = outliers.get_filter_mask(
-                magnet_df[f"{TUNE}{plane}"].values, x_data=magnet_df[K].values, limit=1e-5)
+                magnet_df[f"{COL_TUNE}{plane}"].values, x_data=magnet_df[K].values, limit=1e-5)
     return magnet_df
 
 
 def add_tune_uncertainty(magnet_df, tune_uncertainty):
     LOG.debug(f'adding {tune_uncertainty} units tune measurement uncertainty')
     for plane in PLANES:
-        magnet_df[f"{ERR}{TUNE}{plane}"] = np.sqrt(magnet_df[f"{ERR}{TUNE}{plane}"]**2 + tune_uncertainty**2)
+        magnet_df[f"{ERR}{COL_TUNE}{plane}"] = np.sqrt(magnet_df[f"{ERR}{COL_TUNE}{plane}"] ** 2 + tune_uncertainty ** 2)
     return magnet_df
 
 
@@ -101,14 +101,14 @@ def bin_tunes_and_k(tune_dfs, k_df, magnet):
     magnet_df = k_df.loc[:, ['K']]
     magnet_df['K'] = np.abs(magnet_df['K'].values)
     for plane in PLANES:
-        magnet_df[f"{TUNE}{plane}"], magnet_df[f"{ERR}{TUNE}{plane}"] = return_mean_of_binned_data(bins, tune_dfs[plane])
+	    magnet_df[f"{COL_TUNE}{plane}"], magnet_df[f"{ERR}{COL_TUNE}{plane}"] = return_mean_of_binned_data(bins, tune_dfs[plane])
     return tfs.TfsDataFrame(magnet_df, headers=headers_for_df(magnet, k_df))
 
 
 def return_mean_of_binned_data(bins, tune_df):
     digitize = np.digitize(tune_df['TIME'], bins)
-    mean = [tune_df['TUNE'][digitize == i].mean() for i in range(1, len(bins))]
-    std = np.nan_to_num([tune_df['TUNE'][digitize == i].std() for i in range(1, len(bins))])
+    mean = [tune_df['COL_TUNE'][digitize == i].mean() for i in range(1, len(bins))]
+    std = np.nan_to_num([tune_df['COL_TUNE'][digitize == i].std() for i in range(1, len(bins))])
     return mean, std
 
 
@@ -148,7 +148,7 @@ def ax_plot(ax, magnet_df, plane):
     ax.plot((magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[K].dropna() - magnet_df.headers[K]) * 1E3,
             analysis.fit_prec(
                 analysis.return_fit_input(magnet_df, plane),
-                magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) + magnet_df.headers[f"{TUNE}{plane}"],
+                magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) + magnet_df.headers[f"{COL_TUNE}{plane}"],
             color='red', label='Fit', zorder=3)
     ax.set_xlabel(r'$ \Delta K $', fontsize=15)
     ax.set_ylabel(r'$ Q_{{{:s}}} $'.format(plane), fontsize=15)
@@ -158,8 +158,8 @@ def ax_plot(ax, magnet_df, plane):
 def ax_errorbar_plot(ax, magnet_df, plane, clean, plot_settings):
     new_df = magnet_df.loc[magnet_df.loc[:, f"{CLEANED}{plane}"].values == clean, :]
     ax.errorbar((new_df.loc[:, K].dropna() - magnet_df.headers[K]) * 1E3,
-                new_df.loc[:, f"{TUNE}{plane}"].dropna(),
-                yerr=new_df.loc[:, f"{ERR}{TUNE}{plane}"].dropna(),
+                new_df.loc[:, f"{COL_TUNE}{plane}"].dropna(),
+                yerr=new_df.loc[:, f"{ERR}{COL_TUNE}{plane}"].dropna(),
                 color=plot_settings["color"],
                 fmt=plot_settings["marker"],
                 label=plot_settings["label"],
