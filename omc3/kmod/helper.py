@@ -100,14 +100,14 @@ def bin_tunes_and_k(tune_dfs, k_df, magnet):
     magnet_df = k_df.loc[:, ['K']]
     magnet_df['K'] = np.abs(magnet_df['K'].values)
     for plane in PLANES:
-	    magnet_df[f"{COL_TUNE}{plane}"], magnet_df[f"{ERR}{COL_TUNE}{plane}"] = return_mean_of_binned_data(bins, tune_dfs[plane])
+        magnet_df[f"{COL_TUNE}{plane}"], magnet_df[f"{ERR}{COL_TUNE}{plane}"] = return_mean_of_binned_data(bins, tune_dfs[plane])
     return tfs.TfsDataFrame(magnet_df, headers=headers_for_df(magnet, k_df))
 
 
 def return_mean_of_binned_data(bins, tune_df):
     digitize = np.digitize(tune_df['TIME'], bins)
-    mean = [tune_df['COL_TUNE'][digitize == i].mean() for i in range(1, len(bins))]
-    std = np.nan_to_num([tune_df['COL_TUNE'][digitize == i].std() for i in range(1, len(bins))])
+    mean = [tune_df[COL_TUNE][digitize == i].mean() for i in range(1, len(bins))]
+    std = np.nan_to_num([tune_df[COL_TUNE][digitize == i].std() for i in range(1, len(bins))])
     return mean, std
 
 
