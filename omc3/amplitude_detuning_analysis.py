@@ -68,20 +68,15 @@ import os
 from collections import OrderedDict
 from pathlib import Path
 
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, save_options_to_config
 
 from omc3.definitions import formats
-from omc3.definitions.constants import PLANES
-from omc3.tune_analysis import timber_extract, fitting_tools, kick_file_modifiers
-from omc3.tune_analysis.constants import (get_kick_out_name, get_bbq_out_name,
-                                          get_mav_col, get_timber_bbq_key,
-                                          get_bbq_col)
-from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
-                                                    write_timed_dataframe,
-                                                    read_two_kick_files_from_folder
-                                                    )
-from omc3.utils.logging_tools import get_logger, list2str, DebugMode
-
+from omc3.definitions.constants import (PLANES, get_bbq_col, get_bbq_out_name, get_kick_out_name, get_mav_col,
+                                        get_timber_bbq_key)
+from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
+from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe, read_two_kick_files_from_folder,
+                                                    write_timed_dataframe)
+from omc3.utils.logging_tools import DebugMode, get_logger, list2str
 
 # Globals ----------------------------------------------------------------------
 
