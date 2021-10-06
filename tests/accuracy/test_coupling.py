@@ -37,7 +37,7 @@ def test_coupling_beam_1_against_optics_functions(tmp_path):
 
     assert _rms_arc(f1001[IMAG] - coupling_cmatrix[f"{F1001}I"]) < RDT_LIMIT, "f1001_imag didn't match optics_functions output"
     assert _rms_arc(f1001[REAL] - coupling_cmatrix[f"{F1001}R"]) < RDT_LIMIT, "f1001_real didn't match optics_functions output"
-    assert _rms_arc(f1010[IMAG] - coupling_cmatrix[f"{F1001}I"]) < RDT_LIMIT, "f1010_imag didn't match optics_functions output"
+    assert _rms_arc(f1010[IMAG] - coupling_cmatrix[f"{F1010}I"]) < RDT_LIMIT, "f1010_imag didn't match optics_functions output"
     assert _rms_arc(f1010[REAL] - coupling_cmatrix[f"{F1010}R"]) < RDT_LIMIT, "f1010_real didn't match optics_functions output"
 
 
