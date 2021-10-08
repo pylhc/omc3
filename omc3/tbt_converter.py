@@ -143,12 +143,10 @@ def _drop_elements(tbt_data: tbt.TbtData, elements_to_drop: Sequence[str]) -> tb
     for element in elements_to_drop:
         LOGGER.debug(f"Dropping element '{element}'")
         try:
-            for entry in copied_data.matrices:
-                for (
-                    dataframe
-                ) in entry.values():  # X / Y dfs, BPMs as rows & turn coordinates as columns
-                    dataframe.drop(element, inplace=True)
-        except KeyError:
+            for transverse_data in copied_data.matrices:
+                transverse_data.X = transverse_data.X.drop(element)
+                transverse_data.Y = transverse_data.Y.drop(element)
+        except (KeyError, AttributeError):
             LOGGER.warning(f"Element '{element}' could not be found, skipped")
     return copied_data
 
