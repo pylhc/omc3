@@ -206,20 +206,15 @@ def _get_model_dataframe():
 
 def _write_tbt_file(model, dir_path):
     ints = np.arange(NTURNS) - NTURNS / 2
-    data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(
-        2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] +
-                     model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
-    data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(
-        2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] +
-                     model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
-    data_z = AMPZ * BASEAMP * np.ones((NBPMS, 1)) * np.cos(
-        2 * np.pi * (MUZ * np.ones((NBPMS, 1)) +
-                     TUNEZ * np.ones((NBPMS, 1)) * ints[None, :]))
-    mats = dict(X=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_x
-                               + COUPLING * data_y + data_z, index=model.index),
-                Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
-                               + COUPLING * data_x, index=model.index))
-    tbt.write(os.path.join(dir_path, "test_file"), tbt.TbtData([mats], None, [0], NTURNS))
+    data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] + model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
+    data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] + model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
+    data_z = AMPZ * BASEAMP * np.ones((NBPMS, 1)) * np.cos(2 * np.pi * (MUZ * np.ones((NBPMS, 1)) + TUNEZ * np.ones((NBPMS, 1)) * ints[None, :]))
+    matrices = [tbt.TransverseData(
+        X=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_x + COUPLING * data_y + data_z, index=model.index),
+        Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y + COUPLING * data_x, index=model.index))
+    ]
+    tbt_data = tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=NTURNS)  # let date default
+    tbt.write(os.path.join(dir_path, "test_file"), tbt_data)
 
 
 def _other(plane):
