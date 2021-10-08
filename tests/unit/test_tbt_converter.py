@@ -7,11 +7,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from turn_by_turn.constants import PRINT_PRECISION
+
 from omc3.definitions.constants import PLANES
 from omc3.tbt_converter import converter_entrypoint
 
 INPUTS_DIR = Path(__file__).parent.parent / "inputs"
-ASCII_PRECISION = 0.5 / np.power(10, handler.PRINT_PRECISION)
+ASCII_PRECISION = 0.5 / np.power(10, PRINT_PRECISION)
 
 
 @pytest.mark.basic
