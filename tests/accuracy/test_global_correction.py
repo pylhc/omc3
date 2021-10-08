@@ -10,7 +10,7 @@ from omc3.correction.handler import get_measurement_data, _rms
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import global_correction_entrypoint as global_correction, OPTICS_PARAMS_CHOICES
-from omc3.optics_measurements.constants import NAME
+from omc3.optics_measurements.constants import NAME, AMPLITUDE, IMAG, REAL
 from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
@@ -159,6 +159,9 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics
     # map to VALUE, ERROR and WEIGHT, similar to filter_measurement
     # but without the filtering
     for col, meas in meas_dict.items():
+        if col[:-1] in (F1010, F1001):
+            col = {c[0]: c for c in (REAL, IMAG, PHASE, AMPLITUDE)}[col[-1]]
+
         if col != TUNE:
             meas[VALUE] = meas.loc[:, col].to_numpy()
             meas[ERROR] = meas.loc[:, f"{ERR}{col}"].to_numpy()
