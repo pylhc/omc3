@@ -29,6 +29,9 @@ from omc3.optics_measurements.constants import (
     BETA_NAME,
     AMP_BETA_NAME,
     DISPERSION_NAME,
+    REAL,
+    IMAG,
+    AMPLITUDE,
 )
 from omc3.scripts.fake_measurement_from_model import (
     _get_data,
@@ -120,7 +123,9 @@ def test_run_and_output(tmp_path, both_beams_path):
             if param in df.columns:
                 assert df[col].equals(df[param])  # ... so all values == model values
 
-            if name[:-1] not in (PHASE_NAME, TOTAL_PHASE_NAME):
+            if name.upper() in (F1001, F1010) and param in (REAL, IMAG, AMPLITUDE, PHASE):
+                assert df[col].equals(model[f"{name.upper()}{col[0]}"])  # ... so all values == model values
+            elif name[:-1] not in (PHASE_NAME, TOTAL_PHASE_NAME):
                 assert df[col].equals(model[param])  # ... so all values == model values
 
 
@@ -333,8 +338,8 @@ def _test_norm_disp(df, plane, relative_error):
 
 
 def _test_coupling(df, plane, relative_error):
-    param = "F1010" if plane == "0" else "F1001"
-    for plane in ("R", "I"):
+    param = ""  # independent of rdt
+    for plane in ("REAL", "IMAG"):
         assert _all_columns_present(df, param, plane)
 
         assert all(df[f"{ERR}{param}{plane}"] <= 5 * relative_error * np.abs(df[f"{param}{plane}{MDL}"]))  # rough estimate

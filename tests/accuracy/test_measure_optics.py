@@ -23,8 +23,6 @@ LIMITS = {
     'BET': 3e-3,
     'D': 1.1e-2,
     'ND': 5e-3,
-    'F1001': 5e-3,
-    'F1010': 5e-3,
     '': 5e-3  # orbit
 }
 BASE_PATH = Path(__file__).parent.parent / "results"
@@ -83,11 +81,13 @@ def test_measure_optics(
 
 
 def evaluate_accuracy(meas_path, limits):
-    for f in meas_path.glob("*.tfs"):
+    for f in meas_path.glob("*.tfs"):  # maybe a simple list of files to test wouldn't be too bad?
+        if "f10" in f.name or "phase_driven" in f.name:
+            continue
         df = tfs.read(f)
         cols = df.columns[df.columns.str.startswith('DELTA')]
         for col in cols:
-            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD') or "phase_driven" in f.name:
+            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD'):
                 continue
 
             rms = stats.weighted_rms(
