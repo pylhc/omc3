@@ -14,7 +14,7 @@ from typing import Callable, Dict, List, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import tfs
-from numpy import cos, exp, sin, sqrt, tan
+from numpy import cos, exp, ndarray, sin, sqrt, tan
 from optics_functions.coupling import coupling_via_cmatrix
 
 from omc3.definitions.constants import PI2, PI2I
@@ -24,6 +24,8 @@ from omc3.optics_measurements.constants import (
     AMPLITUDE,
     F1001,
     F1010,
+    IMAG,
+    REAL,
     NAME,
     PHASE,
     PHASE_ADV,
@@ -32,6 +34,10 @@ from omc3.optics_measurements.constants import (
     SECONDARY_FREQUENCY_X,
     SECONDARY_FREQUENCY_Y,
     S,
+    ERR,
+    EXT,
+    MDL,
+    DELTA
 )
 from omc3.utils import logging_tools, stats
 
@@ -84,7 +90,7 @@ def calculate_coupling(
     # the .intersect chain dictates the order, we have to start with the model index.
     LOGGER.debug("Intersecting measurements, starting with model")
     joined: tfs.TfsDataFrame = _joined_frames(input_files)  # merge transverse input frames
-    joined_index = (
+    joined_index: pd.Index = (
         meas_input.accelerator.model.index.intersection(joined.index)
         .intersection(phase_dict["X"][compensation]["MEAS"].index)
         .intersection(phase_dict["Y"][compensation]["MEAS"].index)
@@ -133,8 +139,8 @@ def calculate_coupling(
     eq_1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
     LOGGER.debug("Computing average of coupling RDTs")
-    f1001 = -0.5 * sqrt(np.abs(A01 * B10)) * eq_1001 / abs(eq_1001)
-    f1010 = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq_1010 / abs(eq_1010)
+    f1001: np.ndarray = -0.5 * sqrt(np.abs(A01 * B10)) * eq_1001 / abs(eq_1001)
+    f1010: np.ndarray = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq_1010 / abs(eq_1010)
 
     LOGGER.debug("Getting tune separation from measurements")
     tune_separation = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
@@ -155,61 +161,15 @@ def calculate_coupling(
         LOGGER.debug("Compensating coupling RDT values by model")
         f1001, f1010 = compensate_rdts_by_model(f1001, f1010, tune_dict)
 
-    LOGGER.debug("Combining RDTs into a single dataframe")
-    rdt_df = pd.DataFrame(  # TODO: take care of column names (next PR)
-        index=joined_index,
-        columns=[S, f"{F1001}R", f"{F1010}R", f"{F1001}I", f"{F1010}I", f"{F1001}W", f"{F1010}W", f"{F1001}A", f"{F1010}A"],
-        data=np.array(
-            [
-                meas_input.accelerator.model.loc[joined_index, S],
-                np.real(f1001),
-                np.real(f1010),
-                np.imag(f1001),
-                np.imag(f1010),
-                np.abs(f1001),
-                np.abs(f1010),
-                np.angle(f1001) / PI2,
-                np.angle(f1010) / PI2,
-            ]
-        ).transpose(),
-    )
-    rdt_df = rdt_df.sort_values(by=S)
-
     LOGGER.debug("Adding model values and deltas")
-    model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[rdt_df.index]
-    RDTCOLS = [F1001, F1010]
-    # TODO: take care of column names (next PR)
-    for (domain, func) in [("I", np.imag), ("R", np.real), ("W", np.abs)]:
-        for col in RDTCOLS:
-            mdlcol = func(model_coupling[col])
-            rdt_df[f"{col}{domain}MDL"] = mdlcol
-            rdt_df[f"ERR{col}{domain}"] = 0.0
-            rdt_df[f"DELTA{col}{domain}"] = rdt_df[f"{col}{domain}"] - mdlcol
-            rdt_df[f"ERRDELTA{col}{domain}"] = 0.0
+    model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[joined_index]
+    LOGGER.error(model_coupling)
 
-    _write_coupling_files(rdt_df, meas_input.outputdir, header_dict)
+    f1001_df = _rdt_to_output_df(f1001, model_coupling[F1001], meas_input.accelerator.model, joined_index)
+    f1010_df = _rdt_to_output_df(f1010, model_coupling[F1010], meas_input.accelerator.model, joined_index)
 
-
-def _write_coupling_files(rdt_df: tfs.TfsDataFrame, outdir: Union[str, Path], header_dict: dict) -> None:
-    """
-    Write out to file both coupling RDTs data (sum and difference resonance terms)
-
-    Args:
-        rdt_df (tfs.TfsDataFrame): complete dataframe with both sum and difference resonance RDT values,
-            and comparison to model. Relevant columns are selected for output.
-        outdir (Union[str, Path]): location of the output directory as queried from the commandline.
-        header_dict (dict): headers dictionary to attach to the output dataframes.
-    """
-    common_cols = [S]
-    cols_to_print_f1001 = common_cols + [col for col in rdt_df.columns if "1001" in col]
-    cols_to_print_f1010 = common_cols + [col for col in rdt_df.columns if "1010" in col]
-
-    tfs.write(
-        Path(outdir) / f"{F1001.lower()}.tfs", rdt_df[cols_to_print_f1001], header_dict, save_index=NAME
-    )
-    tfs.write(
-        Path(outdir) / f"{F1010.lower()}.tfs", rdt_df[cols_to_print_f1010], header_dict, save_index=NAME
-    )
+    tfs.write(Path(meas_input.outputdir) / f"{F1001.lower()}{EXT}", f1001_df, header_dict)
+    tfs.write(Path(meas_input.outputdir) / f"{F1010.lower()}{EXT}", f1010_df, header_dict)
 
 
 def compensate_rdts_by_model(
@@ -311,6 +271,60 @@ def _get_complex_line(
     return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
         pairs
     ]
+
+
+def _rdt_to_output_df(
+    fterm: Union[pd.Series, np.ndarray],
+    fterm_mdl: Union[pd.Series, np.ndarray],
+    model_df: tfs.TfsDataFrame,
+    index: pd.Index,
+) -> pd.DataFrame:
+    """
+    Creates the output coupling RDT dataframe from the given RDT and its model-calculated counterpart.
+    Combines all the needed columns (``S``, ``NAME``, ``AMP``, ``PHASE``, ``REAL``, ``IMAG``, and the
+    ``ERR*`` and ``*MDL`` columns).
+
+    Args:
+        fterm (Union[pd.Series, np.ndarray]): the calculated coupling RDT.
+        fterm_mdl (Union[pd.Series, np.ndarray]): corresponding RDT values calculated from the model (e.g.
+            calculated via cmatrix from the model_df).
+        model_df (tfs.TfsDataFrame): the model dataframe attached to the accelerator object, used to get the
+            ``S`` position.
+        index (pd.Index): the joined intersected index used to align everything.
+
+    Returns:
+        pd.DataFrame: dataframe ready to be written to the out file `.tfs`
+    """
+    df = pd.DataFrame()
+    df[S] = model_df.loc[index, S]
+    df[NAME] = index
+
+    LOGGER.debug("Computing RDT amplitude values")
+    df[AMPLITUDE] = np.abs(fterm)
+    df[AMPLITUDE + MDL] = np.abs(fterm_mdl)
+
+    LOGGER.debug("Computing phase values")
+    df[PHASE] = np.angle(fterm)
+    df[PHASE + MDL] = np.angle(fterm_mdl)
+
+    LOGGER.debug("Computing deviation from model")
+    df[DELTA + AMPLITUDE] = df[AMPLITUDE] - df[AMPLITUDE + MDL]
+    df[DELTA + PHASE] = df[PHASE] - df[PHASE + MDL]
+
+    LOGGER.debug("Computing error values")
+    df[ERR + AMPLITUDE] = 0  # TODO: will need to implement this calculation later
+    df[ERR + PHASE] = 0
+
+    LOGGER.debug("Adding real and imaginary parts columns")
+    df[REAL] = np.real(fterm)
+    df[REAL + MDL] = np.real(fterm_mdl)
+    df[ERR + REAL] = 0  # TODO: same
+
+    df[IMAG] = np.imag(fterm)
+    df[IMAG + MDL] = np.imag(fterm_mdl)
+    df[ERR + IMAG] = 0  # TODO: same
+
+    return df.sort_values(by=S)
 
 
 def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:

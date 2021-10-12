@@ -25,6 +25,9 @@ from omc3.correction.constants import (
     NAME2, DELTA, ERR, ERROR, PHASE, TUNE, VALUE, WEIGHT, PHASE_ADV
 )
 from omc3.definitions.constants import PLANES
+from omc3.optics_measurements.constants import (
+    REAL, IMAG, AMPLITUDE, F1001, F1010
+)
 from omc3.utils import logging_tools, stats
 
 LOG = logging_tools.get_logger(__name__)
@@ -48,7 +51,12 @@ def filter_measurement(keys: Sequence[str], meas: Dict[str, pd.DataFrame], model
 def _get_measurement_filters() -> defaultdict:
     """ Returns a dict with the respective `_get_*` filter-functions that defaults
     to `_get_filtered_generic`."""
-    return defaultdict(lambda: _get_filtered_generic, {f"{TUNE}": _get_tunes})
+    return defaultdict(lambda: _get_filtered_generic, {f"{TUNE}": _get_tunes,
+                                                       f"{F1010}I": _get_coupling,
+                                                       f"{F1010}R": _get_coupling,
+                                                       f"{F1001}I": _get_coupling,
+                                                       f"{F1001}R": _get_coupling,
+                                                       })
 
 
 def _get_filtered_generic(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> tfs.TfsDataFrame:
@@ -84,6 +92,14 @@ def _get_tunes(key: str, meas: pd.DataFrame, model, opt: DotDict):
         meas[WEIGHT] = _get_errorbased_weights(key, meas[WEIGHT], meas[ERROR])
     LOG.debug(f"Number of tune measurements: {len(meas.index.to_numpy())}")
     return meas
+
+
+def _get_coupling(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> tfs.TfsDataFrame:
+    # rename measurement column to key
+    column_map = {c[0]: c for c in [REAL, IMAG, AMPLITUDE, PHASE]}  # only REAL and IMAG implemented in responses so far
+    meas_col = column_map[col[-1]]
+    meas.columns = meas.columns.str.replace(meas_col, col)
+    return _get_filtered_generic(col, meas, model, opt)
 
 
 def _get_errorbased_weights(key: str, weights, errors):

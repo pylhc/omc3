@@ -80,7 +80,7 @@ from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_
                                                 DISPERSION_NAME, NORM_DISP_NAME,
                                                 EXT, DELTA, ERR,
                                                 PHASE_ADV, BETA, PHASE,
-                                                TUNE, NAME, NAME2, S, MDL)
+                                                TUNE, NAME, NAME2, S, MDL, REAL, IMAG)
 from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check, ang_diff
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
@@ -329,11 +329,15 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
                     relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates coupling measurements for either the difference or sum RDT. """
     LOG.info(f"Creating fake coupling for {parameter}.")
+    # Naming with R and I as long as model is involved
     re = create_measurement(df_twiss, f'{parameter}R', relative_error, randomize)
     im = create_measurement(df_twiss, f'{parameter}I', relative_error, randomize)
     df = pd.concat([re, im], axis=1)
     df = append_model(df, df_model, f'{parameter}R')
     df = append_model(df, df_model, f'{parameter}I', planes='XY')
+
+    # Go to RDT naming scheme
+    df.columns = df.columns.str.replace(f'{parameter}R', REAL).str.replace(f'{parameter}I', IMAG)
     df.headers = headers.copy()
     return {parameter.lower(): df}
 
@@ -342,7 +346,7 @@ CREATOR_MAP = {
     BETA: create_beta,
     DISP: create_dispersion,
     PHASE: create_phase,
-    F1010[:-1]: create_coupling,
+    F1010[:-1]: create_coupling,  # normally the plane is removed but here is no plane
     F1001[:-1]: create_coupling,
 }
 
