@@ -15,7 +15,6 @@ from scipy.optimize import curve_fit
 from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements import phase
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
@@ -185,7 +184,8 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
 
     for i, bpm_rdt_data in enumerate(line_amp):
         popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
-        amps[i], err_amps[i] = popt[0], np.sqrt(pcov)[0]
+        amps[i] = popt[0]
+        err_amps[i] = np.sqrt(pcov)[0] if np.isfinite(np.sqrt(pcov)[0]) else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
     return amps, err_amps
 
 

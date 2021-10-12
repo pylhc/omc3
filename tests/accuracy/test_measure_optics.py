@@ -12,6 +12,7 @@ from omc3.utils import logging_tools
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
 from tests.accuracy.twiss_to_lin import optics_measurement_test_files
+from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__')  # debugging
@@ -22,8 +23,6 @@ LIMITS = {
     'BET': 3e-3,
     'D': 1.1e-2,
     'ND': 5e-3,
-    'F1001': 5e-3,
-    'F1010': 5e-3,
     '': 5e-3  # orbit
 }
 BASE_PATH = Path(__file__).parent.parent / "results"
@@ -82,11 +81,13 @@ def test_measure_optics(
 
 
 def evaluate_accuracy(meas_path, limits):
-    for f in meas_path.glob("*.tfs"):
+    for f in meas_path.glob("*.tfs"):  # maybe a simple list of files to test wouldn't be too bad?
+        if "f10" in f.name or "phase_driven" in f.name:
+            continue
         df = tfs.read(f)
         cols = df.columns[df.columns.str.startswith('DELTA')]
         for col in cols:
-            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD') or "phase_driven" in f.name:
+            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD'):
                 continue
 
             rms = stats.weighted_rms(
@@ -95,6 +96,8 @@ def evaluate_accuracy(meas_path, limits):
             )
             assert rms < limits[col[5:-1]], f"\n{f.name:25}  {col:15}   RMS: {rms:.1e}"
             LOG.info(f"{f.name:25}  {col[5:]:15}   RMS: {rms:.1e}")
+    assert ((meas_path / f"{SPECIAL_PHASE_NAME}x.tfs").is_file() and (meas_path / f"{SPECIAL_PHASE_NAME}y.tfs").is_file())
+
 
 
 @pytest.fixture(scope="module", params=(1,), ids=("Beam1",))

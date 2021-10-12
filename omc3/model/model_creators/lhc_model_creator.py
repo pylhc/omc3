@@ -28,9 +28,13 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
-    PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER)
+    PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER,
+    ACCELERATOR_MODEL_REPOSITORY
+)
 from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.utils import iotools
+
+LHC_REPOSITORY_NAME = "acc-models-lhc"
 
 LOGGER = logging.getLogger(__name__)
 
@@ -103,6 +107,12 @@ class LhcModelCreator(ModelCreator):
 
     @classmethod
     def prepare_run(cls, accel: Lhc) -> None:
+        if accel.year in ["2018", "2022"]:  # these years should be handled by the fetcher
+            symlink_dst = Path(accel.model_dir)/LHC_REPOSITORY_NAME
+            if not symlink_dst.exists():
+                LOGGER.debug(f"Symlink destination: {symlink_dst}")
+                symlink_dst.absolute().symlink_to((ACCELERATOR_MODEL_REPOSITORY/f"{accel.year}"))
+
         cls.check_accelerator_instance(accel)
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR

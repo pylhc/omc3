@@ -1,6 +1,9 @@
 Scripts
 **************************
 
+.. automodule:: omc3.scripts.betabeatsrc_output_converter
+    :members:
+
 .. automodule:: omc3.scripts.merge_kmod_results
     :members:
 

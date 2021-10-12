@@ -18,7 +18,7 @@ Model Creation Keyword Args:
 
         Year of the optics (or hllhc1.3).
 
-        choices: ``('2012', '2015', '2016', '2017', '2018', 'hllhc1.3')``
+        choices: ``('2012', '2015', '2016', '2017', '2018', '2022', 'hllhc1.3')``
 
 
     *--Optional--*
