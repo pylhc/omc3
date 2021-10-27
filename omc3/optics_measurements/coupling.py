@@ -163,7 +163,6 @@ def calculate_coupling(
 
     LOGGER.debug("Adding model values and deltas")
     model_coupling = coupling_via_cmatrix(meas_input.accelerator.model).loc[joined_index]
-    LOGGER.error(model_coupling)
 
     f1001_df = _rdt_to_output_df(f1001, model_coupling[F1001], meas_input.accelerator.model, joined_index)
     f1010_df = _rdt_to_output_df(f1010, model_coupling[F1010], meas_input.accelerator.model, joined_index)
