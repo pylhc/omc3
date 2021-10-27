@@ -66,6 +66,7 @@ the measurements.
 """
 import os
 from collections import OrderedDict
+from datetime import timedelta
 from pathlib import Path
 
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
@@ -323,7 +324,9 @@ def _get_bbq_data(beam, input_, kick_df):
             timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
             t_start = min(kick_df.index.to_numpy())
             t_end = max(kick_df.index.to_numpy())
-            data = timber_extract.extract_between_times(t_start-DTIME, t_end+DTIME,
+            t_delta = timedelta(seconds=DTIME)
+            data = timber_extract.extract_between_times(t_start-t_delta,
+                                                        t_end+t_delta,
                                                         keys=timber_keys,
                                                         names=dict(zip(timber_keys, bbq_cols)))
         else:

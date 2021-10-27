@@ -19,7 +19,7 @@ BBQ = "BBQ"
 
 def get_timber_bbq_key(plane, beam):
     """ Key to extract bbq from timber. """
-    return f'lhc.bofsu:eigen_freq_{PLANE_TO_NUM[plane] :d}_b{beam:d}'
+    return f'lhc.bofsu:eigen_freq_{PLANE_TO_NUM[plane] :d}_b{beam:d}'.upper()
 
 
 def get_kick_out_name():

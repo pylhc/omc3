@@ -13,6 +13,7 @@ https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 ``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).
 """
 import re
+from contextlib import suppress
 
 import numpy as np
 import tfs
@@ -52,13 +53,19 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
     Extracts data for keys between t_start and t_end from timber.
 
     Args:
-        t_start: starting time in local time or timestamp.
-        t_end: end time in local time or timestamp.
+        t_start: starting time in CERNDateTime or timestamp.
+        t_end: end time in local CERNDateTime or timestamp.
         keys: list of data to extract.
         names: dict to map keys to column names.
 
     Returns: tfs pandas dataframe.
     """
+    with suppress(TypeError):
+        t_start: CERNDatetime = CERNDatetime.from_timestamp(t_start)
+
+    with suppress(TypeError):
+        t_end: CERNDatetime = CERNDatetime.from_timestamp(t_end)
+
     db = pytimber.LoggingDB(source="nxcals")
     if keys is None:
         keys = get_tune_and_coupling_variables(db)
@@ -67,10 +74,10 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
 
     out_df = tfs.TfsDataFrame()
     for key in keys:
-        if extract_dict[key.upper()][1][0].size > 1:
+        if extract_dict[key][1][0].size > 1:
             raise NotImplementedError("Multidimensional variables are not implemented yet.")
 
-        data = np.asarray(extract_dict[key.upper()]).transpose()
+        data = np.asarray(extract_dict[key]).transpose()
         col = names.get(key, key)
 
         key_df = tfs.TfsDataFrame(data, columns=[TIME_COL, col]).set_index(TIME_COL)
@@ -78,8 +85,8 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
         out_df = out_df.merge(key_df, how="outer", left_index=True, right_index=True)
 
     out_df.index = [CERNDatetime.from_timestamp(i) for i in out_df.index]
-    out_df.headers[START_TIME] = CERNDatetime.from_timestamp(t_start).cern_utc_string()
-    out_df.headers[END_TIME] = CERNDatetime.from_timestamp(t_end).cern_utc_string()
+    out_df.headers[START_TIME] = t_start.cern_utc_string()
+    out_df.headers[END_TIME] = t_end.cern_utc_string()
     return out_df
 
 
