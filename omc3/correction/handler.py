@@ -24,7 +24,7 @@ from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT,
+from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT, REAL, IMAG,
                                                 NORM_DISP_NAME, PHASE_NAME, NAME)
 from omc3.utils import logging_tools
 
@@ -133,8 +133,8 @@ def get_measurement_data(
         elif key == f"{NORM_DISP}X":
             measurement[key] = read_measurement_file(meas_dir, f"{NORM_DISP_NAME}{key[-1].lower()}{EXT}")
 
-        elif key in (f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"):
-            measurement[key] = read_measurement_file(meas_dir, f"{key[:-1].lower()}{EXT}").filter(regex=key)
+        elif key[:5] in (F1010, F1001):
+            measurement[key] = read_measurement_file(meas_dir, f"{key[:5].lower()}{EXT}")
 
         elif key == f"{TUNE}":
             measurement[key] = pd.DataFrame(

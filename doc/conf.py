@@ -113,7 +113,9 @@ todo_include_todos = True
 #
 html_theme = 'sphinx_rtd_theme'
 
-
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
 html_theme_options = {
     'collapse_navigation': False,
     'display_version': True,
@@ -121,22 +123,40 @@ html_theme_options = {
     'navigation_depth': 2,
 }
 
+
+# Name of an image file (path relative to the configuration directory)
+# that is the logo of the docs, or URL that points an image file for the logo.
+# It is placed at the top of the sidebar;
+# its width should therefore not exceed 200 pixels.
 html_logo = '_static/img/omc_logo.svg'
-html_static_path = ['_static']
-html_context = {'css_files': ['_static/css/custom.css']}
-
-smartquotes_action = "qe"  # renders only quotes and ellipses (...) but not dashes (option: D)
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+#
+html_static_path = ['_static']
+
+# A dictionary of values to pass into the template engine’s context for all
+# pages. Single values can also be put in this dictionary using the
+# -A command-line option of sphinx-build.
+html_context = {
+    'display_github': True,
+    # the following are only needed if :github_url: is not set
+    'github_user': author,
+    'github_repo': project,
+    'github_version': 'master/doc/',
+}
+
+# A list of CSS files. The entry must be a filename string or a tuple
+# containing the filename string and the attributes dictionary.
+# The filename must be relative to the html_static_path, or a full URI with
+# scheme like https://example.org/style.css.
+# The attributes is used for attributes of <link> tag.
+# It defaults to an empty list.
+#
+html_css_files = ["css/custom.css"]
+
+smartquotes_action = "qe"  # renders only quotes and ellipses (...) but not dashes (option: D)
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

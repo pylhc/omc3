@@ -6,14 +6,9 @@ import tfs
 
 from omc3.hole_in_one import hole_in_one_entrypoint
 
-# The coupling tests for real and imaginary parts are skipped for now as the tests fail because the results
-# are in anti-phase with those from optics_functions. Amplitudes are correct though (and coupling.py is
-# also here)
-SKIP_REASON = "Coupling is skipped as there, Real and Imag are not aligned with model. To be looked into."
-
 # accuracy limits of rdt to ptc
 ACCURACY_LIMIT = dict(
-    skew_quadrupole=0.01,
+    skew_quadrupole=0.011,
     normal_sextupole=0.12,
 )
 
@@ -88,7 +83,7 @@ def _create_input(tmp_path_factory, request):
 @pytest.mark.extended
 @pytest.mark.parametrize("_create_input", (1, 2), ids=["Beam1", "Beam2"], indirect=True)
 @pytest.mark.parametrize("order", ORDERS)
-def test_crdt_amp(order, _create_input):
+def test_rdt_amp(order, _create_input):
     omc3_input = _create_input
     (optics_opt, path_to_lin) = omc3_input[order]
     model_rdt = tfs.read(path_to_lin / f'B{optics_opt["beam"]}_model_rdt.tfs', index="NAME")
@@ -109,19 +104,8 @@ def test_crdt_amp(order, _create_input):
 
 @pytest.mark.extended
 @pytest.mark.parametrize("_create_input", (1, 2), ids=["Beam1", "Beam2"], indirect=True)
-@pytest.mark.parametrize(
-    "order",
-    [
-        pytest.param(
-            order,
-            marks=pytest.mark.skip(reason=SKIP_REASON)  # check SKIP_REASON for an explanation
-            if order == "skew_quadrupole"
-            else pytest.mark.extended,
-        )
-        for order in ORDERS
-    ],
-)
-def test_crdt_complex(order, _create_input):
+@pytest.mark.parametrize("order", ORDERS)
+def test_rdt_complex(order, _create_input):
     omc3_input = _create_input
     (optics_opt, path_to_lin) = omc3_input[order]
     model_rdt = tfs.read(path_to_lin / f'B{optics_opt["beam"]}_model_rdt.tfs', index="NAME")
@@ -135,6 +119,7 @@ def test_crdt_complex(order, _create_input):
             )
 
             bpms = USE_BPMS[f'B{optics_opt["beam"]}'][order]
+
             assert (
                     _max_deviation(hio_rdt["REAL"][bpms].to_numpy(), model_rdt[f"F{jklm}REAL"][bpms].to_numpy(), 0.0)
                     < ACCURACY_LIMIT[order]
