@@ -31,7 +31,7 @@ DEPENDENCIES = [
     "tables>=3.6.0",
     "uncertainties>=3.1.4",
     "optics-functions>=0.1.0",
-    "turn_by_turn>=0.1.0",
+    "turn_by_turn>=0.2.0",
 ]
 
 # Extra dependencies
