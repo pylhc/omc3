@@ -149,15 +149,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules/tbt.html">Turn-by-Turn</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#handler">Handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#esrf-tbt-data-handler">ESRF TbT Data Handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#iota-tbt-data-handler">Iota TbT Data Handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#lhc-tbt-data-handler">LHC TbT Data Handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#ptc-tbt-data-handler">PTC TbT Data Handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/tbt.html#trackone-tbt-data-handler">Trackone TbT Data Handler</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/tbt.html">Turn-by-Turn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -221,7 +213,7 @@
     <span class="n">save_options_to_config</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">omc3</span> <span class="kn">import</span> <span class="n">tbt</span>
+<span class="kn">import</span> <span class="nn">turn_by_turn</span> <span class="k">as</span> <span class="nn">tbt</span>
 <span class="kn">from</span> <span class="nn">omc3.definitions</span> <span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 
@@ -238,7 +230,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">DATA_READERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">DATA_READERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype from which to import. &quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
@@ -314,7 +306,7 @@
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">drop_elements</span><span class="p">:</span>
             <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">_drop_elements</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">drop_elements</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">use_average</span><span class="p">:</span>
-            <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">tbt</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">generate_average_tbtdata</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
+            <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">tbt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">generate_average_tbtdata</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">realizations</span><span class="p">):</span>
             <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_r</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">realizations</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
             <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">noise_levels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -348,12 +340,10 @@
     <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements_to_drop</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropping element &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">copied_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">:</span>
-                <span class="k">for</span> <span class="p">(</span>
-                    <span class="n">dataframe</span>
-                <span class="p">)</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>  <span class="c1"># X / Y dfs, BPMs as rows &amp; turn coordinates as columns</span>
-                    <span class="n">dataframe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">transverse_data</span> <span class="ow">in</span> <span class="n">copied_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">:</span>
+                <span class="n">transverse_data</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">transverse_data</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="n">transverse_data</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="n">transverse_data</span><span class="o">.</span><span class="n">Y</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39; could not be found, skipped&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">copied_data</span>
 
