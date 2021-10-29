@@ -39,7 +39,7 @@ from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters,
                                               add_to_arguments, entrypoint,
                                               save_options_to_config)
 
-from omc3 import tbt
+import turn_by_turn as tbt
 from omc3.definitions import formats
 from omc3.harpy import handler
 from omc3.model import manager
@@ -422,7 +422,7 @@ def harpy_params():
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output.")
     params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],
-                         choices=list(tbt.handler.DATA_READERS.keys()),
+                         choices=list(tbt.io.DATA_READERS.keys()),
                          help="Choose the datatype from which to import. ")
 
     # Cleaning parameters

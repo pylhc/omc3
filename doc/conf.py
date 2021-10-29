@@ -75,6 +75,10 @@ project = ABOUT_OMC3["__title__"]
 copyright_ = '2019-2020, pyLHC/OMC-TEAM'
 author = ABOUT_OMC3["__author__"]
 
+rst_prolog = f"""
+:github_url: {ABOUT_OMC3['__url__']}
+"""
+
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
