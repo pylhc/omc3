@@ -70,5 +70,4 @@ Documentation including relevant flags and parameters can be found at <https://p
 
 ## License
 
-This project is licensed under the `GNU GPLv3` License.
-Please take a moment to check its permissivity - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the `MIT License` - see the [LICENSE](LICENSE) file for details.
