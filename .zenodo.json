@@ -1,0 +1,53 @@
+{
+    "creators": [
+        {
+            "name": "OMC-Team",
+            "affiliation": "CERN"
+        },
+        {
+            "name": "Michael Hofer",
+            "affiliation": "CERN",
+            "orcid": "0000-0001-6173-0232"
+        },
+        {
+            "name": "Joschua Dilly",
+            "affiliation": "CERN",
+            "orcid": "0000-0001-7864-5448"
+        },
+        {
+            "name": "Felix Soubelet",
+            "affiliation": "University of Liverpool & CERN",
+            "orcid": "0000-0001-8012-1440"
+        },
+        {
+            "name": "Lukáš Malina",
+            "affiliation": "CERN",
+            "orcid": "0000-0002-4673-6035"
+        },
+        {
+            "name": "Andreas Wegscheider",
+            "affiliation": "CERN",
+        },
+        {
+            "name": "Maël Le Garrec",
+            "affiliation": "CERN",
+            "orcid": "0000-0002-8146-2340"
+        },
+        {
+            "name": "Jaime Maria Coello De Portugal - Martinez Vazquez",
+            "affiliation": "CERN",
+            "orcid": "0000-0002-6899-3809"
+        },
+        {
+            "name": "Rogelio Tomas Garcia",
+            "affiliation": "CERN",
+            "orcid": "0000-0002-9857-1703"
+        },
+        {
+            "name": "Tobias Persson",
+            "affiliation": "CERN"
+        }
+    ],
+    "title": "OMC3",
+    "description": "Python 3 package for beam optics measurements and corrections in circular particle accelerators."
+}
