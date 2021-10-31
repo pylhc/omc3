@@ -14,6 +14,6 @@ __url__ = "https://github.com/pylhc/omc3"
 __version__ = "0.2.0"
 __author__ = "pylhc"
 __author_email__ = "pylhc@github.com"
-__license__ = "GNU GPLv3"
+__license__ = "MIT"
 
 __all__ = [__version__]
