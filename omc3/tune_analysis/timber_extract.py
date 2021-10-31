@@ -96,8 +96,8 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
             raise NotImplementedError("Multidimensional variables are not implemented yet")
 
         data = np.asarray(extract_dict[key]).transpose()
-        columns = names.get(key, key)
-        key_df = tfs.TfsDataFrame(data, columns=[TIME_COL, columns]).set_index(TIME_COL)
+        column = key if names is None else names.get(key, key)
+        key_df = tfs.TfsDataFrame(data, columns=[TIME_COL, column]).set_index(TIME_COL)
         out_df = out_df.merge(key_df, how="outer", left_index=True, right_index=True)
 
     out_df.index = [CERNDatetime.from_timestamp(i) for i in out_df.index]
