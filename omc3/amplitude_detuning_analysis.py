@@ -68,7 +68,7 @@ import os
 from collections import OrderedDict
 from datetime import timedelta
 from pathlib import Path
-from typing import Sequence, Tuple
+from typing import List, Sequence, Tuple
 
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import (EntryPointParameters, entrypoint,
