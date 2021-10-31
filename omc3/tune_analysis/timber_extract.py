@@ -31,7 +31,7 @@ END_TIME = const.get_tend_head()
 LOG = logging_tools.get_logger(__name__)
 pytimber = cern_network_import("pytimber")
 
-RETRIES = 10  # number of retries on retryable exception
+MAX_RETRIES = 10  # number of retries on retryable exception
 
 
 def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
@@ -61,7 +61,8 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
         keys: list of data to extract.
         names: dict to map keys to column names.
 
-    Returns: tfs pandas dataframe.
+    Returns:
+        Extracted data in a ``TfsDataFrame``.
     """
     with suppress(TypeError):
         t_start: CERNDatetime = CERNDatetime.from_timestamp(t_start)
@@ -73,17 +74,18 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
     if keys is None:
         keys = get_tune_and_coupling_variables(db)
 
-    for ii in range(RETRIES+1):
-        # Try getting data from Timber.
-        # If there is a feign.RetryableException, retry up to RETRIES times.
+    # Attempt getting data from NXCALS, which can sometimes need a few retries (yay NXCALS)
+    # If Java gives a feign.RetryableException, retry up to MAX_RETRIES times.
+    for tries in range(MAX_RETRIES + 1):
         try:
-            extract_dict = db.get(keys, t_start.timestamp(), t_end.timestamp())  # use TimeStamps to avoid confusion w/ local time
+            # We use timestamps to avoid any confusion with local time
+            extract_dict = db.get(keys, t_start.timestamp(), t_end.timestamp())
         except java.lang.IllegalStateException as e:
-            raise IOError("Could not get data from timber. Probable cause: User has no access to nxcals!") from e
-        except JException as e:
-            if "RetryableException" in str(e) and (ii+1) < RETRIES:
-                LOG.error(f"Could not get data from timber! Trial no {ii+1}/{RETRIES}.")
-                continue
+            raise IOError("Could not get data from Timber, user probably has no access to NXCALS") from e
+        except JException as e:  # Might be a case for retries
+            if "RetryableException" in str(e) and (tries + 1) < MAX_RETRIES:
+                LOG.warning(f"Could not get data from Timber! Trial no {tries + 1} / {MAX_RETRIES}")
+                continue  # will go to the next iteratoin of the loop, so retry
             raise IOError("Could not get data from timber!") from e
         else:
             break
@@ -91,13 +93,11 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
     out_df = tfs.TfsDataFrame()
     for key in keys:
         if extract_dict[key][1][0].size > 1:
-            raise NotImplementedError("Multidimensional variables are not implemented yet.")
+            raise NotImplementedError("Multidimensional variables are not implemented yet")
 
         data = np.asarray(extract_dict[key]).transpose()
-        col = names.get(key, key)
-
-        key_df = tfs.TfsDataFrame(data, columns=[TIME_COL, col]).set_index(TIME_COL)
-
+        columns = names.get(key, key)
+        key_df = tfs.TfsDataFrame(data, columns=[TIME_COL, columns]).set_index(TIME_COL)
         out_df = out_df.merge(key_df, how="outer", left_index=True, right_index=True)
 
     out_df.index = [CERNDatetime.from_timestamp(i) for i in out_df.index]
