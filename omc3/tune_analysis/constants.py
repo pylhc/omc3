@@ -162,8 +162,7 @@ def get_paired_lables(tune_plane: str, action_plane: str, tune_scale: int = None
     """ Labels for the action/tune plots. """
     tune_unit = ""
     if tune_scale:
-        tune_unit = f" \quad [10^{{{tune_scale:-d}}}]"
-
+        tune_unit = f" \quad [10^{{{tune_scale:d}}}]"
     return (fr"$2J_{action_plane.lower():s} \quad [\mu m]$", fr"$\Delta Q_{tune_plane.lower():s}{tune_unit}$")
 
 
