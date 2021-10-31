@@ -19,11 +19,12 @@ To contribute, see [our guidelines](https://pylhc.github.io/packages/development
 
 ## Installing
 
-The `omc3` package is `Python 3.7+` compatible, but not yet deployed to `PyPI`.
-The best way to install it is through pip from the online `master` branch, which is stable:
-```bash
-pip install git+https://github.com/pylhc/omc3.git#egg=omc3
+Installation is easily done via `pip`:
+
 ```
+pip install omc3
+```
+
 
 For development purposes, we recommend creating a new virtual environment and installing from VCS in editable mode with all extra dependencies (`cern` for packages only available in the CERN GPN, `test` for `pytest` and relevant plugins, and `doc` for packages needed to build documentation)
 ```bash
