@@ -176,15 +176,6 @@ def _get_params():
             help="Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
             type=float,
         ),
-        # Debug
-        debug=dict(
-            help="Activates Debug mode",
-            action="store_true",
-        ),
-        logfile=dict(
-            help="Logfile if debug mode is active.",
-            type=str,
-        ),
     )
 
 
@@ -197,40 +188,39 @@ def analyse_with_bbq_corrections(opt):
     LOG.info("Starting Amplitude Detuning Analysis")
     _save_options(opt)
 
-    with DebugMode(active=opt.debug, log_file=opt.logfile):
-        opt, filter_opt = _check_analyse_opt(opt)
+    opt, filter_opt = _check_analyse_opt(opt)
 
-        # get data
-        kick_df = read_two_kick_files_from_folder(opt.kick)
-        bbq_df = None
+    # get data
+    kick_df = read_two_kick_files_from_folder(opt.kick)
+    bbq_df = None
 
-        if opt.bbq_in is not None:
-            bbq_df = _get_bbq_data(opt.beam, opt.bbq_in, kick_df)
-            x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
+    if opt.bbq_in is not None:
+        bbq_df = _get_bbq_data(opt.beam, opt.bbq_in, kick_df)
+        x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
 
-            # add moving average to kick
-            kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
+        # add moving average to kick
+        kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
 
-            # add corrected values to kick
-            kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
-            kick_df = kick_file_modifiers.add_total_natq_std(kick_df)
+        # add corrected values to kick
+        kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
+        kick_df = kick_file_modifiers.add_total_natq_std(kick_df)
 
-        kick_plane = opt.plane
+    kick_plane = opt.plane
 
-        # amplitude detuning odr
-        for tune_plane in PLANES:
-            for corrected in [False, True]:
-                if corrected and opt.bbq_in is None:
-                    continue
+    # amplitude detuning odr
+    for tune_plane in PLANES:
+        for corrected in [False, True]:
+            if corrected and opt.bbq_in is None:
+                continue
 
-                # get the proper data
-                data_df = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corrected)
+            # get the proper data
+            data_df = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corrected)
 
-                # make the odr
-                odr_fit = fitting_tools.do_odr(x=data_df['action'], y=data_df['tune'],
-                                               xerr=data_df['action_err'], yerr=data_df['tune_err'],
-                                               order=opt.detuning_order)
-                kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected)
+            # make the odr
+            odr_fit = fitting_tools.do_odr(x=data_df['action'], y=data_df['tune'],
+                                           xerr=data_df['action_err'], yerr=data_df['tune_err'],
+                                           order=opt.detuning_order)
+            kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected)
 
     # output kick and bbq data
     if opt.output:
@@ -313,6 +303,7 @@ def _check_analyse_opt(opt):
     return opt, filter_opt
 
 
+# TODO: remake with proper isinstance instead of tries
 def _get_bbq_data(beam, input_, kick_df):
     """Return BBQ data from input, either file or timber fill."""
     try:
@@ -325,10 +316,9 @@ def _get_bbq_data(beam, input_, kick_df):
             t_start = min(kick_df.index.to_numpy())
             t_end = max(kick_df.index.to_numpy())
             t_delta = timedelta(seconds=DTIME)
-            data = timber_extract.extract_between_times(t_start-t_delta,
-                                                        t_end+t_delta,
-                                                        keys=timber_keys,
-                                                        names=dict(zip(timber_keys, bbq_cols)))
+            data = timber_extract.extract_between_times(
+                t_start - t_delta, t_end + t_delta, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols))
+            )
         else:
             LOG.debug(f"Getting bbq data from file '{input_:s}'")
             data = read_timed_dataframe(input_)
