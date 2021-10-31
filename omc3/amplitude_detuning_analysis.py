@@ -71,20 +71,24 @@ from pathlib import Path
 from typing import List, Sequence, Tuple
 
 from generic_parser import DotDict
-from generic_parser.entrypoint_parser import (EntryPointParameters, entrypoint,
-                                              save_options_to_config)
-
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, save_options_to_config
 from tfs.frame import TfsDataFrame
+
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.tune_analysis import (fitting_tools, kick_file_modifiers,
-                                timber_extract)
-from omc3.tune_analysis.constants import (get_bbq_col, get_bbq_out_name,
-                                          get_kick_out_name, get_mav_col,
-                                          get_timber_bbq_key)
+from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
+from omc3.tune_analysis.constants import (
+    get_bbq_col,
+    get_bbq_out_name,
+    get_kick_out_name,
+    get_mav_col,
+    get_timber_bbq_key,
+)
 from omc3.tune_analysis.kick_file_modifiers import (
-    read_timed_dataframe, read_two_kick_files_from_folder,
-    write_timed_dataframe)
+    read_timed_dataframe,
+    read_two_kick_files_from_folder,
+    write_timed_dataframe,
+)
 from omc3.utils.logging_tools import DebugMode, get_logger, list2str
 from omc3.utils.time_tools import CERNDatetime
 
@@ -121,9 +125,9 @@ def _get_params():
             type=str,
         ),
         bbq_in=dict(
-            help=("Fill number of desired data to extract from timber  or path to presaved bbq-tfs-file. "
-                  "Use the string 'kick' to use the timestamps in the kickfile for timber extraction. "
-                  "Not giving this parameter skips bbq compensation."),
+            help="Fill number of desired data to extract from timber  or path to presaved bbq-tfs-file. "
+            "Use the string 'kick' to use the timestamps in the kickfile for timber extraction. "
+            "Not giving this parameter skips bbq compensation.",
         ),
         detuning_order=dict(
             help="Order of the detuning as int. Basically just the order of the applied fit.",
@@ -141,7 +145,7 @@ def _get_params():
         ),
         bbq_filtering_method=dict(
             help="Filtering method for the bbq to use. 'cut' cuts around a given tune, 'minmax' lets you "
-                 "specify the limits and 'outliers' uses the outlier filtering from utils.",
+            "specify the limits and 'outliers' uses the outlier filtering from utils.",
             type=str,
             choices=["cut", "minmax", "outliers"],
             default="outliers",
@@ -164,14 +168,15 @@ def _get_params():
         ),
         # Filtering method tune-minmax
         tunes_minmax=dict(
-            help=("Tunes minima and maxima in the order x_min, x_max, y_min, y_max. "
-                  "For BBQ cleaning (Method 'minmax')."),
+            help="Tunes minima and maxima in the order x_min, x_max, y_min, y_max. "
+            "For BBQ cleaning (Method 'minmax').",
             type=float,
             nargs=4,
         ),
         # Fine Cleaning
         fine_window=dict(
-            help="Length of the moving average window, i.e # data points (fine cleaning for 'minmax' or 'cut').",
+            help="Length of the moving average window, i.e the number of data points "
+            "(fine cleaning for 'minmax' or 'cut').",
             type=int,
         ),
         fine_cut=dict(
@@ -221,13 +226,21 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
                 continue
 
             LOG.debug("Getting ampdet data")
-            data_df = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corrected)
+            data_df = kick_file_modifiers.get_ampdet_data(
+                kick_df, kick_plane, tune_plane, corrected=corrected
+            )
 
             LOG.debug("Fitting ODR to kick data")
-            odr_fit = fitting_tools.do_odr(x=data_df['action'], y=data_df['tune'],
-                                           xerr=data_df['action_err'], yerr=data_df['tune_err'],
-                                           order=opt.detuning_order)
-            kick_df = kick_file_modifiers.add_odr(kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected)
+            odr_fit = fitting_tools.do_odr(
+                x=data_df["action"],
+                y=data_df["tune"],
+                xerr=data_df["action_err"],
+                yerr=data_df["tune_err"],
+                order=opt.detuning_order,
+            )
+            kick_df = kick_file_modifiers.add_odr(
+                kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected
+            )
 
     # output kick and bbq data
     if opt.output:
@@ -235,7 +248,7 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
         opt.output.mkdir(parents=True, exist_ok=True)
         write_timed_dataframe(opt.output / get_kick_out_name(), kick_df)
         if bbq_df is not None:
-            write_timed_dataframe(opt.output / get_bbq_out_name(), bbq_df.loc[x_interval[0]:x_interval[1]])
+            write_timed_dataframe(opt.output / get_bbq_out_name(), bbq_df.loc[x_interval[0] : x_interval[1]])
 
     return kick_df, bbq_df
 
@@ -252,8 +265,8 @@ def get_approx_bbq_interval(
     ts_index = kick_file_modifiers.get_timestamp_index(bbq_tmp.index)
     ts_start, ts_end = time_array[0].timestamp(), time_array[-1].timestamp()
 
-    i_start = max(ts_index.get_loc(ts_start, method='nearest') - int(window_length/2.), 0)
-    i_end = min(ts_index.get_loc(ts_end, method='nearest') + int(window_length/2.), len(ts_index)-1)
+    i_start = max(ts_index.get_loc(ts_start, method="nearest") - int(window_length / 2.0), 0)
+    i_end = min(ts_index.get_loc(ts_end, method="nearest") + int(window_length / 2.0), len(ts_index) - 1)
 
     return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
@@ -273,37 +286,37 @@ def _check_analyse_opt(opt: DotDict):
     if opt.bbq_in is not None:
         # check if cleaning is properly specified
         all_filter_opt = dict(
-            cut=opt.get_subdict(['bbq_filtering_method', 'window_length',
-                                 'tunes', 'tune_cut',
-                                 'fine_window', 'fine_cut']
-                                ),
-            minmax=opt.get_subdict(['bbq_filtering_method', 'window_length',
-                                    'tunes_minmax', 'fine_window', 'fine_cut']
-                                   ),
-            outliers=opt.get_subdict(['bbq_filtering_method',
-                                      'window_length', 'outlier_limit']
-                                     ),
+            cut=opt.get_subdict(
+                ["bbq_filtering_method", "window_length", "tunes", "tune_cut", "fine_window", "fine_cut"]
+            ),
+            minmax=opt.get_subdict(
+                ["bbq_filtering_method", "window_length", "tunes_minmax", "fine_window", "fine_cut"]
+            ),
+            outliers=opt.get_subdict(["bbq_filtering_method", "window_length", "outlier_limit"]),
         )
 
         for method, params in all_filter_opt.items():
             if opt.bbq_filtering_method == method:
                 missing_params = [k for k, v in params.items() if v is None]
                 if any(missing_params):
-                    raise KeyError("Missing parameters for chosen cleaning method "
-                                   f"{method}: '{list2str(missing_params)}'")
+                    raise KeyError(
+                        f"Missing parameters for cleaning method {method}: '{list2str(missing_params)}'"
+                    )
                 filter_opt = params
 
-        if filter_opt.bbq_filtering_method == 'cut':
-            filter_opt[f"tunes_minmax"] = [minmax for t in opt.tunes
-                                           for minmax in (t - opt.tune_cut, t + opt.tune_cut)]
-            filter_opt.pop('tune_cut')
-            filter_opt.pop('tunes')
+        if filter_opt.bbq_filtering_method == "cut":
+            filter_opt[f"tunes_minmax"] = [
+                minmax for t in opt.tunes for minmax in (t - opt.tune_cut, t + opt.tune_cut)
+            ]
+            filter_opt.pop("tune_cut")
+            filter_opt.pop("tunes")
 
-        if filter_opt.bbq_filtering_method != 'outliers':
+        if filter_opt.bbq_filtering_method != "outliers":
             # check fine cleaning
             if bool(filter_opt.fine_cut) != bool(filter_opt.fine_window):
-                raise KeyError("To activate fine cleaning, "
-                               "both fine cut and fine window need to be specified")
+                raise KeyError(
+                    "To activate fine cleaning, both fine cut and fine window need to be specified"
+                )
 
     if opt.output is not None:
         opt.output = Path(opt.output)
@@ -334,7 +347,7 @@ def _get_bbq_data(beam: int, input_: str, kick_df: TfsDataFrame) -> TfsDataFrame
             LOG.debug(f"Getting bbq data from file '{input_:s}'")
             data = read_timed_dataframe(input_)
             #  Drop old moving average columns as these will be computed again later
-            data.drop([get_mav_col(p) for p in PLANES if get_mav_col(p) in data.columns], axis='columns')
+            data.drop([get_mav_col(p) for p in PLANES if get_mav_col(p) in data.columns], axis="columns")
 
     else:  # input_ is a number, assumed to be a fill number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")
@@ -362,5 +375,5 @@ def _save_options(opt: DotDict) -> None:
 # Script Mode ##################################################################
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     analyse_with_bbq_corrections()
