@@ -4,6 +4,8 @@ Constants
 
 Specific constants and helpers to be used in ``tune_analysis``, to help with consistency.
 """
+from typing import Tuple
+
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.optics_measurements.constants import ACTION, ERR, EXT, KICK_NAME, NAT_TUNE, RES, TIME
 

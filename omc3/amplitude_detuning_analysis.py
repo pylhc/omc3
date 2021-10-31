@@ -68,25 +68,28 @@ import os
 from collections import OrderedDict
 from datetime import timedelta
 from pathlib import Path
+from typing import Tuple
 
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters, save_options_to_config
+from generic_parser import DotDict
+from generic_parser.entrypoint_parser import (EntryPointParameters, entrypoint,
+                                              save_options_to_config)
 
+from tfs.frame import TfsDataFrame
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.tune_analysis import timber_extract, fitting_tools, kick_file_modifiers
-from omc3.tune_analysis.constants import (get_kick_out_name, get_bbq_out_name,
-                                          get_mav_col, get_timber_bbq_key,
-                                          get_bbq_col)
-from omc3.tune_analysis.kick_file_modifiers import (read_timed_dataframe,
-                                                    write_timed_dataframe,
-                                                    read_two_kick_files_from_folder
-                                                    )
-from omc3.utils.logging_tools import get_logger, list2str, DebugMode
-
+from omc3.tune_analysis import (fitting_tools, kick_file_modifiers,
+                                timber_extract)
+from omc3.tune_analysis.constants import (get_bbq_col, get_bbq_out_name,
+                                          get_kick_out_name, get_mav_col,
+                                          get_timber_bbq_key)
+from omc3.tune_analysis.kick_file_modifiers import (
+    read_timed_dataframe, read_two_kick_files_from_folder,
+    write_timed_dataframe)
+from omc3.utils.logging_tools import DebugMode, get_logger, list2str
 
 # Globals ----------------------------------------------------------------------
 
-DTIME = 120  # extra seconds to add to kick times window when extracting from timber
+DTIME: int = 120  # extra seconds to add to kick times window when extracting from timber
 
 LOG = get_logger(__name__)
 
@@ -117,9 +120,8 @@ def _get_params():
             type=str,
         ),
         bbq_in=dict(
-            help=("Fill number of desired data to extract from timber "
-                  "or path to presaved bbq-tfs-file. Use the string 'kick' to "
-                  "use the timestamps in the kickfile for timber extraction. "
+            help=("Fill number of desired data to extract from timber  or path to presaved bbq-tfs-file. "
+                  "Use the string 'kick' to use the timestamps in the kickfile for timber extraction. "
                   "Not giving this parameter skips bbq compensation."),
         ),
         detuning_order=dict(
@@ -137,9 +139,8 @@ def _get_params():
             default=20,
         ),
         bbq_filtering_method=dict(
-            help="Filtering method for the bbq to use. 'cut' cuts around a given tune, "
-                 "'minmax' lets you specify the limits and 'outliers' uses the outlier filtering "
-                 "from utils.",
+            help="Filtering method for the bbq to use. 'cut' cuts around a given tune, 'minmax' lets you "
+                 "specify the limits and 'outliers' uses the outlier filtering from utils.",
             type=str,
             choices=["cut", "minmax", "outliers"],
             default="outliers",
@@ -183,14 +184,14 @@ def _get_params():
 
 
 @entrypoint(_get_params(), strict=True)
-def analyse_with_bbq_corrections(opt):
+def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFrame]:
     """Create amplitude detuning analysis with BBQ correction from timber data."""
     LOG.info("Starting Amplitude Detuning Analysis")
     _save_options(opt)
 
     opt, filter_opt = _check_analyse_opt(opt)
 
-    # get data
+    LOG.debug("Getting data from kick files")
     kick_df = read_two_kick_files_from_folder(opt.kick)
     bbq_df = None
 
@@ -198,25 +199,25 @@ def analyse_with_bbq_corrections(opt):
         bbq_df = _get_bbq_data(opt.beam, opt.bbq_in, kick_df)
         x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
 
-        # add moving average to kick
+        LOG.debug("Adding moving average data to kick data")
         kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
 
-        # add corrected values to kick
+        LOG.debug("Adding corrected natural tunes and stdev to kick data")
         kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
         kick_df = kick_file_modifiers.add_total_natq_std(kick_df)
 
     kick_plane = opt.plane
 
-    # amplitude detuning odr
+    LOG.info("Performing amplitude detuning odr")
     for tune_plane in PLANES:
         for corrected in [False, True]:
             if corrected and opt.bbq_in is None:
                 continue
 
-            # get the proper data
+            LOG.debug("Getting ampdet data")
             data_df = kick_file_modifiers.get_ampdet_data(kick_df, kick_plane, tune_plane, corrected=corrected)
 
-            # make the odr
+            LOG.debug("Fitting ODR to kick data")
             odr_fit = fitting_tools.do_odr(x=data_df['action'], y=data_df['tune'],
                                            xerr=data_df['action_err'], yerr=data_df['tune_err'],
                                            order=opt.detuning_order)
@@ -224,12 +225,11 @@ def analyse_with_bbq_corrections(opt):
 
     # output kick and bbq data
     if opt.output:
+        LOG.info(f"Writing kick and BBQ data to files in directory '{opt.output.absolute()}'")
         opt.output.mkdir(parents=True, exist_ok=True)
-        write_timed_dataframe(opt.output / get_kick_out_name(),
-                              kick_df)
+        write_timed_dataframe(opt.output / get_kick_out_name(), kick_df)
         if bbq_df is not None:
-            write_timed_dataframe(opt.output / get_bbq_out_name(),
-                                  bbq_df.loc[x_interval[0]:x_interval[1]])
+            write_timed_dataframe(opt.output / get_bbq_out_name(), bbq_df.loc[x_interval[0]:x_interval[1]])
 
     return kick_df, bbq_df
 
