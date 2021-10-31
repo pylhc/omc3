@@ -68,7 +68,7 @@ import os
 from collections import OrderedDict
 from datetime import timedelta
 from pathlib import Path
-from typing import Tuple
+from typing import Sequence, Tuple
 
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import (EntryPointParameters, entrypoint,
@@ -86,6 +86,7 @@ from omc3.tune_analysis.kick_file_modifiers import (
     read_timed_dataframe, read_two_kick_files_from_folder,
     write_timed_dataframe)
 from omc3.utils.logging_tools import DebugMode, get_logger, list2str
+from omc3.utils.time_tools import CERNDatetime
 
 # Globals ----------------------------------------------------------------------
 
@@ -185,7 +186,12 @@ def _get_params():
 
 @entrypoint(_get_params(), strict=True)
 def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFrame]:
-    """Create amplitude detuning analysis with BBQ correction from timber data."""
+    """
+    Create amplitude detuning analysis with BBQ correction from timber data.
+
+    Returns:
+        The amplitude detuning analysis results as a TfsDataFrame and the BBQ data as a TfsDataFrame.
+    """
     LOG.info("Starting Amplitude Detuning Analysis")
     _save_options(opt)
 
@@ -234,9 +240,11 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
     return kick_df, bbq_df
 
 
-def get_approx_bbq_interval(bbq_df, time_array, window_length):
+def get_approx_bbq_interval(
+    bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window_length: int
+) -> Tuple[CERNDatetime, CERNDatetime]:
     """
-    Get data in approximate time interval, for averaging based on window length and kick interval.
+    Get approximate start and end times for averaging, based on window length and kick interval.
     """
     bbq_tmp = bbq_df.dropna()
 
@@ -253,7 +261,7 @@ def get_approx_bbq_interval(bbq_df, time_array, window_length):
 # Private Functions ------------------------------------------------------------
 
 
-def _check_analyse_opt(opt):
+def _check_analyse_opt(opt: DotDict):
     """Perform manual checks on opt-sturcture."""
     LOG.debug("Checking Options.")
 
@@ -303,15 +311,18 @@ def _check_analyse_opt(opt):
     return opt, filter_opt
 
 
-# TODO: remake with proper isinstance instead of tries
-def _get_bbq_data(beam, input_, kick_df):
-    """Return BBQ data from input, either file or timber fill."""
+def _get_bbq_data(beam: int, input_: str, kick_df: TfsDataFrame) -> TfsDataFrame:
+    """
+    Return BBQ data from input, either file or timber fill, as a ``TfsDataFrame``.
+
+    Note: the ``input_`` parameter is always parsed from the commandline as a string, but could be 'kick'
+    or a kickfile name or an integer. All these options will be tried until one works.
+    """
     try:
         fill_number = int(input_)
-    except ValueError:
-        # input is a string
+    except ValueError:  # input_ is a file name or the string 'kick'
         if input_ == "kick":
-            LOG.debug("Getting timber data from kick-times.")
+            LOG.debug("Getting timber data from kick times")
             timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
             t_start = min(kick_df.index.to_numpy())
             t_end = max(kick_df.index.to_numpy())
@@ -319,34 +330,33 @@ def _get_bbq_data(beam, input_, kick_df):
             data = timber_extract.extract_between_times(
                 t_start - t_delta, t_end + t_delta, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols))
             )
-        else:
+        else:  # input_ is a file name
             LOG.debug(f"Getting bbq data from file '{input_:s}'")
             data = read_timed_dataframe(input_)
-            data.drop([get_mav_col(p) for p in PLANES
-                       if get_mav_col(p) in data.columns], axis='columns')
+            #  Drop old moving average columns as these will be computed again later
+            data.drop([get_mav_col(p) for p in PLANES if get_mav_col(p) in data.columns], axis='columns')
 
-    else:
-        # input is a number
+    else:  # input_ is a number, assumed to be a fill number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")
         timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
-        data = timber_extract.lhc_fill_to_tfs(fill_number,
-                                              keys=timber_keys,
-                                              names=dict(zip(timber_keys, bbq_cols)))
+        data = timber_extract.lhc_fill_to_tfs(
+            fill_number, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols))
+        )
     return data
 
 
-def _get_timber_keys_and_bbq_columns(beam):
+def _get_timber_keys_and_bbq_columns(beam: int) -> Tuple[List[str], List[str]]:
     keys = [get_timber_bbq_key(plane, beam) for plane in PLANES]
     cols = [get_bbq_col(plane) for plane in PLANES]
     return keys, cols
 
 
-def _save_options(opt):
+def _save_options(opt: DotDict) -> None:
     if opt.output:
         os.makedirs(opt.output, exist_ok=True)
-        save_options_to_config(os.path.join(opt.output, formats.get_config_filename(__file__)),
-                               OrderedDict(sorted(opt.items()))
-                               )
+        save_options_to_config(
+            opt.output / formats.get_config_filename(__file__), OrderedDict(sorted(opt.items()))
+        )
 
 
 # Script Mode ##################################################################
