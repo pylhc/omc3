@@ -12,17 +12,19 @@ dependency and installing from the ``acc-py`` package index (by specifying ``--i
 https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 ``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).
 """
+import datetime
 import re
 from contextlib import suppress
+from typing import Dict, List, NewType, Sequence, Union
 
 import numpy as np
 import tfs
-from jpype import java, JException
+from jpype import JException, java
 
 from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
-from omc3.utils.time_tools import CERNDatetime
 from omc3.utils.mock import cern_network_import
+from omc3.utils.time_tools import CERNDatetime
 
 TIME_COL = const.get_time_col()
 START_TIME = const.get_tstart_head()
@@ -32,34 +34,42 @@ LOG = logging_tools.get_logger(__name__)
 pytimber = cern_network_import("pytimber")
 
 MAX_RETRIES = 10  # number of retries on retryable exception
+AcceptableTimeStamp = NewType("AcceptableTimeStamp", Union[CERNDatetime, int, float])
 
 
-def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
+def lhc_fill_to_tfs(
+    fill_number: int, keys: Sequence[str] = None, names: Dict[str, str] = None
+) -> tfs.TfsDataFrame:
     """
     Extracts data for keys of fill from ``Timber``.
 
     Args:
-        fill_number: fill number.
-        keys: list of data to extract.
-        names: dict to map keys to column names.
+        fill_number (int): Number of the fill to extract from.
+        keys (Sequence[str]): the different variables names to extract data for.
+        names (Dict[str, str): dict mapping keys to column names.
 
-    Returns: tfs pandas dataframe.
+    Returns:
+        The extracted data as a ``TfsDataFrame``.
     """
     db = pytimber.LoggingDB(source="nxcals")
     t_start, t_end = get_fill_times(db, fill_number)
-    out_df = extract_between_times(t_start, t_end, keys, names)
-    return out_df
+    return extract_between_times(t_start, t_end, keys, names)
 
 
-def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataFrame:
+def extract_between_times(
+    t_start: AcceptableTimeStamp,
+    t_end: AcceptableTimeStamp,
+    keys: Sequence[str] = None,
+    names: Dict[str, str] = None
+) -> tfs.TfsDataFrame:
     """
-    Extracts data for keys between t_start and t_end from timber.
+    Extracts data for keys between ``t_start`` and ``t_end`` from ``Timber``.
 
     Args:
-        t_start: starting time in CERNDateTime or timestamp.
-        t_end: end time in local CERNDateTime or timestamp.
-        keys: list of data to extract.
-        names: dict to map keys to column names.
+        t_start (AcceptableTimeStamp): starting time in CERNDateTime or timestamp.
+        t_end (AcceptableTimeStamp): end time in local CERNDateTime or timestamp.
+        keys (Sequence[str]): the different variables names to extract data for.
+        names (Dict[str, str): dict mapping keys to column names.
 
     Returns:
         Extracted data in a ``TfsDataFrame``.
@@ -106,26 +116,28 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
     return out_df
 
 
-def get_tune_and_coupling_variables(db) -> list:
+def get_tune_and_coupling_variables(db) -> List[str]:
     """
     Returns the tune and coupling variable names.
 
     Args:
-        db (pytimber.LoggingDB): pytimber database.
+        db (pytimber.LoggingDB): pytimber database connexion.
 
     Returns:
-        `list` of variable names.
+        List of variable names as strings.
     """
     bbq_vars = []
-    for search_term in ['%EIGEN%FREQ%', '%COUPL%ABS%']:
+    for search_term in ["%EIGEN%FREQ%", "%COUPL%ABS%"]:
         search_results = db.search(search_term)
         for res in search_results:
-            if re.match(r'LHC\.B(OFSU|QBBQ\.CONTINUOUS)', res):
+            if re.match(r"LHC\.B(OFSU|QBBQ\.CONTINUOUS)", res):
                 bbq_vars.append(res)
     return bbq_vars
 
 
-def get_fill_times(db, fill_number: int) -> tuple:
+def get_fill_times(
+    db, fill_number: int
+) -> Tuple[Union[datetime.datetime, float], Union[datetime.datetime, float]]:
     """
     Returns start and end time of fill with fill number.
 
@@ -137,4 +149,4 @@ def get_fill_times(db, fill_number: int) -> tuple:
        `Tuple` of start and end time.
     """
     fill = db.getLHCFillData(fill_number)
-    return fill['startTime'], fill['endTime']
+    return fill["startTime"], fill["endTime"]
