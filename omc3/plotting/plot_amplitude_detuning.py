@@ -192,14 +192,14 @@ def main(opt):
             pannot.set_name(id_str, fig)
             _format_axes(ax, labels=ax_labels, limits=limits)
 
-            if opt.show:
-                plt.show()
-
             if opt.output:
                 output = Path(opt.output)
                 fig.savefig(f'{output.with_suffix("")}_{id_str}{output.suffix}')
 
             figs[id_str] = fig
+
+    if opt.show:
+        plt.show()
 
     return figs
 

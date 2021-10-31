@@ -67,9 +67,35 @@ def get_odr_header_err_coeff_corrected(q_plane, j_plane, order):
     return f"{get_odr_header_default(q_plane, j_plane)}_{ERR}{CORRECTED}{COEFFICIENT.format(order=order)}"
 
 
-def get_mav_window_header(plane):
+def get_mav_window_header():
     """ Header to store the moving average window length """
-    return f"MOVINGAV_WINDOW_{plane.upper()}"
+    return "MOVINGAV_WINDOW"
+
+
+def get_fine_window_header():
+    """ Header to store the moving average fine window length """
+    return "FINE_WINDOW"
+
+
+def get_fine_cut_header():
+    """ Header to store the fine cut. """
+    return "FINE_CUT"
+
+
+def get_outlier_limit_header():
+    """ Header to store the outlier limit."""
+    return "OUTLIER_LIMIT"
+
+
+def get_min_tune_header(plane: str):
+    """ Header to store the minimum tune cut. """
+    return f"MIN_Q{plane.upper()}"
+
+
+def get_max_tune_header(plane: str):
+    """ Header to store the maximum tune cut. """
+    return f"MAX_Q{plane.upper()}"
+
 
 # Kick File Columns ###########################################################
 

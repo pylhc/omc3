@@ -86,7 +86,7 @@ from omc3.utils.logging_tools import get_logger, list2str, DebugMode
 
 # Globals ----------------------------------------------------------------------
 
-DTIME = 60  # extra seconds to add to kick times when extracting from timber
+DTIME = 120  # extra seconds to add to kick times window when extracting from timber
 
 LOG = get_logger(__name__)
 
@@ -251,7 +251,7 @@ def get_approx_bbq_interval(bbq_df, time_array, window_length):
     bbq_tmp = bbq_df.dropna()
 
     # convert to float to use math-comparisons
-    ts_index = kick_file_modifiers.get_timestamp_index(bbq_df.index)
+    ts_index = kick_file_modifiers.get_timestamp_index(bbq_tmp.index)
     ts_start, ts_end = time_array[0].timestamp(), time_array[-1].timestamp()
 
     i_start = max(ts_index.get_loc(ts_start, method='nearest') - int(window_length/2.), 0)

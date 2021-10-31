@@ -17,6 +17,7 @@ from contextlib import suppress
 
 import numpy as np
 import tfs
+from jpype import java, JException
 
 from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
@@ -29,6 +30,8 @@ END_TIME = const.get_tend_head()
 
 LOG = logging_tools.get_logger(__name__)
 pytimber = cern_network_import("pytimber")
+
+RETRIES = 10  # number of retries on retyable exception
 
 
 def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
@@ -70,7 +73,20 @@ def extract_between_times(t_start, t_end, keys=None, names=None) -> tfs.TfsDataF
     if keys is None:
         keys = get_tune_and_coupling_variables(db)
 
-    extract_dict = db.get(keys, t_start, t_end)
+    for ii in range(RETRIES+1):
+        # Try getting data from Timber.
+        # If there is a feign.RetryableException, retry up to RETRIES times.
+        try:
+            extract_dict = db.get(keys, t_start.timestamp(), t_end.timestamp())  # use TimeStamps to avoid confusion w/ local time
+        except java.lang.IllegalStateException as e:
+            raise IOError("Could not get data from timber. Probable cause: User has no access to nxcals!") from e
+        except JException as e:
+            if "RetryableException" in str(e) and (ii+1) < RETRIES:
+                LOG.error(f"Could not get data from timber! Trial no {ii+1}/{RETRIES}.")
+                continue
+            raise IOError("Could not get data from timber!") from e
+        else:
+            break
 
     out_df = tfs.TfsDataFrame()
     for key in keys:
