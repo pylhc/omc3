@@ -355,7 +355,7 @@ def _save_options(opt: DotDict) -> None:
     if opt.output:
         os.makedirs(opt.output, exist_ok=True)
         save_options_to_config(
-            opt.output / formats.get_config_filename(__file__), OrderedDict(sorted(opt.items()))
+            Path(opt.output) / formats.get_config_filename(__file__), OrderedDict(sorted(opt.items()))
         )
 
 
