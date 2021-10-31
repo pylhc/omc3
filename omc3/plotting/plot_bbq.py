@@ -120,9 +120,8 @@ def main(opt):
             raise ValueError("interval and kick-file given. Both are used for the same purpose. Please only use one.")
 
         window = 0  # not too important, bars will then indicate first and last kick directly
-        for p in PLANES:
-            with suppress(KeyError):
-                window = bbq_df.headers[get_mav_window_header(p)]
+        with suppress(KeyError):
+            window = bbq_df.headers[get_mav_window_header()]
 
         kick_df = kick_mod.read_timed_dataframe(opt.kick) if isinstance(opt.kick, str) else opt.kick
         opt.interval = ad_ana.get_approx_bbq_interval(bbq_df, kick_df.index, window)

@@ -20,7 +20,10 @@ from omc3.tune_analysis.constants import (get_odr_header_coeff_corrected,
                                           get_natq_corr_col, get_corr_natq_err_col,
                                           get_natq_err_col, get_natq_col, get_bbq_col,
                                           get_mav_col, get_mav_err_col, get_used_in_mav_col,
-                                          get_time_col, get_action_col, get_action_err_col
+                                          get_time_col, get_action_col, get_action_err_col,
+                                          get_mav_window_header, get_outlier_limit_header,
+                                          get_fine_window_header, get_fine_cut_header,
+                                          get_min_tune_header, get_max_tune_header,
                                           )
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
@@ -77,6 +80,9 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
                                                                              length=filter_args.window_length,
                                                                              limit=filter_args.outlier_limit
                                                                              )
+            bbq_df.headers[get_mav_window_header()] = filter_args.window_length
+            bbq_df.headers[get_outlier_limit_header()] = filter_args.outlier_limit
+
         else:
             bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[get_bbq_col(plane)],
                                                                   length=filter_args.window_length,
@@ -85,6 +91,11 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
                                                                   fine_length=filter_args.fine_window,
                                                                   fine_cut=filter_args.fine_cut,
                                                                   )
+            bbq_df.headers[get_mav_window_header()] = filter_args.window_length
+            bbq_df.headers[get_min_tune_header(plane)] = filter_args.tunes_minmax[2*idx]
+            bbq_df.headers[get_max_tune_header(plane)] = filter_args.tunes_minmax[2*idx+1]
+            bbq_df.headers[get_fine_window_header()] = filter_args.fine_window
+            bbq_df.headers[get_fine_cut_header()] = filter_args.fine_cut
 
         bbq_df[get_mav_col(plane)] = bbq_mav
         bbq_df[get_mav_err_col(plane)] = bbq_std
