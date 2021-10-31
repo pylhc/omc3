@@ -31,7 +31,7 @@ END_TIME = const.get_tend_head()
 LOG = logging_tools.get_logger(__name__)
 pytimber = cern_network_import("pytimber")
 
-RETRIES = 10  # number of retries on retyable exception
+RETRIES = 10  # number of retries on retryable exception
 
 
 def lhc_fill_to_tfs(fill_number, keys=None, names=None) -> tfs.TfsDataFrame:
