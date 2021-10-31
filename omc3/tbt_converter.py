@@ -16,7 +16,7 @@ from generic_parser.entrypoint_parser import (
     save_options_to_config,
 )
 
-from omc3 import tbt
+import turn_by_turn as tbt
 from omc3.definitions import formats
 from omc3.utils import iotools, logging_tools
 
@@ -33,7 +33,7 @@ def converter_params():
         name="tbt_datatype",
         type=str,
         default="lhc",
-        choices=list(tbt.handler.DATA_READERS.keys()),
+        choices=list(tbt.io.DATA_READERS.keys()),
         help="Choose the datatype from which to import. ",
     )
     params.add_parameter(
@@ -109,7 +109,7 @@ def _read_and_write_files(opt):
         if opt.drop_elements:
             tbt_data = _drop_elements(tbt_data, opt.drop_elements)
         if opt.use_average:
-            tbt_data = tbt.handler.generate_average_tbtdata(tbt_data)
+            tbt_data = tbt.utils.generate_average_tbtdata(tbt_data)
         for i in range(opt.realizations):
             suffix = f"_r{i}" if opt.realizations > 1 else ""
             if opt.noise_levels is None:
@@ -143,12 +143,10 @@ def _drop_elements(tbt_data: tbt.TbtData, elements_to_drop: Sequence[str]) -> tb
     for element in elements_to_drop:
         LOGGER.debug(f"Dropping element '{element}'")
         try:
-            for entry in copied_data.matrices:
-                for (
-                    dataframe
-                ) in entry.values():  # X / Y dfs, BPMs as rows & turn coordinates as columns
-                    dataframe.drop(element, inplace=True)
-        except KeyError:
+            for transverse_data in copied_data.matrices:
+                transverse_data.X = transverse_data.X.drop(element)
+                transverse_data.Y = transverse_data.Y.drop(element)
+        except (KeyError, AttributeError):
             LOGGER.warning(f"Element '{element}' could not be found, skipped")
     return copied_data
 
