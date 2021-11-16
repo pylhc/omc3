@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.model_creators.lhc_model_creator &mdash; omc3 0.2.0 documentation</title>
+  <title>omc3.model.model_creators.lhc_model_creator &mdash; omc3 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -242,7 +242,7 @@
 
 
 <div class="viewcode-block" id="LhcModelCreator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator">[docs]</a><span class="k">class</span> <span class="nc">LhcModelCreator</span><span class="p">(</span><span class="n">ModelCreator</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="LhcModelCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># nominal</span>
         <span class="n">use_acd</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
         <span class="n">use_adt</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ADT</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
@@ -261,9 +261,9 @@
                 <span class="sa">f</span><span class="s2">&quot;exec, twiss_adt(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ADT_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">madx_script</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="LhcModelCreator.get_correction_check_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_correction_check_script">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_correction_check_script</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;changeparameters_couple.madx&quot;</span><span class="p">,</span> <span class="n">chrom</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -278,9 +278,9 @@
                 <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors_and_ips(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s1">&#39;twiss_cor_dpm.dat&#39;</span><span class="si">}</span><span class="s2">&#39;, %DELTAPM);</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors_and_ips(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s1">&#39;twiss_cor_dpp.dat&#39;</span><span class="si">}</span><span class="s2">&#39;, %DELTAPP);</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">madx_script</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="LhcModelCreator.prepare_run"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.prepare_run">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;2018&quot;</span><span class="p">,</span> <span class="s2">&quot;2022&quot;</span><span class="p">]:</span>  <span class="c1"># these years should be handled by the fetcher</span>
             <span class="n">symlink_dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span><span class="o">/</span><span class="n">LHC_REPOSITORY_NAME</span>
@@ -319,7 +319,7 @@
                 <span class="n">gen_df</span><span class="p">,</span>
                 <span class="n">headers_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">},</span>
                 <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -349,7 +349,7 @@
     <span class="n">EXTRACTED_MQTS_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;extracted_mqts.str&quot;</span>
     <span class="n">CORRECTIONS_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;corrections.madx&quot;</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="LhcBestKnowledgeCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t set ACD or ADT for best knowledge model.&quot;</span><span class="p">)</span>
@@ -366,18 +366,18 @@
             <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">madx_script</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="LhcBestKnowledgeCreator.check_run_output"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.check_run_output">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">check_run_output</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">files_to_check</span> <span class="o">=</span> <span class="p">[</span><span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span> <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="p">]</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_files_exist</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">files_to_check</span><span class="p">)</span></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_files_exist</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">files_to_check</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="LhcCouplingCreator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator">[docs]</a><span class="k">class</span> <span class="nc">LhcCouplingCreator</span><span class="p">(</span><span class="n">LhcModelCreator</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="LhcCouplingCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_correction_check_script</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_correction_check_script</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

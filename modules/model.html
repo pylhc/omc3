@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.2.0 documentation</title>
+  <title>Model &mdash; omc3 0.2.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -228,13 +228,13 @@ Specific constants to be used in <code class="docutils literal notranslate"><spa
 It contains entrypoint the parent <cite>Accelerator</cite> class as well as other support classes.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.AccElementTypes">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">AccElementTypes</span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AccElementTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">AccElementTypes</span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AccElementTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="Permalink to this definition"></a></dt>
 <dd><p>Defines the strings for the element types <code class="docutils literal notranslate"><span class="pre">BPMS</span></code>, <code class="docutils literal notranslate"><span class="pre">MAGNETS</span></code> and <code class="docutils literal notranslate"><span class="pre">ARC_BPMS</span></code>.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">Accelerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">Accelerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract class to serve as an interface to implement the rest of the accelerators.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script">
@@ -244,20 +244,20 @@ It contains entrypoint the parent <cite>Accelerator</cite> class as well as othe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_correctors_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_correctors_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_correctors_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_correctors_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the set of corrector variables between <code class="docutils literal notranslate"><span class="pre">frm</span></code> and <code class="docutils literal notranslate"><span class="pre">to</span></code>, with classes in
 classes. <code class="docutils literal notranslate"><span class="pre">None</span></code> means select all.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_dir">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_dir" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_dir" title="Permalink to this definition"></a></dt>
 <dd><p>Default directory for accelerator. Should be overwritten if more specific.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_element_types_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_elements</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_element_types_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_element_types_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_element_types_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a boolean mask for elements in <code class="docutils literal notranslate"><span class="pre">list_of_elements</span></code> that belong to any of the
 specified types.
 Needs to handle: <cite>bpm</cite>, <cite>magnet</cite>, <cite>arc_bpm</cite> (see <a class="reference internal" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="omc3.model.accelerators.accelerator.AccElementTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccElementTypes</span></code></a>)</p>
@@ -291,7 +291,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_file">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_file" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_file" title="Permalink to this definition"></a></dt>
 <dd><p>Default location for accelerator files. Should be overwritten if more specific.</p>
 </dd></dl>
 
@@ -304,7 +304,7 @@ iterative correction).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_variables">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">get_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_variables" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Gets the variables with elements in the given range and the given classes. <code class="docutils literal notranslate"><span class="pre">None</span></code> means
 everything.</p>
 </dd></dl>
@@ -319,21 +319,21 @@ everything.</p>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.AcceleratorDefinitionError">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">AcceleratorDefinitionError</span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AcceleratorDefinitionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AcceleratorDefinitionError" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">AcceleratorDefinitionError</span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AcceleratorDefinitionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AcceleratorDefinitionError" title="Permalink to this definition"></a></dt>
 <dd><p>Raised when an <cite>Accelerator</cite> instance is wrongly used, for example by calling a method that
 should have been overwritten.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Element">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">Element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Element" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">Element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Element" title="Permalink to this definition"></a></dt>
 <dd><p>Generic corrector element class that holds <cite>name</cite> and <cite>position (s)</cite> of the corrector. This
 element should represent a physical element of the accelerator.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Variable">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Variable" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Variable" title="Permalink to this definition"></a></dt>
 <dd><p>Generic corrector variable class that holds <cite>name</cite>, <cite>position (s)</cite> and physical elements it
 affects. These variables should be logical variables that have and effect in the model if
 modified.</p>
@@ -394,7 +394,7 @@ modified.</p>
 </dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.esrf.Esrf">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.esrf.</span></span><span class="sig-name descname"><span class="pre">Esrf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/esrf.html#Esrf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.esrf.Esrf" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.esrf.</span></span><span class="sig-name descname"><span class="pre">Esrf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/esrf.html#Esrf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.esrf.Esrf" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -473,17 +473,17 @@ modified.</p>
 </dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.lhc.</span></span><span class="sig-name descname"><span class="pre">Lhc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.lhc.</span></span><span class="sig-name descname"><span class="pre">Lhc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for LHC-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc.get_base_madx_script">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_base_madx_script" title="Permalink to this definition"></a></dt>
 <dd><p>Returns job (string) to create the basic accelerator sequence.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc.get_exciter_bpm">
-<span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commonbpms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_exciter_bpm" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commonbpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_exciter_bpm" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the BPM next to the exciter.
 The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
 <dl class="field-list simple">
@@ -512,7 +512,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc.get_update_correction_script">
-<span class="sig-name descname"><span class="pre">get_update_correction_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outpath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_update_correction_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_update_correction_script" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_update_correction_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_update_correction_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_update_correction_script" title="Permalink to this definition"></a></dt>
 <dd><p>Returns job (string) to create an updated model from changeparameters input (used in
 iterative correction).</p>
 </dd></dl>
@@ -588,7 +588,7 @@ Will Raise an <code class="docutils literal notranslate"><span class="pre">Accel
 </dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.ps.</span></span><span class="sig-name descname"><span class="pre">Ps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.ps.</span></span><span class="sig-name descname"><span class="pre">Ps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for PS-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps.get_base_madx_script">
@@ -619,7 +619,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps.get_file">
-<span class="sig-name descname"><span class="pre">get_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_file" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps.get_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps.get_file" title="Permalink to this definition"></a></dt>
 <dd><p>Get filepaths for PS files.</p>
 </dd></dl>
 
@@ -692,7 +692,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.psbooster.</span></span><span class="sig-name descname"><span class="pre">Psbooster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.psbooster.</span></span><span class="sig-name descname"><span class="pre">Psbooster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for Psbooster-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster.get_base_madx_script">
@@ -787,7 +787,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.skekb.SKekB">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.skekb.</span></span><span class="sig-name descname"><span class="pre">SKekB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.skekb.</span></span><span class="sig-name descname"><span class="pre">SKekB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB" title="Permalink to this definition"></a></dt>
 <dd><p>KEK’s SuperKEKB accelerator.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.skekb.SKekB.verify_object">
@@ -858,8 +858,14 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.iota.Iota">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.iota.</span></span><span class="sig-name descname"><span class="pre">Iota</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/iota.html#Iota"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.iota.Iota" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.iota.</span></span><span class="sig-name descname"><span class="pre">Iota</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/iota.html#Iota"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.iota.Iota" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.accelerators.iota.Iota.verify_object">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verify_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/iota.html#Iota.verify_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.iota.Iota.verify_object" title="Permalink to this definition"></a></dt>
+<dd><p>Verifies that this instance of an <cite>Accelerator</cite> is properly instantiated.</p>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 <span class="target" id="module-omc3.model.accelerators.petra"></span><section id="petra">
@@ -868,7 +874,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 Model creation not implemented yet.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.petra.Petra">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.petra.</span></span><span class="sig-name descname"><span class="pre">Petra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.petra.</span></span><span class="sig-name descname"><span class="pre">Petra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.petra.Petra.get_exciter_bpm">
 <span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commonbpms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra.get_exciter_bpm" title="Permalink to this definition"></a></dt>
@@ -898,18 +904,106 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">LHC</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcBestKnowledgeCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcBestKnowledgeCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.check_run_output">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_run_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">omc3.model.accelerators.lhc.Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator.check_run_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.check_run_output" title="Permalink to this definition"></a></dt>
+<dd><p>Checks that the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run was successful. It should check that the
+appropriate directories are created, and that macros and other files are in place.
+Checks the accelerator instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_instance_and_model</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.get_madx_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">omc3.model.accelerators.lhc.Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.get_madx_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcCouplingCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcCouplingCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcCouplingCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcCouplingCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator.get_madx_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">omc3.model.accelerators.lhc.Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcCouplingCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator.get_madx_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcModelCreator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_correction_check_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_correction_check_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">omc3.model.accelerators.lhc.Lhc</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'changeparameters_couple.madx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator.get_correction_check_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_correction_check_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections. This script should create twiss
+files for before (<code class="docutils literal notranslate"><span class="pre">twiss_no.dat</span></code>) and after (<code class="docutils literal notranslate"><span class="pre">twiss_corr.dat</span></code>) correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p></li>
+<li><p><strong>corr_file</strong> (<em>str</em>) -- File containing the corrections (madx-readable).</p></li>
+<li><p><strong>chrom</strong> (<em>bool</em>) -- Flag for chromatic corrections deltapm and deltapp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_madx_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">omc3.model.accelerators.lhc.Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_madx_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcModelCreator.prepare_run">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">omc3.model.accelerators.lhc.Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator.prepare_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.prepare_run" title="Permalink to this definition"></a></dt>
+<dd><p>Prepares the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run. It should check that the appropriate directories
+are created, and that macros and other files are in place.
+Should also check that all necessary data for model creation is available in the accelerator
+instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_accel_and_instance</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 <span class="target" id="module-omc3.model.model_creators.ps_model_creator"></span><section id="ps-model-creator">
@@ -917,8 +1011,55 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PS</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.ps_model_creator.PsModelCreator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.ps_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.ps_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.ps_model_creator.PsModelCreator.get_correction_check_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_correction_check_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.ps.Ps" title="omc3.model.accelerators.ps.Ps"><span class="pre">omc3.model.accelerators.ps.Ps</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator.get_correction_check_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator.get_correction_check_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections. This script should create twiss
+files for before (<code class="docutils literal notranslate"><span class="pre">twiss_no.dat</span></code>) and after (<code class="docutils literal notranslate"><span class="pre">twiss_corr.dat</span></code>) correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p></li>
+<li><p><strong>corr_file</strong> (<em>str</em>) -- File containing the corrections (madx-readable).</p></li>
+<li><p><strong>chrom</strong> (<em>bool</em>) -- Flag for chromatic corrections deltapm and deltapp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.ps_model_creator.PsModelCreator.get_madx_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.ps.Ps" title="omc3.model.accelerators.ps.Ps"><span class="pre">omc3.model.accelerators.ps.Ps</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator.get_madx_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.ps_model_creator.PsModelCreator.prepare_run">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.ps.Ps" title="omc3.model.accelerators.ps.Ps"><span class="pre">omc3.model.accelerators.ps.Ps</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator.prepare_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator.prepare_run" title="Permalink to this definition"></a></dt>
+<dd><p>Prepares the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run. It should check that the appropriate directories
+are created, and that macros and other files are in place.
+Should also check that all necessary data for model creation is available in the accelerator
+instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_accel_and_instance</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 <span class="target" id="module-omc3.model.model_creators.psbooster_model_creator"></span><section id="ps-booster-model-creator">
@@ -926,8 +1067,55 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PSB</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.psbooster_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsboosterModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.psbooster_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsboosterModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.get_correction_check_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_correction_check_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.psbooster.Psbooster" title="omc3.model.accelerators.psbooster.Psbooster"><span class="pre">omc3.model.accelerators.psbooster.Psbooster</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator.get_correction_check_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.get_correction_check_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections. This script should create twiss
+files for before (<code class="docutils literal notranslate"><span class="pre">twiss_no.dat</span></code>) and after (<code class="docutils literal notranslate"><span class="pre">twiss_corr.dat</span></code>) correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p></li>
+<li><p><strong>corr_file</strong> (<em>str</em>) -- File containing the corrections (madx-readable).</p></li>
+<li><p><strong>chrom</strong> (<em>bool</em>) -- Flag for chromatic corrections deltapm and deltapp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.get_madx_script">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.psbooster.Psbooster" title="omc3.model.accelerators.psbooster.Psbooster"><span class="pre">omc3.model.accelerators.psbooster.Psbooster</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.get_madx_script" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.prepare_run">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.psbooster.Psbooster" title="omc3.model.accelerators.psbooster.Psbooster"><span class="pre">omc3.model.accelerators.psbooster.Psbooster</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator.prepare_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.prepare_run" title="Permalink to this definition"></a></dt>
+<dd><p>Prepares the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run. It should check that the appropriate directories
+are created, and that macros and other files are in place.
+Should also check that all necessary data for model creation is available in the accelerator
+instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_accel_and_instance</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 <span class="target" id="module-omc3.model.model_creators.segment_creator"></span><section id="segment-creator">

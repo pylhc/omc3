@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utils &mdash; omc3 0.2.0 documentation</title>
+  <title>Utils &mdash; omc3 0.2.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -204,7 +204,7 @@
 <p>Provides contexts managers to use.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.contexts.log_out">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.contexts.</span></span><span class="sig-name descname"><span class="pre">log_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">stdout=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='UTF-8'&gt;</span></em>, <em class="sig-param"><span class="pre">stderr=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stderr&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='UTF-8'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/contexts.html#log_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.contexts.log_out" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.contexts.</span></span><span class="sig-name descname"><span class="pre">log_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdout=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='UTF-8'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stderr&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='UTF-8'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/contexts.html#log_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.contexts.log_out" title="Permalink to this definition"></a></dt>
 <dd><p>Temporarily changes <code class="docutils literal notranslate"><span class="pre">sys.stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">sys.stderr</span></code>.</p>
 </dd></dl>
 
@@ -232,19 +232,19 @@
 <p>Helper functions for input/output issues.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.iotools.PathOrStr">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">PathOrStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#PathOrStr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.PathOrStr" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">PathOrStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#PathOrStr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.PathOrStr" title="Permalink to this definition"></a></dt>
 <dd><p>A class that behaves like a Path when possible, otherwise like a string.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.iotools.PathOrStrOrDataFrame">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">PathOrStrOrDataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#PathOrStrOrDataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.PathOrStrOrDataFrame" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">PathOrStrOrDataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#PathOrStrOrDataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.PathOrStrOrDataFrame" title="Permalink to this definition"></a></dt>
 <dd><p>A class that behaves like a Path when possible, otherwise like a string.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.iotools.convert_paths_in_dict_to_strings">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">convert_paths_in_dict_to_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#convert_paths_in_dict_to_strings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.convert_paths_in_dict_to_strings" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">convert_paths_in_dict_to_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#convert_paths_in_dict_to_strings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.convert_paths_in_dict_to_strings" title="Permalink to this definition"></a></dt>
 <dd><p>Converts all Paths in the dict to strings, including those in iterables.</p>
 </dd></dl>
 
@@ -269,14 +269,14 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.iotools.remove_none_dict_entries">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">remove_none_dict_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#remove_none_dict_entries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.remove_none_dict_entries" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">remove_none_dict_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#remove_none_dict_entries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.remove_none_dict_entries" title="Permalink to this definition"></a></dt>
 <dd><p>Removes <code class="docutils literal notranslate"><span class="pre">None</span></code> entries from dict. This can be used as a workaround to
 <a class="reference external" href="https://github.com/pylhc/generic_parser/issues/26">https://github.com/pylhc/generic_parser/issues/26</a>.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.iotools.save_config">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#save_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.save_config" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#save_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.save_config" title="Permalink to this definition"></a></dt>
 <dd><p>Quick wrapper for <code class="docutils literal notranslate"><span class="pre">save_options_to_config</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -297,7 +297,7 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 (see: <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_logger()</span></code>).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.logging_tools.DebugMode">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">DebugMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#DebugMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.DebugMode" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">DebugMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#DebugMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.DebugMode" title="Permalink to this definition"></a></dt>
 <dd><p>Context Manager for the debug mode.
 Hint: Does not work with <code class="docutils literal notranslate"><span class="pre">&#64;contextmanager</span></code> from contextlib (even though nicer code),
 as the <code class="docutils literal notranslate"><span class="pre">_get_caller</span></code> would find <strong>contextlib.py</strong>.</p>
@@ -313,13 +313,13 @@ as the <code class="docutils literal notranslate"><span class="pre">_get_caller<
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.logging_tools.MaxFilter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">MaxFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#MaxFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.MaxFilter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">MaxFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#MaxFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.MaxFilter" title="Permalink to this definition"></a></dt>
 <dd><p>To get messages only up to a certain level.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.logging_tools.TempFile">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">TempFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#TempFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.TempFile" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">TempFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#TempFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.TempFile" title="Permalink to this definition"></a></dt>
 <dd><p>Context Manager. Lets another function write into a temporary file and logs its contents.
 It won’t open the file, so only the files path is returned.</p>
 <dl class="field-list simple">
@@ -334,7 +334,7 @@ It won’t open the file, so only the files path is returned.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.logging_tools.TempStringLogger">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">TempStringLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#TempStringLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.TempStringLogger" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">TempStringLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#TempStringLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.TempStringLogger" title="Permalink to this definition"></a></dt>
 <dd><p>Temporarily log into a string that can be retrieved by <code class="docutils literal notranslate"><span class="pre">get_log</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -405,7 +405,7 @@ It won’t open the file, so only the files path is returned.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.logging_tools.list2str">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">list2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#list2str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.list2str" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">list2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#list2str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.list2str" title="Permalink to this definition"></a></dt>
 <dd><p>Returns string representation of <code class="docutils literal notranslate"><span class="pre">list_</span></code>, but without brackets.</p>
 </dd></dl>
 
@@ -429,7 +429,7 @@ It won’t open the file, so only the files path is returned.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.logging_tools.stream_handler">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">stream_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">stream=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='UTF-8'&gt;</span></em>, <em class="sig-param"><span class="pre">level=10</span></em>, <em class="sig-param"><span class="pre">fmt='%(levelname)7s</span> <span class="pre">|</span> <span class="pre">%(message)s</span> <span class="pre">|</span> <span class="pre">%(name)s'</span></em>, <em class="sig-param"><span class="pre">max_level=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#stream_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.stream_handler" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">stream_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='UTF-8'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level=10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt='%(levelname)7s</span> <span class="pre">|</span> <span class="pre">%(message)s</span> <span class="pre">|</span> <span class="pre">%(name)s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_level=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#stream_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.stream_handler" title="Permalink to this definition"></a></dt>
 <dd><p>Convenience function so the caller does not have to import logging.</p>
 </dd></dl>
 
@@ -451,7 +451,7 @@ It won’t open the file, so only the files path is returned.</p>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.mock.CERNNetworkMockPackage">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.mock.</span></span><span class="sig-name descname"><span class="pre">CERNNetworkMockPackage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/mock.html#CERNNetworkMockPackage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.mock.CERNNetworkMockPackage" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.mock.</span></span><span class="sig-name descname"><span class="pre">CERNNetworkMockPackage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/mock.html#CERNNetworkMockPackage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.mock.CERNNetworkMockPackage" title="Permalink to this definition"></a></dt>
 <dd><p>Mock class to raise an error if the desired package functionality is called when the package is not
 actually installed. Designed for packages installable only from inside the CERN network,
 that are declared as <code class="docutils literal notranslate"><span class="pre">cern</span></code> extra. See module documentation.</p>
@@ -459,7 +459,7 @@ that are declared as <code class="docutils literal notranslate"><span class="pre
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.mock.cern_network_import">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.mock.</span></span><span class="sig-name descname"><span class="pre">cern_network_import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/mock.html#cern_network_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.mock.cern_network_import" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.mock.</span></span><span class="sig-name descname"><span class="pre">cern_network_import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/mock.html#cern_network_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.mock.cern_network_import" title="Permalink to this definition"></a></dt>
 <dd><p>Convenience function to try and import packages only available (and installable) on the CERN network.
 If installed, the module is returned, otherwise a mock class is returned, which will raise an
 insightful <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> on attempted use.</p>
@@ -718,7 +718,7 @@ Periodicity period of data, default is (2 * np.pi)</p></li>
 and UTC time.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.time_tools.</span></span><span class="sig-name descname"><span class="pre">AccDatetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.time_tools.</span></span><span class="sig-name descname"><span class="pre">AccDatetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper for a datetime object to easily convert between local and UTC time as well as give
 different presentations.</p>
 <dl class="py method">
@@ -735,67 +735,67 @@ different presentations.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.datetime">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">datetime</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.datetime" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datetime</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Return normal datetime object (in case ducktyping does not work. Looking at you, mpl!).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.from_cern_utc_string">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_cern_utc_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_cern_utc_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_cern_utc_string" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cern_utc_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_cern_utc_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_cern_utc_string" title="Permalink to this definition"></a></dt>
 <dd><p>Create <cite>AccDatetime</cite> object from datetime in utc string.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.from_local">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_local" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_local" title="Permalink to this definition"></a></dt>
 <dd><p>Create AccDatetime object from datetime in local time.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.from_local_string">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_local_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_local_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_local_string" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_local_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_local_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_local_string" title="Permalink to this definition"></a></dt>
 <dd><p>Create <cite>AccDatetime</cite> object from datetime in local time string.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.from_timestamp">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_timestamp" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_timestamp" title="Permalink to this definition"></a></dt>
 <dd><p>Create <cite>AccDatetime</cite> object from timestamp.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.from_utc">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_utc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_utc" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_utc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_utc" title="Permalink to this definition"></a></dt>
 <dd><p>Create <cite>AccDatetime</cite> object from datetime in utc.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.from_utc_string">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_utc_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_utc_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_utc_string" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_utc_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.from_utc_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.from_utc_string" title="Permalink to this definition"></a></dt>
 <dd><p>Create <cite>AccDatetime</cite> object from datetime in utc string.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.local">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">local</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.local" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">local</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.local" title="Permalink to this definition"></a></dt>
 <dd><p>Get local datetime object.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.local_string">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">local_string</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.local_string" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">local_string</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.local_string" title="Permalink to this definition"></a></dt>
 <dd><p>Get local time as string.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.local_timezone">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">local_timezone</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.local_timezone" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">local_timezone</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.local_timezone" title="Permalink to this definition"></a></dt>
 <dd><p>Get local timezone.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.now">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.now"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.now" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#AccDatetime.now"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.now" title="Permalink to this definition"></a></dt>
 <dd><p>Create <cite>AccDatetime</cite> object at now.</p>
 </dd></dl>
 
@@ -807,13 +807,13 @@ different presentations.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.utc">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">utc</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.utc" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">utc</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.utc" title="Permalink to this definition"></a></dt>
 <dd><p>Get UTC datetime object.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AccDatetime.utc_string">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">utc_string</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.utc_string" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">utc_string</span></span><a class="headerlink" href="#omc3.utils.time_tools.AccDatetime.utc_string" title="Permalink to this definition"></a></dt>
 <dd><p>Get utc time as string.</p>
 </dd></dl>
 
@@ -821,7 +821,7 @@ different presentations.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.AcceleratorDatetime">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.time_tools.</span></span><span class="sig-name descname"><span class="pre">AcceleratorDatetime</span></span><em class="property"> <span class="pre">=</span> <span class="pre">{'lhc':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;,</span> <span class="pre">'ps':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;,</span> <span class="pre">'sps':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;}</span></em><a class="headerlink" href="#omc3.utils.time_tools.AcceleratorDatetime" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.time_tools.</span></span><span class="sig-name descname"><span class="pre">AcceleratorDatetime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'lhc':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;,</span> <span class="pre">'ps':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;,</span> <span class="pre">'sps':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;}</span></em><a class="headerlink" href="#omc3.utils.time_tools.AcceleratorDatetime" title="Permalink to this definition"></a></dt>
 <dd><p>Accelerator name to AccDatetime mapping.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -832,7 +832,7 @@ different presentations.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.time_tools.CERNDatetime">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">omc3.utils.time_tools.</span></span><span class="sig-name descname"><span class="pre">CERNDatetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#CERNDatetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.CERNDatetime" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.time_tools.</span></span><span class="sig-name descname"><span class="pre">CERNDatetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/time_tools.html#CERNDatetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.time_tools.CERNDatetime" title="Permalink to this definition"></a></dt>
 <dd><p><cite>AccDatetime</cite> class for all accelerators at CERN.</p>
 </dd></dl>
 

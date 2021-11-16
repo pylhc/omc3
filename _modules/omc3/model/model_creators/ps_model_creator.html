@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.model_creators.ps_model_creator &mdash; omc3 0.2.0 documentation</title>
+  <title>omc3.model.model_creators.ps_model_creator &mdash; omc3 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -213,7 +213,7 @@
 
 
 <div class="viewcode-block" id="PsModelCreator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator">[docs]</a><span class="k">class</span> <span class="nc">PsModelCreator</span><span class="p">(</span><span class="n">ModelCreator</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="PsModelCreator.get_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator.get_madx_script">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Ps</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
@@ -223,16 +223,16 @@
         <span class="p">}</span>
         <span class="n">madx_template</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;twiss.mask&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="n">madx_template</span> <span class="o">%</span> <span class="n">replace_dict</span>
-        <span class="k">return</span> <span class="n">madx_script</span>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="PsModelCreator.get_correction_check_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator.get_correction_check_script">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_correction_check_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chrom</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s2">&quot;Correction check is not implemented for the Ps model creator yet. &quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s2">&quot;Correction check is not implemented for the Ps model creator yet. &quot;</span><span class="p">)</span></div>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="PsModelCreator.prepare_run"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator.prepare_run">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Ps</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># get path of file from PS model directory (without year at the end)</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;error_deff.txt&quot;</span><span class="p">),</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;error_deff.txt&quot;</span><span class="p">),</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

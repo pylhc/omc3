@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.2.0 documentation</title>
+  <title>Correction &mdash; omc3 0.2.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -16,7 +16,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -348,7 +348,7 @@ optics_params.</p>
 </dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.global_correction.global_correction_entrypoint">
-<span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.global_correction.global_correction_entrypoint" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.global_correction.global_correction_entrypoint" title="Permalink to this definition"></a></dt>
 <dd><p>Do the global correction. Iteratively.</p>
 </dd></dl>
 
@@ -402,7 +402,7 @@ to use. Check <a class="reference internal" href="../modules/model.html#module-o
 </ul>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.response_creator.create_response_entrypoint">
-<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.create_response_entrypoint" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.create_response_entrypoint" title="Permalink to this definition"></a></dt>
 <dd><p>Entry point for creating pandas-based response matrices.</p>
 <p>The response matrices can be either created by response_madx or TwissResponse.</p>
 </dd></dl>
