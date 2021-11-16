@@ -5,9 +5,9 @@
             "affiliation": "CERN"
         },
         {
-            "name": "Michael Hofer",
+            "name": "Lukáš Malina",
             "affiliation": "CERN",
-            "orcid": "0000-0001-6173-0232"
+            "orcid": "0000-0002-4673-6035"
         },
         {
             "name": "Joschua Dilly",
@@ -15,23 +15,18 @@
             "orcid": "0000-0001-7864-5448"
         },
         {
+            "name": "Michael Hofer",
+            "affiliation": "CERN",
+            "orcid": "0000-0001-6173-0232"
+        },
+        {
             "name": "Felix Soubelet",
             "affiliation": "University of Liverpool & CERN",
             "orcid": "0000-0001-8012-1440"
         },
         {
-            "name": "Lukáš Malina",
-            "affiliation": "CERN",
-            "orcid": "0000-0002-4673-6035"
-        },
-        {
             "name": "Andreas Wegscheider",
-            "affiliation": "CERN",
-        },
-        {
-            "name": "Maël Le Garrec",
-            "affiliation": "CERN",
-            "orcid": "0000-0002-8146-2340"
+            "affiliation": "CERN"
         },
         {
             "name": "Jaime Maria Coello De Portugal - Martinez Vazquez",
@@ -39,13 +34,28 @@
             "orcid": "0000-0002-6899-3809"
         },
         {
-            "name": "Rogelio Tomas Garcia",
+            "name": "Maël Le Garrec",
             "affiliation": "CERN",
-            "orcid": "0000-0002-9857-1703"
+            "orcid": "0000-0002-8146-2340"
         },
         {
             "name": "Tobias Persson",
             "affiliation": "CERN"
+        },
+        {
+            "name": "Jacqueline Keintzel",
+            "affiliation": "CERN",
+            "orcid": "0000-0003-1396-8478"
+        },
+        {
+            "name": "Hector Garcia Morales",
+            "affiliation": "CERN",
+            "orcid": "0000-0001-5100-8975"
+        },
+        {
+            "name": "Rogelio Tomas Garcia",
+            "affiliation": "CERN",
+            "orcid": "0000-0002-9857-1703"
         }
     ],
     "title": "OMC3",
