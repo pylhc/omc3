@@ -5,6 +5,7 @@
 [![Code Climate maintainability (percentage)](https://img.shields.io/codeclimate/maintainability-percentage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)
 [![GitHub last commit](https://img.shields.io/github/last-commit/pylhc/omc3.svg?style=popout)](https://github.com/pylhc/omc3/)
 [![GitHub release](https://img.shields.io/github/release/pylhc/omc3.svg?style=popout)](https://github.com/pylhc/omc3/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5705625.svg)](https://doi.org/10.5281/zenodo.5705625)
 
 This is the python-tool package of the Optics Measurements and Corrections team (OMC) at CERN.
 
