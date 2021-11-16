@@ -5,7 +5,7 @@ The omc3 library
 omc3 is a tool package for the optics measurements and corrections group (OMC) at CERN.
 
 :copyright: pyLHC/OMC-Team working group.
-:license: GNU GPLv3, see the LICENSE file for details.
+:license: MIT, see the LICENSE file for details.
 """
 
 __title__ = "omc3"
