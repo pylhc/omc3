@@ -5,6 +5,7 @@
 [![Code Climate maintainability (percentage)](https://img.shields.io/codeclimate/maintainability-percentage/pylhc/omc3.svg?style=popout)](https://codeclimate.com/github/pylhc/omc3)
 [![GitHub last commit](https://img.shields.io/github/last-commit/pylhc/omc3.svg?style=popout)](https://github.com/pylhc/omc3/)
 [![GitHub release](https://img.shields.io/github/release/pylhc/omc3.svg?style=popout)](https://github.com/pylhc/omc3/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5705625.svg)](https://doi.org/10.5281/zenodo.5705625)
 
 This is the python-tool package of the Optics Measurements and Corrections team (OMC) at CERN.
 
@@ -19,11 +20,12 @@ To contribute, see [our guidelines](https://pylhc.github.io/packages/development
 
 ## Installing
 
-The `omc3` package is `Python 3.7+` compatible, but not yet deployed to `PyPI`.
-The best way to install it is through pip from the online `master` branch, which is stable:
-```bash
-pip install git+https://github.com/pylhc/omc3.git#egg=omc3
+Installation is easily done via `pip`:
+
 ```
+pip install omc3
+```
+
 
 For development purposes, we recommend creating a new virtual environment and installing from VCS in editable mode with all extra dependencies (`cern` for packages only available in the CERN GPN, `test` for `pytest` and relevant plugins, and `doc` for packages needed to build documentation)
 ```bash
@@ -70,5 +72,4 @@ Documentation including relevant flags and parameters can be found at <https://p
 
 ## License
 
-This project is licensed under the `GNU GPLv3` License.
-Please take a moment to check its permissivity - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the `MIT License` - see the [LICENSE](LICENSE) file for details.
