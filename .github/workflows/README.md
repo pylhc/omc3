@@ -12,7 +12,7 @@ It runs on `ubuntu-latest` and our lowest supported version, `Python 3.7`.
 
 Tests are ensured in the `tests` workflow, in two stages.
 The first stage runs our simple tests on all push events (except to `master`), and the second one runs the rest of the testing suite (the `extended` tests).
-Tests run on a matrix of all supported operating systems (ubuntu-18.04, ubuntu-20.04, windows-latest and macos-latest) for all supported Python versions (currently `3.7`, `3.8` and `3.9`).
+Tests run on a matrix of all supported operating systems (ubuntu-18.04, ubuntu-20.04, windows-latest and macos-latest) for all supported Python versions (currently `3.7`, `3.8`, `3.9` and `3.10`).
 
 ### Test Coverage
 
