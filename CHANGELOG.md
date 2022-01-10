@@ -1,5 +1,11 @@
 # OMC3 Changelog
 
+#### 2022-01-10
+
+- Fixed:
+  - Sequences for K-Modulation are now included in PyPi package
+  - Bug fixed where default errors in K-Modulation would not have been taken into account
+  
 #### 2021-07-14 
 _by jdilly_
 

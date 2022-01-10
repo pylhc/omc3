@@ -301,7 +301,7 @@ def convert_betastar_and_waist(bs):
 
 def check_default_error(options, error):
     if options[error] is None:
-        options[error] = DEFAULTS_IP[error] if options.ip is not None else DEFAULTS_CIRCUITS[error]
+        options[error] = DEFAULTS_IP[error] if options.interaction_point is not None else DEFAULTS_CIRCUITS[error]
     return options
 
 
