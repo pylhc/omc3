@@ -283,6 +283,21 @@ def _rdt_to_output_df(
     Combines all the needed columns (``S``, ``NAME``, ``AMP``, ``PHASE``, ``REAL``, ``IMAG``, and the
     ``ERR*`` and ``*MDL`` columns).
 
+    .. note::
+        At the moment, the dataframe holds a ``DELTAREAL`` and ``DELTAIMAG`` columns, which are calculated
+        as `REAL - REALMDL` and `IMAG - IMAGMDL`. As most of the time the model is coupling-free, these are
+        usually going to be identical values to ``REAL`` and ``IMAG`` columns. They are still included in
+        case one wishes to have a coupled model, as some machines sometimes do (but not LHC afaik).
+
+        Similarly, there are ``ERRDELTAREAL`` and ``ERRDELTAIMAG`` columns, which are at the moment
+        the same values as ``ERRREAL`` and ``ERRIMAG`` columns. In the future, we might want to have
+        a fancier calculation for these.
+
+    .. important::
+        The columns mentionned in the note above are required and expected in the correction calculation,
+        if ``modelcut`` and/or ``errorcut`` are provided. It would fail the correction functionality to
+        remove these columns.
+
     Args:
         fterm (Union[pd.Series, np.ndarray]): the calculated coupling RDT.
         fterm_mdl (Union[pd.Series, np.ndarray]): corresponding RDT values calculated from the model (e.g.
