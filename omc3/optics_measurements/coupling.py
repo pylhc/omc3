@@ -318,10 +318,20 @@ def _rdt_to_output_df(
     df[REAL] = np.real(fterm)
     df[REAL + MDL] = np.real(fterm_mdl)
     df[ERR + REAL] = 0  # TODO: same
+    # These following columns are needed in the correction calculation later on
+    # Most of the time model has 0 coupling so the DELTA is just the REAL / IMAG but let's
+    # not neglect that we might want to have weird coupled models sometimes
+    # For now error on delta is just the error on REAL / IMAG but in the future
+    # we might want to change this for a fancier calculation
+    df[DELTA + REAL] = df[REAL] - df[REAL + MDL]
+    df[ERR + DELTA + REAL] = df[ERR + REAL]
 
     df[IMAG] = np.imag(fterm)
     df[IMAG + MDL] = np.imag(fterm_mdl)
     df[ERR + IMAG] = 0  # TODO: same
+    # See comment above, same thing here for IMAG
+    df[DELTA + IMAG] = df[IMAG] - df[IMAG + MDL]
+    df[ERR + DELTA + IMAG] = df[ERR + IMAG]
 
     return df.sort_values(by=S)
 
