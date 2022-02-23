@@ -294,9 +294,8 @@ def _rdt_to_output_df(
         a fancier calculation for these.
 
     .. important::
-        The columns mentionned in the note above are required and expected in the correction calculation,
-        if ``modelcut`` and/or ``errorcut`` are provided. It would fail the correction functionality to
-        remove these columns.
+        The columns mentionned in the note above are required and expected in the correction calculation.
+        It would fail the correction functionality to remove these columns.
 
     Args:
         fterm (Union[pd.Series, np.ndarray]): the calculated coupling RDT.
