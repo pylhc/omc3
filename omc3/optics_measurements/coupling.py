@@ -283,6 +283,20 @@ def _rdt_to_output_df(
     Combines all the needed columns (``S``, ``NAME``, ``AMP``, ``PHASE``, ``REAL``, ``IMAG``, and the
     ``ERR*`` and ``*MDL`` columns).
 
+    .. note::
+        At the moment, the dataframe holds a ``DELTAREAL`` and ``DELTAIMAG`` columns, which are calculated
+        as `REAL - REALMDL` and `IMAG - IMAGMDL`. As most of the time the model is coupling-free, these are
+        usually going to be identical values to ``REAL`` and ``IMAG`` columns. They are still included in
+        case one wishes to have a coupled model, as some machines sometimes do (but not LHC afaik).
+
+        Similarly, there are ``ERRDELTAREAL`` and ``ERRDELTAIMAG`` columns, which are at the moment
+        the same values as ``ERRREAL`` and ``ERRIMAG`` columns. In the future, we might want to have
+        a fancier calculation for these.
+
+    .. important::
+        The columns mentionned in the note above are required and expected in the correction calculation.
+        It would fail the correction functionality to remove these columns.
+
     Args:
         fterm (Union[pd.Series, np.ndarray]): the calculated coupling RDT.
         fterm_mdl (Union[pd.Series, np.ndarray]): corresponding RDT values calculated from the model (e.g.
@@ -318,10 +332,20 @@ def _rdt_to_output_df(
     df[REAL] = np.real(fterm)
     df[REAL + MDL] = np.real(fterm_mdl)
     df[ERR + REAL] = 0  # TODO: same
+    # These following columns are needed in the correction calculation later on
+    # Most of the time model has 0 coupling so the DELTA is just the REAL / IMAG but let's
+    # not neglect that we might want to have weird coupled models sometimes
+    # For now error on delta is just the error on REAL / IMAG but in the future
+    # we might want to change this for a fancier calculation
+    df[DELTA + REAL] = df[REAL] - df[REAL + MDL]
+    df[ERR + DELTA + REAL] = df[ERR + REAL]
 
     df[IMAG] = np.imag(fterm)
     df[IMAG + MDL] = np.imag(fterm_mdl)
     df[ERR + IMAG] = 0  # TODO: same
+    # See comment above, same thing here for IMAG
+    df[DELTA + IMAG] = df[IMAG] - df[IMAG + MDL]
+    df[ERR + DELTA + IMAG] = df[ERR + IMAG]
 
     return df.sort_values(by=S)
 
