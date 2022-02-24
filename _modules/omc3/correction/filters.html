@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.filters &mdash; omc3 0.2.2 documentation</title>
+  <title>omc3.correction.filters &mdash; omc3 0.2.3 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -218,13 +218,9 @@
 <span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
 
-<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">NAME2</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span><span class="p">,</span> <span class="n">PHASE_ADV</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">NAME2</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span>
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">REAL</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">stats</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -233,8 +229,10 @@
 <span class="c1"># Measurement Filter -----------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="filter_measurement"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_measurement">[docs]</a><span class="k">def</span> <span class="nf">filter_measurement</span><span class="p">(</span><span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">meas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Filters measurements in `keys` based on the dict-entries (keys as in `keys`)</span>
+<div class="viewcode-block" id="filter_measurement"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_measurement">[docs]</a><span class="k">def</span> <span class="nf">filter_measurement</span><span class="p">(</span>
+    <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">meas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Filters measurements in `keys` based on the dict-entries (keys as in `keys`)</span>
 <span class="sd">    in `opt.errorcut`, `opt.modelcut` and `opt.weights` and unifies the</span>
 <span class="sd">    data-column names to VALUE, ERROR, WEIGHT.</span>
 <span class="sd">    If `opt.use_errorbars` is `True` the weights will be also based on the errors.&quot;&quot;&quot;</span>
@@ -246,19 +244,39 @@
 
 
 <span class="k">def</span> <span class="nf">_get_measurement_filters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">defaultdict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Returns a dict with the respective `_get_*` filter-functions that defaults</span>
-<span class="sd">    to `_get_filtered_generic`.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_get_filtered_generic</span><span class="p">,</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">_get_tunes</span><span class="p">,</span>
-                                                       <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
-                                                       <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
-                                                       <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
-                                                       <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
-                                                       <span class="p">})</span>
+    <span class="sd">&quot;&quot;&quot;Returns a dict with the respective `_get_*` filter-functions that defaults</span>
+<span class="sd">    to `~_get_filtered_generic`. Some columns might need to have extra steps for</span>
+<span class="sd">    filtering, or simply a different filtering process.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">_get_filtered_generic</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">_get_tunes</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="n">_get_coupling</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_filtered_generic</span><span class="p">(</span><span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filters the provided column *col* of the measurement dataframe *meas*, based on the model values</span>
+<span class="sd">    (from the *model* dataframe) and the filtering options given at the command line (for instance,</span>
+<span class="sd">    the ``errorcut`` and ``modelcut`` values).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        col (str): The column name to filter.</span>
+<span class="sd">        meas (pd.DataFrame): The measurement dataframe</span>
+<span class="sd">        model (pd.DataFrame): The model dataframe, which we get from the ``model_creator``.</span>
+<span class="sd">        opt (DotDict): The command line options dictionary.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The filtered dataframe as a `~tfs.TfsDataFrame`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">common_bpms</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">meas</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">common_bpms</span><span class="p">,</span> <span class="p">:]</span>
+
     <span class="n">new</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">common_bpms</span><span class="p">)</span>
     <span class="n">new</span><span class="p">[</span><span class="n">VALUE</span><span class="p">]</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="n">new</span><span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
@@ -267,7 +285,8 @@
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">use_errorbars</span>
         <span class="k">else</span> <span class="n">opt</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="c1"># filter cuts</span>
+
+    <span class="c1"># Applying filtering cuts</span>
     <span class="n">error_filter</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">opt</span><span class="o">.</span><span class="n">errorcut</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
     <span class="n">model_filter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">meas</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">opt</span><span class="o">.</span><span class="n">modelcut</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
     <span class="c1"># if opt.automatic_model_cut:  # TODO automated model cut</span>
@@ -279,7 +298,7 @@
         <span class="n">good_bpms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">good_bpms</span> <span class="o">=</span> <span class="n">error_filter</span> <span class="o">&amp;</span> <span class="n">model_filter</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of BPMs with </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">good_bpms</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of BPMs kept for column &#39;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&#39; after filtering: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">good_bpms</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">good_bpms</span><span class="p">,</span> <span class="p">:]</span>
 
 
@@ -292,6 +311,23 @@
 
 
 <span class="k">def</span> <span class="nf">_get_coupling</span><span class="p">(</span><span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies filters to the coupling dataframe *meas*. This is a bit hacky. Takes the measurement and</span>
+<span class="sd">    model dataframes for one of the coupling RDTs (*meas* comes from **f1001.tfs** or **f1010.tfs**)</span>
+<span class="sd">    maps the column *col* name to the &quot;old&quot; naming (for the F1001 for instance, REAL -&gt; F1001R)</span>
+<span class="sd">    before passing to `~_get_filtered_generic` which will do the filtering. This is because</span>
+<span class="sd">    `~_get_filtered_generic` does a comparison to the model which has old names.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        col (str): The column name to filter.</span>
+<span class="sd">        meas (pd.DataFrame): The measurement dataframe, which here will be the loaded **f1001.tfs**</span>
+<span class="sd">            or **f1010.tfs** file.</span>
+<span class="sd">        model (pd.DataFrame): The model dataframe, which we get from the ``model_creator``.</span>
+<span class="sd">        opt (DotDict): The command line options dictionary.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The filtered dataframe as a `~tfs.TfsDataFrame`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># rename measurement column to key</span>
     <span class="n">column_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">]}</span>  <span class="c1"># only REAL and IMAG implemented in responses so far</span>
     <span class="n">meas_col</span> <span class="o">=</span> <span class="n">column_map</span><span class="p">[</span><span class="n">col</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
@@ -313,16 +349,19 @@
 
 <span class="c1"># Response Matrix Filter -------------------------------------------------------</span>
 
+
 <div class="viewcode-block" id="filter_response_index"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_response_index">[docs]</a><span class="k">def</span> <span class="nf">filter_response_index</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot; Filters the index of the response matrices `response` by the respective entries in `measurement`. &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Filters the index of the response matrices `response` by the respective entries in `measurement`.&quot;&quot;&quot;</span>
     <span class="c1"># rename MU to PHASE as we create a PHASE-Response afterwards</span>
     <span class="c1"># easier to do here, than to check eveywhere below. (jdilly)</span>
     <span class="n">_rename_phase_advance</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 
     <span class="n">not_in_response</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">not_in_response</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following optical parameters are not present in current&quot;</span>
-                       <span class="sa">f</span><span class="s2">&quot;response matrix: </span><span class="si">{</span><span class="n">not_in_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The following optical parameters are not present in current&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;response matrix: </span><span class="si">{</span><span class="n">not_in_response</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">filters</span> <span class="o">=</span> <span class="n">_get_response_filters</span><span class="p">()</span>
     <span class="n">new_response</span> <span class="o">=</span> <span class="p">{}</span>
@@ -332,8 +371,10 @@
 
 
 <span class="k">def</span> <span class="nf">_get_response_filters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Returns a dict with the respective `_get_*_response` functions that defaults</span>
-<span class="sd">    to `_get_generic_response`.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dict with the respective `_get_*_response` functions that defaults</span>
+<span class="sd">    to `_get_generic_response`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">_get_generic_response</span><span class="p">,</span>
         <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="n">_get_phase_response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="n">_get_phase_response</span><span class="p">},</span>
@@ -361,7 +402,7 @@
 
 
 <span class="k">def</span> <span class="nf">_rename_phase_advance</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Renames MU to PHASE inplace. &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Renames MU to PHASE inplace.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
