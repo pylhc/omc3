@@ -5,15 +5,15 @@ Fitting Tools
 This module contains fitting functionality for ``tune_analysis``.
 It provides tools for fitting functions, mainly via odr.
 
-Important Convention:
-    The beta-parameter in the ODR models go upwards with order, i.e.
-    |  beta[0] = y-Axis offset
-    |  beta[1] = slope
-    |  beta[2] = quadratic term
-    |  etc.
 """
+from collections import namedtuple
+from typing import Sequence
+
 import numpy as np
+import pandas as pd
+from numpy.typing import ArrayLike
 from scipy.odr import RealData, Model, ODR
+from scipy.optimize import curve_fit
 
 from omc3.utils import logging_tools
 
@@ -23,16 +23,22 @@ LOG = logging_tools.get_logger(__name__)
 # ODR ###################################################################
 
 
-def get_poly_fun(order):
+def get_poly_fun(order: int):
     """Returns the function of polynomial order. (is this pythonic enough?)."""
     def poly_func(beta, x):
         return sum(beta[i] * np.power(x, i) for i in range(order+1))
     return poly_func
 
 
-def do_odr(x, y, xerr, yerr, order):
+def do_odr(x: pd.Series, y: pd.Series, xerr: pd.Series, yerr: pd.Series, order: int):
     """
     Returns the odr fit.
+    Important Convention:
+        The beta-parameter in the ODR models go upwards with order, i.e.
+        |  beta[0] = y-Axis offset
+        |  beta[1] = slope
+        |  beta[2] = quadratic term
+        |  etc.
 
     Args:
         x: `Series` of x data.
@@ -44,11 +50,121 @@ def do_odr(x, y, xerr, yerr, order):
     Returns: Odr fit. Betas order is index = coefficient of same order.
     """
     LOG.debug("Starting ODR fit.")
-    fit_np = np.polyfit(x, y, order)[::-1]  # using polyfit as starting parameters
+
+    # Poly-Fit for starting point ---
+    fit_np = np.polyfit(x, y, order)[::-1]  # polyfit order is inversed to poly_func
     LOG.debug(f"ODR fit input (from polyfit): {fit_np}")
+
+    # Actual ODR ---
     odr = ODR(data=RealData(x=x, y=y, sx=xerr, sy=yerr),
               model=Model(get_poly_fun(order)),
               beta0=fit_np)
     odr_fit = odr.run()
     logging_tools.odr_pprint(LOG.info, odr_fit)
     return odr_fit
+
+
+# 2D-Kick ODR ##################################################################
+
+INPUT_ORDER = "qx0", "qy0", "dqx/dex", "dqy/dey",  "dq(x,y)/de(y,x)"
+fake_odr_fit = namedtuple("fake_odr_fit", ['beta', 'sd_beta'])
+
+
+def first_order_detuning_2d(beta: Sequence, x: ArrayLike):
+    """ Calculates the 2D tune array (Qx, Qy)
+        Qx = qx0 + dqx/dex * ex + dqx/dey * ey
+        Qy = qy0 + dqy/dex * ex + dqy/dey * ey
+
+    Args:
+        beta: length 5 tune coefficients in order `INPUT_ORDER`
+              0: qx0, 1: qy0, 2: xx, 3: yy, 4: xy/yx
+        x: array size 2xN, [[ex1, ex2, ...],[ey1, ey2,...]]
+
+    Returns:
+        np.array: 2xN [[Qx1, Qx2, ...],[Qy1, Qy2, ...]]
+    """
+    return np.array([beta[0] + beta[2] * x[0, :] + beta[4] * x[1, :],
+                     beta[1] + beta[4] * x[0, :] + beta[3] * x[1, :]])
+
+
+def first_order_detuning_2d_jacobian(beta: Sequence, x: ArrayLike):
+    """ Jacobian of the 2D tune array:
+        [[dqx/dex, dqx/dey ],
+         [dqy/dex, dqy/dey ]]
+
+    Args:
+        beta: length 5 tune coefficients in order `INPUT_ORDER`
+              0: qx0, 1: qy0, 2: xx, 3: yy, 4: xy/yx
+        x: length 2 Sequence, (ex, ey)
+
+    Returns:
+        np.array: size 2x2 containing the Jacobian of the 2d-fit function.
+    """
+    return np.array([[beta[2], beta[4]],
+                     [beta[4], beta[3]]])
+
+
+def map_odr_fit_to_planes(odr_fit):
+    """ Maps the calculated odr fit to fake odr fits with `beta` and `sd_beta`
+    attributes. These would be the results of first-order amplitude detuning
+    odr-fits when done independently by tune and kick plane.
+
+    Returns: Dict[str, Dict[str: odr_fit]] of Odr fits, where the inner
+             string gives the kick-plane, the outer the tune-plane..
+
+    """
+    return {
+        "X": {
+            "X": fake_odr_fit(
+                beta=[odr_fit.beta[0], odr_fit.beta[2]],
+                sd_beta=[odr_fit.beta[0], odr_fit.beta[2]]
+            ),
+            "Y": fake_odr_fit(
+                beta=[odr_fit.beta[0], odr_fit.beta[4]],
+                sd_beta=[odr_fit.beta[0], odr_fit.beta[4]]
+            ),
+        },
+        "Y": {
+            "X": fake_odr_fit(
+                beta=[odr_fit.beta[1], odr_fit.beta[4]],
+                sd_beta=[odr_fit.beta[1], odr_fit.beta[4]]
+            ),
+            "Y": fake_odr_fit(
+                beta=[odr_fit.beta[1], odr_fit.beta[3]],
+                sd_beta=[odr_fit.beta[1], odr_fit.beta[3]]
+            ),
+        },
+    }
+
+
+def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike):
+    """
+    Returns the odr fit.
+
+    Args:
+        x: `Array` of x data (2xN).
+        y: `Array` of y data (2xN).
+        xerr: `Array` of x data errors (2xN).
+        yerr: `Array` of y data errors (2xN).
+
+    Returns: Dict[str, Dict[str: odr_fit]] of Odr fits, where the inner
+             string gives the kick-plane, the outer the tune-plane..
+    """
+    LOG.debug("Starting ODR fit.")
+
+    # Curve-Fit for starting point ---
+    curve_fit_fun = lambda v, *args: first_order_detuning_2d(args, v)
+    curve_fit_jac = lambda v, *args: first_order_detuning_2d_jacobian(args, v)
+    beta, beta_cov = curve_fit(f=curve_fit_fun, xdata=x, ydata=y, sigma=yerr, jac=curve_fit_jac)
+
+    res_str = ", ".join([f"{n} = {b}" for n, b in zip(INPUT_ORDER, beta)])
+    LOG.debug(f"ODR fit input (from curve_fit): {res_str}")
+
+    # Actual ODR ---
+    odr = ODR(data=RealData(x=x, y=y, sx=xerr, sy=yerr),
+              # model=Model(first_order_detuning_2d),
+              model=Model(first_order_detuning_2d, fjacd=first_order_detuning_2d_jacobian),
+              beta0=beta)
+    odr_fit = odr.run()
+    logging_tools.odr_pprint(LOG.info, odr_fit)
+    return map_odr_fit_to_planes(odr_fit)

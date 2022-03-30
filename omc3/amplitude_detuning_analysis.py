@@ -68,10 +68,13 @@ import os
 from collections import OrderedDict
 from datetime import timedelta
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import List, Sequence, Tuple, Dict, Any
 
+import numpy as np
+import pandas as pd
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, save_options_to_config
+from numpy.typing import ArrayLike
 from tfs.frame import TfsDataFrame
 
 from omc3.definitions import formats
@@ -115,9 +118,9 @@ def _get_params():
             required=True,
         ),
         plane=dict(
-            help="Plane of the kicks. 'X' or 'Y'.",
+            help="Plane of the kicks. 'X' or 'Y' or 'XY'.",
             required=True,
-            choices=PLANES,
+            choices=list(PLANES) + ["XY"],
             type=str,
         ),
         label=dict(
@@ -219,28 +222,52 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 
     kick_plane = opt.plane
 
-    LOG.info("Performing amplitude detuning odr")
-    for tune_plane in PLANES:
-        for corrected in [False, True]:
-            if corrected and opt.bbq_in is None:
-                continue
+    for corrected in (False, True):
+        if corrected and opt.bbq_in is None:
+            continue
 
-            LOG.debug("Getting ampdet data")
-            data_df = kick_file_modifiers.get_ampdet_data(
-                kick_df, kick_plane, tune_plane, corrected=corrected
-            )
+        if kick_plane in PLANES:
+            LOG.info(f"Performing amplitude detuning ODR for single-plane kicks in {kick_plane}.")
+            for tune_plane in PLANES:
+                    LOG.debug("Getting ampdet data")
+                    data_df = kick_file_modifiers.get_ampdet_data(
+                        kick_df, kick_plane, tune_plane, corrected=corrected
+                    )
+
+                    LOG.debug("Fitting ODR to kick data")
+                    odr_fit = fitting_tools.do_odr(
+                        x=data_df["action"],
+                        y=data_df["tune"],
+                        xerr=data_df["action_err"],
+                        yerr=data_df["tune_err"],
+                        order=opt.detuning_order,
+                    )
+
+                    kick_df = kick_file_modifiers.add_odr(
+                        kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected
+                    )
+        else:
+            LOG.info("Performing amplitude detuning ODR for diagonal kicks.")
+            data_dfs = {}
+            for tune_plane in PLANES:
+                LOG.debug("Getting ampdet data")
+                data_dfs[tune_plane] = kick_file_modifiers.get_ampdet_data(
+                    kick_df, kick_plane, tune_plane, corrected=corrected
+                )
 
             LOG.debug("Fitting ODR to kick data")
-            odr_fit = fitting_tools.do_odr(
-                x=data_df["action"],
-                y=data_df["tune"],
-                xerr=data_df["action_err"],
-                yerr=data_df["tune_err"],
-                order=opt.detuning_order,
+            odr_fits = fitting_tools.do_2d_kicks_odr(
+                x=_get_dfs_columns_as_array(data_dfs, "action"),
+                y=_get_dfs_columns_as_array(data_dfs, "tune"),
+                xerr=_get_dfs_columns_as_array(data_dfs, "action_err"),
+                yerr=_get_dfs_columns_as_array(data_dfs, "tune_err"),
             )
-            kick_df = kick_file_modifiers.add_odr(
-                kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected
-            )
+
+            for t_plane in PLANES:
+                for k_plane in PLANES:
+                    kick_df = kick_file_modifiers.add_odr(
+                        kick_df, odr_fits[t_plane][k_plane], k_plane, t_plane, corrected=corrected
+                    )
 
     # output kick and bbq data
     if opt.output:
@@ -248,7 +275,7 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
         opt.output.mkdir(parents=True, exist_ok=True)
         write_timed_dataframe(opt.output / get_kick_out_name(), kick_df)
         if bbq_df is not None:
-            write_timed_dataframe(opt.output / get_bbq_out_name(), bbq_df.loc[x_interval[0] : x_interval[1]])
+            write_timed_dataframe(opt.output / get_bbq_out_name(), bbq_df.loc[x_interval[0]: x_interval[1]])
 
     return kick_df, bbq_df
 
@@ -370,6 +397,10 @@ def _save_options(opt: DotDict) -> None:
         save_options_to_config(
             Path(opt.output) / formats.get_config_filename(__file__), OrderedDict(sorted(opt.items()))
         )
+
+
+def _get_dfs_columns_as_array(dfs: Dict[Any, pd.DataFrame], column: str) -> ArrayLike:
+    return np.vstack([df[column] for df in dfs.values()])
 
 
 # Script Mode ##################################################################
