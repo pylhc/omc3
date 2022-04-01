@@ -265,10 +265,10 @@
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="n">run_file</span><span class="p">(</span>
         <span class="n">input_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">file</span><span class="p">),</span>
-        <span class="n">output_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">),</span>
-        <span class="n">log_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">log</span><span class="p">),</span>
+        <span class="n">output_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">)</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">log</span><span class="p">)</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">madx_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">madx_path</span><span class="p">),</span>
-        <span class="n">cwd</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">cwd</span><span class="p">)</span>
+        <span class="n">cwd</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">cwd</span><span class="p">)</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">cwd</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="p">)</span>
 
 
