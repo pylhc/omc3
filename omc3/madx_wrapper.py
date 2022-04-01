@@ -68,10 +68,10 @@ def madx_wrapper_params():
 def main(opt):
     run_file(
         input_file=Path(opt.file),
-        output_file=Path(opt.output),
-        log_file=Path(opt.log),
+        output_file=Path(opt.output) if opt.output else None,
+        log_file=Path(opt.log) if opt.log else None,
         madx_path=Path(opt.madx_path),
-        cwd=Path(opt.cwd)
+        cwd=Path(opt.cwd) if opt.cwd else None
     )
 
 
