@@ -2,7 +2,6 @@ import pathlib
 
 import setuptools
 
-
 # The directory containing this file
 TOPLEVEL_DIR = pathlib.Path(__file__).parent.absolute()
 ABOUT_FILE = TOPLEVEL_DIR / "omc3" / "__init__.py"
@@ -32,12 +31,12 @@ DEPENDENCIES = [
     "uncertainties>=3.1.4",
     "optics-functions>=0.1.0",
     "turn_by_turn>=0.2.0",
-    "jpype1>=1.3.0",
 ]
 
 # Extra dependencies
 EXTRA_DEPENDENCIES = {
     "cern": [
+        "jpype1>=1.3.0",
         "pytimber>=2.8.0",
     ],
     "test": [
@@ -50,11 +49,11 @@ EXTRA_DEPENDENCIES = {
     "doc": [
         "sphinx",
         "travis-sphinx",
-        "sphinx_rtd_theme"
+        "sphinx_rtd_theme",
     ],
 }
 EXTRA_DEPENDENCIES.update(
-    {'all': [elem for list_ in EXTRA_DEPENDENCIES.values() for elem in list_]}
+    {"all": [elem for list_ in EXTRA_DEPENDENCIES.values() for elem in list_]}
 )
 
 
@@ -85,6 +84,6 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Visualization",
     ],
     install_requires=DEPENDENCIES,
-    tests_require=EXTRA_DEPENDENCIES['test'],
+    tests_require=EXTRA_DEPENDENCIES["test"],
     extras_require=EXTRA_DEPENDENCIES,
 )
