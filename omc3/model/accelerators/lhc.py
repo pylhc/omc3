@@ -96,6 +96,7 @@ from omc3.model.constants import (
     B2_SETTINGS_MADX,
     GENERAL_MACROS,
     LHC_MACROS,
+    LHC_MACROS_RUN3,
     MACROS_DIR,
     MODIFIER_TAG,
 )
@@ -322,6 +323,7 @@ class Lhc(Accelerator):
             # f"option, -echo;\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
+            f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             f'title, "LHC Model created by OMC3";\n'
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n"
