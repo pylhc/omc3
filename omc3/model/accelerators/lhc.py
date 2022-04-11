@@ -323,7 +323,13 @@ class Lhc(Accelerator):
             # f"option, -echo;\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
-            f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
+            )
+        if(self.year == "2022"):
+            madx_script += (
+                f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
+            )
+
+        madx_script += (
             f'title, "LHC Model created by OMC3";\n'
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n"
