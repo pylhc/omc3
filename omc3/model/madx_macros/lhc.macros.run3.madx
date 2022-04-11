@@ -1,5 +1,5 @@
 /*
-* Macros for runI and runII of the LHC
+* Macros for runIII of the LHC using the new standard of the _op for the knobs used in operation.
 */
 
 !requires general.macros.madx

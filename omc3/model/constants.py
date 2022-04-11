@@ -23,7 +23,7 @@ JOB_MODEL_MADX = "job.create_model.madx"
 
 GENERAL_MACROS = "general.macros.madx"
 LHC_MACROS = "lhc.macros.madx"
-LHC_MACROS_RUN3 = "lhc.macrosRun3.madx"
+LHC_MACROS_RUN3 = "lhc.macros.run3.madx"
 
 B2_SETTINGS_MADX = "b2_settings.madx"
 B2_ERRORS_TFS = "b2_errors.tfs"
