@@ -1,5 +1,15 @@
 # OMC3 Changelog
 
+#### 2022-04-12
+
+- Fixed:
+  - An additionnal knob and macros definition file has been added to reflect the knobs used by OP in the LHC Run 3. This makes sure any `omc3.model_creator` run for the LHC with `year >= 2022` has correct knobs.
+
+#### 2022-04-07
+
+- Miscellaneous:
+  - The jpype1 package is not a default dependency anymore, and is instead included as a dependency in the cern and test extras. Its import is mocked where needed in omc3.
+
 #### 2022-02-23
 
 - Fixed:
