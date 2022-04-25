@@ -371,13 +371,13 @@ def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
         merged_transverse_lins_df = pd.merge(
             left=linx,
             right=liny,
-            on=[NAME, S],
+            on=[NAME],
             how="inner",
             sort=False,
         )
         joined_dfs.append(merged_transverse_lins_df)
 
-    partial_merge = partial(pd.merge, how="inner", on=[NAME, S], sort=False)
+    partial_merge = partial(pd.merge, how="inner", on=[NAME], sort=False)
     reduced = reduce(partial_merge, joined_dfs).set_index(NAME)
     reduced = reduced.rename(
         columns={f"{PHASE_ADV}X_X_0": f"{PHASE_ADV}X", f"{PHASE_ADV}Y_Y_0": f"{PHASE_ADV}Y"}
@@ -398,7 +398,7 @@ def rename_col(plane: str, index: int) -> Callable:
     """
 
     def fn(column):
-        if column in [NAME, S]:
+        if column == NAME:
             return column
         return f"{column}_{plane}_{index}"
 
