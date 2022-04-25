@@ -508,6 +508,10 @@ def optics_params():
     params.add_parameter(name="coupling_method", type=int,
                          choices=(0, 1, 2), default=OPTICS_DEFAULTS["coupling_method"],
                          help="Analysis option for coupling: disabled, 1 BPM or 2 BPMs method")
+    params.add_parameter(name="coupling_pairing", type=int,
+                         default=OPTICS_DEFAULTS["coupling_pairing"],
+                         type=int,
+                         help="Pairing mode for 2 BPM coupling method, 0=best candidate, >=1 skip n BPMs")
     params.add_parameter(name="range_of_bpms", type=int,
                          choices=(5, 7, 9, 11, 13, 15),  default=OPTICS_DEFAULTS["range_of_bpms"],
                          help="Range of BPMs for beta from phase calculation")
@@ -553,6 +557,7 @@ HARPY_DEFAULTS = {
 
 OPTICS_DEFAULTS = {
         "coupling_method": 2,
+        "coupling_pairing": 0,
         "range_of_bpms": 11,
         "compensation": "model",
 }
