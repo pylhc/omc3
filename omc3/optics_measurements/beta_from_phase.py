@@ -80,6 +80,12 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     Returns:
         `TfsDataFrame` containing betas and alfas from phase.
     """
+
+    if phases['MEAS'].count() < 3:
+        LOGGER.error("less than 3 BPMs in phase output, the N-BPM method needs at least three distinctive BPMs")
+    if phases['MEAS'].count() < meas_input.range_of_bpms:
+        LOGGER.warning("less than N BPMs in phase output, the N-BPM method expects at least N BPMS")
+        LOGGER.warning("note: the result is still correct")
     elements, error_method = get_elements_with_errors(meas_input, plane)
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     bk_model = _get_filtered_model_df(meas_input, phase, plane, best=True)
@@ -398,6 +404,8 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     Returns:
         `TfsDataFrame` containing betas and alfas from phase.
     """
+    if phase["MEAS"].count() < 3:
+        LOGGER.error("less than 3 BPMs in phase output, the THREE BPM method needs at least THREE BPMs")
     tune, mdltune = meas_and_mdl_tunes
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     # tilt phase advances in order to have the phase advances in a neighbourhood

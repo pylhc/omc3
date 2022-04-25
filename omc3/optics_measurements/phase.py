@@ -66,6 +66,14 @@ def calculate(
                                                                              no_errors)
         dfs = free_dfs + drv_dfs
 
+    if phase_advances["MEAS"].count() < 3:
+        LOGGER.warning("Dear user, phase analysis yields less than 3 BPMs.")
+        LOGGER.warning("This will probably lead to problems later on, especially in beta from phase. Please check your measurement.")
+        LOGGER.warning("Common issues to check:")
+        LOGGER.warning(" - did you pass the correct tunes to harpy")
+        LOGGER.warning(" - did excitation trigger in both planes")
+        LOGGER.warning(" - are cleaning settings (peak-to-peak, singular-value-cut) too agressive")
+
     return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
 
 
