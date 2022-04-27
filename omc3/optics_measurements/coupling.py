@@ -236,12 +236,12 @@ def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
     """
     Takes the following BPM for momentum reconstruction by a given shift.
 
-     Args:
-         phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
-         shift (int): take n-th folliwing BPM
-     """
-     indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
-     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
+    Args:
+        phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
+        shift (int): take n-th folliwing BPM
+    """
+    indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
+    return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
 
 def _find_candidate(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:

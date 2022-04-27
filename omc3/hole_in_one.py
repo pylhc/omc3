@@ -510,7 +510,6 @@ def optics_params():
                          help="Analysis option for coupling: disabled, 1 BPM or 2 BPMs method")
     params.add_parameter(name="coupling_pairing", type=int,
                          default=OPTICS_DEFAULTS["coupling_pairing"],
-                         type=int,
                          help="Pairing mode for 2 BPM coupling method, 0=best candidate, >=1 skip n BPMs")
     params.add_parameter(name="range_of_bpms", type=int,
                          choices=(5, 7, 9, 11, 13, 15),  default=OPTICS_DEFAULTS["range_of_bpms"],
