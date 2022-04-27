@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2022-04-25
+
+- Fixed:
+  - Only perform index merging on the `NAME` column during coupling calculation. This solves an (at the moment) un-understood issue where some BPMs would have different `S` values in different files.
+
 #### 2022-04-12
 
 - Fixed:
