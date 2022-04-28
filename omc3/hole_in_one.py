@@ -233,8 +233,8 @@ def hole_in_one_entrypoint(opt, rest):
         Choices: ``(0, 1, 2)``
         Default: ``2``
       - **coupling_pairing**: Pairing mode for 2 BPM coupling method. If 0 is given 0, omc3 
-        will try to determine the best candidate. If a number n>=1 is given, then n BPMs are 
-        skipped and BPM number n+1 is used for the pairing.
+        will try to determine the best candidate. If a number n>=1 is given, then some BPMs are 
+        skipped and the n-th following BPM downstream is used for the pairing.
 
         Flags: **--coupling_pairing**
         Choices: ``(0, n>=1)``
@@ -518,8 +518,8 @@ def optics_params():
     params.add_parameter(name="coupling_pairing", type=int,
                          default=OPTICS_DEFAULTS["coupling_pairing"],
                          help="Pairing mode for 2 BPM coupling method. If 0 is given 0, omc3 will try to "
-                              "determine the best candidate. If a number n>=1 is given, then n BPMs are skipped "
-                              "and BPM number n+1 is used for the pairing.")
+                              "determine the best candidate. If a number n>=1 is given, then some BPMs are skipped "
+                              "and the n-th following BPM downstream is used for the pairing.")
     params.add_parameter(name="range_of_bpms", type=int,
                          choices=(5, 7, 9, 11, 13, 15),  default=OPTICS_DEFAULTS["range_of_bpms"],
                          help="Range of BPMs for beta from phase calculation")

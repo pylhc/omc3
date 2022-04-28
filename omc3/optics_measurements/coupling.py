@@ -219,11 +219,12 @@ def compensate_rdts_ryoichi():
 
 def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
     """
-    Does the BPM pairing
+    Does the BPM pairing for coupling calculation.
 
     Args:
-        mode (int): 0) find best candidate, >=1) take n-th following BPM
-
+        mode (int): Value to determine the BPM pairing. If ``0`` is given,
+            tries to find the best candidate. If a value ``n>=1`` is given,
+            then takes the n-th following BPM downstream for the pairing.
     """
 
     if mode == 0:
@@ -238,8 +239,10 @@ def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
 
     Args:
         phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
-        shift (int): take n-th folliwing BPM
-    """
+        shift (int): Value to determine the BPM pairing. If ``0`` is given,
+           tries to find the best candidate. If a value ``n>=1`` is given,
+           then takes the n-th following BPM downstream for the pairing.
+   """
     indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
