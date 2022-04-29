@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; omc3 0.2.6 documentation</title>
+  <title>Analysis &mdash; omc3 0.2.7 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -429,6 +429,13 @@ Default: <code class="docutils literal notranslate"><span class="pre">model</spa
 <p>Flags: <strong>--coupling_method</strong>
 Choices: <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1,</span> <span class="pre">2)</span></code>
 Default: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</li>
+<li><p><strong>coupling_pairing</strong>: Pairing mode for 2 BPM coupling method. If 0 is given, omc3
+will try to determine the best candidate. If a number n&gt;=1 is given, then some BPMs are
+skipped and the n-th following BPM downstream is used for the pairing.</p>
+<p>Flags: <strong>--coupling_pairing</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">n&gt;=1)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 </li>
 <li><p><strong>nonlinear</strong>: Calculate higher order RDTs or CRDT</p>
 <p>Flags: <strong>--nonlinear</strong>
