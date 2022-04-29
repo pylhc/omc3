@@ -113,8 +113,8 @@ def calculate_coupling(
         )
 
     LOGGER.debug("Finding BPM pairs for momentum reconstruction")
-    bpm_pairs_x, deltas_x = _find_pair(phases_x)
-    bpm_pairs_y, deltas_y = _find_pair(phases_y)
+    bpm_pairs_x, deltas_x = _find_pair(phases_x, meas_input.coupling_pairing)
+    bpm_pairs_y, deltas_y = _find_pair(phases_y, meas_input.coupling_pairing)
 
     LOGGER.debug("Computing complex lines from spectra")
     A01: np.ndarray = 0.5 * _get_complex_line(
@@ -217,19 +217,37 @@ def compensate_rdts_ryoichi():
 
 # ----- Helpers ----- #
 
-# def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
-#     """
-#     Takes the following BPM for momentum reconstruction by a given shift.
-#
-#     Args:
-#         phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
-#         shift (int): ???
-#     """
-#     indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
-#     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
+def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
+    """
+    Does the BPM pairing for coupling calculation.
+
+    Args:
+        mode (int): Value to determine the BPM pairing. If ``0`` is given,
+            tries to find the best candidate. If a value ``n>=1`` is given,
+            then takes the n-th following BPM downstream for the pairing.
+    """
+
+    if mode == 0:
+        return _find_candidate(phases)
+    else:
+        return _take_next(phases, mode)
 
 
-def _find_pair(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:
+def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
+    """
+    Takes the following BPM for momentum reconstruction by a given shift.
+
+    Args:
+        phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
+        shift (int): Value to determine the BPM pairing. If ``0`` is given,
+           tries to find the best candidate. If a value ``n>=1`` is given,
+           then takes the n-th following BPM downstream for the pairing.
+   """
+    indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
+    return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
+
+
+def _find_candidate(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:
     """
     Finds the best candidate for momentum reconstruction.
 

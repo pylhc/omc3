@@ -2,6 +2,11 @@
 
 #### 2022-04-25
 
+- Added:
+  - There is now an option, `coupling_pairing`, for the BPM pairing in coupling calculation, to let the user choose the number of BPMs instead of the usual "best candidate" method.
+
+#### 2022-04-25
+
 - Fixed:
   - Only perform index merging on the `NAME` column during coupling calculation. This solves an (at the moment) un-understood issue where some BPMs would have different `S` values in different files.
 
