@@ -16,6 +16,7 @@ from contextlib import contextmanager
 from io import StringIO
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL  # make them available directly
 
+import numpy as np
 import pandas as pd
 
 DIVIDER = "|"
@@ -208,16 +209,21 @@ class TempStringLogger:
 
 def odr_pprint(printer, odr_out):
     """Logs the odr output results. Adapted from odr_output pretty print."""
-    printer('ODR-Summary:')
-    printer(f'  Beta: {odr_out.beta}')
-    printer(f'  Beta Std Error: {odr_out.sd_beta}')
-    printer(f'  Beta Covariance: {odr_out.cov_beta}')
+    old_opts = np.get_printoptions()
+    np.set_printoptions(precision=2)
+    odr_str = ('\nODR-Summary:\n'
+               f'Beta:\n {odr_out.beta}\n'
+               f'Beta Std Error:\n {odr_out.sd_beta}\n'
+               f'Beta Covariance:\n {odr_out.cov_beta}\n'
+               )
     if hasattr(odr_out, 'info'):
-        printer(f'  Residual Variance: {odr_out.res_var}')
-        printer(f'  Inverse Condition #: {odr_out.inv_condnum}')
-        printer(f'  Reason(s) for Halting:')
+        odr_str += (f'  Residual Variance:\n {odr_out.res_var}\n'
+                    f'  Inverse Condition #:\n {odr_out.inv_condnum}\n'
+                    f'  Reason(s) for Halting:\n')
         for r in odr_out.stopreason:
-            printer(f'    {r}')
+            odr_str += f'    {r}\n'
+    printer(odr_str)
+    np.set_printoptions(**old_opts)
 
 
 def list2str(list_: list) -> str:

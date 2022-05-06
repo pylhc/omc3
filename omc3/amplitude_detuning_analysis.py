@@ -90,7 +90,7 @@ from omc3.tune_analysis.constants import (
 from omc3.tune_analysis.kick_file_modifiers import (
     read_timed_dataframe,
     read_two_kick_files_from_folder,
-    write_timed_dataframe,
+    write_timed_dataframe, AmpDetData,
 )
 from omc3.utils.logging_tools import DebugMode, get_logger, list2str
 from omc3.utils.time_tools import CERNDatetime
@@ -120,7 +120,7 @@ def _get_params():
         plane=dict(
             help="Plane of the kicks. 'X' or 'Y' or 'XY'.",
             required=True,
-            choices=list(PLANES) + ["XY"],
+            choices=list(PLANES) + ["".join(PLANES)],
             type=str,
         ),
         label=dict(
@@ -230,16 +230,16 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
             LOG.info(f"Performing amplitude detuning ODR for single-plane kicks in {kick_plane}.")
             for tune_plane in PLANES:
                     LOG.debug("Getting ampdet data")
-                    data_df = kick_file_modifiers.get_ampdet_data(
+                    data = kick_file_modifiers.get_ampdet_data(
                         kick_df, kick_plane, tune_plane, corrected=corrected
                     )
 
                     LOG.debug("Fitting ODR to kick data")
                     odr_fit = fitting_tools.do_odr(
-                        x=data_df["action"],
-                        y=data_df["tune"],
-                        xerr=data_df["action_err"],
-                        yerr=data_df["tune_err"],
+                        x=data.action,
+                        y=data.tune,
+                        xerr=data.action_err,
+                        yerr=data.tune_err,
                         order=opt.detuning_order,
                     )
 
@@ -248,19 +248,19 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
                     )
         else:
             LOG.info("Performing amplitude detuning ODR for diagonal kicks.")
-            data_dfs = {}
-            for tune_plane in PLANES:
-                LOG.debug("Getting ampdet data")
-                data_dfs[tune_plane] = kick_file_modifiers.get_ampdet_data(
-                    kick_df, kick_plane, tune_plane, corrected=corrected
+            data = {}
+            for plane in PLANES:
+                LOG.debug(f"Getting action and tune data for plane {plane}.")
+                data[plane] = kick_file_modifiers.get_ampdet_data(
+                    kick_df, plane, plane, corrected=corrected
                 )
 
             LOG.debug("Fitting ODR to kick data")
             odr_fits = fitting_tools.do_2d_kicks_odr(
-                x=_get_dfs_columns_as_array(data_dfs, "action"),
-                y=_get_dfs_columns_as_array(data_dfs, "tune"),
-                xerr=_get_dfs_columns_as_array(data_dfs, "action_err"),
-                yerr=_get_dfs_columns_as_array(data_dfs, "tune_err"),
+                x=_get_ampdet_data_as_array(data, "action"),         # gets [2Jx, 2Jy]
+                y=_get_ampdet_data_as_array(data, "tune"),           # gets [Qx, Qy]
+                xerr=_get_ampdet_data_as_array(data, "action_err"),
+                yerr=_get_ampdet_data_as_array(data, "tune_err"),
             )
 
             for t_plane in PLANES:
@@ -283,9 +283,7 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 def get_approx_bbq_interval(
     bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window_length: int
 ) -> Tuple[CERNDatetime, CERNDatetime]:
-    """
-    Get approximate start and end times for averaging, based on window length and kick interval.
-    """
+    """Get approximate start and end times for averaging, based on window length and kick interval."""
     bbq_tmp = bbq_df.dropna()
 
     # convert to float to use math-comparisons
@@ -399,8 +397,8 @@ def _save_options(opt: DotDict) -> None:
         )
 
 
-def _get_dfs_columns_as_array(dfs: Dict[Any, pd.DataFrame], column: str) -> ArrayLike:
-    return np.vstack([df[column] for df in dfs.values()])
+def _get_ampdet_data_as_array(data: Dict[Any, AmpDetData], column: str) -> ArrayLike:
+    return np.vstack([getattr(d, column) for d in data.values()])
 
 
 # Script Mode ##################################################################

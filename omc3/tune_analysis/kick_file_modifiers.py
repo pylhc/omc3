@@ -5,10 +5,13 @@ Kick File Modifiers
 Functions to add data to or extract data from **kick_ac** files.
 """
 import os
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from scipy import odr
 import tfs
+from tfs import TfsDataFrame
 from generic_parser.dict_parser import DotDict
 
 from omc3.definitions.constants import PLANES
@@ -24,6 +27,7 @@ from omc3.tune_analysis.constants import (get_odr_header_coeff_corrected,
                                           get_mav_window_header, get_outlier_limit_header,
                                           get_fine_window_header, get_fine_cut_header,
                                           get_min_tune_header, get_max_tune_header,
+                                          AmpDetData, FakeOdrOutput,
                                           )
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
@@ -71,7 +75,7 @@ def add_bbq_data(kick_df, bbq_series, column):
     return kick_df
 
 
-def add_moving_average(kickac_df, bbq_df, filter_args):
+def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_args) -> Tuple[TfsDataFrame, TfsDataFrame]:
     """Adds the moving average of the bbq data to kickac_df and bbq_df."""
     LOG.debug("Calculating moving average.")
     for idx, plane in enumerate(PLANES):
@@ -105,7 +109,7 @@ def add_moving_average(kickac_df, bbq_df, filter_args):
     return kickac_df, bbq_df
 
 
-def add_corrected_natural_tunes(kickac_df):
+def add_corrected_natural_tunes(kickac_df: pd.DataFrame):
     """
     Adds the corrected natural tunes to ``kickac_df``.
 
@@ -122,7 +126,8 @@ def add_corrected_natural_tunes(kickac_df):
     return kickac_df
 
 
-def add_odr(kickac_df, odr_fit, action_plane, tune_plane, corrected=False):
+def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output, 
+            action_plane: str, tune_plane: str, corrected: bool=False):
     """
     Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.
 
@@ -143,7 +148,7 @@ def add_odr(kickac_df, odr_fit, action_plane, tune_plane, corrected=False):
     return kickac_df
 
 
-def add_total_natq_std(kickac_df):
+def add_total_natq_std(kickac_df: pd.DataFrame):
     """
     Add the total standard deviation of the natural tune to the kickac. The total standard
     deviation is here defined as the standard deviation of the measurement plus the standard
@@ -166,7 +171,8 @@ def add_total_natq_std(kickac_df):
 # Data Extraction ##############################################################
 
 
-def get_odr_data(kickac_df, action_plane, tune_plane, order, corrected=False):
+def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
+                 order: int, corrected: bool=False) -> FakeOdrOutput:
     """
     Extract the data from kickac.
 
@@ -182,24 +188,29 @@ def get_odr_data(kickac_df, action_plane, tune_plane, order, corrected=False):
     """
 
     header_val, header_err = _get_odr_headers(corrected)
-    odr_data = DotDict(beta=[0] * (order+1), sd_beta=[0] * (order+1))
+    odr_data = FakeOdrOutput(beta=[0] * (order+1), sd_beta=[0] * (order+1))
     for idx in range(order+1):
         odr_data.beta[idx] = kickac_df.headers[header_val(action_plane, tune_plane, idx)]
         odr_data.sd_beta[idx] = kickac_df.headers[header_err(action_plane, tune_plane, idx)]
     return odr_data
 
 
-def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
+
+def get_ampdet_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
+                    corrected: bool = False) -> AmpDetData:
     """
     Extract the data needed for the (un)corrected amplitude detuning from ``kickac_df``.
 
     Args:
-        kickac_df: `Dataframe` containing the data.
-        action_plane: Plane of the action.
-        tune_plane: Plane of the tune.
+        kickac_df (DataFrame): Containing the data
+                              (either `kick_x`, `kick_y` from optics
+                              or `kick_ampdet_xy` from ampdet analysis)..
+        action_plane (str): Plane of the action.
+        tune_plane (str): Plane of the tune.
+        corrected (bool): if the BBQ-corrected columns should be taken
 
     Returns:
-        `Dataframe` containing action, tune, action_err and tune_err.
+        `Dataframe` containing `action`, `tune`, `action_err` and `tune_err` columns.
     """
     col_natq, col_natq_std = _get_ampdet_columns(corrected)
 
@@ -221,7 +232,12 @@ def get_ampdet_data(kickac_df, action_plane, tune_plane, corrected=False):
             f"Amplitude Detuning data for Q{tune_plane} and J{action_plane} contains NaNs"
         )
         data = data.dropna(axis=0)
-    return data
+
+    return AmpDetData(
+        action_plane=action_plane,
+        tune_plane=tune_plane,
+        **{column: data[column] for column in data.columns}
+    )
 
 
 # Timed DataFrames -------------------------------------------------------------
@@ -231,7 +247,7 @@ def get_timestamp_index(index):
     return pd.Index([i.timestamp() for i in index])
 
 
-def read_timed_dataframe(path):
+def read_timed_dataframe(path: str):
     df = tfs.read(path, index=get_time_col())
     df.index = pd.Index([CERNDatetime.from_cern_utc_string(i) for i in df.index], dtype=object)
     return df
@@ -250,7 +266,7 @@ def read_two_kick_files_from_folder(folder):
 
 
 def merge_two_plane_kick_dfs(df_x, df_y):
-    df_xy = tfs.TfsDataFrame(pd.merge(df_x, df_y, how='inner', left_index=True, right_index=True, suffixes=PLANES))
+    df_xy = TfsDataFrame(pd.merge(df_x, df_y, how='inner', left_index=True, right_index=True, suffixes=PLANES))
     if len(df_xy.index) != len(df_x.index) or len(df_xy.index) != len(df_y.index):
         raise IndexError("Can't merge the two planed kick-files as their indices seem to be different!")
     df_xy.headers = df_x.headers
