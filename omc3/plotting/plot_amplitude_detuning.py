@@ -181,10 +181,9 @@ def main(opt):
 
 # Plotting --------------------------------------------------------------
 
-
 # 2D Plots ----------------------------
 
-def _plot_2d(tune_plane, opt):
+def _plot_2d(tune_plane: str, opt: DotDict):
     """ 2D Plots per kick-plane and with/without BBQ correction. """
     figs = {}
     limits = opt.get_subdict(['x_lim', 'y_lim'])
@@ -261,7 +260,7 @@ def _plot_2d(tune_plane, opt):
     return figs
 
 
-def plot_odr(ax, odr_fit, xmax, label='', color=None):
+def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=None):
     """Adds a quadratic odr fit to axes."""
 
     color = 'k' if color is None else color
@@ -304,7 +303,7 @@ def _plot_detuning(ax: Axes, data: AmpDetData, label: str, color=None,
                 label=label, color=color)
 
 
-def _format_axes(ax, limits, labels):
+def _format_axes(ax: Axes, limits: Dict[str, Sequence[float]], labels: Sequence[str]):
     # labels
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
@@ -579,6 +578,7 @@ def _format_axes_3d(
 
 def _get_odr_label(odr_fit: odr.Output, tune_plane: str, action_plane: str,
                    action_unit: str, do_acd_correction: bool):
+    """ Returns the label for the ODR fit, nicely formatted and scaled. """
     order = len(odr_fit.beta) - 1
     str_list = [None] * order
     for o in range(order):
