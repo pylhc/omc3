@@ -19,8 +19,8 @@ from typing import Dict, List, NewType, Sequence, Tuple, Union
 
 import numpy as np
 import tfs
-from jpype import JException, java
 
+# from jpype import JException, java
 from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
@@ -32,6 +32,7 @@ END_TIME = const.get_tend_head()
 
 LOG = logging_tools.get_logger(__name__)
 pytimber = cern_network_import("pytimber")
+jpype = cern_network_import("jpype")
 
 MAX_RETRIES = 10  # number of retries on retryable exception
 AcceptableTimeStamp = NewType("AcceptableTimeStamp", Union[CERNDatetime, int, float])
@@ -60,7 +61,7 @@ def extract_between_times(
     t_start: AcceptableTimeStamp,
     t_end: AcceptableTimeStamp,
     keys: Sequence[str] = None,
-    names: Dict[str, str] = None
+    names: Dict[str, str] = None,
 ) -> tfs.TfsDataFrame:
     """
     Extracts data for keys between ``t_start`` and ``t_end`` from ``Timber``.
@@ -90,13 +91,15 @@ def extract_between_times(
         try:
             # We use timestamps to avoid any confusion with local time
             extract_dict = db.get(keys, t_start.timestamp(), t_end.timestamp())
-        except java.lang.IllegalStateException as e:
-            raise IOError("Could not get data from Timber, user probably has no access to NXCALS") from e
-        except JException as e:  # Might be a case for retries
-            if "RetryableException" in str(e) and (tries + 1) < MAX_RETRIES:
+        except jpype.java.lang.IllegalStateException as java_state_error:
+            raise IOError(
+                "Could not get data from Timber, user probably has no access to NXCALS"
+            ) from java_state_error
+        except jpype.JException as java_exception:  # Might be a case for retries
+            if "RetryableException" in str(java_exception) and (tries + 1) < MAX_RETRIES:
                 LOG.warning(f"Could not get data from Timber! Trial no {tries + 1} / {MAX_RETRIES}")
                 continue  # will go to the next iteratoin of the loop, so retry
-            raise IOError("Could not get data from timber!") from e
+            raise IOError("Could not get data from timber!") from java_exception
         else:
             break
 
