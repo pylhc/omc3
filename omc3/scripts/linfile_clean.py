@@ -4,6 +4,31 @@ Linfile Cleaning
 Performs an automated cleaning of different columns in the lin-file
 as a standalone script to allow for manual refinement after harpy is done.
 
+All data is assumed to be gaussian distributed around a "true" value,
+and outliers are cleaned by calculating average and standard deviation
+of the given data.
+
+The cleaning is done by removing all data-points that are outside of the
+1-0.5/n estimated percentile of the data. Where n is the number of
+(remaining) data-points in each loop, and the process is repeated until
+n stays constant (or 2 or less data-points remain).
+
+Datapoints with a standard deviation smaller than the given limit are not
+cleaned. The limit is given in whatever units the data itself is in and
+is an absolute value.
+
+Cleaning is done per given file independently
+i.e. removed BPMs from one file can be present in the next.
+The columns are iterated on the same file, i.e. the cleaning is done
+consecutively on the already cleaned data from the last column,
+yet the moments of the distribution themselves are evaluated per column.
+
+In the end, the lin-files are overwritten with the cleaned ones.
+If the ``backup`` option is activated, a backup of the original file
+is created, which can be restored via the ``restore`` option.
+In case the restore-flag is given, only the filenames are required.
+No cleaning is performed with this option.
+
 **Arguments:**
 
 *--Required--*
