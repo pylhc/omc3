@@ -50,8 +50,6 @@ as well, as it only cleans on TUNE, not on NATTUNE.
 And it requires an accelerator instance.
 """
 import shutil
-from collections import OrderedDict
-from contextlib import suppress
 from numbers import Number
 from pathlib import Path
 from typing import Sequence, Union
@@ -59,14 +57,13 @@ from typing import Sequence, Union
 import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import (
-    save_options_to_config, entrypoint, EntryPointParameters
+    entrypoint, EntryPointParameters
 )
 
-from omc3.definitions import formats
 from omc3.definitions.formats import BACKUP_FILENAME
 from omc3.harpy.constants import COL_NAME
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr
+from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.outliers import get_filter_mask
 
 LOG = logging_tools.get_logger(__name__)
@@ -110,7 +107,7 @@ def get_params():
 def main(opt):
     """Main function, to parse commandline input and separate restoration
     from cleaning."""
-    _save_options_to_config(opt)
+    save_config(Path('.'), opt, __file__)
     if opt.restore:
         restore_files(opt.files)
         return
@@ -183,7 +180,7 @@ def _filter_by_column(df: pd.DataFrame, column: str, limit: Number) -> pd.DataFr
         LOG.info(f"{column} not in current file. Skipping cleaning.")
         return df
 
-    good_bpms = get_filter_mask(df[column], limit)
+    good_bpms = get_filter_mask(data=df[column], limit=limit)
     n_good, n_total = sum(good_bpms), len(good_bpms)
     LOG.info(f"Cleaned {n_total-n_good:d} of {n_total:d} elements in {column} ({n_good:d} remaining).")
     return df.loc[good_bpms, :]
@@ -204,14 +201,6 @@ def _backup_file(file):
 
 def _get_backup_filename(file: Path, counter: int):
     return file.with_name(BACKUP_FILENAME.format(file.name, counter))
-
-
-# Helper -----------------------------------------------------------------------
-
-def _save_options_to_config(opt):
-    with suppress(IOError):
-        save_options_to_config(formats.get_config_filename(__file__),
-                               OrderedDict(sorted(opt.items())))
 
 
 # Script Mode ------------------------------------------------------------------
