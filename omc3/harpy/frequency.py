@@ -177,7 +177,7 @@ def _realign_phases(phase_data, freq_data, nturns):
     return np.where(np.abs(mid_phase) > 0.5, mid_phase - np.sign(mid_phase), mid_phase)
 
 
-def clean_by_tune(tunes: pd.Series, tune_clean_limit: Number) -> pd.Series[str]:
+def clean_by_tune(tunes: pd.Series, tune_clean_limit: Number) -> pd.Series:
     """
     Looks for outliers in the tunes pandas Series and returns their indices.
 
