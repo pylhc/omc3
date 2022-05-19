@@ -141,15 +141,15 @@ def restore_files(files: Sequence[Union[Path, str]]):
 
 def _restore_file(file):
     counter = 1
-    backup_file = _get_backup_filename(file, counter)
+    backup_file = _get_backup_filepath(file, counter)
     if not backup_file.exists():
         raise IOError(f"No backups found for file {file.name}")
 
     # get last existing backup file
     while backup_file.exists():
         counter += 1
-        backup_file = _get_backup_filename(file, counter)
-    backup_file = _get_backup_filename(file, counter-1)
+        backup_file = _get_backup_filepath(file, counter)
+    backup_file = _get_backup_filepath(file, counter-1)
 
     # restore found  file
     LOG.info(f"Restoring last backup file {backup_file.name} to {file.name}.")
@@ -190,17 +190,17 @@ def _filter_by_column(df: pd.DataFrame, column: str, limit: Number) -> pd.DataFr
 
 def _backup_file(file):
     counter = 1
-    backup_file = _get_backup_filename(file, counter)
+    backup_file = _get_backup_filepath(file, counter)
     while backup_file.exists():
         counter += 1
-        backup_file = _get_backup_filename(file, counter)
+        backup_file = _get_backup_filepath(file, counter)
 
     LOG.info(f"Backing up original file {file.name} to {backup_file.name}.")
     shutil.copy(file, backup_file)
 
 
-def _get_backup_filename(file: Path, counter: int):
-    return file.with_name(BACKUP_FILENAME.format(file.name, counter))
+def _get_backup_filepath(file: Path, counter: int):
+    return file.with_name(BACKUP_FILENAME.format(basefile=file.name, counter=counter))
 
 
 # Script Mode ------------------------------------------------------------------
