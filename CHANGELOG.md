@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2022-05-19
+
+- Added:
+  - Linfile cleaning script. 
+
 #### 2022-04-25
 
 - Added:
