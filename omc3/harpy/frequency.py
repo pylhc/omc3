@@ -10,6 +10,7 @@ analysis.
 Also searches for resonances in the calculated spectra.
 """
 from collections import OrderedDict
+from numbers import Number
 
 import numpy as np
 import pandas as pd
@@ -176,7 +177,7 @@ def _realign_phases(phase_data, freq_data, nturns):
     return np.where(np.abs(mid_phase) > 0.5, mid_phase - np.sign(mid_phase), mid_phase)
 
 
-def clean_by_tune(tunes: pd.Series, tune_clean_limit):
+def clean_by_tune(tunes: pd.Series, tune_clean_limit: Number) -> pd.Series:
     """
     Looks for outliers in the tunes pandas Series and returns their indices.
 
@@ -185,7 +186,7 @@ def clean_by_tune(tunes: pd.Series, tune_clean_limit):
         tune_clean_limit: No BPM will find as outlier if its distance to the
             average is lower than this limit.
     """
-    bad_bpms_mask = outliers.get_filter_mask(tunes, limit=tune_clean_limit)
+    bad_bpms_mask = outliers.get_filter_mask(tunes, limit=tune_clean_limit)  # returns ``True`` for good BPMs
     bad_bpms_names = tunes[~bad_bpms_mask].index
     return bad_bpms_names
 

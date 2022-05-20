@@ -1,5 +1,30 @@
 # OMC3 Changelog
 
+#### 2022-05-19
+
+- Added:
+  - Linfile cleaning script. 
+
+#### 2022-04-25
+
+- Added:
+  - There is now an option, `coupling_pairing`, for the BPM pairing in coupling calculation, to let the user choose the number of BPMs instead of the usual "best candidate" method.
+
+#### 2022-04-25
+
+- Fixed:
+  - Only perform index merging on the `NAME` column during coupling calculation. This solves an (at the moment) un-understood issue where some BPMs would have different `S` values in different files.
+
+#### 2022-04-12
+
+- Fixed:
+  - An additionnal knob and macros definition file has been added to reflect the knobs used by OP in the LHC Run 3. This makes sure any `omc3.model_creator` run for the LHC with `year >= 2022` has correct knobs.
+
+#### 2022-04-07
+
+- Miscellaneous:
+  - The jpype1 package is not a default dependency anymore, and is instead included as a dependency in the cern and test extras. Its import is mocked where needed in omc3.
+
 #### 2022-02-23
 
 - Fixed:
