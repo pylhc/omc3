@@ -149,7 +149,7 @@ def _sync_phase(lin_frame, plane):
     return lin_frame
 
 
-def _compute_headers(panda, date):
+def _compute_headers(panda, date=None):
     headers = OrderedDict()
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
@@ -160,7 +160,8 @@ def _compute_headers(panda, date):
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
-    headers["TIME"] = date.strftime(formats.TIME)
+    if date:
+        headers["TIME"] = date.strftime(formats.TIME)
     return headers
 
 
