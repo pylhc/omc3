@@ -75,10 +75,9 @@ def clean_outliers_moving_average(data_series, length, limit):
     """
     LOG.debug("Filtering and calculating moving average of length {:d}.".format(length))
     init_mask = ~data_series.isna()
-    mask = get_filter_mask(data=data_series, limit=limit, mask=init_mask.copy())
-
-    # for i in range(len(data_series)-length):
-    #     mask[i:i+length] &= get_filter_mask(data_series[i:i+length], limit=limit, mask=init_mask[i:i+length])
+    mask = init_mask.copy()
+    for i in range(len(data_series)-length):
+        mask[i:i+length] &= get_filter_mask(data_series[i:i+length], limit=limit, mask=init_mask[i:i+length])
 
     _is_almost_empty_mask(mask, length)
     data_mav, std_mav = _get_interpolated_moving_average(data_series, ~mask, length)
