@@ -33,13 +33,13 @@ def test_filter_tune(tmp_path):
 
 
 def test_filter_tune_limit(tmp_path):
-    """ Test filtering works on outlier creatd by modify linfiles function. """
+    """ Test filtering works on outlier created by modify linfiles function. """
     columns = [COL_TUNE]
     plane_columns = [f"{col}{p}" for col in columns for p in PLANES]
     linfiles = _copy_and_modify_linfiles(tmp_path, columns=columns, index=[2], by=0.1)
     unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
 
-    # if limit not given, would filter two elements in X
+    # choose limit greater than the changes made
     clean_columns(files=linfiles.values(), columns=plane_columns, limit=0.2)
 
     filtered = {p: tfs.read(f) for p, f in linfiles.items()}
@@ -72,18 +72,18 @@ def test_backup_and_restore(tmp_path):
     linfiles = _copy_and_modify_linfiles(tmp_path)
     unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
 
-    _assert_nlinfilesfiles(tmp_path, 1)
+    _assert_nlinfiles(tmp_path, 1)
     clean_columns(files=linfiles.values(), columns=plane_columns, backup=True)
-    _assert_nlinfilesfiles(tmp_path, 2)
+    _assert_nlinfiles(tmp_path, 2)
     clean_columns(files=linfiles.values(), columns=plane_columns, backup=True)
-    _assert_nlinfilesfiles(tmp_path, 3)
+    _assert_nlinfiles(tmp_path, 3)
 
     filtered = {p: tfs.read(f) for p, f in linfiles.items()}
 
     restore_files(files=linfiles.values())
-    _assert_nlinfilesfiles(tmp_path, 2)
+    _assert_nlinfiles(tmp_path, 2)
     restore_files(files=linfiles.values())
-    _assert_nlinfilesfiles(tmp_path, 1)
+    _assert_nlinfiles(tmp_path, 1)
 
     restored = {p: tfs.read(f) for p, f in linfiles.items()}
 
@@ -107,12 +107,12 @@ def test_main(tmp_path):
 
     # if limit not given, would filter two elements in X
     main(files=list(linfiles.values()), columns=plane_columns, limit=0.01, backup=True)
-    _assert_nlinfilesfiles(tmp_path, 2)
+    _assert_nlinfiles(tmp_path, 2)
 
     filtered = {p: tfs.read(f) for p, f in linfiles.items()}
 
     main(files=list(linfiles.values()), restore=True)
-    _assert_nlinfilesfiles(tmp_path, 1)
+    _assert_nlinfiles(tmp_path, 1)
 
     restored = {p: tfs.read(f) for p, f in linfiles.items()}
 
@@ -130,12 +130,12 @@ def test_main(tmp_path):
     assert len(inis) == 2
     main(entry_cfg=sorted(inis)[0])
     assert len(list(Path('.').glob("*.ini"))) == 3
-    _assert_nlinfilesfiles(tmp_path, 2)
+    _assert_nlinfiles(tmp_path, 2)
 
 
 # Helper -----------------------------------------------------------------------
 
-def _assert_nlinfilesfiles(path, nfiles):
+def _assert_nlinfiles(path, nfiles):
     for plane in PLANES:
         assert len(list(path.glob(f"*.lin{plane.lower()}*"))) == nfiles
 
