@@ -70,7 +70,7 @@ def add_bbq_data(kick_df, bbq_series, column):
 
     values = []
     for time in kick_indx:
-        values.append(bbq_series.iloc[bbq_indx.get_loc(time, method="nearest")])
+        values.append(bbq_series.iloc[bbq_indx.get_indexer([time], method="nearest")[0]])
     kick_df[column] = values
     return kick_df
 
@@ -193,7 +193,6 @@ def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
         odr_data.beta[idx] = kickac_df.headers[header_val(action_plane, tune_plane, idx)]
         odr_data.sd_beta[idx] = kickac_df.headers[header_err(action_plane, tune_plane, idx)]
     return odr_data
-
 
 
 def get_ampdet_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,

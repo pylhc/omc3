@@ -4,7 +4,12 @@ BBQ Tools
 
 Tools to handle BBQ data.
 """
+from typing import Tuple, Union
+from datetime import datetime
+
 import numpy as np
+import pandas as pd
+from numpy.typing import ArrayLike
 
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
@@ -61,7 +66,7 @@ def get_moving_average(data_series, length=20,
     return data_mav, std_mav, ~cut_mask
 
 
-def clean_outliers_moving_average(data_series, length, limit):
+def clean_outliers_moving_average(data_series: pd.Series, length: int, limit: float) -> Tuple[pd.Series, pd.Series, ArrayLike]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries, by means of
     :func:`outlier filter <omc3.utils.outliers.get_filter_mask>`.
@@ -87,15 +92,33 @@ def clean_outliers_moving_average(data_series, length, limit):
 # Private methods ############################################################
 
 
-def _get_interpolated_moving_average(data_series, clean_mask, length):
+def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[pd.Series, ArrayLike], length: int) -> Tuple[pd.Series, pd.Series]:
     """
     Returns the moving average of data series with a window of length and interpolated ``NaNs``.
     """
     data = data_series.copy()
+    is_datetime_index = isinstance(data.index[0], datetime)
+
+    if is_datetime_index:
+        # in case data_series has datetime or similar as index
+        # interpolation works in some pandas/numpy combinations, in some not
+        try:
+            # if clean_mask is a Series, bring into the right order and make array ...
+            clean_mask = clean_mask[data.index].to_numpy()
+        except TypeError:
+            pass
+
+        # ... as we change the index of data now
+        data.index = pd.Index([i.timestamp() for i in data.index])
+
     data[clean_mask] = np.NaN
 
-    # 'interpolate' fills nan based on index/values of neighbours
-    data = data.interpolate("index").fillna(method="bfill").fillna(method="ffill")
+    try:
+        # 'interpolate' fills nan based on index/values of neighbours
+        data = data.interpolate("index").fillna(method="bfill").fillna(method="ffill")
+    except TypeError as e:
+        raise TypeError("Interpolation failed. "
+                        "Usually due to a dtype format that is not properly recognized.") from e
 
     shift = -int((length-1)/2)  # Shift average to middle value
 
@@ -104,6 +127,12 @@ def _get_interpolated_moving_average(data_series, clean_mask, length):
         method="bfill").fillna(method="ffill")
     std_mav = data.rolling(length).std().shift(shift).fillna(
         method="bfill").fillna(method="ffill")
+
+    if is_datetime_index:
+        # restore index from input series
+        data_mav.index = data_series.index
+        std_mav.index = data_series.index
+
     return data_mav, std_mav
 
 
