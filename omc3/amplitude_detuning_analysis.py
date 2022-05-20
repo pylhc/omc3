@@ -290,8 +290,8 @@ def get_approx_bbq_interval(
     ts_index = kick_file_modifiers.get_timestamp_index(bbq_tmp.index)
     ts_start, ts_end = time_array[0].timestamp(), time_array[-1].timestamp()
 
-    i_start = max(ts_index.get_loc(ts_start, method="nearest") - int(window_length / 2.0), 0)
-    i_end = min(ts_index.get_loc(ts_end, method="nearest") + int(window_length / 2.0), len(ts_index) - 1)
+    i_start = max(ts_index.get_indexer([ts_start], method="nearest")[0] - int(window_length / 2.0), 0)
+    i_end = min(ts_index.get_indexer([ts_end], method="nearest")[0] + int(window_length / 2.0), len(ts_index) - 1)
 
     return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
