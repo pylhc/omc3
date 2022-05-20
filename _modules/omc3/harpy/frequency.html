@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.frequency &mdash; omc3 0.2.7 documentation</title>
+  <title>omc3.harpy.frequency &mdash; omc3 0.3.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -29,7 +29,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.2
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 </ul>
 </li>
 </ul>
@@ -207,6 +208,7 @@
 <span class="sd">Also searches for resonances in the calculated spectra.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -373,7 +375,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">mid_phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">),</span> <span class="n">mid_phase</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="clean_by_tune"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.clean_by_tune">[docs]</a><span class="k">def</span> <span class="nf">clean_by_tune</span><span class="p">(</span><span class="n">tunes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">tune_clean_limit</span><span class="p">):</span>
+<div class="viewcode-block" id="clean_by_tune"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.clean_by_tune">[docs]</a><span class="k">def</span> <span class="nf">clean_by_tune</span><span class="p">(</span><span class="n">tunes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">tune_clean_limit</span><span class="p">:</span> <span class="n">Number</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks for outliers in the tunes pandas Series and returns their indices.</span>
 
@@ -382,7 +384,7 @@
 <span class="sd">        tune_clean_limit: No BPM will find as outlier if its distance to the</span>
 <span class="sd">            average is lower than this limit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bad_bpms_mask</span> <span class="o">=</span> <span class="n">outliers</span><span class="o">.</span><span class="n">get_filter_mask</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">tune_clean_limit</span><span class="p">)</span>
+    <span class="n">bad_bpms_mask</span> <span class="o">=</span> <span class="n">outliers</span><span class="o">.</span><span class="n">get_filter_mask</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">tune_clean_limit</span><span class="p">)</span>  <span class="c1"># returns ``True`` for good BPMs</span>
     <span class="n">bad_bpms_names</span> <span class="o">=</span> <span class="n">tunes</span><span class="p">[</span><span class="o">~</span><span class="n">bad_bpms_mask</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">return</span> <span class="n">bad_bpms_names</span></div>
 

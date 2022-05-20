@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harpy &mdash; omc3 0.2.7 documentation</title>
+  <title>Harpy &mdash; omc3 0.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -32,7 +32,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.2
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -75,6 +75,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 </ul>
 </li>
 </ul>
@@ -259,7 +260,7 @@ analysis.
 Also searches for resonances in the calculated spectra.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.harpy.frequency.clean_by_tune">
-<span class="sig-prename descclassname"><span class="pre">omc3.harpy.frequency.</span></span><span class="sig-name descname"><span class="pre">clean_by_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_clean_limit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#clean_by_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.harpy.frequency.clean_by_tune" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.harpy.frequency.</span></span><span class="sig-name descname"><span class="pre">clean_by_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_clean_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Number</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#clean_by_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.harpy.frequency.clean_by_tune" title="Permalink to this definition"></a></dt>
 <dd><p>Looks for outliers in the tunes pandas Series and returns their indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

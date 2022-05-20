@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.outliers &mdash; omc3 0.2.7 documentation</title>
+  <title>omc3.utils.outliers &mdash; omc3 0.3.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -29,7 +29,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.2
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 </ul>
 </li>
 </ul>
@@ -202,45 +203,72 @@
 <span class="sd">Helper functions for outlier detection.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">t</span>
 
 
-<span class="c1"># nsig: Limit for not being cleaned</span>
-<div class="viewcode-block" id="get_filter_mask"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.outliers.get_filter_mask">[docs]</a><span class="k">def</span> <span class="nf">get_filter_mask</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">x_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">nsig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_filter_mask"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.outliers.get_filter_mask">[docs]</a><span class="k">def</span> <span class="nf">get_filter_mask</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">x_data</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="n">niter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">nsig</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Filters the array of values which are meant to be constant or a linear function of the other</span>
-<span class="sd">    array if that is provided. Returns a filter mask for the original array</span>
+<span class="sd">    Filters the array of values which are meant to be constant or a linear function of the x-data</span>
+<span class="sd">    array if that is provided, by checking how many sigmas they are deviating from the average.</span>
+<span class="sd">    Returns a filter mask for the original array (meaning ``True`` for elements that should be kept).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">         data (ArrayLike): Data to filter.</span>
+<span class="sd">         x_data (ArrayLike): Additional x-data. If given a linear function is fit on the data,</span>
+<span class="sd">                             and the outliers filtered on the difference to this function.</span>
+<span class="sd">                             Otherwise, the distribution of data is used directly for filtering.</span>
+<span class="sd">         limit (float): Only data deviating more than this limit from the average is filtered.</span>
+<span class="sd">         niter (int): Maximum number of filter iterations to do.</span>
+<span class="sd">                      Iterations are interrupted if the number of datapoints did not shrink</span>
+<span class="sd">                      in the last iteration or if there is only two or less data-points left.</span>
+<span class="sd">         nsig (int): number of sigmas within the data points are considered okay, outside they are</span>
+<span class="sd">                     considered outliers. If not given, nsigmas is got from the</span>
+<span class="sd">                     1-0.5/length(data) percentile of a student-t distribution.</span>
+<span class="sd">         mask (ArrayLike): Boolean mask of data-points to consider.</span>
+<span class="sd">                           If ``None``, all data is considered.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ArrayLike: Boolean array containing ``True`` entries for data-points that are good,</span>
+<span class="sd">                   and ``False`` for the ones that should be filtered.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_data</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Datasets are not equally long.&quot;</span><span class="p">)</span>
     
-    <span class="c1"># To fulfill the condition for the first iteration:</span>
     <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mask is not equally long as dataset.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">nsig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nsig</span> <span class="o">=</span> <span class="n">_get_significance_cut_from_length</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
 
+    <span class="c1"># To fulfill the condition for the first iteration:</span>
     <span class="n">prevlen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Cleaning iteration</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">niter</span><span class="p">):</span>
+        <span class="c1"># check that number of points decreases and some are left</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">prevlen</span><span class="p">)</span> <span class="ow">and</span>
                 <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)):</span>
             <span class="k">break</span>
         <span class="n">prevlen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+
+        <span class="c1"># get the (remaining) data-points used to get moments from,</span>
+        <span class="c1"># if x-data is given, fit and remove slope.</span>
         <span class="k">if</span> <span class="n">x_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">y</span><span class="p">,</span> <span class="n">y_orig</span> <span class="o">=</span> <span class="n">_get_data</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">y</span><span class="p">,</span> <span class="n">y_orig</span> <span class="o">=</span> <span class="n">_get_data_without_slope</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">x_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="n">avg</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">_get_moments</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_orig</span> <span class="o">-</span> <span class="n">avg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">limit</span><span class="p">,</span> <span class="n">nsig</span> <span class="o">*</span> <span class="n">std</span><span class="p">]))</span>
+
+        <span class="c1"># keep only points within nsig sigma of the remaining data.</span>
+        <span class="n">avg</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_orig</span> <span class="o">-</span> <span class="n">avg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">limit</span><span class="p">,</span> <span class="n">nsig</span> <span class="o">*</span> <span class="n">std</span><span class="p">]))</span>
     <span class="k">return</span> <span class="n">mask</span></div>
-
-
-<span class="k">def</span> <span class="nf">_get_moments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_data_without_slope</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>

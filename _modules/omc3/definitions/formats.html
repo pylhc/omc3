@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.definitions.formats &mdash; omc3 0.2.7 documentation</title>
+  <title>omc3.definitions.formats &mdash; omc3 0.3.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -29,7 +29,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.2
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -72,6 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 </ul>
 </li>
 </ul>
@@ -206,6 +207,7 @@
 
 <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;%Y_%m_</span><span class="si">%d</span><span class="s2">@%H_%M_%S_</span><span class="si">%f</span><span class="s2">&quot;</span>  <span class="c1"># CERN default</span>
 <span class="n">CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{script:s}</span><span class="s2">_</span><span class="si">{time:s}</span><span class="s2">.ini&quot;</span>
+<span class="n">BACKUP_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{basefile}</span><span class="s2">_backup</span><span class="si">{counter}</span><span class="s2">&quot;</span>
 
 
 <div class="viewcode-block" id="get_config_filename"><a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.formats.get_config_filename">[docs]</a><span class="k">def</span> <span class="nf">get_config_filename</span><span class="p">(</span><span class="n">script</span><span class="p">):</span>

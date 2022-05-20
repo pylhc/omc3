@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.2.7 documentation</title>
+  <title>Scripts &mdash; omc3 0.3.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -33,7 +33,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.2
+                0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -76,6 +76,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linfile-cleaning">Linfile Cleaning</a></li>
 </ul>
 </li>
 </ul>
@@ -677,6 +678,92 @@ values in order of parameters.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.frame.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.generate" title="Permalink to this definition"></a></dt>
 <dd><p>Takes a twiss file and writes the parameters in optics_parameters to Output_dir in the format
 global_correction_entrypoint uses (same format you would get from hole_in_one).</p>
+</dd></dl>
+
+</section>
+<span class="target" id="module-omc3.scripts.linfile_clean"></span><section id="linfile-cleaning">
+<h2>Linfile Cleaning<a class="headerlink" href="#linfile-cleaning" title="Permalink to this headline"></a></h2>
+<p>Performs an automated cleaning of different columns in the lin-file
+as a standalone script to allow for manual refinement after harpy is done.</p>
+<p>All data is assumed to be gaussian distributed around a “true” value,
+and outliers are cleaned by calculating average and standard deviation
+of the given data.</p>
+<p>The cleaning is done by removing all data-points that are outside of the
+1-0.5/n estimated percentile of the data. Where n is the number of
+(remaining) data-points in each loop, and the process is repeated until
+n stays constant (or 2 or less data-points remain).</p>
+<p>Datapoints with a standard deviation smaller than the given limit are not
+cleaned. The limit is given in whatever units the data itself is in and
+is an absolute value.</p>
+<p>Cleaning is done per given file independently
+i.e. removed BPMs from one file can be present in the next.
+The columns are iterated on the same file, i.e. the cleaning is done
+consecutively on the already cleaned data from the last column,
+yet the moments of the distribution themselves are evaluated per column.</p>
+<p>In the end, the lin-files are overwritten with the cleaned ones.
+If the <code class="docutils literal notranslate"><span class="pre">backup</span></code> option is activated, a backup of the original file
+is created, which can be restored via the <code class="docutils literal notranslate"><span class="pre">restore</span></code> option.
+In case the restore-flag is given, only the filenames are required.
+No cleaning is performed with this option.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>files</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>List of paths to the lin-files, including suffix.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>backup</strong>:</p>
+<blockquote>
+<div><p>Create a backup of the files before overwriting. The backups are
+numbered, with the highest number being the latest backup.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>columns</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Columns to clean on.</p>
+</div></blockquote>
+</li>
+<li><p><strong>limit</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Do not clean data-points deviating less than this limit from the
+average.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>restore</strong>:</p>
+<blockquote>
+<div><p>Restore the latest backup of the files. If this parameter is given, no
+cleaning is performed.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+<p>TODO:
+also use isolation forest, BUT this probably needs some modification there
+as well, as it only cleans on TUNE, not on NATTUNE.
+And it requires an accelerator instance.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.linfile_clean.clean_columns">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.linfile_clean.</span></span><span class="sig-name descname"><span class="pre">clean_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/linfile_clean.html#clean_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.linfile_clean.clean_columns" title="Permalink to this definition"></a></dt>
+<dd><p>Clean the columns in the given files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.linfile_clean.main">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.linfile_clean.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/linfile_clean.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.linfile_clean.main" title="Permalink to this definition"></a></dt>
+<dd><p>Main function, to parse commandline input and separate restoration
+from cleaning.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.linfile_clean.restore_files">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.linfile_clean.</span></span><span class="sig-name descname"><span class="pre">restore_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/linfile_clean.html#restore_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.linfile_clean.restore_files" title="Permalink to this definition"></a></dt>
+<dd><p>Restore backupped files.</p>
 </dd></dl>
 
 </section>
