@@ -15,3 +15,7 @@ Scripts
 
 .. automodule:: omc3.scripts.fake_measurement_from_model
     :members:
+
+.. automodule:: omc3.scripts.linfile_clean
+    :members:
+
