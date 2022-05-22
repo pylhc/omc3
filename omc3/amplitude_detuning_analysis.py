@@ -291,6 +291,14 @@ def get_approx_bbq_interval(
     ts_kick_index = kick_file_modifiers.get_timestamp_index(time_array)
     ts_start, ts_end = min(ts_kick_index), max(ts_kick_index)
 
+    ts_bbq_min, ts_bbq_max = min(ts_bbq_index), max(ts_bbq_index)
+
+    if not (ts_bbq_min <= ts_start <= ts_bbq_max):
+        raise ValueError("The starting time of the kicks lies outside of the given BBQ times.")
+
+    if not (ts_bbq_min <= ts_end <= ts_bbq_max):
+        raise ValueError("The end time of the kicks lies outside of the given BBQ times.")
+
     i_start = max(ts_bbq_index.get_indexer([ts_start], method="nearest")[0] - int(window_length / 2.0), 0)
     i_end = min(ts_bbq_index.get_indexer([ts_end], method="nearest")[0] + int(window_length / 2.0), len(ts_bbq_index) - 1)
 
@@ -372,6 +380,8 @@ def _get_bbq_data(beam: int, input_: str, kick_df: TfsDataFrame) -> TfsDataFrame
         else:  # input_ is a file name
             LOG.debug(f"Getting bbq data from file '{input_:s}'")
             data = read_timed_dataframe(input_)
+            if not len(data.index):
+                raise ValueError(f"No entries in {input_}.")
             #  Drop old moving average columns as these will be computed again later
             data.drop([get_mav_col(p) for p in PLANES if get_mav_col(p) in data.columns], axis="columns")
 
