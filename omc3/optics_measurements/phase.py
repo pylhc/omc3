@@ -138,9 +138,9 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
             phases_errors[~mask] = 1e-10
     elif no_errors:
         phases_errors = None
-    phases_3d = phases_meas.to_numpy()[np.newaxis, :, :] - phases_meas.to_numpy()[:, np.newaxis, :]
+    phases_3d = phases_meas[np.newaxis, :, :] - phases_meas[:, np.newaxis, :]
     if phases_errors is not None:
-        errors_3d = phases_errors.to_numpy()[np.newaxis, :, :] + phases_errors.to_numpy()[:, np.newaxis, :]
+        errors_3d = phases_errors[np.newaxis, :, :] + phases_errors[:, np.newaxis, :]
     else:
         errors_3d = None
     phase_advances["MEAS"] = _get_square_data_frame(stats.circular_mean(
@@ -151,11 +151,11 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                             _create_output_df(phase_advances, df, plane, tot=True)]
 
 
-def _compensate_by_equation(phases_meas, plane, tunes):
+def _compensate_by_equation(phases_meas: ArrayLike, plane, tunes):
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
-    phases_meas = phases_meas + phase_corr.to_numpy()[np.newaxis, :]
+    phases_meas = phases_meas + phase_corr[np.newaxis, :]
     r = tunes.get_lambda(plane)
     phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
     psi = (np.arctan((1 - r) / (1 + r) * np.tan(2 * np.pi * phases_meas)) / (2 * np.pi)) % 0.5
@@ -169,7 +169,7 @@ def _compensate_by_model(input_files, meas_input, df, plane):
                   how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
     phase_compensation = df_diff(df, f"MU{plane}", f"MU{plane}comp")
     df[input_files.get_columns(df, f"MU{plane}")] = ang_sum(
-        input_files.get_data(df, f"MU{plane}"), phase_compensation.to_numpy()[:, np.newaxis])
+        input_files.get_data(df, f"MU{plane}"), phase_compensation[:, np.newaxis])
     return df
 
 
