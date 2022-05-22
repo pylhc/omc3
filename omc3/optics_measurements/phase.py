@@ -11,6 +11,7 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 import tfs
+from numpy.typing import ArrayLike
 
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
@@ -204,10 +205,10 @@ def _create_output_df(phase_advances, model, plane, tot=False):
     return output_data
 
 
-def _get_all_phase_diff(phases_a: pd.Series, phases_b: pd.Series = None):
+def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike = None):
     if phases_b is None:
         phases_b = phases_a
-    return (phases_a.to_numpy()[np.newaxis, :] - phases_b.to_numpy()[:, np.newaxis]) % 1.0
+    return (phases_a[np.newaxis, :] - phases_b[:, np.newaxis]) % 1.0
 
 
 def _get_square_data_frame(data, index):
