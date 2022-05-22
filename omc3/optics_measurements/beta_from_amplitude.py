@@ -33,7 +33,7 @@ def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane
     beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
     beta_amp = add_rescaled_beta_columns(beta_amp, x_ratio, plane)
-    header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].values), x_ratio)
+    header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].to_numpy()), x_ratio)
     tfs.write(join(meas_input.outputdir, f"{AMP_BETA_NAME}{plane.lower()}{EXT}"), beta_amp, header_d, save_index='NAME')
     return x_ratio
 
@@ -49,8 +49,8 @@ def phase_to_amp_ratio(measure_input, beta_phase, beta_amp, plane):
 
 
 def add_rescaled_beta_columns(df, ratio, plane):
-    df[f"BET{plane}{RES}"] = df.loc[:, f"BET{plane}"].values * ratio
-    df[f"{ERR}BET{plane}{RES}"] = df.loc[:, f"{ERR}BET{plane}"].values * ratio
+    df[f"BET{plane}{RES}"] = df.loc[:, f"BET{plane}"].to_numpy() * ratio
+    df[f"{ERR}BET{plane}{RES}"] = df.loc[:, f"{ERR}BET{plane}"].to_numpy() * ratio
     return df
 
 
@@ -70,7 +70,7 @@ def beta_from_amplitude(meas_input, input_files, plane, tunes):
 
     amps_squared = np.square(input_files.get_data(df, f"AMP{plane}"))
     mask = meas_input.accelerator.get_element_types_mask(df.index, ["arc_bpm"])
-    actions = amps_squared / df.loc[:, f"BET{plane}{MDL}"].values[:, np.newaxis]
+    actions = amps_squared / df.loc[:, f"BET{plane}{MDL}"].to_numpy()[:, np.newaxis]
     betas = amps_squared / np.mean(actions[mask], axis=0, keepdims=True)
     df[f"BET{plane}"] = np.mean(betas, axis=1)
     df[f"{ERR}BET{plane}"] = np.std(betas, axis=1)

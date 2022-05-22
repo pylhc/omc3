@@ -183,7 +183,7 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
                                     label="$Q_{:s}$".format(plane.lower(),)
                                     )[0]
         filtered_data = bbq_df.loc[mask, get_bbq_col(plane)].dropna()
-        handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.values,
+        handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.to_numpy(),
                                                 color=pcolors.change_color_brightness(color, .7),
                                                 marker=".",
                                                 label="filtered".format(plane.lower())
