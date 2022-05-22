@@ -182,16 +182,16 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
     NDX_arr = np.divide(resp[columns.index(f"{DISP}X")], np.sqrt(resp[columns.index(f"{BETA}X")]))
     NDY_arr = np.divide(resp[columns.index(f"{DISP}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")]))
     resp[columns.index(f"{BETA}X")] = np.divide(
-        resp[columns.index(f"{BETA}X")], resp[columns.index(f"{BETA}X"), :, model_index].to_numpy()[:, np.newaxis]
+        resp[columns.index(f"{BETA}X")], resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis]
     )
     resp[columns.index(f"{BETA}Y")] = np.divide(
-        resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index].to_numpy()[:, np.newaxis]
+        resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
     )
 
     # subtracting nominal model from data
-    resp = np.subtract(resp, resp[:, :, model_index].to_numpy()[:, :, np.newaxis])
-    NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index].to_numpy()[:, np.newaxis])
-    NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index].to_numpy()[:, np.newaxis])
+    resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
+    NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])
+    NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index][:, np.newaxis])
     
     # Remove difference of nominal model with itself (bunch of zeros) and divide by increment
     resp = np.delete(resp, model_index, axis=2)

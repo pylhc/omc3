@@ -114,11 +114,11 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
             outer_meas_err = phases_err.iloc[indx, indx + loc_range]
             outer_mdl_ph = bk_model.iloc[indx + loc_range][mu_column].to_numpy() * PI2
             outer_elmts = elements.iloc[indx_el_first:indx_el_last + 1]
-            outer_elmts_ph = elements.iloc[indx_el_first:indx_el_last + 1][mu_column] * PI2
+            outer_elmts_ph = elements.iloc[indx_el_first:indx_el_last + 1][mu_column].to_numpy() * PI2
         # bpms_inds_elements was not used (jdilly)
         # bpms_inds_elements = [outer_elmts.index.get_loc(bpm_name) for bpm_name in outer_meas_phase_adv.index.to_numpy()]
         sin_squared_elements = np.square(np.sin(
-            outer_elmts_ph.to_numpy()[:, np.newaxis] - outer_mdl_ph.to_numpy()[np.newaxis, :]
+            outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :]
         ))
         with np.errstate(divide='ignore'):
             cot_meas = 1.0 / np.tan(outer_meas_phase_adv.to_numpy())
