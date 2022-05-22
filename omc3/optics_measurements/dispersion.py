@@ -107,8 +107,8 @@ def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
     model = accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['AMPZ', 'MUZ', f"AMP{plane}"])
     # work around due to scaling to main line in lin files
-    unscaled_amps = (df_orbit.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].values *
-                     df_orbit.loc[:, input_files.get_columns(df_orbit, f"AMP{plane}")].values)
+    unscaled_amps = (df_orbit.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].to_numpy() *
+                     df_orbit.loc[:, input_files.get_columns(df_orbit, f"AMP{plane}")].to_numpy())
     mask = accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     global_factors = np.array([1 / df.headers["DPPAMP"] for df in input_files[plane]])
     # scaling to the model, and getting the synchrotron phase in the arcs
@@ -145,7 +145,7 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
     df_orbit['NDX_unscaled'] = fit[0][-2, :].T / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)  # TODO there is no error from AMPX
     df_orbit['STDNDX_unscaled'] = np.sqrt(fit[1][-2, -2, :].T) / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
-    global_factor = np.sum(df_orbit.loc[mask, f"ND{plane}{MDL}"].values) / np.sum(df_orbit.loc[mask, 'NDX_unscaled'].values)
+    global_factor = np.sum(df_orbit.loc[mask, f"ND{plane}{MDL}"].to_numpy()) / np.sum(df_orbit.loc[mask, 'NDX_unscaled'].to_numpy())
     if order > 1:
         df_orbit[f"ND2{plane}"] = global_factor * df_orbit.loc[:, 'ND2X_unscaled']
         df_orbit[f"{ERR}ND2{plane}"] = global_factor * df_orbit.loc[:, 'STDND2X_unscaled']
@@ -172,10 +172,10 @@ def _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header):
     df_orbit = pd.merge(df_orbit, driven_model.loc[:, [f"BET{plane}"]], how='inner', left_index=True,
                         right_index=True, suffixes=('', '_driven'))
     mask = accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
-    compensation = np.sqrt(df_orbit.loc[:, f"BET{plane}_driven"].values / df_orbit.loc[:, f"BET{plane}{MDL}"].values)
-    global_factors = np.sum(df_orbit.loc[mask, f"ND{plane}{MDL}"].values) / np.sum(df_orbit.loc[mask, input_files.get_columns(df_orbit, 'AMPZ')].values * compensation[mask, None], axis=0)
+    compensation = np.sqrt(df_orbit.loc[:, f"BET{plane}_driven"].to_numpy() / df_orbit.loc[:, f"BET{plane}{MDL}"].to_numpy())
+    global_factors = np.sum(df_orbit.loc[mask, f"ND{plane}{MDL}"].to_numpy()) / np.sum(df_orbit.loc[mask, input_files.get_columns(df_orbit, 'AMPZ')].to_numpy() * compensation[mask, None], axis=0)
     # scaling to the model, and getting the synchrotron phase in the arcs
-    scaled_amps = (df_orbit.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].values * global_factors) * compensation[:, None]
+    scaled_amps = (df_orbit.loc[:, input_files.get_columns(df_orbit, 'AMPZ')].to_numpy() * global_factors) * compensation[:, None]
     df_orbit[f"ND{plane}"], df_orbit[f"{ERR}ND{plane}"] = _get_signed_dispersion(
         input_files, df_orbit, scaled_amps, mask)
     df_orbit = _calculate_from_norm_disp(df_orbit, model, plane)
@@ -190,8 +190,8 @@ def _calculate_dp(model, disp, plane):
                                      f"BET{plane}", f"ALF{plane}"]]
     df = pd.merge(df, disp.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], how='inner', left_index=True,
                   right_index=True, suffixes=('', _m))
-    shifted = np.roll(df.index.values, -1)
-    p_mdl_12 = df.loc[shifted, f"MU{plane}"].values - df.loc[:, f"MU{plane}"].values
+    shifted = np.roll(df.index.to_numpy(), -1)
+    p_mdl_12 = df.loc[shifted, f"MU{plane}"].to_numpy() - df.loc[:, f"MU{plane}"].to_numpy()
     p_mdl_12[-1] = p_mdl_12[-1] + model['Q' + str(1+(plane == "Y"))]
     phi_12 = p_mdl_12 * 2 * np.pi
     m11 = np.sqrt(df.loc[shifted, f"BET{plane}"] / df.loc[:, f"BET{plane}"]
@@ -215,7 +215,7 @@ def _get_merged_df(meas_input, input_files, plane, meas_columns):
 
 
 def _get_signed_dispersion(input_files, df_orbit, scaled_amps, mask):
-    same_interval_phase = np.angle(np.exp(PI2I * df_orbit.loc[:, input_files.get_columns(df_orbit, 'MUZ')].values)) / (2 * np.pi)
+    same_interval_phase = np.angle(np.exp(PI2I * df_orbit.loc[:, input_files.get_columns(df_orbit, 'MUZ')].to_numpy())) / (2 * np.pi)
     phase_wrt_arcs = same_interval_phase - stats.circular_mean(same_interval_phase[mask, :], period=1, axis=0)
     phase_wrt_arcs = np.abs(np.where(np.abs(phase_wrt_arcs) > 0.5, phase_wrt_arcs - np.sign(phase_wrt_arcs), phase_wrt_arcs))
     if len(input_files.get_columns(df_orbit, 'AMPZ')) > 1:

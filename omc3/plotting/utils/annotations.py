@@ -142,7 +142,7 @@ def get_ip_positions(path):
     """
     df = tfs.read_tfs(path).set_index('NAME')
     ip_names = [f"IP{i:d}" for i in range(1, 9)]
-    ip_pos = df.loc[ip_names, 'S'].values
+    ip_pos = df.loc[ip_names, 'S'].to_numpy()
     return dict(zip(ip_names, ip_pos))
 
 
