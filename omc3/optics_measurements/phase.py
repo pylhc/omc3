@@ -117,8 +117,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                                                      * meas_input.accelerator.beam_direction
                                                      )
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
-    phase_advances = {"MODEL": _get_square_data_frame(
-        (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
+    phase_advances = {"MODEL": _get_square_data_frame(_get_all_phase_diff(phases_mdl), df.index)}
     if compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
     phases_meas = input_files.get_data(df, f"MU{plane}")
@@ -127,8 +126,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
 
     phases_errors = input_files.get_data(df, f"{ERR}MU{plane}")
     if phases_meas.ndim < 2:
-        phase_advances["MEAS"] = _get_square_data_frame(
-                (phases_meas[np.newaxis, :] - phases_meas[:, np.newaxis]) % 1.0, df.index)
+        phase_advances["MEAS"] = _get_square_data_frame(_get_all_phase_diff(phases_meas), df.index)
         phase_advances["ERRMEAS"] = _get_square_data_frame(
                 np.zeros((len(phases_meas), len(phases_meas))), df.index)
         return phase_advances
@@ -139,9 +137,9 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
             phases_errors[~mask] = 1e-10
     elif no_errors:
         phases_errors = None
-    phases_3d = phases_meas[np.newaxis, :, :] - phases_meas[:, np.newaxis, :]
+    phases_3d = phases_meas.to_numpy()[np.newaxis, :, :] - phases_meas.to_numpy()[:, np.newaxis, :]
     if phases_errors is not None:
-        errors_3d = phases_errors[np.newaxis, :, :] + phases_errors[:, np.newaxis, :]
+        errors_3d = phases_errors.to_numpy()[np.newaxis, :, :] + phases_errors.to_numpy()[:, np.newaxis, :]
     else:
         errors_3d = None
     phase_advances["MEAS"] = _get_square_data_frame(stats.circular_mean(
@@ -156,7 +154,7 @@ def _compensate_by_equation(phases_meas, plane, tunes):
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
-    phases_meas = phases_meas + phase_corr[np.newaxis, :]
+    phases_meas = phases_meas + phase_corr.to_numpy()[np.newaxis, :]
     r = tunes.get_lambda(plane)
     phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
     psi = (np.arctan((1 - r) / (1 + r) * np.tan(2 * np.pi * phases_meas)) / (2 * np.pi)) % 0.5
@@ -170,7 +168,7 @@ def _compensate_by_model(input_files, meas_input, df, plane):
                   how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
     phase_compensation = df_diff(df, f"MU{plane}", f"MU{plane}comp")
     df[input_files.get_columns(df, f"MU{plane}")] = ang_sum(
-        input_files.get_data(df, f"MU{plane}"), phase_compensation[:, np.newaxis])
+        input_files.get_data(df, f"MU{plane}"), phase_compensation.to_numpy()[:, np.newaxis])
     return df
 
 
@@ -204,6 +202,12 @@ def _create_output_df(phase_advances, model, plane, tot=False):
     output_data[f"{DELTA}PHASE{plane}"] = df_ang_diff(output_data, f"PHASE{plane}", f"PHASE{plane}{MDL}")
     output_data[f"{ERR}{DELTA}PHASE{plane}"] = output_data.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
     return output_data
+
+
+def _get_all_phase_diff(phases_a: pd.Series, phases_b: pd.Series = None):
+    if phases_b is None:
+        phases_b = phases_a
+    return (phases_a.to_numpy()[np.newaxis, :] - phases_b.to_numpy()[:, np.newaxis]) % 1.0
 
 
 def _get_square_data_frame(data, index):
