@@ -406,21 +406,12 @@ def _plot_3d(tune_plane: str, opt: DotDict):
             const.get_action_label(PLANES[1], opt.action_plot_unit),
             const.get_tune_label(tune_plane, opt.tune_scale)
         )
+        ax.view_init(azim=45, elev=18)
         _format_axes_3d(ax, ax_labels=ax_labels, limits=limits,
                         acd=opt.correct_acd, odr_labels=all_odr_labels)
 
         if opt.output:
             output = Path(opt.output)
-            id_strJX = f"dQ{tune_plane.upper():s}d2JX_3D{corr_label:s}"
-            id_strJY = f"dQ{tune_plane.upper():s}d2JY_3D{corr_label:s}"
-
-            ax.view_init(azim=45, elev=18)
-            fig.savefig(f'{output.with_suffix("")}_{id_strJX}{output.suffix}')
-
-            ax.view_init(azim=45, elev=18)
-            fig.savefig(f'{output.with_suffix("")}_{id_strJY}{output.suffix}')
-
-            ax.view_init(azim=45, elev=18)
             fig.savefig(f'{output.with_suffix("")}_{id_str}{output.suffix}')
         figs[id_str] = fig
     return figs
@@ -577,9 +568,11 @@ def _format_axes_3d(
             transform=ax.transAxes,
         )
     h, l = get_labels_with_odr_labels(ax, odr_labels)
-    ax.legend(h, l, loc='upper left', bbox_to_anchor=(1.2, 1.0), prop={'size': 'small'})
+    ax.legend(h, l, loc='upper left', bbox_to_anchor=(1.2, 0.98), prop={'size': 'small'})
     ax.zaxis._axinfo['juggled'] = (1,2,0)  # move tune axis to the other side
-    ax.figure.tight_layout()  # needs two calls for some reason to look great
+    # tight layout so that the legend fits
+    ax.figure.tight_layout()
+    ax.figure.tight_layout()
 
 
 # Labels -----------------------------------------------------------------------

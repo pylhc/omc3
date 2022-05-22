@@ -287,11 +287,12 @@ def get_approx_bbq_interval(
     bbq_tmp = bbq_df.dropna()
 
     # convert to float to use math-comparisons
-    ts_index = kick_file_modifiers.get_timestamp_index(bbq_tmp.index)
-    ts_start, ts_end = time_array[0].timestamp(), time_array[-1].timestamp()
+    ts_bbq_index = kick_file_modifiers.get_timestamp_index(bbq_tmp.index)
+    ts_kick_index = kick_file_modifiers.get_timestamp_index(time_array)
+    ts_start, ts_end = min(ts_kick_index), max(ts_kick_index)
 
-    i_start = max(ts_index.get_indexer([ts_start], method="nearest")[0] - int(window_length / 2.0), 0)
-    i_end = min(ts_index.get_indexer([ts_end], method="nearest")[0] + int(window_length / 2.0), len(ts_index) - 1)
+    i_start = max(ts_bbq_index.get_indexer([ts_start], method="nearest")[0] - int(window_length / 2.0), 0)
+    i_end = min(ts_bbq_index.get_indexer([ts_end], method="nearest")[0] + int(window_length / 2.0), len(ts_bbq_index) - 1)
 
     return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
