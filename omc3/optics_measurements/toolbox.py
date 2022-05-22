@@ -30,7 +30,7 @@ def df_prod(df, a_col, b_col):
 
 def df_rel_diff(df, a_col, b_col):
     """ Returns a column containing the difference between a_col and b_col relative to b_col """
-    return (df.loc[:, a_col].to_numpy() / df.loc[:, b_col].to_numpy()) - 1
+    return df_ratio(df, a_col, b_col) - 1
 
 
 # with Errors ---
