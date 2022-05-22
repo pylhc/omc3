@@ -411,8 +411,17 @@ def _plot_3d(tune_plane: str, opt: DotDict):
 
         if opt.output:
             output = Path(opt.output)
-            fig.savefig(f'{output.with_suffix("")}_{id_str}{output.suffix}')
+            id_strJX = f"dQ{tune_plane.upper():s}d2JX_3D{corr_label:s}"
+            id_strJY = f"dQ{tune_plane.upper():s}d2JY_3D{corr_label:s}"
 
+            ax.view_init(azim=45, elev=18)
+            fig.savefig(f'{output.with_suffix("")}_{id_strJX}{output.suffix}')
+
+            ax.view_init(azim=45, elev=18)
+            fig.savefig(f'{output.with_suffix("")}_{id_strJY}{output.suffix}')
+
+            ax.view_init(azim=45, elev=18)
+            fig.savefig(f'{output.with_suffix("")}_{id_str}{output.suffix}')
         figs[id_str] = fig
     return figs
 
@@ -569,7 +578,6 @@ def _format_axes_3d(
         )
     h, l = get_labels_with_odr_labels(ax, odr_labels)
     ax.legend(h, l, loc='upper left', bbox_to_anchor=(1.2, 1.0), prop={'size': 'small'})
-    ax.view_init(azim=45, elev=18)
     ax.zaxis._axinfo['juggled'] = (1,2,0)  # move tune axis to the other side
     ax.figure.tight_layout()  # needs two calls for some reason to look great
 
