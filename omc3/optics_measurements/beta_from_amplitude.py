@@ -85,7 +85,7 @@ def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
-    phases_meas = phases_meas + phase_corr.to_numpy()[np.newaxis, :]
+    phases_meas = phases_meas + phase_corr[np.newaxis, :]
     r = tunes.get_lambda(plane)
     phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
     amp_compensation = np.sqrt((1 + r ** 2 + 2 * r * np.cos(4 * np.pi * phases_meas)) / (1 - r ** 2))
@@ -99,7 +99,7 @@ def _compensate_by_model(input_files, meas_input, df, plane):
                   how='inner', left_index=True, right_index=True)
     amp_compensation = np.sqrt(df_ratio(df, f"BET{plane}{MDL}", f"BET{plane}comp"))
     df[input_files.get_columns(df, f"AMP{plane}")] = (input_files.get_data(df, f"AMP{plane}")
-                                                      * amp_compensation.to_numpy()[:, np.newaxis])
+                                                      * amp_compensation[:, np.newaxis])
     return df
 
 
