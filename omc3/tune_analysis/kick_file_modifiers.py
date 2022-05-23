@@ -54,25 +54,29 @@ def _get_ampdet_columns(corrected):
 # Data Addition ################################################################
 
 
-def add_bbq_data(kick_df, bbq_series, column):
+def add_bbq_data(kick_df: pd.DataFrame, bbq_df: pd.DataFrame, column: str, bbq_column: str = None):
     """
-    Add BBQ values from series to kickac dataframe into column.
+    Add BBQ values from column to kickac dataframe into same column.
 
     Args:
-        kick_df: kick `dataframe`, which needs to have time as index, best load it with
+        kick_df: kick `DataFrame`, which needs to have time as index, best load it with
             ``read_timed_dataframe()``.
-        bbq_series: `Series` of bbq data with time as index.
+        bbq_df: `DataFrame` of bbq data with time as index.
         column: column name to add the data into.
+        bbq_column: column name to get the data from (same as `column` if not given).
 
     Returns:
         Modified kick `Dataframe`.
     """
+    if bbq_column is None:
+        bbq_column = column
     kick_indx = get_timestamp_index(kick_df.index)
-    bbq_indx = get_timestamp_index(bbq_series.index)
+    bbq_indx = get_timestamp_index(bbq_df.index)
 
     values = []
     for time in kick_indx:
-        values.append(bbq_series.iloc[bbq_indx.get_indexer([time], method="nearest")[0]])
+        nearest_bbq_index = bbq_indx.get_indexer([time], method="nearest")[0]
+        values.append(bbq_df[bbq_column].iloc[nearest_bbq_index])
     kick_df[column] = values
     return kick_df
 
@@ -104,19 +108,21 @@ def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_arg
             bbq_df.headers[get_fine_cut_header()] = filter_args.fine_cut
 
         bbq_df[get_mav_col(plane)] = bbq_mav
-
         # bbq_df[get_mav_err_col(plane)] = bbq_std  # this is too large
         bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
 
         bbq_df[get_used_in_mav_col(plane)] = mask
-        kickac_df = add_bbq_data(kickac_df, bbq_mav, get_mav_col(plane))
-        kickac_df = add_bbq_data(kickac_df, bbq_std, get_mav_err_col(plane))
+        kickac_df = add_bbq_data(kickac_df, bbq_df, get_mav_col(plane))
+        kickac_df = add_bbq_data(kickac_df, bbq_df, get_mav_err_col(plane))
     return kickac_df, bbq_df
 
 
 def add_corrected_natural_tunes(kickac_df: pd.DataFrame):
     """
     Adds the corrected natural tunes to ``kickac_df``.
+    Add also the total standard deviation of the natural tune to the kickac dataframe.
+    The total standard deviation is here defined as the standard deviation of
+    the measurement plus the standard deviation of the moving average.
 
     Args:
         kickac_df: `Dataframe` containing the data.
@@ -125,8 +131,15 @@ def add_corrected_natural_tunes(kickac_df: pd.DataFrame):
         Modified kick_ac.
     """
     for plane in PLANES:
+        # NATQ
         kickac_df[get_natq_corr_col(plane)] = (
             kickac_df[get_natq_col(plane)] - kickac_df[get_mav_col(plane)]
+        )
+
+        # ERROR
+        kickac_df[get_corr_natq_err_col(plane)] = np.sqrt(
+            np.power(kickac_df[get_natq_err_col(plane)], 2) +
+            np.power(kickac_df[get_mav_err_col(plane)], 2)
         )
     return kickac_df
 
@@ -153,28 +166,7 @@ def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output,
     return kickac_df
 
 
-def add_total_natq_std(kickac_df: pd.DataFrame):
-    """
-    Add the total standard deviation of the natural tune to the kickac dataframe.
-    The total standard deviation is here defined as the standard deviation of
-    the measurement plus the standard deviation of the moving average.
-
-    Args:
-        kickac_df: `Dataframe` containing the data.
-
-    Returns:
-        Modified kick_ac.
-    """
-    for plane in PLANES:
-        kickac_df[get_corr_natq_err_col(plane)] = np.sqrt(
-            np.power(kickac_df[get_natq_err_col(plane)], 2) +
-            np.power(kickac_df[get_mav_err_col(plane)], 2)
-        )
-    return kickac_df
-
-
-# Data Extraction ##############################################################
-
+# Data Extraction --------------------------------------------------------------
 
 def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
                  order: int, corrected: bool=False) -> FakeOdrOutput:

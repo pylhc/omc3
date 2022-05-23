@@ -219,7 +219,6 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 
         LOG.debug("Adding corrected natural tunes and stdev to kick data")
         kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
-        kick_df = kick_file_modifiers.add_total_natq_std(kick_df)
 
     kick_plane = opt.plane
 
