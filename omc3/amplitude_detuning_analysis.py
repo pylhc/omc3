@@ -132,6 +132,7 @@ def _get_params():
             "Use the string 'kick' to use the timestamps in the kickfile for timber extraction. "
             "Not giving this parameter skips bbq compensation.",
         ),
+
         detuning_order=dict(
             help="Order of the detuning as int. Basically just the order of the applied fit.",
             type=int,

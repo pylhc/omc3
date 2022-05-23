@@ -201,14 +201,23 @@ def _plot_2d(tune_plane: str, opt: DotDict):
             for idx, (kick_file, label) in enumerate(zip(opt.kicks, opt.labels)):
                 kick_df = kick_mod.read_timed_dataframe(kick_file) if isinstance(kick_file, str) else kick_file
                 try:
-                    data = kick_mod.get_ampdet_data(kick_df, action_plane, tune_plane, corrected=corrected)
-                except KeyError:
-                    continue  # should only happen when there is no 'corrected' columns
+                    data = kick_mod.get_ampdet_data(kick_df,
+                                                    tune_plane=tune_plane,
+                                                    action_plane=action_plane,
+                                                    corrected=corrected
+                                                    )
+                except KeyError as e:
+                    if corrected:
+                        continue  # should only happen when there is no 'corrected' columns
+                    raise
 
                 # Read data from kick_df headers ---
-                odr_fit = kick_mod.get_odr_data(kick_df, action_plane, tune_plane,
+                odr_fit = kick_mod.get_odr_data(kick_df,
+                                                tune_plane=tune_plane,
+                                                action_plane=action_plane,
                                                 order=opt.detuning_order,
-                                                corrected=corrected)
+                                                corrected=corrected
+                                                )
 
                 # Get label for ODR fit ---
                 odr_label = _get_odr_label(odr_fit,
@@ -220,9 +229,9 @@ def _plot_2d(tune_plane: str, opt: DotDict):
 
                 # Scale and Plot ---
                 data, odr_fit = _scale_data(
-                    data, odr_fit,
-                    opt.action_unit, opt.action_plot_unit,
-                    tune_scale
+                    data=data, odr_fit=odr_fit,
+                    action_unit=opt.action_unit, action_plot_unit=opt.action_plot_unit,
+                    tune_scale=tune_scale
                 )
                 _plot_detuning(
                     ax, data=data, label=label, limits=limits,
