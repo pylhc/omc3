@@ -245,15 +245,24 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
                     )
 
                     kick_df = kick_file_modifiers.add_odr(
-                        kick_df, odr_fit, kick_plane, tune_plane, corrected=corrected
+                        kickac_df=kick_df,
+                        odr_fit=odr_fit,
+                        action_plane=kick_plane,
+                        tune_plane=tune_plane,
+                        corrected=corrected
                     )
         else:
             LOG.info("Performing amplitude detuning ODR for diagonal kicks.")
             data = {}
+
+            # get all action arrays and all tune arrays, unfolded below
             for plane in PLANES:
                 LOG.debug(f"Getting action and tune data for plane {plane}.")
                 data[plane] = kick_file_modifiers.get_ampdet_data(
-                    kick_df, plane, plane, corrected=corrected
+                    kickac_df=kick_df,
+                    action_plane=plane,
+                    tune_plane=plane,
+                    corrected=corrected
                 )
 
             LOG.debug("Fitting ODR to kick data")
@@ -264,10 +273,15 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
                 yerr=_get_ampdet_data_as_array(data, "tune_err"),
             )
 
+            # add the fits to the kick header
             for t_plane in PLANES:
                 for k_plane in PLANES:
                     kick_df = kick_file_modifiers.add_odr(
-                        kick_df, odr_fits[t_plane][k_plane], k_plane, t_plane, corrected=corrected
+                        kickac_df=kick_df,
+                        odr_fit=odr_fits[t_plane][k_plane],
+                        action_plane=k_plane,
+                        tune_plane=t_plane,
+                        corrected=corrected
                     )
 
     # output kick and bbq data

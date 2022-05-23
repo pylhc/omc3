@@ -148,12 +148,12 @@ def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output,
     """
     header_val, header_err = _get_odr_headers(corrected)
     for idx in range(len(odr_fit.beta)):
-        kickac_df.headers[header_val(action_plane, tune_plane, idx)] = odr_fit.beta[idx]
-        kickac_df.headers[header_err(action_plane, tune_plane, idx)] = odr_fit.sd_beta[idx]
+        kickac_df.headers[header_val(j_plane=action_plane, q_plane=tune_plane, order=idx)] = odr_fit.beta[idx]
+        kickac_df.headers[header_err(j_plane=action_plane, q_plane=tune_plane, order=idx)] = odr_fit.sd_beta[idx]
     return kickac_df
 
 
-def add_total_natq_std(kickac_df: pd.DataFrame, add_bbq: bool = False):
+def add_total_natq_std(kickac_df: pd.DataFrame):
     """
     Add the total standard deviation of the natural tune to the kickac dataframe.
     The total standard deviation is here defined as the standard deviation of
@@ -161,7 +161,6 @@ def add_total_natq_std(kickac_df: pd.DataFrame, add_bbq: bool = False):
 
     Args:
         kickac_df: `Dataframe` containing the data.
-        add_bbq (bool): add the BBQ std as well.
 
     Returns:
         Modified kick_ac.
