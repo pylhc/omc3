@@ -264,9 +264,9 @@ def read_two_kick_files_from_folder(folder):
 
 
 def merge_two_plane_kick_dfs(df_x, df_y):
-    df_xy = TfsDataFrame(pd.merge(df_x, df_y, how='inner', left_index=True, right_index=True, suffixes=PLANES))
+    df_xy = TfsDataFrame(pd.merge(df_x, df_y, how='outer', left_index=True, right_index=True, suffixes=PLANES))
     if len(df_xy.index) != len(df_x.index) or len(df_xy.index) != len(df_y.index):
-        raise IndexError("Can't merge the two planed kick-files as their indices seem to be different!")
+        LOG.warning("The kick-files for each plane seem to have different indices.")
     df_xy.headers = df_x.headers
     df_xy.headers.update(df_y.headers)
     return df_xy
