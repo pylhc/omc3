@@ -231,7 +231,10 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
             for tune_plane in PLANES:
                     LOG.debug("Getting ampdet data")
                     data = kick_file_modifiers.get_ampdet_data(
-                        kick_df, kick_plane, tune_plane, corrected=corrected
+                        kick_df,
+                        action_plane=kick_plane,
+                        tune_plane=tune_plane,
+                        corrected=corrected
                     )
 
                     LOG.debug("Fitting ODR to kick data")
@@ -261,7 +264,8 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
                     kickac_df=kick_df,
                     action_plane=plane,
                     tune_plane=plane,
-                    corrected=corrected
+                    corrected=corrected,
+                    dropna=False,  # so that they still have the same lengths
                 )
 
             LOG.debug("Fitting ODR to kick data")
@@ -423,6 +427,11 @@ def _save_options(opt: DotDict) -> None:
 
 
 def _get_ampdet_data_as_array(data: Dict[Any, AmpDetData], column: str) -> ArrayLike:
+    """ Returns a matrix with number of rows as entries in data,
+    each containing the values from the given column of the AmpDetData.
+    e.g. [[Jx0, Jx1, Jx2, ....]
+          [Jy0, Jy1, Jy2, ....]]
+    """
     return np.vstack([getattr(d, column) for d in data.values()])
 
 

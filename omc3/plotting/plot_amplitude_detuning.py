@@ -363,7 +363,10 @@ def _plot_3d(tune_plane: str, opt: DotDict):
             for action_plane in PLANES:
                 do_acd_correction = opt.correct_acd and (action_plane == tune_plane)
                 try:
-                    data = kick_mod.get_ampdet_data(kick_df, action_plane, tune_plane, corrected=corrected)
+                    data = kick_mod.get_ampdet_data(kick_df,
+                                                    action_plane=action_plane,
+                                                    tune_plane=tune_plane,
+                                                    corrected=corrected)
                 except KeyError as e:
                     LOG.debug(str(e))
                     continue  # should only happen when there is no 'corrected' columns

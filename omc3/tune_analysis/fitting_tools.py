@@ -7,7 +7,7 @@ It provides tools for fitting functions, mainly via odr.
 
 """
 from collections import namedtuple
-from typing import Sequence, Dict
+from typing import Sequence, Dict, List
 
 import numpy as np
 import pandas as pd
@@ -146,6 +146,8 @@ def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike
     """
     LOG.debug("Starting ODR fit.")
 
+    x, y, xerr, yerr = _filter_nans(x, y, xerr, yerr)
+
     # Curve-Fit for starting point ---
     curve_fit_fun = lambda v, *args: first_order_detuning_2d(args, v).ravel()
     beta, beta_cov = curve_fit(f=curve_fit_fun, xdata=x, ydata=y.ravel(), p0=[0]*5)
@@ -164,3 +166,13 @@ def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike
     res_str = ",\n".join([f"{n:>16} = {b:9.3g} +- {e:8.3g}" for n, b, e in zip(INPUT_ORDER, odr_fit.beta, odr_fit.sd_beta)])
     LOG.info(f"\nDetuning estimate with errors (odr):\n{res_str}\n")
     return map_odr_fit_to_planes(odr_fit)
+
+
+def _filter_nans(*args: ArrayLike) -> List[ArrayLike]:
+    """Remove all data points containing a NaN.
+    Assumes input arrays are all of shape 2xn
+    """
+    a = np.array(args)
+    a = a[:, :, ~np.isnan(a).any(axis=0).any(axis=0)]
+    return list(a)
+

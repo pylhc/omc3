@@ -193,7 +193,7 @@ def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
 
 
 def get_ampdet_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
-                    corrected: bool = False) -> AmpDetData:
+                    corrected: bool = False, dropna: bool = True) -> AmpDetData:
     """
     Extract the data needed for the (un)corrected amplitude detuning from ``kickac_df``.
 
@@ -204,6 +204,7 @@ def get_ampdet_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
         action_plane (str): Plane of the action.
         tune_plane (str): Plane of the tune.
         corrected (bool): if the BBQ-corrected columns should be taken
+        dropna (bool): drop columns containing NaNs
 
     Returns:
         `Dataframe` containing `action`, `tune`, `action_err` and `tune_err` columns.
@@ -226,10 +227,12 @@ def get_ampdet_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
     if data.isna().any().any():
         # could be on purpose,
         # for manually filtering kick points in one plane, but not in the other
-        LOG.warn(
+        LOG.warning(
             f"Amplitude Detuning data for Q{tune_plane} and J{action_plane} contains NaNs"
         )
-        data = data.dropna(axis=0)
+        if dropna:
+            LOG.debug("NaN's are being dropped.")
+            data = data.dropna(axis=0)
 
     return AmpDetData(
         action_plane=action_plane,
