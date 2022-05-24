@@ -84,14 +84,21 @@ def add_bbq_data(kick_df: pd.DataFrame, bbq_df: pd.DataFrame, column: str, bbq_c
 def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_args) -> Tuple[TfsDataFrame, TfsDataFrame]:
     """Adds the moving average of the bbq data to kickac_df and bbq_df."""
     LOG.debug("Calculating moving average.")
+
     for idx, plane in enumerate(PLANES):
         if filter_args.bbq_filtering_method == 'outliers':
-            bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)],
-                                                                             length=filter_args.window_length,
-                                                                             limit=filter_args.outlier_limit
-                                                                             )
-            bbq_df.headers[get_mav_window_header()] = filter_args.window_length
-            bbq_df.headers[get_outlier_limit_header()] = filter_args.outlier_limit
+            if get_outlier_limit_header() in bbq_tools and bbq_df.headers[get_mav_window_header()] == filter_args.window_length:
+                LOG.info(
+                    "BBQ data has already been filtered by outlier cleaning with the same parameters. "
+                    "Using data from file.")
+                bbq_mav, bbq_std, mask = bbq_df[get_mav_col(plane)], bbq_df[get_mav_err_col(plane)], bbq_df[get_used_in_mav_col(plane)]
+            else:
+                bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)],
+                                                                                 length=filter_args.window_length,
+                                                                                 limit=filter_args.outlier_limit
+                                                                                 )
+                bbq_df.headers[get_mav_window_header()] = filter_args.window_length
+                bbq_df.headers[get_outlier_limit_header()] = filter_args.outlier_limit
 
         else:
             bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[get_bbq_col(plane)],
@@ -112,6 +119,7 @@ def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_arg
         bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
 
         bbq_df[get_used_in_mav_col(plane)] = mask
+
         kickac_df = add_bbq_data(kickac_df, bbq_df, get_mav_col(plane))
         kickac_df = add_bbq_data(kickac_df, bbq_df, get_mav_err_col(plane))
     return kickac_df, bbq_df
