@@ -91,7 +91,6 @@ def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_arg
         else:
             bbq_df, bbq_mav, bbq_std, mask = _filter_bbq_cut(bbq_df, plane, idx, filter_args)
 
-
         bbq_df[get_mav_col(plane)] = bbq_mav
         # bbq_df[get_mav_err_col(plane)] = bbq_std  # this is too large
         bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
@@ -106,7 +105,7 @@ def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_arg
 def _filter_bbq_outliers(bbq_df, plane, filter_args):
     header_limit = get_outlier_limit_header()
     header_window = get_mav_window_header()
-    if (header_limit in bbq_df) and (
+    if ((header_limit in bbq_df.headers) and
             (bbq_df.headers[header_limit] == filter_args.outlier_limit) and
             (bbq_df.headers[header_window] == filter_args.window_length)):
         LOG.info("BBQ data has already been filtered with the same parameters. Using data from file.")

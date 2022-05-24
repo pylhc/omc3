@@ -36,7 +36,7 @@ def get_moving_average(data_series, length=20,
     Returns:
         A filtered and averaged `Series` and the mask used for filtering data.
     """
-    LOG.debug("Cutting data and calculating moving average of length {:d}.".format(length))
+    LOG.debug(f"Cutting data and calculating moving average of length {length:d}.")
 
     if bool(fine_length) != bool(fine_cut):
         raise NotImplementedError("To activate fine cleaning, both "
@@ -78,7 +78,7 @@ def clean_outliers_moving_average(data_series: pd.Series, length: int, limit: fl
         length: length of the averaging window.
         limit: points beyond that limit are always filtered.
     """
-    LOG.debug("Filtering and calculating moving average of length {:d}.".format(length))
+    LOG.debug(f"Filtering and calculating moving average of length {length:d}.")
     init_mask = ~data_series.isna()
     mask = init_mask.copy()
     for i in range(len(data_series)-length):
