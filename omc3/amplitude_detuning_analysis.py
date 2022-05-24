@@ -231,7 +231,7 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
             for tune_plane in PLANES:
                     LOG.debug("Getting ampdet data")
                     data = kick_file_modifiers.get_ampdet_data(
-                        kick_df,
+                        kickac_df=kick_df,
                         action_plane=kick_plane,
                         tune_plane=tune_plane,
                         corrected=corrected
