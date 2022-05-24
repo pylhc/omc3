@@ -109,17 +109,16 @@ def _filter_bbq_outliers(bbq_df, plane, filter_args):
     if (header_limit in bbq_df) and (
             (bbq_df.headers[header_limit] == filter_args.outlier_limit) and
             (bbq_df.headers[header_window] == filter_args.window_length)):
-        LOG.info(
-            "BBQ data has already been filtered by outlier cleaning with the same parameters. "
-            "Using data from file.")
+        LOG.info("BBQ data has already been filtered with the same parameters. Using data from file.")
         return bbq_df, bbq_df[get_mav_col(plane)], bbq_df[get_mav_err_col(plane)], bbq_df[get_used_in_mav_col(plane)]
 
-    bbq_df.headers[get_mav_window_header()] = filter_args.window_length
-    bbq_df.headers[get_outlier_limit_header()] = filter_args.outlier_limit
-    bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)],
-                                                                     length=filter_args.window_length,
-                                                                     limit=filter_args.outlier_limit
-                                                                     )
+    bbq_df.headers[header_window] = filter_args.window_length
+    bbq_df.headers[header_limit] = filter_args.outlier_limit
+    bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(
+        bbq_df[get_bbq_col(plane)],
+        length=filter_args.window_length,
+        limit=filter_args.outlier_limit
+    )
     return bbq_df, bbq_mav, bbq_std, mask
 
 
