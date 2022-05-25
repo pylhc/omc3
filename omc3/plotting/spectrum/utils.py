@@ -388,10 +388,6 @@ def rescale_amp(amp_data: pd.Series) -> pd.Series:
 
 def output_plot(fig_cont: FigureContainer):
     fig = fig_cont.fig
-
-    fig.tight_layout()
-    fig.tight_layout()  # sometimes better to do twice
-
     if fig_cont.path is not None:
         LOG.info(f"Saving Plot '{fig_cont.path}'")
         fig.savefig(fig_cont.path)

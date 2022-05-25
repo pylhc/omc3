@@ -62,18 +62,14 @@ from tfs.tools import significant_digits
 from omc3.definitions import formats
 from omc3.definitions.constants import UNIT_IN_METERS, PLANES
 from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
+from omc3.plotting.utils.style import set_style_from_cli_input, PathOrStrOrDictAsString
 from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr, UnionPathStr
 
 LOG = logging_tools.get_logger(__name__)
 
 NFIT = 100  # Points for the fitting function
-
-MANUAL_STYLE_DEFAULT = {
-    u'figure.figsize': [9.5, 4],
-    u"lines.marker": u"o",
-    u"lines.linestyle": u"",
-}
 
 
 def get_params():
@@ -135,9 +131,15 @@ def get_params():
             type=str,
         ),
         manual_style=dict(
-            help="Additional plotting style.",
             type=DictAsString,
-            default={}
+            default={},
+            help='Additional style rcParameters which update the set of predefined ones.'
+        ),
+        plot_styles=dict(
+            help="Plotting styles.",
+            type=UnionPathStr,
+            nargs="+",
+            default=['standard', 'amplitude_detuning'],
         ),
         tune_scale=dict(
             help="Plotting exponent of the tune.",
@@ -156,7 +158,7 @@ def main(opt):
     kick_plane = opt.plane
     figs = {}
 
-    _set_plotstyle(opt.manual_style)
+    pstyle.set_style(opt.plot_styles, opt.manual_style)
     limits = opt.get_subdict(['x_lim', 'y_lim'])
 
     for tune_plane in PLANES:
@@ -267,12 +269,6 @@ def _plot_detuning(ax, data, label, action_unit, tune_scale, color=None, limits=
                 label=label, color=color)
 
 
-def _set_plotstyle(manual_style):
-    mstyle = MANUAL_STYLE_DEFAULT
-    mstyle.update(manual_style)
-    pstyle.set_style("standard", mstyle)
-
-
 def _format_axes(ax, limits, labels):
     # labels
     ax.set_xlabel(labels[0])
@@ -286,9 +282,6 @@ def _format_axes(ax, limits, labels):
         ax.set_ylim(limits['y_lim'])
 
     pannot.make_top_legend(ax, ncol=2)
-
-    ax.figure.tight_layout()
-    ax.figure.tight_layout()  # needs two calls for some reason to look great
 
 
 def _get_scaled_labels(val, std, scale):

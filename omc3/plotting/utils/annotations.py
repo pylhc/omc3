@@ -286,10 +286,6 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
                     bbox_to_anchor=(1.0, 1.0+pad),
                     fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
 
-    if LooseVersion(matplotlib.__version__) <= LooseVersion("2.2.0"):
-        legend_height = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).height
-        ax.figure.tight_layout(rect=[0, 0, 1, 1+pad-legend_height])
-
     leg.axes.figure.canvas.draw()
     legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
     if legend_width > 1:
@@ -297,9 +293,6 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
         ax.legend(handles=handles, labels=labels, loc='lower right',
                   bbox_to_anchor=(1.0 + x_shift, 1.0+pad),
                   fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
-
-    if LooseVersion(matplotlib.__version__) >= LooseVersion("2.2.0"):
-        ax.figure.tight_layout()
 
     return leg
 

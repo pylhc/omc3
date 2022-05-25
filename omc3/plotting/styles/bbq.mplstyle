@@ -1,0 +1,3 @@
+figure.figsize: 12.24, 7.68
+lines.marker: None     # overwritten on a per-plot basis, e.g. ax.plot(..., marker=)
+lines.linestyle: None  # overwritten on a per-plot basis
