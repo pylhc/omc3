@@ -6,46 +6,92 @@ Provides the plotting function for amplitude detuning analysis
 
 **Arguments:**
 
-*--Required--*
+- **plane** *(str)*:
 
-- **kicks**: Kick files as data frames or tfs files.
+    Plane of the kicks.
 
-- **labels** *(str)*: Labels for the data. Needs to be same length as kicks.
+    choices: ``('X', 'Y')``
 
-- **plane** *(str)*: Plane of the kicks.
-
-  Choices: ``('X', 'Y')``
 
 *--Optional--*
 
-- **action_plot_unit** *(str)*: Unit the action should be plotted in.
+- **action_plot_unit** *(str)*:
 
-  Choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
-  Default: ``um``
-- **action_unit** *(str)*: Unit the action is given in.
+    Unit the action should be plotted in.
 
-  Choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
-  Default: ``m``
-- **correct_acd**: Correct for AC-Dipole kicks.
+    choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
 
-  Action: ``store_true``
-- **detuning_order** *(int)*: Order of the detuning as int. Basically just the order of the applied fit.
+    default: ``um``
 
-  Default: ``1``
-- **manual_style** *(DictAsString)*: Additional plotting style.
 
-  Default: ``{}``
-- **output** *(str)*: Save the amplitude detuning plot here.
+- **action_unit** *(str)*:
 
-- **show**: Show the amplitude detuning plot.
+    Unit the action is given in.
 
-  Action: ``store_true``
-- **tune_scale** *(int)*: Plotting exponent of the tune.
+    choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
 
-  Default: ``-3``
-- **x_lim** *(float)*: Action limits in um (x-axis).
+    default: ``m``
 
-- **y_lim** *(float)*: Tune limits in units of tune scale (y-axis).
+
+- **correct_acd**:
+
+    Correct for AC-Dipole kicks.
+
+    action: ``store_true``
+
+
+- **detuning_order** *(int)*:
+
+    Order of the detuning as int. Basically just the order of the applied
+    fit.
+
+    default: ``1``
+
+
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **output** *(str)*:
+
+    Save the amplitude detuning plot here. Give filename with extension.
+    An id for the 4 different plots will be added before the suffix.
+
+
+- **plot_styles** *(UnionPathStr)*:
+
+    Plotting styles.
+
+    default: ``['standard', 'amplitude_detuning']``
+
+
+- **show**:
+
+    Show the amplitude detuning plot.
+
+    action: ``store_true``
+
+
+- **tune_scale** *(int)*:
+
+    Plotting exponent of the tune.
+
+    default: ``-3``
+
+
+- **x_lim** *(float)*:
+
+    Action limits in um (x-axis).
+
+
+- **y_lim** *(float)*:
+
+    Tune limits in units of tune scale (y-axis).
+
+
 """
 from collections import OrderedDict
 from functools import partial
@@ -64,16 +110,11 @@ from omc3.definitions.constants import UNIT_IN_METERS, PLANES
 from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
 from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
+from omc3.utils.iotools import UnionPathStr
 
 LOG = logging_tools.get_logger(__name__)
 
 NFIT = 100  # Points for the fitting function
-
-MANUAL_STYLE_DEFAULT = {
-    u'figure.figsize': [9.5, 4],
-    u"lines.marker": u"o",
-    u"lines.linestyle": u"",
-}
 
 
 def get_params():
@@ -135,9 +176,15 @@ def get_params():
             type=str,
         ),
         manual_style=dict(
-            help="Additional plotting style.",
             type=DictAsString,
-            default={}
+            default={},
+            help='Additional style rcParameters which update the set of predefined ones.'
+        ),
+        plot_styles=dict(
+            help="Plotting styles.",
+            type=UnionPathStr,
+            nargs="+",
+            default=['standard', 'amplitude_detuning'],
         ),
         tune_scale=dict(
             help="Plotting exponent of the tune.",
@@ -156,7 +203,7 @@ def main(opt):
     kick_plane = opt.plane
     figs = {}
 
-    _set_plotstyle(opt.manual_style)
+    pstyle.set_style(opt.plot_styles, opt.manual_style)
     limits = opt.get_subdict(['x_lim', 'y_lim'])
 
     for tune_plane in PLANES:
@@ -267,12 +314,6 @@ def _plot_detuning(ax, data, label, action_unit, tune_scale, color=None, limits=
                 label=label, color=color)
 
 
-def _set_plotstyle(manual_style):
-    mstyle = MANUAL_STYLE_DEFAULT
-    mstyle.update(manual_style)
-    pstyle.set_style("standard", mstyle)
-
-
 def _format_axes(ax, limits, labels):
     # labels
     ax.set_xlabel(labels[0])
@@ -286,9 +327,6 @@ def _format_axes(ax, limits, labels):
         ax.set_ylim(limits['y_lim'])
 
     pannot.make_top_legend(ax, ncol=2)
-
-    ax.figure.tight_layout()
-    ax.figure.tight_layout()  # needs two calls for some reason to look great
 
 
 def _get_scaled_labels(val, std, scale):
