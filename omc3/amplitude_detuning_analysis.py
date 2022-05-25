@@ -16,53 +16,102 @@ the measurements.
 
 *--Required--*
 
-- **beam** *(int)*: Which beam to use.
+- **beam** *(int)*:
 
-- **kick** *(str)*: Location of the kick files (parent folder).
+    Which beam to use.
 
-- **plane** *(str)*: Plane of the kicks. 'X' or 'Y'.
 
-  Choices: ``('X', 'Y')``
+- **kick** *(str)*:
+
+    Location of the kick files (parent folder).
+
+
+- **plane** *(str)*:
+
+    Plane of the kicks. 'X' or 'Y' or 'XY'.
+
+    choices: ``['X', 'Y', 'XY']``
+
 
 *--Optional--*
 
-- **bbq_filtering_method** *(str)*:Filtering method for the bbq to use. 'cut' cuts around a given tune,
-  'minmax' lets you specify the limits and 'outliers' uses the outlier filtering from utils.
+- **bbq_filtering_method** *(str)*:
 
-  Choices: ``['cut', 'minmax', 'outliers']``
-  Default: ``outliers``
-- **bbq_in**: Fill number of desired data to extract from ``Timber`` (requires installing with the [cern]
-  extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string 'kick' to use the
-  timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.
+    Filtering method for the bbq to use. 'cut' cuts around a given tune,
+    'minmax' lets you specify the limits and 'outliers' uses the outlier
+    filtering from utils.
 
-- **debug**: Activates Debug mode
+    choices: ``['cut', 'minmax', 'outliers']``
 
-  Action: ``store_true``
-- **detuning_order** *(int)*: Order of the detuning as int. Basically just the order of the applied fit.
+    default: ``outliers``
 
-  Default: ``1``
-- **fine_cut** *(float)*: Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').
 
-- **fine_window** *(int)*: Length of the moving average window, i.e # data points (fine cleaning for 'minmax' or 'cut').
+- **bbq_in**:
 
-- **label** *(str)*: Label to identify this run.
+    Fill number of desired data to extract from timber  or path to
+    presaved bbq-tfs-file. Use the string 'kick' to use the timestamps in
+    the kickfile for timber extraction. Not giving this parameter skips
+    bbq compensation.
 
-- **logfile** *(str)*: Logfile if debug mode is active.
 
-- **outlier_limit** *(float)*: Limit, i.e. cut, on outliers (Method 'outliers')
+- **detuning_order** *(int)*:
 
-  Default: ``0.0002``
-- **output** *(str)*: Output directory for the modified kickfile and bbq data.
+    Order of the detuning as int. Basically just the order of the applied
+    fit.
 
-- **tune_cut** *(float)*: Cuts for the tune. For BBQ cleaning (Method 'cut').
+    default: ``1``
 
-- **tunes** *(float)*: Tunes for BBQ cleaning (Method 'cut').
 
-- **tunes_minmax** *(float)*: Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For BBQ cleaning (Method 'minmax').
+- **fine_cut** *(float)*:
 
-- **window_length** *(int)*: Length of the moving average window. (# data points)
+    Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or
+    'cut').
 
-  Default: ``20``
+
+- **fine_window** *(int)*:
+
+    Length of the moving average window, i.e the number of data points
+    (fine cleaning for 'minmax' or 'cut').
+
+
+- **label** *(str)*:
+
+    Label to identify this run.
+
+
+- **outlier_limit** *(float)*:
+
+    Limit, i.e. cut, on outliers (Method 'outliers')
+
+    default: ``0.0002``
+
+
+- **output** *(str)*:
+
+    Output directory for the modified kickfile and bbq data.
+
+
+- **tune_cut** *(float)*:
+
+    Cuts for the tune. For BBQ cleaning (Method 'cut').
+
+
+- **tunes** *(float)*:
+
+    Tunes for BBQ cleaning (Method 'cut').
+
+
+- **tunes_minmax** *(float)*:
+
+    Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For
+    BBQ cleaning (Method 'minmax').
+
+
+- **window_length** *(int)*:
+
+    Length of the moving average window. (# data points)
+
+    default: ``20``
 """
 import os
 from collections import OrderedDict

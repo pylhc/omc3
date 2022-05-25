@@ -170,7 +170,10 @@ def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike
 
 def _filter_nans(*args: ArrayLike) -> List[ArrayLike]:
     """Remove all data points containing a NaN.
-    Assumes input arrays are all of shape 2xn
+    Assumes input arrays are all of shape 2xN.
+    TODO:
+    As this is not done in plotting, points might be plotted,
+    that have not been used for fitting.
     """
     a = np.array(args)
     a = a[:, :, ~np.isnan(a).any(axis=0).any(axis=0)]
