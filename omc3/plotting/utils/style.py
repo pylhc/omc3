@@ -25,7 +25,8 @@ def omc3_styles():
     return {p.with_suffix('').name: p for p in STYLES_DIR.glob('*.mplstyle')}
 
 
-def set_style(styles: Sequence[Union[Path, str]] = 'standard', manual: Dict[str, Any] = None):
+def set_style(styles: Union[Path, str, Sequence[Union[Path, str]]] = 'standard',
+              manual: Dict[str, Any] = None):
     """
     Sets the style for all following plots.
 
