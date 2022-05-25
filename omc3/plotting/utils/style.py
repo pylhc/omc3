@@ -32,7 +32,8 @@ def set_style(styles: Sequence[Union[Path, str]] = 'standard', manual: Dict[str,
     Args:
         styles: `List` of styles (or single string), either path to style-file, name of style in
             styles or from the mpl styles
-        manual: `Dict` of manual parameters to update. Convention: ``REMOVE_ENTRY`` removes entry.
+        manual: `Dict` of manual parameters to update. Convention: ``REMOVE_ENTRY`` removes entry
+                from given styles, i.e. falls back to mpl default.
     """
     if isinstance(styles, PathOrStr):
         styles = (styles,)
