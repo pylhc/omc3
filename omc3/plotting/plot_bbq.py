@@ -8,30 +8,67 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 
 *--Required--*
 
-- **input**: BBQ data as data frame or tfs file.
+- **input**:
 
-  Flags: **--in**
+    BBQ data as data frame or tfs file.
+
 
 *--Optional--*
 
-- **interval** *(float)*: x_axis interval that was used in calculations.
+- **interval** *(float)*:
 
-  Flags: **--interval**
-- **kick**: Kick file as data frame or tfs file.
+    x_axis interval that was used in calculations.
 
-- **output** *(str)*: Save figure to this location.
 
-  Flags: **--out**
-- **show**: Show plot.
+- **kick**:
 
-  Action: ``store_true``
-- **two_plots**: Plot two axis into the figure.
+    Kick file as data frame or tfs file.
 
-  Flags: **--two**
-  Action: ``store_true``
-- **x_lim** *(float)*: X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)
 
-- **y_lim** *(float)*: Y-Axis limits.
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **output** *(str)*:
+
+    Save figure to this location.
+
+
+- **plot_styles** *(UnionPathStr)*:
+
+    Which plotting styles to use, either from plotting.styles.*.mplstyles
+    or default mpl.
+
+    default: ``['standard', 'bbq']``
+
+
+- **show**:
+
+    Show plot.
+
+    action: ``store_true``
+
+
+- **two_plots**:
+
+    Plot two axis into the figure.
+
+    action: ``store_true``
+
+
+- **x_lim** *(float)*:
+
+    X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)
+
+
+- **y_lim** *(float)*:
+
+    Y-Axis limits.
+    
+
 """
 from collections import OrderedDict
 from contextlib import suppress
@@ -42,7 +79,7 @@ import numpy as np
 from generic_parser import entrypoint, EntryPointParameters
 from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import save_options_to_config
-from matplotlib import pyplot as plt, gridspec
+from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.plotting import register_matplotlib_converters
 
@@ -50,7 +87,6 @@ from omc3 import amplitude_detuning_analysis as ad_ana
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.plotting.utils import colors as pcolors, style as pstyle
-from omc3.plotting.utils.style import set_style_from_cli_input, PathOrStrOrDictAsString
 from omc3.tune_analysis import kick_file_modifiers as kick_mod
 from omc3.tune_analysis.constants import (get_mav_window_header, get_used_in_mav_col,
                                           get_bbq_col, get_mav_col)

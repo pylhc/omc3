@@ -6,46 +6,92 @@ Provides the plotting function for amplitude detuning analysis
 
 **Arguments:**
 
-*--Required--*
+- **plane** *(str)*:
 
-- **kicks**: Kick files as data frames or tfs files.
+    Plane of the kicks.
 
-- **labels** *(str)*: Labels for the data. Needs to be same length as kicks.
+    choices: ``('X', 'Y')``
 
-- **plane** *(str)*: Plane of the kicks.
-
-  Choices: ``('X', 'Y')``
 
 *--Optional--*
 
-- **action_plot_unit** *(str)*: Unit the action should be plotted in.
+- **action_plot_unit** *(str)*:
 
-  Choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
-  Default: ``um``
-- **action_unit** *(str)*: Unit the action is given in.
+    Unit the action should be plotted in.
 
-  Choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
-  Default: ``m``
-- **correct_acd**: Correct for AC-Dipole kicks.
+    choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
 
-  Action: ``store_true``
-- **detuning_order** *(int)*: Order of the detuning as int. Basically just the order of the applied fit.
+    default: ``um``
 
-  Default: ``1``
-- **manual_style** *(DictAsString)*: Additional plotting style.
 
-  Default: ``{}``
-- **output** *(str)*: Save the amplitude detuning plot here.
+- **action_unit** *(str)*:
 
-- **show**: Show the amplitude detuning plot.
+    Unit the action is given in.
 
-  Action: ``store_true``
-- **tune_scale** *(int)*: Plotting exponent of the tune.
+    choices: ``['km', 'm', 'mm', 'um', 'nm', 'pm', 'fm', 'am']``
 
-  Default: ``-3``
-- **x_lim** *(float)*: Action limits in um (x-axis).
+    default: ``m``
 
-- **y_lim** *(float)*: Tune limits in units of tune scale (y-axis).
+
+- **correct_acd**:
+
+    Correct for AC-Dipole kicks.
+
+    action: ``store_true``
+
+
+- **detuning_order** *(int)*:
+
+    Order of the detuning as int. Basically just the order of the applied
+    fit.
+
+    default: ``1``
+
+
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **output** *(str)*:
+
+    Save the amplitude detuning plot here. Give filename with extension.
+    An id for the 4 different plots will be added before the suffix.
+
+
+- **plot_styles** *(UnionPathStr)*:
+
+    Plotting styles.
+
+    default: ``['standard', 'amplitude_detuning']``
+
+
+- **show**:
+
+    Show the amplitude detuning plot.
+
+    action: ``store_true``
+
+
+- **tune_scale** *(int)*:
+
+    Plotting exponent of the tune.
+
+    default: ``-3``
+
+
+- **x_lim** *(float)*:
+
+    Action limits in um (x-axis).
+
+
+- **y_lim** *(float)*:
+
+    Tune limits in units of tune scale (y-axis).
+
+
 """
 from collections import OrderedDict
 from functools import partial
@@ -62,10 +108,9 @@ from tfs.tools import significant_digits
 from omc3.definitions import formats
 from omc3.definitions.constants import UNIT_IN_METERS, PLANES
 from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
-from omc3.plotting.utils.style import set_style_from_cli_input, PathOrStrOrDictAsString
 from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, UnionPathStr
+from omc3.utils.iotools import UnionPathStr
 
 LOG = logging_tools.get_logger(__name__)
 
