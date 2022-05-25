@@ -122,7 +122,7 @@ one figure is used.
     Which plotting styles to use, either from plotting.styles.*.mplstyles
     or default mpl.
 
-    default: ``['standard']``
+    default: ``['standard', 'spectrum']``
 
 
 - **plot_type**:
@@ -322,7 +322,7 @@ def get_params():
     params.add_parameter(name="plot_styles",
                          type=UnionPathStr,
                          nargs="+",
-                         default=['standard'],
+                         default=['standard', 'spectrum'],
                          help='Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.'
                          )
     params.add_parameter(name="manual_style",
