@@ -204,6 +204,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">distutils.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -484,10 +485,6 @@
                     <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">+</span><span class="n">pad</span><span class="p">),</span>
                     <span class="n">fancybox</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="s2">&quot;2.2.0&quot;</span><span class="p">):</span>
-        <span class="n">legend_height</span> <span class="o">=</span> <span class="n">leg</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">inverse_transformed</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span><span class="o">.</span><span class="n">height</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">pad</span><span class="o">-</span><span class="n">legend_height</span><span class="p">])</span>
-
     <span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
     <span class="n">legend_width</span> <span class="o">=</span> <span class="n">leg</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">transformed</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">transAxes</span><span class="o">.</span><span class="n">inverted</span><span class="p">())</span><span class="o">.</span><span class="n">width</span>
     <span class="k">if</span> <span class="n">legend_width</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -495,9 +492,6 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span>
                   <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">x_shift</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">+</span><span class="n">pad</span><span class="p">),</span>
                   <span class="n">fancybox</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="s2">&quot;2.2.0&quot;</span><span class="p">):</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">leg</span></div>
 
@@ -548,6 +542,24 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">ticklabel_format</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sci&quot;</span><span class="p">,</span> <span class="n">scilimits</span><span class="o">=</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span> <span class="n">useMathText</span><span class="o">=</span><span class="n">math_text</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ax</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_fontsize_as_float</span><span class="p">(</span><span class="n">font_size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;xx-small&#39;</span><span class="p">:</span> <span class="mf">0.579</span><span class="p">,</span>
+            <span class="s1">&#39;x-small&#39;</span><span class="p">:</span> <span class="mf">0.694</span><span class="p">,</span>
+            <span class="s1">&#39;small&#39;</span><span class="p">:</span> <span class="mf">0.833</span><span class="p">,</span>
+            <span class="s1">&#39;medium&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s1">&#39;large&#39;</span><span class="p">:</span> <span class="mf">1.200</span><span class="p">,</span>
+            <span class="s1">&#39;x-large&#39;</span><span class="p">:</span> <span class="mf">1.440</span><span class="p">,</span>
+            <span class="s1">&#39;xx-large&#39;</span><span class="p">:</span> <span class="mf">1.728</span><span class="p">,</span>
+            <span class="s1">&#39;larger&#39;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+            <span class="s1">&#39;smaller&#39;</span><span class="p">:</span> <span class="mf">0.833</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}[</span><span class="n">font_size</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">font_size</span>
+    <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span>
 </pre></div>
 
            </div>

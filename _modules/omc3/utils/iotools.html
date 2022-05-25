@@ -263,6 +263,14 @@
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="UnionPathStr"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.UnionPathStr">[docs]</a><span class="k">class</span> <span class="nc">UnionPathStr</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;A class that can be used as Path and string parser input, but does not convert.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\&#39;\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
 <div class="viewcode-block" id="PathOrStrOrDataFrame"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.PathOrStrOrDataFrame">[docs]</a><span class="k">class</span> <span class="nc">PathOrStrOrDataFrame</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;A class that behaves like a Path when possible, otherwise like a string.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>

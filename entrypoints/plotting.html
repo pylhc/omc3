@@ -424,67 +424,138 @@ by unique id’s which depend on which combination of merging the spectra into
 one figure is used.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
-<ul class="simple">
-<li><p><strong>files</strong>: List of paths to the spectrum files. The files need to be given
-without their ‘.lin’/’.amps[xy]’,’.freqs[xy]’ endings. (So usually the path
-of the TbT-Data file.)</p></li>
+<ul>
+<li><p><strong>files</strong>:</p>
+<blockquote>
+<div><p>List of paths to the spectrum files. The files need to be given
+without their ‘.lin’/’.amps[xy]’,’.freqs[xy]’ endings.  (So usually
+the path of the TbT-Data file.)</p>
+</div></blockquote>
+</li>
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>amp_limit</strong> <em>(float)</em>: All amplitudes &lt;= limit are filtered.
-This value needs to be at least 0 to filter non-found frequencies.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+<li><p><strong>amp_limit</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>All amplitudes &lt;= limit are filtered. This value needs to be at least
+0 to filter non-found frequencies.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>bpms</strong>: List of BPMs for which spectra will be plotted. If not given all BPMs are used.</p></li>
-<li><p><strong>combine_by</strong>: Choose how to combine the data into figures.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['bpms',</span> <span class="pre">'files']</span></code>
-Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+<li><p><strong>bpms</strong>:</p>
+<blockquote>
+<div><p>List of BPMs for which spectra will be plotted. If not given all BPMs
+are used.</p>
+</div></blockquote>
 </li>
-<li><p><strong>filetype</strong> <em>(str)</em>: Filetype to save plots as (i.e. extension without “.”)</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">pdf</span></code></p>
+<li><p><strong>combine_by</strong>:</p>
+<blockquote>
+<div><p>Choose how to combine the data into figures.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['bpms',</span> <span class="pre">'files']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>lines_manual</strong> <em>(DictAsString)</em>: List of manual lines to plot. Need to contain arguments for axvline,
-and may contain the additional key “loc” which is one of [‘bottom’, ‘top’, ‘line bottom’, ‘line top’]
-and places the label as text at the given location.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+<li><p><strong>filetype</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Filetype to save plots as (i.e. extension without “.”)</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">pdf</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>lines_nattunes</strong> <em>(tuple)</em>: List of natural tune lines to plot</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">[(1,</span> <span class="pre">0),</span> <span class="pre">(0,</span> <span class="pre">1)]</span></code></p>
+<li><p><strong>lines_manual</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>List of manual lines to plot. Need to contain arguments for axvline,
+and may contain the additional keys “text” and “loc” which is one of
+[‘bottom’, ‘top’, ‘line bottom’, ‘line top’] and places the text at
+the given location.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>lines_tunes</strong> <em>(tuple)</em>: list of tune lines to plot</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">[(1,</span> <span class="pre">0),</span> <span class="pre">(0,</span> <span class="pre">1)]</span></code></p>
+<li><p><strong>lines_nattunes</strong> <em>(tuple)</em>:</p>
+<blockquote>
+<div><p>List of natural tune lines to plot</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[(1,</span> <span class="pre">0),</span> <span class="pre">(0,</span> <span class="pre">1)]</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>manual_style</strong> <em>(DictAsString)</em>: Additional Style parameters which update the set of predefined ones.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+<li><p><strong>lines_tunes</strong> <em>(tuple)</em>:</p>
+<blockquote>
+<div><p>list of tune lines to plot</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[(1,</span> <span class="pre">0),</span> <span class="pre">(0,</span> <span class="pre">1)]</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>ncol_legend</strong> <em>(int)</em>: Number of bpm legend-columns. If &lt; 1 no legend is shown.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">5</span></code></p>
+<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>Additional style rcParameters which update the set of predefined ones.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>output_dir</strong> <em>(str)</em>: Directory to write results to. If no option is given, plots will not be saved.</p></li>
-<li><p><strong>plot_type</strong>: Choose plot type (Multiple choices possible).</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['stem',</span> <span class="pre">'waterfall']</span></code>
-Default: <code class="docutils literal notranslate"><span class="pre">['stem']</span></code></p>
+<li><p><strong>ncol_legend</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Number of bpm legend-columns. If &lt; 1 no legend is shown.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">5</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>rescale</strong>: Flag to rescale plots amplitude to max-line = 1</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>output_dir</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Directory to write results to. If no option is given, plots will not
+be saved.</p>
+</div></blockquote>
 </li>
-<li><p><strong>show_plots</strong>: Flag to show plots</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>plot_styles</strong> <em>(UnionPathStr)</em>:</p>
+<blockquote>
+<div><p>Which plotting styles to use, either from plotting.styles.*.mplstyles
+or default mpl.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['standard',</span> <span class="pre">'spectrum']</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>waterfall_cmap</strong> <em>(str)</em>: Colormap to use for waterfall plot.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">inferno</span></code></p>
+<li><p><strong>plot_type</strong>:</p>
+<blockquote>
+<div><p>Choose plot type (Multiple choices possible).</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['stem',</span> <span class="pre">'waterfall']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['stem']</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>waterfall_common_plane_colors</strong>: Same colorbar scale for both planes in waterfall plots.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>rescale</strong>:</p>
+<blockquote>
+<div><p>Flag to rescale plots amplitude to max-line = 1</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>waterfall_line_width</strong>: Line width of the waterfall frequency lines. “auto” fills them up until the next one.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+<li><p><strong>show_plots</strong>:</p>
+<blockquote>
+<div><p>Flag to show plots</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>xlim</strong> <em>(float)</em>: Limits on the x axis (Tupel)</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">0.5]</span></code></p>
+<li><p><strong>waterfall_cmap</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Colormap to use for waterfall plot.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">inferno</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>ylim</strong> <em>(float)</em>: Limits on the y axis (Tupel)</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">[1e-09,</span> <span class="pre">1.0]</span></code></p>
+<li><p><strong>waterfall_common_plane_colors</strong>:</p>
+<blockquote>
+<div><p>Same colorbar scale for both planes in waterfall plots.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>waterfall_line_width</strong>:</p>
+<blockquote>
+<div><p>Line width of the waterfall frequency lines. “auto” fills them up
+until the next one.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>xlim</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Limits on the x axis (Tupel)</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">0.5]</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>ylim</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Limits on the y axis (Tupel)</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[1e-09,</span> <span class="pre">1.0]</span></code></p>
+</div></blockquote>
 </li>
 </ul>
 <dl class="py function">
@@ -499,42 +570,83 @@ Needs to be up here as it is used in <code class="docutils literal notranslate">
 <h2>Plot Amplitude Detuning Results<a class="headerlink" href="#plot-amplitude-detuning-results" title="Permalink to this headline"></a></h2>
 <p>Provides the plotting function for amplitude detuning analysis</p>
 <p><strong>Arguments:</strong></p>
-<p><em>--Required--</em></p>
 <ul>
-<li><p><strong>kicks</strong>: Kick files as data frames or tfs files.</p></li>
-<li><p><strong>labels</strong> <em>(str)</em>: Labels for the data. Needs to be same length as kicks.</p></li>
-<li><p><strong>plane</strong> <em>(str)</em>: Plane of the kicks.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">('X',</span> <span class="pre">'Y')</span></code></p>
+<li><p><strong>plane</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Plane of the kicks.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('X',</span> <span class="pre">'Y')</span></code></p>
+</div></blockquote>
 </li>
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>action_plot_unit</strong> <em>(str)</em>: Unit the action should be plotted in.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['km',</span> <span class="pre">'m',</span> <span class="pre">'mm',</span> <span class="pre">'um',</span> <span class="pre">'nm',</span> <span class="pre">'pm',</span> <span class="pre">'fm',</span> <span class="pre">'am']</span></code>
-Default: <code class="docutils literal notranslate"><span class="pre">um</span></code></p>
+<li><p><strong>action_plot_unit</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Unit the action should be plotted in.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['km',</span> <span class="pre">'m',</span> <span class="pre">'mm',</span> <span class="pre">'um',</span> <span class="pre">'nm',</span> <span class="pre">'pm',</span> <span class="pre">'fm',</span> <span class="pre">'am']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">um</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>action_unit</strong> <em>(str)</em>: Unit the action is given in.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['km',</span> <span class="pre">'m',</span> <span class="pre">'mm',</span> <span class="pre">'um',</span> <span class="pre">'nm',</span> <span class="pre">'pm',</span> <span class="pre">'fm',</span> <span class="pre">'am']</span></code>
-Default: <code class="docutils literal notranslate"><span class="pre">m</span></code></p>
+<li><p><strong>action_unit</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Unit the action is given in.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['km',</span> <span class="pre">'m',</span> <span class="pre">'mm',</span> <span class="pre">'um',</span> <span class="pre">'nm',</span> <span class="pre">'pm',</span> <span class="pre">'fm',</span> <span class="pre">'am']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">m</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>correct_acd</strong>: Correct for AC-Dipole kicks.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>correct_acd</strong>:</p>
+<blockquote>
+<div><p>Correct for AC-Dipole kicks.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>detuning_order</strong> <em>(int)</em>: Order of the detuning as int. Basically just the order of the applied fit.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+<li><p><strong>detuning_order</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Order of the detuning as int. Basically just the order of the applied
+fit.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>manual_style</strong> <em>(DictAsString)</em>: Additional plotting style.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>Additional style rcParameters which update the set of predefined ones.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>output</strong> <em>(str)</em>: Save the amplitude detuning plot here.</p></li>
-<li><p><strong>show</strong>: Show the amplitude detuning plot.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>output</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Save the amplitude detuning plot here. Give filename with extension.
+An id for the 4 different plots will be added before the suffix.</p>
+</div></blockquote>
 </li>
-<li><p><strong>tune_scale</strong> <em>(int)</em>: Plotting exponent of the tune.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">-3</span></code></p>
+<li><p><strong>plot_styles</strong> <em>(UnionPathStr)</em>:</p>
+<blockquote>
+<div><p>Plotting styles.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['standard',</span> <span class="pre">'amplitude_detuning']</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>x_lim</strong> <em>(float)</em>: Action limits in um (x-axis).</p></li>
-<li><p><strong>y_lim</strong> <em>(float)</em>: Tune limits in units of tune scale (y-axis).</p></li>
+<li><p><strong>show</strong>:</p>
+<blockquote>
+<div><p>Show the amplitude detuning plot.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>tune_scale</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Plotting exponent of the tune.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">-3</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_lim</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Action limits in um (x-axis).</p>
+</div></blockquote>
+</li>
+<li><p><strong>y_lim</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Tune limits in units of tune scale (y-axis).</p>
+</div></blockquote>
+</li>
 </ul>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_amplitude_detuning.plot_odr">
@@ -549,28 +661,64 @@ Default: <code class="docutils literal notranslate"><span class="pre">m</span></
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
 <ul>
-<li><p><strong>input</strong>: BBQ data as data frame or tfs file.</p>
-<p>Flags: <strong>--in</strong></p>
+<li><p><strong>input</strong>:</p>
+<blockquote>
+<div><p>BBQ data as data frame or tfs file.</p>
+</div></blockquote>
 </li>
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>interval</strong> <em>(float)</em>: x_axis interval that was used in calculations.</p>
-<p>Flags: <strong>--interval</strong></p>
+<li><p><strong>interval</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>x_axis interval that was used in calculations.</p>
+</div></blockquote>
 </li>
-<li><p><strong>kick</strong>: Kick file as data frame or tfs file.</p></li>
-<li><p><strong>output</strong> <em>(str)</em>: Save figure to this location.</p>
-<p>Flags: <strong>--out</strong></p>
+<li><p><strong>kick</strong>:</p>
+<blockquote>
+<div><p>Kick file as data frame or tfs file.</p>
+</div></blockquote>
 </li>
-<li><p><strong>show</strong>: Show plot.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>Additional style rcParameters which update the set of predefined ones.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>two_plots</strong>: Plot two axis into the figure.</p>
-<p>Flags: <strong>--two</strong>
-Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>output</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Save figure to this location.</p>
+</div></blockquote>
 </li>
-<li><p><strong>x_lim</strong> <em>(float)</em>: X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)</p></li>
-<li><p><strong>y_lim</strong> <em>(float)</em>: Y-Axis limits.</p></li>
+<li><p><strong>plot_styles</strong> <em>(UnionPathStr)</em>:</p>
+<blockquote>
+<div><p>Which plotting styles to use, either from plotting.styles.*.mplstyles
+or default mpl.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['standard',</span> <span class="pre">'bbq']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>show</strong>:</p>
+<blockquote>
+<div><p>Show plot.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>two_plots</strong>:</p>
+<blockquote>
+<div><p>Plot two axis into the figure.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_lim</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)</p>
+</div></blockquote>
+</li>
+<li><p><strong>y_lim</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Y-Axis limits.</p>
+</div></blockquote>
+</li>
 </ul>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_bbq.main">

@@ -204,46 +204,92 @@
 
 <span class="sd">**Arguments:**</span>
 
-<span class="sd">*--Required--*</span>
+<span class="sd">- **plane** *(str)*:</span>
 
-<span class="sd">- **kicks**: Kick files as data frames or tfs files.</span>
+<span class="sd">    Plane of the kicks.</span>
 
-<span class="sd">- **labels** *(str)*: Labels for the data. Needs to be same length as kicks.</span>
+<span class="sd">    choices: ``(&#39;X&#39;, &#39;Y&#39;)``</span>
 
-<span class="sd">- **plane** *(str)*: Plane of the kicks.</span>
-
-<span class="sd">  Choices: ``(&#39;X&#39;, &#39;Y&#39;)``</span>
 
 <span class="sd">*--Optional--*</span>
 
-<span class="sd">- **action_plot_unit** *(str)*: Unit the action should be plotted in.</span>
+<span class="sd">- **action_plot_unit** *(str)*:</span>
 
-<span class="sd">  Choices: ``[&#39;km&#39;, &#39;m&#39;, &#39;mm&#39;, &#39;um&#39;, &#39;nm&#39;, &#39;pm&#39;, &#39;fm&#39;, &#39;am&#39;]``</span>
-<span class="sd">  Default: ``um``</span>
-<span class="sd">- **action_unit** *(str)*: Unit the action is given in.</span>
+<span class="sd">    Unit the action should be plotted in.</span>
 
-<span class="sd">  Choices: ``[&#39;km&#39;, &#39;m&#39;, &#39;mm&#39;, &#39;um&#39;, &#39;nm&#39;, &#39;pm&#39;, &#39;fm&#39;, &#39;am&#39;]``</span>
-<span class="sd">  Default: ``m``</span>
-<span class="sd">- **correct_acd**: Correct for AC-Dipole kicks.</span>
+<span class="sd">    choices: ``[&#39;km&#39;, &#39;m&#39;, &#39;mm&#39;, &#39;um&#39;, &#39;nm&#39;, &#39;pm&#39;, &#39;fm&#39;, &#39;am&#39;]``</span>
 
-<span class="sd">  Action: ``store_true``</span>
-<span class="sd">- **detuning_order** *(int)*: Order of the detuning as int. Basically just the order of the applied fit.</span>
+<span class="sd">    default: ``um``</span>
 
-<span class="sd">  Default: ``1``</span>
-<span class="sd">- **manual_style** *(DictAsString)*: Additional plotting style.</span>
 
-<span class="sd">  Default: ``{}``</span>
-<span class="sd">- **output** *(str)*: Save the amplitude detuning plot here.</span>
+<span class="sd">- **action_unit** *(str)*:</span>
 
-<span class="sd">- **show**: Show the amplitude detuning plot.</span>
+<span class="sd">    Unit the action is given in.</span>
 
-<span class="sd">  Action: ``store_true``</span>
-<span class="sd">- **tune_scale** *(int)*: Plotting exponent of the tune.</span>
+<span class="sd">    choices: ``[&#39;km&#39;, &#39;m&#39;, &#39;mm&#39;, &#39;um&#39;, &#39;nm&#39;, &#39;pm&#39;, &#39;fm&#39;, &#39;am&#39;]``</span>
 
-<span class="sd">  Default: ``-3``</span>
-<span class="sd">- **x_lim** *(float)*: Action limits in um (x-axis).</span>
+<span class="sd">    default: ``m``</span>
 
-<span class="sd">- **y_lim** *(float)*: Tune limits in units of tune scale (y-axis).</span>
+
+<span class="sd">- **correct_acd**:</span>
+
+<span class="sd">    Correct for AC-Dipole kicks.</span>
+
+<span class="sd">    action: ``store_true``</span>
+
+
+<span class="sd">- **detuning_order** *(int)*:</span>
+
+<span class="sd">    Order of the detuning as int. Basically just the order of the applied</span>
+<span class="sd">    fit.</span>
+
+<span class="sd">    default: ``1``</span>
+
+
+<span class="sd">- **manual_style** *(DictAsString)*:</span>
+
+<span class="sd">    Additional style rcParameters which update the set of predefined ones.</span>
+
+<span class="sd">    default: ``{}``</span>
+
+
+<span class="sd">- **output** *(str)*:</span>
+
+<span class="sd">    Save the amplitude detuning plot here. Give filename with extension.</span>
+<span class="sd">    An id for the 4 different plots will be added before the suffix.</span>
+
+
+<span class="sd">- **plot_styles** *(UnionPathStr)*:</span>
+
+<span class="sd">    Plotting styles.</span>
+
+<span class="sd">    default: ``[&#39;standard&#39;, &#39;amplitude_detuning&#39;]``</span>
+
+
+<span class="sd">- **show**:</span>
+
+<span class="sd">    Show the amplitude detuning plot.</span>
+
+<span class="sd">    action: ``store_true``</span>
+
+
+<span class="sd">- **tune_scale** *(int)*:</span>
+
+<span class="sd">    Plotting exponent of the tune.</span>
+
+<span class="sd">    default: ``-3``</span>
+
+
+<span class="sd">- **x_lim** *(float)*:</span>
+
+<span class="sd">    Action limits in um (x-axis).</span>
+
+
+<span class="sd">- **y_lim** *(float)*:</span>
+
+<span class="sd">    Tune limits in units of tune scale (y-axis).</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
@@ -262,16 +308,11 @@
 <span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">pcolors</span><span class="p">,</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span><span class="p">,</span> <span class="n">style</span> <span class="k">as</span> <span class="n">pstyle</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">const</span><span class="p">,</span> <span class="n">kick_file_modifiers</span> <span class="k">as</span> <span class="n">kick_mod</span><span class="p">,</span> <span class="n">fitting_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">UnionPathStr</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">NFIT</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Points for the fitting function</span>
-
-<span class="n">MANUAL_STYLE_DEFAULT</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="sa">u</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">9.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
-    <span class="sa">u</span><span class="s2">&quot;lines.marker&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
-    <span class="sa">u</span><span class="s2">&quot;lines.linestyle&quot;</span><span class="p">:</span> <span class="sa">u</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-<span class="p">}</span>
 
 
 <span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
@@ -333,9 +374,15 @@
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">manual_style</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Additional plotting style.&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="n">DictAsString</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional style rcParameters which update the set of predefined ones.&#39;</span>
+        <span class="p">),</span>
+        <span class="n">plot_styles</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plotting styles.&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">UnionPathStr</span><span class="p">,</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude_detuning&#39;</span><span class="p">],</span>
         <span class="p">),</span>
         <span class="n">tune_scale</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plotting exponent of the tune.&quot;</span><span class="p">,</span>
@@ -354,7 +401,7 @@
     <span class="n">kick_plane</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">plane</span>
     <span class="n">figs</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="n">_set_plotstyle</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">manual_style</span><span class="p">)</span>
+    <span class="n">pstyle</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">plot_styles</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">manual_style</span><span class="p">)</span>
     <span class="n">limits</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="s1">&#39;y_lim&#39;</span><span class="p">])</span>
 
     <span class="k">for</span> <span class="n">tune_plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
@@ -465,12 +512,6 @@
                 <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_set_plotstyle</span><span class="p">(</span><span class="n">manual_style</span><span class="p">):</span>
-    <span class="n">mstyle</span> <span class="o">=</span> <span class="n">MANUAL_STYLE_DEFAULT</span>
-    <span class="n">mstyle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">manual_style</span><span class="p">)</span>
-    <span class="n">pstyle</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span> <span class="n">mstyle</span><span class="p">)</span>
-
-
 <span class="k">def</span> <span class="nf">_format_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">limits</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
     <span class="c1"># labels</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -484,9 +525,6 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="s1">&#39;y_lim&#39;</span><span class="p">])</span>
 
     <span class="n">pannot</span><span class="o">.</span><span class="n">make_top_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  <span class="c1"># needs two calls for some reason to look great</span>
 
 
 <span class="k">def</span> <span class="nf">_get_scaled_labels</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
