@@ -62,15 +62,22 @@ Provides the plotting function for amplitude detuning analysis
 
 - **manual_style** *(DictAsString)*:
 
-    Additional plotting style.
+    Additional style rcParameters which update the set of predefined ones.
 
     default: ``{}``
 
 
-- **output** *(PathOrStr)*:
+- **output** *(str)*:
 
     Save the amplitude detuning plot here. Give filename with extension.
     An id for the 4 different plots will be added before the suffix.
+
+
+- **plot_styles** *(UnionPathStr)*:
+
+    Plotting styles.
+
+    default: ``['standard', 'amplitude_detuning']``
 
 
 - **show**:
@@ -121,18 +128,12 @@ from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_m
 from omc3.tune_analysis.kick_file_modifiers import AmpDetData
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings
-from omc3.utils.iotools import PathOrStr, save_config
+from omc3.utils.iotools import PathOrStr, save_config, UnionPathStr
 
 LOG = logging_tools.get_logger(__name__)
 
 NFIT = 100  # Points for the fitting function
 X, Y = PLANES
-
-MANUAL_STYLE_DEFAULT = {
-    u'figure.figsize': [9.5, 4],
-    u"lines.marker": u"o",
-    u"lines.linestyle": u"",
-}
 
 
 def get_params():
@@ -196,9 +197,15 @@ def get_params():
             type=str,
         ),
         manual_style=dict(
-            help="Additional plotting style.",
             type=DictAsString,
-            default={}
+            default={},
+            help='Additional style rcParameters which update the set of predefined ones.'
+        ),
+        plot_styles=dict(
+            help="Plotting styles.",
+            type=UnionPathStr,
+            nargs="+",
+            default=['standard', 'amplitude_detuning'],
         ),
         tune_scale=dict(
             help="Plotting exponent of the tune.",
@@ -216,7 +223,7 @@ def main(opt):
 
     figs = {}
 
-    _set_plotstyle(opt.manual_style)
+    pstyle.set_style(opt.plot_styles, opt.manual_style)
 
     for tune_plane in PLANES:
         if opt.plane == "3D":
@@ -692,12 +699,6 @@ def get_labels_with_odr_labels(ax, odr_labels):
 
 
 # Helper -----------------------------------------------------------------------
-
-def _set_plotstyle(manual_style):
-    mstyle = MANUAL_STYLE_DEFAULT
-    mstyle.update(manual_style)
-    pstyle.set_style("standard", mstyle)
-
 
 def _save_options(opt):
     if opt.output:

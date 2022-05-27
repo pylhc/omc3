@@ -6,6 +6,7 @@ Helper functions to create annotations as well as style labels in plots.
 """
 import re
 from distutils.version import LooseVersion
+from typing import Union
 
 import matplotlib
 import pandas as pd
@@ -286,10 +287,6 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
                     bbox_to_anchor=(1.0, 1.0+pad),
                     fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
 
-    if LooseVersion(matplotlib.__version__) <= LooseVersion("2.2.0"):
-        legend_height = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).height
-        ax.figure.tight_layout(rect=[0, 0, 1, 1+pad-legend_height])
-
     leg.axes.figure.canvas.draw()
     legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
     if legend_width > 1:
@@ -297,9 +294,6 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
         ax.legend(handles=handles, labels=labels, loc='lower right',
                   bbox_to_anchor=(1.0 + x_shift, 1.0+pad),
                   fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
-
-    if LooseVersion(matplotlib.__version__) >= LooseVersion("2.2.0"):
-        ax.figure.tight_layout()
 
     return leg
 
@@ -350,3 +344,21 @@ def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, ma
     ax.ticklabel_format(axis=axis, style="sci", scilimits=(order, order), useMathText=math_text)
 
     return ax
+
+
+def get_fontsize_as_float(font_size: Union[str, float]) -> float:
+    try:
+        scale = {
+            'xx-small': 0.579,
+            'x-small': 0.694,
+            'small': 0.833,
+            'medium': 1.0,
+            'large': 1.200,
+            'x-large': 1.440,
+            'xx-large': 1.728,
+            'larger': 1.2,
+            'smaller': 0.833,
+            None: 1.0}[font_size]
+    except KeyError:
+        return font_size
+    return scale * matplotlib.rcParams['font.size']
