@@ -6,10 +6,11 @@ Functions to add data to or extract data from **kick_ac** files.
 """
 import os
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
+from numpy.typing import ArrayLike, NDArray
 from scipy import odr
 import tfs
 from tfs import TfsDataFrame
@@ -102,7 +103,8 @@ def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_arg
     return kickac_df, bbq_df
 
 
-def _filter_bbq_outliers(bbq_df, plane, filter_args):
+def _filter_bbq_outliers(bbq_df: tfs.TfsDataFrame, plane: str, filter_args
+                         ) -> Tuple[tfs.TfsDataFrame, pd.Series, pd.Series, ArrayLike]:
     header_limit = get_outlier_limit_header()
     header_window = get_mav_window_header()
     if ((header_limit in bbq_df.headers) and
@@ -137,7 +139,7 @@ def _filter_bbq_cut(bbq_df, plane, plane_idx, filter_args):
     return bbq_df, bbq_mav, bbq_std, mask
 
 
-def add_corrected_natural_tunes(kickac_df: pd.DataFrame):
+def add_corrected_natural_tunes(kickac_df: pd.DataFrame) -> pd.DataFrame:
     """
     Adds the corrected natural tunes to ``kickac_df``.
     Add also the total standard deviation of the natural tune to the kickac dataframe.
@@ -264,29 +266,29 @@ def get_ampdet_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
 # Timed DataFrames -------------------------------------------------------------
 
 
-def get_timestamp_index(index):
+def get_timestamp_index(index: pd.Index) -> pd.Index:
     return pd.Index([i.timestamp() for i in index])
 
 
-def read_timed_dataframe(path: str):
+def read_timed_dataframe(path: Union[str, Path]) -> tfs.TfsDataFrame:
     df = tfs.read(path, index=get_time_col())
     df.index = pd.Index([CERNDatetime.from_cern_utc_string(i) for i in df.index], dtype=object)
     return df
 
 
-def write_timed_dataframe(path, df):
+def write_timed_dataframe(path: Union[str, Path], df: tfs.TfsDataFrame):
     df = df.copy()
     df.index = pd.Index([i.strftime(get_cern_time_format()) for i in df.index], dtype=str)
-    tfs.write(str(path), df, save_index=get_time_col())
+    tfs.write(path, df, save_index=get_time_col(), headerswidth=max(len(k) for k in df.headers.keys()))
 
 
-def read_two_kick_files_from_folder(folder):
+def read_two_kick_files_from_folder(folder: Path) -> tfs.TfsDataFrame:
     return merge_two_plane_kick_dfs(
-        *[read_timed_dataframe(os.path.join(folder, f'{KICK_NAME}{p.lower()}.tfs')) for p in PLANES]
+        *[read_timed_dataframe(folder / f'{KICK_NAME}{p.lower()}.tfs') for p in PLANES]
     )
 
 
-def merge_two_plane_kick_dfs(df_x, df_y):
+def merge_two_plane_kick_dfs(df_x: tfs.TfsDataFrame, df_y: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     df_xy = TfsDataFrame(pd.merge(df_x, df_y, how='outer', left_index=True, right_index=True, suffixes=PLANES))
     if len(df_xy.index) != len(df_x.index) or len(df_xy.index) != len(df_y.index):
         LOG.warning("The kick-files for each plane seem to have different indices.")
@@ -305,7 +307,7 @@ def convert_bbs_kickfile(file: Path):
     tfs.write(file.with_name(get_kick_out_name()), df)
 
 
-def convert_bbs_kickdataframe(df: TfsDataFrame):
+def convert_bbs_kickdataframe(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     """Converts a kick-dataframe created with the python2 amplitude detuning
     analysis into a dataframe compatible with omc3's detuning analysis.
     Beware that the old files may not contain the error coefficients for
@@ -314,6 +316,8 @@ def convert_bbs_kickdataframe(df: TfsDataFrame):
     And that the offset (coeffient 0) has no error, which is here assumed
     to be zero (it is not used anyway, but required when reading the data).
     The action unit is converted from um to m.
+    !!! Be also aware, that due to a bug the Action and Tune planes might be switched !!!
+    This is not taken into account here.
     """
     # Header ---
     df.headers = {_rename_old_header(key): value for key, value in df.headers.items()}

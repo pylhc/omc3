@@ -117,10 +117,9 @@ import os
 from collections import OrderedDict
 from datetime import timedelta
 from pathlib import Path
-from typing import List, Sequence, Tuple, Dict, Any
+from typing import List, Sequence, Tuple, Dict, Any, Union
 
 import numpy as np
-import pandas as pd
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, save_options_to_config
 from numpy.typing import ArrayLike
@@ -141,7 +140,8 @@ from omc3.tune_analysis.kick_file_modifiers import (
     read_two_kick_files_from_folder,
     write_timed_dataframe, AmpDetData,
 )
-from omc3.utils.logging_tools import DebugMode, get_logger, list2str
+from omc3.utils.iotools import PathOrStr, UnionPathStrInt
+from omc3.utils.logging_tools import get_logger, list2str
 from omc3.utils.time_tools import CERNDatetime
 
 # Globals ----------------------------------------------------------------------
@@ -163,7 +163,7 @@ def _get_params():
         ),
         kick=dict(
             help="Location of the kick files (parent folder).",
-            type=str,
+            type=PathOrStr,
             required=True,
         ),
         plane=dict(
@@ -177,9 +177,10 @@ def _get_params():
             type=str,
         ),
         bbq_in=dict(
-            help="Fill number of desired data to extract from timber  or path to presaved bbq-tfs-file. "
+            help="Fill number of desired data to extract from timber or path to presaved bbq-tfs-file. "
             "Use the string 'kick' to use the timestamps in the kickfile for timber extraction. "
             "Not giving this parameter skips bbq compensation.",
+            type=UnionPathStrInt
         ),
 
         detuning_order=dict(
@@ -189,7 +190,7 @@ def _get_params():
         ),
         output=dict(
             help="Output directory for the modified kickfile and bbq data.",
-            type=str,
+            type=PathOrStr,
         ),
         window_length=dict(
             help="Length of the moving average window. (# data points)",
@@ -425,7 +426,7 @@ def _check_analyse_opt(opt: DotDict):
     return opt, filter_opt
 
 
-def _get_bbq_data(beam: int, input_: str, kick_df: TfsDataFrame) -> TfsDataFrame:
+def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFrame) -> TfsDataFrame:
     """
     Return BBQ data from input, either file or timber fill, as a ``TfsDataFrame``.
 
@@ -434,7 +435,7 @@ def _get_bbq_data(beam: int, input_: str, kick_df: TfsDataFrame) -> TfsDataFrame
     """
     try:
         fill_number = int(input_)
-    except ValueError:  # input_ is a file name or the string 'kick'
+    except (TypeError, ValueError) as e:  # input_ is a file name or the string 'kick'
         if input_ == "kick":
             LOG.debug("Getting timber data from kick times")
             timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
@@ -444,11 +445,11 @@ def _get_bbq_data(beam: int, input_: str, kick_df: TfsDataFrame) -> TfsDataFrame
             data = timber_extract.extract_between_times(
                 t_start - t_delta, t_end + t_delta, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols))
             )
-        else:  # input_ is a file name
-            LOG.debug(f"Getting bbq data from file '{input_:s}'")
+        else:  # input_ is a file name or path
+            LOG.debug(f"Getting bbq data from file '{str(input_):s}'")
             data = read_timed_dataframe(input_)
             if not len(data.index):
-                raise ValueError(f"No entries in {input_}.")
+                raise ValueError(f"No entries in {str(input_):s}.")
             #  Drop old moving average columns as these will be computed again later
             data.drop([get_mav_col(p) for p in PLANES if get_mav_col(p) in data.columns], axis="columns")
 

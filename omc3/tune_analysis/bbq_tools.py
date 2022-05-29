@@ -9,7 +9,7 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-from numpy.typing import ArrayLike
+from numpy.typing import ArrayLike, NDArray
 
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
@@ -66,7 +66,7 @@ def get_moving_average(data_series, length=20,
     return data_mav, std_mav, ~cut_mask
 
 
-def clean_outliers_moving_average(data_series: pd.Series, length: int, limit: float) -> Tuple[pd.Series, pd.Series, ArrayLike]:
+def clean_outliers_moving_average(data_series: pd.Series, length: int, limit: float) -> Tuple[pd.Series, pd.Series, NDArray[bool]]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries, by means of
     :func:`outlier filter <omc3.utils.outliers.get_filter_mask>`.

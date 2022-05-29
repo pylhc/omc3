@@ -12,7 +12,7 @@ import numpy as np
 PI: float = np.pi
 PI2: float = 2 * np.pi
 PI2I: float = 2j * np.pi
-PLANES: Tuple[str] = ("X", "Y")
+PLANES: Tuple[str, str] = ("X", "Y")
 PLANE_TO_NUM: Dict[str, int] = dict(X=1, Y=2)
 PLANE_TO_HV: Dict[str, str] = dict(X="H", Y="V")
 
