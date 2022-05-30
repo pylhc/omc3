@@ -1,5 +1,17 @@
 # OMC3 Changelog
 
+#### 2022-05-30
+
+- Added: 
+  - 2D amplitude detuning analysis and 3D plotting of the results
+  - Converter for amp.det. analysis from bbs to omc3
+  - general typehinting/doc/unification of entrypoint parameters/saving
+
+- Fixed:
+  - Switched action-tune planes in ampdet-kick file header-names
+  - Deprecated way of pandas indexing (`.loc` for nearest points)
+  - Allow different sized kick-files for amp.det. analysis
+
 #### 2022-05-19
 
 - Added:
