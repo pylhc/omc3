@@ -21,7 +21,7 @@ the measurements.
     Which beam to use.
 
 
-- **kick** *(str)*:
+- **kick** *(PathOrStr)*:
 
     Location of the kick files (parent folder).
 
@@ -46,12 +46,12 @@ the measurements.
     default: ``outliers``
 
 
-- **bbq_in**:
+- **bbq_in** *(UnionPathStrInt)*:
 
-    Fill number of desired data to extract from timber  or path to
-    presaved bbq-tfs-file. Use the string 'kick' to use the timestamps in
-    the kickfile for timber extraction. Not giving this parameter skips
-    bbq compensation.
+    Fill number of desired data to extract from timber or path to presaved
+    bbq-tfs-file. Use the string 'kick' to use the timestamps in the
+    kickfile for timber extraction. Not giving this parameter skips bbq
+    compensation.
 
 
 - **detuning_order** *(int)*:
@@ -86,7 +86,7 @@ the measurements.
     default: ``0.0002``
 
 
-- **output** *(str)*:
+- **output** *(PathOrStr)*:
 
     Output directory for the modified kickfile and bbq data.
 
@@ -112,6 +112,8 @@ the measurements.
     Length of the moving average window. (# data points)
 
     default: ``20``
+
+
 """
 import os
 from collections import OrderedDict
@@ -140,7 +142,7 @@ from omc3.tune_analysis.kick_file_modifiers import (
     read_two_kick_files_from_folder,
     write_timed_dataframe, AmpDetData,
 )
-from omc3.utils.iotools import PathOrStr, UnionPathStrInt
+from omc3.utils.iotools import PathOrStr, UnionPathStrInt, save_config
 from omc3.utils.logging_tools import get_logger, list2str
 from omc3.utils.time_tools import CERNDatetime
 
@@ -470,10 +472,7 @@ def _get_timber_keys_and_bbq_columns(beam: int) -> Tuple[List[str], List[str]]:
 
 def _save_options(opt: DotDict) -> None:
     if opt.output:
-        os.makedirs(opt.output, exist_ok=True)
-        save_options_to_config(
-            Path(opt.output) / formats.get_config_filename(__file__), OrderedDict(sorted(opt.items()))
-        )
+        save_config(Path(opt.output), opt, __file__)
 
 
 def _get_ampdet_data_as_array(data: Dict[Any, AmpDetData], column: str) -> ArrayLike:
