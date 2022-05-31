@@ -87,7 +87,7 @@ def test_amplitude_detuning_2d(tmp_path):
     # accuracy test
     kick_xy_prepared = tfs.read(get_2d_input_dir() / "kick_ampdet_xy.tfs")
     for key in odr_headers:
-        assert abs(kick_df.headers[key] - kick_xy_prepared.headers[key]) / abs(kick_xy_prepared.headers[key]) < 1e-4
+        assert abs(kick_df.headers[key] - kick_xy_prepared.headers[key]) / abs(kick_xy_prepared.headers[key]) < 1e-3
 
 
 def get_input_dir():
