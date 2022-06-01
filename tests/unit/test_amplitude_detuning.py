@@ -90,6 +90,29 @@ def test_amplitude_detuning_2d(tmp_path):
         assert abs(kick_df.headers[key] - kick_xy_prepared.headers[key]) / abs(kick_xy_prepared.headers[key]) < 1e-3
 
 
+@pytest.mark.extended
+def test_amplitude_detuning_previous_bbq_compensation(tmp_path):
+    setup = dict(
+        beam=1,
+        kick=get_input_dir(),
+        plane="Y",
+        label="B1VKicks",
+        bbq_in="previous",
+        detuning_order=1,
+        output=tmp_path,
+    )
+    kick_df, bbq_df = analyse_with_bbq_corrections(**setup)
+
+    assert len(list(tmp_path.glob("*.tfs"))) == 1
+    odr_headers = [k for k, v in kick_df.headers.items() if k.startswith("ODR")]
+    assert len(odr_headers) == 16
+
+    # accuracy test
+    kick_xy_prepared = tfs.read(get_input_dir() / "kick_ampdet_xy.tfs")
+    for key in odr_headers:
+        assert abs(kick_df.headers[key] - kick_xy_prepared.headers[key]) / abs(kick_xy_prepared.headers[key]) < 1e-3
+
+
 def get_input_dir():
     return Path(__file__).parent.parent / "inputs" / "amplitude_detuning"
 
