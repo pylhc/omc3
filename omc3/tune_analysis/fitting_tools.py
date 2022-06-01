@@ -11,6 +11,7 @@ from typing import Sequence, Dict, List
 
 import numpy as np
 import pandas as pd
+from numpy.polynomial import Polynomial
 from numpy.typing import ArrayLike
 from scipy.odr import RealData, Model, ODR
 from scipy.optimize import curve_fit
@@ -53,13 +54,13 @@ def do_odr(x: pd.Series, y: pd.Series, xerr: pd.Series, yerr: pd.Series, order: 
     LOG.debug("Starting ODR fit.")
 
     # Poly-Fit for starting point ---
-    fit_np = np.polyfit(x, y, order)[::-1]  # polyfit order is inversed to poly_func
-    LOG.debug(f"ODR fit input (from polyfit): {fit_np}")
+    fit_np = Polynomial.fit(x, y, deg=1).convert()
+    LOG.debug(f"ODR fit input (from polynomial fit): {fit_np}")
 
     # Actual ODR ---
     odr = ODR(data=RealData(x=x, y=y, sx=xerr, sy=yerr),
               model=Model(get_poly_fun(order)),
-              beta0=fit_np)
+              beta0=fit_np.coef)
     odr_fit = odr.run()
     logging_tools.odr_pprint(LOG.info, odr_fit)
     return odr_fit
