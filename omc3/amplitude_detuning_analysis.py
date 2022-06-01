@@ -131,6 +131,7 @@ from tfs.frame import TfsDataFrame
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
+from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, MinMaxFilterOpt
 from omc3.tune_analysis.constants import (
     get_bbq_col,
     get_bbq_out_name,
@@ -152,6 +153,12 @@ from omc3.utils.time_tools import CERNDatetime
 DTIME: int = 120  # extra seconds to add to kick times window when extracting from timber
 
 LOG = get_logger(__name__)
+
+FILTER_OPTS = dict(
+    cut=("window_length", "tunes", "tune_cut"),  # "fine_window", "fine_cut"
+    minmax=("window_length", "tunes_minmax", ),  # "fine_window", "fine_cut"
+    outliers=("window_length", "outlier_limit"),
+)
 
 
 # Get Parameters ---------------------------------------------------------------
@@ -186,7 +193,6 @@ def _get_params():
             "Not giving this parameter skips bbq compensation.",
             type=UnionPathStrInt
         ),
-
         detuning_order=dict(
             help="Order of the detuning as int. Basically just the order of the applied fit.",
             type=int,
@@ -205,7 +211,7 @@ def _get_params():
             help="Filtering method for the bbq to use. 'cut' cuts around a given tune, 'minmax' lets you "
             "specify the limits and 'outliers' uses the outlier filtering from utils.",
             type=str,
-            choices=["cut", "minmax", "outliers"],
+            choices=list(FILTER_OPTS.keys()),
             default="outliers",
         ),
         # Filtering method outliers
@@ -259,7 +265,8 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
     _save_options(opt)
 
     opt, filter_opt = _check_analyse_opt(opt)
-    kick_df, bbq_df = get_kick_and_bbq_df(kick=opt.kick, bbq_in=opt.bbq_in, beam=opt.beam, filter_opt=filter_opt)
+    kick_df, bbq_df = get_kick_and_bbq_df(kick=opt.kick, bbq_in=opt.bbq_in,
+                                          beam=opt.beam, filter_opt=filter_opt, output=opt.output)
 
     kick_plane = opt.plane
 
@@ -267,9 +274,8 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
         if kick_plane in PLANES:
             kick_df = single_action_analysis(kick_df, kick_plane, opt.detuning_order, corrected)
         else:
-            kick_df = double_action_analysis(kick_df, opt.detunig_order, corrected)
+            kick_df = double_action_analysis(kick_df, opt.detuning_order, corrected)
 
-    # output kick and bbq data
     if opt.output:
         LOG.info(f"Writing kick data to file in directory '{opt.output.absolute()}'")
         opt.output.mkdir(parents=True, exist_ok=True)
@@ -279,7 +285,8 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 
 
 def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
-                        beam: int = None, filter_opt = None, output: Path = None
+                        beam: int = None, filter_opt = None,
+                        output: Path = None
                         ) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """Load the input data."""
     bbq_df = None
@@ -302,7 +309,12 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
 
             if output:
                 LOG.info(f"Writing BBQ data to file in directory '{output.absolute()}'")
-                x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, filter_opt.window_length)
+                try:
+                    window = filter_opt.window
+                except AttributeError:
+                    window = filter_opt[0].window
+
+                x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, window)
                 write_timed_dataframe(output / get_bbq_out_name(), bbq_df.loc[x_interval[0]: x_interval[1]])
     return kick_df, bbq_df
 
@@ -339,7 +351,8 @@ def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_
     return kick_df
 
 
-def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, corrected: bool = False):
+def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, corrected: bool = False
+                           ) -> tfs.TfsDataFrame:
     """Performs the full 2D/4D fitting of the data."""
     if detuning_order > 1:
         raise NotImplementedError(f"2D Analysis for detuning order {detuning_order:d} is not implemented "
@@ -380,8 +393,7 @@ def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, c
 
 
 def get_approx_bbq_interval(
-        bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window_length: int
-) -> Tuple[CERNDatetime, CERNDatetime]:
+        bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window: int) -> Tuple[CERNDatetime, CERNDatetime]:
     """Get approximate start and end times for averaging, based on window length and kick interval."""
     bbq_tmp = bbq_df.dropna()
 
@@ -398,8 +410,8 @@ def get_approx_bbq_interval(
     if not (ts_bbq_min <= ts_end <= ts_bbq_max):
         raise ValueError("The end time of the kicks lies outside of the given BBQ times.")
 
-    i_start = max(ts_bbq_index.get_indexer([ts_start], method="nearest")[0] - window_length, 0)
-    i_end = min(ts_bbq_index.get_indexer([ts_end], method="nearest")[0] + window_length, len(ts_bbq_index) - 1)
+    i_start = max(ts_bbq_index.get_indexer([ts_start], method="nearest")[0] - window, 0)
+    i_end = min(ts_bbq_index.get_indexer([ts_end], method="nearest")[0] + window, len(ts_bbq_index) - 1)
 
     return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
@@ -418,38 +430,49 @@ def _check_analyse_opt(opt: DotDict):
     filter_opt = None
     if (opt.bbq_in is not None) and (opt.bbq_in != INPUT_PREVIOUS):
         # check if cleaning is properly specified
-        all_filter_opt = dict(
-            cut=opt.get_subdict(
-                ["bbq_filtering_method", "window_length", "tunes", "tune_cut", "fine_window", "fine_cut"]
-            ),
-            minmax=opt.get_subdict(
-                ["bbq_filtering_method", "window_length", "tunes_minmax", "fine_window", "fine_cut"]
-            ),
-            outliers=opt.get_subdict(["bbq_filtering_method", "window_length", "outlier_limit"]),
-        )
+        method = opt.bbq_filtering_method
+        if method is None:
+            raise ValueError(f"Please choose a filtering method for the BBQ data from {list(FILTER_OPTS.keys())}")
 
-        for method, params in all_filter_opt.items():
-            if opt.bbq_filtering_method == method:
-                missing_params = [k for k, v in params.items() if v is None]
-                if any(missing_params):
-                    raise KeyError(
-                        f"Missing parameters for cleaning method {method}: '{list2str(missing_params)}'"
-                    )
-                filter_opt = params
+        missing_params = [name for name in FILTER_OPTS[method] if opt[name] is None]
+        if any(missing_params):
+            raise KeyError(
+                f"Missing parameters for cleaning method {method}: '{list2str(missing_params)}'"
+            )
 
-        if filter_opt.bbq_filtering_method == "cut":
-            filter_opt[f"tunes_minmax"] = [
-                minmax for t in opt.tunes for minmax in (t - opt.tune_cut, t + opt.tune_cut)
-            ]
-            filter_opt.pop("tune_cut")
-            filter_opt.pop("tunes")
+        if bool(opt.fine_cut) != bool(opt.fine_window):
+            raise KeyError(
+                "To activate fine cleaning, both fine cut and fine window need to be specified"
+            )
 
-        if filter_opt.bbq_filtering_method != "outliers":
-            # check fine cleaning
-            if bool(filter_opt.fine_cut) != bool(filter_opt.fine_window):
-                raise KeyError(
-                    "To activate fine cleaning, both fine cut and fine window need to be specified"
+        if method == "outliers":
+            filter_opt = OutlierFilterOpt(
+                    window=opt.window_length,
+                    limit=opt.outlier_limit
+               )
+
+        elif method == "minmax":
+            filter_opt = [
+                MinMaxFilterOpt(
+                    window=opt.window_length,
+                    min=opt.tunes_minmax[2*i],
+                    max=opt.tunes_minmax[2*i+1],
+                    fine_window=opt.fine_window,
+                    fine_cut=opt.fine_cut,
                 )
+                for i in range(2)
+            ]
+        else:
+            filter_opt = [
+                MinMaxFilterOpt(
+                    window=opt.window_length,
+                    min=opt.tunes[i] - opt.tune_cut,
+                    max=opt.tunes[i] + opt.tune_cut,
+                    fine_window=opt.fine_window,
+                    fine_cut=opt.fine_cut,
+                )
+                for i in range(2)
+            ]
 
     if opt.output is not None:
         opt.output = Path(opt.output)
