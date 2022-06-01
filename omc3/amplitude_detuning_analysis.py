@@ -122,6 +122,7 @@ from pathlib import Path
 from typing import List, Sequence, Tuple, Dict, Any, Union
 
 import numpy as np
+import tfs
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, save_options_to_config
 from numpy.typing import ArrayLike
@@ -135,7 +136,7 @@ from omc3.tune_analysis.constants import (
     get_bbq_out_name,
     get_kick_out_name,
     get_mav_col,
-    get_timber_bbq_key,
+    get_timber_bbq_key, INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
     read_timed_dataframe,
@@ -180,7 +181,8 @@ def _get_params():
         ),
         bbq_in=dict(
             help="Fill number of desired data to extract from timber or path to presaved bbq-tfs-file. "
-            "Use the string 'kick' to use the timestamps in the kickfile for timber extraction. "
+            f"Use the string '{INPUT_KICK}' to use the timestamps in the kickfile for timber extraction. "
+            f"Use the string '{INPUT_PREVIOUS}' to look for the modified ampdet kick-file from a previous run. "
             "Not giving this parameter skips bbq compensation.",
             type=UnionPathStrInt
         ),
@@ -257,101 +259,128 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
     _save_options(opt)
 
     opt, filter_opt = _check_analyse_opt(opt)
-
-    LOG.debug("Getting data from kick files")
-    kick_df = read_two_kick_files_from_folder(opt.kick)
-    bbq_df = None
-
-    if opt.bbq_in is not None:
-        bbq_df = _get_bbq_data(opt.beam, opt.bbq_in, kick_df)
-        x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, opt.window_length)
-
-        LOG.debug("Adding moving average data to kick data")
-        kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
-
-        LOG.debug("Adding corrected natural tunes and stdev to kick data")
-        kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
+    kick_df, bbq_df = get_kick_and_bbq_df(kick=opt.kick, bbq_in=opt.bbq_in, beam=opt.beam, filter_opt=filter_opt)
 
     kick_plane = opt.plane
 
-    for corrected in (False, True):
-        if corrected and opt.bbq_in is None:
-            continue
-
+    for corrected in [False] + _should_do_corrected(kick_df, opt.bbq_in):
         if kick_plane in PLANES:
-            LOG.info(f"Performing amplitude detuning ODR for single-plane kicks in {kick_plane}.")
-            for tune_plane in PLANES:
-                    LOG.debug("Getting ampdet data")
-                    data = kick_file_modifiers.get_ampdet_data(
-                        kickac_df=kick_df,
-                        action_plane=kick_plane,
-                        tune_plane=tune_plane,
-                        corrected=corrected
-                    )
-
-                    LOG.debug("Fitting ODR to kick data")
-                    odr_fit = fitting_tools.do_odr(
-                        x=data.action,
-                        y=data.tune,
-                        xerr=data.action_err,
-                        yerr=data.tune_err,
-                        order=opt.detuning_order,
-                    )
-
-                    kick_df = kick_file_modifiers.add_odr(
-                        kickac_df=kick_df,
-                        odr_fit=odr_fit,
-                        action_plane=kick_plane,
-                        tune_plane=tune_plane,
-                        corrected=corrected
-                    )
+            kick_df = single_action_analysis(kick_df, kick_plane, opt.detuning_order, corrected)
         else:
-            LOG.info("Performing amplitude detuning ODR for diagonal kicks.")
-            data = {}
-
-            # get all action arrays and all tune arrays, unfolded below
-            for plane in PLANES:
-                LOG.debug(f"Getting action and tune data for plane {plane}.")
-                data[plane] = kick_file_modifiers.get_ampdet_data(
-                    kickac_df=kick_df,
-                    action_plane=plane,
-                    tune_plane=plane,
-                    corrected=corrected,
-                    dropna=False,  # so that they still have the same lengths
-                )
-
-            LOG.debug("Fitting ODR to kick data")
-            odr_fits = fitting_tools.do_2d_kicks_odr(
-                x=_get_ampdet_data_as_array(data, "action"),         # gets [2Jx, 2Jy]
-                y=_get_ampdet_data_as_array(data, "tune"),           # gets [Qx, Qy]
-                xerr=_get_ampdet_data_as_array(data, "action_err"),
-                yerr=_get_ampdet_data_as_array(data, "tune_err"),
-            )
-
-            # add the fits to the kick header
-            for t_plane in PLANES:
-                for k_plane in PLANES:
-                    kick_df = kick_file_modifiers.add_odr(
-                        kickac_df=kick_df,
-                        odr_fit=odr_fits[t_plane][k_plane],
-                        action_plane=k_plane,
-                        tune_plane=t_plane,
-                        corrected=corrected
-                    )
+            kick_df = double_action_analysis(kick_df, opt.detunig_order, corrected)
 
     # output kick and bbq data
     if opt.output:
-        LOG.info(f"Writing kick and BBQ data to files in directory '{opt.output.absolute()}'")
+        LOG.info(f"Writing kick data to file in directory '{opt.output.absolute()}'")
         opt.output.mkdir(parents=True, exist_ok=True)
         write_timed_dataframe(opt.output / get_kick_out_name(), kick_df)
-        if bbq_df is not None:
-            write_timed_dataframe(opt.output / get_bbq_out_name(), bbq_df.loc[x_interval[0]: x_interval[1]])
 
     return kick_df, bbq_df
 
 
+def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
+                        beam: int = None, filter_opt = None, output: Path = None
+                        ) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
+    """Load the input data."""
+    bbq_df = None
+    if bbq_in is not None and bbq_in == INPUT_PREVIOUS:
+        LOG.debug("Getting data from previous ampdet kick file")
+        kick_df = read_timed_dataframe(Path(kick) / get_kick_out_name())
+        kick_df.headers = {k: v for k, v in kick_df.headers.items() if not k.startswith("ODR_")}
+    else:
+        LOG.debug("Getting data from kick files")
+        kick_df = read_two_kick_files_from_folder(kick)
+
+        if bbq_in is not None:
+            bbq_df = _get_bbq_data(beam, bbq_in, kick_df)
+
+            LOG.debug("Adding moving average data to kick data")
+            kick_df, bbq_df = kick_file_modifiers.add_moving_average(kick_df, bbq_df, filter_opt)
+
+            LOG.debug("Adding corrected natural tunes and stdev to kick data")
+            kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
+
+            if output:
+                LOG.info(f"Writing BBQ data to file in directory '{output.absolute()}'")
+                x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, filter_opt.window_length)
+                write_timed_dataframe(output / get_bbq_out_name(), bbq_df.loc[x_interval[0]: x_interval[1]])
+    return kick_df, bbq_df
+
+
+def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_order: int = 1, corrected: bool = False
+                           ) -> tfs.TfsDataFrame:
+    """Performs the fit one action and tune pane at a time."""
+    LOG.info(f"Performing amplitude detuning ODR for single-plane kicks in {kick_plane}.")
+    for tune_plane in PLANES:
+        LOG.debug("Getting ampdet data")
+        data = kick_file_modifiers.get_ampdet_data(
+            kickac_df=kick_df,
+            action_plane=kick_plane,
+            tune_plane=tune_plane,
+            corrected=corrected
+        )
+
+        LOG.debug("Fitting ODR to kick data")
+        odr_fit = fitting_tools.do_odr(
+            x=data.action,
+            y=data.tune,
+            xerr=data.action_err,
+            yerr=data.tune_err,
+            order=detuning_order,
+        )
+
+        kick_df = kick_file_modifiers.add_odr(
+            kickac_df=kick_df,
+            odr_fit=odr_fit,
+            action_plane=kick_plane,
+            tune_plane=tune_plane,
+            corrected=corrected
+        )
+    return kick_df
+
+
+def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, corrected: bool = False):
+    """Performs the full 2D/4D fitting of the data."""
+    if detuning_order > 1:
+        raise NotImplementedError(f"2D Analysis for detuning order {detuning_order:d} is not implemented "
+                                  f"(only first order so far).")
+    LOG.info("Performing amplitude detuning ODR for diagonal kicks.")
+    data = {}
+
+    # get all action arrays and all tune arrays, unfolded below
+    for plane in PLANES:
+        LOG.debug(f"Getting action and tune data for plane {plane}.")
+        data[plane] = kick_file_modifiers.get_ampdet_data(
+            kickac_df=kick_df,
+            action_plane=plane,
+            tune_plane=plane,
+            corrected=corrected,
+            dropna=False,  # so that they still have the same lengths
+        )
+
+    LOG.debug("Fitting ODR to kick data")
+    odr_fits = fitting_tools.do_2d_kicks_odr(
+        x=_get_ampdet_data_as_array(data, "action"),  # gets [2Jx, 2Jy]
+        y=_get_ampdet_data_as_array(data, "tune"),  # gets [Qx, Qy]
+        xerr=_get_ampdet_data_as_array(data, "action_err"),
+        yerr=_get_ampdet_data_as_array(data, "tune_err"),
+    )
+
+    # add the fits to the kick header
+    for t_plane in PLANES:
+        for k_plane in PLANES:
+            kick_df = kick_file_modifiers.add_odr(
+                kickac_df=kick_df,
+                odr_fit=odr_fits[t_plane][k_plane],
+                action_plane=k_plane,
+                tune_plane=t_plane,
+                corrected=corrected
+            )
+    return kick_df
+
+
 def get_approx_bbq_interval(
-    bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window_length: int
+        bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window_length: int
 ) -> Tuple[CERNDatetime, CERNDatetime]:
     """Get approximate start and end times for averaging, based on window length and kick interval."""
     bbq_tmp = bbq_df.dropna()
@@ -369,8 +398,8 @@ def get_approx_bbq_interval(
     if not (ts_bbq_min <= ts_end <= ts_bbq_max):
         raise ValueError("The end time of the kicks lies outside of the given BBQ times.")
 
-    i_start = max(ts_bbq_index.get_indexer([ts_start], method="nearest")[0] - int(window_length / 2.0), 0)
-    i_end = min(ts_bbq_index.get_indexer([ts_end], method="nearest")[0] + int(window_length / 2.0), len(ts_bbq_index) - 1)
+    i_start = max(ts_bbq_index.get_indexer([ts_start], method="nearest")[0] - window_length, 0)
+    i_end = min(ts_bbq_index.get_indexer([ts_end], method="nearest")[0] + window_length, len(ts_bbq_index) - 1)
 
     return bbq_tmp.index[i_start], bbq_tmp.index[i_end]
 
@@ -387,7 +416,7 @@ def _check_analyse_opt(opt: DotDict):
         opt.label = f"Amplitude Detuning for Beam {opt.beam:d}"
 
     filter_opt = None
-    if opt.bbq_in is not None:
+    if (opt.bbq_in is not None) and (opt.bbq_in != INPUT_PREVIOUS):
         # check if cleaning is properly specified
         all_filter_opt = dict(
             cut=opt.get_subdict(
@@ -438,7 +467,7 @@ def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFram
     try:
         fill_number = int(input_)
     except (TypeError, ValueError) as e:  # input_ is a file name or the string 'kick'
-        if input_ == "kick":
+        if input_ == INPUT_KICK:
             LOG.debug("Getting timber data from kick times")
             timber_keys, bbq_cols = _get_timber_keys_and_bbq_columns(beam)
             t_start = min(kick_df.index.to_numpy())
@@ -468,6 +497,14 @@ def _get_timber_keys_and_bbq_columns(beam: int) -> Tuple[List[str], List[str]]:
     keys = [get_timber_bbq_key(plane, beam) for plane in PLANES]
     cols = [get_bbq_col(plane) for plane in PLANES]
     return keys, cols
+
+
+def _should_do_corrected(kick_df, bbq_in) -> List:
+    if bbq_in is None:
+        return []
+    if bbq_in == INPUT_PREVIOUS and not any(CORRECTED in col for col in kick_df.columns):
+        return []
+    return [True]
 
 
 def _save_options(opt: DotDict) -> None:

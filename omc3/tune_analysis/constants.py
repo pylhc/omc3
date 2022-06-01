@@ -20,6 +20,9 @@ CORRECTED: str = "CORR"
 COEFFICIENT: str = "COEFF{order:d}"
 BBQ: str = "BBQ"
 
+INPUT_KICK = "kick"
+INPUT_PREVIOUS = "previous"
+
 
 def get_timber_bbq_key(plane: str, beam: int) -> str:
     """ Key to extract bbq from timber. """
