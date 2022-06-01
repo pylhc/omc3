@@ -211,14 +211,15 @@ def odr_pprint(printer, odr_out):
     """Logs the odr output results. Adapted from odr_output pretty print."""
     old_opts = np.get_printoptions()
     np.set_printoptions(precision=2)
+    covariance_str = str(odr_out.cov_beta).replace("\n", ",")
     odr_str = ('\nODR-Summary:\n'
-               f'Beta:\n {odr_out.beta}\n'
-               f'Beta Std Error:\n {odr_out.sd_beta}\n'
-               f'Beta Covariance:\n {odr_out.cov_beta}\n'
+               f'  Beta: {odr_out.beta}\n'
+               f'  Beta Std Error: {odr_out.sd_beta}\n'
+               f'  Beta Covariance: {covariance_str}\n'
                )
     if hasattr(odr_out, 'info'):
-        odr_str += (f'  Residual Variance:\n {odr_out.res_var}\n'
-                    f'  Inverse Condition #:\n {odr_out.inv_condnum}\n'
+        odr_str += (f'  Residual Variance: {odr_out.res_var:.2e}\n'
+                    f'  Inverse Condition #: {odr_out.inv_condnum:.2e}\n'
                     f'  Reason(s) for Halting:\n')
         for r in odr_out.stopreason:
             odr_str += f'    {r}\n'
