@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2022-05-30
+#### 2022-05-30 - v0.4.0 - _jdilly_
 
 - Added: 
   - 2D amplitude detuning analysis and 3D plotting of the results
@@ -12,44 +12,47 @@
   - Deprecated way of pandas indexing (`.loc` for nearest points)
   - Allow different sized kick-files for amp.det. analysis
 
-#### 2022-05-19
+#### 2022-05-19 - v0.3.0 - _jdilly_
 
 - Added:
   - Linfile cleaning script. 
 
-#### 2022-04-25
+#### 2022-04-25 - v0.2.7 - _awegshe_
 
 - Added:
   - There is now an option, `coupling_pairing`, for the BPM pairing in coupling calculation, to let the user choose the number of BPMs instead of the usual "best candidate" method.
 
-#### 2022-04-25
+#### 2022-04-25 - v0.2.6 - _awegsche_
 
 - Fixed:
   - Only perform index merging on the `NAME` column during coupling calculation. This solves an (at the moment) un-understood issue where some BPMs would have different `S` values in different files.
 
-#### 2022-04-12
+#### 2022-04-12 - v0.2.5 - _awegsche_
 
 - Fixed:
-  - An additionnal knob and macros definition file has been added to reflect the knobs used by OP in the LHC Run 3. This makes sure any `omc3.model_creator` run for the LHC with `year >= 2022` has correct knobs.
+  - An additional knob and macros definition file has been added to reflect the knobs used by OP in the LHC Run 3. This makes sure any `omc3.model_creator` run for the LHC with `year >= 2022` has correct knobs.
 
-#### 2022-04-07
+#### 2022-04-07 - v0.2.4 - _fsoubelet_
 
 - Miscellaneous:
   - The jpype1 package is not a default dependency anymore, and is instead included as a dependency in the cern and test extras. Its import is mocked where needed in omc3.
 
-#### 2022-02-23
+#### 2022-02-23 - v0.2.3 - _awegsche_
 
 - Fixed:
   - The coupling calculation now includes additional columns in the output dataframes, which were missing while being needed later on by the correction calculation.
 
-#### 2022-01-10
+#### 2022-01-10 - v0.2.2 - _mihofer_
 
 - Fixed:
   - Sequences for K-Modulation are now included in PyPi package
   - Bug fixed where default errors in K-Modulation would not have been taken into account
 
-#### 2021-07-14 
-_by jdilly_
+#### 2022-01-10 - v0.2.1 - _fsoubelet_
+
+- _Dummy Release for Zenodo_
+
+#### 2021-07-14 - v0.2.0 - _jdilly_
 
 - Added:
   - global correction framework
