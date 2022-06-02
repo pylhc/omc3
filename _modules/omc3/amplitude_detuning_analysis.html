@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.amplitude_detuning_analysis &mdash; omc3 0.3.0 documentation</title>
+  <title>omc3.amplitude_detuning_analysis &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -14,6 +14,7 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -29,7 +30,7 @@
             <img src="../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -214,80 +215,136 @@
 
 <span class="sd">*--Required--*</span>
 
-<span class="sd">- **beam** *(int)*: Which beam to use.</span>
+<span class="sd">- **beam** *(int)*:</span>
 
-<span class="sd">- **kick** *(str)*: Location of the kick files (parent folder).</span>
+<span class="sd">    Which beam to use.</span>
 
-<span class="sd">- **plane** *(str)*: Plane of the kicks. &#39;X&#39; or &#39;Y&#39;.</span>
 
-<span class="sd">  Choices: ``(&#39;X&#39;, &#39;Y&#39;)``</span>
+<span class="sd">- **kick** *(PathOrStr)*:</span>
+
+<span class="sd">    Location of the kick files (parent folder).</span>
+
+
+<span class="sd">- **plane** *(str)*:</span>
+
+<span class="sd">    Plane of the kicks. &#39;X&#39; or &#39;Y&#39; or &#39;XY&#39;.</span>
+
+<span class="sd">    choices: ``[&#39;X&#39;, &#39;Y&#39;, &#39;XY&#39;]``</span>
+
 
 <span class="sd">*--Optional--*</span>
 
-<span class="sd">- **bbq_filtering_method** *(str)*:Filtering method for the bbq to use. &#39;cut&#39; cuts around a given tune,</span>
-<span class="sd">  &#39;minmax&#39; lets you specify the limits and &#39;outliers&#39; uses the outlier filtering from utils.</span>
+<span class="sd">- **bbq_filtering_method** *(str)*:</span>
 
-<span class="sd">  Choices: ``[&#39;cut&#39;, &#39;minmax&#39;, &#39;outliers&#39;]``</span>
-<span class="sd">  Default: ``outliers``</span>
-<span class="sd">- **bbq_in**: Fill number of desired data to extract from ``Timber`` (requires installing with the [cern]</span>
-<span class="sd">  extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string &#39;kick&#39; to use the</span>
-<span class="sd">  timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.</span>
+<span class="sd">    Filtering method for the bbq to use. &#39;cut&#39; cuts around a given tune,</span>
+<span class="sd">    &#39;minmax&#39; lets you specify the limits and &#39;outliers&#39; uses the outlier</span>
+<span class="sd">    filtering from utils.</span>
 
-<span class="sd">- **debug**: Activates Debug mode</span>
+<span class="sd">    choices: ``[&#39;cut&#39;, &#39;minmax&#39;, &#39;outliers&#39;]``</span>
 
-<span class="sd">  Action: ``store_true``</span>
-<span class="sd">- **detuning_order** *(int)*: Order of the detuning as int. Basically just the order of the applied fit.</span>
+<span class="sd">    default: ``outliers``</span>
 
-<span class="sd">  Default: ``1``</span>
-<span class="sd">- **fine_cut** *(float)*: Cut, i.e. tolerance, of the tune (fine cleaning for &#39;minmax&#39; or &#39;cut&#39;).</span>
 
-<span class="sd">- **fine_window** *(int)*: Length of the moving average window, i.e # data points (fine cleaning for &#39;minmax&#39; or &#39;cut&#39;).</span>
+<span class="sd">- **bbq_in** *(UnionPathStrInt)*:</span>
 
-<span class="sd">- **label** *(str)*: Label to identify this run.</span>
+<span class="sd">    Fill number of desired data to extract from timber or path to presaved</span>
+<span class="sd">    bbq-tfs-file. Use the string &#39;kick&#39; to use the timestamps in the</span>
+<span class="sd">    kickfile for timber extraction. Not giving this parameter skips bbq</span>
+<span class="sd">    compensation.</span>
 
-<span class="sd">- **logfile** *(str)*: Logfile if debug mode is active.</span>
 
-<span class="sd">- **outlier_limit** *(float)*: Limit, i.e. cut, on outliers (Method &#39;outliers&#39;)</span>
+<span class="sd">- **detuning_order** *(int)*:</span>
 
-<span class="sd">  Default: ``0.0002``</span>
-<span class="sd">- **output** *(str)*: Output directory for the modified kickfile and bbq data.</span>
+<span class="sd">    Order of the detuning as int. Basically just the order of the applied</span>
+<span class="sd">    fit.</span>
 
-<span class="sd">- **tune_cut** *(float)*: Cuts for the tune. For BBQ cleaning (Method &#39;cut&#39;).</span>
+<span class="sd">    default: ``1``</span>
 
-<span class="sd">- **tunes** *(float)*: Tunes for BBQ cleaning (Method &#39;cut&#39;).</span>
 
-<span class="sd">- **tunes_minmax** *(float)*: Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For BBQ cleaning (Method &#39;minmax&#39;).</span>
+<span class="sd">- **fine_cut** *(float)*:</span>
 
-<span class="sd">- **window_length** *(int)*: Length of the moving average window. (# data points)</span>
+<span class="sd">    Cut, i.e. tolerance, of the tune (fine cleaning for &#39;minmax&#39; or</span>
+<span class="sd">    &#39;cut&#39;).</span>
 
-<span class="sd">  Default: ``20``</span>
+
+<span class="sd">- **fine_window** *(int)*:</span>
+
+<span class="sd">    Length of the moving average window, i.e the number of data points</span>
+<span class="sd">    (fine cleaning for &#39;minmax&#39; or &#39;cut&#39;).</span>
+
+
+<span class="sd">- **label** *(str)*:</span>
+
+<span class="sd">    Label to identify this run.</span>
+
+
+<span class="sd">- **outlier_limit** *(float)*:</span>
+
+<span class="sd">    Limit, i.e. cut, on outliers (Method &#39;outliers&#39;)</span>
+
+<span class="sd">    default: ``0.0002``</span>
+
+
+<span class="sd">- **output** *(PathOrStr)*:</span>
+
+<span class="sd">    Output directory for the modified kickfile and bbq data.</span>
+
+
+<span class="sd">- **tune_cut** *(float)*:</span>
+
+<span class="sd">    Cuts for the tune. For BBQ cleaning (Method &#39;cut&#39;).</span>
+
+
+<span class="sd">- **tunes** *(float)*:</span>
+
+<span class="sd">    Tunes for BBQ cleaning (Method &#39;cut&#39;).</span>
+
+
+<span class="sd">- **tunes_minmax** *(float)*:</span>
+
+<span class="sd">    Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For</span>
+<span class="sd">    BBQ cleaning (Method &#39;minmax&#39;).</span>
+
+
+<span class="sd">- **window_length** *(int)*:</span>
+
+<span class="sd">    Length of the moving average window. (# data points)</span>
+
+<span class="sd">    default: ``20``</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
 <span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">save_options_to_config</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
 <span class="kn">from</span> <span class="nn">tfs.frame</span> <span class="kn">import</span> <span class="n">TfsDataFrame</span>
 
 <span class="kn">from</span> <span class="nn">omc3.definitions</span> <span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">fitting_tools</span><span class="p">,</span> <span class="n">kick_file_modifiers</span><span class="p">,</span> <span class="n">timber_extract</span>
+<span class="kn">from</span> <span class="nn">omc3.tune_analysis.bbq_tools</span> <span class="kn">import</span> <span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis.constants</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_bbq_col</span><span class="p">,</span>
     <span class="n">get_bbq_out_name</span><span class="p">,</span>
     <span class="n">get_kick_out_name</span><span class="p">,</span>
     <span class="n">get_mav_col</span><span class="p">,</span>
-    <span class="n">get_timber_bbq_key</span><span class="p">,</span>
+    <span class="n">get_timber_bbq_key</span><span class="p">,</span> <span class="n">INPUT_KICK</span><span class="p">,</span> <span class="n">INPUT_PREVIOUS</span><span class="p">,</span> <span class="n">CORRECTED</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis.kick_file_modifiers</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">read_timed_dataframe</span><span class="p">,</span>
     <span class="n">read_two_kick_files_from_folder</span><span class="p">,</span>
-    <span class="n">write_timed_dataframe</span><span class="p">,</span>
+    <span class="n">write_timed_dataframe</span><span class="p">,</span> <span class="n">AmpDetData</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.logging_tools</span> <span class="kn">import</span> <span class="n">DebugMode</span><span class="p">,</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">list2str</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">UnionPathStrInt</span><span class="p">,</span> <span class="n">save_config</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.logging_tools</span> <span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">list2str</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.time_tools</span> <span class="kn">import</span> <span class="n">CERNDatetime</span>
 
 <span class="c1"># Globals ----------------------------------------------------------------------</span>
@@ -295,6 +352,12 @@
 <span class="n">DTIME</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">120</span>  <span class="c1"># extra seconds to add to kick times window when extracting from timber</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">FILTER_OPTS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">cut</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;window_length&quot;</span><span class="p">,</span> <span class="s2">&quot;tunes&quot;</span><span class="p">,</span> <span class="s2">&quot;tune_cut&quot;</span><span class="p">),</span>  <span class="c1"># &quot;fine_window&quot;, &quot;fine_cut&quot;</span>
+    <span class="n">minmax</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;window_length&quot;</span><span class="p">,</span> <span class="s2">&quot;tunes_minmax&quot;</span><span class="p">,</span> <span class="p">),</span>  <span class="c1"># &quot;fine_window&quot;, &quot;fine_cut&quot;</span>
+    <span class="n">outliers</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;window_length&quot;</span><span class="p">,</span> <span class="s2">&quot;outlier_limit&quot;</span><span class="p">),</span>
+<span class="p">)</span>
 
 
 <span class="c1"># Get Parameters ---------------------------------------------------------------</span>
@@ -309,13 +372,13 @@
         <span class="p">),</span>
         <span class="n">kick</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Location of the kick files (parent folder).&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">plane</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plane of the kicks. &#39;X&#39; or &#39;Y&#39;.&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plane of the kicks. &#39;X&#39; or &#39;Y&#39; or &#39;XY&#39;.&quot;</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="n">PLANES</span><span class="p">,</span>
+            <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)],</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">label</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
@@ -323,9 +386,11 @@
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">bbq_in</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Fill number of desired data to extract from timber  or path to presaved bbq-tfs-file. &quot;</span>
-            <span class="s2">&quot;Use the string &#39;kick&#39; to use the timestamps in the kickfile for timber extraction. &quot;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Fill number of desired data to extract from timber or path to presaved bbq-tfs-file. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Use the string &#39;</span><span class="si">{</span><span class="n">INPUT_KICK</span><span class="si">}</span><span class="s2">&#39; to use the timestamps in the kickfile for timber extraction. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Use the string &#39;</span><span class="si">{</span><span class="n">INPUT_PREVIOUS</span><span class="si">}</span><span class="s2">&#39; to look for the modified ampdet kick-file from a previous run. &quot;</span>
             <span class="s2">&quot;Not giving this parameter skips bbq compensation.&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">UnionPathStrInt</span>
         <span class="p">),</span>
         <span class="n">detuning_order</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Order of the detuning as int. Basically just the order of the applied fit.&quot;</span><span class="p">,</span>
@@ -334,7 +399,7 @@
         <span class="p">),</span>
         <span class="n">output</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory for the modified kickfile and bbq data.&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">window_length</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Length of the moving average window. (# data points)&quot;</span><span class="p">,</span>
@@ -345,7 +410,7 @@
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Filtering method for the bbq to use. &#39;cut&#39; cuts around a given tune, &#39;minmax&#39; lets you &quot;</span>
             <span class="s2">&quot;specify the limits and &#39;outliers&#39; uses the outlier filtering from utils.&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cut&quot;</span><span class="p">,</span> <span class="s2">&quot;minmax&quot;</span><span class="p">,</span> <span class="s2">&quot;outliers&quot;</span><span class="p">],</span>
+            <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">FILTER_OPTS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
             <span class="n">default</span><span class="o">=</span><span class="s2">&quot;outliers&quot;</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="c1"># Filtering method outliers</span>
@@ -399,72 +464,153 @@
     <span class="n">_save_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
 
     <span class="n">opt</span><span class="p">,</span> <span class="n">filter_opt</span> <span class="o">=</span> <span class="n">_check_analyse_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
-
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting data from kick files&quot;</span><span class="p">)</span>
-    <span class="n">kick_df</span> <span class="o">=</span> <span class="n">read_two_kick_files_from_folder</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">kick</span><span class="p">)</span>
-    <span class="n">bbq_df</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">_get_bbq_data</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span><span class="p">,</span> <span class="n">kick_df</span><span class="p">)</span>
-        <span class="n">x_interval</span> <span class="o">=</span> <span class="n">get_approx_bbq_interval</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">,</span> <span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">window_length</span><span class="p">)</span>
-
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding moving average data to kick data&quot;</span><span class="p">)</span>
-        <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_moving_average</span><span class="p">(</span><span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">)</span>
-
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding corrected natural tunes and stdev to kick data&quot;</span><span class="p">)</span>
-        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kick_df</span><span class="p">)</span>
-        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_total_natq_std</span><span class="p">(</span><span class="n">kick_df</span><span class="p">)</span>
+    <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">get_kick_and_bbq_df</span><span class="p">(</span><span class="n">kick</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">kick</span><span class="p">,</span> <span class="n">bbq_in</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span><span class="p">,</span>
+                                          <span class="n">beam</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">=</span><span class="n">filter_opt</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 
     <span class="n">kick_plane</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">plane</span>
 
-    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Performing amplitude detuning odr&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">tune_plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">corrected</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">corrected</span> <span class="ow">and</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">continue</span>
+    <span class="k">for</span> <span class="n">corrected</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">+</span> <span class="n">_should_do_corrected</span><span class="p">(</span><span class="n">kick_df</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">kick_plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="n">kick_df</span> <span class="o">=</span> <span class="n">single_action_analysis</span><span class="p">(</span><span class="n">kick_df</span><span class="p">,</span> <span class="n">kick_plane</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">detuning_order</span><span class="p">,</span> <span class="n">corrected</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kick_df</span> <span class="o">=</span> <span class="n">double_action_analysis</span><span class="p">(</span><span class="n">kick_df</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">detuning_order</span><span class="p">,</span> <span class="n">corrected</span><span class="p">)</span>
 
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting ampdet data&quot;</span><span class="p">)</span>
-            <span class="n">data_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">get_ampdet_data</span><span class="p">(</span>
-                <span class="n">kick_df</span><span class="p">,</span> <span class="n">kick_plane</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">,</span> <span class="n">corrected</span><span class="o">=</span><span class="n">corrected</span>
-            <span class="p">)</span>
-
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fitting ODR to kick data&quot;</span><span class="p">)</span>
-            <span class="n">odr_fit</span> <span class="o">=</span> <span class="n">fitting_tools</span><span class="o">.</span><span class="n">do_odr</span><span class="p">(</span>
-                <span class="n">x</span><span class="o">=</span><span class="n">data_df</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">],</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">data_df</span><span class="p">[</span><span class="s2">&quot;tune&quot;</span><span class="p">],</span>
-                <span class="n">xerr</span><span class="o">=</span><span class="n">data_df</span><span class="p">[</span><span class="s2">&quot;action_err&quot;</span><span class="p">],</span>
-                <span class="n">yerr</span><span class="o">=</span><span class="n">data_df</span><span class="p">[</span><span class="s2">&quot;tune_err&quot;</span><span class="p">],</span>
-                <span class="n">order</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">detuning_order</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_odr</span><span class="p">(</span>
-                <span class="n">kick_df</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">,</span> <span class="n">kick_plane</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">,</span> <span class="n">corrected</span><span class="o">=</span><span class="n">corrected</span>
-            <span class="p">)</span>
-
-    <span class="c1"># output kick and bbq data</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing kick and BBQ data to files in directory &#39;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing kick data to file in directory &#39;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">write_timed_dataframe</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span> <span class="o">/</span> <span class="n">get_kick_out_name</span><span class="p">(),</span> <span class="n">kick_df</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">bbq_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">write_timed_dataframe</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span> <span class="o">/</span> <span class="n">get_bbq_out_name</span><span class="p">(),</span> <span class="n">bbq_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x_interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="n">x_interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
     <span class="k">return</span> <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span></div>
 
 
+<div class="viewcode-block" id="get_kick_and_bbq_df"><a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.get_kick_and_bbq_df">[docs]</a><span class="k">def</span> <span class="nf">get_kick_and_bbq_df</span><span class="p">(</span><span class="n">kick</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">bbq_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+                        <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filter_opt</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Load the input data.&quot;&quot;&quot;</span>
+    <span class="n">bbq_df</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">bbq_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bbq_in</span> <span class="o">==</span> <span class="n">INPUT_PREVIOUS</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting data from previous ampdet kick file&quot;</span><span class="p">)</span>
+        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">kick</span><span class="p">)</span> <span class="o">/</span> <span class="n">get_kick_out_name</span><span class="p">())</span>
+        <span class="n">kick_df</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kick_df</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ODR_&quot;</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting data from kick files&quot;</span><span class="p">)</span>
+        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">read_two_kick_files_from_folder</span><span class="p">(</span><span class="n">kick</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bbq_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">_get_bbq_data</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">bbq_in</span><span class="p">,</span> <span class="n">kick_df</span><span class="p">)</span>
+
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding moving average data to kick data&quot;</span><span class="p">)</span>
+            <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_moving_average</span><span class="p">(</span><span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">)</span>
+
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding corrected natural tunes and stdev to kick data&quot;</span><span class="p">)</span>
+            <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kick_df</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing BBQ data to file in directory &#39;</span><span class="si">{</span><span class="n">output</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">window</span> <span class="o">=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">window</span> <span class="o">=</span> <span class="n">filter_opt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">window</span>
+
+                <span class="n">x_interval</span> <span class="o">=</span> <span class="n">get_approx_bbq_interval</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">,</span> <span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+                <span class="n">write_timed_dataframe</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="n">get_bbq_out_name</span><span class="p">(),</span> <span class="n">bbq_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x_interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">x_interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span></div>
+
+
+<div class="viewcode-block" id="single_action_analysis"><a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.single_action_analysis">[docs]</a><span class="k">def</span> <span class="nf">single_action_analysis</span><span class="p">(</span><span class="n">kick_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">kick_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">detuning_order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+                           <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Performs the fit one action and tune pane at a time.&quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performing amplitude detuning ODR for single-plane kicks in </span><span class="si">{</span><span class="n">kick_plane</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">tune_plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting ampdet data&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">get_ampdet_data</span><span class="p">(</span>
+            <span class="n">kickac_df</span><span class="o">=</span><span class="n">kick_df</span><span class="p">,</span>
+            <span class="n">action_plane</span><span class="o">=</span><span class="n">kick_plane</span><span class="p">,</span>
+            <span class="n">tune_plane</span><span class="o">=</span><span class="n">tune_plane</span><span class="p">,</span>
+            <span class="n">corrected</span><span class="o">=</span><span class="n">corrected</span>
+        <span class="p">)</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fitting ODR to kick data&quot;</span><span class="p">)</span>
+        <span class="n">odr_fit</span> <span class="o">=</span> <span class="n">fitting_tools</span><span class="o">.</span><span class="n">do_odr</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">action</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">tune</span><span class="p">,</span>
+            <span class="n">xerr</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">action_err</span><span class="p">,</span>
+            <span class="n">yerr</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">tune_err</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">detuning_order</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_odr</span><span class="p">(</span>
+            <span class="n">kickac_df</span><span class="o">=</span><span class="n">kick_df</span><span class="p">,</span>
+            <span class="n">odr_fit</span><span class="o">=</span><span class="n">odr_fit</span><span class="p">,</span>
+            <span class="n">action_plane</span><span class="o">=</span><span class="n">kick_plane</span><span class="p">,</span>
+            <span class="n">tune_plane</span><span class="o">=</span><span class="n">tune_plane</span><span class="p">,</span>
+            <span class="n">corrected</span><span class="o">=</span><span class="n">corrected</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">kick_df</span></div>
+
+
+<div class="viewcode-block" id="double_action_analysis"><a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.double_action_analysis">[docs]</a><span class="k">def</span> <span class="nf">double_action_analysis</span><span class="p">(</span><span class="n">kick_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">detuning_order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+                           <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Performs the full 2D/4D fitting of the data.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">detuning_order</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2D Analysis for detuning order </span><span class="si">{</span><span class="n">detuning_order</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> is not implemented &quot;</span>
+                                  <span class="sa">f</span><span class="s2">&quot;(only first order so far).&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Performing amplitude detuning ODR for diagonal kicks.&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># get all action arrays and all tune arrays, unfolded below</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting action and tune data for plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">get_ampdet_data</span><span class="p">(</span>
+            <span class="n">kickac_df</span><span class="o">=</span><span class="n">kick_df</span><span class="p">,</span>
+            <span class="n">action_plane</span><span class="o">=</span><span class="n">plane</span><span class="p">,</span>
+            <span class="n">tune_plane</span><span class="o">=</span><span class="n">plane</span><span class="p">,</span>
+            <span class="n">corrected</span><span class="o">=</span><span class="n">corrected</span><span class="p">,</span>
+            <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># so that they still have the same lengths</span>
+        <span class="p">)</span>
+
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fitting ODR to kick data&quot;</span><span class="p">)</span>
+    <span class="n">odr_fits</span> <span class="o">=</span> <span class="n">fitting_tools</span><span class="o">.</span><span class="n">do_2d_kicks_odr</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">_get_ampdet_data_as_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">),</span>  <span class="c1"># gets [2Jx, 2Jy]</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">_get_ampdet_data_as_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;tune&quot;</span><span class="p">),</span>  <span class="c1"># gets [Qx, Qy]</span>
+        <span class="n">xerr</span><span class="o">=</span><span class="n">_get_ampdet_data_as_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;action_err&quot;</span><span class="p">),</span>
+        <span class="n">yerr</span><span class="o">=</span><span class="n">_get_ampdet_data_as_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;tune_err&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># add the fits to the kick header</span>
+    <span class="k">for</span> <span class="n">t_plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k_plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_odr</span><span class="p">(</span>
+                <span class="n">kickac_df</span><span class="o">=</span><span class="n">kick_df</span><span class="p">,</span>
+                <span class="n">odr_fit</span><span class="o">=</span><span class="n">odr_fits</span><span class="p">[</span><span class="n">t_plane</span><span class="p">][</span><span class="n">k_plane</span><span class="p">],</span>
+                <span class="n">action_plane</span><span class="o">=</span><span class="n">k_plane</span><span class="p">,</span>
+                <span class="n">tune_plane</span><span class="o">=</span><span class="n">t_plane</span><span class="p">,</span>
+                <span class="n">corrected</span><span class="o">=</span><span class="n">corrected</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">kick_df</span></div>
+
+
 <div class="viewcode-block" id="get_approx_bbq_interval"><a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.get_approx_bbq_interval">[docs]</a><span class="k">def</span> <span class="nf">get_approx_bbq_interval</span><span class="p">(</span>
-    <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">time_array</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CERNDatetime</span><span class="p">],</span> <span class="n">window_length</span><span class="p">:</span> <span class="nb">int</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">CERNDatetime</span><span class="p">,</span> <span class="n">CERNDatetime</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get approximate start and end times for averaging, based on window length and kick interval.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">time_array</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CERNDatetime</span><span class="p">],</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">CERNDatetime</span><span class="p">,</span> <span class="n">CERNDatetime</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Get approximate start and end times for averaging, based on window length and kick interval.&quot;&quot;&quot;</span>
     <span class="n">bbq_tmp</span> <span class="o">=</span> <span class="n">bbq_df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 
     <span class="c1"># convert to float to use math-comparisons</span>
-    <span class="n">ts_index</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">get_timestamp_index</span><span class="p">(</span><span class="n">bbq_tmp</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-    <span class="n">ts_start</span><span class="p">,</span> <span class="n">ts_end</span> <span class="o">=</span> <span class="n">time_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(),</span> <span class="n">time_array</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+    <span class="n">ts_bbq_index</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">get_timestamp_index</span><span class="p">(</span><span class="n">bbq_tmp</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">ts_kick_index</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">get_timestamp_index</span><span class="p">(</span><span class="n">time_array</span><span class="p">)</span>
+    <span class="n">ts_start</span><span class="p">,</span> <span class="n">ts_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ts_kick_index</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">ts_kick_index</span><span class="p">)</span>
 
-    <span class="n">i_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ts_index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">ts_start</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">i_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ts_index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">ts_end</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts_index</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ts_bbq_min</span><span class="p">,</span> <span class="n">ts_bbq_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ts_bbq_index</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">ts_bbq_index</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ts_bbq_min</span> <span class="o">&lt;=</span> <span class="n">ts_start</span> <span class="o">&lt;=</span> <span class="n">ts_bbq_max</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The starting time of the kicks lies outside of the given BBQ times.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ts_bbq_min</span> <span class="o">&lt;=</span> <span class="n">ts_end</span> <span class="o">&lt;=</span> <span class="n">ts_bbq_max</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The end time of the kicks lies outside of the given BBQ times.&quot;</span><span class="p">)</span>
+
+    <span class="n">i_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ts_bbq_index</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">([</span><span class="n">ts_start</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">window</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">i_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ts_bbq_index</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">([</span><span class="n">ts_end</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">window</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts_bbq_index</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">bbq_tmp</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">i_start</span><span class="p">],</span> <span class="n">bbq_tmp</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">i_end</span><span class="p">]</span></div>
 
@@ -481,40 +627,51 @@
         <span class="n">opt</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Amplitude Detuning for Beam </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">filter_opt</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span> <span class="o">!=</span> <span class="n">INPUT_PREVIOUS</span><span class="p">):</span>
         <span class="c1"># check if cleaning is properly specified</span>
-        <span class="n">all_filter_opt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">cut</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;bbq_filtering_method&quot;</span><span class="p">,</span> <span class="s2">&quot;window_length&quot;</span><span class="p">,</span> <span class="s2">&quot;tunes&quot;</span><span class="p">,</span> <span class="s2">&quot;tune_cut&quot;</span><span class="p">,</span> <span class="s2">&quot;fine_window&quot;</span><span class="p">,</span> <span class="s2">&quot;fine_cut&quot;</span><span class="p">]</span>
-            <span class="p">),</span>
-            <span class="n">minmax</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;bbq_filtering_method&quot;</span><span class="p">,</span> <span class="s2">&quot;window_length&quot;</span><span class="p">,</span> <span class="s2">&quot;tunes_minmax&quot;</span><span class="p">,</span> <span class="s2">&quot;fine_window&quot;</span><span class="p">,</span> <span class="s2">&quot;fine_cut&quot;</span><span class="p">]</span>
-            <span class="p">),</span>
-            <span class="n">outliers</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s2">&quot;bbq_filtering_method&quot;</span><span class="p">,</span> <span class="s2">&quot;window_length&quot;</span><span class="p">,</span> <span class="s2">&quot;outlier_limit&quot;</span><span class="p">]),</span>
-        <span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_filtering_method</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please choose a filtering method for the BBQ data from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">FILTER_OPTS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">all_filter_opt</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_filtering_method</span> <span class="o">==</span> <span class="n">method</span><span class="p">:</span>
-                <span class="n">missing_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">missing_params</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Missing parameters for cleaning method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">: &#39;</span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">missing_params</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-                    <span class="p">)</span>
-                <span class="n">filter_opt</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="n">missing_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">FILTER_OPTS</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="k">if</span> <span class="n">opt</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">missing_params</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Missing parameters for cleaning method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">: &#39;</span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">missing_params</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">bbq_filtering_method</span> <span class="o">==</span> <span class="s2">&quot;cut&quot;</span><span class="p">:</span>
-            <span class="n">filter_opt</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;tunes_minmax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">minmax</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">tunes</span> <span class="k">for</span> <span class="n">minmax</span> <span class="ow">in</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">opt</span><span class="o">.</span><span class="n">tune_cut</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">tune_cut</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="n">filter_opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tune_cut&quot;</span><span class="p">)</span>
-            <span class="n">filter_opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tunes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s2">&quot;To activate fine cleaning, both fine cut and fine window need to be specified&quot;</span>
+            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">bbq_filtering_method</span> <span class="o">!=</span> <span class="s2">&quot;outliers&quot;</span><span class="p">:</span>
-            <span class="c1"># check fine cleaning</span>
-            <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                    <span class="s2">&quot;To activate fine cleaning, both fine cut and fine window need to be specified&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;outliers&quot;</span><span class="p">:</span>
+            <span class="n">filter_opt</span> <span class="o">=</span> <span class="n">OutlierFilterOpt</span><span class="p">(</span>
+                    <span class="n">window</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">window_length</span><span class="p">,</span>
+                    <span class="n">limit</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">outlier_limit</span>
+               <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;minmax&quot;</span><span class="p">:</span>
+            <span class="n">filter_opt</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">MinMaxFilterOpt</span><span class="p">(</span>
+                    <span class="n">window</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">window_length</span><span class="p">,</span>
+                    <span class="nb">min</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">tunes_minmax</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
+                    <span class="nb">max</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">tunes_minmax</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">fine_window</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">,</span>
+                    <span class="n">fine_cut</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">,</span>
                 <span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filter_opt</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">MinMaxFilterOpt</span><span class="p">(</span>
+                    <span class="n">window</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">window_length</span><span class="p">,</span>
+                    <span class="nb">min</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">tunes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">opt</span><span class="o">.</span><span class="n">tune_cut</span><span class="p">,</span>
+                    <span class="nb">max</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">tunes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">tune_cut</span><span class="p">,</span>
+                    <span class="n">fine_window</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">,</span>
+                    <span class="n">fine_cut</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="p">]</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">opt</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
@@ -522,7 +679,7 @@
     <span class="k">return</span> <span class="n">opt</span><span class="p">,</span> <span class="n">filter_opt</span>
 
 
-<span class="k">def</span> <span class="nf">_get_bbq_data</span><span class="p">(</span><span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">input_</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">kick_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_bbq_data</span><span class="p">(</span><span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">input_</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">kick_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return BBQ data from input, either file or timber fill, as a ``TfsDataFrame``.</span>
 
@@ -531,8 +688,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">fill_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># input_ is a file name or the string &#39;kick&#39;</span>
-        <span class="k">if</span> <span class="n">input_</span> <span class="o">==</span> <span class="s2">&quot;kick&quot;</span><span class="p">:</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># input_ is a file name or the string &#39;kick&#39;</span>
+        <span class="k">if</span> <span class="n">input_</span> <span class="o">==</span> <span class="n">INPUT_KICK</span><span class="p">:</span>
             <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting timber data from kick times&quot;</span><span class="p">)</span>
             <span class="n">timber_keys</span><span class="p">,</span> <span class="n">bbq_cols</span> <span class="o">=</span> <span class="n">_get_timber_keys_and_bbq_columns</span><span class="p">(</span><span class="n">beam</span><span class="p">)</span>
             <span class="n">t_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
@@ -541,9 +698,11 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">timber_extract</span><span class="o">.</span><span class="n">extract_between_times</span><span class="p">(</span>
                 <span class="n">t_start</span> <span class="o">-</span> <span class="n">t_delta</span><span class="p">,</span> <span class="n">t_end</span> <span class="o">+</span> <span class="n">t_delta</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">timber_keys</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">timber_keys</span><span class="p">,</span> <span class="n">bbq_cols</span><span class="p">))</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># input_ is a file name</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting bbq data from file &#39;</span><span class="si">{</span><span class="n">input_</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># input_ is a file name or path</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting bbq data from file &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No entries in </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="c1">#  Drop old moving average columns as these will be computed again later</span>
             <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="n">get_mav_col</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PLANES</span> <span class="k">if</span> <span class="n">get_mav_col</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
 
@@ -562,12 +721,26 @@
     <span class="k">return</span> <span class="n">keys</span><span class="p">,</span> <span class="n">cols</span>
 
 
+<span class="k">def</span> <span class="nf">_should_do_corrected</span><span class="p">(</span><span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_in</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">bbq_in</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">bbq_in</span> <span class="o">==</span> <span class="n">INPUT_PREVIOUS</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">CORRECTED</span> <span class="ow">in</span> <span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">kick_df</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+
+
 <span class="k">def</span> <span class="nf">_save_options</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">save_options_to_config</span><span class="p">(</span>
-            <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">)</span> <span class="o">/</span> <span class="n">formats</span><span class="o">.</span><span class="n">get_config_filename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
-        <span class="p">)</span>
+        <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">),</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_ampdet_data_as_array</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">AmpDetData</span><span class="p">],</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Returns a matrix with number of rows as entries in data,</span>
+<span class="sd">    each containing the values from the given column of the AmpDetData.</span>
+<span class="sd">    e.g. [[Jx0, Jx1, Jx2, ....]</span>
+<span class="sd">          [Jy0, Jy1, Jy2, ....]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
 
 
 <span class="c1"># Script Mode ##################################################################</span>

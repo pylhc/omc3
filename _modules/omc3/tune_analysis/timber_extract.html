@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tune_analysis.timber_extract &mdash; omc3 0.3.0 documentation</title>
+  <title>omc3.tune_analysis.timber_extract &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -14,6 +14,7 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -29,7 +30,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -285,6 +286,7 @@
 
     <span class="c1"># Attempt getting data from NXCALS, which can sometimes need a few retries (yay NXCALS)</span>
     <span class="c1"># If Java gives a feign.RetryableException, retry up to MAX_RETRIES times.</span>
+    <span class="n">extract_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">tries</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_RETRIES</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># We use timestamps to avoid any confusion with local time</span>
@@ -300,6 +302,16 @@
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Could not get data from timber!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">java_exception</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">break</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">extract_dict</span><span class="p">)</span>  <span class="c1"># dict is empty</span>
+            <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">extract_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>  <span class="c1"># values are empty</span>
+            <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">extract_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>  <span class="c1"># arrays are empty (size 2 for time/data)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variables </span><span class="si">{</span><span class="n">keys</span><span class="si">}</span><span class="s2"> found but no data extracted in time </span><span class="si">{</span><span class="n">t_start</span><span class="o">.</span><span class="n">utc_string</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">t_end</span><span class="o">.</span><span class="n">utc_string</span><span class="si">}</span><span class="s2"> (UTC).</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;Possible reasons:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;  - Too small time window.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;  - Old pytimber version.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;  - Variable outdated (i.e. no longer logged).&quot;</span><span class="p">)</span>
 
     <span class="n">out_df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.logging_tools &mdash; omc3 0.3.0 documentation</title>
+  <title>omc3.utils.logging_tools &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -14,6 +14,7 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -29,7 +30,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -214,6 +215,7 @@
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">NOTSET</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>  <span class="c1"># make them available directly</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">DIVIDER</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span>
@@ -406,16 +408,22 @@
 
 <div class="viewcode-block" id="odr_pprint"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.odr_pprint">[docs]</a><span class="k">def</span> <span class="nf">odr_pprint</span><span class="p">(</span><span class="n">printer</span><span class="p">,</span> <span class="n">odr_out</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Logs the odr output results. Adapted from odr_output pretty print.&quot;&quot;&quot;</span>
-    <span class="n">printer</span><span class="p">(</span><span class="s1">&#39;ODR-Summary:&#39;</span><span class="p">)</span>
-    <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Beta: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Beta Std Error: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">sd_beta</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Beta Covariance: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">cov_beta</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">old_opts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">get_printoptions</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">covariance_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">odr_out</span><span class="o">.</span><span class="n">cov_beta</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="n">odr_str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">ODR-Summary:</span><span class="se">\n</span><span class="s1">&#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;  Beta: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;  Beta Std Error: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">sd_beta</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;  Beta Covariance: </span><span class="si">{</span><span class="n">covariance_str</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+               <span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">odr_out</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">):</span>
-        <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Residual Variance: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">res_var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Inverse Condition #: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">inv_condnum</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Reason(s) for Halting:&#39;</span><span class="p">)</span>
+        <span class="n">odr_str</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  Residual Variance: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">res_var</span><span class="si">:</span><span class="s1">.2e</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;  Inverse Condition #: </span><span class="si">{</span><span class="n">odr_out</span><span class="o">.</span><span class="n">inv_condnum</span><span class="si">:</span><span class="s1">.2e</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;  Reason(s) for Halting:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">odr_out</span><span class="o">.</span><span class="n">stopreason</span><span class="p">:</span>
-            <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;    </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+            <span class="n">odr_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;    </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="n">printer</span><span class="p">(</span><span class="n">odr_str</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="o">**</span><span class="n">old_opts</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="list2str"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.list2str">[docs]</a><span class="k">def</span> <span class="nf">list2str</span><span class="p">(</span><span class="n">list_</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harpy &mdash; omc3 0.3.0 documentation</title>
+  <title>Harpy &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -32,7 +33,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -200,9 +201,9 @@
            <div itemprop="articleBody">
              
   <section id="module-omc3.harpy.clean">
-<span id="harpy"></span><h1>Harpy<a class="headerlink" href="#module-omc3.harpy.clean" title="Permalink to this headline"></a></h1>
+<span id="harpy"></span><h1>Harpy<a class="headerlink" href="#module-omc3.harpy.clean" title="Permalink to this heading"></a></h1>
 <section id="clean">
-<h2>Clean<a class="headerlink" href="#clean" title="Permalink to this headline"></a></h2>
+<h2>Clean<a class="headerlink" href="#clean" title="Permalink to this heading"></a></h2>
 <p>This module contains the cleaning functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.harpy.clean.clean">
@@ -248,11 +249,11 @@ and the U matrix mask for cleaned elements.</p>
 
 </section>
 <span class="target" id="module-omc3.harpy.constants"></span><section id="constants">
-<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline"></a></h2>
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this heading"></a></h2>
 <p>Specific constants to be used in <code class="docutils literal notranslate"><span class="pre">harpy</span></code>, to help with consistency.</p>
 </section>
 <span class="target" id="module-omc3.harpy.frequency"></span><section id="frequency">
-<h2>Frequency<a class="headerlink" href="#frequency" title="Permalink to this headline"></a></h2>
+<h2>Frequency<a class="headerlink" href="#frequency" title="Permalink to this heading"></a></h2>
 <p>This module contains the frequency calculations related functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.</p>
 <p>It provides functions to calculate the frequency spectra of turn-by-turn data.
 This calculation is done using a combination of SVD decomposition zero_padded <cite>fft</cite> to speed up the
@@ -260,7 +261,7 @@ analysis.
 Also searches for resonances in the calculated spectra.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.harpy.frequency.clean_by_tune">
-<span class="sig-prename descclassname"><span class="pre">omc3.harpy.frequency.</span></span><span class="sig-name descname"><span class="pre">clean_by_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.series.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_clean_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Number</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#clean_by_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.harpy.frequency.clean_by_tune" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.harpy.frequency.</span></span><span class="sig-name descname"><span class="pre">clean_by_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_clean_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/harpy/frequency.html#clean_by_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.harpy.frequency.clean_by_tune" title="Permalink to this definition"></a></dt>
 <dd><p>Looks for outliers in the tunes pandas Series and returns their indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -390,7 +391,7 @@ main lobe, also decreasing spectral leakage in closest lobes):
 
 </section>
 <span class="target" id="module-omc3.harpy.handler"></span><section id="handler">
-<h2>Handler<a class="headerlink" href="#handler" title="Permalink to this headline"></a></h2>
+<h2>Handler<a class="headerlink" href="#handler" title="Permalink to this heading"></a></h2>
 <p>This module contains high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.
 Tools are provided to handle the cleaning, frequency analysis and resonance search for a
 single-bunch <cite>TbtData</cite>.</p>
@@ -413,7 +414,7 @@ single-bunch <cite>TbtData</cite>.</p>
 
 </section>
 <span class="target" id="module-omc3.harpy.kicker"></span><section id="kicker">
-<h2>Kicker<a class="headerlink" href="#kicker" title="Permalink to this headline"></a></h2>
+<h2>Kicker<a class="headerlink" href="#kicker" title="Permalink to this heading"></a></h2>
 <p>This module contains phase correction functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.
 It provides tools to correct phases of a main spectral line in a case where damped (exponentially
 decaying) oscillations are analysed.</p>

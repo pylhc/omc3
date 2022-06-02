@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.plot_bbq &mdash; omc3 0.3.0 documentation</title>
+  <title>omc3.plotting.plot_bbq &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -14,6 +14,7 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -29,7 +30,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -289,7 +290,7 @@
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_mav_window_header</span><span class="p">,</span> <span class="n">get_used_in_mav_col</span><span class="p">,</span>
                                           <span class="n">get_bbq_col</span><span class="p">,</span> <span class="n">get_mav_col</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">UnionPathStr</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">UnionPathStr</span><span class="p">,</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDataFrame</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -303,15 +304,17 @@
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;input&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;BBQ data as data frame or tfs file.&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;kick&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Kick file as data frame or tfs file.&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Save figure to this location.&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;show&quot;</span><span class="p">,</span>
@@ -364,7 +367,7 @@
     <span class="n">_save_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
     <span class="n">pstyle</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;plot_styles&quot;</span><span class="p">),</span> <span class="n">opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;manual_style&quot;</span><span class="p">))</span>
 
-    <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">kick_mod</span><span class="o">.</span><span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">opt</span><span class="o">.</span><span class="n">input</span>
+    <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">kick_mod</span><span class="o">.</span><span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">))</span> <span class="k">else</span> <span class="n">opt</span><span class="o">.</span><span class="n">input</span>
     <span class="n">opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">kick</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -375,7 +378,7 @@
         <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
             <span class="n">window</span> <span class="o">=</span> <span class="n">bbq_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">get_mav_window_header</span><span class="p">()]</span>
 
-        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_mod</span><span class="o">.</span><span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">kick</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">kick</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">opt</span><span class="o">.</span><span class="n">kick</span>
+        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_mod</span><span class="o">.</span><span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">kick</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">kick</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">))</span> <span class="k">else</span> <span class="n">opt</span><span class="o">.</span><span class="n">kick</span>
         <span class="n">opt</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">ad_ana</span><span class="o">.</span><span class="n">get_approx_bbq_interval</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">,</span> <span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
         <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">bbq_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">opt</span><span class="o">.</span><span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
     <span class="n">opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kick&quot;</span><span class="p">)</span>

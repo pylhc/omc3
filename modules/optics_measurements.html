@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optics Measurements &mdash; omc3 0.3.0 documentation</title>
+  <title>Optics Measurements &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -32,7 +33,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -200,9 +201,9 @@
            <div itemprop="articleBody">
              
   <section id="module-omc3.optics_measurements.measure_optics">
-<span id="optics-measurements"></span><h1>Optics Measurements<a class="headerlink" href="#module-omc3.optics_measurements.measure_optics" title="Permalink to this headline"></a></h1>
+<span id="optics-measurements"></span><h1>Optics Measurements<a class="headerlink" href="#module-omc3.optics_measurements.measure_optics" title="Permalink to this heading"></a></h1>
 <section id="measure-optics">
-<h2>Measure Optics<a class="headerlink" href="#measure-optics" title="Permalink to this headline"></a></h2>
+<h2>Measure Optics<a class="headerlink" href="#measure-optics" title="Permalink to this heading"></a></h2>
 <p>This module contains high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute various lattice optics parameters from frequency spectra.</p>
 <dl class="py class">
@@ -220,7 +221,7 @@ It provides functions to compute various lattice optics parameters from frequenc
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.dpps">
-<span class="sig-name descname"><span class="pre">dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.dpps" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.dpps" title="Permalink to this definition"></a></dt>
 <dd><p>Gathers measured DPPs from input files corresponding to given plane</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -251,7 +252,7 @@ It provides functions to compute various lattice optics parameters from frequenc
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.get_data">
-<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.get_data" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.get_data" title="Permalink to this definition"></a></dt>
 <dd><p>Returns data in columns of frame corresponding to column in original files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -322,7 +323,7 @@ default is <code class="docutils literal notranslate"><span class="pre">inner</s
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.beta_from_amplitude"></span><section id="beta-from-amplitude">
-<h2>Beta from Amplitude<a class="headerlink" href="#beta-from-amplitude" title="Permalink to this headline"></a></h2>
+<h2>Beta from Amplitude<a class="headerlink" href="#beta-from-amplitude" title="Permalink to this heading"></a></h2>
 <p>This module contains some of the beta calculation related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to calculate beta functions from amplitude data.</p>
 <dl class="py function">
@@ -346,7 +347,7 @@ It provides functions to calculate beta functions from amplitude data.</p>
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.beta_from_phase"></span><section id="beta-from-phase">
-<h2>Beta from Phase<a class="headerlink" href="#beta-from-phase" title="Permalink to this headline"></a></h2>
+<h2>Beta from Phase<a class="headerlink" href="#beta-from-phase" title="Permalink to this heading"></a></h2>
 <p>This module contains some of the beta calculation related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to calculate beta and alpha functions from phase advance data.</p>
 <dl class="py function">
@@ -538,23 +539,23 @@ form:</p>
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.chromatic"></span><section id="chromatic">
-<h2>Chromatic<a class="headerlink" href="#chromatic" title="Permalink to this headline"></a></h2>
+<h2>Chromatic<a class="headerlink" href="#chromatic" title="Permalink to this heading"></a></h2>
 <p>This module contains chromatic calculations functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute various chromatic beam properties.</p>
 </section>
 <span class="target" id="module-omc3.optics_measurements.constants"></span><section id="constants">
-<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline"></a></h2>
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this heading"></a></h2>
 <p>Specific constants to be used in optics_measurements, to help with consistency.</p>
 </section>
 <span class="target" id="module-omc3.optics_measurements.crdt"></span><section id="combined-rdts">
-<h2>Combined RDTs<a class="headerlink" href="#combined-rdts" title="Permalink to this headline"></a></h2>
+<h2>Combined RDTs<a class="headerlink" href="#combined-rdts" title="Permalink to this heading"></a></h2>
 <p>This module contains combined resonance driving terms calculations functionality of
 <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute combined resonance driving terms following the derivations in
 <a class="reference external" href="https://arxiv.org/pdf/1402.1461.pdf">https://arxiv.org/pdf/1402.1461.pdf</a>.</p>
 </section>
 <span class="target" id="module-omc3.optics_measurements.dispersion"></span><section id="dispersion">
-<h2>Dispersion<a class="headerlink" href="#dispersion" title="Permalink to this headline"></a></h2>
+<h2>Dispersion<a class="headerlink" href="#dispersion" title="Permalink to this heading"></a></h2>
 <p>This module contains dispersion calculations related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute orbit, dispersion and normalised dispersion.</p>
 <dl class="py function">
@@ -616,7 +617,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.dpp"></span><section id="dpp">
-<h2>Dpp<a class="headerlink" href="#dpp" title="Permalink to this headline"></a></h2>
+<h2>Dpp<a class="headerlink" href="#dpp" title="Permalink to this heading"></a></h2>
 <p>This module contains deltap over p calculations related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to computes and arrange dp over p.</p>
 <dl class="py function">
@@ -627,12 +628,12 @@ It provides functions to computes and arrange dp over p.</p>
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.iforest"></span><section id="isolation-forest">
-<h2>Isolation Forest<a class="headerlink" href="#isolation-forest" title="Permalink to this headline"></a></h2>
+<h2>Isolation Forest<a class="headerlink" href="#isolation-forest" title="Permalink to this heading"></a></h2>
 <p>This module contains the isolation forest functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to detect and exclude BPMs with anomalies.</p>
 </section>
 <span class="target" id="module-omc3.optics_measurements.interaction_point"></span><section id="interaction-point">
-<h2>Interaction Point<a class="headerlink" href="#interaction-point" title="Permalink to this headline"></a></h2>
+<h2>Interaction Point<a class="headerlink" href="#interaction-point" title="Permalink to this heading"></a></h2>
 <p>This module contains IP properties calculations related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute beta* from phase.</p>
 <dl class="py function">
@@ -671,7 +672,7 @@ and their distance (lstar). The phase and error in the phase must be given in ra
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.kick"></span><section id="kick">
-<h2>Kick<a class="headerlink" href="#kick" title="Permalink to this headline"></a></h2>
+<h2>Kick<a class="headerlink" href="#kick" title="Permalink to this heading"></a></h2>
 <p>This module contains kick functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute kick actions.</p>
 <dl class="py function">
@@ -695,12 +696,12 @@ It provides functions to compute kick actions.</p>
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.phase"></span><section id="phase-advance">
-<h2>Phase Advance<a class="headerlink" href="#phase-advance" title="Permalink to this headline"></a></h2>
+<h2>Phase Advance<a class="headerlink" href="#phase-advance" title="Permalink to this heading"></a></h2>
 <p>This module contains phase calculation functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute betatron phase advances and structures to store them.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.phase.calculate">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.frame.TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.frame.TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.phase.calculate" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.phase.calculate" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate phases for ‘free’ and ‘uncompensated’ cases from the measurement files, and return a
 dictionary combining the results for each transverse plane.</p>
 <dl class="field-list simple">
@@ -723,7 +724,7 @@ the location of the output <code class="docutils literal notranslate"><span clas
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.rdt"></span><section id="resonance-driving-terms">
-<h2>Resonance Driving Terms<a class="headerlink" href="#resonance-driving-terms" title="Permalink to this headline"></a></h2>
+<h2>Resonance Driving Terms<a class="headerlink" href="#resonance-driving-terms" title="Permalink to this heading"></a></h2>
 <p>This module contains RDT calculations related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute global resonance driving terms <strong>f_jklm</strong>.</p>
 <dl class="py function">
@@ -770,7 +771,7 @@ we use sqrt(2J): unit is sqrt(m).</p>
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.toolbox"></span><section id="toolbox">
-<h2>Toolbox<a class="headerlink" href="#toolbox" title="Permalink to this headline"></a></h2>
+<h2>Toolbox<a class="headerlink" href="#toolbox" title="Permalink to this heading"></a></h2>
 <p>This module contains helper functionality for <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to perform regularly used simple calculations.</p>
 <dl class="py function">
@@ -865,7 +866,7 @@ It provides functions to perform regularly used simple calculations.</p>
 
 </section>
 <span class="target" id="module-omc3.optics_measurements.tune"></span><section id="tune">
-<h2>Tune<a class="headerlink" href="#tune" title="Permalink to this headline"></a></h2>
+<h2>Tune<a class="headerlink" href="#tune" title="Permalink to this heading"></a></h2>
 <p>This module contains tune calculations functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute betatron tunes and structures to store them.</p>
 <dl class="py class">
@@ -888,7 +889,7 @@ It provides functions to compute betatron tunes and structures to store them.</p
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.optics_measurements.tune.TuneDict.phase_ac2bpm">
-<span class="sig-name descname"><span class="pre">phase_ac2bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_idx_by_bpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/tune.html#TuneDict.phase_ac2bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.tune.TuneDict.phase_ac2bpm" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">phase_ac2bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_idx_by_bpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/tune.html#TuneDict.phase_ac2bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.tune.TuneDict.phase_ac2bpm" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the necessary values for the exciter compensation.
 See <strong>DOI: 10.1103/PhysRevSTAB.11.084002</strong></p>
 <dl class="field-list simple">

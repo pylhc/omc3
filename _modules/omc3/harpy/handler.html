@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.handler &mdash; omc3 0.3.0 documentation</title>
+  <title>omc3.harpy.handler &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -14,6 +14,7 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -29,7 +30,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -347,7 +348,7 @@
     <span class="k">return</span> <span class="n">lin_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_compute_headers</span><span class="p">(</span><span class="n">panda</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_compute_headers</span><span class="p">(</span><span class="n">panda</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">ALL_PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;NAT&quot;</span><span class="p">):</span>
@@ -358,7 +359,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">Q</span><span class="si">{</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bpm_tunes</span><span class="p">)</span>
                 <span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">Q</span><span class="si">{</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">RMS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">bpm_tunes</span><span class="p">)</span>
-    <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;TIME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">date</span><span class="p">:</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;TIME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">headers</span>
 
 

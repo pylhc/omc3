@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; omc3 0.3.0 documentation</title>
+  <title>Analysis &mdash; omc3 0.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -32,7 +33,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -200,9 +201,9 @@
            <div itemprop="articleBody">
              
   <section id="module-omc3.hole_in_one">
-<span id="analysis"></span><h1>Analysis<a class="headerlink" href="#module-omc3.hole_in_one" title="Permalink to this headline"></a></h1>
+<span id="analysis"></span><h1>Analysis<a class="headerlink" href="#module-omc3.hole_in_one" title="Permalink to this heading"></a></h1>
 <section id="hole-in-one">
-<h2>Hole in One<a class="headerlink" href="#hole-in-one" title="Permalink to this headline"></a></h2>
+<h2>Hole in One<a class="headerlink" href="#hole-in-one" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">hole_in_one</span></code> is the top-level script of analysis functionality offered in <code class="docutils literal notranslate"><span class="pre">omc3</span></code>. In most of
 your use cases, this is the file you will want to call. It handles:
 - frequency spectra of Turn-by-Turn BPM data,
@@ -490,7 +491,7 @@ which are declared in <code class="docutils literal notranslate"><span class="pr
 
 </section>
 <span class="target" id="module-omc3.amplitude_detuning_analysis"></span><section id="amplitude-detuning-analysis">
-<h2>Amplitude Detuning Analysis<a class="headerlink" href="#amplitude-detuning-analysis" title="Permalink to this headline"></a></h2>
+<h2>Amplitude Detuning Analysis<a class="headerlink" href="#amplitude-detuning-analysis" title="Permalink to this heading"></a></h2>
 <p>Entrypoint for amplitude detuning analysis.</p>
 <p>This module provides functionality to run amplitude detuning analysis with additionally getting
 BBQ data from timber, averaging and filtering this data and subtracting it from the measurement
@@ -500,46 +501,103 @@ the measurements.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
 <ul>
-<li><p><strong>beam</strong> <em>(int)</em>: Which beam to use.</p></li>
-<li><p><strong>kick</strong> <em>(str)</em>: Location of the kick files (parent folder).</p></li>
-<li><p><strong>plane</strong> <em>(str)</em>: Plane of the kicks. ‘X’ or ‘Y’.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">('X',</span> <span class="pre">'Y')</span></code></p>
+<li><p><strong>beam</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Which beam to use.</p>
+</div></blockquote>
+</li>
+<li><p><strong>kick</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Location of the kick files (parent folder).</p>
+</div></blockquote>
+</li>
+<li><p><strong>plane</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Plane of the kicks. ‘X’ or ‘Y’ or ‘XY’.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['X',</span> <span class="pre">'Y',</span> <span class="pre">'XY']</span></code></p>
+</div></blockquote>
 </li>
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>bbq_filtering_method</strong> <em>(str)</em>:Filtering method for the bbq to use. ‘cut’ cuts around a given tune,
-‘minmax’ lets you specify the limits and ‘outliers’ uses the outlier filtering from utils.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['cut',</span> <span class="pre">'minmax',</span> <span class="pre">'outliers']</span></code>
-Default: <code class="docutils literal notranslate"><span class="pre">outliers</span></code></p>
+<li><p><strong>bbq_filtering_method</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Filtering method for the bbq to use. ‘cut’ cuts around a given tune,
+‘minmax’ lets you specify the limits and ‘outliers’ uses the outlier
+filtering from utils.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['cut',</span> <span class="pre">'minmax',</span> <span class="pre">'outliers']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">outliers</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>bbq_in</strong>: Fill number of desired data to extract from <code class="docutils literal notranslate"><span class="pre">Timber</span></code> (requires installing with the [cern]
-extra and access to the CERN network) or path to presaved bbq-tfs-file. Use the string ‘kick’ to use the
-timestamps in the kickfile for timber extraction. Not giving this parameter skips bbq compensation.</p></li>
-<li><p><strong>debug</strong>: Activates Debug mode</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>bbq_in</strong> <em>(UnionPathStrInt)</em>:</p>
+<blockquote>
+<div><p>Fill number of desired data to extract from timber or path to presaved
+bbq-tfs-file. Use the string ‘kick’ to use the timestamps in the
+kickfile for timber extraction. Not giving this parameter skips bbq
+compensation.</p>
+</div></blockquote>
 </li>
-<li><p><strong>detuning_order</strong> <em>(int)</em>: Order of the detuning as int. Basically just the order of the applied fit.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+<li><p><strong>detuning_order</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Order of the detuning as int. Basically just the order of the applied
+fit.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>fine_cut</strong> <em>(float)</em>: Cut, i.e. tolerance, of the tune (fine cleaning for ‘minmax’ or ‘cut’).</p></li>
-<li><p><strong>fine_window</strong> <em>(int)</em>: Length of the moving average window, i.e # data points (fine cleaning for ‘minmax’ or ‘cut’).</p></li>
-<li><p><strong>label</strong> <em>(str)</em>: Label to identify this run.</p></li>
-<li><p><strong>logfile</strong> <em>(str)</em>: Logfile if debug mode is active.</p></li>
-<li><p><strong>outlier_limit</strong> <em>(float)</em>: Limit, i.e. cut, on outliers (Method ‘outliers’)</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">0.0002</span></code></p>
+<li><p><strong>fine_cut</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Cut, i.e. tolerance, of the tune (fine cleaning for ‘minmax’ or
+‘cut’).</p>
+</div></blockquote>
 </li>
-<li><p><strong>output</strong> <em>(str)</em>: Output directory for the modified kickfile and bbq data.</p></li>
-<li><p><strong>tune_cut</strong> <em>(float)</em>: Cuts for the tune. For BBQ cleaning (Method ‘cut’).</p></li>
-<li><p><strong>tunes</strong> <em>(float)</em>: Tunes for BBQ cleaning (Method ‘cut’).</p></li>
-<li><p><strong>tunes_minmax</strong> <em>(float)</em>: Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For BBQ cleaning (Method ‘minmax’).</p></li>
-<li><p><strong>window_length</strong> <em>(int)</em>: Length of the moving average window. (# data points)</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">20</span></code></p>
+<li><p><strong>fine_window</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Length of the moving average window, i.e the number of data points
+(fine cleaning for ‘minmax’ or ‘cut’).</p>
+</div></blockquote>
+</li>
+<li><p><strong>label</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Label to identify this run.</p>
+</div></blockquote>
+</li>
+<li><p><strong>outlier_limit</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Limit, i.e. cut, on outliers (Method ‘outliers’)</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.0002</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>output</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Output directory for the modified kickfile and bbq data.</p>
+</div></blockquote>
+</li>
+<li><p><strong>tune_cut</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Cuts for the tune. For BBQ cleaning (Method ‘cut’).</p>
+</div></blockquote>
+</li>
+<li><p><strong>tunes</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Tunes for BBQ cleaning (Method ‘cut’).</p>
+</div></blockquote>
+</li>
+<li><p><strong>tunes_minmax</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Tunes minima and maxima in the order x_min, x_max, y_min, y_max. For
+BBQ cleaning (Method ‘minmax’).</p>
+</div></blockquote>
+</li>
+<li><p><strong>window_length</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Length of the moving average window. (# data points)</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">20</span></code></p>
+</div></blockquote>
 </li>
 </ul>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections">
-<span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">analyse_with_bbq_corrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">generic_parser.tools.DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.frame.TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.frame.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#analyse_with_bbq_corrections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">analyse_with_bbq_corrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#analyse_with_bbq_corrections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections" title="Permalink to this definition"></a></dt>
 <dd><p>Create amplitude detuning analysis with BBQ correction from timber data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -549,14 +607,32 @@ timestamps in the kickfile for timber extraction. Not giving this parameter skip
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="omc3.amplitude_detuning_analysis.double_action_analysis">
+<span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">double_action_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kick_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detuning_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#double_action_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.double_action_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the full 2D/4D fitting of the data.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.amplitude_detuning_analysis.get_approx_bbq_interval">
-<span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">get_approx_bbq_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbq_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tfs.frame.TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.CERNDatetime" title="omc3.utils.time_tools.CERNDatetime"><span class="pre">omc3.utils.time_tools.CERNDatetime</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.CERNDatetime" title="omc3.utils.time_tools.CERNDatetime"><span class="pre">omc3.utils.time_tools.CERNDatetime</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.CERNDatetime" title="omc3.utils.time_tools.CERNDatetime"><span class="pre">omc3.utils.time_tools.CERNDatetime</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#get_approx_bbq_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.get_approx_bbq_interval" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">get_approx_bbq_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbq_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.CERNDatetime" title="omc3.utils.time_tools.CERNDatetime"><span class="pre">CERNDatetime</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.CERNDatetime" title="omc3.utils.time_tools.CERNDatetime"><span class="pre">CERNDatetime</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.CERNDatetime" title="omc3.utils.time_tools.CERNDatetime"><span class="pre">CERNDatetime</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#get_approx_bbq_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.get_approx_bbq_interval" title="Permalink to this definition"></a></dt>
 <dd><p>Get approximate start and end times for averaging, based on window length and kick interval.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.amplitude_detuning_analysis.get_kick_and_bbq_df">
+<span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">get_kick_and_bbq_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kick</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbq_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#get_kick_and_bbq_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.get_kick_and_bbq_df" title="Permalink to this definition"></a></dt>
+<dd><p>Load the input data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.amplitude_detuning_analysis.single_action_analysis">
+<span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">single_action_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kick_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kick_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detuning_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#single_action_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.single_action_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the fit one action and tune pane at a time.</p>
 </dd></dl>
 
 </section>
 <span class="target" id="module-omc3.run_kmod"></span><section id="run-kmod">
-<h2>Run Kmod<a class="headerlink" href="#run-kmod" title="Permalink to this headline"></a></h2>
+<h2>Run Kmod<a class="headerlink" href="#run-kmod" title="Permalink to this heading"></a></h2>
 <p>Top-level script to analyse Kmod-results from the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> and creating files for GUI and plotting
 as well as returning beta-star and waist shift.</p>
 <dl class="py function">
