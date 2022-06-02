@@ -87,6 +87,7 @@ from generic_parser.entrypoint_parser import (
 
 from omc3.definitions.formats import BACKUP_FILENAME
 from omc3.harpy.constants import COL_NAME
+from omc3.harpy.handler import _compute_headers
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.outliers import get_filter_mask
@@ -192,6 +193,7 @@ def clean_columns(files: Sequence[Union[Path, str]], columns: Sequence[str],
         df = tfs.read_tfs(file, index=COL_NAME)
         for column in columns:
             df = _filter_by_column(df, column, limit)
+        df.headers.update(_compute_headers(df))
 
         if backup:
             _backup_file(file)
