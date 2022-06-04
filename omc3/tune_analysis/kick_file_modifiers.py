@@ -111,7 +111,9 @@ def _filter_bbq_outliers(bbq_df: tfs.TfsDataFrame, plane: str, filter_opt: Outli
     header_window = get_mav_window_header()
     if ((header_limit in bbq_df.headers) and
             (bbq_df.headers[header_limit] == filter_opt.limit) and
-            (bbq_df.headers[header_window] == filter_opt.window)):
+            (bbq_df.headers[header_window] == filter_opt.window) and
+            all(col in bbq_df.columns for col in (
+                    get_mav_col(plane), get_mav_err_col(plane), get_used_in_mav_col(plane)))):
         LOG.info("BBQ data has already been filtered with the same parameters. Using data from file.")
         return bbq_df, bbq_df[get_mav_col(plane)], bbq_df[get_mav_err_col(plane)], bbq_df[get_used_in_mav_col(plane)]
 
