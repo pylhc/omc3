@@ -137,7 +137,7 @@ from omc3.tune_analysis.constants import (
     get_bbq_out_name,
     get_kick_out_name,
     get_mav_col,
-    get_timber_bbq_key, INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
+    get_timber_bbq_key, INPUT_KICK, INPUT_PREVIOUS, CORRECTED, get_tune_jitter_header, get_natq_err_col,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
     read_timed_dataframe,
@@ -247,6 +247,12 @@ def _get_params():
             help="Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
             type=float,
         ),
+        tune_jitter=dict(
+            help="Manual estimate for the tune jitter. "
+                 "Will be added to the tune error in quadrature before fit.",
+            type=float,
+            default=0.0,
+        ),
     )
 
 
@@ -267,6 +273,8 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
     opt, filter_opt = _check_analyse_opt(opt)
     kick_df, bbq_df = get_kick_and_bbq_df(kick=opt.kick, bbq_in=opt.bbq_in,
                                           beam=opt.beam, filter_opt=filter_opt, output=opt.output)
+
+    kick_df = add_tune_jitter(kick_df, opt.tune_jitter)
 
     kick_plane = opt.plane
 
@@ -317,6 +325,18 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
                 x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, window)
                 write_timed_dataframe(output / get_bbq_out_name(), bbq_df.loc[x_interval[0]: x_interval[1]])
     return kick_df, bbq_df
+
+
+def add_tune_jitter(kick_df: tfs.TfsDataFrame, jitter: float):
+    """Add additional tune jitter on the error bar of the natural tune.
+    This is a user determined parameter, usually an estimate on the BBQ accuracy.
+    """
+    kick_df.headers[get_tune_jitter_header()] = jitter
+    if jitter != 0:
+        for plane in PLANES:
+            err_column = get_natq_err_col(plane=plane)
+            kick_df[err_column] = np.sqrt(kick_df[err_column]**2 + jitter**2)
+    return kick_df
 
 
 def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_order: int = 1, corrected: bool = False
