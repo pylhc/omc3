@@ -133,7 +133,9 @@ from omc3.tune_analysis.constants import (
     get_bbq_col,
     get_bbq_out_name,
     get_kick_out_name,
-    get_timber_bbq_key, INPUT_KICK, INPUT_PREVIOUS, CORRECTED, get_tune_jitter_header, get_natq_err_col,
+    get_timber_bbq_key,
+    get_natq_err_col,
+    INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
     read_timed_dataframe,

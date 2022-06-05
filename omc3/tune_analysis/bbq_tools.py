@@ -13,7 +13,7 @@ from numpy.typing import ArrayLike, NDArray
 
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
-from dataclasses import  dataclass
+from dataclasses import dataclass
 
 
 LOG = logging_tools.get_logger(__name__)
