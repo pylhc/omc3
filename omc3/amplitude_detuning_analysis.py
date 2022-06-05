@@ -321,18 +321,6 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
     return kick_df, bbq_df
 
 
-def add_tune_jitter(kick_df: tfs.TfsDataFrame, jitter: float):
-    """Add additional tune jitter on the error bar of the natural tune.
-    This is a user determined parameter, usually an estimate on the BBQ accuracy.
-    """
-    kick_df.headers[get_tune_jitter_header()] = jitter
-    if jitter != 0:
-        for plane in PLANES:
-            err_column = get_natq_err_col(plane=plane)
-            kick_df[err_column] = np.sqrt(kick_df[err_column]**2 + jitter**2)
-    return kick_df
-
-
 def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_order: int = 1, corrected: bool = False
                            ) -> tfs.TfsDataFrame:
     """Performs the fit one action and tune pane at a time."""
