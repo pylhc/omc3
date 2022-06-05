@@ -172,7 +172,7 @@ def add_corrected_natural_tunes(kickac_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output, 
-            action_plane: str, tune_plane: str, corrected: bool=False):
+            action_plane: str, tune_plane: str, corrected: bool = False):
     """
     Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.
 
