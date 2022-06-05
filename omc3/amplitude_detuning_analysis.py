@@ -251,7 +251,7 @@ def _get_params():
             help="Manual estimate for the tune jitter. "
                  "Will be added to the tune error in quadrature before fit.",
             type=float,
-            default=0.0,
+            default=5e-4,
         ),
     )
 
