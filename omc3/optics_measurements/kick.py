@@ -94,7 +94,7 @@ def _gen_kick_calc(meas_input, lin, plane):
 
     actions_2j = np.square(amps) / frame.loc[:, f"{BETA}{plane}"].to_numpy()
     mean_2j = np.mean(actions_2j)
-    err_2j = np.sqrt(np.std(actions_2j)**2 + np.mean(2*err_amps*amps))
+    err_2j = np.sqrt(np.std(actions_2j)**2 + np.mean(2*err_amps*amps)**2)
 
     return np.array([mean_sqrt2j, err_sqrt2j, mean_2j, err_2j])
 
