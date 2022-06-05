@@ -4,17 +4,15 @@ Kick File Modifiers
 
 Functions to add data to or extract data from **kick_ac** files.
 """
-import os
 from pathlib import Path
 from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
-from numpy.typing import ArrayLike, NDArray
-from scipy import odr
 import tfs
+from numpy.typing import ArrayLike
+from scipy import odr
 from tfs import TfsDataFrame
-from generic_parser.dict_parser import DotDict
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import KICK_NAME, TIME, ERR, NAT_TUNE, ACTION
@@ -109,17 +107,23 @@ def _filter_bbq_outliers(bbq_df: tfs.TfsDataFrame, plane: str, filter_opt: Outli
                          ) -> Tuple[tfs.TfsDataFrame, pd.Series, pd.Series, ArrayLike]:
     header_limit = get_outlier_limit_header()
     header_window = get_mav_window_header()
+    mav_col = get_mav_col(plane)
+    mav_err_col = get_mav_err_col(plane)
+    used_in_mav_col = get_used_in_mav_col(plane)
+
+    # check if we need to recompute (as this might take time)
     if ((header_limit in bbq_df.headers) and
             (bbq_df.headers[header_limit] == filter_opt.limit) and
             (bbq_df.headers[header_window] == filter_opt.window) and
-            all(col in bbq_df.columns for col in (
-                    get_mav_col(plane), get_mav_err_col(plane), get_used_in_mav_col(plane)))):
+            all(col in bbq_df.columns for col in (mav_col, mav_err_col, used_in_mav_col))):
         LOG.info("BBQ data has already been filtered with the same parameters. Using data from file.")
-        return bbq_df, bbq_df[get_mav_col(plane)], bbq_df[get_mav_err_col(plane)], bbq_df[get_used_in_mav_col(plane)]
+        return bbq_df, bbq_df[mav_col], bbq_df[mav_err_col], bbq_df[used_in_mav_col]
 
-    bbq_df.headers[header_window] = filter_opt.window
-    bbq_df.headers[header_limit] = filter_opt.limit
     bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)], filter_opt=filter_opt)
+    if PLANES.index(plane):
+        # only add after second plane, as they are used to test if filtering can be skipped
+        bbq_df.headers[header_window] = filter_opt.window
+        bbq_df.headers[header_limit] = filter_opt.limit
     return bbq_df, bbq_mav, bbq_std, mask
 
 

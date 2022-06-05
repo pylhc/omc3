@@ -524,8 +524,6 @@ def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFram
             data = read_timed_dataframe(input_)
             if not len(data.index):
                 raise ValueError(f"No entries in {str(input_):s}.")
-            #  Drop old moving average columns as these will be computed again later
-            data.drop([get_mav_col(p) for p in PLANES if get_mav_col(p) in data.columns], axis="columns")
 
     else:  # input_ is a number, assumed to be a fill number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")

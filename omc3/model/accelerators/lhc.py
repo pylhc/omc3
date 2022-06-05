@@ -291,15 +291,21 @@ class Lhc(Accelerator):
         l_r = "L" if (beam == 1 != plane == "Y") else "R"
         a_b = "B" if beam == 1 else "A"
         if self.excitation == AccExcitationMode.ACD:
-            return (
-                _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms),
-                f"MKQA.6L4.B{beam}",
-            )
+            try:
+                return (
+                    _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms),
+                    f"MKQA.6L4.B{beam}",
+                )
+            except KeyError as e:
+                raise KeyError("AC-Dipole BPM not found in the common BPMs. Maybe cleaned?") from e
         if self.excitation == AccExcitationMode.ADT:
-            return (
-                _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"], commonbpms),
-                f"ADTK{adt}5{l_r}4.B{beam}",
-            )
+            try:
+                return (
+                    _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"], commonbpms),
+                    f"ADTK{adt}5{l_r}4.B{beam}",
+                )
+            except KeyError as e:
+                raise KeyError("ADT BPM not found in the common BPMs. Maybe cleaned?") from e
         return None
 
     def important_phase_advances(self) -> List[List[str]]:
