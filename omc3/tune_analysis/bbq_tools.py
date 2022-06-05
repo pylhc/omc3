@@ -52,7 +52,7 @@ class MinMaxFilterOpt:
 FilterOpts = Union[OutlierFilterOpt, Tuple[MinMaxFilterOpt, MinMaxFilterOpt]]
 
 
-def get_moving_average(data_series, filter_opt: MinMaxFilterOpt):
+def get_moving_average(data_series, filter_opt: MinMaxFilterOpt)->Tuple[pd.Series, pd.Series, ArrayLike]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered
     beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)
@@ -63,7 +63,7 @@ def get_moving_average(data_series, filter_opt: MinMaxFilterOpt):
         filter_opt: Options for the filtering, see `:class:`omc3.tune_analysis.bbq_tools.MinMaxFilterOpt`.
 
     Returns:
-        A filtered and averaged `Series` and the mask used for filtering data.
+        A filtered and averaged `Series`, another `Series` with the error and the mask used for filtering data.
     """
     LOG.debug(f"Cutting data and calculating moving average of length {filter_opt.window:d}.")
 
@@ -83,16 +83,16 @@ def get_moving_average(data_series, filter_opt: MinMaxFilterOpt):
 
     cut_mask = min_mask | max_mask | data_series.isna()
     _is_almost_empty_mask(~cut_mask, filter_opt.window)
-    data_mav, std_mav = _get_interpolated_moving_average(data_series, cut_mask, filter_opt.window)
+    data_mav, err_mav = _get_interpolated_moving_average(data_series, cut_mask, filter_opt.window)
 
     if filter_opt.fine_window is not None:
         min_mask = data_series <= (data_mav - filter_opt.fine_cut)
         max_mask = data_series >= (data_mav + filter_opt.fine_cut)
         cut_mask = min_mask | max_mask | data_series.isna()
         _is_almost_empty_mask(~cut_mask, filter_opt.fine_window)
-        data_mav, std_mav = _get_interpolated_moving_average(data_series, cut_mask, filter_opt.fine_window)
+        data_mav, err_mav = _get_interpolated_moving_average(data_series, cut_mask, filter_opt.fine_window)
 
-    return data_mav, std_mav, ~cut_mask
+    return data_mav, err_mav, ~cut_mask
 
 
 def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFilterOpt) -> Tuple[pd.Series, pd.Series, NDArray[bool]]:
@@ -114,8 +114,8 @@ def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFil
         mask[i:i+window] &= get_filter_mask(data_series[i:i+window], limit=limit, mask=init_mask[i:i+window])
 
     _is_almost_empty_mask(mask, window)
-    data_mav, std_mav = _get_interpolated_moving_average(data_series, ~mask, window)
-    return data_mav, std_mav, mask
+    data_mav, err_mav = _get_interpolated_moving_average(data_series, ~mask, window)
+    return data_mav, err_mav, mask
 
 
 # Private methods ############################################################
@@ -156,15 +156,17 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[p
         method="bfill").fillna(method="ffill")
 
     # calculate deviation to the moving average and fill NaNs at the ends
-    std_mav = (data-data_mav).rolling(length).std().shift(shift).fillna(
-        method="bfill").fillna(method="ffill")
+    std_mav = np.sqrt(((data-data_mav)**2).rolling(length).mean().shift(shift).fillna(
+        method="bfill").fillna(method="ffill"))
+    err_mav = std_mav / np.sqrt(length)
 
     if is_datetime_index:
         # restore index from input series
         data_mav.index = data_series.index
         std_mav.index = data_series.index
+        err_mav.index = data_series.index
 
-    return data_mav, std_mav
+    return data_mav, err_mav
 
 
 def _is_almost_empty_mask(mask, av_length):

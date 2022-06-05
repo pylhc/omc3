@@ -20,7 +20,7 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 NAT_TUNE, PEAK2PEAK,
                                                 RES,
                                                 RESCALE_FACTOR, RMS,
-                                                SQRT_ACTION, TIME, TUNE, S, NOISE)
+                                                SQRT_ACTION, TIME, TUNE, S, NOISE, CO)
 
 
 def calculate(measure_input, input_files, scale, header_dict, plane):
@@ -86,16 +86,17 @@ def _gen_kick_calc(meas_input, lin, plane):
             else frame.loc[:, PEAK2PEAK].to_numpy() / 2.0)
 
     err_amps = (frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy() if meas_input.accelerator.excitation
-                else frame.loc[:, NOISE].to_numpy())
+                else frame.loc[:, f"{CO}{RMS}"].to_numpy())
 
     actions_sqrt2j = amps / np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
     mean_sqrt2j = np.mean(actions_sqrt2j)
-    err_sqrt2j = np.sqrt(np.std(actions_sqrt2j)**2 + np.mean(err_amps**2))
+    err_sqrt2j = np.sqrt(np.mean(err_amps**2))
 
     actions_2j = np.square(amps) / frame.loc[:, f"{BETA}{plane}"].to_numpy()
     mean_2j = np.mean(actions_2j)
-    err_2j = np.sqrt(np.std(actions_2j)**2 + np.mean((2*err_amps*amps)**2))
+    err_2j = np.sqrt(np.mean((2*err_amps*amps)**2))
 
+    #TODO: Discuss error calculation. Before it was using `std(actions_2j)`
     return np.array([mean_sqrt2j, err_sqrt2j, mean_2j, err_2j])
 
 
