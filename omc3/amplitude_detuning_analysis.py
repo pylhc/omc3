@@ -115,8 +115,6 @@ the measurements.
 
 
 """
-import os
-from collections import OrderedDict
 from datetime import timedelta
 from pathlib import Path
 from typing import List, Sequence, Tuple, Dict, Any, Union
@@ -124,19 +122,17 @@ from typing import List, Sequence, Tuple, Dict, Any, Union
 import numpy as np
 import tfs
 from generic_parser import DotDict
-from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, save_options_to_config
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 from numpy.typing import ArrayLike
 from tfs.frame import TfsDataFrame
 
-from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
-from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, MinMaxFilterOpt
+from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, MinMaxFilterOpt, FilterOpts
 from omc3.tune_analysis.constants import (
     get_bbq_col,
     get_bbq_out_name,
     get_kick_out_name,
-    get_mav_col,
     get_timber_bbq_key, INPUT_KICK, INPUT_PREVIOUS, CORRECTED, get_tune_jitter_header, get_natq_err_col,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
@@ -272,9 +268,11 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 
     opt, filter_opt = _check_analyse_opt(opt)
     kick_df, bbq_df = get_kick_and_bbq_df(kick=opt.kick, bbq_in=opt.bbq_in,
-                                          beam=opt.beam, filter_opt=filter_opt, output=opt.output)
+                                          beam=opt.beam,
+                                          tune_jitter=opt.tune_jitter,
+                                          filter_opt=filter_opt,
+                                          output=opt.output)
 
-    kick_df = add_tune_jitter(kick_df, opt.tune_jitter)
 
     kick_plane = opt.plane
 
@@ -293,7 +291,9 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 
 
 def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
-                        beam: int = None, filter_opt = None,
+                        beam: int = None,
+                        tune_jitter: float = 0.0,
+                        filter_opt: FilterOpts = None,
                         output: Path = None
                         ) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """Load the input data."""
@@ -305,6 +305,7 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
     else:
         LOG.debug("Getting data from kick files")
         kick_df = read_two_kick_files_from_folder(kick)
+        kick_df = add_tune_jitter(kick_df, tune_jitter)
 
         if bbq_in is not None:
             bbq_df = _get_bbq_data(beam, bbq_in, kick_df)
@@ -439,7 +440,7 @@ def get_approx_bbq_interval(
 # Private Functions ------------------------------------------------------------
 
 
-def _check_analyse_opt(opt: DotDict):
+def _check_analyse_opt(opt: DotDict) -> Tuple[DotDict, FilterOpts]:
     """Perform manual checks on opt-sturcture."""
     LOG.debug("Checking Options.")
 
