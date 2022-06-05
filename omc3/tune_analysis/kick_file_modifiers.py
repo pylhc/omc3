@@ -121,8 +121,6 @@ def _filter_bbq_outliers(bbq_df: tfs.TfsDataFrame, plane: str, filter_opt: Outli
         LOG.info("BBQ data has already been filtered with the same parameters. Using data from file.")
         return bbq_df, bbq_df[mav_col], bbq_df[mav_err_col], bbq_df[used_in_mav_col]
 
-    bbq_df.headers[header_window] = filter_opt.window
-    bbq_df.headers[header_limit] = filter_opt.limit
     bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)], filter_opt=filter_opt)
     if PLANES.index(plane):
         # only add after second plane, as they are used to test if filtering can be skipped
