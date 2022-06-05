@@ -3,7 +3,8 @@
 #### 2022-05-30 - v0.4.1 - _jdilly_
 
 - Added:
-  - Tune jitter as imnput parameter
+  - Tune error based on deviation of filtered BBQ data to the moving average
+    (over moving average window)
 
 - Fixed:
   - Getting new BBQ data ended in a key-error.

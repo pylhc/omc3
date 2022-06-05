@@ -151,10 +151,12 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[p
 
     shift = -int((length-1)/2)  # Shift average to middle value
 
-    # calculate mean and std, fill NaNs at the ends
+    # calculate mean and fill NaNs at the ends
     data_mav = data.rolling(length).mean().shift(shift).fillna(
         method="bfill").fillna(method="ffill")
-    std_mav = data.rolling(length).std().shift(shift).fillna(
+
+    # calculate deviation to the moving average and fill NaNs at the ends
+    std_mav = (data-data_mav).rolling(length).std().shift(shift).fillna(
         method="bfill").fillna(method="ffill")
 
     if is_datetime_index:

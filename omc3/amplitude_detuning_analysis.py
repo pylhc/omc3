@@ -243,12 +243,6 @@ def _get_params():
             help="Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
             type=float,
         ),
-        tune_jitter=dict(
-            help="Manual estimate for the tune jitter. "
-                 "Will be added to the tune error in quadrature before fit.",
-            type=float,
-            default=0.0,
-        ),
     )
 
 
@@ -269,7 +263,6 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
     opt, filter_opt = _check_analyse_opt(opt)
     kick_df, bbq_df = get_kick_and_bbq_df(kick=opt.kick, bbq_in=opt.bbq_in,
                                           beam=opt.beam,
-                                          tune_jitter=opt.tune_jitter,
                                           filter_opt=filter_opt,
                                           output=opt.output)
 
@@ -292,7 +285,6 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 
 def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
                         beam: int = None,
-                        tune_jitter: float = 0.0,
                         filter_opt: FilterOpts = None,
                         output: Path = None
                         ) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
@@ -305,7 +297,6 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
     else:
         LOG.debug("Getting data from kick files")
         kick_df = read_two_kick_files_from_folder(kick)
-        kick_df = add_tune_jitter(kick_df, tune_jitter)
 
         if bbq_in is not None:
             bbq_df = _get_bbq_data(beam, bbq_in, kick_df)
