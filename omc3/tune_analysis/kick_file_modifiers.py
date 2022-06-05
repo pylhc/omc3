@@ -6,7 +6,7 @@ Functions to add data to or extract data from **kick_ac** files.
 """
 import os
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple, Union, Sequence
 
 import numpy as np
 import pandas as pd
@@ -88,56 +88,60 @@ def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_opt
     """Adds the moving average of the bbq data to kickac_df and bbq_df."""
     LOG.debug("Calculating moving average.")
 
-    for idx, plane in enumerate(PLANES):
-        if isinstance(filter_opt, OutlierFilterOpt):
-            bbq_df, bbq_mav, bbq_std, mask = _filter_bbq_outliers(bbq_df, plane, filter_opt)
-        else:
-            bbq_df, bbq_mav, bbq_std, mask = _filter_bbq_cut(bbq_df, plane, filter_opt[idx])
+    if isinstance(filter_opt, OutlierFilterOpt):
+        bbq_df = _filter_bbq_outliers(bbq_df, filter_opt)
+    else:
+        bbq_df = _filter_bbq_cut(bbq_df, filter_opt)
 
-        bbq_df[get_mav_col(plane)] = bbq_mav
-        # bbq_df[get_mav_err_col(plane)] = bbq_std  # this is too large
-        bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
-
-        bbq_df[get_used_in_mav_col(plane)] = mask
-
+    for plane in PLANES:
         kickac_df = add_bbq_data(kickac_df, bbq_df, get_mav_col(plane))
         kickac_df = add_bbq_data(kickac_df, bbq_df, get_mav_err_col(plane))
     return kickac_df, bbq_df
 
 
-def _filter_bbq_outliers(bbq_df: tfs.TfsDataFrame, plane: str, filter_opt: OutlierFilterOpt
-                         ) -> Tuple[tfs.TfsDataFrame, pd.Series, pd.Series, ArrayLike]:
+def _filter_bbq_outliers(bbq_df: tfs.TfsDataFrame, filter_opt: OutlierFilterOpt) -> tfs.TfsDataFrame:
     header_limit = get_outlier_limit_header()
     header_window = get_mav_window_header()
-    mav_col = get_mav_col(plane)
-    mav_err_col = get_mav_err_col(plane)
-    used_in_mav_col = get_used_in_mav_col(plane)
 
-    # check if we need to recompute (as this might take time)
-    if ((header_limit in bbq_df.headers) and
-            (bbq_df.headers[header_limit] == filter_opt.limit) and
-            (bbq_df.headers[header_window] == filter_opt.window) and
-            all(col in bbq_df.columns for col in (mav_col, mav_err_col, used_in_mav_col))):
+    # check if we need to recompute (as this might take quite some time)
+    if (
+            (header_limit in bbq_df.headers)
+            and (bbq_df.headers[header_limit] == filter_opt.limit)
+            and (bbq_df.headers[header_window] == filter_opt.window)
+            and all(col in bbq_df.columns for p in PLANES for col in (
+                    get_mav_col(p), get_mav_err_col(p), get_used_in_mav_col(p)))
+    ):
         LOG.info("BBQ data has already been filtered with the same parameters. Using data from file.")
-        return bbq_df, bbq_df[mav_col], bbq_df[mav_err_col], bbq_df[used_in_mav_col]
+        return bbq_df
 
-    bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)], filter_opt=filter_opt)
-    if PLANES.index(plane):
-        # only add after second plane, as they are used to test if filtering can be skipped
-        bbq_df.headers[header_window] = filter_opt.window
-        bbq_df.headers[header_limit] = filter_opt.limit
-    return bbq_df, bbq_mav, bbq_std, mask
+    bbq_df.headers[header_window] = filter_opt.window
+    bbq_df.headers[header_limit] = filter_opt.limit
+    for plane in PLANES:
+        bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)],
+                                                                         filter_opt=filter_opt)
+        bbq_df[get_mav_col(plane)] = bbq_mav
+        # bbq_df[get_mav_err_col(plane)] = bbq_std  # this is too large
+        bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
+        bbq_df[get_used_in_mav_col(plane)] = mask
+    return bbq_df
 
 
-def _filter_bbq_cut(bbq_df: tfs.TfsDataFrame, plane: str, filter_opt: MinMaxFilterOpt
-                    ) -> Tuple[tfs.TfsDataFrame, pd.Series, pd.Series, ArrayLike]:
-    bbq_df.headers[get_mav_window_header()] = filter_opt.window
-    bbq_df.headers[get_min_tune_header(plane)] = filter_opt.min
-    bbq_df.headers[get_max_tune_header(plane)] = filter_opt.max
-    bbq_df.headers[get_fine_window_header()] = filter_opt.fine_window
-    bbq_df.headers[get_fine_cut_header()] = filter_opt.fine_cut
-    bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[get_bbq_col(plane)], filter_opt)
-    return bbq_df, bbq_mav, bbq_std, mask
+def _filter_bbq_cut(bbq_df: tfs.TfsDataFrame, filter_opts: Sequence[MinMaxFilterOpt]) -> tfs.TfsDataFrame:
+    bbq_df.headers[get_mav_window_header()] = filter_opts[0].window
+    bbq_df.headers[get_fine_window_header()] = filter_opts[0].fine_window
+    bbq_df.headers[get_fine_cut_header()] = filter_opts[0].fine_cut
+
+    for idx, plane in enumerate(PLANES):
+        bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[get_bbq_col(plane)], filter_opts[idx])
+
+        bbq_df.headers[get_min_tune_header(plane)] = filter_opts[idx].min
+        bbq_df.headers[get_max_tune_header(plane)] = filter_opts[idx].max
+
+        bbq_df[get_mav_col(plane)] = bbq_mav
+        # bbq_df[get_mav_err_col(plane)] = bbq_std  # this is too large
+        bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
+        bbq_df[get_used_in_mav_col(plane)] = mask
+    return bbq_df
 
 
 def add_corrected_natural_tunes(kickac_df: pd.DataFrame) -> pd.DataFrame:
