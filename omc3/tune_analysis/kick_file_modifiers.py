@@ -196,7 +196,7 @@ def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output,
 # Data Extraction --------------------------------------------------------------
 
 def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
-                 order: int, corrected: bool=False) -> FakeOdrOutput:
+                 order: int, corrected: bool = False) -> FakeOdrOutput:
     """
     Extract the data from kickac.
 
