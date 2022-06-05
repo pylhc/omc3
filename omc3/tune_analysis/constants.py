@@ -107,11 +107,6 @@ def get_fine_cut_header() -> str:
     return "FINE_CUT"
 
 
-def get_tune_jitter_header() -> str:
-    """ Header for the tune jitter value. """
-    return "TUNE_JITTER"
-
-
 def get_outlier_limit_header() -> str:
     """ Header to store the outlier limit."""
     return "OUTLIER_LIMIT"

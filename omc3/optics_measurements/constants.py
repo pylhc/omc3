@@ -44,6 +44,7 @@ PHASE: str = "PHASE"
 PHASE_ADV: str = "MU"
 F1001: str = "F1001"
 F1010: str = "F1010"
+NOISE: str = "NOISE"
 
 SECONDARY_AMPLITUDE_X: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum
