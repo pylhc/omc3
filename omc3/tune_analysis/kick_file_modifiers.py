@@ -134,7 +134,7 @@ def _filter_bbq_cut(bbq_df: tfs.TfsDataFrame, filter_opts: Sequence[MinMaxFilter
         bbq_df.headers[get_max_tune_header(plane)] = filter_opts[idx].max
 
         bbq_df[get_mav_col(plane)] = bbq_mav
-        bbq_df[get_mav_err_col(plane)] = bbq_err # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
+        bbq_df[get_mav_err_col(plane)] = bbq_err  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
         bbq_df[get_used_in_mav_col(plane)] = mask
     return bbq_df
 
