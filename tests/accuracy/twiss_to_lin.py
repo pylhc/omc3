@@ -79,7 +79,7 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0, beam_directio
                                      (1 + dpp * np.sin(2 * np.pi * model.loc[:, f"PHI{plane}{motion}"])
                                       * model.loc[:, f"W{plane}{motion}"])) + lin[f"ERRAMP{plane}"]
 
-        lin[f"ERRAMP{plane}"] = np.abs(lin[f"ERRAMP{plane}"]) # * 2  divided by two removed?
+        lin[f"ERRAMP{plane}"] = np.abs(lin[f"ERRAMP{plane}"])  # * 2  divided by two removed?
 
         lin[f"NATMU{plane}"] = np.remainder(model.loc[:, f"MU{plane}{MOTION['free']}"]
                                             + (NAT_OVER_DRV * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
