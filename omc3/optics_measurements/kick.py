@@ -80,7 +80,7 @@ def _gen_kick_calc(meas_input, lin, plane):
     """
     Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation
     """
-    frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin.loc[:, [f"{AMPLITUDE}{plane}", PEAK2PEAK]],
+    frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin,
                      how='inner', left_index=True, right_index=True)
     amps = (frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy() if meas_input.accelerator.excitation
             else frame.loc[:, PEAK2PEAK].to_numpy() / 2.0)
@@ -96,7 +96,7 @@ def _gen_kick_calc(meas_input, lin, plane):
     mean_2j = np.mean(actions_2j)
     err_2j = np.sqrt(np.mean((2*err_amps*amps)**2))
 
-    #TODO: Discuss error calculation. Before it was using `std(actions_2j)`
+    # TODO: Discuss error calculation. Before it was using `std(actions_2j)`
     return np.array([mean_sqrt2j, err_sqrt2j, mean_2j, err_2j])
 
 
