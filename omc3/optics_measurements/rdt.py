@@ -18,6 +18,7 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
+from optics_functions.rdt import get_all_to_order
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
@@ -38,6 +39,31 @@ DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Skew Quadrupole
                            (2, 0, 2, 0), (2, 0, 1, 1), (0, 2, 2, 0), (0, 2, 1, 1)  # Normal Octupole
                            )}
 
+def _generate_plane_rdts(order):
+    # Get all the valid RDTs up to a certain order
+    all_rdts = get_all_to_order(order)
+
+    single_plane = {'X': [], 'Y': []}
+    double_plane = {'X': [], 'Y': []}
+    # Iterate through our RDTs an classify them depending on what plane they act
+    for (j,k,l,m) in all_rdts:
+        if j == 0 and l == 0:
+            continue
+        if l+m == 0 and j != 0:
+            single_plane['X'].append((j,k,l,m))
+        elif j+k == 0 and l != 0:
+            single_plane['Y'].append((j,k,l,m))
+        elif j == 0:
+            double_plane['Y'].append((j,k,l,m))
+        elif l == 0:
+            double_plane['X'].append((j,k,l,m))
+        else:  # both planes
+            double_plane['X'].append((j,k,l,m))
+            double_plane['Y'].append((j,k,l,m))
+
+    return single_plane, double_plane
+
+SINGLE_PLANE_RDTS, DOUBLE_PLANE_RDTS = _generate_plane_rdts(5)
 
 def calculate(measure_input, input_files, tunes, phases, invariants, header):
     """
@@ -85,7 +111,13 @@ def _rdt_to_str(rdt):
 def _rdt_to_order_and_type(rdt):
     j, k, l, m = rdt
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
-    orders = dict(((1, "dipole"), (2, "quadrupole"), (3, "sextupole"), (4, "octupole")))
+    orders = dict(((1, "dipole"), 
+                   (2, "quadrupole"), 
+                   (3, "sextupole"), 
+                   (4, "octupole"),
+                   (5, "decapole"),
+                   (6, "dodecapole"),
+                 ))
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 

@@ -20,6 +20,7 @@ from omc3.definitions.constants import PLANES, PI2
 from omc3.harpy.constants import (COL_TUNE, COL_AMP, COL_MU,
                                   COL_NATTUNE, COL_NATAMP, COL_NATMU,
                                   COL_FREQ, COL_PHASE)
+from optics_functions.rdt import get_all_to_order
 
 LOGGER = logging_tools.getLogger(__name__)
 
@@ -35,6 +36,20 @@ RESONANCES = {
     "Z": ((1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1))
 }
 
+def get_resonance_lines(order):
+    resonances = {'X': [], 
+                  'Y': [], 
+                  'Z': [(1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1)]}
+    fterms = get_all_to_order(order)
+    for (j,k,l,m) in fterms:
+        if j != 0:
+            resonances['X'].append((1-j+k, m-l, 0))
+        if l != 0:
+            resonances['Y'].append((k-j, 1-l+m, 0))
+    return resonances
+
+
+RESONANCES = get_resonance_lines(5)
 MAIN_LINES = {"X": (1, 0, 0), "Y": (0, 1, 0), "Z": (0, 0, 1)}
 Z_TOLERANCE = 0.0003
 
