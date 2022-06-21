@@ -22,42 +22,36 @@ from optics_functions.rdt import get_all_to_order
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
-SINGLE_PLANE_RDTS = {"X": ((3, 0, 0, 0), (1, 2, 0, 0),      # Normal Sextupolar
-                           (4, 0, 0, 0), (1, 3, 0, 0),      # Normal Octupolar
-                           ),
-                     "Y": ((0, 0, 3, 0), (0, 0, 1, 2),   # Skew Sextupolar
-                           (0, 0, 4, 0), (0, 0, 1, 3)    # Normal Octupolar
-                           )}
-DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Skew Quadrupole
-                           (1, 0, 2, 0), (1, 0, 0, 2),  # Normal Sextupole
-                           (1, 1, 0, 1), (2, 0, 1, 0), (1, 1, 1, 0), (2, 0, 0, 1),  # Skew Sextupole
-                           (2, 0, 0, 2), (1, 1, 2, 0), (1, 1, 0, 2), (2, 0, 2, 0)  # Normal Octupole
-                           ),
-                     "Y": ((0, 1, 1, 0), (1, 0, 1, 0),  # Skew Quadrupole
-                           (0, 1, 1, 1), (1, 0, 2, 0), (0, 1, 2, 0), (1, 0, 1, 1),  # Normal Sextupole
-                           (0, 2, 1, 0), (2, 0, 1, 0),  # Skew Sextupole
-                           (2, 0, 2, 0), (2, 0, 1, 1), (0, 2, 2, 0), (0, 2, 1, 1)  # Normal Octupole
-                           )}
 
 def _generate_plane_rdts(order):
+    """
+    This helper function generates two dictionnaries representing on what plane(s)
+    a RDT can be seen and which tune it is a multiple of.
+
+    For a given j+k+l+m = n multiple order, a line can be seen:
+      - on the horizontal axis if j != 0, at:
+          (1 - j + k) Qx + (m - l) Qy
+      - on the vertical axis if l != 0, at:
+          (k - j) Qx + (1 - l + m) Qy
+    """
     # Get all the valid RDTs up to a certain order
     all_rdts = get_all_to_order(order)
 
     single_plane = {'X': [], 'Y': []}
     double_plane = {'X': [], 'Y': []}
-    # Iterate through our RDTs an classify them depending on what plane they act
+    # Iterate through our RDTs and classify them depending on what plane they act
     for (j,k,l,m) in all_rdts:
-        if j == 0 and l == 0:
+        if j == 0 and l == 0:  # the RDT can't be seen on any plane
             continue
-        if l+m == 0 and j != 0:
+        if l+m == 0 and j != 0:  # The line where the RDT is seen is a multiple of the Qx line
             single_plane['X'].append((j,k,l,m))
-        elif j+k == 0 and l != 0:
+        elif j+k == 0 and l != 0:  # same, but for the Qy line
             single_plane['Y'].append((j,k,l,m))
-        elif j == 0:
+        elif j == 0:  # The RDT can only be seen on the vertical plane and uses both Qx and Qy
             double_plane['Y'].append((j,k,l,m))
-        elif l == 0:
+        elif l == 0: # same, but for the horizontal plane
             double_plane['X'].append((j,k,l,m))
-        else:  # both planes
+        else:  # The RDT can be seen on both planes and is a multiple of both Qx and Qy
             double_plane['X'].append((j,k,l,m))
             double_plane['Y'].append((j,k,l,m))
 

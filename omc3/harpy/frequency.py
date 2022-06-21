@@ -24,23 +24,13 @@ from optics_functions.rdt import get_all_to_order
 
 LOGGER = logging_tools.getLogger(__name__)
 
-RESONANCES = {
-    "X": ((0, 1, 0),
-          (2, 0, 0), (0, 2, 0), (1, 1, 0), (1, -1, 0),
-          (3, 0, 0), (0, 3, 0), (2, 1, 0), (2, -1, 0), (1, 2, 0), (1, -2, 0),
-          (1, -3, 0), (2, -2, 0)),
-    "Y": ((1, 0, 0),
-          (2, 0, 0), (0, 2, 0), (1, 1, 0), (1, -1, 0),
-          (3, 0, 0), (0, 3, 0), (2, 1, 0), (2, -1, 0), (1, 2, 0), (1, -2, 0),
-          (1, -3, 0), (2, -2, 0)),
-    "Z": ((1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1))
-}
-
 def get_resonance_lines(order):
     resonances = {'X': [], 
                   'Y': [], 
                   'Z': [(1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1)]}
+    # Get all the rdts up to a given order
     fterms = get_all_to_order(order)
+    # Some rdts can't be seen depending on the plane, filter them
     for (j,k,l,m) in fterms:
         if j != 0:
             resonances['X'].append((1-j+k, m-l, 0))
