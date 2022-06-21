@@ -330,7 +330,7 @@ class Lhc(Accelerator):
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
             )
-        if int(self.year) >= 2022:  # include the Run 3 macros (fsoubelet, 2022)
+        if self.year.lower().startswith("hllhc") or int(self.year) >= 2022:  # include the Run 3 macros (fsoubelet, 2022)
             madx_script += (
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
@@ -365,7 +365,7 @@ class Lhc(Accelerator):
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
 
-        if int(self.year) >= 2018:  # starting there we use ATS optics and macros (fsoubelet, 2022)
+        if self.year.lower().startswith("hllhc") or int(self.year) >= 2018:  # starting there we use ATS optics and macros (fsoubelet, 2022)
             madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
         else:
             madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
