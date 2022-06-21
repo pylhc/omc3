@@ -3,10 +3,13 @@ import shutil
 from pathlib import Path
 
 import pytest
-from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
-from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
+from omc3.model.accelerators.accelerator import (AcceleratorDefinitionError,
+                                                 AccExcitationMode)
+from omc3.model.constants import (TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT,
+                                  TWISS_ELEMENTS_DAT)
 from omc3.model.manager import get_accelerator
-from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
+from omc3.model.model_creators.lhc_model_creator import (
+    LhcBestKnowledgeCreator, LhcModelCreator)
 from omc3.model_creator import create_instance_and_model
 
 INPUTS = Path(__file__).parent.parent / "inputs"
@@ -116,6 +119,28 @@ def test_lhc_creation_nominal_driven(tmp_path):
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize(
+    "test_year, uses_ats, uses_run3", 
+    [("2012", False, False), ("2018", True, False), ("2022", True, True), ("hllhc1.3", False, False)]
+)
+def test_lhc_creation_use_ats_and_run3_macros(test_year, uses_ats, uses_run3):
+    accel_opt = dict(
+        accel="lhc",
+        year=test_year,
+        beam=1,
+        nat_tunes=[0.28, 0.31],
+        drv_tunes=[0.27, 0.332],
+        driven_excitation="acd",
+        dpp=0.0,
+        energy=6.5,
+        modifiers=[COMP_MODEL / "opticsfile.24_ctpps2"],
+    )
+    accel = get_accelerator(**accel_opt)
+    assert accel._uses_ats_knobs() is uses_ats
+    assert accel._uses_run3_macros() is uses_run3
 
 
 @pytest.mark.basic
