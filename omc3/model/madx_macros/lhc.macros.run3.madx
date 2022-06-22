@@ -19,7 +19,7 @@ match_tunes(nqx, nqy, beam_number): macro = {
     vary, name=dQx.bbeam_number_op;
     vary, name=dQy.bbeam_number_op;
     constraint, range=#E, mux=total_qx, muy=total_qy;
-    lmdif;
+    lmdif, tolerance=1E-10;
     endmatch;
 };
 
@@ -37,7 +37,7 @@ match_tunes_ats(nqx, nqy, beam_number): macro = {
         vary, name=dQx.bbeam_number_sq;
         vary, name=dQy.bbeam_number_sq;
         constraint, range=#E, mux=total_qx, muy=total_qy;
-        lmdif;
+        lmdif, tolerance=1E-10;
         endmatch;
 };
 
