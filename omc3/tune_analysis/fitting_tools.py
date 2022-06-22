@@ -7,7 +7,7 @@ It provides tools for fitting functions, mainly via odr.
 
 """
 from collections import namedtuple
-from typing import Sequence, Dict, List
+from typing import Sequence, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -58,6 +58,7 @@ def do_odr(x: pd.Series, y: pd.Series, xerr: pd.Series, yerr: pd.Series, order: 
     LOG.debug(f"ODR fit input (from polynomial fit): {fit_np}")
 
     # Actual ODR ---
+    xerr, yerr = _check_exact_zero_errors(xerr, yerr)
     odr = ODR(data=RealData(x=x, y=y, sx=xerr, sy=yerr),
               model=Model(get_poly_fun(order)),
               beta0=fit_np.coef)
@@ -157,6 +158,7 @@ def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike
     LOG.info(f"\nDetuning estimate without errors (curve fit):\n{res_str}\n")
 
     # Actual ODR ---
+    xerr, yerr = _check_exact_zero_errors(xerr, yerr)
     odr = ODR(data=RealData(x=x, y=y, sx=xerr, sy=yerr),
               # model=Model(first_order_detuning_2d),
               model=Model(first_order_detuning_2d, fjacd=first_order_detuning_2d_jacobian),
@@ -179,4 +181,31 @@ def _filter_nans(*args: ArrayLike) -> List[ArrayLike]:
     a = np.array(args)
     a = a[:, :, ~np.isnan(a).any(axis=0).any(axis=0)]
     return list(a)
+
+
+def _check_exact_zero_errors(xerr: ArrayLike, yerr: ArrayLike) -> Tuple[np.ndarray, np.ndarray]:
+    """Check if errors are exact zero and replace with minimum error, if so.
+    Done because ODR crashes on exact zero error-bars.
+
+    Beware that the output will always be np.arrays, even if the input is pd.Series.
+    """
+    def check_exact_zero_per_plane(err, plane):
+        if (err != 0).all():  # no problem
+            return err
+
+        # best way to work with array and series?
+        minval = np.where(err == 0, np.inf, err).min()  # assumes all values >=0
+
+        if np.isinf(minval):
+            raise ValueError(f"All errors are exactly zero in the {plane} plane."
+                             f" ODR cannot be performed.")
+        LOG.warning(f"Exact zeros in {plane} errors found."
+                    f" Replaced by {minval} (the minimum value) to be able to perform ODR.")
+        return np.where(err == 0, minval, err)
+
+    xerr = check_exact_zero_per_plane(xerr, "horizontal")
+    yerr = check_exact_zero_per_plane(yerr, "vertical")
+    return xerr, yerr
+
+
 
