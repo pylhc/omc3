@@ -84,22 +84,12 @@ from typing import Dict, Iterator, List, Sequence, Tuple
 
 import tfs
 from generic_parser import EntryPoint
-
-from omc3.model.accelerators.accelerator import (
-    AccElementTypes,
-    Accelerator,
-    AcceleratorDefinitionError,
-    AccExcitationMode,
-)
-from omc3.model.constants import (
-    B2_ERRORS_TFS,
-    B2_SETTINGS_MADX,
-    GENERAL_MACROS,
-    LHC_MACROS,
-    LHC_MACROS_RUN3,
-    MACROS_DIR,
-    MODIFIER_TAG,
-)
+from omc3.model.accelerators.accelerator import (AccElementTypes, Accelerator,
+                                                 AcceleratorDefinitionError,
+                                                 AccExcitationMode)
+from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
+                                  GENERAL_MACROS, LHC_MACROS, LHC_MACROS_RUN3,
+                                  MACROS_DIR, MODIFIER_TAG)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -134,9 +124,13 @@ class Lhc(Accelerator):
             type=str,
             required=True,
             choices=("2012", "2015", "2016", "2017", "2018", "2022", "hllhc1.3"),
-            help="Year of the optics (or hllhc1.3).",
+            help="Year of the optics (or hllhc1.x version).",
         )
-        params.add_parameter(name="ats", action="store_true", help="Marks ATS optics")
+        params.add_parameter(
+            name="ats",
+            action="store_true",
+            help="Force use of ATS macros and knobs for years which are not ATS by default.",
+            )
         return params
 
     def __init__(self, *args, **kwargs):
@@ -330,7 +324,7 @@ class Lhc(Accelerator):
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
             )
-        if self.year.lower().startswith("hllhc") or int(self.year) >= 2022:  # include the Run 3 macros (fsoubelet, 2022)
+        if self._uses_run3_macros():  # include the Run 3 macros (fsoubelet, 2022)
             madx_script += (
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
@@ -365,7 +359,7 @@ class Lhc(Accelerator):
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
 
-        if self.year.lower().startswith("hllhc") or int(self.year) >= 2018:  # starting there we use ATS optics and macros (fsoubelet, 2022)
+        if self._uses_ats_knobs():
             madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
         else:
             madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
@@ -384,6 +378,19 @@ class Lhc(Accelerator):
         )
         return madx_script
 
+    def _uses_ats_knobs(self) -> bool:
+        """Returns wether the ATS knobs and macros should be used, based on the instance's year."""
+        try:
+            return int(self.year) >= 2018  # self.year is always a string
+        except ValueError:  # if a "hllhc1.x" version is given
+            return False
+
+    def _uses_run3_macros(self) -> bool:
+        """Returns wether the Run 3 macros should be called, based on the instance's year."""
+        try:
+            return int(self.year) >= 2022  # self.year is always a string
+        except ValueError:  # if a "hllhc1.x" year is given
+            return False
 
 # General functions ##########################################################
 
