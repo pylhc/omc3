@@ -1,21 +1,41 @@
 /*
 * Macros for runIII of the LHC using the new standard of the _op for the knobs used in operation.
+* If called after lhc.macros.madx these will override the previous definitions.
 */
 
 !requires general.macros.madx
 
 
 /*
+* Performs the matching of the LHC tunes.
+* This is adapted for Run 3 to use the *_op knobs
+* @param nqx: The horizontal tune to match to.
+* @param nqy: The vertical tune to match to.
+* @param beam_number: The beam to use, either 1 or 2.
+*/
+match_tunes(nqx, nqy, beam_number): macro = {
+    exec, find_complete_tunes(nqx, nqy, beam_number);
+    match;
+    vary, name=dQx.bbeam_number_op;
+    vary, name=dQy.bbeam_number_op;
+    constraint, range=#E, mux=total_qx, muy=total_qy;
+    lmdif;
+    endmatch;
+};
+
+
+/*
 * Performs the matching of the LHC tunes, adapted to ATS optics.
+* This is adapted for Run 3 to use the *_sq knobs
 * @param qx: The horizontal tune to match to.
 * @param qy: The vertical tune to match to.
-* @param beam_number: The beam to use either 1 or 2.
+* @param beam_number: The beam to use, either 1 or 2.
 */
 match_tunes_ats(nqx, nqy, beam_number): macro = {
     exec, find_complete_tunes(nqx, nqy, beam_number);
         match;
-        vary, name=dQx_op.bbeam_number_sq;
-        vary, name=dQy_op.bbeam_number_sq;
+        vary, name=dQx.bbeam_number_sq;
+        vary, name=dQy.bbeam_number_sq;
         constraint, range=#E, mux=total_qx, muy=total_qy;
         lmdif;
         endmatch;
