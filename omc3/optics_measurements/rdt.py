@@ -18,7 +18,7 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
-from optics_functions.rdt import get_all_to_order
+from optics_functions.rdt import get_all_to_order, jklm2str
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
@@ -60,7 +60,7 @@ def _generate_plane_rdts(order):
 
     return single_plane, double_plane
 
-SINGLE_PLANE_RDTS, DOUBLE_PLANE_RDTS = _generate_plane_rdts(5)
+SINGLE_PLANE_RDTS, DOUBLE_PLANE_RDTS = _generate_plane_rdts(8)
 
 def calculate(measure_input, input_files, tunes, phases, invariants, header):
     """
@@ -85,7 +85,7 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
             try:
                 df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
             except ValueError as e:  # catch the AMP line not being found in the lin file
-                LOGGER.warning(str(e))
+                LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
                 continue
             write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
     for plane in PLANES:
@@ -96,7 +96,7 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
             try:
                 df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
             except ValueError as e:
-                LOGGER.warning(str(e))
+                LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
                 continue
             write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
@@ -122,6 +122,8 @@ def _rdt_to_order_and_type(rdt):
                    (4, "octupole"),
                    (5, "decapole"),
                    (6, "dodecapole"),
+                   (7, "tetradecapole"),
+                   (8, "hexadecapole"),
                  ))
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
