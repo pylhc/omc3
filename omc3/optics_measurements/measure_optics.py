@@ -239,7 +239,7 @@ class InputFiles(dict):
             bpm_resolution = calibs[plane].headers.get(BPM_RESOLUTION, 1e-4)  # TODO: Default of 0.1 mm is LHC specific
             for i in range(len(self[plane])):
                 # Merge all measurement BPMs into calibration data (only few BPMs),
-                # fill missing values with a scaling of 1 and estimated error of 0.5% (lmalina estimate)
+                # fill missing values with a scaling of 1 and estimated error of 0.1mm (emaclean estimate)
                 data = pd.merge(self[plane][i].loc[:, [f"{AMPLITUDE}{plane}"]], calibs[plane],
                                 how='left', left_index=True, right_index=True).fillna(
                     value={CALIBRATION: 1.})  # ERR_CALIBRATION is relative, NaN filled with absolute value below
