@@ -82,8 +82,10 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
         for rdt in SINGLE_PLANE_RDTS[plane]:
-            df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-            if df is None:  # could not process the RDT
+            try:
+                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+            except ValueError as e:  # catch the AMP line not being found in the lin file
+                LOGGER.warning(str(e))
                 continue
             write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
     for plane in PLANES:
@@ -91,8 +93,10 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
         for rdt in DOUBLE_PLANE_RDTS[plane]:
-            df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-            if df is None:
+            try:
+                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+            except ValueError as e:
+                LOGGER.warning(str(e))
                 continue
             write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
@@ -164,8 +168,6 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
     df["COUNT"] = len(input_files.dpp_frames(plane, 0))
     line = _determine_line(rdt, plane)
     phase_sign, suffix = get_line_sign_and_suffix(line, input_files, plane)
-    if phase_sign is None and suffix is None:  # no line found
-        return None
     comp_coeffs1 = to_complex(
         input_files.joined_frame(plane, [f"AMP{suffix}"], dpp_value=0).loc[df.index, :].to_numpy(),
         phase_sign * input_files.joined_frame(plane, [f"PHASE{suffix}"], dpp_value=0).loc[df.index, :].to_numpy())
@@ -248,8 +250,7 @@ def get_line_sign_and_suffix(line, input_files, plane):
     # The specified AMP column hasn't been found in the lin file
     msg = (f"The column AMP{suffix} has not been found in the lin{plane.lower()} file. "
             "Consider re-running the frequency analysis with a higher order resonance term")
-    LOGGER.warning(msg)
-    return None, None
+    raise ValueError(msg)
 
 
 def complex_secondary_lines(phase_adv, err_padv, sig1, sig2):
