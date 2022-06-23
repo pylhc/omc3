@@ -39,6 +39,7 @@ def get_resonance_lines(order):
     return resonances
 
 
+# TODO: add the order in the arguments parser
 RESONANCES = get_resonance_lines(5)
 MAIN_LINES = {"X": (1, 0, 0), "Y": (0, 1, 0), "Z": (0, 0, 1)}
 Z_TOLERANCE = 0.0003

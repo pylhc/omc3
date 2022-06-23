@@ -60,7 +60,8 @@ def _generate_plane_rdts(order):
 
     return single_plane, double_plane
 
-SINGLE_PLANE_RDTS, DOUBLE_PLANE_RDTS = _generate_plane_rdts(8)
+# TODO: add the order in the arguments parser
+SINGLE_PLANE_RDTS, DOUBLE_PLANE_RDTS = _generate_plane_rdts(5)
 
 def calculate(measure_input, input_files, tunes, phases, invariants, header):
     """
