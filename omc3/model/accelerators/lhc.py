@@ -334,7 +334,7 @@ class Lhc(Accelerator):
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
             )
-        if self._uses_run3_macros():  # include the Run 3 macros (fsoubelet, 2022)
+        if self._uses_run3_macros():
             madx_script += (
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
