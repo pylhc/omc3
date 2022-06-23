@@ -84,12 +84,22 @@ from typing import Dict, Iterator, List, Sequence, Tuple
 
 import tfs
 from generic_parser import EntryPoint
-from omc3.model.accelerators.accelerator import (AccElementTypes, Accelerator,
-                                                 AcceleratorDefinitionError,
-                                                 AccExcitationMode)
-from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
-                                  GENERAL_MACROS, LHC_MACROS, LHC_MACROS_RUN3,
-                                  MACROS_DIR, MODIFIER_TAG)
+
+from omc3.model.accelerators.accelerator import (
+    AccElementTypes,
+    Accelerator,
+    AcceleratorDefinitionError,
+    AccExcitationMode,
+)
+from omc3.model.constants import (
+    B2_ERRORS_TFS,
+    B2_SETTINGS_MADX,
+    GENERAL_MACROS,
+    LHC_MACROS,
+    LHC_MACROS_RUN3,
+    MACROS_DIR,
+    MODIFIER_TAG,
+)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
