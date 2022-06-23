@@ -23,7 +23,7 @@ from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       interaction_point, kick, phase, rdt,
                                       tune, crdt, coupling)
 from omc3.optics_measurements.constants import (
-    CHROM_BETA_NAME, ERR, EXT, AMPLITUDE, ERR_CALIBRATION, CALIBRATION, CALIBRATION_FILE, NAME
+    CHROM_BETA_NAME, ERR, EXT, AMPLITUDE, ERR_CALIBRATION, CALIBRATION, CALIBRATION_FILE, NAME, BPM_RESOLUTION
 )
 from omc3.utils import iotools, logging_tools
 
@@ -153,7 +153,8 @@ class InputFiles(dict):
     def _repair_backwards_compatible_frame(df, plane):
         """
         Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones.
-        This is for backwards compatibility with Drive.
+        This is for backwards compatibility with Drive,
+        i.e. harpy has this
         """
         df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].to_numpy() * 2
         if f"NATAMP{plane}" in df.columns:
@@ -235,22 +236,21 @@ class InputFiles(dict):
             return
 
         for plane in PLANES:
+            bpm_resolution = calibs[plane].headers.get(BPM_RESOLUTION, 1e-4)  # TODO: 0.1 mm is LHC specific
             for i in range(len(self[plane])):
                 # Merge all measurement BPMs into calibration data (only few BPMs),
                 # fill missing values with a scaling of 1 and estimated error of 0.5% (lmalina estimate)
                 data = pd.merge(self[plane][i].loc[:, [f"{AMPLITUDE}{plane}"]], calibs[plane],
                                 how='left', left_index=True, right_index=True).fillna(
-                    value={CALIBRATION: 1.,
-                           ERR_CALIBRATION: 0.005,  # estimated calibration error on unmeasured BPMs
-                           })
+                    value={CALIBRATION: 1.})  # ERR_CALIBRATION is relative, filled with absolute value below
 
                 # Scale amplitude with the calibration
-                self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:, "CALIBRATION"]
+                self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:, CALIBRATION]
 
                 # Sum Amplitude Error (absolute) and Calibration Error (relative)
                 self[plane][i][f"{ERR}{AMPLITUDE}{plane}"] = np.sqrt(
                     self[plane][i][f"{ERR}{AMPLITUDE}{plane}"]**2 +
-                    (self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION])**2
+                    ((self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION]).fillna(bpm_resolution))**2
                 )
 
     @ staticmethod

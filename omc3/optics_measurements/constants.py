@@ -65,3 +65,4 @@ ERR_CALIBRATION = "ERROR_CALIBRATION"
 
 # Headers ----------------------------------------------------------------------
 RESCALE_FACTOR: str = "RescalingFactor"
+BPM_RESOLUTION: str = "BPMResolution"
