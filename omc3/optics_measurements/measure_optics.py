@@ -10,6 +10,7 @@ import os
 import sys
 from collections import OrderedDict
 from copy import deepcopy
+from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -21,7 +22,9 @@ from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       chromatic, dispersion, dpp, iforest,
                                       interaction_point, kick, phase, rdt,
                                       tune, crdt, coupling)
-from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT)
+from omc3.optics_measurements.constants import (
+    CHROM_BETA_NAME, ERR, EXT, AMPLITUDE, ERR_CALIBRATION, CALIBRATION, CALIBRATION_FILE, NAME
+)
 from omc3.utils import iotools, logging_tools
 
 LOGGER = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
@@ -47,7 +50,7 @@ def measure_optics(input_files, measure_input):
     invariants = {}
     phase_dict = {}
     for plane in PLANES:
-        phase_dict[plane], out_dfs  = phase.calculate(measure_input, input_files, tune_dict, plane)
+        phase_dict[plane], out_dfs = phase.calculate(measure_input, input_files, tune_dict, plane)
         phase.write(out_dfs, [common_header]*4, measure_input.outputdir, plane)
         phase.write_special(measure_input, phase_dict[plane]['free'], tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
@@ -220,16 +223,35 @@ class InputFiles(dict):
             indices[0] = indices[0].intersection(ind)
         return indices[0]
 
-    def calibrate(self, calibs):
+    def calibrate(self, calibs: Dict[str, pd.DataFrame]):
+        """
+        Use calibration data to rescale amplitude and amplitude error.
+
+        Args:
+            calibs (Dict): Plane-Dictionary with DataFrames of calibration data.
+
+        """
         if calibs is None:
             return
+
         for plane in PLANES:
             for i in range(len(self[plane])):
-                data = pd.merge(self[plane][i].loc[:, ["AMP" + plane]], calibs[plane], how='left',
-                                left_index=True, right_index=True).fillna(
-                    value={"CALIBRATION": 1., "ERROR_CALIBRATION": 0.})
+                # Merge all measurement BPMs into calibration data (only few BPMs),
+                # fill missing values with a scaling of 1 and estimated error of 0.5% (lmalina estimate)
+                data = pd.merge(self[plane][i].loc[:, [f"{AMPLITUDE}{plane}"]], calibs[plane],
+                                how='left', left_index=True, right_index=True).fillna(
+                    value={CALIBRATION: 1.,
+                           ERR_CALIBRATION: 0.005,  # estimated calibration error on unmeasured BPMs
+                           })
+
+                # Scale amplitude with the calibration
                 self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:, "CALIBRATION"]
-                self[plane][i][f"{ERR}AMP{plane}"] = data.loc[:, "ERROR_CALIBRATION"]  # TODO
+
+                # Sum Amplitude Error (absolute) and Calibration Error (relative)
+                self[plane][i][f"{ERR}{AMPLITUDE}{plane}"] = np.sqrt(
+                    self[plane][i][f"{ERR}{AMPLITUDE}{plane}"]**2 +
+                    (self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION])**2
+                )
 
     @ staticmethod
     def get_columns(frame, column):
@@ -268,7 +290,7 @@ def copy_calibration_files(outputdir, calibrationdir):
         return None
     calibs = {}
     for plane in PLANES:
-        cal_file = f"calibration_{plane.lower()}.out"
+        cal_file = CALIBRATION_FILE.format(plane=plane.lower())
         iotools.copy_item(os.path.join(calibrationdir, cal_file), os.path.join(outputdir, cal_file))
-        calibs[plane] = tfs.read(os.path.join(outputdir, cal_file)).set_index("NAME")
+        calibs[plane] = tfs.read(os.path.join(outputdir, cal_file)).set_index(NAME)
     return calibs

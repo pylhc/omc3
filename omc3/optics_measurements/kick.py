@@ -21,6 +21,7 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 RES,
                                                 RESCALE_FACTOR, RMS,
                                                 SQRT_ACTION, TIME, TUNE, S, NOISE, CO)
+from omc3.utils.stats import weighted_mean, weighted_error
 
 
 def calculate(measure_input, input_files, scale, header_dict, plane):
@@ -82,21 +83,30 @@ def _gen_kick_calc(meas_input, lin, plane):
     """
     frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin,
                      how='inner', left_index=True, right_index=True)
-    amps = (frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy() if meas_input.accelerator.excitation
-            else frame.loc[:, PEAK2PEAK].to_numpy() / 2.0)
 
-    err_amps = (frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy() if meas_input.accelerator.excitation
-                else frame.loc[:, f"{CO}{RMS}"].to_numpy())
+    if meas_input.accelerator.excitation:
+        amps = frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy()
+        err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
+    else:
+        amps = frame.loc[:, PEAK2PEAK].to_numpy() / 2.0
+        err_amps = frame.loc[:, f"{CO}{RMS}"].to_numpy()
 
-    actions_sqrt2j = amps / np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
-    mean_sqrt2j = np.mean(actions_sqrt2j)
-    err_sqrt2j = np.sqrt(np.mean(err_amps**2))
+    # sqrt(2J)
+    sqrt_beta = np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
 
+    actions_sqrt2j = amps / sqrt_beta
+    errors_sqrt2j = err_amps / sqrt_beta
+
+    mean_sqrt2j = weighted_mean(data=actions_sqrt2j, errors=errors_sqrt2j)
+    err_sqrt2j = weighted_error(data=actions_sqrt2j, errors=errors_sqrt2j)
+
+    # 2J
     actions_2j = np.square(amps) / frame.loc[:, f"{BETA}{plane}"].to_numpy()
-    mean_2j = np.mean(actions_2j)
-    err_2j = np.sqrt(np.mean((2*err_amps*amps)**2))
+    errors_2j = 2 * amps * err_amps / frame.loc[:, f"{BETA}{plane}"].to_numpy()
 
-    # TODO: Discuss error calculation. Before it was using `std(actions_2j)`
+    mean_2j = weighted_mean(data=actions_2j, errors=errors_2j)
+    err_2j = weighted_error(data=actions_2j, errors=errors_2j)
+
     return np.array([mean_sqrt2j, err_sqrt2j, mean_2j, err_2j])
 
 
