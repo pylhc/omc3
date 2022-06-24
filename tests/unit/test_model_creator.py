@@ -124,7 +124,7 @@ def test_lhc_creation_nominal_driven(tmp_path):
 @pytest.mark.basic
 @pytest.mark.parametrize(
     "test_year, uses_ats, uses_run3", 
-    [("2012", False, False), ("2018", True, False), ("2022", True, True), ("hllhc1.3", False, False)]
+    [("2012", False, False), ("2018", True, False), ("2022", False, True), ("hllhc1.3", False, False)]
 )
 def test_lhc_creation_use_ats_and_run3_macros(test_year, uses_ats, uses_run3):
     accel_opt = dict(
