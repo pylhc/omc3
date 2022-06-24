@@ -3,8 +3,7 @@
 #### 2022-06-21 - v0.4.1 - _jdilly_, _fesoubel_
 
 - Fixed:
-  - LHC ATS macros called for all years after 2018
-  - LHC RunIII macros called for all years after 2022
+  - Fixed macros and knobs usage in model_creator for Run 3 optics
   - Getting new BBQ data ended in a key-error.
   - Better KeyError Message for Exciter-BPM not found.
 
