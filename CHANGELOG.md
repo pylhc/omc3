@@ -1,5 +1,12 @@
 # OMC3 Changelog
 
+#### 2022-06-21 - v0.4.1 - _jdilly_, _fesoubel_
+
+- Fixed:
+  - Fixed macros and knobs usage in model_creator for Run 3 optics
+  - Getting new BBQ data ended in a key-error.
+  - Better KeyError Message for Exciter-BPM not found.
+
 #### 2022-05-30 - v0.4.0 - _jdilly_
 
 - Added: 
