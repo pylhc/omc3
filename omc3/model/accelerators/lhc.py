@@ -84,22 +84,12 @@ from typing import Dict, Iterator, List, Sequence, Tuple
 
 import tfs
 from generic_parser import EntryPoint
-
-from omc3.model.accelerators.accelerator import (
-    AccElementTypes,
-    Accelerator,
-    AcceleratorDefinitionError,
-    AccExcitationMode,
-)
-from omc3.model.constants import (
-    B2_ERRORS_TFS,
-    B2_SETTINGS_MADX,
-    GENERAL_MACROS,
-    LHC_MACROS,
-    LHC_MACROS_RUN3,
-    MACROS_DIR,
-    MODIFIER_TAG,
-)
+from omc3.model.accelerators.accelerator import (AccElementTypes, Accelerator,
+                                                 AcceleratorDefinitionError,
+                                                 AccExcitationMode)
+from omc3.model.constants import (B2_ERRORS_TFS, B2_SETTINGS_MADX,
+                                  GENERAL_MACROS, LHC_MACROS, LHC_MACROS_RUN3,
+                                  MACROS_DIR, MODIFIER_TAG)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -334,6 +324,7 @@ class Lhc(Accelerator):
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
             )
         if self._uses_run3_macros():
+            LOGGER.debug("According to the optics year, Run 3 versions of the macros will be used")
             madx_script += (
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
@@ -369,6 +360,7 @@ class Lhc(Accelerator):
             madx_script += "exec, high_beta_matcher();\n"
 
         if self._uses_ats_knobs():
+            LOGGER.debug("According to the optics year or the --ats flag being provided, ATS macros and knobs will be used")
             madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
             madx_script += f"exec, coupling_knob_ats({self.beam});\n"
         else:
