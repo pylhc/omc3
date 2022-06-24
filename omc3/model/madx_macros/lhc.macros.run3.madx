@@ -1,5 +1,5 @@
 /*
-* Macros for runIII of the LHC using the new standard of the _op for the knobs used in operation.
+* Macros for runIII of the LHC using the new standard _op knobs used in operation.
 * If called after lhc.macros.madx these will override the previous definitions.
 */
 
@@ -8,7 +8,8 @@
 
 /*
 * Performs the matching of the LHC tunes.
-* This is adapted for Run 3 to use the *_op knobs
+* This is adapted for Run 3 to use the *_op knobs and is
+* the default routine to use starting with 2022 optics.
 * @param nqx: The horizontal tune to match to.
 * @param nqy: The vertical tune to match to.
 * @param beam_number: The beam to use, either 1 or 2.
@@ -25,8 +26,10 @@ match_tunes(nqx, nqy, beam_number): macro = {
 
 
 /*
-* Performs the matching of the LHC tunes, adapted to ATS optics.
-* This is adapted for Run 3 to use the *_sq knobs
+* Performs the matching of the LHC tunes using the *_sq knobs.
+* This is not the default routine to use, but it is left available
+* should we choose to use it. If --ats is provided to model_creator
+* then this will be used instead of the one above.
 * @param qx: The horizontal tune to match to.
 * @param qy: The vertical tune to match to.
 * @param beam_number: The beam to use, either 1 or 2.
@@ -43,11 +46,11 @@ match_tunes_ats(nqx, nqy, beam_number): macro = {
 
 /*
 * Coupling knobs convention for Run3
+* beam_number is a parameter here but not used
 */
-coupling_knob_ats(beam_number): macro = {
+coupling_knob(beam_number): macro = {
         Cmrs.b1_op := b1_re_ip7_knob;
         Cmrs.b2_op := b2_re_ip7_knob;
         Cmis.b1_op := b1_im_ip7_knob;
         Cmis.b2_op := b2_im_ip7_knob;  
 };
-

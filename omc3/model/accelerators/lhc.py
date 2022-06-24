@@ -328,7 +328,6 @@ class Lhc(Accelerator):
     def get_base_madx_script(self, best_knowledge: bool = False) -> str:
         ats_md = False
         high_beta = False
-        ats_suffix = "_ats" if self.ats else ""
         madx_script = (
             # f"option, -echo;\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
@@ -371,13 +370,14 @@ class Lhc(Accelerator):
 
         if self._uses_ats_knobs():
             madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            madx_script += f"exec, coupling_knob_ats({self.beam});\n"
         else:
-            madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-
+            madx_script += f"exec, match_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            madx_script += f"exec, coupling_knob({self.beam});\n"
+        
         if ats_md:
             madx_script += "exec, full_response_ats();\n"
 
-        madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
         return madx_script
 
     def get_update_correction_script(self, outpath: Path, corr_file: Path) -> str:
@@ -389,9 +389,14 @@ class Lhc(Accelerator):
         return madx_script
 
     def _uses_ats_knobs(self) -> bool:
-        """Returns wether the ATS knobs and macros should be used, based on the instance's year."""
+        """
+        Returns wether the ATS knobs and macros should be used, based on the instance's year.
+        If the **--ats** flag was explicitely provided then the returned value will be `True`.
+        """
         try:
-            return int(self.year) >= 2018  # self.year is always a string
+            if self.ats:
+                return True
+            return 2018 <= int(self.year) <= 2021  # self.year is always a string
         except ValueError:  # if a "hllhc1.x" version is given
             return False
 
