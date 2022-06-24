@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.lhc &mdash; omc3 0.4.0 documentation</title>
+  <title>omc3.model.accelerators.lhc &mdash; omc3 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -333,9 +333,13 @@
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;2012&quot;</span><span class="p">,</span> <span class="s2">&quot;2015&quot;</span><span class="p">,</span> <span class="s2">&quot;2016&quot;</span><span class="p">,</span> <span class="s2">&quot;2017&quot;</span><span class="p">,</span> <span class="s2">&quot;2018&quot;</span><span class="p">,</span> <span class="s2">&quot;2022&quot;</span><span class="p">,</span> <span class="s2">&quot;hllhc1.3&quot;</span><span class="p">),</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Year of the optics (or hllhc1.3).&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Year of the optics (or hllhc1.x version).&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ats&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Marks ATS optics&quot;</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ats&quot;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force use of ATS macros and knobs for years which are not ATS by default.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -520,22 +524,41 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="ow">in</span> <span class="n">index</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;BPMSW.33R8.B2&quot;</span><span class="p">:]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 
+    <span class="k">def</span> <span class="nf">_get_madx_script_info_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">info_comments</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;title, &quot;LHC Model created by omc3&quot;;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Model directory: </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Natural Tune X         [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Natural Tune Y         [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Best Knowledge:        [</span><span class="si">{</span><span class="s1">&#39;NO&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_best_knowledge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;OK&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
+            <span class="n">info_comments</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;! Excitation             [</span><span class="si">{</span><span class="s1">&#39;NO&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="s2">]</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="n">info_comments</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">info_comments</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;! Excitation             [</span><span class="si">{</span><span class="s1">&#39;ACD&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span> <span class="k">else</span> <span class="s1">&#39;ADT&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;! &gt; Driven Tune X        [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;! &gt; Driven Tune Y        [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">info_comments</span>
+
 <div class="viewcode-block" id="Lhc.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">ats_md</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">high_beta</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">ats_suffix</span> <span class="o">=</span> <span class="s2">&quot;_ats&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ats</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="c1"># f&quot;option, -echo;\n&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_madx_script_info_comments</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! ----- Calling Sequence and Optics -----</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span> <span class="o">/</span> <span class="n">GENERAL_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span> <span class="o">/</span> <span class="n">LHC_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;2022&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_run3_macros</span><span class="p">():</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;According to the optics year, Run 3 versions of the macros will be used&quot;</span><span class="p">)</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span> <span class="o">/</span> <span class="n">LHC_MACROS_RUN3</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;title, &quot;LHC Model created by OMC3&quot;;</span><span class="se">\n</span><span class="s1">&#39;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">load_main_seq_madx</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;exec, define_nominal_beams();</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
@@ -544,6 +567,7 @@
             <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span>
         <span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Defining Configuration Specifics -----</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;exec, cycle_sequences();</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;xing_angles = </span><span class="si">{</span><span class="s1">&#39;1&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xing</span> <span class="k">else</span> <span class="s1">&#39;0&#39;</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;if(xing_angles==1)</span><span class="se">{{\n</span><span class="s2">&quot;</span>
@@ -557,6 +581,7 @@
         <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
             <span class="c1"># madx_script += f&quot;exec, load_average_error_table({self.energy}, {self.beam});\n&quot;</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- For Best Knowledge Model -----</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;readmytable, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_ERRORS_TFS</span><span class="si">}</span><span class="s2">&#39;, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;seterr, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_SETTINGS_MADX</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -564,15 +589,18 @@
         <span class="k">if</span> <span class="n">high_beta</span><span class="p">:</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;exec, high_beta_matcher();</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;2018&quot;</span><span class="p">:</span>  <span class="c1"># to be checked for 2022 (jdilly, 2021)</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Matching Knobs and Output Files -----</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_ats_knobs</span><span class="p">():</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;According to the optics year or the --ats flag being provided, ATS macros and knobs will be used&quot;</span><span class="p">)</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes_ats(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, coupling_knob_ats(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes</span><span class="si">{</span><span class="n">ats_suffix</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
-
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, coupling_knob(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+        
         <span class="k">if</span> <span class="n">ats_md</span><span class="p">:</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;exec, full_response_ats();</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, coupling_knob</span><span class="si">{</span><span class="n">ats_suffix</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
 <div class="viewcode-block" id="Lhc.get_update_correction_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_update_correction_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_correction_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outpath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -581,8 +609,26 @@
             <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">corr_file</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">madx_script</span></div></div>
+        <span class="k">return</span> <span class="n">madx_script</span></div>
 
+    <span class="k">def</span> <span class="nf">_uses_ats_knobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns wether the ATS knobs and macros should be used, based on the instance&#39;s year.</span>
+<span class="sd">        If the **--ats** flag was explicitely provided then the returned value will be `True`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ats</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="mi">2018</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2021</span>  <span class="c1"># self.year is always a string</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># if a &quot;hllhc1.x&quot; version is given</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_uses_run3_macros</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns wether the Run 3 macros should be called, based on the instance&#39;s year.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2022</span>  <span class="c1"># self.year is always a string</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># if a &quot;hllhc1.x&quot; year is given</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
 
 <span class="c1"># General functions ##########################################################</span>
 
