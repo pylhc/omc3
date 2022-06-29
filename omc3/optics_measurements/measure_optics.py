@@ -21,7 +21,7 @@ from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       chromatic, dispersion, dpp, iforest,
                                       interaction_point, kick, phase, rdt,
                                       tune, crdt, coupling)
-from omc3.optics_measurements.constants import (CHROM_BETA_NAME, ERR, EXT)
+from omc3.optics_measurements.constants import (PHASE_NAME, CHROM_BETA_NAME, ERR, EXT)
 from omc3.utils import iotools, logging_tools
 
 LOGGER = logging_tools.get_logger(__name__, level_console=logging_tools.INFO)
@@ -45,35 +45,40 @@ def measure_optics(input_files, measure_input):
     tune_dict = tune.calculate(measure_input, input_files)
     common_header = _get_header(measure_input, tune_dict)
     invariants = {}
-    phase_dict = {}
+    # phase_dict = {}
     for plane in PLANES:
-        phase_dict[plane], out_dfs  = phase.calculate(measure_input, input_files, tune_dict, plane)
-        phase.write(out_dfs, [common_header]*4, measure_input.outputdir, plane)
-        phase.write_special(measure_input, phase_dict[plane]['free'], tune_dict[plane]["QF"], plane)
-        if measure_input.only_coupling:
-            continue
-        beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict[plane], common_header, plane)
-        beta_from_phase.write(beta_df, beta_header, measure_input.outputdir, plane)
+        # phase_dict[plane], out_dfs  = phase.calculate(measure_input, input_files, tune_dict, plane)
+        # phase.write(out_dfs, [common_header]*4, measure_input.outputdir, plane)
+        # phase.write_special(measure_input, phase_dict[plane]['free'], tune_dict[plane]["QF"], plane)
+        # if measure_input.only_coupling:
+        #     continue
+        # beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict[plane], common_header, plane)
+        # beta_from_phase.write(beta_df, beta_header, measure_input.outputdir, plane)
 
-        ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_df, common_header, plane)
+        # ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_df, common_header, plane)
+        ratio = 1
         invariants[plane] = kick.calculate(measure_input, input_files, ratio, common_header, plane)
-        ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict[plane]['free'])
-        interaction_point.write(ip_df, common_header, measure_input.outputdir, plane)
-        dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
-        dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
-        if plane == "X":
-            dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
-    coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
-    if measure_input.only_coupling:
-        return
-    if 'rdt' in measure_input.nonlinear:
-        iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))
-        rdt.calculate(measure_input, input_files, tune_dict, phase_dict, invariants, common_header)
-    if 'crdt' in measure_input.nonlinear:
-        iotools.create_dirs(os.path.join(measure_input.outputdir, "crdt"))
-        crdt.calculate(measure_input, input_files, invariants, common_header)
-    if measure_input.chromatic_beating:
-        chromatic_beating(input_files, measure_input, tune_dict)
+
+        # write phase_x.tfs as the gui needs that to recognize a valid optics directory
+        tfs.write(os.path.join(measure_input.outputdir, f"{PHASE_NAME}{plane.lower()}{EXT}"), pd.DataFrame())
+
+    #     ip_df = interaction_point.betastar_from_phase(measure_input, phase_dict[plane]['free'])
+    #     interaction_point.write(ip_df, common_header, measure_input.outputdir, plane)
+    #     dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
+    #     dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
+    #     if plane == "X":
+    #         dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
+    # coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
+    # if measure_input.only_coupling:
+    #     return
+    # if 'rdt' in measure_input.nonlinear:
+    #     iotools.create_dirs(os.path.join(measure_input.outputdir, "rdt"))
+    #     rdt.calculate(measure_input, input_files, tune_dict, phase_dict, invariants, common_header)
+    # if 'crdt' in measure_input.nonlinear:
+    #     iotools.create_dirs(os.path.join(measure_input.outputdir, "crdt"))
+    #     crdt.calculate(measure_input, input_files, invariants, common_header)
+    # if measure_input.chromatic_beating:
+    #     chromatic_beating(input_files, measure_input, tune_dict)
 
 
 def chromatic_beating(input_files, measure_input, tune_dict):
