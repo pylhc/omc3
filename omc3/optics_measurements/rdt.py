@@ -85,10 +85,10 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
         for rdt in SINGLE_PLANE_RDTS[plane]:
             try:
                 df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-                write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
             except ValueError as e:  # catch the AMP line not being found in the lin file
                 LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
                 continue
+            write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
     for plane in PLANES:
         bpm_names = input_files.bpms(dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
@@ -96,10 +96,10 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
         for rdt in DOUBLE_PLANE_RDTS[plane]:
             try:
                 df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-                write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
             except ValueError as e:
                 LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
                 continue
+            write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
 
 def write(df, header, meas_input, plane, rdt):
