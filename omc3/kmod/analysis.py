@@ -146,7 +146,7 @@ def fit_prec(x, beta_av):
     return dQ
 
 
-np.vectorize(fit_prec)
+fit_prec = np.vectorize(fit_prec)
 
 
 def fit_approx(x, beta_av):
@@ -154,7 +154,7 @@ def fit_approx(x, beta_av):
     return dQ
 
 
-np.vectorize(fit_approx)
+fit_approx = np.vectorize(fit_approx)
 
 
 def average_beta_from_Tune(Q, TdQ, l, Dk):
