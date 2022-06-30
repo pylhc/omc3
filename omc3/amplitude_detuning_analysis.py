@@ -289,13 +289,21 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
     if bbq_in is not None and bbq_in == INPUT_PREVIOUS:
         # NOTE: this is not the same as the "previous BBQ data" option in the GUI.
         # That one just uses the previous bbq_ampdet.tfs file (loaded in the "else" below).
-        # The usecase for the INPUT_PREVIOUS option here is,
+        # The use-case for the INPUT_PREVIOUS option here is,
         # that you can modify the kick_ampdet_xy file manually (e.g. removing kicks)
         # and run the fitting on the new data again,
         # without having to touch the whole BBQ stuff again (as the values are already in the file).
+        # Tips:
+        #  - Remove full columns to get rid of the whole kick
+        #  - Add NaNs into NATQ columns you want to ignore (in case you want to keep the other plane for this kick)
+        #  - Add NaNs to the ERRNATQ columns if you want to plot the point (w/o error bars) but not use it for fit
         LOG.debug("Getting data from previous ampdet kick file")
         kick_df = read_timed_dataframe(Path(kick) / get_kick_out_name())
         kick_df.headers = {k: v for k, v in kick_df.headers.items() if not k.startswith("ODR_")}
+
+        # redo the corrected columns, so you only need to add NaNs into the NATQ columns
+        LOG.debug("Adding corrected natural tunes and stdev to kick data")
+        kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
     else:
         LOG.debug("Getting data from kick files")
         kick_df = read_two_kick_files_from_folder(kick)
