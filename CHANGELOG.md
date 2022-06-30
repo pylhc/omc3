@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### ????-??-?? - v0.4.2 - _fesoubel_
+
+- Fixed:
+  - Some functions in the `kmod` analysis are now properly vectorized.
+
 #### 2022-06-21 - v0.4.1 - _jdilly_, _fesoubel_
 
 - Fixed:
