@@ -326,10 +326,10 @@ def convert_bbs_kickdataframe(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
         if COEFFICIENT.format(order=1) in key:
             df.headers[key] = df.headers[key] * 1e6  # inverse um to inverse m
 
-        # use uncorrected error columns for corrected data
-        if ERR in key:
-            new_key = key.replace(ERR, f"{ERR}{CORRECTED}")
-            df.headers[new_key] = df.headers[key]
+        # # use uncorrected error columns for corrected data
+        # if ERR in key:
+        #     new_key = key.replace(ERR, f"{ERR}{CORRECTED}")
+        #     df.headers[new_key] = df.headers[key]
 
     # add err headers for coefficient 0 (offset)
     for tune in PLANES:
@@ -362,12 +362,12 @@ def _rename_old_header(key: str):
             key = key.replace(old, new)
     key = key.replace("OFFSET", COEFFICIENT.format(order=0)).replace("SLOPE", COEFFICIENT.format(order=1))
 
-    # this was the last prefix in the old file, so replace this first
+    # CORR was the last prefix in the old file, so replace this first
     if "_CORR" in key:
         parts = key.split("_")
-        key = "_".join(parts[:-2] + [f"{CORRECTED}{parts[-2]}"])
+        key = "_".join(parts[:2] + [f"{CORRECTED}{parts[2]}"] + parts[3:-1])
 
-    # and then remove also this and add ERR
+    # and then remove also STD and add ERR
     if "_STD" in key:
         parts = key.split("_")
         key = "_".join(parts[:-2] + [f"{ERR}{parts[-2]}"])
