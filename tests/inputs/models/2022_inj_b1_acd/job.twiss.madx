@@ -1,0 +1,45 @@
+option, -echo;
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/beta_beat.macros.madx";
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/lhc.macros.madx";
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/lhc_runII.macros.madx";
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/beta_beat.macros.madx";
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/lhc.macros.madx";
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/lhc_runII.macros.madx";
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/lhc_runII_ats.macros.madx";
+call, file = "/afs/cern.ch/eng/sl/lintrack/Beta-Beat.src/madx/lib/lhc_runIII_2022.macros.madx";
+option, echo;
+
+title, "Model creator for java";
+
+!@require lhc_runIII_2022.macros.madx
+
+option, -echo;
+
+call, file = "/afs/cern.ch/eng/acc-models/lhc/2022/lhc.seq";
+
+exec, define_nominal_beams();
+call, file = "/afs/cern.ch/eng/acc-models/lhc/2022/operation/optics/R2022a_A30cmC30cmA10mL200cm.madx";
+exec, cycle_sequences();
+
+if(0==1){
+    exec, set_crossing_scheme_ON();
+}else{
+    exec, set_default_crossing_scheme();
+}
+
+call, file = "/afs/cern.ch/eng/acc-models/lhc/2022/toolkit/remove-triplet-symmetry-knob.madx"; ! removes ktqx.r1 := -ktqx.l1 type issues 
+
+use, period = LHCB1;
+
+option, echo;
+
+exec, match_tunes(0.28, 0.31, 1);
+
+exec, do_twiss_monitors(LHCB1, "/afs/cern.ch/work/m/mlegarre/public/jupyter/resonance_driving_terms/measurements/2022-06-24/Analysis/Model/twiss.dat", 0.0);
+exec, do_twiss_elements(LHCB1, "/afs/cern.ch/work/m/mlegarre/public/jupyter/resonance_driving_terms/measurements/2022-06-24/Analysis/Model/twiss_elements.dat", 0.0);
+
+if(1 == 1){
+    exec, twiss_ac_dipole(0.28, 0.31, 0.273, 0.319, 1, "/afs/cern.ch/work/m/mlegarre/public/jupyter/resonance_driving_terms/measurements/2022-06-24/Analysis/Model/twiss_ac.dat", 0.0);
+}else if(0 == 1){
+    exec, twiss_adt(0.28, 0.31, 0.273, 0.319, 1, "/afs/cern.ch/work/m/mlegarre/public/jupyter/resonance_driving_terms/measurements/2022-06-24/Analysis/Model/twiss_adt.dat", 0.0);
+}
