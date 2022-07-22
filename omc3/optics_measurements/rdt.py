@@ -47,21 +47,21 @@ def _generate_plane_rdts(order):
         if j == 0 and l == 0:  # the RDT can't be seen on any plane
             continue
         if l+m == 0 and j != 0:  # The line where the RDT is seen is a multiple of the Qx line
-            single_plane['X'].append((j,k,l,m))
+            single_plane['X'].append((j,k,l,m))  # e.g. f1400, f3000, f4000
         elif j+k == 0 and l != 0:  # same, but for the Qy line
-            single_plane['Y'].append((j,k,l,m))
+            single_plane['Y'].append((j,k,l,m))  # e.g. f0030,f0040
         elif j == 0:  # The RDT can only be seen on the vertical plane and uses both Qx and Qy
-            double_plane['Y'].append((j,k,l,m))
+            double_plane['Y'].append((j,k,l,m))  # e.g. f0111, f0120
         elif l == 0: # same, but for the horizontal plane
-            double_plane['X'].append((j,k,l,m))
+            double_plane['X'].append((j,k,l,m))  # e.g. f1001, f1002
         else:  # The RDT can be seen on both planes and is a multiple of both Qx and Qy
-            double_plane['X'].append((j,k,l,m))
+            double_plane['X'].append((j,k,l,m))  # e.g. f1020, f1120
             double_plane['Y'].append((j,k,l,m))
 
     return single_plane, double_plane
 
 # TODO: add the order in the arguments parser
-SINGLE_PLANE_RDTS, DOUBLE_PLANE_RDTS = _generate_plane_rdts(5)
+#SINGLE_PLANE_RDTS, DOUBLE_PLANE_RDTS = _generate_plane_rdts(5)
 
 def calculate(measure_input, input_files, tunes, phases, invariants, header):
     """
@@ -78,11 +78,14 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
     LOGGER.info(f"Start of RDT analysis")
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
+    LOGGER.info(f"Calculating RDTs up to magnet order {meas_input['rdt_magnet_order']}")
+
+    single_plane_rdts, double_plane_rdts = _generate_plane_rdts(meas_input["rdt_magnet_order"])
     for plane in PLANES:
         bpm_names = input_files.bpms(plane=plane, dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
-        for rdt in SINGLE_PLANE_RDTS[plane]:
+        for rdt in single_plane_rdts[plane]:
             try:
                 df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
             except ValueError as e:  # catch the AMP line not being found in the lin file
@@ -93,7 +96,7 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
         bpm_names = input_files.bpms(dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
-        for rdt in DOUBLE_PLANE_RDTS[plane]:
+        for rdt in double_plane_rdts[plane]:
             try:
                 df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
             except ValueError as e:
