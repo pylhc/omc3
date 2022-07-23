@@ -74,3 +74,18 @@ Documentation including relevant flags and parameters can be found at <https://p
 ## License
 
 This project is licensed under the `MIT License` - see the [LICENSE](LICENSE) file for details.
+
+
+## Citing
+
+If `omc3` has been significant in your work, and you would like to acknowledge the package in your academic publication, please consider citing the following:
+```bibtex
+@software{omc3,
+  author    = {OMC-Team and Malina, L and Dilly, J and Hofer, M and Soubelet, F and Wegscheider, A and Coello De Portugal, J and Le Garrec, M and Persson, T and Keintzel, J and Garcia Morales, H and Tomás, R},
+  doi       = {10.5281/zenodo.5705625},
+  publisher = {Zenodo},
+  title     = {OMC3},
+  url       = {https://doi.org/10.5281/zenodo.5705625},
+  year      = 2022
+}
+```
