@@ -51,7 +51,7 @@ def test_default_harpy_resonance(tmp_path):
                Y=tfs.read(f"{files}.liny"))
 
     # Some resonance lines for each order, as multiples of (Qx, Qy)
-    # The same line on each plane is given by a different RDT, but they're from the same magnet order
+    # The same line on each plane is given by different RDT, but they're from the same magnet order
     # There is thus no need to differentiate the planes when checking the line
     r_lines = {2: [(0, 2), (-1, 1), (1, 1)],
                3: [(-1, 0), (3, 0), (1, -2), (0, 3)],
@@ -99,7 +99,7 @@ def test_harpy_bad_resonance(tmp_path):
 @pytest.mark.extended
 def test_harpy_high_order_resonance(tmp_path):
     '''
-    Check the --rdt_magnet_order with higher magnet orders: dodecapole (6)
+    Check the --resonances flag  with higher magnet orders: dodecapole (6)
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
