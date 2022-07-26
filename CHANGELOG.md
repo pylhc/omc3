@@ -1,5 +1,11 @@
 # OMC3 Changelog
 
+#### 2022-07-25 - v0.5.0 - _Mael-Le-Garrec_
+
+- Added:
+  - The resonance lines can now be sought and detected up to arbitrary order during the frequency analysis, with the `resonances` argument / flag of `harpy`.
+  - The RDT components can now be calculated up to arbitrary order in the optics measurements with the `rdt_magnet_order` argument / flag of `optics`. Note that the relevant resonance lines for this order should have been detected by `harpy` beforehand.
+
 #### 2022-06-21 - v0.4.1 - _jdilly_, _fesoubel_
 
 - Fixed:
