@@ -32,7 +32,6 @@ def test_default_harpy_resonance(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -40,7 +39,7 @@ def test_default_harpy_resonance(tmp_path):
                            clean=clean,
                            turn_bits=turn_bits,
                            autotunes="transverse",
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=input_files,
                            model=model,
                            to_write=to_write,
@@ -77,7 +76,6 @@ def test_harpy_bad_resonance_lower(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -86,7 +84,7 @@ def test_harpy_bad_resonance_lower(tmp_path):
                                clean=clean,
                                turn_bits=turn_bits,
                                autotunes="transverse",
-                               outputdir=output_dir,
+                               outputdir=tmp_path,
                                files=input_files,
                                model=model,
                                to_write=to_write,
@@ -103,7 +101,6 @@ def test_harpy_bad_resonance_upper(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -112,7 +109,7 @@ def test_harpy_bad_resonance_upper(tmp_path):
                                clean=clean,
                                turn_bits=turn_bits,
                                autotunes="transverse",
-                               outputdir=output_dir,
+                               outputdir=tmp_path,
                                files=input_files,
                                model=model,
                                to_write=to_write,
@@ -129,7 +126,6 @@ def test_harpy_high_order_resonance(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -137,7 +133,7 @@ def test_harpy_high_order_resonance(tmp_path):
                            clean=clean,
                            turn_bits=turn_bits,
                            autotunes="transverse",
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=input_files,
                            model=model,
                            to_write=to_write,
@@ -166,7 +162,6 @@ def test_optics_default_rdt_order(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -174,7 +169,7 @@ def test_optics_default_rdt_order(tmp_path):
                            clean=True,
                            turn_bits=turn_bits,
                            autotunes="transverse",
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=input_files,
                            model=model,
                            to_write=to_write,
@@ -183,7 +178,7 @@ def test_optics_default_rdt_order(tmp_path):
     # And then the optics analysis, with default values as well
     files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
     hole_in_one_entrypoint(optics=True,
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=files,
                            model_dir=os.path.dirname(model),
                            accel="lhc",
@@ -220,7 +215,6 @@ def test_optics_wrong_rdt_magnet_order_upper(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -228,7 +222,7 @@ def test_optics_wrong_rdt_magnet_order_upper(tmp_path):
                            clean=True,
                            turn_bits=turn_bits,
                            autotunes="transverse",
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=input_files,
                            model=model,
                            to_write=to_write,
@@ -238,7 +232,7 @@ def test_optics_wrong_rdt_magnet_order_upper(tmp_path):
     files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
     with pytest.raises(AttributeError) as e_info:
         hole_in_one_entrypoint(optics=True,
-                               outputdir=output_dir,
+                               outputdir=tmp_path,
                                files=files,
                                model_dir=os.path.dirname(model),
                                accel="lhc",
@@ -256,7 +250,6 @@ def test_optics_wrong_rdt_magnet_order_lower(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -264,7 +257,7 @@ def test_optics_wrong_rdt_magnet_order_lower(tmp_path):
                            clean=True,
                            turn_bits=turn_bits,
                            autotunes="transverse",
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=input_files,
                            model=model,
                            to_write=to_write,
@@ -274,7 +267,7 @@ def test_optics_wrong_rdt_magnet_order_lower(tmp_path):
     files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
     with pytest.raises(AttributeError) as e_info:
         hole_in_one_entrypoint(optics=True,
-                               outputdir=output_dir,
+                               outputdir=tmp_path,
                                files=files,
                                model_dir=os.path.dirname(model),
                                accel="lhc",
@@ -292,7 +285,6 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -300,7 +292,7 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
                            clean=True,
                            turn_bits=turn_bits,
                            autotunes="transverse",
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=input_files,
                            model=model,
                            to_write=to_write,
@@ -310,7 +302,7 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
     # And then the optics analysis, with default values as well
     files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
     hole_in_one_entrypoint(optics=True,
-                           outputdir=output_dir,
+                           outputdir=tmp_path,
                            files=files,
                            model_dir=os.path.dirname(model),
                            accel="lhc",
