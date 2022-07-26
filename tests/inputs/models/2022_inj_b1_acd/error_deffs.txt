@@ -1,0 +1,17 @@
+@ Energy	%s	6800GeV
+@ Info		%s	Created on 23/03/2022. Copy from 6.5TeV, best guess for now.
+@ RELATIVE 	%s	MAINFIELD
+@ RADIUS 	%le	0.017
+
+*	PATTERN		dK1		dX		dS		MAINFIELD
+$	%s			%le		%le		%le		%s
+
+	^MQ\.		18e-4	0		0.003	QUAD
+	^MQM		12e-4	0		0.003	QUAD
+	^MQY		 8e-4	0		0.003	QUAD
+	^MQX		10e-4	0		0.003	QUAD
+	^MQW		15e-4	0		0.003	QUAD
+	^MQT		75e-4	0		0.003	QUAD
+	^MQS		0		0		0.01	QUAD
+	^MS\.		0		0.003	0		SEXT
+	^BPM		0		0		0.003	BPM

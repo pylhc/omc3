@@ -71,7 +71,7 @@ def run_per_bunch(tbt_data, harpy_input):
 
     for plane in PLANES:
         lins[plane] = lins[plane].join(frequency.find_resonances(
-            measured_tunes, bpm_datas[plane].shape[1], plane, spectra[plane]))
+            measured_tunes, bpm_datas[plane].shape[1], plane, spectra[plane], harpy_input.resonances))
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
