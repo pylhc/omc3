@@ -209,7 +209,8 @@ def test_optics_default_rdt_order(tmp_path):
 
 
 @pytest.mark.extended
-def test_optics_wrong_rdt_magnet_order_upper(tmp_path):
+@pytest.mark.parametrize("order", [1, 9])
+def test_optics_wrong_rdt_magnet_order(tmp_path, order):
     '''
     Check that --rdt_magnet_order raises when > 8
     '''
@@ -239,43 +240,8 @@ def test_optics_wrong_rdt_magnet_order_upper(tmp_path):
                                year="2022",
                                beam=1,
                                nonlinear=['rdt'],
-                               rdt_magnet_order=9)
-    assert 'maximum magnet order for RDT calculation is 8' in str(e_info)
-
-
-@pytest.mark.extended
-def test_optics_wrong_rdt_magnet_order_lower(tmp_path):
-    '''
-    Check that --rdt_magnet_order raises when < 2
-    '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
-    input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-
-    # First run the frequency analysis with default resonances value
-    clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
-    hole_in_one_entrypoint(harpy=True,
-                           clean=True,
-                           turn_bits=turn_bits,
-                           autotunes="transverse",
-                           outputdir=tmp_path,
-                           files=input_files,
-                           model=model,
-                           to_write=to_write,
-                           unit="mm")
-
-    # And then the optics analysis, with default values as well
-    files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
-    with pytest.raises(AttributeError) as e_info:
-        hole_in_one_entrypoint(optics=True,
-                               outputdir=tmp_path,
-                               files=files,
-                               model_dir=os.path.dirname(model),
-                               accel="lhc",
-                               year="2022",
-                               beam=1,
-                               nonlinear=['rdt'],
-                               rdt_magnet_order=1)
-    assert 'minimum magnet order for RDT calculation is 2' in str(e_info)
+                               rdt_magnet_order=order)
+    assert "magnet order for RDT calculation should be between 2 and 8 (inclusive)" in str(e_info)
 
 
 @pytest.mark.extended
