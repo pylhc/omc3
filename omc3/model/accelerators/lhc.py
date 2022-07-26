@@ -134,9 +134,13 @@ class Lhc(Accelerator):
             type=str,
             required=True,
             choices=("2012", "2015", "2016", "2017", "2018", "2022", "hllhc1.3"),
-            help="Year of the optics (or hllhc1.3).",
+            help="Year of the optics (or hllhc1.x version).",
         )
-        params.add_parameter(name="ats", action="store_true", help="Marks ATS optics")
+        params.add_parameter(
+            name="ats",
+            action="store_true",
+            help="Force use of ATS macros and knobs for years which are not ATS by default.",
+            )
         return params
 
     def __init__(self, *args, **kwargs):
@@ -291,15 +295,21 @@ class Lhc(Accelerator):
         l_r = "L" if (beam == 1 != plane == "Y") else "R"
         a_b = "B" if beam == 1 else "A"
         if self.excitation == AccExcitationMode.ACD:
-            return (
-                _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms),
-                f"MKQA.6L4.B{beam}",
-            )
+            try:
+                return (
+                    _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms),
+                    f"MKQA.6L4.B{beam}",
+                )
+            except KeyError as e:
+                raise KeyError("AC-Dipole BPM not found in the common BPMs. Maybe cleaned?") from e
         if self.excitation == AccExcitationMode.ADT:
-            return (
-                _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"], commonbpms),
-                f"ADTK{adt}5{l_r}4.B{beam}",
-            )
+            try:
+                return (
+                    _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"], commonbpms),
+                    f"ADTK{adt}5{l_r}4.B{beam}",
+                )
+            except KeyError as e:
+                raise KeyError("ADT BPM not found in the common BPMs. Maybe cleaned?") from e
         return None
 
     def important_phase_advances(self) -> List[List[str]]:
@@ -315,22 +325,41 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
+    def _get_madx_script_info_comments(self) -> str:
+        info_comments = (
+            f'title, "LHC Model created by omc3";\n'
+            f"! Model directory: {Path(self.model_dir).absolute()}\n"
+            f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
+            f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
+            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'OK':>10s}]\n"
+        )
+        if self.excitation == AccExcitationMode.FREE:
+            info_comments += f"! Excitation             [{'NO':>10s}]\n\n"
+            return info_comments
+        else:
+            info_comments += (
+                f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
+                f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
+                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n\n"
+            )
+        return info_comments
+
     def get_base_madx_script(self, best_knowledge: bool = False) -> str:
         ats_md = False
         high_beta = False
-        ats_suffix = "_ats" if self.ats else ""
         madx_script = (
-            # f"option, -echo;\n"
+            f"{self._get_madx_script_info_comments()}"
+            f"! ----- Calling Sequence and Optics -----\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
             )
-        if self.year == "2022":
+        if self._uses_run3_macros():
+            LOGGER.debug("According to the optics year, Run 3 versions of the macros will be used")
             madx_script += (
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
 
         madx_script += (
-            f'title, "LHC Model created by OMC3";\n'
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n"
         )
@@ -339,6 +368,7 @@ class Lhc(Accelerator):
             for modifier in self.modifiers
         )
         madx_script += (
+            f"\n! ----- Defining Configuration Specifics -----\n"
             f"exec, cycle_sequences();\n"
             f"xing_angles = {'1' if self.xing else '0'};\n"
             f"if(xing_angles==1){{\n"
@@ -352,6 +382,7 @@ class Lhc(Accelerator):
         if best_knowledge:
             # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
             madx_script += (
+                f"\n! ----- For Best Knowledge Model -----\n"
                 f"readmytable, file = '{self.model_dir / B2_ERRORS_TFS}', table=errtab;\n"
                 f"seterr, table=errtab;\n"
                 f"call, file = '{self.model_dir / B2_SETTINGS_MADX}';\n"
@@ -359,15 +390,18 @@ class Lhc(Accelerator):
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
 
-        if self.year == "2018":  # to be checked for 2022 (jdilly, 2021)
+        madx_script += f"\n! ----- Matching Knobs and Output Files -----\n"
+        if self._uses_ats_knobs():
+            LOGGER.debug("According to the optics year or the --ats flag being provided, ATS macros and knobs will be used")
             madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            madx_script += f"exec, coupling_knob_ats({self.beam});\n"
         else:
-            madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-
+            madx_script += f"exec, match_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            madx_script += f"exec, coupling_knob({self.beam});\n"
+        
         if ats_md:
             madx_script += "exec, full_response_ats();\n"
 
-        madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
         return madx_script
 
     def get_update_correction_script(self, outpath: Path, corr_file: Path) -> str:
@@ -378,6 +412,24 @@ class Lhc(Accelerator):
         )
         return madx_script
 
+    def _uses_ats_knobs(self) -> bool:
+        """
+        Returns wether the ATS knobs and macros should be used, based on the instance's year.
+        If the **--ats** flag was explicitely provided then the returned value will be `True`.
+        """
+        try:
+            if self.ats:
+                return True
+            return 2018 <= int(self.year) <= 2021  # self.year is always a string
+        except ValueError:  # if a "hllhc1.x" version is given
+            return False
+
+    def _uses_run3_macros(self) -> bool:
+        """Returns wether the Run 3 macros should be called, based on the instance's year."""
+        try:
+            return int(self.year) >= 2022  # self.year is always a string
+        except ValueError:  # if a "hllhc1.x" year is given
+            return False
 
 # General functions ##########################################################
 

@@ -18,25 +18,47 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
+from optics_functions.rdt import get_all_to_order, jklm2str
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
-SINGLE_PLANE_RDTS = {"X": ((3, 0, 0, 0), (1, 2, 0, 0),      # Normal Sextupolar
-                           (4, 0, 0, 0), (1, 3, 0, 0),      # Normal Octupolar
-                           ),
-                     "Y": ((0, 0, 3, 0), (0, 0, 1, 2),   # Skew Sextupolar
-                           (0, 0, 4, 0), (0, 0, 1, 3)    # Normal Octupolar
-                           )}
-DOUBLE_PLANE_RDTS = {"X": ((1, 0, 0, 1), (1, 0, 1, 0),  # Skew Quadrupole
-                           (1, 0, 2, 0), (1, 0, 0, 2),  # Normal Sextupole
-                           (1, 1, 0, 1), (2, 0, 1, 0), (1, 1, 1, 0), (2, 0, 0, 1),  # Skew Sextupole
-                           (2, 0, 0, 2), (1, 1, 2, 0), (1, 1, 0, 2), (2, 0, 2, 0)  # Normal Octupole
-                           ),
-                     "Y": ((0, 1, 1, 0), (1, 0, 1, 0),  # Skew Quadrupole
-                           (0, 1, 1, 1), (1, 0, 2, 0), (0, 1, 2, 0), (1, 0, 1, 1),  # Normal Sextupole
-                           (0, 2, 1, 0), (2, 0, 1, 0),  # Skew Sextupole
-                           (2, 0, 2, 0), (2, 0, 1, 1), (0, 2, 2, 0), (0, 2, 1, 1)  # Normal Octupole
-                           )}
+
+def _generate_plane_rdts(order):
+    """
+    This helper function generates two dictionnaries representing on what plane(s)
+    a RDT can be seen and which tune it is a multiple of.
+
+    For a given j+k+l+m = n multiple order, a line can be seen:
+      - on the horizontal axis if j != 0, at:
+          (1 - j + k) Qx + (m - l) Qy
+      - on the vertical axis if l != 0, at:
+          (k - j) Qx + (1 - l + m) Qy
+
+    Reference equations are (3.27) and (3.28) in
+    [Andrea Franchi's Thesis](https://repository.gsi.de/record/55413/files/GSI-Diss-2006-07.pdf)
+    """
+    # Get all the valid RDTs up to a certain order
+    all_rdts = get_all_to_order(order)
+
+    single_plane = {'X': [], 'Y': []}
+    double_plane = {'X': [], 'Y': []}
+    # Iterate through our RDTs and classify them depending on what plane they act
+    for (j,k,l,m) in all_rdts:
+        if j == 0 and l == 0:  # the RDT can't be seen on any plane
+            continue
+        if l+m == 0 and j != 0:  # The line where the RDT is seen is a multiple of the Qx line
+            single_plane['X'].append((j,k,l,m))  # e.g. f1400, f3000, f4000
+        elif j+k == 0 and l != 0:  # same, but for the Qy line
+            single_plane['Y'].append((j,k,l,m))  # e.g. f0030,f0040
+        elif j == 0:  # The RDT can only be seen on the vertical plane and uses both Qx and Qy
+            double_plane['Y'].append((j,k,l,m))  # e.g. f0111, f0120
+        elif l == 0: # same, but for the horizontal plane
+            double_plane['X'].append((j,k,l,m))  # e.g. f1001, f1002
+        else:  # The RDT can be seen on both planes and is a multiple of both Qx and Qy
+            double_plane['X'].append((j,k,l,m))  # e.g. f1020, f1120
+            double_plane['Y'].append((j,k,l,m))
+
+    return single_plane, double_plane
 
 
 def calculate(measure_input, input_files, tunes, phases, invariants, header):
@@ -54,19 +76,30 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
     LOGGER.info(f"Start of RDT analysis")
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
+    LOGGER.info(f"Calculating RDTs up to magnet order {meas_input['rdt_magnet_order']}")
+
+    single_plane_rdts, double_plane_rdts = _generate_plane_rdts(meas_input["rdt_magnet_order"])
     for plane in PLANES:
         bpm_names = input_files.bpms(plane=plane, dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
-        for rdt in SINGLE_PLANE_RDTS[plane]:
-            df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+        for rdt in single_plane_rdts[plane]:
+            try:
+                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+            except ValueError as e:  # catch the AMP line not being found in the lin file
+                LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
+                continue
             write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
     for plane in PLANES:
         bpm_names = input_files.bpms(dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
-        for rdt in DOUBLE_PLANE_RDTS[plane]:
-            df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+        for rdt in double_plane_rdts[plane]:
+            try:
+                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+            except ValueError as e:
+                LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
+                continue
             write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
 
@@ -85,7 +118,15 @@ def _rdt_to_str(rdt):
 def _rdt_to_order_and_type(rdt):
     j, k, l, m = rdt
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
-    orders = dict(((1, "dipole"), (2, "quadrupole"), (3, "sextupole"), (4, "octupole")))
+    orders = dict(((1, "dipole"), 
+                   (2, "quadrupole"), 
+                   (3, "sextupole"), 
+                   (4, "octupole"),
+                   (5, "decapole"),
+                   (6, "dodecapole"),
+                   (7, "tetradecapole"),
+                   (8, "hexadecapole"),
+                 ))
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
@@ -209,7 +250,11 @@ def get_line_sign_and_suffix(line, input_files, plane):
         return 1, suffix
     if f"AMP{conj_suffix}" in input_files[plane][0].columns:
         return -1, conj_suffix
-    raise ValueError(f"No data for line {line} in plane {plane}")
+
+    # The specified AMP column hasn't been found in the lin file
+    msg = (f"The column AMP{suffix} has not been found in the lin{plane.lower()} file. "
+            "Consider re-running the frequency analysis with a higher order resonance term")
+    raise ValueError(msg)
 
 
 def complex_secondary_lines(phase_adv, err_padv, sig1, sig2):

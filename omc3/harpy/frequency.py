@@ -10,6 +10,7 @@ analysis.
 Also searches for resonances in the calculated spectra.
 """
 from collections import OrderedDict
+from numbers import Number
 
 import numpy as np
 import pandas as pd
@@ -19,20 +20,24 @@ from omc3.definitions.constants import PLANES, PI2
 from omc3.harpy.constants import (COL_TUNE, COL_AMP, COL_MU,
                                   COL_NATTUNE, COL_NATAMP, COL_NATMU,
                                   COL_FREQ, COL_PHASE)
+from optics_functions.rdt import get_all_to_order
 
 LOGGER = logging_tools.getLogger(__name__)
 
-RESONANCES = {
-    "X": ((0, 1, 0),
-          (2, 0, 0), (0, 2, 0), (1, 1, 0), (1, -1, 0),
-          (3, 0, 0), (0, 3, 0), (2, 1, 0), (2, -1, 0), (1, 2, 0), (1, -2, 0),
-          (1, -3, 0), (2, -2, 0)),
-    "Y": ((1, 0, 0),
-          (2, 0, 0), (0, 2, 0), (1, 1, 0), (1, -1, 0),
-          (3, 0, 0), (0, 3, 0), (2, 1, 0), (2, -1, 0), (1, 2, 0), (1, -2, 0),
-          (1, -3, 0), (2, -2, 0)),
-    "Z": ((1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1))
-}
+def _get_resonance_lines(order):
+    resonances = {'X': [], 
+                  'Y': [], 
+                  'Z': [(1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1)]}
+    # Get all the rdts up to a given order
+    fterms = get_all_to_order(order)
+    # Some rdts can't be seen depending on the plane, filter them
+    for (j,k,l,m) in fterms:
+        if j != 0:
+            resonances['X'].append((1-j+k, m-l, 0))
+        if l != 0:
+            resonances['Y'].append((k-j, 1-l+m, 0))
+    return resonances
+
 
 MAIN_LINES = {"X": (1, 0, 0), "Y": (0, 1, 0), "Z": (0, 0, 1)}
 Z_TOLERANCE = 0.0003
@@ -112,7 +117,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     return panda, spectra, bad_bpms_summaries
 
 
-def find_resonances(tunes, nturns, plane, spectra):
+def find_resonances(tunes, nturns, plane, spectra, order_resonances):
     """
     Finds higher order lines in the spectra.
 
@@ -125,10 +130,12 @@ def find_resonances(tunes, nturns, plane, spectra):
     Returns:
         A DataFrame.
     """
+    resonance_lines = _get_resonance_lines(order_resonances)
+
     df = pd.DataFrame(index=spectra["FREQS"].index, columns=OrderedDict())
-    resonances_freqs = _compute_resonances_with_freqs(plane, tunes)
+    resonances_freqs = _compute_resonances_with_freqs(plane, tunes, resonance_lines)
     if tunes[2] > 0.0:
-        resonances_freqs.update(_compute_resonances_with_freqs("Z", tunes))
+        resonances_freqs.update(_compute_resonances_with_freqs("Z", tunes, resonance_lines))
     for resonance in resonances_freqs.keys():
         tolerance = _get_resonance_tolerance(resonance, nturns)
         max_coefs, max_freqs = _search_highest_coefs(resonances_freqs[resonance], tolerance,
@@ -176,7 +183,7 @@ def _realign_phases(phase_data, freq_data, nturns):
     return np.where(np.abs(mid_phase) > 0.5, mid_phase - np.sign(mid_phase), mid_phase)
 
 
-def clean_by_tune(tunes: pd.Series, tune_clean_limit):
+def clean_by_tune(tunes: pd.Series, tune_clean_limit: Number) -> pd.Series:
     """
     Looks for outliers in the tunes pandas Series and returns their indices.
 
@@ -185,7 +192,7 @@ def clean_by_tune(tunes: pd.Series, tune_clean_limit):
         tune_clean_limit: No BPM will find as outlier if its distance to the
             average is lower than this limit.
     """
-    bad_bpms_mask = outliers.get_filter_mask(tunes, limit=tune_clean_limit)
+    bad_bpms_mask = outliers.get_filter_mask(tunes, limit=tune_clean_limit)  # returns ``True`` for good BPMs
     bad_bpms_names = tunes[~bad_bpms_mask].index
     return bad_bpms_names
 
@@ -229,17 +236,17 @@ def _get_resonance_suffix(resonance):
     return f"{x}{y}{z if z else ''}".replace("-", "_")
 
 
-def _compute_resonances_with_freqs(plane, tunes):
+def _compute_resonances_with_freqs(plane, tunes, resonance_lines):
     """
     Computes the frequencies in [0, 1) for all the resonances listed in the ``RESONANCE_LISTS``,
     together with the natural tunes frequencies if given.
     """
-    freqs = [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in RESONANCES[plane]]
-    return dict(zip(RESONANCES[plane], freqs))
+    freqs = [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in resonance_lines[plane]]
+    return dict(zip(resonance_lines[plane], freqs))
 
 
-def _compute_resonance_freqs(plane, tunes):
-    return [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in RESONANCES[plane]]
+def _compute_resonance_freqs(plane, tunes, resonance_lines):
+    return [sum(r * t for r, t in zip(tunes, resonance)) % 1 for resonance in resonance_lines[plane]]
 
 
 def _get_resonance_tolerance(resonance, n_turns):
@@ -337,10 +344,12 @@ def get_freq_mask(harpy_input, tunes, auto_tol):
         mask = _get_partial_freq_mask(harpy_input, mask, list(nattunes), harpy_input.tolerance)
     tol = harpy_input.tolerance if harpy_input.autotunes is None else auto_tol
     freqs = (list(tunes))
+    
+    resonance_lines = _get_resonance_lines(harpy_input.resonances)
     for plane in PLANES:
-        freqs.extend(_compute_resonance_freqs(plane, tunes))
+        freqs.extend(_compute_resonance_freqs(plane, tunes, resonance_lines))
     if tunes[2]:
-        freqs.extend(_compute_resonance_freqs("Z", tunes))
+        freqs.extend(_compute_resonance_freqs("Z", tunes, resonance_lines))
     return _get_partial_freq_mask(harpy_input, mask, freqs, tol)
 
 

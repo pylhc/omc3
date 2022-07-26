@@ -66,6 +66,7 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 - `merge_kmod_results.py` to merge lsa_results files created by kmod, and add the luminosity imbalance if the 4 needed IP/Beam files combination are present.
 - `fake_measurement_from_model.py` to create a fake measurement based on a model twiss file.
 - `betabeatsrc_output_converter.py` to convert outputs from our old codes to `omc3`'s new standardized format.
+- `linfile_clean.py` to automatically clean given columns in lin-files. 
 
 Example use for these scripts can be found in the [`tests`](tests) files.
 Documentation including relevant flags and parameters can be found at <https://pylhc.github.io/omc3/>.

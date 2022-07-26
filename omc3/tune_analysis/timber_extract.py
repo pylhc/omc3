@@ -87,6 +87,7 @@ def extract_between_times(
 
     # Attempt getting data from NXCALS, which can sometimes need a few retries (yay NXCALS)
     # If Java gives a feign.RetryableException, retry up to MAX_RETRIES times.
+    extract_dict = {}
     for tries in range(MAX_RETRIES + 1):
         try:
             # We use timestamps to avoid any confusion with local time
@@ -102,6 +103,16 @@ def extract_between_times(
             raise IOError("Could not get data from timber!") from java_exception
         else:
             break
+
+    if (not len(extract_dict)  # dict is empty
+            or all(not len(v) for v in extract_dict.values())  # values are empty
+            or all(len(v) == 2 and not len(v[0]) for v in extract_dict.values())  # arrays are empty (size 2 for time/data)
+    ):
+        raise IOError(f"Variables {keys} found but no data extracted in time {t_start.utc_string} - {t_end.utc_string} (UTC).\n"
+                      f"Possible reasons:\n"
+                      f"  - Too small time window.\n"
+                      f"  - Old pytimber version.\n"
+                      f"  - Variable outdated (i.e. no longer logged).")
 
     out_df = tfs.TfsDataFrame()
     for key in keys:
