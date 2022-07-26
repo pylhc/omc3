@@ -70,32 +70,8 @@ def test_default_harpy_resonance(tmp_path):
 
 
 @pytest.mark.basic
-def test_harpy_bad_resonance_lower(tmp_path):
-    '''
-    Check that the --resonances minimum order is 2
-    '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
-    input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-
-    # First run the frequency analysis with default resonances value
-    clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
-    with pytest.raises(AttributeError) as e_info:
-        hole_in_one_entrypoint(harpy=True,
-                               clean=clean,
-                               turn_bits=turn_bits,
-                               autotunes="transverse",
-                               outputdir=tmp_path,
-                               files=input_files,
-                               model=model,
-                               to_write=to_write,
-                               unit="mm",
-                               resonances=1)
-
-    assert 'minimum magnet order for resonance lines calculation is 2' in str(e_info)
-
-
-@pytest.mark.basic
-def test_harpy_bad_resonance_upper(tmp_path):
+@pytest.mark.parametrize("order", [1, 12])
+def test_harpy_bad_resonance_order(tmp_path, order):
     '''
     Check that the --resonances maximum order is 8
     '''
@@ -114,9 +90,9 @@ def test_harpy_bad_resonance_upper(tmp_path):
                                model=model,
                                to_write=to_write,
                                unit="mm",
-                               resonances=12)
+                               resonances=order)
 
-    assert 'maximum magnet order for resonance lines calculation is 8' in str(e_info)
+    assert "magnet order for resonance lines calculation should be between 2 and 8 (inclusive)" in str(e_info)
 
 
 @pytest.mark.extended
