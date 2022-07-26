@@ -207,7 +207,7 @@ def hole_in_one_entrypoint(opt, rest):
       - **resonances** *(int)*: Maximum magnet order of resonance lines to calculate.
 
         Flags: **--resonances**
-        Choices: ``(n>=2)``
+        Choices: ``(2 <= n <= 8)``
         Default: ``4``
 
 
@@ -252,7 +252,7 @@ def hole_in_one_entrypoint(opt, rest):
       - **rdt_magnet_order**: Maximum magnet order for RDTs calculation if --nonlinear is given
 
         Flags: **--rdt_magnet_order**
-        Choices: ``(n>=2)``
+        Choices: ``(2 <= n <= 8)``
         Default: ``4``
       - **only_coupling**: Calculate only coupling.
 
@@ -424,6 +424,8 @@ def _harpy_entrypoint(params):
         options.window = "rectangle"
     if options.resonances < 2:
         raise AttributeError("The minimum magnet order for resonance lines calculation is 2.")
+    if options.resonances > 8:
+        raise AttributeError("The maximum magnet order for resonance lines calculation is 8.")
 
     return options, rest
 
@@ -520,6 +522,8 @@ def _optics_entrypoint(params):
     
     if options.rdt_magnet_order < 2 and 'rdt' in options.nonlinear:
         raise AttributeError("The minimum magnet order for RDT calculation is 2.")
+    if options.rdt_magnet_order > 8 and 'rdt' in options.nonlinear:
+        raise AttributeError("The maximum magnet order for RDT calculation is 8.")
 
     return options, rest
 

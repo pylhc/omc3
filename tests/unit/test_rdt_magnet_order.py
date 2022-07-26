@@ -71,7 +71,7 @@ def test_default_harpy_resonance(tmp_path):
 
 
 @pytest.mark.basic
-def test_harpy_bad_resonance(tmp_path):
+def test_harpy_bad_resonance_lower(_test_directory):
     '''
     Check that the --resonances minimum order is 2
     '''
@@ -94,6 +94,32 @@ def test_harpy_bad_resonance(tmp_path):
                                resonances=1)
 
     assert 'minimum magnet order for resonance lines calculation is 2' in str(e_info)
+
+
+@pytest.mark.basic
+def test_harpy_bad_resonance_upper(_test_directory):
+    '''
+    Check that the --resonances maximum order is 8
+    '''
+    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    input_files = [str(INPUTS / "lhc_200_turns.sdds")]
+    output_dir = os.path.abspath(_test_directory)
+
+    # First run the frequency analysis with default resonances value
+    clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
+    with pytest.raises(AttributeError) as e_info:
+        hole_in_one_entrypoint(harpy=True,
+                               clean=clean,
+                               turn_bits=turn_bits,
+                               autotunes="transverse",
+                               outputdir=output_dir,
+                               files=input_files,
+                               model=model,
+                               to_write=to_write,
+                               unit="mm",
+                               resonances=12)
+
+    assert 'maximum magnet order for resonance lines calculation is 8' in str(e_info)
 
 
 @pytest.mark.extended
@@ -188,7 +214,43 @@ def test_optics_default_rdt_order(tmp_path):
 
 
 @pytest.mark.extended
-def test_optics_wrong_rdt_magnet_order(tmp_path):
+def test_optics_wrong_rdt_magnet_order_upper(_test_directory):
+    '''
+    Check that --rdt_magnet_order raises when > 8
+    '''
+    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    input_files = [str(INPUTS / "lhc_200_turns.sdds")]
+    output_dir = os.path.abspath(_test_directory)
+
+    # First run the frequency analysis with default resonances value
+    clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
+    hole_in_one_entrypoint(harpy=True,
+                           clean=True,
+                           turn_bits=turn_bits,
+                           autotunes="transverse",
+                           outputdir=output_dir,
+                           files=input_files,
+                           model=model,
+                           to_write=to_write,
+                           unit="mm")
+
+    # And then the optics analysis, with default values as well
+    files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
+    with pytest.raises(AttributeError) as e_info:
+        hole_in_one_entrypoint(optics=True,
+                               outputdir=output_dir,
+                               files=files,
+                               model_dir=os.path.dirname(model),
+                               accel="lhc",
+                               year="2022",
+                               beam=1,
+                               nonlinear=['rdt'],
+                               rdt_magnet_order=9)
+    assert 'maximum magnet order for RDT calculation is 8' in str(e_info)
+
+
+@pytest.mark.extended
+def test_optics_wrong_rdt_magnet_order_lower(_test_directory):
     '''
     Check that --rdt_magnet_order raises when < 2
     '''
