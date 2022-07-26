@@ -45,7 +45,7 @@ def test_default_harpy_resonance(tmp_path):
                            to_write=to_write,
                            unit="mm")
 
-    files = os.path.join(output_dir, 'lhc_200_turns.sdds')
+    files = os.path.join(tmp_path, 'lhc_200_turns.sdds')
     lin = dict(X=tfs.read(f"{files}.linx"),
                Y=tfs.read(f"{files}.liny"))
 
@@ -141,7 +141,7 @@ def test_harpy_high_order_resonance(tmp_path):
                            resonances=6)
     
 
-    files = os.path.join(output_dir, 'lhc_200_turns.sdds')
+    files = os.path.join(tmp_path, 'lhc_200_turns.sdds')
     lin = dict(X=tfs.read(f"{files}.linx"),
                Y=tfs.read(f"{files}.liny"))
 
@@ -176,7 +176,7 @@ def test_optics_default_rdt_order(tmp_path):
                            unit="mm")
 
     # And then the optics analysis, with default values as well
-    files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
+    files = [os.path.join(tmp_path, 'lhc_200_turns.sdds')]
     hole_in_one_entrypoint(optics=True,
                            outputdir=tmp_path,
                            files=files,
@@ -187,7 +187,7 @@ def test_optics_default_rdt_order(tmp_path):
                            nonlinear=['rdt'])
 
     # Now check that we got the wanted directories and nothing more
-    rdt_dirs = os.listdir(os.path.join(output_dir, 'rdt'))
+    rdt_dirs = os.listdir(os.path.join(tmp_path, 'rdt'))
     assert len(rdt_dirs) == 6
 
     magnets = 'quadrupole', 'sextupole', 'octupole'
@@ -203,7 +203,7 @@ def test_optics_default_rdt_order(tmp_path):
                    'skew_octupole': ['f0310_y', 'f3001_x']
                    }
     for magnet_type, rdts in sample_rdts.items():
-        actual_rdts = os.listdir(os.path.join(output_dir, 'rdt', magnet_type))
+        actual_rdts = os.listdir(os.path.join(tmp_path, 'rdt', magnet_type))
         for rdt in rdts:
             assert f'{rdt}.tfs' in actual_rdts
 
@@ -230,7 +230,7 @@ def test_optics_wrong_rdt_magnet_order(tmp_path, order):
                            unit="mm")
 
     # And then the optics analysis, with default values as well
-    files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
+    files = [os.path.join(tmp_path, 'lhc_200_turns.sdds')]
     with pytest.raises(AttributeError) as e_info:
         hole_in_one_entrypoint(optics=True,
                                outputdir=tmp_path,
@@ -266,7 +266,7 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
                            resonances=6)
 
     # And then the optics analysis, with default values as well
-    files = [os.path.join(output_dir, 'lhc_200_turns.sdds')]
+    files = [os.path.join(tmp_path, 'lhc_200_turns.sdds')]
     hole_in_one_entrypoint(optics=True,
                            outputdir=tmp_path,
                            files=files,
@@ -278,7 +278,7 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
                            rdt_magnet_order=6)
 
     # Now check that we got the wanted directories and nothing more
-    rdt_dirs = os.listdir(os.path.join(output_dir, 'rdt'))
+    rdt_dirs = os.listdir(os.path.join(tmp_path, 'rdt'))
     assert len(rdt_dirs) == 10
 
     magnets = 'quadrupole', 'sextupole', 'octupole', 'decapole', 'dodecapole'
@@ -298,7 +298,7 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
                    'skew_dodecapole': ['f0510_y', 'f1005_x'],
                    }
     for magnet_type, rdts in sample_rdts.items():
-        actual_rdts = os.listdir(os.path.join(output_dir, 'rdt', magnet_type))
+        actual_rdts = os.listdir(os.path.join(tmp_path, 'rdt', magnet_type))
         for rdt in rdts:
             assert f'{rdt}.tfs' in actual_rdts
 
