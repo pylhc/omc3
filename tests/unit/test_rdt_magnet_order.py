@@ -71,7 +71,7 @@ def test_default_harpy_resonance(tmp_path):
 
 
 @pytest.mark.basic
-def test_harpy_bad_resonance_lower(_test_directory):
+def test_harpy_bad_resonance_lower(tmp_path):
     '''
     Check that the --resonances minimum order is 2
     '''
@@ -97,13 +97,13 @@ def test_harpy_bad_resonance_lower(_test_directory):
 
 
 @pytest.mark.basic
-def test_harpy_bad_resonance_upper(_test_directory):
+def test_harpy_bad_resonance_upper(tmp_path):
     '''
     Check that the --resonances maximum order is 8
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = os.path.abspath(_test_directory)
+    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -214,13 +214,13 @@ def test_optics_default_rdt_order(tmp_path):
 
 
 @pytest.mark.extended
-def test_optics_wrong_rdt_magnet_order_upper(_test_directory):
+def test_optics_wrong_rdt_magnet_order_upper(tmp_path):
     '''
     Check that --rdt_magnet_order raises when > 8
     '''
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
-    output_dir = os.path.abspath(_test_directory)
+    output_dir = tmp_path
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
@@ -250,7 +250,7 @@ def test_optics_wrong_rdt_magnet_order_upper(_test_directory):
 
 
 @pytest.mark.extended
-def test_optics_wrong_rdt_magnet_order_lower(_test_directory):
+def test_optics_wrong_rdt_magnet_order_lower(tmp_path):
     '''
     Check that --rdt_magnet_order raises when < 2
     '''
