@@ -422,10 +422,8 @@ def _harpy_entrypoint(params):
         options.wrong_polarity_bpms = []
     if options.is_free_kick:
         options.window = "rectangle"
-    if options.resonances < 2:
-        raise AttributeError("The minimum magnet order for resonance lines calculation is 2.")
-    if options.resonances > 8:
-        raise AttributeError("The maximum magnet order for resonance lines calculation is 8.")
+    if not 2 <= options.resonances <= 8:
+        raise AttributeError("The magnet order for resonance lines calculation should be between 2 and 8 (inclusive).")
 
     return options, rest
 
@@ -520,10 +518,8 @@ def harpy_params():
 def _optics_entrypoint(params):
     options, rest = EntryPoint(optics_params(), strict=False).parse(params)
     
-    if options.rdt_magnet_order < 2 and 'rdt' in options.nonlinear:
-        raise AttributeError("The minimum magnet order for RDT calculation is 2.")
-    if options.rdt_magnet_order > 8 and 'rdt' in options.nonlinear:
-        raise AttributeError("The maximum magnet order for RDT calculation is 8.")
+    if "rdt" in options.nonlinear and not 2 <= options.rdt_magnet_order <= 8:
+        raise AttributeError("The magnet order for RDT calculation should be between 2 and 8 (inclusive).")
 
     return options, rest
 
