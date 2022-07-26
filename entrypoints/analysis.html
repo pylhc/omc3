@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; omc3 0.4.1 documentation</title>
+  <title>Analysis &mdash; omc3 0.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -33,7 +33,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.4
+                0.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -401,6 +401,11 @@ Default: <code class="docutils literal notranslate"><span class="pre">20</span><
 Choices: <code class="docutils literal notranslate"><span class="pre">('rectangle',</span> <span class="pre">'welch',</span> <span class="pre">'triangle',</span> <span class="pre">'hann',</span> <span class="pre">'hamming',</span> <span class="pre">'nuttal3',</span> <span class="pre">'nuttal4')</span></code>
 Default: <code class="docutils literal notranslate"><span class="pre">hann</span></code></p>
 </li>
+<li><p><strong>resonances</strong> <em>(int)</em>: Maximum magnet order of resonance lines to calculate.</p>
+<p>Flags: <strong>--resonances</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">&lt;=</span> <span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">8)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">4</span></code></p>
+</li>
 </ul>
 </dd>
 <dt>Optics Kwargs:</dt><dd><ul>
@@ -443,6 +448,11 @@ Default: <code class="docutils literal notranslate"><span class="pre">0</span></
 <p>Flags: <strong>--nonlinear</strong>
 Choices: <code class="docutils literal notranslate"><span class="pre">(rdt,</span> <span class="pre">crdt)</span></code>
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</li>
+<li><p><strong>rdt_magnet_order</strong>: Maximum magnet order for RDTs calculation if --nonlinear is given</p>
+<p>Flags: <strong>--rdt_magnet_order</strong>
+Choices: <code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">&lt;=</span> <span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">8)</span></code>
+Default: <code class="docutils literal notranslate"><span class="pre">4</span></code></p>
 </li>
 <li><p><strong>only_coupling</strong>: Calculate only coupling.</p>
 <p>Flags: <strong>--only_coupling</strong>

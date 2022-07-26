@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.hole_in_one &mdash; omc3 0.4.1 documentation</title>
+  <title>omc3.hole_in_one &mdash; omc3 0.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -30,7 +30,7 @@
             <img src="../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.4
+                0.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -403,6 +403,11 @@
 <span class="sd">        Flags: **--window**</span>
 <span class="sd">        Choices: ``(&#39;rectangle&#39;, &#39;welch&#39;, &#39;triangle&#39;, &#39;hann&#39;, &#39;hamming&#39;, &#39;nuttal3&#39;, &#39;nuttal4&#39;)``</span>
 <span class="sd">        Default: ``hann``</span>
+<span class="sd">      - **resonances** *(int)*: Maximum magnet order of resonance lines to calculate.</span>
+
+<span class="sd">        Flags: **--resonances**</span>
+<span class="sd">        Choices: ``(2 &lt;= n &lt;= 8)``</span>
+<span class="sd">        Default: ``4``</span>
 
 
 <span class="sd">    Optics Kwargs:</span>
@@ -443,6 +448,11 @@
 <span class="sd">        Flags: **--nonlinear**</span>
 <span class="sd">        Choices: ``(rdt, crdt)``</span>
 <span class="sd">        Default: ``None``</span>
+<span class="sd">      - **rdt_magnet_order**: Maximum magnet order for RDTs calculation if --nonlinear is given</span>
+
+<span class="sd">        Flags: **--rdt_magnet_order**</span>
+<span class="sd">        Choices: ``(2 &lt;= n &lt;= 8)``</span>
+<span class="sd">        Default: ``4``</span>
 <span class="sd">      - **only_coupling**: Calculate only coupling.</span>
 
 <span class="sd">        Flags: **--only_coupling**</span>
@@ -611,6 +621,9 @@
         <span class="n">options</span><span class="o">.</span><span class="n">wrong_polarity_bpms</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">is_free_kick</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="s2">&quot;rectangle&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">resonances</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;The magnet order for resonance lines calculation should be between 2 and 8 (inclusive).&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">rest</span>
 
 
@@ -696,11 +709,18 @@
                               <span class="s2">&quot;is up to 2 ** output_bits (maximal in case full spectra is output). &quot;</span>
                               <span class="s2">&quot;There is one pair (with maximal amplitude of complex coefficient) &quot;</span>
                               <span class="s2">&quot;per interval of size 2 ** (- output_bits - 1).&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;resonances&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;resonances&quot;</span><span class="p">],</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum magnet order of resonance lines to calculate.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
 
 <span class="k">def</span> <span class="nf">_optics_entrypoint</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">optics_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">options</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">optics_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="s2">&quot;rdt&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">nonlinear</span> <span class="ow">and</span> <span class="ow">not</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">rdt_magnet_order</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;The magnet order for RDT calculation should be between 2 and 8 (inclusive).&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">rest</span>
 
 
 <span class="k">def</span> <span class="nf">optics_params</span><span class="p">():</span>
@@ -728,6 +748,8 @@
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nonlinear&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
                          <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rdt&#39;</span><span class="p">,</span> <span class="s1">&#39;crdt&#39;</span><span class="p">),</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose which rdt analysis is conducted.&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;rdt_magnet_order&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;rdt_magnet_order&quot;</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum magnet order for the RDT calculation.&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;three_bpm_method&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use 3 BPM method in beta from phase&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;only_coupling&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate only coupling. &quot;</span><span class="p">)</span>
@@ -759,7 +781,8 @@
     <span class="s2">&quot;turn_bits&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
     <span class="s2">&quot;output_bits&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;to_write&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;lin&quot;</span><span class="p">,</span> <span class="s2">&quot;bpm_summary&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;tbt_datatype&quot;</span><span class="p">:</span> <span class="s2">&quot;lhc&quot;</span>
+    <span class="s2">&quot;tbt_datatype&quot;</span><span class="p">:</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;resonances&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">OPTICS_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
@@ -767,6 +790,7 @@
         <span class="s2">&quot;coupling_pairing&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="s2">&quot;range_of_bpms&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
         <span class="s2">&quot;compensation&quot;</span><span class="p">:</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;rdt_magnet_order&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 <span class="p">}</span>
 
 
