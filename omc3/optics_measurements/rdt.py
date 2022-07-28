@@ -237,9 +237,9 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt, ot
         rdts_to_use = [rdt]
         LOGGER.warning(f"Not enough files to compute together the RDTs {[rdt] + other_rdts}."
                        f" They will be computed alone, the result might be wrong.")
-    #amp, err_amp = _fit_multiple_rdt_amplitudes(invariants, line_amp, plane, rdts_to_use)
-    #df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = amp[rdt], err_amp[rdt]
-    df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
+    amp, err_amp = _fit_multiple_rdt_amplitudes(invariants, line_amp, plane, rdts_to_use)
+    df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = amp[rdt], err_amp[rdt]
+    #df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
 
     # Real and Imaginary parts
     df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
@@ -320,9 +320,13 @@ def _fit_multiple_rdt_amplitudes(invariants, line_amp, plane, rdts):
     # Get the power of actions that will be used for the fit of |f_jklm|
     action_powers = get_linearized_problem_multiple(invariants, plane, rdts)
 
+    # Rough guesses for each RDT
     guesses = list()
     for action_power in action_powers:
         guesses.append(np.mean(line_amp / action_power, axis=1))
+
+    # Bounds are important, we want the amplitude of the fterms, it has to be positive
+    bounds = [0, np.inf]
 
     # The eq should be: amp_fterm1 * action_power1 + amp_fterm2 * action_power2 + …
     def fitting(x, *args, plane, rdt_list):
@@ -343,7 +347,7 @@ def _fit_multiple_rdt_amplitudes(invariants, line_amp, plane, rdts):
     func = partial(fitting, plane=plane, rdt_list=rdts)
     for i, bpm_rdt_data in enumerate(line_amp):
         # Fit the line amplitude given the action raised to the adequate power
-        popt, pcov = curve_fit(func, invariants, bpm_rdt_data, p0=[g[i] for g in guesses])
+        popt, pcov = curve_fit(func, invariants, bpm_rdt_data, p0=[g[i] for g in guesses], bounds=bounds)
         errors = np.sqrt(np.diag(pcov))
 
         for j in range(len(rdts)):
