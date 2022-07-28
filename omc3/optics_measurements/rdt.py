@@ -6,6 +6,7 @@ This module contains RDT calculations related functionality of ``optics_measurem
 It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from copy import deepcopy
+from functools import partial
 from os.path import join
 
 import numpy as np
@@ -61,6 +62,40 @@ def _generate_plane_rdts(order):
     return single_plane, double_plane
 
 
+def rdts_generating_line(order):
+    """"
+        Returns all the RDTs contributing to different lines up to a certain order
+    """
+    # Get all the valid RDTs up to a certain order
+    all_rdts = get_all_to_order(order)
+
+    lines = {'X': {}, 'Y': {}}
+    for rdt in all_rdts:
+        j, k, l, m = rdt
+        for plane in ('X', 'Y'):
+            # Get the line related to the RDT in the given spectrum
+            if (plane == 'X' and j != 0) or (plane == 'Y' and l != 0):
+                line = _determine_line(rdt, plane)
+            else:
+                continue
+
+            # Add the RDT to the lines dict
+            if line is not None and line not in lines[plane].keys():
+                lines[plane][line] = []
+            lines[plane][line].append(rdt)
+    return lines
+
+
+def get_other_rdts_same_line(lines, rdt, plane):
+    """
+    Returns all the other RDTs contributing to the same line, given a dict of lines and their associated RDTs
+    """
+    line = _determine_line(rdt, plane)
+    other_rdts = deepcopy(lines[plane][line])
+    other_rdts.remove(rdt)
+    return other_rdts
+
+
 def calculate(measure_input, input_files, tunes, phases, invariants, header):
     """
 
@@ -78,14 +113,19 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
     meas_input["compensation"] = "none"
     LOGGER.info(f"Calculating RDTs up to magnet order {meas_input['rdt_magnet_order']}")
 
+    # Get all the RDTs that need to be computed
     single_plane_rdts, double_plane_rdts = _generate_plane_rdts(meas_input["rdt_magnet_order"])
+    # Get the RDTs contributing to specific lines
+    lines = rdts_generating_line(meas_input['rdt_magnet_order'])
+
     for plane in PLANES:
         bpm_names = input_files.bpms(plane=plane, dpp_value=0)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
         for rdt in single_plane_rdts[plane]:
             try:
-                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+                other_rdts = get_other_rdts_same_line(lines, rdt, plane)
+                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt, other_rdts)
             except ValueError as e:  # catch the AMP line not being found in the lin file
                 LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
                 continue
@@ -96,7 +136,8 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
         for rdt in double_plane_rdts[plane]:
             try:
-                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
+                other_rdts = get_other_rdts_same_line(lines, rdt, plane)
+                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt, other_rdts)
             except ValueError as e:
                 LOGGER.warning(f"RDT calculation failed for {jklm2str(*rdt)}: {str(e)}")
                 continue
@@ -165,7 +206,7 @@ def add_freq_to_header(header, plane, rdt):
     return mod_header
 
 
-def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
+def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt, other_rdts):
     df = pd.DataFrame(phase_data)
     second_bpms = df.loc[:, "NAME2"].to_numpy()
     df["S2"] = df.loc[second_bpms, "S"].to_numpy()
@@ -188,7 +229,19 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
     df[f"PHASE"] = rdt_angles
     df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
+
+    # Amplitude
+    # Check that we got enough files to do a proper fit with all the RDTs, else default to a single RDT fit
+    rdts_to_use = [rdt] + other_rdts
+    if len(meas_input.files) < len(rdts_to_use):
+        rdts_to_use = [rdt]
+        LOGGER.warning(f"Not enough files to compute together the RDTs {[rdt] + other_rdts}."
+                       f" They will be computed alone, the result might be wrong.")
+    #amp, err_amp = _fit_multiple_rdt_amplitudes(invariants, line_amp, plane, rdts_to_use)
+    #df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = amp[rdt], err_amp[rdt]
     df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
+
+    # Real and Imaginary parts
     df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
     df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
     # in old files there was "EAMP" and "PHASE_STD"
@@ -215,29 +268,134 @@ def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase):
 def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     """
     Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.
+
+    Args:
+        invariants: dictionary of actions and their amplitudes per plane
+        line_amp: amplitude of the line for each BPM
+        plane: plane on which to calculate the RDT, e.g. X or Y
+        rdt: tuple representing the rdt, e.g. (1, 2, 0, 0)
+
+    Returns:
+        amps: dict for each RDT containing an array with the RDT amplitudes for each BPM
     """
+    # Create an empty array that will contain the amplitude of the RDT
     amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
-    kick_data = get_linearized_problem(invariants, plane, rdt)  # corresponding to actions in meters
-    guess = np.mean(line_amp / kick_data, axis=1)
 
-    def fitting(x, f):
-        return f * x
+    # Get the power of actions that will be used for the fit of |f_jklm|
+    action_powers = get_linearized_problem(invariants, plane, rdt)
+    guess = np.mean(line_amp / action_powers, axis=1)
 
+    def fitting(x, amp_fterm):
+        return amp_fterm * x
+
+    # Get a fit of the RDT amplitude via all the given files for each BPM
     for i, bpm_rdt_data in enumerate(line_amp):
-        popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
+        # Fit the line amplitude given the action raised to the adequate power
+        popt, pcov = curve_fit(fitting, action_powers, bpm_rdt_data, p0=guess[i])
         amps[i] = popt[0]
         err_amps[i] = np.sqrt(pcov)[0] if np.isfinite(np.sqrt(pcov)[0]) else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
     return amps, err_amps
 
 
+def _fit_multiple_rdt_amplitudes(invariants, line_amp, plane, rdts):
+    """
+    Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.
+    This functions takes several RDTs contributing to the same line and uses them together in the fit
+
+    Args:
+        invariants: dictionary of actions and their amplitudes per plane
+        line_amp: amplitude of the line for each BPM
+        plane: plane on which to calculate the RDT, e.g. X or Y
+        rdts: list of tuples representing the rdt, e.g. [(0, 1, 2, 0), (0, 1, 3, 1)]
+
+    Returns:
+        amps: array with the RDT amplitudes for each BPM
+    """
+    LOGGER.info(f"Computing amplitude for RDTs {', '.join([f'f{_rdt_to_str(r)}_{plane}' for r in rdts])}")
+    # Create an empty array that will contain the amplitude of the RDT
+    amps, err_amps = {}, {}
+    for rdt in rdts:
+        amps[rdt], err_amps[rdt] = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
+
+    # Get the power of actions that will be used for the fit of |f_jklm|
+    action_powers = get_linearized_problem_multiple(invariants, plane, rdts)
+
+    guesses = list()
+    for action_power in action_powers:
+        guesses.append(np.mean(line_amp / action_power, axis=1))
+
+    # The eq should be: amp_fterm1 * action_power1 + amp_fterm2 * action_power2 + …
+    def fitting(x, *args, plane, rdt_list):
+        # x are the actions
+        # amps_fjklm are the |f_jklm| terms computed by scipy
+        res = 0
+        act_x = x["X"].T[0]  # Action is sqrt(2 *  J_x)
+        act_y = x["Y"].T[0]
+        for amp_fjklm, rdt in zip(args, rdt_list):
+            j, k, l, m = rdt
+            if plane == "X":
+                res += (2 * j * act_x ** (j + k - 2) * act_y ** (l + m)) * amp_fjklm
+            elif plane == "Y":
+                res += (2 * l * act_x ** (j + k) * act_y ** (l + m - 2)) * amp_fjklm
+        return res
+
+    # Get a fit of the RDT amplitude via all the given files for each BPM
+    func = partial(fitting, plane=plane, rdt_list=rdts)
+    for i, bpm_rdt_data in enumerate(line_amp):
+        # Fit the line amplitude given the action raised to the adequate power
+        popt, pcov = curve_fit(func, invariants, bpm_rdt_data, p0=[g[i] for g in guesses])
+        errors = np.sqrt(np.diag(pcov))
+
+        for j in range(len(rdts)):
+            amps[rdts[j]][i] = popt[j]
+            # if single file is used, the error is reported as Inf, which is then overwritten with 0
+            err_amps[rdts[j]][i] = errors[j] if np.isfinite(errors[j]) else 0.
+    return amps, err_amps
+
+
+def get_linearized_problem_multiple(invariants, plane, rdts):
+    """
+    Amplitude of a line:
+        - H(k-j+1, m-l) = 2j (√2Jx)^(j+k-1) (√2Jy)^(m+l) · |f_jklm,H|
+        - H(k-j, m-l+1) = 2l (√2Jx)^(j+k) (√2Jy)^(m+l-1) · |f_jklm,V|
+    Each RDT contribution to the line is added to it.
+    In OMC3 the lines are normalized by H(1,0) and V(0,1) on their respective plane, hence the -2 power instead of -1.
+
+    The factor 2j is because... ????
+
+    Args:
+        invariants: dict of actions and their errors. The actions are sqrt(2Jx) and sqrt(2Jy)
+        plane: plane on which to get the action powers
+        rdts: list of RDTs as tuples
+    """
+    powers = list()
+    for rdt in rdts:
+        j, k, l, m = rdt
+        act_x = invariants["X"].T[0]  # Action is sqrt(2 *  J_x)
+        act_y = invariants["Y"].T[0]
+
+        if plane == "X":
+            powers.append(2 * j * act_x ** (j + k - 2) * act_y ** (l + m))
+        elif plane == "Y":
+            powers.append(2 * l * act_x ** (j + k) * act_y ** (l + m - 2))
+        else:
+            raise AttributeError(f"Plane has to be X or Y. Given plane is {plane}")
+    return np.array(powers)
+
+
 def get_linearized_problem(invs, plane, rdt):
     """
-    2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
-    we use sqrt(2J): unit is sqrt(m).
+    Amplitude of a line:
+        - H(k-j+1, m-l) = 2j (√2Jx)^(j+k-1) (√2Jy)^(m+l) · |f_jklm,H|
+        - H(k-j, m-l+1) = 2l (√2Jx)^(j+k) (√2Jy)^(m+l-1) · |f_jklm,V|
+    In OMC3 the lines are normalized by H(1,0) and V(0,1) on their respective plane, hence the -2 power instead of -1.
+
+    The factor 2j is because... ????
     """
     j, k, l, m = rdt
-    act_x = invs["X"].T[0]
+    act_x = invs["X"].T[0]  # Action is sqrt(2 *  J_x)
     act_y = invs["Y"].T[0]
+
     if plane == "X":
         return 2 * j * act_x ** (j + k - 2) * act_y ** (l + m)
     return 2 * l * act_x ** (j + k) * act_y ** (l + m - 2)
