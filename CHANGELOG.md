@@ -1,14 +1,25 @@
 # OMC3 Changelog
 
-#### 2022-05-30 - v0.4.1 - _jdilly_
+#### 2022-05-30 - v0.5.x - _jdilly_
 
 - Added:
   - Tune error based on deviation of filtered BBQ data to the moving average
     (over moving average window)
+  - Action error calculated from error on the spectral line
+    (which in turn is the same as NOISE)
+  
+#### 2022-07-25 - v0.5.0 - _Mael-Le-Garrec_
+
+- Added:
+  - The resonance lines can now be sought and detected up to arbitrary order during the frequency analysis, with the `resonances` argument / flag of `harpy`.
+  - The RDT components can now be calculated up to arbitrary order in the optics measurements with the `rdt_magnet_order` argument / flag of `optics`. Note that the relevant resonance lines for this order should have been detected by `harpy` beforehand.
+
+#### 2022-06-21 - v0.4.1 - _jdilly_, _fesoubel_
 
 - Fixed:
+  - Fixed macros and knobs usage in model_creator for Run 3 optics
   - Getting new BBQ data ended in a key-error.
-  - Better KeyError Message for Exciter-BPM not found
+  - Better KeyError Message for Exciter-BPM not found.
 
 #### 2022-05-30 - v0.4.0 - _jdilly_
 
