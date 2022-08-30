@@ -35,12 +35,14 @@ def get_poly_fun(order: int):
 def do_odr(x: pd.Series, y: pd.Series, xerr: pd.Series, yerr: pd.Series, order: int):
     """
     Returns the odr fit.
+
     Important Convention:
-        The beta-parameter in the ODR models go upwards with order, i.e.
-        |  beta[0] = y-Axis offset
-        |  beta[1] = slope
-        |  beta[2] = quadratic term
-        |  etc.
+    The beta-parameter in the ODR models go upwards with order, i.e.
+
+    |  beta[0] = y-Axis offset
+    |  beta[1] = slope
+    |  beta[2] = quadratic term
+    |  etc.
 
     Args:
         x: `Series` of x data.
