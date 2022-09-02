@@ -113,8 +113,8 @@ def calculate_coupling(
         )
 
     LOGGER.debug("Finding BPM pairs for momentum reconstruction")
-    bpm_pairs_x, deltas_x = _find_pair(phases_x)
-    bpm_pairs_y, deltas_y = _find_pair(phases_y)
+    bpm_pairs_x, deltas_x = _find_pair(phases_x, meas_input.coupling_pairing)
+    bpm_pairs_y, deltas_y = _find_pair(phases_y, meas_input.coupling_pairing)
 
     LOGGER.debug("Computing complex lines from spectra")
     A01: np.ndarray = 0.5 * _get_complex_line(
@@ -217,19 +217,37 @@ def compensate_rdts_ryoichi():
 
 # ----- Helpers ----- #
 
-# def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
-#     """
-#     Takes the following BPM for momentum reconstruction by a given shift.
-#
-#     Args:
-#         phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
-#         shift (int): ???
-#     """
-#     indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
-#     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
+def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
+    """
+    Does the BPM pairing for coupling calculation.
+
+    Args:
+        mode (int): Value to determine the BPM pairing. If ``0`` is given,
+            tries to find the best candidate. If a value ``n>=1`` is given,
+            then takes the n-th following BPM downstream for the pairing.
+    """
+
+    if mode == 0:
+        return _find_candidate(phases)
+    else:
+        return _take_next(phases, mode)
 
 
-def _find_pair(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:
+def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
+    """
+    Takes the following BPM for momentum reconstruction by a given shift.
+
+    Args:
+        phases (tfs.TfsDataFrame): Dataframe matrix of phase advances, as calculated in phase.py.
+        shift (int): Value to determine the BPM pairing. If ``0`` is given,
+           tries to find the best candidate. If a value ``n>=1`` is given,
+           then takes the n-th following BPM downstream for the pairing.
+   """
+    indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
+    return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
+
+
+def _find_candidate(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:
     """
     Finds the best candidate for momentum reconstruction.
 
@@ -283,6 +301,20 @@ def _rdt_to_output_df(
     Combines all the needed columns (``S``, ``NAME``, ``AMP``, ``PHASE``, ``REAL``, ``IMAG``, and the
     ``ERR*`` and ``*MDL`` columns).
 
+    .. note::
+        At the moment, the dataframe holds a ``DELTAREAL`` and ``DELTAIMAG`` columns, which are calculated
+        as `REAL - REALMDL` and `IMAG - IMAGMDL`. As most of the time the model is coupling-free, these are
+        usually going to be identical values to ``REAL`` and ``IMAG`` columns. They are still included in
+        case one wishes to have a coupled model, as some machines sometimes do (but not LHC afaik).
+
+        Similarly, there are ``ERRDELTAREAL`` and ``ERRDELTAIMAG`` columns, which are at the moment
+        the same values as ``ERRREAL`` and ``ERRIMAG`` columns. In the future, we might want to have
+        a fancier calculation for these.
+
+    .. important::
+        The columns mentionned in the note above are required and expected in the correction calculation.
+        It would fail the correction functionality to remove these columns.
+
     Args:
         fterm (Union[pd.Series, np.ndarray]): the calculated coupling RDT.
         fterm_mdl (Union[pd.Series, np.ndarray]): corresponding RDT values calculated from the model (e.g.
@@ -318,10 +350,20 @@ def _rdt_to_output_df(
     df[REAL] = np.real(fterm)
     df[REAL + MDL] = np.real(fterm_mdl)
     df[ERR + REAL] = 0  # TODO: same
+    # These following columns are needed in the correction calculation later on
+    # Most of the time model has 0 coupling so the DELTA is just the REAL / IMAG but let's
+    # not neglect that we might want to have weird coupled models sometimes
+    # For now error on delta is just the error on REAL / IMAG but in the future
+    # we might want to change this for a fancier calculation
+    df[DELTA + REAL] = df[REAL] - df[REAL + MDL]
+    df[ERR + DELTA + REAL] = df[ERR + REAL]
 
     df[IMAG] = np.imag(fterm)
     df[IMAG + MDL] = np.imag(fterm_mdl)
     df[ERR + IMAG] = 0  # TODO: same
+    # See comment above, same thing here for IMAG
+    df[DELTA + IMAG] = df[IMAG] - df[IMAG + MDL]
+    df[ERR + DELTA + IMAG] = df[ERR + IMAG]
 
     return df.sort_values(by=S)
 
@@ -347,13 +389,13 @@ def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
         merged_transverse_lins_df = pd.merge(
             left=linx,
             right=liny,
-            on=[NAME, S],
+            on=[NAME],
             how="inner",
             sort=False,
         )
         joined_dfs.append(merged_transverse_lins_df)
 
-    partial_merge = partial(pd.merge, how="inner", on=[NAME, S], sort=False)
+    partial_merge = partial(pd.merge, how="inner", on=[NAME], sort=False)
     reduced = reduce(partial_merge, joined_dfs).set_index(NAME)
     reduced = reduced.rename(
         columns={f"{PHASE_ADV}X_X_0": f"{PHASE_ADV}X", f"{PHASE_ADV}Y_Y_0": f"{PHASE_ADV}Y"}
@@ -374,7 +416,7 @@ def rename_col(plane: str, index: int) -> Callable:
     """
 
     def fn(column):
-        if column in [NAME, S]:
+        if column == NAME:
             return column
         return f"{column}_{plane}_{index}"
 

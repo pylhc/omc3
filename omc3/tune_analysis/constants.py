@@ -4,8 +4,10 @@ Constants
 
 Specific constants and helpers to be used in ``tune_analysis``, to help with consistency.
 """
-from typing import Tuple
+from dataclasses import dataclass
+from typing import Tuple, Sequence
 
+import pandas as pd
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.optics_measurements.constants import ACTION, ERR, EXT, KICK_NAME, NAT_TUNE, RES, TIME
 
@@ -18,10 +20,15 @@ CORRECTED: str = "CORR"
 COEFFICIENT: str = "COEFF{order:d}"
 BBQ: str = "BBQ"
 
+INPUT_KICK = "kick"
+INPUT_PREVIOUS = "previous"
+
 
 def get_timber_bbq_key(plane: str, beam: int) -> str:
     """ Key to extract bbq from timber. """
-    return f"lhc.bofsu:eigen_freq_{PLANE_TO_NUM[plane] :d}_b{beam:d}".upper()
+    # return f"lhc.bofsu:eigen_freq_{PLANE_TO_NUM[plane]:d}_b{beam:d}".upper()  # pre run 3
+    # return f"BFC.LHC:TuneFBAcq:TUNEB{beam:d}{PLANE_TO_HV[plane]}"  # contains less data
+    return f"LHC.BQBBQ.CONTINUOUS_HS.B{beam:d}:EIGEN_FREQ_{PLANE_TO_NUM[plane]:d}"
 
 
 def get_kick_out_name() -> str:
@@ -30,6 +37,22 @@ def get_kick_out_name() -> str:
 
 def get_bbq_out_name() -> str:
     return f"bbq_ampdet.tfs"
+
+
+@dataclass
+class AmpDetData:
+    tune_plane: str
+    action_plane: str
+    action: pd.Series
+    action_err: pd.Series
+    tune: pd.Series
+    tune_err: pd.Series
+
+
+@dataclass
+class FakeOdrOutput:
+    beta: Sequence[float]
+    sd_beta: Sequence[float]
 
 
 # Kick File Headers ###########################################################
@@ -160,12 +183,19 @@ def get_action_err_col(plane: str) -> str:
 # Plotting #####################################################################
 
 
-def get_paired_lables(tune_plane: str, action_plane: str, tune_scale: int = None) -> Tuple[str, str]:
-    """ Labels for the action/tune plots. """
-    tune_unit = ""
-    if tune_scale:
-        tune_unit = f" \quad [10^{{{tune_scale:d}}}]"
-    return (fr"$2J_{action_plane.lower():s} \quad [\mu m]$", fr"$\Delta Q_{tune_plane.lower():s}{tune_unit}$")
+def get_tune_label(plane: str, scale: int = None) -> str:
+    """ Tune label for the action/tune plots. """
+    unit = ""
+    if scale:
+        unit = f" \quad [10^{{{scale:d}}}]"
+    return fr"$\Delta Q_{plane.lower():s}{unit}$"
+
+
+def get_action_label(plane: str, unit: str) -> str:
+    """ Action label for the action/tune plots. """
+    if unit == "um":
+        unit = r"\mu m"
+    return fr"$2J_{plane.lower():s} \quad [{unit:s}]$"
 
 
 def get_detuning_exponent_for_order(order: int) -> int:

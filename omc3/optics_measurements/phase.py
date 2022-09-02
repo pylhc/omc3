@@ -11,6 +11,7 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 import tfs
+from numpy.typing import ArrayLike
 
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
@@ -117,8 +118,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                                                      * meas_input.accelerator.beam_direction
                                                      )
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
-    phase_advances = {"MODEL": _get_square_data_frame(
-        (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
+    phase_advances = {"MODEL": _get_square_data_frame(_get_all_phase_diff(phases_mdl), df.index)}
     if compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
     phases_meas = input_files.get_data(df, f"MU{plane}")
@@ -127,8 +127,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
 
     phases_errors = input_files.get_data(df, f"{ERR}MU{plane}")
     if phases_meas.ndim < 2:
-        phase_advances["MEAS"] = _get_square_data_frame(
-                (phases_meas[np.newaxis, :] - phases_meas[:, np.newaxis]) % 1.0, df.index)
+        phase_advances["MEAS"] = _get_square_data_frame(_get_all_phase_diff(phases_meas), df.index)
         phase_advances["ERRMEAS"] = _get_square_data_frame(
                 np.zeros((len(phases_meas), len(phases_meas))), df.index)
         return phase_advances
@@ -152,7 +151,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                             _create_output_df(phase_advances, df, plane, tot=True)]
 
 
-def _compensate_by_equation(phases_meas, plane, tunes):
+def _compensate_by_equation(phases_meas: ArrayLike, plane, tunes):
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
@@ -204,6 +203,12 @@ def _create_output_df(phase_advances, model, plane, tot=False):
     output_data[f"{DELTA}PHASE{plane}"] = df_ang_diff(output_data, f"PHASE{plane}", f"PHASE{plane}{MDL}")
     output_data[f"{ERR}{DELTA}PHASE{plane}"] = output_data.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
     return output_data
+
+
+def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike = None):
+    if phases_b is None:
+        phases_b = phases_a
+    return (phases_a[np.newaxis, :] - phases_b[:, np.newaxis]) % 1.0
 
 
 def _get_square_data_frame(data, index):

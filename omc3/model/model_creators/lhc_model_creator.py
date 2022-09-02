@@ -21,6 +21,7 @@ from omc3.model.constants import (
     ERROR_DEFFS_TXT,
     GENERAL_MACROS,
     LHC_MACROS,
+    LHC_MACROS_RUN3,
     MACROS_DIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
@@ -122,6 +123,7 @@ class LhcModelCreator(ModelCreator):
         lib_path = Path(__file__).parent.parent / "madx_macros"
         shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
         shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
+        shutil.copy(lib_path / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
 
         if accel.energy is not None:
             LOGGER.debug(
