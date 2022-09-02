@@ -100,3 +100,12 @@ class ModelCreator(ABC):
                 raise FileNotFoundError(
                     f"Model Creation Failed. The file '{file_path.absolute()}' was not created."
                 )
+
+
+class CreatedModel:
+    def __init__(self, accelerator=None, help_requested=False):
+        self.accelerator = object
+
+    @staticmethod
+    def help():
+        return CreatedModel(object, True)

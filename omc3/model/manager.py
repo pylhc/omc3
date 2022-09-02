@@ -9,6 +9,8 @@ from generic_parser.entrypoint_parser import entrypoint, EntryPoint, EntryPointP
 from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota
 from generic_parser.dict_parser import ArgumentError
 from generic_parser.tools import silence
+
+from omc3.model.model_creators.abstract_model_creator import CreatedModel
 from omc3.utils.parsertools import print_help
 
 ACCELS = {
@@ -34,23 +36,33 @@ def _get_params():
 @entrypoint(_get_params())
 def get_accelerator(opt, other_opt):
     """
-    Returns the `Accelerator` instance of the desired accelerator, as given at the commandline.
+    Returns (accel, help_requested):
+        `accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.
+        `help_requested` is a boolean stating if help was requested at any point
+
     """
     if not isinstance(opt.accel, str):
-        # assume it's the class
-        return opt.accel, False
-    if not opt.show_help:
-        return ACCELS[opt.accel](other_opt), False
+        # if it's the class already, we just return it
+        return CreatedModel(opt.accel)
 
+    if not opt.show_help:
+        # if no help is requested, return the accelerator instance and fall through
+        return CreatedModel(ACCELS[opt.accel](other_opt))
+
+    # ----------------------------------------------------------------------------------------------
+    # if we are still here, print the help
     accelclass = ACCELS[opt.accel]
     print(f"--- {accelclass.NAME.upper()} Accelerator Class. Parameters:")
     print_help(accelclass.get_parameters())
 
-    try :
+    # try creating the accelclass from the options
+    try:
         with silence():
-            return accelclass(other_opt), True
+            return CreatedModel.help()
     except SystemExit:
-        return None, True
+        # if this fails, the accelclass options where incomplete, so we DON'T return an accel instance
+        # but only the flag help_requested=True
+        return CreatedModel.help()
 
 
 @entrypoint(_get_params())

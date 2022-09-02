@@ -2,7 +2,7 @@
 ParserTools
 -----------
 
-This modules provides tools for the parsing of parameters.
+This module provides tools for the parsing of parameters.
 Maybe merge this into `generic_parser` one day.
 """
 from textwrap import wrap
@@ -62,3 +62,5 @@ def print_help(parameters):
     if optional_params:
         print("Optional:\n")
         print("".join(optional_params))
+
+

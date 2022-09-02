@@ -55,7 +55,7 @@ class LhcModelCreator(ModelCreator):
 
         if opt.list_modifiers:
             print("Listing Modifiers")
-            for root, subdirs, files in os.walk(Path(accel_inst.acc_model_path) / "strengths"):
+            for root, subdirs, files in os.walk(Path(accel_inst.acc_model_path) / "operation/optics"):
                 for f in files:
                     if os.path.splitext(f)[1] == ".madx":
                         print(Path(root)/f)
@@ -63,7 +63,7 @@ class LhcModelCreator(ModelCreator):
 
         # adjust modifier paths
         accel_inst.modifiers = [
-            Path(accel_inst.acc_model_path) / "strengths" / m for m in accel_inst.modifiers]
+            Path(accel_inst.acc_model_path) / "operation/optics" / m for m in accel_inst.modifiers]
 
         return True
 

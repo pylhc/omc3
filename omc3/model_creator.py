@@ -45,14 +45,12 @@ def _get_params():
     params.add_parameter(
         name="type",
         choices=("nominal", "best_knowledge", "coupling_correction"),
-        help="Type of model to create.",
-        required=True,
+        help="Type of model to create. [Required]",
     )
     params.add_parameter(
         name="outputdir",
-        required=True,
         type=Path,
-        help="Output path for model, twiss files will be writen here."
+        help="Output path for model, twiss files will be writen here. [Required]"
     )
     params.add_parameter(
         name="logfile",
@@ -137,23 +135,36 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         JPARC: Not implemented
     """
     # Prepare paths
-
+    print("model creator")
     create_dirs(opt.outputdir)
 
-    accel_inst, help_requested = manager.get_accelerator(accel_opt)
+    # because the different modules (model_creator, accelerator_class, accelerator_modelcreator)
+    # eagerly evaluate their state, we cannot predetermine any help to print.
+    # the solution (workaround?) is to construct until failure, all the modules encountered will do
+    # as much work as possible and print help / errors if appropriate
+    created_model = manager.get_accelerator(accel_opt)
 
-    if accel_inst is None:
+    # maybe a bit clunky
+    # if `accel_inst` is None, the manager couldn't create it, but did handle the input
+    # (either it crashed with a meaningful error message or help was requested and it printed that)
+    if created_model.accelerator is None:
         print(DRY_RUN)
-        return
-    if help_requested:
+        return None
+    # if `accel_inst` is not None AND help was requested, we print the help of **the modelcreator**
+    if created_model.help_requested:
+        print("Model Creators help requested")
         print_help(_get_params())
         print(DRY_RUN)
-        return
+        return None
 
+    accel_inst = created_model.accelerator
+
+    # if none of the above are true, the instance was successfully created
+    # proceed to the creator
     print(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     creator = CREATORS[accel_inst.NAME][opt.type]
 
-    if not help_requested and creator.get_opt(accel_inst, opt):
+    if not created_model.help_requested and creator.get_opt(accel_inst, opt):
         accel_inst.verify_object()
         # Prepare model-dir output directory
         accel_inst.model_dir = opt.outputdir
@@ -164,9 +175,6 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         # The resulting model-dir is then more self-contained. (jdilly)
         accel_inst.model_dir = Path()
         madx_script = creator.get_madx_script(accel_inst)
-        run_string(madx_script,
-                   output_file=opt.outputdir / JOB_MODEL_MADX,
-                   log_file=opt.logfile)
 
         # Run madx to create model
         run_string(madx_script,
