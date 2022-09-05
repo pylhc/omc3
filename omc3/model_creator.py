@@ -135,7 +135,6 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         JPARC: Not implemented
     """
     # Prepare paths
-    print("model creator")
     create_dirs(opt.outputdir)
 
     # because the different modules (model_creator, accelerator_class, accelerator_modelcreator)
@@ -159,7 +158,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     accel_inst = created_model.accelerator
 
-    # if none of the above are true, the instance was successfully created
+    # if none of the above are true, the instance was successfully created and we don't want help
     # proceed to the creator
     print(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     creator = CREATORS[accel_inst.NAME][opt.type]

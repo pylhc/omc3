@@ -103,8 +103,12 @@ class ModelCreator(ABC):
 
 
 class CreatedModel:
+    """
+    Convenience class for modelcreator results.
+    """
     def __init__(self, accelerator=None, help_requested=False):
-        self.accelerator = object
+        self.accelerator = accelerator
+        self.help_requested = help_requested
 
     @staticmethod
     def help():
