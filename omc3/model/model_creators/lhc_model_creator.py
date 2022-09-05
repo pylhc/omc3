@@ -50,12 +50,19 @@ def _b2_columns() -> List[str]:
 
 class LhcModelCreator(ModelCreator):
 
-    def get_opt(accel_inst, opt):
+    def get_opt(accel_inst, opt) -> bool:
+        LOGGER.warning(f"accel_inst.acc_model_path: {accel_inst.acc_model_path}")
+        LOGGER.warning(f"opt path                 : {opt.path}")
+        LOGGER.warning(f"ACC_MODEL_REP/year       : {ACCELERATOR_MODEL_REPOSITORY}/{accel_inst.year}")
         if opt.fetch == PATHFETCHER:
             accel_inst.acc_model_path = opt.path
+        elif opt.fetch == AFSFETCHER:
+            accel_inst.acc_model_path = ACCELERATOR_MODEL_REPOSITORY / accel_inst.year
 
         if opt.list_modifiers:
-            print("Listing Modifiers")
+            if accel_inst.acc_model_path is None:
+                raise ValueError("can't list modifiers if lattice source is not an `acc-models` repository")
+                return False
             for root, subdirs, files in os.walk(Path(accel_inst.acc_model_path) / "operation/optics"):
                 for f in files:
                     if os.path.splitext(f)[1] == ".madx":
@@ -108,15 +115,19 @@ class LhcModelCreator(ModelCreator):
 
     @classmethod
     def prepare_run(cls, accel: Lhc) -> None:
+        LOGGER.info("preparing run ...")
+        LOGGER.info("creating symlinks")
         if accel.year in ["2018", "2022"]:  # these years should be handled by the fetcher
-            symlink_dst = Path(accel.model_dir)/LHC_REPOSITORY_NAME
-            if not symlink_dst.exists():
-                LOGGER.debug(f"Symlink destination: {symlink_dst}")
-                symlink_dst.absolute().symlink_to((ACCELERATOR_MODEL_REPOSITORY/f"{accel.year}"))
+            link = Path(accel.model_dir)/LHC_REPOSITORY_NAME
+            target = accel.acc_model_path
+            if not link.exists():
+                LOGGER.debug("link will be created")
+                link.absolute().symlink_to(target)
 
         cls.check_accelerator_instance(accel)
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
+        LOGGER.info("creating macros dirs")
         iotools.create_dirs(macros_path)
 
         LOGGER.debug("Copying macros to model directory")

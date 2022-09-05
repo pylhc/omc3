@@ -24,7 +24,7 @@ from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
 from omc3.utils.parsertools import print_help
 
-LOG = logging_tools.get_logger(__name__)
+LOGGER = logging_tools.get_logger(__name__)
 
 DRY_RUN = "*** ==> dry-run, no model created ***"
 
@@ -46,11 +46,12 @@ def _get_params():
         name="type",
         choices=("nominal", "best_knowledge", "coupling_correction"),
         help="Type of model to create. [Required]",
+        required=True,
     )
     params.add_parameter(
         name="outputdir",
         type=Path,
-        help="Output path for model, twiss files will be writen here. [Required]"
+        help="Output path for model, twiss files will be writen here. [Required]",
     )
     params.add_parameter(
         name="logfile",
@@ -68,7 +69,7 @@ def _get_params():
     params.add_parameter(
         name="path",
         type=str,
-        help=("If path fetcher is selected, this option sets the path"),
+        help="If path fetcher is selected, this option sets the path",
     )
     params.add_parameter(
         name="list_modifiers",
@@ -134,9 +135,6 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
         JPARC: Not implemented
     """
-    # Prepare paths
-    create_dirs(opt.outputdir)
-
     # because the different modules (model_creator, accelerator_class, accelerator_modelcreator)
     # eagerly evaluate their state, we cannot predetermine any help to print.
     # the solution (workaround?) is to construct until failure, all the modules encountered will do
@@ -147,34 +145,35 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     # if `accel_inst` is None, the manager couldn't create it, but did handle the input
     # (either it crashed with a meaningful error message or help was requested and it printed that)
     if created_model.accelerator is None:
-        print(DRY_RUN)
+        LOGGER.debug(DRY_RUN)
         return None
     # if `accel_inst` is not None AND help was requested, we print the help of **the modelcreator**
     if created_model.help_requested:
-        print("Model Creators help requested")
+        LOGGER.info("Model Creators help requested")
         print_help(_get_params())
-        print(DRY_RUN)
+        LOGGER.info(DRY_RUN)
         return None
 
     accel_inst = created_model.accelerator
 
     # if none of the above are true, the instance was successfully created and we don't want help
     # proceed to the creator
-    print(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
+    LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     creator = CREATORS[accel_inst.NAME][opt.type]
 
     if not created_model.help_requested and creator.get_opt(accel_inst, opt):
         accel_inst.verify_object()
+        print("==========================")
+        if opt.outputdir is None:
+            raise AttributeError("Missing flag `--outputdir DIR`")
         # Prepare model-dir output directory
-        accel_inst.model_dir = opt.outputdir
+        accel_inst.model_dir = Path(opt.outputdir).absolute()
+
+        # Prepare paths
+        create_dirs(opt.outputdir)
         creator.prepare_run(accel_inst)
 
-        # get madx-script with relative output-paths
-        # as `cwd` changes run to correct directory.
-        # The resulting model-dir is then more self-contained. (jdilly)
-        accel_inst.model_dir = Path()
         madx_script = creator.get_madx_script(accel_inst)
-
         # Run madx to create model
         run_string(madx_script,
                    output_file=opt.outputdir / JOB_MODEL_MADX,
@@ -184,7 +183,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         accel_inst.model_dir = opt.outputdir
         return accel_inst
 
-    print(DRY_RUN)
+    LOGGER.info(DRY_RUN)
 
 
 if __name__ == "__main__":

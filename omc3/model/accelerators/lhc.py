@@ -144,10 +144,8 @@ class Lhc(Accelerator):
         return params
 
     def __init__(self, *args, **kwargs):
-        print("init lhc")
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
-        print("parsed")
         super().__init__(opt)
         self.correctors_dir = "2012"
         self.year = opt.year
@@ -164,6 +162,8 @@ class Lhc(Accelerator):
         Will Raise an ``AcceleratorDefinitionError`` if one of the checks is invalid.
         """
         LOGGER.debug("Accelerator class verification")
+
+        Accelerator.verify_object(self)
         _ = self.beam
 
         if self.model_dir is None and self.xing is None:
@@ -368,15 +368,23 @@ class Lhc(Accelerator):
             f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
             for modifier in self.modifiers
         )
+
+        if self.year.startswith("hl") or int(self.year) <= 2021:
+            madx_script += (
+                f"\n! ----- Defining Configuration Specifics -----\n"
+                f"xing_angles = {'1' if self.xing else '0'};\n"
+                f"if(xing_angles==1){{\n"
+                f"    exec, set_crossing_scheme_ON();\n"
+                f"}}else{{\n"
+                f"    exec, set_default_crossing_scheme();\n"
+                f"}}\n"
+            )
+        else:
+            madx_script += "call, file=\"knobs.madx\";\n\n"
+
+
         madx_script += (
-            f"\n! ----- Defining Configuration Specifics -----\n"
-            f"exec, cycle_sequences();\n"
-            f"xing_angles = {'1' if self.xing else '0'};\n"
-            f"if(xing_angles==1){{\n"
-            f"    exec, set_crossing_scheme_ON();\n"
-            f"}}else{{\n"
-            f"    exec, set_default_crossing_scheme();\n"
-            f"}}\n"
+            "exec, cycle_sequences();\n"
             f"use, sequence = LHCB{self.beam};\n"
             f"option, echo;\n"
         )
