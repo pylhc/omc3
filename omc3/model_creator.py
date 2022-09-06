@@ -146,6 +146,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
             pass
 
         print("---- Model Creator | Usage ----\n")
+        print_help(manager._get_params())
         print_help(_get_params())
         return None
 
