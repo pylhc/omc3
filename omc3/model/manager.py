@@ -29,7 +29,6 @@ def _get_params():
     params = EntryPointParameters()
     params.add_parameter(name="accel", required=True, choices=list(ACCELS.keys()),
                          help="Choose the accelerator to use.Can be the class already.")
-    params.add_parameter(name="show_help", action="store_true", help="instructs the subsequent modules to print a help message")
     return params
 
 
@@ -41,29 +40,20 @@ def get_accelerator(opt, other_opt):
         `help_requested` is a boolean stating if help was requested at any point
 
     """
+
     if not isinstance(opt.accel, str):
         # if it's the class already, we just return it
-        return CreatedModel(opt.accel)
+        return opt.accel
 
-    if not opt.show_help:
-        # if no help is requested, return the accelerator instance and fall through
-        return CreatedModel(ACCELS[opt.accel](other_opt))
+    return ACCELS[opt.accel](other_opt)
 
-    # ----------------------------------------------------------------------------------------------
-    # if we are still here, print the help
-    accelclass = ACCELS[opt.accel]
-    print(f"--- {accelclass.NAME.upper()} Accelerator Class. Parameters:")
-    print_help(accelclass.get_parameters())
 
-    # try creating the accelclass from the options
-    try:
-        with silence():
-            return CreatedModel.help()
-    except SystemExit:
-        # if this fails, the accelclass options where incomplete, so we DON'T return an accel instance
-        # but only the flag help_requested=True
-        return CreatedModel.help()
+@entrypoint(_get_params())
+def get_accelerator_class(opt, other):
+    """
+    """
 
+    return ACCELS[opt.accel]
 
 @entrypoint(_get_params())
 def get_parsed_opt(opt, other_opt):

@@ -22,7 +22,8 @@ from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCrea
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
-from omc3.utils.parsertools import print_help
+from omc3.utils.parsertools import print_help, require_param
+from generic_parser.tools import silence
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -46,7 +47,6 @@ def _get_params():
         name="type",
         choices=("nominal", "best_knowledge", "coupling_correction"),
         help="Type of model to create. [Required]",
-        required=True,
     )
     params.add_parameter(
         name="outputdir",
@@ -76,6 +76,7 @@ def _get_params():
         action="store_true",
         help="if selected, a list of valid modifier files is printed",
     )
+    params.add_parameter(name="show_help", action="store_true", help="instructs the subsequent modules to print a help message")
     return params
 
 
@@ -135,37 +136,30 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
         JPARC: Not implemented
     """
-    # because the different modules (model_creator, accelerator_class, accelerator_modelcreator)
-    # eagerly evaluate their state, we cannot predetermine any help to print.
-    # the solution (workaround?) is to construct until failure, all the modules encountered will do
-    # as much work as possible and print help / errors if appropriate
-    created_model = manager.get_accelerator(accel_opt)
+    if opt.show_help:
+        try:
+            with silence():
+                accel_class = manager.get_accelerator_class(accel_opt)
+            print(f"---- Accelerator {accel_class.__name__}  | Usage ----\n")
+            print_help(accel_class.get_parameters())
+        except:
+            pass
 
-    # maybe a bit clunky
-    # if `accel_inst` is None, the manager couldn't create it, but did handle the input
-    # (either it crashed with a meaningful error message or help was requested and it printed that)
-    if created_model.accelerator is None:
-        LOGGER.debug(DRY_RUN)
-        return None
-    # if `accel_inst` is not None AND help was requested, we print the help of **the modelcreator**
-    if created_model.help_requested:
-        LOGGER.info("Model Creators help requested")
+        print("---- Model Creator | Usage ----\n")
         print_help(_get_params())
-        LOGGER.info(DRY_RUN)
         return None
 
-    accel_inst = created_model.accelerator
-
-    # if none of the above are true, the instance was successfully created and we don't want help
     # proceed to the creator
+    accel_inst = manager.get_accelerator(accel_opt)
+    require_param("type", _get_params(), opt)
+
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     creator = CREATORS[accel_inst.NAME][opt.type]
 
-    if not created_model.help_requested and creator.get_opt(accel_inst, opt):
+    if creator.get_opt(accel_inst, opt):
         accel_inst.verify_object()
-        print("==========================")
-        if opt.outputdir is None:
-            raise AttributeError("Missing flag `--outputdir DIR`")
+        require_param("outputdir", _get_params(), opt)
+
         # Prepare model-dir output directory
         accel_inst.model_dir = Path(opt.outputdir).absolute()
 

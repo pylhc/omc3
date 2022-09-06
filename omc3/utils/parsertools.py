@@ -7,60 +7,102 @@ Maybe merge this into `generic_parser` one day.
 """
 from textwrap import wrap
 
+
 def print_help(parameters):
-    """ copied from generic parser and modified to fit in here"""
-    optional_params = []
-    required_params = []
-    space = " " * 4
+    """
+    Pretty prints the help information for the given parameters.
 
+    (copied from generic parser and modified to fit in here)
+    """
     for name in sorted(parameters.keys()):
-        item = parameters[name]
-        try:
-            name_and_type = f"\33[1m{name}\33[22m (\33[33m{item['type'].__name__}\33[0m):\n"
-        except KeyError:
-            name_and_type = f"\33[1m{name}\33[22m:\n"
-
-        try:
-            help_str = f"{item['help']}"
-        except KeyError:
-            help_str = "-No info available-"
-
-        help_str = "\n".join([f"{space}{line}" for line in wrap(help_str, 70)])
-        help_str = f"{help_str}\n"
-
-        try:
-            flags = f"{space}flags: {item['flags']}\n"
-        except KeyError:
-            flags = ''
-
-        try:
-            choices = f"{space}choices: {item['choices']}\n"
-        except KeyError:
-            choices = ''
-
-        try:
-            default = f"{space}default: {item['default']}\n"
-        except KeyError:
-            default = ''
-
-        try:
-            action = f"{space}action: \33[35m{item['action']}\33[0m\n"
-        except KeyError:
-            action = ''
-
-        item_str = f"{name_and_type}{help_str}{flags}{choices}{default}{action}"
-
-        if item.get("required", False):
-            required_params.append(item_str)
-        else:
-            optional_params.append(item_str)
-
-    if required_params:
-        print("Required:\n")
-        print("".join(required_params))
-
-    if optional_params:
-        print("Optional:\n")
-        print("".join(optional_params))
+        print(_get_help_str(name, parameters))
 
 
+def require_param(name: str, parameters: dict, options: dict):
+    """
+    Guard for a missing parameter.
+
+    This function is meant to be used if a parameter is required from a certain line on, but not before
+    (because we want to get some debug info, help output, etc up until that point even if the required parameter is
+    not given).
+
+    The presents of the parameter in the parse options is checked and an `AttributeError` is thrown if it is missing.
+
+    Args:
+        name: the name of the parameter
+        parameters: the list of all parameters
+        options: the parsed options
+
+    """
+    if options[name] is None:
+        raise AttributeError(f"Missing flag `{name}`.\nUsage:\n{_get_help_str(name, parameters)}")
+
+
+def _get_help_str(name: str, parameters: dict) -> str:
+    """
+    Gets the parameter's help string.
+
+    Args:
+        name: the name of the parameter
+        parameters: the list of all parameters
+
+    Returns:
+        The help string of the parameter `name`
+
+    """
+    space = " " * 4
+    item = parameters[name]
+
+    try:
+        name_and_type = f"{_fmt_name(name)} ({_fmt_type(item['type'].__name__)}):\n"
+    except KeyError:
+        name_and_type = f"{_fmt_name(name)}:\n"
+
+    try:
+        help_str = f"{item['help']}"
+    except KeyError:
+        help_str = "-No info available-"
+
+    help_str = "\n".join([f"{space}{line}" for line in wrap(help_str, 70)])
+    help_str = f"{help_str}\n"
+
+    try:
+        flags = f"{space}flags: {item['flags']}\n"
+    except KeyError:
+        flags = ''
+
+    try:
+        choices = f"{space}choices: {item['choices']}\n"
+    except KeyError:
+        choices = ''
+
+    try:
+        default = f"{space}default: {item['default']}\n"
+    except KeyError:
+        default = ''
+
+    try:
+        action = f"{space}action: {_fmt_action(item['action'])}\n"
+    except KeyError:
+        action = ''
+
+    return f"{name_and_type}{help_str}{flags}{choices}{default}{action}"
+
+
+# ---- formatting ----------------------------------------------------------------------------------
+def _fmt_name(name) -> str:
+    return name
+    # # if color terminal:
+    # return f"\33[1m{name}\33[22m"
+
+
+def _fmt_action(name) -> str:
+    return name
+    # # if color terminal:
+    # return f"\33[35m{name}\33[0m"
+
+
+def _fmt_type(name) -> str:
+    return name
+    # # if color terminal:
+    # return f"\33[33m{name}\33[0m"
