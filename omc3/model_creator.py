@@ -11,7 +11,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER
+from omc3.model.constants import JOB_MODEL_MADX, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, MODIFIER_BRANCH
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
@@ -24,10 +24,10 @@ from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
 from omc3.utils.parsertools import print_help, require_param
 from generic_parser.tools import silence
+from omc3.model.model_creators import abstract_model_creator
 
 LOGGER = logging_tools.get_logger(__name__)
 
-DRY_RUN = "*** ==> dry-run, no model created ***"
 
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
@@ -155,30 +155,54 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     require_param("type", _get_params(), opt)
 
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
-    creator = CREATORS[accel_inst.NAME][opt.type]
 
-    if creator.get_opt(accel_inst, opt):
-        accel_inst.verify_object()
-        require_param("outputdir", _get_params(), opt)
+    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type]
 
-        # Prepare model-dir output directory
-        accel_inst.model_dir = Path(opt.outputdir).absolute()
+    if not creator.get_options(accel_inst, opt):
+        return None
 
-        # Prepare paths
-        create_dirs(opt.outputdir)
-        creator.prepare_run(accel_inst)
+    accel_inst.verify_object()
+    require_param("outputdir", _get_params(), opt)
 
-        madx_script = creator.get_madx_script(accel_inst)
-        # Run madx to create model
-        run_string(madx_script,
-                   output_file=opt.outputdir / JOB_MODEL_MADX,
-                   log_file=opt.logfile,
-                   cwd=opt.outputdir)
-        # Return accelerator instance
-        accel_inst.model_dir = opt.outputdir
-        return accel_inst
+    # Prepare model-dir output directory
+    accel_inst.model_dir = Path(opt.outputdir).absolute()
 
-    LOGGER.info(DRY_RUN)
+    # adjust modifier paths,
+    if accel_inst.modifiers is not None:
+        accel_inst.modifiers = [_find_modifier(m, accel_inst) for m in accel_inst.modifiers]
+
+    # Prepare paths
+    create_dirs(opt.outputdir)
+    creator.prepare_run(accel_inst)
+
+    madx_script = creator.get_madx_script(accel_inst)
+    # Run madx to create model
+    run_string(madx_script,
+               output_file=opt.outputdir / JOB_MODEL_MADX,
+               log_file=opt.logfile,
+               cwd=opt.outputdir)
+    # Return accelerator instance
+    accel_inst.model_dir = opt.outputdir
+    return accel_inst
+
+
+def _find_modifier(modifier, accel_inst: Accelerator):
+    # first case: if modifier exists as is, take it
+    if modifier.exists():
+        return modifier
+
+    # second case: try if it is already in the output dir
+    modifier_path = accel_inst.model_dir / modifier
+    if modifier_path.exists():
+        return modifier_path.absolute()
+
+    # and last case, try to find it in the acc-models rep
+    if accel_inst.acc_model_path is not None:
+        modifier_path = accel_inst.acc_model_path / MODIFIER_BRANCH / modifier
+        if modifier_path.exists():
+            return modifier_path.absolute()
+
+    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}")
 
 
 if __name__ == "__main__":

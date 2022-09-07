@@ -30,7 +30,8 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
     PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER,
-    ACCELERATOR_MODEL_REPOSITORY
+    ACCELERATOR_MODEL_REPOSITORY,
+    MODIFIER_BRANCH,
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.utils import iotools
@@ -50,28 +51,21 @@ def _b2_columns() -> List[str]:
 
 class LhcModelCreator(ModelCreator):
 
-    def get_opt(accel_inst, opt) -> bool:
-        LOGGER.warning(f"accel_inst.acc_model_path: {accel_inst.acc_model_path}")
-        LOGGER.warning(f"opt path                 : {opt.path}")
-        LOGGER.warning(f"ACC_MODEL_REP/year       : {ACCELERATOR_MODEL_REPOSITORY}/{accel_inst.year}")
+    def get_options(accel_inst, opt) -> bool:
         if opt.fetch == PATHFETCHER:
-            accel_inst.acc_model_path = opt.path
+            accel_inst.acc_model_path = Path(opt.path)
         elif opt.fetch == AFSFETCHER:
             accel_inst.acc_model_path = ACCELERATOR_MODEL_REPOSITORY / accel_inst.year
 
         if opt.list_modifiers:
             if accel_inst.acc_model_path is None:
                 raise ValueError("can't list modifiers if lattice source is not an `acc-models` repository")
-                return False
-            for root, subdirs, files in os.walk(Path(accel_inst.acc_model_path) / "operation/optics"):
+
+            for root, subdirs, files in os.walk(Path(accel_inst.acc_model_path) / MODIFIER_BRANCH):
                 for f in files:
                     if os.path.splitext(f)[1] == ".madx":
                         print(Path(root)/f)
             return False
-
-        # adjust modifier paths
-        accel_inst.modifiers = [
-            Path(accel_inst.acc_model_path) / "operation/optics" / m for m in accel_inst.modifiers]
 
         return True
 
@@ -116,8 +110,8 @@ class LhcModelCreator(ModelCreator):
     @classmethod
     def prepare_run(cls, accel: Lhc) -> None:
         LOGGER.info("preparing run ...")
-        LOGGER.info("creating symlinks")
-        if accel.year in ["2018", "2022"]:  # these years should be handled by the fetcher
+        if accel.acc_model_path is not None:
+            LOGGER.info("creating symlinks")
             link = Path(accel.model_dir)/LHC_REPOSITORY_NAME
             target = accel.acc_model_path
             if not link.exists():
@@ -162,6 +156,7 @@ class LhcModelCreator(ModelCreator):
                 headers_dict={"NAME": "EFIELD", "TYPE": "EFIELD"},
                 save_index="NAME",
             )
+
 
     @staticmethod
     def check_accelerator_instance(accel: Lhc) -> None:

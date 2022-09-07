@@ -10,7 +10,7 @@ from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota
 from generic_parser.dict_parser import ArgumentError
 from generic_parser.tools import silence
 
-from omc3.model.model_creators.abstract_model_creator import CreatedModel
+from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils.parsertools import print_help
 
 ACCELS = {
@@ -33,7 +33,7 @@ def _get_params():
 
 
 @entrypoint(_get_params())
-def get_accelerator(opt, other_opt):
+def get_accelerator(opt, other_opt) -> Accelerator:
     """
     Returns (accel, help_requested):
         `accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.

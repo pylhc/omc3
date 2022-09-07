@@ -17,6 +17,21 @@ class ModelCreator(ABC):
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
     functions are defined here.
     """
+
+
+    @abstractmethod
+    def get_options(self, options) -> bool:
+        """
+        Parses additional commandline options (if any)
+        Args:
+            options:
+
+        Returns:
+
+        """
+        return True
+
+
     @classmethod
     @abstractmethod
     def get_correction_check_script(cls, accel: Accelerator, corr_file: str, chrom: bool) -> str:
@@ -100,16 +115,3 @@ class ModelCreator(ABC):
                 raise FileNotFoundError(
                     f"Model Creation Failed. The file '{file_path.absolute()}' was not created."
                 )
-
-
-class CreatedModel:
-    """
-    Convenience class for modelcreator results.
-    """
-    def __init__(self, accelerator=None, help_requested=False):
-        self.accelerator = accelerator
-        self.help_requested = help_requested
-
-    @staticmethod
-    def help():
-        return CreatedModel(object, True)
