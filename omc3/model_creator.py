@@ -136,6 +136,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
         JPARC: Not implemented
     """
+    # first, if help is requested, gather all help info and print it
     if opt.show_help:
         try:
             with silence():
@@ -158,9 +159,11 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type]
 
+    # now that the creator is initialised, we can ask for modifiers that are actually present using the fetcher we chose
     if not creator.get_options(accel_inst, opt):
         return None
 
+    # the rest is really only the model creation itself we are not going to stop anymore to print help / info stuff
     accel_inst.verify_object()
     require_param("outputdir", _get_params(), opt)
 
