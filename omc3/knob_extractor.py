@@ -7,9 +7,11 @@ Fetches data from nxcals through pytimber using the StateTracker fields.
 
 import argparse
 import math
-from datetime import datetime, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import re
 import os
+import pytest
 
 KNOBS_TXT_MDLDIR = "acc-models-lhc/operation/knobs.txt"
 KNOBS_TXT_FALLBACK =  "/afs/cern.ch/eng/acc-models/lhc/current/operation/knobs.txt"
@@ -180,17 +182,17 @@ def _add_delta(t1, pattern):
         unit = delta[1]
         value = sign*int(delta[0])
         if unit == 's':
-            t1 = t1 + timedelta(seconds=value)
+            t1 = t1 + relativedelta(seconds=value)
         if unit == 'm':
-            t1 = t1 + timedelta(minutes=value)
+            t1 = t1 + relativedelta(minutes=value)
         if unit == 'h':
-            t1 = t1 + timedelta(hours=value)
+            t1 = t1 + relativedelta(hours=value)
         if unit == 'd':
-            t1 = t1 + timedelta(days=value)
+            t1 = t1 + relativedelta(days=value)
         if unit == 'w':
-            t1 = t1 + timedelta(days=7*value)
+            t1 = t1 + relativedelta(days=7*value)
         if unit == 'M':
-            t1 = t1 + timedelta(months=value)
+            t1 = t1 + relativedelta(months=value)
 
     return t1
 
@@ -217,6 +219,30 @@ def _get_knobs_dict(user_defined = None):
                 knobdict[knob[1].strip()] = (knob[0].strip(), float(knob[2]))
 
     return knobdict
+
+
+@pytest.mark.basic
+def test_time_and_delta():
+    t1 = _time_from_str("2022-06-26T03:00")
+
+    assert t1 == datetime(2022,6,26,3,0,0)
+
+    # 2 hours earlier
+    t2 = _add_delta(t1, "_2h")
+    assert t2 == datetime(2022,6,26,1,0,0)
+
+    # 1 week earlier
+    t2 = _add_delta(t1, "_1w")
+    assert t2 == datetime(2022,6,19,3,0,0)
+
+    # 1 week and 1 hour earlier
+    t2 = _add_delta(t1, "_1w1h")
+    assert t2 == datetime(2022,6,19,2,0,0)
+
+    # 1 month later
+    t2 = _add_delta(t1, "1M")
+    assert t2 == datetime(2022,7,26,3,0,0)
+
 
 
 if __name__ == "__main__":
