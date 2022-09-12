@@ -81,6 +81,11 @@ def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
     """
     Calculates action (2J and sqrt(2J)) and its errors from BPM data in lin-df.
     Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation.
+    Reminder: A = sqrt(2J \beta) .
+
+    TODO (jdilly 07.09.2022):
+          beta_phase instead of beta_model as stated below Eq. (11) in
+          PHYS. REV. ACCEL. BEAMS 23, 042801 (2020)
 
     Returns:
         sqrt(2J), error sqrt(2J), 2J, error 2J as  (1x4) array

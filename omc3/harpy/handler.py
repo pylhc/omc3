@@ -158,7 +158,6 @@ def _compute_headers(panda, date=None):
             except KeyError:
                 pass
             else:
-                # TODO: Calculate like in optics_measurements kick?
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)  # TODO: not really the RMS?
     if date:
