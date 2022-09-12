@@ -33,7 +33,7 @@ def converter_params():
         name="tbt_datatype",
         type=str,
         default="lhc",
-        choices=list(tbt.io.DATA_READERS.keys()),
+        choices=list(tbt.io.TBT_MODULES.keys()),
         help="Choose the datatype from which to import. ",
     )
     params.add_parameter(
