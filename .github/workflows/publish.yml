@@ -29,7 +29,7 @@ jobs:
           cache: 'pip'
 
       - name: Upgrade pip, setuptools, wheel, build and twine
-        run: python -m pip install --upgrade pip setuptools wheel
+        run: python -m pip install --upgrade pip setuptools wheel build twine
 
       - name: Get full Python version
         id: full-python-version
