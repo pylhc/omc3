@@ -220,6 +220,10 @@ def _get_knobs_dict(user_defined = None):
 
     return knobdict
 
+# --------------------------------------------------------------------------------------------------
+# ---- tests ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
+
 
 def test_time_and_delta():
     t1 = _time_from_str("2022-06-26T03:00")
@@ -243,15 +247,48 @@ def test_time_and_delta():
     assert t2 == datetime(2022,7,26,3,0,0)
 
 
-def test_example1():
-    argv = ["dummy", "disp", "chroma", "--time", "2022-05-04T14:00"]
+def test_command_args():
+    # TODO: maybe check the resulting `knobs.madx`
 
+    # correct command
     try:
-        main(argv)
+        main(["dummy", "disp", "chroma", "--time", "2022-05-04T14:00"])
     except Exception as e:
         assert False, e
 
+    # invalid knob name
+    try:
+        main(["knob_extractor.py", "invalid_knob", "--time", "2022-05-04T14:00"])
+    except:
+        pass
+    else:
+        assert False, "this should throw"
 
+    # another valid time string
+    try:
+        main(["knob_extractor.py", "disp", "--time", "2022-05-04 14:00"])
+    except Exception as e:
+        assert False, e
+
+    # `now` is also a valid time string
+    try:
+        main(["knob_extractor.py", "disp", "--time", "now"])
+    except Exception as e:
+        assert False, e
+
+    # invalid time string
+    try:
+        main(["knob_extractor.py", "disp", "--time", "hello,world"])
+    except RuntimeError as e:
+        pass # this should be thrown
+    else:
+        assert False, "this should throw"
+
+    # test extraction of all the knobs
+    try:
+        main(["knob_extractor.py", "disp", "sep", "xing", "chroma", "ip_offset", "mo", "--time", "now"])
+    except Exception as e:
+        assert False, e
 
 
 if __name__ == "__main__":
