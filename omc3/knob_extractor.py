@@ -244,7 +244,7 @@ def test_time_and_delta():
 
 
 def test_example1():
-    argv = ["dummy", "disp" "chroma" "--time" "2022-05-04T14:00"]
+    argv = ["dummy", "disp", "chroma", "--time", "2022-05-04T14:00"]
 
     try:
         main(argv)
