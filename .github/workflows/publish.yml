@@ -27,7 +27,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-        run: python -m pip install --upgrade pip setuptools wheel build twine
+
+      - name: Upgrade pip, setuptools, wheel, build and twine
+        run: python -m pip install --upgrade pip setuptools wheel
 
       - name: Get full Python version
         id: full-python-version
