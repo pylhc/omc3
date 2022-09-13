@@ -11,7 +11,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import re
 import os
-import pytest
+import sys
 
 KNOBS_TXT_MDLDIR = "acc-models-lhc/operation/knobs.txt"
 KNOBS_TXT_FALLBACK =  "/afs/cern.ch/eng/acc-models/lhc/current/operation/knobs.txt"
@@ -69,7 +69,7 @@ python knob_extractor.py disp sep xing chroma ip_offset mo --time now
 """
 
 
-def main():
+def main(arguments=sys.argv):
     parser = argparse.ArgumentParser("Knob extraction tool.",
                                     epilog=USAGE_EXAMPLES,
                                     formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -98,11 +98,11 @@ def main():
                         help="Specify user-defined output path. This should probably be `model_dir/knobs.madx`"
                         )
 
-    args = parser.parse_args()
+    args = parser.parse_args(arguments[1:])
 
     if args.time is not None:
-        end = args.time[1] if len(args.extract) > 1 else None
-        _extract(args.knobs, args.extract[0], end, args.output)
+        end = args.time[1] if len(args.time) > 1 else None
+        _extract(args.knobs, args.time[0], end, args.output)
 
     if args.state:
         print("---- STATE ------------------------------------")
@@ -221,7 +221,6 @@ def _get_knobs_dict(user_defined = None):
     return knobdict
 
 
-@pytest.mark.basic
 def test_time_and_delta():
     t1 = _time_from_str("2022-06-26T03:00")
 
@@ -242,6 +241,16 @@ def test_time_and_delta():
     # 1 month later
     t2 = _add_delta(t1, "1M")
     assert t2 == datetime(2022,7,26,3,0,0)
+
+
+def test_example1():
+    argv = ["dummy", "disp" "chroma" "--time" "2022-05-04T14:00"]
+
+    try:
+        main(argv)
+    except Exception as e:
+        assert False, e
+
 
 
 
