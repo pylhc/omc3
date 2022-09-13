@@ -24,7 +24,7 @@ AMPZ, MUZ, TUNEZ = 0.01, 0.3, 0.008
 HARPY_SETTINGS = dict(
     clean=[True, False],
     keep_exact_zeros=[False, True],
-    singval=[12],
+    sing_val=[12],
     peak_to_peak=[1e-8],
     window=['hann', 'rectangle', 'welch', 'triangle', 'hamming', 'nuttal3', 'nuttal4'],
     max_peak=[0.02],
@@ -41,7 +41,7 @@ HARPY_INPUT = list(itertools.product(*HARPY_SETTINGS.values()))
 @pytest.mark.basic
 def test_harpy(_test_file, _model_file):
 
-    [clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak, svd_dominance_limit,
+    [clean, keep_exact_zeros, sing_val, peak_to_peak, window, max_peak, svd_dominance_limit,
      num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits ] = HARPY_INPUT[0]
 
     model = _get_model_dataframe()
@@ -50,7 +50,7 @@ def test_harpy(_test_file, _model_file):
     hole_in_one_entrypoint(harpy=True,
                            clean=clean,
                            keep_exact_zeros=keep_exact_zeros,
-                           singval=singval,
+                           sing_val=sing_val,
                            peak_to_peak=peak_to_peak,
                            window=window,
                            max_peak=max_peak,
@@ -88,10 +88,10 @@ def test_harpy_without_model(_test_file, _model_file):
     _assert_spectra(lin, model)
 
 @pytest.mark.extended
-@pytest.mark.parametrize("clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak,"
+@pytest.mark.parametrize("clean, keep_exact_zeros, sing_val, peak_to_peak, window, max_peak,"
                          "svd_dominance_limit, num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits",
                           HARPY_INPUT)
-def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak,
+def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, sing_val, peak_to_peak, window, max_peak,
                          svd_dominance_limit, num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
@@ -99,7 +99,7 @@ def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, singval, pe
     hole_in_one_entrypoint(harpy=True,
                            clean=clean,
                            keep_exact_zeros=keep_exact_zeros,
-                           singval=singval,
+                           sing_val=sing_val,
                            peak_to_peak=peak_to_peak,
                            window=window,
                            max_peak=max_peak,
@@ -146,6 +146,7 @@ def test_freekick_harpy(_test_file, _model_file):
         # main and secondary phases
         assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].to_numpy(),
                                 model.loc[:, f"MU{plane}"].to_numpy())) < LIMITS["P1"]
+
 
 @pytest.mark.extended
 def test_harpy_3d(_test_file, _model_file):

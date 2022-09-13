@@ -442,7 +442,7 @@ def harpy_params():
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output.")
     params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],
-                         choices=list(tbt.io.DATA_READERS.keys()),
+                         choices=list(tbt.io.TBT_MODULES.keys()),
                          help="Choose the datatype from which to import. ")
 
     # Cleaning parameters
