@@ -170,10 +170,7 @@ def _time_from_str(pattern):
 
 def _add_delta(t1, pattern):
     is_negative = pattern.startswith('_')
-    sign = 1
-
-    if is_negative:
-        sign = -1
+    sign = -1 if is_negative else 1
 
     deltare = re.compile("(\\d+)(\\w)")
     all_deltas = deltare.findall(pattern)
