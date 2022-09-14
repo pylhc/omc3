@@ -1,4 +1,8 @@
 import pytest
+
+# import private functions to test
+from omc3.knob_extractor import _time_from_str, _add_delta
+# import the rest
 from omc3.knob_extractor import *
 
 
