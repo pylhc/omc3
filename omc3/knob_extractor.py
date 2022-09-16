@@ -177,7 +177,7 @@ def main(opt):
     return knobs_extract
 
 
-def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: datetime) -> Dict[str, KnobsDict]:
+def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: datetime) -> KnobsDict:
     """
     Main function to gather data from  the state-tracker.
 
@@ -285,7 +285,7 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> KnobsDict:
     df = pd.read_csv(file_path, comment="#", names=dtypes.keys(), dtype=dtypes, converters=converters)
     df = df.drop(columns="test").set_index("lsa", drop=False)
     return {
-        r[0].replace("/", ":"): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
+        lsa2name(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
     }
 
 
@@ -336,6 +336,16 @@ def _add_time_delta(time: datetime, delta_str: str) -> datetime:
     time = time + relativedelta(**time_parts)
 
     return time
+
+
+# Other tools ------------------------------------------------------------------
+
+def lsa2name(lsa_name: str) -> str:
+    return lsa_name.replace("/", ":")
+
+
+def name2lsa(name: str) -> str:
+    return name.replace(":", "/")
 
 
 if __name__ == "__main__":
