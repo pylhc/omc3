@@ -34,7 +34,7 @@ KNOBS_TXT_AFS = AFS_ACC_MODELS_LHC / KNOBS_TXT_PATH
 
 MINUS_CHARS = ("_", "-")
 
-KNOB_NAMES = {
+KNOB_CATEGORIES = {
     "sep": [
         "LHCBEAM:IP1-SEP-H-MM",
         "LHCBEAM:IP1-SEP-V-MM",
@@ -94,9 +94,9 @@ def get_params():
             nargs='*',
             help=(
                 "A list of knob names or categories to extract. "
-                f"Available categories are: {', '.join(KNOB_NAMES.keys())}."
+                f"Available categories are: {', '.join(KNOB_CATEGORIES.keys())}."
             ),
-            default=list(KNOB_NAMES.keys()),
+            default=list(KNOB_CATEGORIES.keys()),
         ),
         time=dict(
             type=str,
@@ -198,10 +198,8 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
     LOGGER.info("---- KNOBS ------------------------------------")
     for category in knob_categories:
-        knobs[category] = {}  # only here to group them on output
-
-        for knob in KNOB_NAMES.get(category, category):
-            knobs[category][knob] = knobs_dict[knob]
+        for knob in KNOB_CATEGORIES.get(category, category):
+            knobs[knob] = knobs_dict[knob]
 
             LOGGER.info(f"Looking for {knob:<34s} ")
             knobkey = f"LhcStateTracker:{knob}:target"
@@ -222,19 +220,28 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
                 continue
 
             LOGGER.info(f"Knob value for {knob} extracted: {value} (unscaled)")
-            knobs[category][knob].value = value
+            knobs[knob].value = value
     return knobs
 
 
 def _write_knobsfile(output: Union[Path, str], collected_knobs: Dict[str, KnobsDict], time):
     """ Takes the collected knobs and writes them out into a text-file. """
+    # Sort the knobs by category
+    category_knobs = {c: None for c in KNOB_CATEGORIES.keys()}
+    for category, names in KNOB_CATEGORIES.items():
+        for name in names:
+            if name in collected_knobs.keys():
+                category_knobs[category][name] = collected_knobs.pop(name)
+    category_knobs["Other Knobs"] = collected_knobs
+
+    # Write them out
     with open(output, "w") as outfile:
         outfile.write(f"!! --- knobs extracted by knob_extractor\n")
         outfile.write(f"!! --- extracted knobs for time {time}\n\n")
         for category, knobs in collected_knobs.items():
-            if len(knobs) > 1:
-                outfile.write(f"!! --- {category:10} --------------------\n")
-
+            if knobs is None:
+                continue
+            outfile.write(f"!! --- {category:10} --------------------\n")
             for knob, knob_entry in knobs.items():
                 outfile.write(f"{knob_entry.get_madx()}\n")
             outfile.write("\n")
