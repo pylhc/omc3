@@ -4,6 +4,60 @@ Knob Extractor
 
 Will extract knobs and give information about the current beam process (no it doesn't?).
 Fetches data from nxcals through pytimber using the StateTracker fields.
+
+**Arguments:**
+
+*--Optional--*
+
+- **knob_definitions** *(PathOrStrOrDataFrame)*:
+
+    User defined path to the knob-definitions, or (via python) a dataframe
+    containing the knob definitions with the columns 'madx', 'lsa' and
+    'scaling'.
+
+
+- **knobs** *(str)*:
+
+    A list of knob names or categories to extract. Available categories
+    are: sep, xing, chroma, ip_offset, disp, mo.
+
+    default: ``['sep', 'xing', 'chroma', 'ip_offset', 'disp', 'mo']``
+
+
+- **output** *(PathOrStr)*:
+
+    Specify user-defined output path. This should probably be
+    `model_dir/knobs.madx`
+
+    default: ``knobs.madx``
+
+
+- **state**:
+
+    Prints the state of the StateTracker. Does not extract anything else.
+
+    action: ``store_true``
+
+
+- **time** *(str)*:
+
+    At what time to extract the knobs. Accepts ISO-format (YYYY-MM-
+    DDThh:mm:ss), timestamp or 'now'. The default timezone for the ISO-
+    format is local time, but you can force e.g. UTC by adding +00:00.
+
+    default: ``now``
+
+
+- **timedelta** *(str)*:
+
+    Add this timedelta to the given time. The format of timedelta is
+    '((\d+)(\w))+' with the second token being one of s(seconds),
+    m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,
+    1d = 1day, 7m30s = 7 min 30 secs. A prefix '_' specifies a negative
+    timedelta. This allows for easily getting the setting e.g. 2h ago:
+    '_2h' while setting the `time` argument to 'now' (default).
+
+
 """
 import argparse
 import math
