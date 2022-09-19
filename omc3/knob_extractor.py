@@ -14,7 +14,7 @@ import os
 import sys
 
 KNOBS_TXT_MDLDIR = "acc-models-lhc/operation/knobs.txt"
-KNOBS_TXT_FALLBACK =  "/afs/cern.ch/eng/acc-models/lhc/current/operation/knobs.txt"
+KNOBS_TXT_FALLBACK = "/afs/cern.ch/eng/acc-models/lhc/current/operation/knobs.txt"
 
 KNOB_NAMES = {
     "sep": [
@@ -55,10 +55,10 @@ KNOB_NAMES = {
 
 USAGE_EXAMPLES = """Usage Examples:
 
-python knob_extractor.py disp chroma --time 2022-05-04T14:00     
+python knob_extractor.py disp chroma --time 2022-05-04T14:00
     extracts the chromaticity and dispersion knobs at 14h on May 4th 2022
 
-python knob_extractor.py disp chroma --time now _2h 
+python knob_extractor.py disp chroma --time now _2h
     extracts the chromaticity and dispersion knobs as of 2 hours ago
 
 python knob_extractor.py --state
@@ -71,8 +71,8 @@ python knob_extractor.py disp sep xing chroma ip_offset mo --time now
 
 def main(arguments=sys.argv):
     parser = argparse.ArgumentParser("Knob extraction tool.",
-                                    epilog=USAGE_EXAMPLES,
-                                    formatter_class=argparse.RawDescriptionHelpFormatter)
+                                     epilog=USAGE_EXAMPLES,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument("knobs", type=str, nargs='*',
                         help="A list of knob categories to extract",
@@ -106,26 +106,31 @@ def main(arguments=sys.argv):
 
     if args.state:
         print("---- STATE ------------------------------------")
+        ldb = _get_database()
         # TODO: ceck for available fields (and checking the exact name)
         # and prepare for better presentation
+        t1 = _time_from_str("now")
         print(ldb.get("LhcStateTracker:State", t1))
         print(ldb.get("LhcStateTracker/State", t1))
 
 
-def _extract(knobs, start, end = None, output="./knobs.madx"):
+def _get_database():
     import pytimber
+    return pytimber.LoggingDB(source="nxcals")
+
+
+def _extract(knobs, start, end=None, output="./knobs.madx"):
     print("---- EXTRACTING KNOBS -------------------------")
 
     t1 = _time_from_str(start)
-
     if end is not None:
         t1 = _add_delta(t1, end)
 
     print(f"extracting knobs for {t1}")
-
     knobdict = _get_knobs_dict()
 
-    ldb = pytimber.LoggingDB(source="nxcals")
+    ldb = _get_database()
+
     print("---- KNOBS ------------------------------------")
     with open(output, "w") as outfile:
         outfile.write(f"!! --- knobs extracted by knob_extractor\n")
@@ -137,13 +142,15 @@ def _extract(knobs, start, end = None, output="./knobs.madx"):
                 knobkey = f"LhcStateTracker:{knobname}:target"
                 knobvalue = ldb.get(knobkey, t1)
                 print(knobvalue)
-                if not knobkey in knobvalue:
-                    outfile.write(f"! no value for {knobname}, 'target' not in knob\n")
+                if knobkey not in knobvalue:
+                    outfile.write(
+                        f"! no value for {knobname}, 'target' not in knob\n")
                     continue
                 (timestamps, values) = knobvalue[knobkey]
                 if len(values) == 0:
                     print(f"no value for {knobname}")
-                    outfile.write(f"! no value for {knobname}, no values defined for given time\n")
+                    outfile.write(
+                        f"! no value for {knobname}, no values defined for given time\n")
                     continue
                 value = values[-1]
                 (madxname, scaling) = knobdict[knobname.replace(":", "/")]
@@ -202,7 +209,7 @@ def _add_delta(t1, pattern):
     return t1
 
 
-def _get_knobs_dict(user_defined = None):
+def _get_knobs_dict(user_defined=None):
     # if all fails, fall back to lhc acc-models
     if user_defined is not None:
         filename = user_defined
