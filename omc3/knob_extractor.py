@@ -11,21 +11,23 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Sequence, Union
+from typing import Dict, Sequence, Union, Optional
 
 import pandas as pd
+import tfs
 from dateutil.relativedelta import relativedelta
 
 from generic_parser import EntryPointParameters, entrypoint
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
+from omc3.utils.iotools import PathOrStrOrDataFrame
 
 LOGGER = get_logger(__name__)
 
 pytimber = cern_network_import("pytimber")
 
 
-AFS_ACC_MODELS_LHC = Path("/") / "afs" / "cern.ch" / "eng" / "acc-models" / "lhc" / "current"
+AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/current")
 ACC_MODELS_LHC = Path("acc-models-lhc")
 KNOBS_TXT_PATH = Path("operation") / "knobs.txt"
 
@@ -73,10 +75,10 @@ KNOB_CATEGORIES = {
 
 USAGE_EXAMPLES = """Usage Examples:
 
-python knob_extractor.py disp chroma --time 2022-05-04T14:00     
+python knob_extractor.py --knobs disp chroma --time 2022-05-04T14:00     
     extracts the chromaticity and dispersion knobs at 14h on May 4th 2022
 
-python knob_extractor.py disp chroma --time now _2h 
+python knob_extractor.py --knobs disp chroma --time now _2h 
     extracts the chromaticity and dispersion knobs as of 2 hours ago
 
 python knob_extractor.py --state
@@ -112,7 +114,8 @@ def get_params():
                   "s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) "
                   "e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. "
                   "a prefix '_' specifies a negative timedelta"
-                  )
+                  ),
+            default="now"
         ),
         state=dict(
             action='store_true',
@@ -121,9 +124,10 @@ def get_params():
             type=str,
             default='knobs.madx',
             help="Specify user-defined output path. This should probably be `model_dir/knobs.madx`"),
-        knobs_txt=dict(
-            type=str,
-            help="user defined path to knob.txt."
+        knob_definitions=dict(
+            type=PathOrStrOrDataFrame,
+            help="user defined path to the knob-definitions, "
+                 "or (via python) a dataframe containing the knob definitions with the columns 'madx', 'lsa' and 'scaling'."
         ),
     )
 
@@ -132,7 +136,7 @@ def get_params():
 class KnobEntry:
     madx: str
     lsa: str
-    scaling: float
+    scaling: float  # is usually +-1, i.e. takes care of sign-conventions
     value: float = None
 
     def get_madx(self):
@@ -152,28 +156,23 @@ KnobsDict = Dict[str, KnobEntry]
         prog="Knob Extraction Tool."
     )
 )
-def main(opt):
+def main(opt) -> Optional[KnobsDict]:
     if not opt.time and not opt.state:
         raise ValueError("No functionality selected. Set either `time` or `state`.")
 
     ldb = pytimber.LoggingDB(source="nxcals")
-    knobs_extract = None
-
-    if opt.time is not None:
-        time = _parse_time(opt.time)
-        knobs_def_file = _get_knobs_def_file(opt.knobs_txt)
-        knobs_dict = _load_knobs_dict(knobs_def_file)
-        knobs_extract = _extract(ldb, knobs_dict, opt.knobs, time)
-        _write_knobsfile(opt.output, knobs_extract, time)
+    time = _parse_time(opt.time)
 
     if opt.state:
-        raise NotImplementedError("StateTracker State not implemented.")
-        # LOGGER.info("---- STATE ------------------------------------")
-        # # TODO: ceck for available fields (and checking the exact name)
-        # # and prepare for better presentation
-        # LOGGER.info(ldb.get("LhcStateTracker:State", t1))
-        # LOGGER.info(ldb.get("LhcStateTracker/State", t1))
-
+        # only print the state of the StateTracker - the MetaState!
+        LOGGER.info("---- STATE ------------------------------------")
+        LOGGER.info(ldb.get("LhcStateTracker:State", time))
+        LOGGER.info(ldb.get("LhcStateTracker/State", time))
+        return None
+    
+    knobs_dict = _parse_knobs_defintions(opt.knob_definitions)
+    knobs_extract = _extract(ldb, knobs_dict, opt.knobs, time)
+    _write_knobsfile(opt.output, knobs_extract, time)
     return knobs_extract
 
 
@@ -224,7 +223,7 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
     return knobs
 
 
-def _write_knobsfile(output: Union[Path, str], collected_knobs: Dict[str, KnobsDict], time):
+def _write_knobsfile(output: Union[Path, str], collected_knobs: KnobsDict, time):
     """ Takes the collected knobs and writes them out into a text-file. """
     # Sort the knobs by category
     category_knobs = {c: None for c in KNOB_CATEGORIES.keys()}
@@ -250,7 +249,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: Dict[str, KnobsD
 
 # Knobs Dict -------------------------------------------------------------------
 
-def _get_knobs_def_file(user_defined=None) -> Path:
+def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path:
     """ Check which knobs-definition file is appropriate to take. """
     if user_defined is not None:
         LOGGER.info(f"Using user defined knobs.txt: '{user_defined}")
@@ -272,6 +271,7 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> KnobsDict:
     """ Load the knobs-definition file and convert into KnobsDict.
     Each line in this file should consist of four comma separated entries:
     madx-name, lsa-name, scaling factor, knob-test value.
+    Alternatively, a TFS-file is also allowed, but needs to have the suffix ``.tfs``.
 
     Args:
         file_path (Path): Path to the knobs definition file.
@@ -280,13 +280,44 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> KnobsDict:
         Dictionary with LSA names (but with colon instead of /) as
         keys and KnobEntries (without values) as value.
     """
-    dtypes = {"madx": str, "lsa": str, "scaling": float, "test": float}
-    converters = {'madx': str.strip, 'lsa': str.strip}  # strip whitespaces
-    df = pd.read_csv(file_path, comment="#", names=dtypes.keys(), dtype=dtypes, converters=converters)
-    df = df.drop(columns="test").set_index("lsa", drop=False)
+    if Path(file_path).suffix == ".tfs":
+        # just in case someone wants to give tfs files (hidden feature)
+        df = tfs.read_tfs(file_path)
+    else:
+        # parse csv file (the official way)
+        dtypes = {"madx": str, "lsa": str, "scaling": float, "test": float}
+        converters = {'madx': str.strip, 'lsa': str.strip}  # strip whitespaces
+        df = pd.read_csv(file_path, comment="#", names=dtypes.keys(), dtype=dtypes, converters=converters)
+    return _dataframe_to_knobsdict(df)
+
+
+def _dataframe_to_knobsdict(df: pd.DataFrame) -> KnobsDict:
+    """ Converts a DataFrame into the required Dictionary structure.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing at least the columns
+                           'lsa', 'madx', 'scaling' (upper or lowercase)
+
+    Returns:
+        Dictionary with LSA names (but with colon instead of /) as
+        keys and KnobEntries (without values) as value.
+
+    """
+    df.columns = df.columns.astype(str).str.lower()
+    df = df['lsa', 'madx', 'scaling'].set_index("lsa", drop=False)
     return {
         lsa2name(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
     }
+
+
+def _parse_knobs_defintions(knobs_def_input: Optional[Union[Path, str, pd.DataFrame]]) -> KnobsDict:
+    """ Parse the given knob-definitions either from a csv-file or from a DataFrame. """
+    if isinstance(knobs_def_input, pd.DataFrame):
+        return _dataframe_to_knobsdict(knobs_def_input)
+
+    # input points to a file or is None
+    knobs_def_file = _get_knobs_def_file(knobs_def_input)
+    return _load_knobs_dict(knobs_def_file)
 
 
 # Time Tools -------------------------------------------------------------------
@@ -302,7 +333,7 @@ def _parse_time(time: Sequence[str]) -> datetime:
 def _parse_time_from_str(time_str: str) -> datetime:
     """ Parse time from given string. """
     # Now? ---
-    if time_str == "now":
+    if time_str.lower() == "now":
         return datetime.now()
 
     # ISOFormat? ---
