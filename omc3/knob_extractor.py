@@ -169,6 +169,14 @@ def _time_from_str(pattern):
 
 
 def _add_delta(t1, pattern):
+    """
+    Adds a timedelta to the given time `t1` for easy selection of relative times
+    (like 2 hours ago, or one month ago)
+
+    TODO: add some examples
+
+    """
+
     is_negative = pattern.startswith('_')
     sign = -1 if is_negative else 1
 
