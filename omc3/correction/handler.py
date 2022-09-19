@@ -63,7 +63,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
     resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
-    delta = tfs.TfsDataFrame(0, index=vars_list, columns=[DELTA])
+    delta = tfs.TfsDataFrame(0., index=vars_list, columns=[DELTA])
 
     # ######### Iteration Phase ######### #
     for iteration in range(opt.max_iter + 1):
