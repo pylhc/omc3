@@ -1,5 +1,18 @@
 # OMC3 Changelog
 
+#### 2022-09-19 - v0.5.2
+
+- Bugfix:
+  - Correction Dataframe initialized as float (before as int)
+
+- Added:
+  - Plotting: Transposed legend order
+  - Plotting: Create markers from any text
+
+#### 2022-09-12 - v0.5.1
+
+- Updated to turn_by_turn v0.4.0: Includes SPS reader
+
 #### 2022-07-25 - v0.5.0 - _Mael-Le-Garrec_
 
 - Added:
