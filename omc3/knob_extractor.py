@@ -228,6 +228,7 @@ KnobsDict = Dict[str, KnobEntry]
     )
 )
 def main(opt) -> Optional[KnobsDict]:
+    """ Main knob extracting function. """
     if not opt.time and not opt.state:
         raise ValueError("No functionality selected. Set either `time` or `state`.")
 
@@ -298,8 +299,9 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
 def _write_knobsfile(output: Union[Path, str], collected_knobs: KnobsDict, time):
     """ Takes the collected knobs and writes them out into a text-file. """
-    # Sort the knobs by category
     collected_knobs = collected_knobs.copy()  # to not modify the return dict
+
+    # Sort the knobs by category
     category_knobs = {c: {} for c in KNOB_CATEGORIES.keys()}
     for category, names in KNOB_CATEGORIES.items():
         for name in names:
