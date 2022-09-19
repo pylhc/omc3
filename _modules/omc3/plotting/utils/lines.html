@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.utils.lines &mdash; omc3 0.5.1 documentation</title>
+  <title>omc3.plotting.utils.lines &mdash; omc3 0.5.2 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -207,6 +207,8 @@
 <span class="kn">import</span> <span class="nn">matplotlib.transforms</span> <span class="k">as</span> <span class="nn">mtrans</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">matplotlib.markers</span> <span class="kn">import</span> <span class="n">MarkerStyle</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">PathPatch</span>
 
 <span class="n">VERTICAL_LINES_TEXT_LOCATIONS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;bottom&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=-</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">),</span>
@@ -239,6 +241,31 @@
         <span class="n">marker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_marker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">marker</span></div></div>
+
+
+<div class="viewcode-block" id="text_to_marker"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.text_to_marker">[docs]</a><span class="k">def</span> <span class="nf">text_to_marker</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert the given `text` to path</span>
+<span class="sd">    which can be used as a marker in matplotlib plots,</span>
+<span class="sd">    including the options of setting `markerfacecolor` and `markeredgecolor`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): Text to use as a marker.</span>
+<span class="sd">        center (bool): Center the path around the origin (otherwise bottom left is anchor).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Array of the path vertices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">MarkerStyle</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;$\mathrm</span><span class="se">{{</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="se">}}</span><span class="s1">$&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_path</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
+        <span class="c1"># center path: remove any offsets (extend.min) and move to center (-size[0]/2)</span>
+        <span class="n">extend</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">get_extents</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">mtrans</span><span class="o">.</span><span class="n">Affine2D</span><span class="p">()</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="n">extend</span><span class="o">.</span><span class="n">min</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">extend</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">extend</span><span class="o">.</span><span class="n">min</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">extend</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">transformed</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">PathPatch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">mtrans</span><span class="o">.</span><span class="n">IdentityTransform</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">pp</span><span class="o">.</span><span class="n">get_path</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="plot_vertical_lines_fast"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.plot_vertical_lines_fast">[docs]</a><span class="k">def</span> <span class="nf">plot_vertical_lines_fast</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

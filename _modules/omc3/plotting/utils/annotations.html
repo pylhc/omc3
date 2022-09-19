@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.utils.annotations &mdash; omc3 0.5.1 documentation</title>
+  <title>omc3.plotting.utils.annotations &mdash; omc3 0.5.2 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -201,10 +201,10 @@
 <span class="sd">Plotting Utilities: Annotations</span>
 <span class="sd">-------------------------------</span>
 
-<span class="sd">Helper functions to create annotations as well as style labels in plots.</span>
+<span class="sd">Helper functions to create annotations, legends as well as style labels in plots.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">distutils.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib</span>
@@ -477,10 +477,33 @@
     <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">max_length</span><span class="o">/</span><span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]),</span> <span class="mi">1</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="make_top_legend"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.make_top_legend">[docs]</a><span class="k">def</span> <span class="nf">make_top_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">handles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.02</span><span class="p">):</span>
+<div class="viewcode-block" id="transpose_legend_order"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.transpose_legend_order">[docs]</a><span class="k">def</span> <span class="nf">transpose_legend_order</span><span class="p">(</span><span class="n">ncol</span><span class="p">,</span> <span class="n">handles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Reorder handles and labels, so that the legend order is transposed,</span>
+<span class="sd">    i.e. the entries are row-first instead of column-first.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">reorder</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">::</span><span class="n">ncol</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncol</span><span class="p">)]))</span>
+
+    <span class="k">if</span> <span class="n">handles</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+        <span class="n">ax_handles</span><span class="p">,</span> <span class="n">ax_labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">handles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">handles</span> <span class="o">=</span> <span class="n">ax_handles</span>
+
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">ax_labels</span>
+
+    <span class="k">return</span> <span class="n">reorder</span><span class="p">(</span><span class="n">handles</span><span class="p">),</span> <span class="n">reorder</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="make_top_legend"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.make_top_legend">[docs]</a><span class="k">def</span> <span class="nf">make_top_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">handles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">transposed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a legend on top of the plot.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ncol</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">transposed</span><span class="p">:</span>
+        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">transpose_legend_order</span><span class="p">(</span><span class="n">ncol</span><span class="p">,</span> <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
 
     <span class="n">leg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span>
                     <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">+</span><span class="n">pad</span><span class="p">),</span>

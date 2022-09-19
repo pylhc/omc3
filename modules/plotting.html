@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plot-Subfunctions &mdash; omc3 0.5.1 documentation</title>
+  <title>Plot-Subfunctions &mdash; omc3 0.5.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -348,7 +348,7 @@ with subdicts of the planes.</p>
 <span id="common-plot-functionality"></span><h2>Common Plot Functionality<a class="headerlink" href="#module-omc3.plotting.utils.annotations" title="Permalink to this heading"></a></h2>
 <section id="plotting-utilities-annotations">
 <h3>Plotting Utilities: Annotations<a class="headerlink" href="#plotting-utilities-annotations" title="Permalink to this heading"></a></h3>
-<p>Helper functions to create annotations as well as style labels in plots.</p>
+<p>Helper functions to create annotations, legends as well as style labels in plots.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.plotting.utils.annotations.OOMFormatter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.annotations.</span></span><span class="sig-name descname"><span class="pre">OOMFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%1.1f'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mathText</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/annotations.html#OOMFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.utils.annotations.OOMFormatter" title="Permalink to this definition"></a></dt>
@@ -421,7 +421,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.utils.annotations.make_top_legend">
-<span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.annotations.</span></span><span class="sig-name descname"><span class="pre">make_top_legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/annotations.html#make_top_legend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.utils.annotations.make_top_legend" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.annotations.</span></span><span class="sig-name descname"><span class="pre">make_top_legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transposed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/annotations.html#make_top_legend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.utils.annotations.make_top_legend" title="Permalink to this definition"></a></dt>
 <dd><p>Create a legend on top of the plot.</p>
 </dd></dl>
 
@@ -534,6 +534,13 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.plotting.utils.annotations.transpose_legend_order">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.annotations.</span></span><span class="sig-name descname"><span class="pre">transpose_legend_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/annotations.html#transpose_legend_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.utils.annotations.transpose_legend_order" title="Permalink to this definition"></a></dt>
+<dd><p>Reorder handles and labels, so that the legend order is transposed,
+i.e. the entries are row-first instead of column-first.</p>
+</dd></dl>
+
 </section>
 <span class="target" id="module-omc3.plotting.utils.colors"></span><section id="plotting-utilities-colors">
 <h3>Plotting Utilities: Colors<a class="headerlink" href="#plotting-utilities-colors" title="Permalink to this heading"></a></h3>
@@ -620,6 +627,25 @@ by text_loc.</p>
 <li><p><strong>y</strong> -- tuple of y-limits (axis coordinates, default (0,1) i.e. bottom to top).</p></li>
 <li><p><strong>kwargs</strong> -- kwargs passed on to ax.plot.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.plotting.utils.lines.text_to_marker">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.lines.</span></span><span class="sig-name descname"><span class="pre">text_to_marker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/plotting/utils/lines.html#text_to_marker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.utils.lines.text_to_marker" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the given <cite>text</cite> to path
+which can be used as a marker in matplotlib plots,
+including the options of setting <cite>markerfacecolor</cite> and <cite>markeredgecolor</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) -- Text to use as a marker.</p></li>
+<li><p><strong>center</strong> (<em>bool</em>) -- Center the path around the origin (otherwise bottom left is anchor).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array of the path vertices.</p>
 </dd>
 </dl>
 </dd></dl>
