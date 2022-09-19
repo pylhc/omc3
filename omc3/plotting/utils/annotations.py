@@ -2,10 +2,10 @@
 Plotting Utilities: Annotations
 -------------------------------
 
-Helper functions to create annotations as well as style labels in plots.
+Helper functions to create annotations, legends as well as style labels in plots.
 """
+import itertools
 import re
-from distutils.version import LooseVersion
 from typing import Union
 
 import matplotlib
@@ -278,10 +278,33 @@ def get_legend_ncols(labels, max_length=78):
     return max([max_length/max([len(l) for l in labels]), 1])
 
 
-def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
+def transpose_legend_order(ncol, handles=None, labels=None, ax=None):
+    """ Reorder handles and labels, so that the legend order is transposed,
+    i.e. the entries are row-first instead of column-first."""
+    def reorder(items):
+        return list(itertools.chain(*[items[i::ncol] for i in range(ncol)]))
+
+    if handles is None or labels is None:
+        if ax is None:
+            ax = plt.gca()
+
+        ax_handles, ax_labels = ax.get_legend_handles_labels()
+        if handles is None:
+            handles = ax_handles
+
+        if labels is None:
+            labels = ax_labels
+
+    return reorder(handles), reorder(labels)
+
+
+def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02, transposed=False):
     """Create a legend on top of the plot."""
     if ncol < 1:
         return
+
+    if transposed:
+        handles, labels = transpose_legend_order(ncol, handles, labels, ax)
 
     leg = ax.legend(handles=handles, labels=labels, loc='lower right',
                     bbox_to_anchor=(1.0, 1.0+pad),
