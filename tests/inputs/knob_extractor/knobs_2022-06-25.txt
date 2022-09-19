@@ -1,0 +1,38 @@
+!! --- knobs extracted by knob_extractor
+!! --- extracted knobs for time 2022-06-25 00:20:00+00:00
+
+!! --- sep        --------------------
+on_sep1_h := 0.0;
+! on_sep1_v : No Value extracted
+! on_sep5_h : No Value extracted
+on_sep5_v := 0.0;
+
+!! --- xing       --------------------
+on_x1_v := -160.0;
+! on_x1_h : No Value extracted
+! on_x5_v : No Value extracted
+on_x5_h := 160.0;
+
+!! --- chroma     --------------------
+dQpx.b1_op := 2.0;
+dQpy.b1_op := 2.0;
+dQpx.b2_op := 2.0;
+dQpy.b2_op := 2.0;
+
+!! --- ip_offset  --------------------
+! on_ov1 : No Value extracted
+! on_ov2 : No Value extracted
+! on_oh5 : No Value extracted
+! on_oh8 : No Value extracted
+
+!! --- disp       --------------------
+! on_ssep1_h : No Value extracted
+on_xx1_v := 0.0;
+! on_ssep5_v : No Value extracted
+on_xx5_h := 0.0;
+
+!! --- mo         --------------------
+on_mo.b1 := 0.0;
+on_mo.b2 := 0.0;
+
+
