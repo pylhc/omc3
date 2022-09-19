@@ -1,6 +1,6 @@
 import pytest
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # import private functions to test
 from omc3.knob_extractor import _time_from_str, _add_delta
@@ -8,8 +8,8 @@ from omc3.knob_extractor import _time_from_str, _add_delta
 
 @pytest.mark.basic
 def test_timezones():
-    assert _time_from_str("2022-06-26T03:00+02:00") == datetime(2022, 6, 26, 3, 0, 0)
-    assert _time_from_str("2022-06-26T03:00-12:00") == datetime(2022, 6, 26, 3, 0, 0)
+    assert _time_from_str("2022-06-26T03:00+02:00") == datetime(2022, 6, 26, 3,
+                                                                0, 0, tzinfo=timezone(timedelta(seconds=7200)))
 
 
 @pytest.mark.basic
