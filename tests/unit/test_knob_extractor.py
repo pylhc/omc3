@@ -174,7 +174,7 @@ def test_timezones():
 # CERN Tests -------------------------------------------------------------------
 
 
-@pytest.mark.cern
+@pytest.mark.cern_network
 def test_real(tmp_path, knob_definitions, saved_knob_txt):
     path_saved, time_saved = saved_knob_txt
     path = tmp_path / "knobs.txt"
