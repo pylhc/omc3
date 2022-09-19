@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 
 from datetime import datetime, timezone, timedelta
 
@@ -37,7 +38,7 @@ def test_time_and_delta():
 
 @pytest.mark.basic
 def test_knobdict():
-    knobdict = _get_knobs_dict()
+    knobdict = _get_knobs_dict(Path(__file__).parent / "../inputs/knobs.txt" )
 
     for knobname in KNOB_NAMES:
         for knobkey in KNOB_NAMES[knobname]:
