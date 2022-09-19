@@ -155,7 +155,7 @@ class KnobEntry:
     value: float = None
 
     def get_madx(self):
-        if not self.value:
+        if self.value is None:
             return f"! {self.madx} : No Value extracted"
         return f"{self.madx} := {self.value * self.scaling};"
 
