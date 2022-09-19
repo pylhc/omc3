@@ -1,14 +1,76 @@
-import pytest
+import re
+from pathlib import Path
 
-# import private functions to test
-from omc3.knob_extractor import _parse_time_from_str, _add_time_delta
-# import the rest
-from omc3.knob_extractor import *
+import pandas as pd
+import pytest
+from datetime import datetime, timezone, timedelta
+
+import tfs
+
+from omc3.knob_extractor import (
+    _parse_time, _add_time_delta, main, _parse_knobs_defintions,
+    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile
+)
+
+INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
+
+
+@pytest.mark.basic
+def test_parse_knobdict_from_file(knob_definitions):
+    knob_dict = _parse_knobs_defintions(knob_definitions)
+    for knobs in KNOB_CATEGORIES.values():
+        for knob in knobs:
+            assert knob in knob_dict.keys()
+            knob_entry = knob_dict[knob]
+
+            assert knob_entry.value is None
+            assert abs(knob_entry.scaling) == 1
+            assert lsa2name(knob_entry.lsa) == knob
+            assert len(knob_entry.madx)
+            assert knob_entry.madx in knob_entry.get_madx()
+            assert knob_entry.get_madx().strip().startswith("!")
+
+            knob_entry.value = 10
+            assert str(10) in knob_entry.get_madx()
+
+
+@pytest.mark.basic
+def test_parse_knobdict_from_dataframe(tmp_path):
+    df = pd.DataFrame(data=[["madx_name", "lsa_name", 1., "something"]], columns=["madx", "lsa", "scaling", "other"])
+
+    path = tmp_path / "knob_defs.tfs"
+    tfs.write(path, df)
+
+    knob_dict = _parse_knobs_defintions(path)
+    assert len(knob_dict) == 1
+    assert "lsa_name" in knob_dict
+    knob_entry = knob_dict["lsa_name"]
+    assert knob_entry.lsa == "lsa_name"
+    assert knob_entry.madx == "madx_name"
+    assert knob_entry.scaling == 1
+
+
+@pytest.mark.basic
+def test_write_file(tmp_path):
+    knobs_dict = {
+        "knob1": KnobEntry(madx="knob1.madx", lsa="knob1.lsa", scaling=-1, value=12.43383),
+        "knob2": KnobEntry(madx="knob2.madx", lsa="knob2.lsa", scaling=1, value=-3.0231),
+        "knob3": KnobEntry(madx="knob3.madx", lsa="knob3.lsa", scaling=-1, value=-9.7492),
+    }
+    path = tmp_path / "knobs.txt"
+    time = datetime.now()
+    _write_knobsfile(path, knobs_dict, time=time)
+    as_read = parse_output_file(path)
+    assert str(time) in path.read_text()
+    assert len(as_read) == len(knobs_dict)
+    for _, entry in knobs_dict.items():
+        assert as_read[entry.madx] == entry.value * entry.scaling
 
 
 @pytest.mark.basic
 def test_time_and_delta():
-    t1 = _parse_time_from_str("2022-06-26T03:00")
+    time_str = "2022-06-26T03:00"
+    t1 = _parse_time(time_str)
 
     assert t1 == datetime(2022, 6, 26, 3, 0, 0)
 
@@ -32,49 +94,36 @@ def test_time_and_delta():
     t2 = _add_time_delta(t1, "20Y")
     assert t2 == datetime(2042, 6, 26, 3, 0, 0)
 
+    t3 = _parse_time(time_str, "20Y")
+    assert t2 == t3
+
 
 @pytest.mark.basic
-def test_command_args():
-    # TODO: maybe check the resulting `knobs.madx`
-
-    # correct command
-    try:
-        main(["dummy", "disp", "chroma", "--time", "2022-05-04T14:00"])
-    except Exception as e:
-        assert False, e
-
-    # invalid knob name
-    try:
-        main(["knob_extractor.py", "invalid_knob", "--time", "2022-05-04T14:00"])
-    except:
-        pass
-    else:
-        assert False, "this should throw"
-
-    # another valid time string
-    try:
-        main(["knob_extractor.py", "disp", "--time", "2022-05-04 14:00"])
-    except Exception as e:
-        assert False, e
-
-    # `now` is also a valid time string
-    try:
-        main(["knob_extractor.py", "disp", "--time", "now"])
-    except Exception as e:
-        assert False, e
-
-    # invalid time string
-    try:
-        main(["knob_extractor.py", "disp", "--time", "hello,world"])
-    except RuntimeError as e:
-        pass # this should be thrown
-    else:
-        assert False, "this should throw"
-
-    # test extraction of all the knobs
-    try:
-        main(["knob_extractor.py", "disp", "sep", "xing", "chroma", "ip_offset", "mo", "--time", "now"])
-    except Exception as e:
-        assert False, e
+def test_timezones():
+    assert (
+            _parse_time("2022-06-26T03:00+02:00")
+            ==
+            datetime(2022, 6, 26, 3, 0, 0, tzinfo=timezone(timedelta(seconds=7200)))
+    )
 
 
+# Helper -----------------------------------------------------------------------
+
+
+def parse_output_file(file_path):
+    txt = Path(file_path).read_text()
+    d = {}
+    pattern = re.compile(r"\s*(\S+)\s*:=\s*([^;\s*]+)\s*;")
+    for line in txt.splitlines():
+        line = line.strip()
+        if not line or line.startswith("!"):
+            continue
+
+        match = pattern.match(line)
+        d[match.group(1)] = float(match.group(2))
+    return d
+
+
+@pytest.fixture()
+def knob_definitions():
+    return INPUTS / "knob_definitions.txt"

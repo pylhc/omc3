@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Sequence, Union, Optional
+from typing import Dict, Sequence, Union, Optional, List, Tuple
 
 import pandas as pd
 import tfs
@@ -34,9 +34,9 @@ KNOBS_TXT_PATH = Path("operation") / "knobs.txt"
 KNOBS_TXT_MDLDIR = ACC_MODELS_LHC / KNOBS_TXT_PATH
 KNOBS_TXT_AFS = AFS_ACC_MODELS_LHC / KNOBS_TXT_PATH
 
-MINUS_CHARS = ("_", "-")
+MINUS_CHARS: Tuple[str, ...] = ("_", "-")
 
-KNOB_CATEGORIES = {
+KNOB_CATEGORIES: Dict[str, List[str]] = {
     "sep": [
         "LHCBEAM:IP1-SEP-H-MM",
         "LHCBEAM:IP1-SEP-V-MM",
@@ -102,32 +102,47 @@ def get_params():
         ),
         time=dict(
             type=str,
-            nargs='+',
-            help=("Triggers the extraction and"
-                  "defines the time at which to extract the knob settings. "
-                  "'now': extracts the current knob setting. "
-                  "<time>: extracts the knob setting for a given time. "
-                  "<time> <timedelta>: extracts the knob setting for a given time, "
-                  "with an offset of <timedelta> "
-                  "the format of timedelta is '((\\d+)(\\w))+' "
-                  "with the second token being one of "
-                  "s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) "
-                  "e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. "
-                  "a prefix '_' specifies a negative timedelta"
-                  ),
-            default="now"
+            help=(
+                "At what time to extract the knobs. "
+                "Accepts ISO-format or 'now'."
+            ),
+            default="now",
+        ),
+        timedelta=dict(
+            type=str,
+            help=(
+                "Add this timedelta to the given time. "
+                "The format of timedelta is '((\\d+)(\\w))+' "
+                "with the second token being one of "
+                "s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) "
+                "e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. "
+                "A prefix '_' specifies a negative timedelta. "
+                "This allows for easily getting the setting "
+                "e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default)."
+            ),
         ),
         state=dict(
             action='store_true',
-            help="Prints the state of the statetracker. Does not extract anything."),
+            help=(
+                "Prints the state of the StateTracker. "
+                "Does not extract anything else."
+            ),
+        ),
         output=dict(
             type=str,
             default='knobs.madx',
-            help="Specify user-defined output path. This should probably be `model_dir/knobs.madx`"),
+            help=(
+                "Specify user-defined output path. "
+                "This should probably be `model_dir/knobs.madx`"
+            ),
+        ),
         knob_definitions=dict(
             type=PathOrStrOrDataFrame,
-            help="user defined path to the knob-definitions, "
-                 "or (via python) a dataframe containing the knob definitions with the columns 'madx', 'lsa' and 'scaling'."
+            help=(
+                "User defined path to the knob-definitions, "
+                "or (via python) a dataframe containing the knob definitions "
+                "with the columns 'madx', 'lsa' and 'scaling'."
+            ),
         ),
     )
 
@@ -161,7 +176,7 @@ def main(opt) -> Optional[KnobsDict]:
         raise ValueError("No functionality selected. Set either `time` or `state`.")
 
     ldb = pytimber.LoggingDB(source="nxcals")
-    time = _parse_time(opt.time)
+    time = _parse_time(opt.time, opt.timedelta)
 
     if opt.state:
         # only print the state of the StateTracker - the MetaState!
@@ -237,7 +252,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: KnobsDict, time)
     with open(output, "w") as outfile:
         outfile.write(f"!! --- knobs extracted by knob_extractor\n")
         outfile.write(f"!! --- extracted knobs for time {time}\n\n")
-        for category, knobs in collected_knobs.items():
+        for category, knobs in category_knobs.items():
             if knobs is None:
                 continue
             outfile.write(f"!! --- {category:10} --------------------\n")
@@ -304,7 +319,7 @@ def _dataframe_to_knobsdict(df: pd.DataFrame) -> KnobsDict:
 
     """
     df.columns = df.columns.astype(str).str.lower()
-    df = df['lsa', 'madx', 'scaling'].set_index("lsa", drop=False)
+    df = df[['lsa', 'madx', 'scaling']].set_index("lsa", drop=False)
     return {
         lsa2name(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
     }
@@ -322,11 +337,11 @@ def _parse_knobs_defintions(knobs_def_input: Optional[Union[Path, str, pd.DataFr
 
 # Time Tools -------------------------------------------------------------------
 
-def _parse_time(time: Sequence[str]) -> datetime:
+def _parse_time(time: str, timedelta: str = None) -> datetime:
     """ Parse time from given time-input. """
-    t = _parse_time_from_str(time[0])
-    if len(time) > 1:
-        t = _add_time_delta(t, time[1])
+    t = _parse_time_from_str(time)
+    if timedelta:
+        t = _add_time_delta(t, timedelta)
     return t
 
 
