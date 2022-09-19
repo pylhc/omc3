@@ -24,13 +24,13 @@ DEPENDENCIES = [
     "scipy>=1.5.0",
     "scikit-learn>=0.23.0",
     "tfs-pandas>=2.0",
-    "generic-parser>=1.0.6",
+    "generic-parser>=1.1.0",
     "sdds>=0.1.3",
     "h5py>=2.9.0",
     "tables>=3.6.0",
     "uncertainties>=3.1.4",
     "optics-functions>=0.1.0",
-    "turn_by_turn>=0.5.0",
+    "turn_by_turn>=0.4.0",
 ]
 
 # Extra dependencies
