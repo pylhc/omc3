@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 from datetime import datetime, timezone, timedelta
@@ -9,10 +10,47 @@ import tfs
 
 from omc3.knob_extractor import (
     _parse_time, _add_time_delta, main, _parse_knobs_defintions,
-    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile, _extract
+    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile, _extract,
+    pytimber
 )
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
+
+
+@pytest.mark.basic
+def test_full(tmp_path, knob_definitions, saved_knob_txt, monkeypatch):
+    knobs_dict = _parse_knobs_defintions(knob_definitions)
+    all_variables = [knob for category in KNOB_CATEGORIES.values() for knob in category]
+    for knob in all_variables:
+        value = np.random.random() * 10 - 5
+        threshold = np.random.random() < 0.3
+        knobs_dict[knob].value = 0.0 if threshold else value
+
+    start_time = datetime.now().timestamp()
+
+    # Mock a database, and perform some tests on the way
+    def mock_ldb(*args, **kwargs):
+        class MyLDB:
+            @staticmethod
+            def get(key, time):
+                now_time = datetime.now().timestamp()
+                assert start_time <= time <= now_time
+                name = ":".join(key.split(":")[1:-1])
+                return {key: [[739173129, 42398328], [-1, knobs_dict[name].value]]}
+        return MyLDB()
+    monkeypatch.setattr(pytimber, "LoggingDB", mock_ldb)
+
+    path = tmp_path / "knobs.txt"
+
+    knobs_extracted = main(time="now", output=path, knob_definitions=knob_definitions)
+
+    parsed_output, _ = parse_output_file(path)
+
+    assert len(all_variables) == len(parsed_output)
+    assert len(knobs_extracted) == len(parsed_output)
+    for knob in all_variables:
+        assert knobs_dict[knob].value == knobs_extracted[knob].value
+        assert parsed_output[knobs_extracted[knob].madx] == knobs_extracted[knob].value * knobs_extracted[knob].scaling
 
 
 @pytest.mark.basic
@@ -133,6 +171,22 @@ def test_timezones():
             datetime(2022, 6, 26, 3, 0, 0, tzinfo=timezone(timedelta(seconds=7200)))
     )
 
+# CERN Tests -------------------------------------------------------------------
+
+
+@pytest.mark.cern
+def test_real(tmp_path, knob_definitions, saved_knob_txt):
+    path_saved, time_saved = saved_knob_txt
+    path = tmp_path / "knobs.txt"
+    main(time=time_saved, output=path, knob_definitions=knob_definitions)
+
+    parsed_output, _ = parse_output_file(path)
+    parsed_saved, _ = parse_output_file(path_saved)
+
+    assert len(parsed_saved) == len(parsed_output)
+    for key in parsed_output.keys():
+        assert parsed_output[key] == parsed_saved[key]
+
 
 # Helper -----------------------------------------------------------------------
 
@@ -154,3 +208,8 @@ def parse_output_file(file_path):
 @pytest.fixture()
 def knob_definitions():
     return INPUTS / "knob_definitions.txt"
+
+
+@pytest.fixture()
+def saved_knob_txt():
+    return INPUTS / "knobs_2022-06-25.txt", "2022-06-25T00:20:00+00:00"

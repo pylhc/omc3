@@ -18,9 +18,9 @@ import tfs
 from dateutil.relativedelta import relativedelta
 
 from generic_parser import EntryPointParameters, entrypoint
+from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
-from omc3.utils.iotools import PathOrStrOrDataFrame
 
 LOGGER = get_logger(__name__)
 
@@ -104,7 +104,9 @@ def get_params():
             type=str,
             help=(
                 "At what time to extract the knobs. "
-                "Accepts ISO-format or 'now'."
+                "Accepts ISO-format (YYYY-MM-DDThh:mm:ss), timestamp or 'now'. "
+                "The default timezone for the ISO-format is local time, "
+                "but you can force e.g. UTC by adding +00:00."
             ),
             default="now",
         ),
@@ -129,7 +131,7 @@ def get_params():
             ),
         ),
         output=dict(
-            type=str,
+            type=PathOrStr,
             default='knobs.madx',
             help=(
                 "Specify user-defined output path. "
@@ -219,7 +221,7 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
             LOGGER.info(f"Looking for {knob:<34s} ")
             knobkey = f"LhcStateTracker:{knob}:target"
-            knobvalue = ldb.get(knobkey, time)
+            knobvalue = ldb.get(knobkey, time.timestamp())  # use timestamp to preserve timezone info
             if knobkey not in knobvalue:
                 LOGGER.warning(f"No value for {knob} found!")
                 continue
