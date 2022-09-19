@@ -9,10 +9,33 @@ import tfs
 
 from omc3.knob_extractor import (
     _parse_time, _add_time_delta, main, _parse_knobs_defintions,
-    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile
+    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile, _extract
 )
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
+
+
+@pytest.mark.basic
+def test_extraction():
+    knobs_dict = {
+        "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx="landau1", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
+        "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx="landau2", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
+        "other": KnobEntry(madx="other_knob", lsa="other/knob", scaling=1),
+    }
+    values = [8904238, 34.323904, 3489.23409]
+    time = datetime.now()
+    timestamp = time.timestamp()*1e9  # java format
+
+    fake_ldb = {
+        f"LhcStateTracker:{key}:target": {f"LhcStateTracker:{key}:target": [[timestamp, timestamp], [-1, value]]}
+        for key, value in zip(knobs_dict.keys(), values)
+    }
+
+    extracted = _extract(fake_ldb, knobs_dict=knobs_dict, knob_categories=["mo", "other"], time=time)
+
+    assert len(extracted) == len(knobs_dict)
+    for idx, (key, entry) in enumerate(extracted.items()):
+        assert entry.value == values[idx]  # depends on the order of "mo" in the file
 
 
 @pytest.mark.basic
@@ -53,6 +76,8 @@ def test_parse_knobdict_from_dataframe(tmp_path):
 @pytest.mark.basic
 def test_write_file(tmp_path):
     knobs_dict = {
+        "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx="moknob1", lsa="moknob1.lsa", scaling=-1, value=-4783),
+        "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx="moknob2", lsa="moknob2.lsa", scaling=1, value=32333),
         "knob1": KnobEntry(madx="knob1.madx", lsa="knob1.lsa", scaling=-1, value=12.43383),
         "knob2": KnobEntry(madx="knob2.madx", lsa="knob2.lsa", scaling=1, value=-3.0231),
         "knob3": KnobEntry(madx="knob3.madx", lsa="knob3.lsa", scaling=-1, value=-9.7492),
@@ -60,11 +85,13 @@ def test_write_file(tmp_path):
     path = tmp_path / "knobs.txt"
     time = datetime.now()
     _write_knobsfile(path, knobs_dict, time=time)
-    as_read = parse_output_file(path)
-    assert str(time) in path.read_text()
-    assert len(as_read) == len(knobs_dict)
+    read_as_dict, full_text = parse_output_file(path)
+    assert str(time) in full_text
+    assert " mo " in full_text
+    assert " Other Knobs " in full_text
+    assert len(read_as_dict) == len(knobs_dict)
     for _, entry in knobs_dict.items():
-        assert as_read[entry.madx] == entry.value * entry.scaling
+        assert read_as_dict[entry.madx] == entry.value * entry.scaling
 
 
 @pytest.mark.basic
@@ -121,7 +148,7 @@ def parse_output_file(file_path):
 
         match = pattern.match(line)
         d[match.group(1)] = float(match.group(2))
-    return d
+    return d, txt
 
 
 @pytest.fixture()

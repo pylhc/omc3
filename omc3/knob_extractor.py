@@ -180,9 +180,11 @@ def main(opt) -> Optional[KnobsDict]:
 
     if opt.state:
         # only print the state of the StateTracker - the MetaState!
+        # I still don't know what this does,
+        # because I only get back that the variable does not exist. (jdilly)
+        state = ldb.get("LhcStateTracker:State", time)  # do first to have output together
         LOGGER.info("---- STATE ------------------------------------")
-        LOGGER.info(ldb.get("LhcStateTracker:State", time))
-        LOGGER.info(ldb.get("LhcStateTracker/State", time))
+        LOGGER.info(state)
         return None
     
     knobs_dict = _parse_knobs_defintions(opt.knob_definitions)
@@ -212,7 +214,7 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
     LOGGER.info("---- KNOBS ------------------------------------")
     for category in knob_categories:
-        for knob in KNOB_CATEGORIES.get(category, category):
+        for knob in KNOB_CATEGORIES.get(category, [category]):
             knobs[knob] = knobs_dict[knob]
 
             LOGGER.info(f"Looking for {knob:<34s} ")
@@ -241,7 +243,8 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 def _write_knobsfile(output: Union[Path, str], collected_knobs: KnobsDict, time):
     """ Takes the collected knobs and writes them out into a text-file. """
     # Sort the knobs by category
-    category_knobs = {c: None for c in KNOB_CATEGORIES.keys()}
+    collected_knobs = collected_knobs.copy()  # to not modify the return dict
+    category_knobs = {c: {} for c in KNOB_CATEGORIES.keys()}
     for category, names in KNOB_CATEGORIES.items():
         for name in names:
             if name in collected_knobs.keys():
@@ -253,7 +256,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: KnobsDict, time)
         outfile.write(f"!! --- knobs extracted by knob_extractor\n")
         outfile.write(f"!! --- extracted knobs for time {time}\n\n")
         for category, knobs in category_knobs.items():
-            if knobs is None:
+            if not knobs:
                 continue
             outfile.write(f"!! --- {category:10} --------------------\n")
             for knob, knob_entry in knobs.items():
