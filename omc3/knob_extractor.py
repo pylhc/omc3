@@ -18,7 +18,7 @@ KNOBS_TXT_FALLBACK = "/afs/cern.ch/eng/acc-models/lhc/current/operation/knobs.tx
 # action choices
 CHOICE_EXTRACT = "extract"
 CHOICE_STATE = "state"
-ACTIONS = [CHOICE_EXTRACT, CHOICE_STATE]  # TODO: add subscribe?
+ACTIONS = [CHOICE_EXTRACT, CHOICE_STATE]
 
 KNOB_NAMES = {
     "sep": [
@@ -117,11 +117,8 @@ def main(arguments=sys.argv):
     if CHOICE_STATE in args.actions:
         print("---- STATE ------------------------------------")
         ldb = _get_database()
-        # TODO: ceck for available fields (and checking the exact name)
-        # and prepare for better presentation
         t1 = _time_from_str("now") if args.time is None else _time_from_str(args.time[0])
         print(ldb.get("LhcStateTracker:State", t1))
-        print(ldb.get("LhcStateTracker/State", t1))
 
 
 def _get_database():
@@ -190,7 +187,28 @@ def _add_delta(t1, pattern):
     Adds a timedelta to the given time `t1` for easy selection of relative times
     (like 2 hours ago, or one month ago)
 
-    TODO: add some examples
+    Examples:
+    ```
+        t1 = _time_from_str("2022-06-26T03:00")
+
+        assert t1 == datetime(2022,6,26,3,0,0)
+
+        # 2 hours earlier
+        t2 = _add_delta(t1, "_2h")
+        assert t2 == datetime(2022,6,26,1,0,0)
+
+        # 1 week earlier
+        t2 = _add_delta(t1, "_1w")
+        assert t2 == datetime(2022,6,19,3,0,0)
+
+        # 1 week and 1 hour earlier
+        t2 = _add_delta(t1, "_1w1h")
+        assert t2 == datetime(2022,6,19,2,0,0)
+
+        # 1 month later
+        t2 = _add_delta(t1, "1M")
+        assert t2 == datetime(2022,7,26,3,0,0)
+    ```
 
     """
 
