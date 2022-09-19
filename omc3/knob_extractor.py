@@ -15,6 +15,10 @@ import sys
 
 KNOBS_TXT_MDLDIR = "acc-models-lhc/operation/knobs.txt"
 KNOBS_TXT_FALLBACK = "/afs/cern.ch/eng/acc-models/lhc/current/operation/knobs.txt"
+# action choices
+CHOICE_EXTRACT = "extract"
+CHOICE_STATE = "state"
+ACTIONS = [CHOICE_EXTRACT, CHOICE_STATE]  # TODO: add subscribe?
 
 KNOB_NAMES = {
     "sep": [
@@ -55,16 +59,16 @@ KNOB_NAMES = {
 
 USAGE_EXAMPLES = """Usage Examples:
 
-python knob_extractor.py disp chroma --time 2022-05-04T14:00
+python knob_extractor.py extract --knobs disp chroma --time 2022-05-04T14:00
     extracts the chromaticity and dispersion knobs at 14h on May 4th 2022
 
-python knob_extractor.py disp chroma --time now _2h
+python knob_extractor.py extract --knobs disp chroma --time now _2h
     extracts the chromaticity and dispersion knobs as of 2 hours ago
 
-python knob_extractor.py --state
+python knob_extractor.py state
     prints the current StateTracker/State metadata
 
-python knob_extractor.py disp sep xing chroma ip_offset mo --time now
+python knob_extractor.py extract --knobs disp sep xing chroma ip_offset mo --time now
     extracts the current settings for all the knobs
 """
 
@@ -74,7 +78,10 @@ def main(arguments=sys.argv):
                                      epilog=USAGE_EXAMPLES,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument("knobs", type=str, nargs='*',
+    parser.add_argument("actions", type=str, nargs='+',
+                        choices=ACTIONS,
+                        help="The action to perform")
+    parser.add_argument("--knobs", type=str, nargs='+',
                         help="A list of knob categories to extract",
                         choices=[key for key in KNOB_NAMES.keys()]
                         )
@@ -92,24 +99,27 @@ def main(arguments=sys.argv):
                               "a prefix '_' specifies a negative timedelta"
                               )
                         )
-    parser.add_argument("--state", action='store_true',
-                        help="Prints the state of the statetracker. Does not extract anything")
     parser.add_argument("--output", type=str, default='knobs.madx',
                         help="Specify user-defined output path. This should probably be `model_dir/knobs.madx`"
                         )
 
     args = parser.parse_args(arguments[1:])
 
-    if args.time is not None:
+    if CHOICE_EXTRACT in args.actions:
+        if args.time is None:
+            raise RuntimeError("--time flag needed for extraction")
+        if args.knobs is None:
+            raise RuntimeError("--knobs flag needed for extraction")
+
         end = args.time[1] if len(args.time) > 1 else None
         _extract(args.knobs, args.time[0], end, args.output)
 
-    if args.state:
+    if CHOICE_STATE in args.actions:
         print("---- STATE ------------------------------------")
         ldb = _get_database()
         # TODO: ceck for available fields (and checking the exact name)
         # and prepare for better presentation
-        t1 = _time_from_str("now")
+        t1 = _time_from_str("now") if args.time is None else _time_from_str(args.time[0])
         print(ldb.get("LhcStateTracker:State", t1))
         print(ldb.get("LhcStateTracker/State", t1))
 
