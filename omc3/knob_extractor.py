@@ -127,16 +127,16 @@ KNOB_CATEGORIES: Dict[str, List[str]] = {
 
 USAGE_EXAMPLES = """Usage Examples:
 
-python knob_extractor.py --knobs disp chroma --time 2022-05-04T14:00     
+python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00     
     extracts the chromaticity and dispersion knobs at 14h on May 4th 2022
 
-python knob_extractor.py --knobs disp chroma --time now _2h 
+python -m omc3.knob_extractor --knobs disp chroma --time now _2h 
     extracts the chromaticity and dispersion knobs as of 2 hours ago
 
-python knob_extractor.py --state
+python -m omc3.knob_extractor --state
     prints the current StateTracker/State metadata
 
-python knob_extractor.py disp sep xing chroma ip_offset mo --time now
+python -m omc3.knob_extractor --knobs disp sep xing chroma ip_offset mo --time now
     extracts the current settings for all the knobs
 """
 
