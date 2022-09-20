@@ -207,7 +207,7 @@ class KnobEntry:
     scaling: float  # is usually +-1, i.e. takes care of sign-conventions
     value: float = None
 
-    def get_madx(self):
+    def get_madx_command(self) -> str:
         if self.value is None:
             return f"! {self.madx} : No Value extracted"
         return f"{self.madx} := {self.value * self.scaling};"
