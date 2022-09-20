@@ -250,7 +250,7 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
     Main function to gather data from  the state-tracker.
 
     Args:
-        ldb: The pytimber database.
+        ldb (pytimber.LoggingDB): The pytimber database.
         knobs_dict (KnobsDict): A mapping of all knob-names to KnobEntries.
         knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.
         time (datetime): The time, when to extract.
