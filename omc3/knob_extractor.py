@@ -205,15 +205,15 @@ def get_params():
 
 @dataclass
 class KnobEntry:
-    madx: str
-    lsa: str
+    madx_name: str
+    lsa_name: str
     scaling: float  # is usually +-1, i.e. takes care of sign-conventions
     value: float = None
 
     def get_madx(self):
         if self.value is None:
-            return f"! {self.madx} : No Value extracted"
-        return f"{self.madx} := {self.value * self.scaling};"
+            return f"! {self.madx_name} : No Value extracted"
+        return f"{self.madx_name} := {self.value * self.scaling};"
 
 
 KnobsDict = Dict[str, KnobEntry]
@@ -377,7 +377,7 @@ def _dataframe_to_knobsdict(df: pd.DataFrame) -> KnobsDict:
     df.columns = df.columns.astype(str).str.lower()
     df = df[['lsa', 'madx', 'scaling']].set_index("lsa", drop=False)
     return {
-        lsa2name(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
+        lsa2madxname(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
     }
 
 
@@ -445,11 +445,11 @@ def _add_time_delta(time: datetime, delta_str: str) -> datetime:
 
 # Other tools ------------------------------------------------------------------
 
-def lsa2name(lsa_name: str) -> str:
+def lsa2madxname(lsa_name: str) -> str:
     return lsa_name.replace("/", ":")
 
 
-def name2lsa(name: str) -> str:
+def madx2lsaname(name: str) -> str:
     return name.replace(":", "/")
 
 

@@ -10,7 +10,7 @@ import tfs
 from omc3 import knob_extractor
 from omc3.knob_extractor import (KNOB_CATEGORIES, KnobEntry, _add_time_delta,
                                  _extract, _parse_knobs_defintions,
-                                 _parse_time, _write_knobsfile, lsa2name, main)
+                                 _parse_time, _write_knobsfile, lsa2madxname, main)
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
 
@@ -59,9 +59,9 @@ def test_full(tmp_path, knob_definitions, monkeypatch):
 @pytest.mark.basic
 def test_extraction():
     knobs_dict = {
-        "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx="landau1", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
-        "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx="landau2", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
-        "other": KnobEntry(madx="other_knob", lsa="other/knob", scaling=1),
+        "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx_name="landau1", lsa_name="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
+        "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx_name="landau2", lsa_name="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
+        "other": KnobEntry(madx_name="other_knob", lsa_name="other/knob", scaling=1),
     }
     values = [8904238, 34.323904, 3489.23409]
     time = datetime.now()
@@ -89,7 +89,7 @@ def test_parse_knobdict_from_file(knob_definitions):
 
             assert knob_entry.value is None
             assert abs(knob_entry.scaling) == 1
-            assert lsa2name(knob_entry.lsa) == knob
+            assert lsa2madxname(knob_entry.lsa) == knob
             assert len(knob_entry.madx)
             assert knob_entry.madx in knob_entry.get_madx()
             assert knob_entry.get_madx().strip().startswith("!")
@@ -109,19 +109,19 @@ def test_parse_knobdict_from_dataframe(tmp_path):
     assert len(knob_dict) == 1
     assert "lsa_name" in knob_dict
     knob_entry = knob_dict["lsa_name"]
-    assert knob_entry.lsa == "lsa_name"
-    assert knob_entry.madx == "madx_name"
+    assert knob_entry.lsa_name == "lsa_name"
+    assert knob_entry.madx_name == "madx_name"
     assert knob_entry.scaling == 1
 
 
 @pytest.mark.basic
 def test_write_file(tmp_path):
     knobs_dict = {
-        "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx="moknob1", lsa="moknob1.lsa", scaling=-1, value=-4783),
-        "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx="moknob2", lsa="moknob2.lsa", scaling=1, value=0.0),  # one should be 0.0 to test this case
-        "knob1": KnobEntry(madx="knob1.madx", lsa="knob1.lsa", scaling=-1, value=12.43383),
-        "knob2": KnobEntry(madx="knob2.madx", lsa="knob2.lsa", scaling=1, value=-3.0231),
-        "knob3": KnobEntry(madx="knob3.madx", lsa="knob3.lsa", scaling=-1, value=-9.7492),
+        "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx_name="moknob1", lsa_name="moknob1.lsa", scaling=-1, value=-4783),
+        "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx_name="moknob2", lsa_name="moknob2.lsa", scaling=1, value=0.0),  # one should be 0.0 to test this case
+        "knob1": KnobEntry(madx_name="knob1.madx", lsa_name="knob1.lsa", scaling=-1, value=12.43383),
+        "knob2": KnobEntry(madx_name="knob2.madx", lsa_name="knob2.lsa", scaling=1, value=-3.0231),
+        "knob3": KnobEntry(madx_name="knob3.madx", lsa_name="knob3.lsa", scaling=-1, value=-9.7492),
     }
     path = tmp_path / "knobs.txt"
     time = datetime.now()
@@ -132,7 +132,7 @@ def test_write_file(tmp_path):
     assert " Other Knobs " in full_text
     assert len(read_as_dict) == len(knobs_dict)
     for _, entry in knobs_dict.items():
-        assert read_as_dict[entry.madx] == entry.value * entry.scaling
+        assert read_as_dict[entry.madx_name] == entry.value * entry.scaling
 
 
 @pytest.mark.basic
