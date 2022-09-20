@@ -16,7 +16,7 @@ INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
 
 
 @pytest.mark.basic
-def test_full(tmp_path, knob_definitions, saved_knob_txt, monkeypatch):
+def test_full(tmp_path, knob_definitions, monkeypatch):
     knobs_dict = _parse_knobs_defintions(knob_definitions)
     all_variables = [knob for category in KNOB_CATEGORIES.values() for knob in category]
     for knob in all_variables:
@@ -178,8 +178,8 @@ def test_timezones():
 
 
 @pytest.mark.cern_network
-def test_extractor_in_cern_network(tmp_path, knob_definitions, saved_knob_txt):
-    path_saved, time_saved = saved_knob_txt
+def test_extractor_in_cern_network(tmp_path, knob_definitions, saved_knobfile_and_time):
+    path_saved, time_saved = saved_knobfile_and_time
     path = tmp_path / "knobs.txt"
     main(time=time_saved, output=path, knob_definitions=knob_definitions)
 
@@ -214,5 +214,5 @@ def knob_definitions() -> Path:
 
 
 @pytest.fixture()
-def saved_knob_txt() -> Tuple[Path, str]:
+def saved_knobfile_and_time() -> Tuple[Path, str]:
     return INPUTS / "knobs_2022-06-25.txt", "2022-06-25T00:20:00+00:00"
