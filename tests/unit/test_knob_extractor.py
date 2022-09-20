@@ -91,11 +91,11 @@ def test_parse_knobdict_from_file(knob_definitions):
             assert abs(knob_entry.scaling) == 1
             assert lsa2name(knob_entry.lsa) == knob
             assert len(knob_entry.madx)
-            assert knob_entry.madx in knob_entry.get_madx()
-            assert knob_entry.get_madx().strip().startswith("!")
+            assert knob_entry.madx in knob_entry.get_madx_command()
+            assert knob_entry.get_madx_command().strip().startswith("!")
 
             knob_entry.value = 10
-            assert str(10) in knob_entry.get_madx()
+            assert str(10) in knob_entry.get_madx_command()
 
 
 @pytest.mark.basic
