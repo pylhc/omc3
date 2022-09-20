@@ -1,18 +1,16 @@
 import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
 import pytest
-from datetime import datetime, timezone, timedelta
-
 import tfs
-
 from omc3 import knob_extractor
-from omc3.knob_extractor import (
-    _parse_time, _add_time_delta, main, _parse_knobs_defintions,
-    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile, _extract
-)
+from omc3.knob_extractor import (KNOB_CATEGORIES, KnobEntry, _add_time_delta,
+                                 _extract, _parse_knobs_defintions,
+                                 _parse_time, _write_knobsfile, lsa2name, main)
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
 
@@ -46,7 +44,6 @@ def test_full(tmp_path, knob_definitions, saved_knob_txt, monkeypatch):
     monkeypatch.setattr(knob_extractor, "pytimber", MockTimber())
 
     # Main ---
-
     path = tmp_path / "knobs.txt"
     knobs_extracted = main(time="now", output=path, knob_definitions=knob_definitions)
 
@@ -181,7 +178,7 @@ def test_timezones():
 
 
 @pytest.mark.cern_network
-def test_real(tmp_path, knob_definitions, saved_knob_txt):
+def test_extractor_in_cern_network(tmp_path, knob_definitions, saved_knob_txt):
     path_saved, time_saved = saved_knob_txt
     path = tmp_path / "knobs.txt"
     main(time=time_saved, output=path, knob_definitions=knob_definitions)
@@ -197,7 +194,7 @@ def test_real(tmp_path, knob_definitions, saved_knob_txt):
 # Helper -----------------------------------------------------------------------
 
 
-def parse_output_file(file_path):
+def parse_output_file(file_path) -> Tuple[Dict[str, float], str]:
     txt = Path(file_path).read_text()
     d = {}
     pattern = re.compile(r"\s*(\S+)\s*:=\s*([^;\s*]+)\s*;")
@@ -212,10 +209,10 @@ def parse_output_file(file_path):
 
 
 @pytest.fixture()
-def knob_definitions():
+def knob_definitions() -> Path:
     return INPUTS / "knob_definitions.txt"
 
 
 @pytest.fixture()
-def saved_knob_txt():
+def saved_knob_txt() -> Tuple[Path, str]:
     return INPUTS / "knobs_2022-06-25.txt", "2022-06-25T00:20:00+00:00"
