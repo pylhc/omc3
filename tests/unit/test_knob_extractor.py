@@ -264,7 +264,7 @@ class TestTime:
 class TestParser:
     @pytest.mark.basic
     def test_defaults(self, main_entrypoint):
-        opt = main_entrypoint.parse()
+        opt = main_entrypoint.parse([])
         assert isinstance(opt.knobs, list)
         assert opt.time == "now"
         assert opt.timedelta is None
