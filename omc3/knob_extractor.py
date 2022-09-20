@@ -310,7 +310,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: KnobsDict, time)
                 continue
             outfile.write(f"!! --- {category:10} --------------------\n")
             for knob, knob_entry in knobs.items():
-                outfile.write(f"{knob_entry.get_madx()}\n")
+                outfile.write(f"{knob_entry.get_madx_command()}\n")
             outfile.write("\n")
         outfile.write("\n")
 
