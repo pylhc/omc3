@@ -2,7 +2,8 @@ r"""
 Knob Extractor
 --------------
 
-Will extract knobs and give information about the current beam process (no it doesn't?).
+Will extract knobs and write them into a file.
+Can also be used to print information about the StateTracker State.
 Fetches data from nxcals through pytimber using the StateTracker fields.
 
 **Arguments:**
@@ -76,10 +77,9 @@ from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
 
-LOGGER = get_logger(__name__)
-
 pytimber = cern_network_import("pytimber")
 
+LOGGER = get_logger(__name__)
 
 AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/current")
 ACC_MODELS_LHC = Path("acc-models-lhc")
@@ -186,7 +186,6 @@ def get_params():
         ),
         output=dict(
             type=PathOrStr,
-            default='knobs.madx',
             help=(
                 "Specify user-defined output path. "
                 "This should probably be `model_dir/knobs.madx`"
@@ -229,9 +228,6 @@ KnobsDict = Dict[str, KnobEntry]
 )
 def main(opt) -> Optional[KnobsDict]:
     """ Main knob extracting function. """
-    if not opt.time and not opt.state:
-        raise ValueError("No functionality selected. Set either `time` or `state`.")
-
     ldb = pytimber.LoggingDB(source="nxcals")
     time = _parse_time(opt.time, opt.timedelta)
 
@@ -246,7 +242,8 @@ def main(opt) -> Optional[KnobsDict]:
     
     knobs_dict = _parse_knobs_defintions(opt.knob_definitions)
     knobs_extract = _extract(ldb, knobs_dict, opt.knobs, time)
-    _write_knobsfile(opt.output, knobs_extract, time)
+    if opt.output:
+        _write_knobsfile(opt.output, knobs_extract, time)
     return knobs_extract
 
 
@@ -265,16 +262,14 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
         When extraction was not possible, the value attribute of the respective KnobEntry is still None
 
     """
-    LOGGER.info("---- EXTRACTING KNOBS -------------------------")
-    LOGGER.info(f"extracting knobs for {time}")
+    LOGGER.info(f"---- EXTRACTING KNOBS @ {time} ----")
     knobs = {}
 
-    LOGGER.info("---- KNOBS ------------------------------------")
     for category in knob_categories:
         for knob in KNOB_CATEGORIES.get(category, [category]):
             knobs[knob] = knobs_dict[knob]
 
-            LOGGER.info(f"Looking for {knob:<34s} ")
+            # LOGGER.debug(f"Looking for {knob:<34s} ")  # pytimber logs this to info anyway
             knobkey = f"LhcStateTracker:{knob}:target"
             knobvalue = ldb.get(knobkey, time.timestamp())  # use timestamp to preserve timezone info
             if knobkey not in knobvalue:
@@ -430,16 +425,17 @@ def _parse_time_from_str(time_str: str) -> datetime:
 def _add_time_delta(time: datetime, delta_str: str) -> datetime:
     """ Parse delta-string and add time-delta to time. """
     sign = -1 if delta_str[0] in MINUS_CHARS else 1
-    all_deltas = re.findall(r"(\d+)(\w)", delta_str)
+    all_deltas = re.findall(r"(\d+)(\w)", delta_str)  # tuples (value, timeunit-char)
 
+    # mapping char to the time-unit as accepted by relativedelta,
     # following ISO-8601 for time durations
-    char_map = dict(
+    char2unit = dict(
         s='seconds', m='minutes', h='hours',
         d='days', w='weeks', M='months', Y="years",
     )
 
-    # add all deltas
-    time_parts = {char_map[delta[1]]: sign * int(delta[0]) for delta in all_deltas}
+    # add all deltas, which are tuples of (value, timeunit-char)
+    time_parts = {char2unit[delta[1]]: sign * int(delta[0]) for delta in all_deltas}
     time = time + relativedelta(**time_parts)
 
     return time
