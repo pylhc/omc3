@@ -443,12 +443,12 @@ def _add_time_delta(time: datetime, delta_str: str) -> datetime:
 # Other tools ------------------------------------------------------------------
 
 def lsa2name(lsa_name: str) -> str:
-    """LSA name -> Variable in Timber name conversion."""
+    """LSA name -> Variable in Timber/StateTracker conversion."""
     return lsa_name.replace("/", ":")
 
 
 def name2lsa(name: str) -> str:
-    """Variable in Timber name -> LSA name conversion."""
+    """Variable in Timber/StateTracker -> LSA name conversion."""
     return name.replace(":", "/")
 
 
