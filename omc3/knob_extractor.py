@@ -66,14 +66,14 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Sequence, Union, Optional, List, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 import tfs
 from dateutil.relativedelta import relativedelta
-
 from generic_parser import EntryPointParameters, entrypoint
-from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
+
+from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
 
@@ -83,10 +83,8 @@ LOGGER = get_logger(__name__)
 
 AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/current")
 ACC_MODELS_LHC = Path("acc-models-lhc")
-KNOBS_TXT_PATH = Path("operation") / "knobs.txt"
-
-KNOBS_TXT_MDLDIR = ACC_MODELS_LHC / KNOBS_TXT_PATH
-KNOBS_TXT_AFS = AFS_ACC_MODELS_LHC / KNOBS_TXT_PATH
+KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
+KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
 
 MINUS_CHARS: Tuple[str, ...] = ("_", "-")
 
@@ -326,14 +324,14 @@ def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path
         LOGGER.info(f"Using user defined knobs.txt: '{user_defined}")
         return Path(user_defined)
 
-    if KNOBS_TXT_MDLDIR.is_file():
-        LOGGER.info(f"Using model folder's knobs.txt: '{KNOBS_TXT_MDLDIR}")
-        return KNOBS_TXT_MDLDIR
+    if KNOBS_FILE_ACC_MODELS.is_file():
+        LOGGER.info(f"Using model folder's knobs.txt: '{KNOBS_FILE_ACC_MODELS}")
+        return KNOBS_FILE_ACC_MODELS
 
-    if KNOBS_TXT_AFS.is_file():
+    if KNOBS_FILE_AFS.is_file():
         # if all fails, fall back to lhc acc-models
-        LOGGER.info(f"Using fallback knobs.txt: '{KNOBS_TXT_AFS}'")
-        return KNOBS_TXT_AFS
+        LOGGER.info(f"Using fallback knobs.txt: '{KNOBS_FILE_AFS}'")
+        return KNOBS_FILE_AFS
 
     raise FileNotFoundError("None of the knobs-definition files are available.")
 
