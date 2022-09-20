@@ -374,7 +374,7 @@ def _dataframe_to_knobsdict(df: pd.DataFrame) -> KnobsDict:
     df.columns = df.columns.astype(str).str.lower()
     df = df[['lsa', 'madx', 'scaling']].set_index("lsa", drop=False)
     return {
-        lsa2madxname(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
+        lsa2name(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
     }
 
 
@@ -442,11 +442,13 @@ def _add_time_delta(time: datetime, delta_str: str) -> datetime:
 
 # Other tools ------------------------------------------------------------------
 
-def lsa2madxname(lsa_name: str) -> str:
+def lsa2name(lsa_name: str) -> str:
+    """LSA name -> Variable in Timber name conversion."""
     return lsa_name.replace("/", ":")
 
 
-def madx2lsaname(name: str) -> str:
+def name2lsa(name: str) -> str:
+    """Variable in Timber name -> LSA name conversion."""
     return name.replace(":", "/")
 
 

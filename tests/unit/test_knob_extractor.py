@@ -10,7 +10,7 @@ import tfs
 from omc3 import knob_extractor
 from omc3.knob_extractor import (KNOB_CATEGORIES, KnobEntry, _add_time_delta,
                                  _extract, _parse_knobs_defintions,
-                                 _parse_time, _write_knobsfile, lsa2madxname, main)
+                                 _parse_time, _write_knobsfile, lsa2name, main)
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
 
@@ -89,7 +89,7 @@ def test_parse_knobdict_from_file(knob_definitions):
 
             assert knob_entry.value is None
             assert abs(knob_entry.scaling) == 1
-            assert lsa2madxname(knob_entry.lsa) == knob
+            assert lsa2name(knob_entry.lsa) == knob
             assert len(knob_entry.madx)
             assert knob_entry.madx in knob_entry.get_madx()
             assert knob_entry.get_madx().strip().startswith("!")
