@@ -271,18 +271,17 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
             knobkey = f"LhcStateTracker:{knob}:target"
             knobvalue = ldb.get(knobkey, time.timestamp())  # use timestamp to preserve timezone info
             if knobkey not in knobvalue:
-                LOGGER.warning(f"No value for {knob} found!")
+                LOGGER.warning(f"No value for {knob} found")
                 continue
 
-            LOGGER.debug(f"Some value for {knob} extracted.")
             timestamps, values = knobvalue[knobkey]
             if len(values) == 0:
-                LOGGER.warning(f"No value for {knob} found for given time!")
+                LOGGER.warning(f"No value for {knob} found")
                 continue
 
             value = values[-1]
             if not math.isfinite(value):
-                LOGGER.warning(f"Value for {knob} is not a number or infinite!")
+                LOGGER.warning(f"Value for {knob} is not a number or infinite")
                 continue
 
             LOGGER.info(f"Knob value for {knob} extracted: {value} (unscaled)")
