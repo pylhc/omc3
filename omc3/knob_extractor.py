@@ -409,12 +409,14 @@ def _parse_time_from_str(time_str: str) -> datetime:
     try:
         return datetime.fromisoformat(time_str)
     except (TypeError, ValueError):
+        LOGGER.debug("Could not parse time string as ISO format")
         pass
 
     # Timestamp? ---
     try:
         return datetime.fromtimestamp(int(time_str))
     except (TypeError, ValueError):
+        LOGGER.debug("Could not parse time string as a timestamp")
         pass
 
     raise ValueError(f"Couldn't read datetime '{time_str}'")
