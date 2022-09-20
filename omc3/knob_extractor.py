@@ -265,7 +265,10 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
     for category in knob_categories:
         for knob in KNOB_CATEGORIES.get(category, [category]):
-            knobs[knob] = knobs_dict[knob]
+            try:
+                knobs[knob] = knobs_dict[knob]
+            except KeyError as e:
+                raise KeyError(f"Knob '{knob}' not found in the knob-definitions!") from e
 
             # LOGGER.debug(f"Looking for {knob:<34s} ")  # pytimber logs this to info anyway
             knobkey = f"LhcStateTracker:{knob}:target"
