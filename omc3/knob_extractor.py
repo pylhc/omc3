@@ -202,15 +202,15 @@ def get_params():
 
 @dataclass
 class KnobEntry:
-    madx_name: str
-    lsa_name: str
+    madx: str  # the name of the MAD-X variable for this knob
+    lsa: str  # the name of the knob in LSA itself
     scaling: float  # is usually +-1, i.e. takes care of sign-conventions
     value: float = None
 
     def get_madx(self):
         if self.value is None:
-            return f"! {self.madx_name} : No Value extracted"
-        return f"{self.madx_name} := {self.value * self.scaling};"
+            return f"! {self.madx} : No Value extracted"
+        return f"{self.madx} := {self.value * self.scaling};"
 
 
 KnobsDict = Dict[str, KnobEntry]
