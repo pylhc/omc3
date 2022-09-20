@@ -8,10 +8,10 @@ from datetime import datetime, timezone, timedelta
 
 import tfs
 
+from omc3 import knob_extractor
 from omc3.knob_extractor import (
     _parse_time, _add_time_delta, main, _parse_knobs_defintions,
-    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile, _extract,
-    pytimber
+    KNOB_CATEGORIES, lsa2name, KnobEntry, _write_knobsfile, _extract
 )
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
@@ -28,24 +28,30 @@ def test_full(tmp_path, knob_definitions, saved_knob_txt, monkeypatch):
 
     start_time = datetime.now().timestamp()
 
-    # Mock a database, and perform some tests on the way
-    def mock_ldb(*args, **kwargs):
-        class MyLDB:
-            @staticmethod
-            def get(key, time):
-                now_time = datetime.now().timestamp()
-                assert start_time <= time <= now_time
-                name = ":".join(key.split(":")[1:-1])
-                return {key: [[739173129, 42398328], [-1, knobs_dict[name].value]]}
-        return MyLDB()
-    monkeypatch.setattr(pytimber, "LoggingDB", mock_ldb)
+    # Mock Pytimber ---
+    class MyLDB:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        @staticmethod
+        def get(key, time):
+            now_time = datetime.now().timestamp()
+            assert start_time <= time <= now_time
+            name = ":".join(key.split(":")[1:-1])
+            return {key: [[739173129, 42398328], [-1, knobs_dict[name].value]]}
+
+    class MockTimber:
+        LoggingDB = MyLDB
+
+    monkeypatch.setattr(knob_extractor, "pytimber", MockTimber())
+
+    # Main ---
 
     path = tmp_path / "knobs.txt"
-
     knobs_extracted = main(time="now", output=path, knob_definitions=knob_definitions)
 
+    # Asserts ---
     parsed_output, _ = parse_output_file(path)
-
     assert len(all_variables) == len(parsed_output)
     assert len(knobs_extracted) == len(parsed_output)
     for knob in all_variables:
