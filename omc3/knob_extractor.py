@@ -14,13 +14,14 @@ Fetches data from nxcals through pytimber using the StateTracker fields.
 
     User defined path to the knob-definitions, or (via python) a dataframe
     containing the knob definitions with the columns 'madx', 'lsa' and
-    'scaling'.
+    'scaling'. Can be given in combination with the --knobs parameter.
 
 
 - **knobs** *(str)*:
 
     A list of knob names or categories to extract. Available categories
-    are: sep, xing, chroma, ip_offset, disp, mo.
+    are: sep, xing, chroma, ip_offset, disp, mo. Can be given in combination
+    with the --knob_definitions parameter.
 
     default: ``['sep', 'xing', 'chroma', 'ip_offset', 'disp', 'mo']``
 
@@ -149,6 +150,7 @@ def get_params():
             help=(
                 "A list of knob names or categories to extract. "
                 f"Available categories are: {', '.join(KNOB_CATEGORIES.keys())}."
+                "Can be given in combination with the --knob_definitions parameter."
             ),
             default=list(KNOB_CATEGORIES.keys()),
         ),
@@ -195,6 +197,7 @@ def get_params():
                 "User defined path to the knob-definitions, "
                 "or (via python) a dataframe containing the knob definitions "
                 "with the columns 'madx', 'lsa' and 'scaling'."
+                "Can be given in combination with the --knobs parameter."
             ),
         ),
     )
