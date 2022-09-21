@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2022-09-20 - v0.6.0
+
+- Added:
+  - The `knob_extractor` script to get LHC knob values from `NXCALS` at a given time
+
 #### 2022-09-19 - v0.5.2
 
 - Bugfix:
