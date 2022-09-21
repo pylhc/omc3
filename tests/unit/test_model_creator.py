@@ -208,7 +208,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path):
         energy=6.5,
         modifiers=[COMP_MODEL / "opticsfile.non_existent"],
     )
-    with pytest.raises(AcceleratorDefinitionError) as creation_error:
+    with pytest.raises(FileNotFoundError) as creation_error:
         create_instance_and_model(
             outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
         )
