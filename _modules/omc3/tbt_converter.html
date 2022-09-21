@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tbt_converter &mdash; omc3 0.6.0 documentation</title>
+  <title>omc3.tbt_converter &mdash; omc3 0.6.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -236,6 +236,13 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype from which to import. &quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_datatype&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">WRITERS</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype to export. &quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;realizations&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of copies with added noise&quot;</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;noise_levels&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sigma of added Gaussian noise&quot;</span><span class="p">)</span>
@@ -270,6 +277,10 @@
 <span class="sd">      - **tbt_datatype** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS).</span>
 
 <span class="sd">        Flags: **--tbt_datatype**</span>
+<span class="sd">        Default: ``lhc``</span>
+<span class="sd">      - **output_datatype** *(str)*: Choose the datatype to export.</span>
+
+<span class="sd">        Flags: **--output_datatype**</span>
 <span class="sd">        Default: ``lhc``</span>
 <span class="sd">      - **realizations** *(int)*: Number of copies with added noise.</span>
 
@@ -320,6 +331,7 @@
                 <span class="k">for</span> <span class="n">noise_level</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">noise_levels</span><span class="p">:</span>
                     <span class="n">tbt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                         <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_file_name_without_sdds</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="si">}</span><span class="s2">_n</span><span class="si">{</span><span class="n">noise_level</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">datatype</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">output_datatype</span><span class="p">,</span>
                         <span class="n">tbt_data</span><span class="o">=</span><span class="n">tbt_data</span><span class="p">,</span>
                         <span class="n">noise</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">noise_level</span><span class="p">),</span>
                     <span class="p">)</span>
