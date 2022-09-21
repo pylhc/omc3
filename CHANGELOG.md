@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2022-09-21 - v0.6.1
+
+- Added: 
+  - tbt output datatype for converter.
+
 #### 2022-09-20 - v0.6.0
 
 - Added:
