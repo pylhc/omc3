@@ -139,8 +139,8 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     # first, if help is requested, gather all help info and print it
     if opt.show_help:
         try:
-            with silence():
-                accel_class = manager.get_accelerator_class(accel_opt)
+            #with silence():
+            accel_class = manager.get_accelerator_class(accel_opt)
             print(f"---- Accelerator {accel_class.__name__}  | Usage ----\n")
             print_help(accel_class.get_parameters())
         except:
