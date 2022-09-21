@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Other &mdash; omc3 0.5.2 documentation</title>
+  <title>Other &mdash; omc3 0.6.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -33,7 +33,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.5
+                0.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -59,6 +59,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#knob-extractor">Knob Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -154,7 +155,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/tbt.html">Turn-by-Turn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -298,6 +298,84 @@ provided it will be written to sys.stdout.</p>
 <p>JPARC: Not implemented</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<span class="target" id="module-omc3.knob_extractor"></span><section id="knob-extractor">
+<h2>Knob Extractor<a class="headerlink" href="#knob-extractor" title="Permalink to this heading"></a></h2>
+<p>Will extract knobs and write them into a file.
+Can also be used to print information about the StateTracker State.
+Fetches data from nxcals through pytimber using the StateTracker fields.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>knob_definitions</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>User defined path to the knob-definitions, or (via python) a dataframe
+containing the knob definitions with the columns ‘madx’, ‘lsa’ and
+‘scaling’.</p>
+</div></blockquote>
+</li>
+<li><p><strong>knobs</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>A list of knob names or categories to extract. Available categories
+are: sep, xing, chroma, ip_offset, disp, mo.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['sep',</span> <span class="pre">'xing',</span> <span class="pre">'chroma',</span> <span class="pre">'ip_offset',</span> <span class="pre">'disp',</span> <span class="pre">'mo']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>output</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Specify user-defined output path. This should probably be
+<cite>model_dir/knobs.madx</cite></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">knobs.madx</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>state</strong>:</p>
+<blockquote>
+<div><p>Prints the state of the StateTracker. Does not extract anything else.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>time</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>At what time to extract the knobs. Accepts ISO-format (YYYY-MM-
+DDThh:mm:ss), timestamp or ‘now’. The default timezone for the ISO-
+format is local time, but you can force e.g. UTC by adding +00:00.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">now</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>timedelta</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Add this timedelta to the given time. The format of timedelta is
+‘((d+)(w))+’ with the second token being one of s(seconds),
+m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,
+1d = 1day, 7m30s = 7 min 30 secs. A prefix ‘_’ specifies a negative
+timedelta. This allows for easily getting the setting e.g. 2h ago:
+‘_2h’ while setting the <cite>time</cite> argument to ‘now’ (default).</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.knob_extractor.KnobEntry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">KnobEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">madx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lsa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#KnobEntry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.KnobEntry" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.knob_extractor.lsa2name">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">lsa2name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#lsa2name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.lsa2name" title="Permalink to this definition"></a></dt>
+<dd><p>LSA name -&gt; Variable in Timber/StateTracker conversion.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.knob_extractor.main">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#omc3.knob_extractor.KnobEntry" title="omc3.knob_extractor.KnobEntry"><span class="pre">KnobEntry</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.main" title="Permalink to this definition"></a></dt>
+<dd><p>Main knob extracting function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.knob_extractor.name2lsa">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">name2lsa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#name2lsa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.name2lsa" title="Permalink to this definition"></a></dt>
+<dd><p>Variable in Timber/StateTracker -&gt; LSA name conversion.</p>
 </dd></dl>
 
 </section>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; omc3 0.5.2 documentation</title>
+  <title>Index &mdash; omc3 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -30,7 +30,7 @@
             <img src="_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.5
+                0.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -56,6 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -151,7 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/tbt.html">Turn-by-Turn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -210,6 +210,7 @@
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -825,6 +826,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="entrypoints/other.html#omc3.knob_extractor.KnobEntry">KnobEntry (class in omc3.knob_extractor)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -842,10 +851,10 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.spectrum.utils.load_spectrum_data">load_spectrum_data() (in module omc3.plotting.spectrum.utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.local">local (omc3.utils.time_tools.AccDatetime property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.local_string">local_string (omc3.utils.time_tools.AccDatetime property)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.local_string_to_utc">local_string_to_utc() (in module omc3.utils.time_tools)</a>
@@ -860,6 +869,8 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.logging_silence">logging_silence() (in module omc3.utils.logging_tools)</a>
 </li>
+      <li><a href="entrypoints/other.html#omc3.knob_extractor.lsa2name">lsa2name() (in module omc3.knob_extractor)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -868,9 +879,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="entrypoints/other.html#omc3.madx_wrapper.MadxError">MadxError</a>
 </li>
-      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_bbq.main">main() (in module omc3.plotting.plot_bbq)</a>
+      <li><a href="entrypoints/other.html#omc3.knob_extractor.main">main() (in module omc3.knob_extractor)</a>
 
       <ul>
+        <li><a href="entrypoints/plotting.html#omc3.plotting.plot_bbq.main">(in module omc3.plotting.plot_bbq)</a>
+</li>
         <li><a href="entrypoints/scripts.html#omc3.scripts.linfile_clean.main">(in module omc3.scripts.linfile_clean)</a>
 </li>
       </ul></li>
@@ -937,6 +950,8 @@
         <li><a href="modules/kmod.html#module-omc3.kmod.constants">omc3.kmod.constants</a>
 </li>
         <li><a href="modules/kmod.html#module-omc3.kmod.helper">omc3.kmod.helper</a>
+</li>
+        <li><a href="entrypoints/other.html#module-omc3.knob_extractor">omc3.knob_extractor</a>
 </li>
         <li><a href="entrypoints/other.html#module-omc3.madx_wrapper">omc3.madx_wrapper</a>
 </li>
@@ -1085,6 +1100,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="entrypoints/other.html#omc3.knob_extractor.name2lsa">name2lsa() (in module omc3.knob_extractor)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.now">now() (omc3.utils.time_tools.AccDatetime class method)</a>
 </li>
   </ul></td>
@@ -1247,6 +1264,13 @@
 
       <ul>
         <li><a href="modules/kmod.html#module-omc3.kmod.helper">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.knob_extractor
+
+      <ul>
+        <li><a href="entrypoints/other.html#module-omc3.knob_extractor">module</a>
 </li>
       </ul></li>
       <li>
