@@ -37,6 +37,13 @@ def converter_params():
         help="Choose the datatype from which to import. ",
     )
     params.add_parameter(
+        name="output_datatype",
+        type=str,
+        default="lhc",
+        choices=list(tbt.io.WRITERS),
+        help="Choose the datatype to export. ",
+    )
+    params.add_parameter(
         name="realizations", type=int, default=1, help="Number of copies with added noise"
     )
     params.add_parameter(name="noise_levels", nargs="+", help="Sigma of added Gaussian noise")
@@ -71,6 +78,10 @@ def converter_entrypoint(opt):
       - **tbt_datatype** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS).
 
         Flags: **--tbt_datatype**
+        Default: ``lhc``
+      - **output_datatype** *(str)*: Choose the datatype to export.
+
+        Flags: **--output_datatype**
         Default: ``lhc``
       - **realizations** *(int)*: Number of copies with added noise.
 
@@ -121,6 +132,7 @@ def _read_and_write_files(opt):
                 for noise_level in opt.noise_levels:
                     tbt.write(
                         Path(opt.outputdir) / f"{_file_name_without_sdds(input_file)}_n{noise_level}{suffix}",
+                        datatype=opt.output_datatype,
                         tbt_data=tbt_data,
                         noise=float(noise_level),
                     )
