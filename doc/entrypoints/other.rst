@@ -7,5 +7,8 @@ Other
 .. automodule:: omc3.model_creator
     :members:
 
+.. automodule:: omc3.knob_extractor
+    :members:
+
 .. automodule:: omc3.madx_wrapper
     :members:
