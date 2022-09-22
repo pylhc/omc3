@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.knob_extractor &mdash; omc3 0.6.1 documentation</title>
+  <title>omc3.knob_extractor &mdash; omc3 0.6.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -201,9 +201,12 @@
 <span class="sd">Knob Extractor</span>
 <span class="sd">--------------</span>
 
-<span class="sd">Will extract knobs and write them into a file.</span>
-<span class="sd">Can also be used to print information about the StateTracker State.</span>
-<span class="sd">Fetches data from nxcals through pytimber using the StateTracker fields.</span>
+<span class="sd">Entrypoint to extract knobs from ``NXCALS`` at a given time, and eventually write them out to a file.</span>
+<span class="sd">This script can also be used to display information about the StateTracker State.</span>
+<span class="sd">The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracker** fields.</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">    Please note that access to the GPN is required to use this functionality.</span>
 
 <span class="sd">**Arguments:**</span>
 
@@ -260,6 +263,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -425,7 +429,7 @@
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">KnobsDict</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot; Main knob extracting function. &quot;&quot;&quot;</span>
-    <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">)</span>
+    <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">_parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
@@ -478,16 +482,17 @@
 
             <span class="n">timestamps</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">knobvalue</span><span class="p">[</span><span class="n">knobkey</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> found&quot;</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> is not a number or infinite&quot;</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> is not a number or infinite&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Knob value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> extracted: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (unscaled)&quot;</span><span class="p">)</span>
             <span class="n">knobs</span><span class="p">[</span><span class="n">knob</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
     <span class="k">return</span> <span class="n">knobs</span>
 
 

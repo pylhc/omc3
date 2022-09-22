@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Other &mdash; omc3 0.6.1 documentation</title>
+  <title>Other &mdash; omc3 0.6.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -307,9 +307,13 @@ provided it will be written to sys.stdout.</p>
 </section>
 <span class="target" id="module-omc3.knob_extractor"></span><section id="knob-extractor">
 <h2>Knob Extractor<a class="headerlink" href="#knob-extractor" title="Permalink to this heading"></a></h2>
-<p>Will extract knobs and write them into a file.
-Can also be used to print information about the StateTracker State.
-Fetches data from nxcals through pytimber using the StateTracker fields.</p>
+<p>Entrypoint to extract knobs from <code class="docutils literal notranslate"><span class="pre">NXCALS</span></code> at a given time, and eventually write them out to a file.
+This script can also be used to display information about the StateTracker State.
+The data is fetched from <code class="docutils literal notranslate"><span class="pre">NXCALS</span></code> through <code class="docutils literal notranslate"><span class="pre">pytimber</span></code> using the <strong>StateTracker</strong> fields.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that access to the GPN is required to use this functionality.</p>
+</div>
 <p><strong>Arguments:</strong></p>
 <p><em>--Optional--</em></p>
 <ul>
