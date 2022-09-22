@@ -2,9 +2,12 @@ r"""
 Knob Extractor
 --------------
 
-Will extract knobs and write them into a file.
-Can also be used to print information about the StateTracker State.
-Fetches data from nxcals through pytimber using the StateTracker fields.
+Entrypoint to extract knobs from ``NXCALS`` at a given time, and eventually write them out to a file.
+This script can also be used to display information about the StateTracker State.
+The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracker** fields.
+
+.. note::
+    Please note that access to the GPN is required to use this functionality.
 
 **Arguments:**
 
@@ -61,13 +64,13 @@ Fetches data from nxcals through pytimber using the StateTracker fields.
 
 """
 import argparse
+import logging
 import math
 import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple, Union
-import logging
 
 import pandas as pd
 import tfs
