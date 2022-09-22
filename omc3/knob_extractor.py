@@ -67,6 +67,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple, Union
+import logging
 
 import pandas as pd
 import tfs
@@ -226,7 +227,7 @@ KnobsDict = Dict[str, KnobEntry]
 )
 def main(opt) -> Optional[KnobsDict]:
     """ Main knob extracting function. """
-    ldb = pytimber.LoggingDB(source="nxcals")
+    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR)
     time = _parse_time(opt.time, opt.timedelta)
 
     if opt.state:
@@ -262,6 +263,7 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
     """
     LOGGER.info(f"---- EXTRACTING KNOBS @ {time} ----")
     knobs = {}
+    knobs_nan_or_inf = []
 
     for category in knob_categories:
         for knob in KNOB_CATEGORIES.get(category, [category]):
@@ -279,16 +281,23 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
             timestamps, values = knobvalue[knobkey]
             if len(values) == 0:
-                LOGGER.warning(f"No value for {knob} found")
+                LOGGER.debug(f"No value for {knob} found")
+                knobs_nan_or_inf.append(knob)
                 continue
 
             value = values[-1]
             if not math.isfinite(value):
-                LOGGER.warning(f"Value for {knob} is not a number or infinite")
+                LOGGER.debug(f"Value for {knob} is not a number or infinite")
+                knobs_nan_or_inf.append(knob)
                 continue
 
             LOGGER.info(f"Knob value for {knob} extracted: {value} (unscaled)")
             knobs[knob].value = value
+
+    if len(knobs_nan_or_inf):
+        LOGGER.info(f"The following knobs didn't return a value (or NaN/Inf):")
+        LOGGER.info(f" {', '.join(knobs_nan_or_inf)}")
+
     return knobs
 
 
