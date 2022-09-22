@@ -2,9 +2,12 @@ r"""
 Knob Extractor
 --------------
 
-Will extract knobs and write them into a file.
-Can also be used to print information about the StateTracker State.
-Fetches data from nxcals through pytimber using the StateTracker fields.
+Entrypoint to extract knobs from ``NXCALS`` at a given time, and eventually write them out to a file.
+This script can also be used to display information about the StateTracker State.
+The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracker** fields.
+
+.. note::
+    Please note that access to the GPN is required to use this functionality.
 
 **Arguments:**
 
@@ -61,6 +64,7 @@ Fetches data from nxcals through pytimber using the StateTracker fields.
 
 """
 import argparse
+import logging
 import math
 import re
 from dataclasses import dataclass
@@ -226,7 +230,7 @@ KnobsDict = Dict[str, KnobEntry]
 )
 def main(opt) -> Optional[KnobsDict]:
     """ Main knob extracting function. """
-    ldb = pytimber.LoggingDB(source="nxcals")
+    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR)
     time = _parse_time(opt.time, opt.timedelta)
 
     if opt.state:
@@ -279,16 +283,17 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
             timestamps, values = knobvalue[knobkey]
             if len(values) == 0:
-                LOGGER.warning(f"No value for {knob} found")
+                LOGGER.debug(f"No value for {knob} found")
                 continue
 
             value = values[-1]
             if not math.isfinite(value):
-                LOGGER.warning(f"Value for {knob} is not a number or infinite")
+                LOGGER.debug(f"Value for {knob} is not a number or infinite")
                 continue
 
             LOGGER.info(f"Knob value for {knob} extracted: {value} (unscaled)")
             knobs[knob].value = value
+
     return knobs
 
 
