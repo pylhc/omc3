@@ -67,7 +67,6 @@ import argparse
 import logging
 import math
 import re
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple, Union
@@ -75,8 +74,8 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 import pandas as pd
 import tfs
 from dateutil.relativedelta import relativedelta
-from generic_parser import EntryPointParameters, entrypoint
 
+from generic_parser import EntryPointParameters, entrypoint
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
@@ -91,6 +90,14 @@ KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
 KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
 
 MINUS_CHARS: Tuple[str, ...] = ("_", "-")
+
+class Col:
+    """ Columns used in this script. """
+    madx: str = "madx"
+    lsa: str = "lsa"
+    scaling: str = "scaling"
+    value: str = "value"
+
 
 KNOB_CATEGORIES: Dict[str, List[str]] = {
     "sep": [
@@ -204,22 +211,6 @@ def get_params():
     )
 
 
-@dataclass
-class KnobEntry:
-    madx: str  # the name of the MAD-X variable for this knob
-    lsa: str  # the name of the knob in LSA itself
-    scaling: float  # is usually +-1, i.e. takes care of sign-conventions
-    value: float = None
-
-    def get_madx_command(self) -> str:
-        if self.value is None:
-            return f"! {self.madx} : No Value extracted"
-        return f"{self.madx} := {self.value * self.scaling};"
-
-
-KnobsDict = Dict[str, KnobEntry]
-
-
 @entrypoint(
     get_params(), strict=True,
     argument_parser_args=dict(
@@ -228,7 +219,7 @@ KnobsDict = Dict[str, KnobEntry]
         prog="Knob Extraction Tool."
     )
 )
-def main(opt) -> Optional[KnobsDict]:
+def main(opt) -> Optional[pd.DataFrame]:
     """ Main knob extracting function. """
     ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR)
     time = _parse_time(opt.time, opt.timedelta)
@@ -243,24 +234,23 @@ def main(opt) -> Optional[KnobsDict]:
         return None
     
     knobs_dict = _parse_knobs_defintions(opt.knob_definitions)
-    knobs_extract = _extract(ldb, knobs_dict, opt.knobs, time)
+    knobs_extract = _extract_and_gather(ldb, knobs_dict, opt.knobs, time)
     if opt.output:
         _write_knobsfile(opt.output, knobs_extract, time)
     return knobs_extract
 
 
-def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: datetime) -> KnobsDict:
+def extract(ldb, knob_categories: Sequence[str], time: datetime) -> Dict[str, float]:
     """
     Main function to gather data from  the state-tracker.
 
     Args:
         ldb (pytimber.LoggingDB): The pytimber database.
-        knobs_dict (KnobsDict): A mapping of all knob-names to KnobEntries.
         knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.
         time (datetime): The time, when to extract.
 
     Returns:
-        Dict[str, KnobsDict]: Contains all the extracted knobs, grouped by categories.
+        Dict[str, float]: Contains all the extracted knobs.
         When extraction was not possible, the value attribute of the respective KnobEntry is still None
 
     """
@@ -269,13 +259,9 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
 
     for category in knob_categories:
         for knob in KNOB_CATEGORIES.get(category, [category]):
-            try:
-                knobs[knob] = knobs_dict[knob]
-            except KeyError as e:
-                raise KeyError(f"Knob '{knob}' not found in the knob-definitions!") from e
-
-            # LOGGER.debug(f"Looking for {knob:<34s} ")  # pytimber logs this to info anyway
             knobkey = f"LhcStateTracker:{knob}:target"
+            knobs[knob] = None  # to log that this was tried to be extracted.
+
             knobvalue = ldb.get(knobkey, time.timestamp())  # use timestamp to preserve timezone info
             if knobkey not in knobvalue:
                 LOGGER.warning(f"No value for {knob} found")
@@ -292,33 +278,66 @@ def _extract(ldb, knobs_dict: KnobsDict, knob_categories: Sequence[str], time: d
                 continue
 
             LOGGER.info(f"Knob value for {knob} extracted: {value} (unscaled)")
-            knobs[knob].value = value
+            knobs[knob] = value
 
     return knobs
 
 
-def _write_knobsfile(output: Union[Path, str], collected_knobs: KnobsDict, time):
+def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
+                        knob_categories: Sequence[str],
+                        time: datetime) -> pd.DataFrame:
+    """
+    Main function to gather data from  the state-tracker.
+
+    Args:
+        ldb (pytimber.LoggingDB): The pytimber database.
+        knobs_definitions (KnobsDict): A mapping of all knob-names to KnobEntries.
+        knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.
+        time (datetime): The time, when to extract.
+
+    Returns:
+        pd.Dataframe: Contains all the extracted knobs.
+        When extraction was not possible, the value attribute of the respective entry is NAN
+
+    """
+    extracted_knobs = extract(ldb, knob_categories=knob_categories, time=time)
+    undefined_knobs = [knob for knob in extracted_knobs if knob not in knobs_definitions.index]
+    if undefined_knobs:
+        raise KeyError(
+            "The following knob(s) could not be found "
+            f"in the knob-definitions: '{', '.join(undefined_knobs)}'"
+        )
+
+    knob_names = list(extracted_knobs.keys())
+    knobs = pd.DataFrame(index=knob_names, columns=[Col.lsa, Col.madx, Col.scaling, Col.value])
+    knobs[[Col.lsa, Col.madx, Col.scaling]] = knobs_definitions.loc[knob_names, :]
+    knobs[Col.value] = pd.Series(extracted_knobs)
+    return knobs
+
+
+def _write_knobsfile(output: Union[Path, str], collected_knobs: pd.DataFrame, time):
     """ Takes the collected knobs and writes them out into a text-file. """
-    collected_knobs = collected_knobs.copy()  # to not modify the return dict
+    collected_knobs = collected_knobs.copy()  # to not modify the return df
 
     # Sort the knobs by category
-    category_knobs = {c: {} for c in KNOB_CATEGORIES.keys()}
-    for category, names in KNOB_CATEGORIES.items():
-        for name in names:
-            if name in collected_knobs.keys():
-                category_knobs[category][name] = collected_knobs.pop(name)
+    category_knobs = {}
+    for category, category_names in KNOB_CATEGORIES.items():
+        names = [name for name in collected_knobs.index if name in category_names]
+        if not names:
+            continue
+
+        category_knobs[category] = collected_knobs.loc[names, :]
+        collected_knobs = collected_knobs.drop(index=names)
     category_knobs["Other Knobs"] = collected_knobs
 
     # Write them out
     with open(output, "w") as outfile:
         outfile.write(f"!! --- knobs extracted by knob_extractor\n")
         outfile.write(f"!! --- extracted knobs for time {time}\n\n")
-        for category, knobs in category_knobs.items():
-            if not knobs:
-                continue
+        for category, knobs_df in category_knobs.items():
             outfile.write(f"!! --- {category:10} --------------------\n")
-            for knob, knob_entry in knobs.items():
-                outfile.write(f"{knob_entry.get_madx_command()}\n")
+            for knob, knob_entry in knobs_df.iterrows():
+                outfile.write(f"{get_madx_command(knob_entry)}\n")
             outfile.write("\n")
         outfile.write("\n")
 
@@ -343,7 +362,7 @@ def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path
     raise FileNotFoundError("None of the knobs-definition files are available.")
 
 
-def _load_knobs_dict(file_path: Union[Path, str]) -> KnobsDict:
+def _load_knobs_dict(file_path: Union[Path, str]) -> pd.DataFrame:
     """ Load the knobs-definition file and convert into KnobsDict.
     Each line in this file should consist of four comma separated entries:
     madx-name, lsa-name, scaling factor, knob-test value.
@@ -353,7 +372,7 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> KnobsDict:
         file_path (Path): Path to the knobs definition file.
 
     Returns:
-        Dictionary with LSA names (but with colon instead of /) as
+        Dataframe with LSA names (but with colon instead of /) as
         keys and KnobEntries (without values) as value.
     """
     if Path(file_path).suffix == ".tfs":
@@ -361,13 +380,13 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> KnobsDict:
         df = tfs.read_tfs(file_path)
     else:
         # parse csv file (the official way)
-        dtypes = {"madx": str, "lsa": str, "scaling": float, "test": float}
-        converters = {'madx': str.strip, 'lsa': str.strip}  # strip whitespaces
+        dtypes = {Col.madx: str, Col.lsa: str, Col.scaling: float, "test": float}
+        converters = {Col.madx: str.strip, Col.lsa: str.strip}  # strip whitespaces
         df = pd.read_csv(file_path, comment="#", names=dtypes.keys(), dtype=dtypes, converters=converters)
-    return _dataframe_to_knobsdict(df)
+    return _to_knobs_dataframe(df)
 
 
-def _dataframe_to_knobsdict(df: pd.DataFrame) -> KnobsDict:
+def _to_knobs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """ Converts a DataFrame into the required Dictionary structure.
 
     Args:
@@ -375,25 +394,33 @@ def _dataframe_to_knobsdict(df: pd.DataFrame) -> KnobsDict:
                            'lsa', 'madx', 'scaling' (upper or lowercase)
 
     Returns:
-        Dictionary with LSA names (but with colon instead of /) as
-        keys and KnobEntries (without values) as value.
+        Dataframe with LSA names (but with colon instead of /) as
+        keys and 'lsa', 'madx', 'scaling' and (empty) 'value' columns.
 
     """
     df.columns = df.columns.astype(str).str.lower()
-    df = df[['lsa', 'madx', 'scaling']].set_index("lsa", drop=False)
-    return {
-        lsa2name(r[0]): KnobEntry(**r[1].to_dict()) for r in df.iterrows()
-    }
+    df = df[[Col.lsa, Col.madx, Col.scaling]].set_index(Col.lsa, drop=False)
+    df.index = df.index.map(lsa2name)
+    return df
 
 
-def _parse_knobs_defintions(knobs_def_input: Optional[Union[Path, str, pd.DataFrame]]) -> KnobsDict:
+def _parse_knobs_defintions(knobs_def_input: Optional[Union[Path, str, pd.DataFrame]]) -> pd.DataFrame:
     """ Parse the given knob-definitions either from a csv-file or from a DataFrame. """
     if isinstance(knobs_def_input, pd.DataFrame):
-        return _dataframe_to_knobsdict(knobs_def_input)
+        return _to_knobs_dataframe(knobs_def_input)
 
     # input points to a file or is None
     knobs_def_file = _get_knobs_def_file(knobs_def_input)
     return _load_knobs_dict(knobs_def_file)
+
+
+def get_madx_command(knob_data: pd.Series) -> str:
+    if Col.value not in knob_data.index:
+        raise KeyError("Value entry not found in extracted knob_data. "
+                       "Something went wrong as it should at least be NaN.")
+    if knob_data[Col.value] is None or pd.isna(knob_data[Col.value]):
+        return f"! {knob_data[Col.madx]} : No Value extracted"
+    return f"{knob_data[Col.madx]} := {knob_data[Col.value] * knob_data[Col.scaling]};"
 
 
 # Time Tools -------------------------------------------------------------------

@@ -12,10 +12,10 @@ import tfs
 from generic_parser import EntryPoint
 from generic_parser.dict_parser import ArgumentError
 from omc3 import knob_extractor
-from omc3.knob_extractor import (KNOB_CATEGORIES, KnobEntry, _add_time_delta,
-                                 _extract, _parse_knobs_defintions,
+from omc3.knob_extractor import (KNOB_CATEGORIES, _add_time_delta,
+                                 _extract_and_gather, _parse_knobs_defintions,
                                  _parse_time, _write_knobsfile, lsa2name, main,
-                                 get_params
+                                 get_params, Col, get_madx_command
                                  )
 
 from tests.conftest import cli_args
@@ -27,12 +27,12 @@ class TestFullRun:
     @pytest.mark.basic
     @pytest.mark.parametrize("commandline", [True, False], ids=["as function", "cli"])
     def test_full(self, tmp_path, knob_definitions, monkeypatch, commandline):
-        knobs_dict = _parse_knobs_defintions(knob_definitions)
+        kobs_defs = _parse_knobs_defintions(knob_definitions)
         all_variables = [knob for category in KNOB_CATEGORIES.values() for knob in category]
         for knob in all_variables:
             value = np.random.random() * 10 - 5
             threshold = np.random.random() < 0.3
-            knobs_dict[knob].value = 0.0 if threshold else value
+            kobs_defs.loc[knob, Col.value] = 0.0 if threshold else value
 
         start_time = datetime.now().timestamp()
         path = tmp_path / "knobs.txt"
@@ -47,7 +47,7 @@ class TestFullRun:
                 now_time = datetime.now().timestamp()
                 assert start_time <= time <= now_time
                 name = ":".join(key.split(":")[1:-1])
-                return {key: [[739173129, 42398328], [-1, knobs_dict[name].value]]}
+                return {key: [[739173129, 42398328], [-1, kobs_defs.loc[name, Col.value]]]}
 
         class MockTimber:
             LoggingDB = MyLDB
@@ -66,7 +66,8 @@ class TestFullRun:
             parsed_output, _ = parse_output_file(path)
             assert len(all_variables) == len(parsed_output)
             for knob in all_variables:
-                assert parsed_output[knobs_dict[knob].madx] == knobs_dict[knob].value * knobs_dict[knob].scaling
+                knob_entry = kobs_defs.loc[knob, :]
+                assert parsed_output[knob_entry[Col.madx]] == knob_entry[Col.value] * knob_entry[Col.scaling]
 
         else:
             knobs_extracted = main(time="now", output=path, knob_definitions=knob_definitions)
@@ -76,9 +77,10 @@ class TestFullRun:
             assert len(all_variables) == len(parsed_output)
             assert len(knobs_extracted) == len(parsed_output)
             for knob in all_variables:
-                assert knobs_dict[knob].value == knobs_extracted[knob].value
-                assert parsed_output[knobs_extracted[knob].madx] == knobs_extracted[knob].value * knobs_extracted[knob].scaling
-    
+                knob_entry = kobs_defs.loc[knob, :]
+                assert knob_entry[Col.value] == knobs_extracted.loc[knob, Col.value]
+                assert parsed_output[knob_entry[Col.madx]] == knob_entry[Col.value] * knob_entry[Col.scaling]
+
     @pytest.mark.basic
     @pytest.mark.parametrize("commandline", [True, False], ids=["as function", "cli"])
     def test_state(self, tmp_path, monkeypatch, caplog, commandline):
@@ -128,7 +130,7 @@ class TestFullRun:
 
             @staticmethod
             def get(key, time):
-                raise ValueError("This test failed: The code should not have run this far.")
+                return {key: [[478973], [343.343]]}
 
         class MockTimber:
             LoggingDB = MyLDB
@@ -145,45 +147,52 @@ class TestFullRun:
 class TestKnobExtraction:
     @pytest.mark.basic
     def test_extraction(self):
-        knobs_dict = {
-            "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx="landau1", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
-            "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx="landau2", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
-            "other": KnobEntry(madx="other_knob", lsa="other/knob", scaling=1),
-        }
+        knobs_dict = pd.DataFrame({
+            "LHCBEAM1:LANDAU_DAMPING": knob_def(madx="landau1", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
+            "LHCBEAM2:LANDAU_DAMPING": knob_def(madx="landau2", lsa="LHCBEAM1/LANDAU_DAMPING", scaling=-1),
+            "other": knob_def(madx="other_knob", lsa="other/knob", scaling=1),
+        }).transpose()
         values = [8904238, 34.323904, 3489.23409]
         time = datetime.now()
         timestamp = time.timestamp()*1e9  # java format
 
         fake_ldb = {
             f"LhcStateTracker:{key}:target": {f"LhcStateTracker:{key}:target": [[timestamp, timestamp], [-1, value]]}
-            for key, value in zip(knobs_dict.keys(), values)
+            for key, value in zip(knobs_dict.index, values)
         }
 
-        extracted = _extract(fake_ldb, knobs_dict=knobs_dict, knob_categories=["mo", "other"], time=time)
+        extracted = _extract_and_gather(fake_ldb, knobs_definitions=knobs_dict, knob_categories=["mo", "other"], time=time)
 
         assert len(extracted) == len(knobs_dict)
-        for idx, (key, entry) in enumerate(extracted.items()):
-            assert entry.value == values[idx]  # depends on the order of "mo" in the file
+        for idx, (key, entry) in enumerate(extracted.iterrows()):
+            assert entry[Col.value] == values[idx]  # depends on the order of "mo" in the file
 
 
 class TestIO:
     @pytest.mark.basic
-    def test_parse_knobdict_from_file(self, knob_definitions):
-        knob_dict = _parse_knobs_defintions(knob_definitions)
+    def test_parse_knobdefs_from_file(self, knob_definitions):
+        knob_defs = _parse_knobs_defintions(knob_definitions)
         for knobs in KNOB_CATEGORIES.values():
             for knob in knobs:
-                assert knob in knob_dict.keys()
-                knob_entry = knob_dict[knob]
+                assert knob in knob_defs.index
+                knob_entry = knob_defs.loc[knob, :]
 
-                assert knob_entry.value is None
-                assert abs(knob_entry.scaling) == 1
-                assert lsa2name(knob_entry.lsa) == knob
-                assert len(knob_entry.madx)
-                assert knob_entry.madx in knob_entry.get_madx_command()
-                assert knob_entry.get_madx_command().strip().startswith("!")
+                assert abs(knob_entry[Col.scaling]) == 1
+                assert lsa2name(knob_entry[Col.lsa]) == knob
+                assert len(knob_entry[Col.madx])
 
-                knob_entry.value = 10
-                assert str(10) in knob_entry.get_madx_command()
+                with pytest.raises(KeyError) as e:
+                    get_madx_command(knob_entry)
+                assert "Value entry not found" in str(e)
+
+                knob_entry[Col.value] = pd.NA
+                madx_command = get_madx_command(knob_entry)
+                assert knob_entry[Col.madx] in madx_command
+                assert madx_command.strip().startswith("!")
+
+                knob_entry[Col.value] = 10
+                madx_command = get_madx_command(knob_entry)
+                assert str(10) in madx_command
 
     @pytest.mark.basic
     def test_parse_knobdict_from_dataframe(self, tmp_path):
@@ -192,33 +201,33 @@ class TestIO:
         path = tmp_path / "knob_defs.tfs"
         tfs.write(path, df)
 
-        knob_dict = _parse_knobs_defintions(path)
-        assert len(knob_dict) == 1
-        assert "lsa_name" in knob_dict
-        knob_entry = knob_dict["lsa_name"]
-        assert knob_entry.lsa == "lsa_name"
-        assert knob_entry.madx == "madx_name"
-        assert knob_entry.scaling == 1
+        knob_defs = _parse_knobs_defintions(path)
+        assert len(knob_defs) == 1
+        assert "lsa_name" in knob_defs.index
+        knob_entry = knob_defs.loc["lsa_name", :]
+        assert knob_entry[Col.lsa] == "lsa_name"
+        assert knob_entry[Col.madx] == "madx_name"
+        assert knob_entry[Col.scaling] == 1
 
     @pytest.mark.basic
     def test_write_file(self, tmp_path):
-        knobs_dict = {
-            "LHCBEAM1:LANDAU_DAMPING": KnobEntry(madx="moknob1", lsa="moknob1.lsa", scaling=-1, value=-4783),
-            "LHCBEAM2:LANDAU_DAMPING": KnobEntry(madx="moknob2", lsa="moknob2.lsa", scaling=1, value=0.0),  # one should be 0.0 to test this case
-            "knob1": KnobEntry(madx="knob1.madx", lsa="knob1.lsa", scaling=-1, value=12.43383),
-            "knob2": KnobEntry(madx="knob2.madx", lsa="knob2.lsa", scaling=1, value=-3.0231),
-            "knob3": KnobEntry(madx="knob3.madx", lsa="knob3.lsa", scaling=-1, value=-9.7492),
-        }
+        knobs_defs = pd.DataFrame({
+            "LHCBEAM1:LANDAU_DAMPING": knob_def(madx="moknob1", lsa="moknob1.lsa", scaling=-1, value=-4783),
+            "LHCBEAM2:LANDAU_DAMPING": knob_def(madx="moknob2", lsa="moknob2.lsa", scaling=1, value=0.0),  # one should be 0.0 to test this case
+            "knob1": knob_def(madx="knob1.madx", lsa="knob1.lsa", scaling=-1, value=12.43383),
+            "knob2": knob_def(madx="knob2.madx", lsa="knob2.lsa", scaling=1, value=-3.0231),
+            "knob3": knob_def(madx="knob3.madx", lsa="knob3.lsa", scaling=-1, value=-9.7492),
+        }).transpose()
         path = tmp_path / "knobs.txt"
         time = datetime.now()
-        _write_knobsfile(path, knobs_dict, time=time)
+        _write_knobsfile(path, knobs_defs, time=time)
         read_as_dict, full_text = parse_output_file(path)
         assert str(time) in full_text
         assert " mo " in full_text
         assert " Other Knobs " in full_text
-        assert len(read_as_dict) == len(knobs_dict)
-        for _, entry in knobs_dict.items():
-            assert read_as_dict[entry.madx] == entry.value * entry.scaling
+        assert len(read_as_dict) == len(knobs_defs)
+        for _, entry in knobs_defs.iterrows():
+            assert read_as_dict[entry.madx] == entry[Col.value] * entry[Col.scaling]
 
 
 class TestTime:
@@ -336,6 +345,10 @@ class TestInsideCERNNetwork:
 
 
 # Helper -----------------------------------------------------------------------
+
+
+def knob_def(**kwargs):
+    return pd.Series(dict(**kwargs))
 
 
 def parse_output_file(file_path) -> Tuple[Dict[str, float], str]:
