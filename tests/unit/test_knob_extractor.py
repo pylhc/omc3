@@ -15,7 +15,7 @@ from omc3 import knob_extractor
 from omc3.knob_extractor import (KNOB_CATEGORIES, _add_time_delta,
                                  _extract_and_gather, _parse_knobs_defintions,
                                  _parse_time, _write_knobsfile, lsa2name, main,
-                                 get_params, Col, get_madx_command
+                                 get_params, Col, get_madx_command, Head
                                  )
 
 from tests.conftest import cli_args
@@ -220,7 +220,8 @@ class TestIO:
         }).transpose()
         path = tmp_path / "knobs.txt"
         time = datetime.now()
-        _write_knobsfile(path, knobs_defs, time=time)
+        knobs_defs = tfs.TfsDataFrame(knobs_defs, headers={Head.time: time})
+        _write_knobsfile(path, knobs_defs)
         read_as_dict, full_text = parse_output_file(path)
         assert str(time) in full_text
         assert " mo " in full_text

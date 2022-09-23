@@ -91,12 +91,18 @@ KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
 
 MINUS_CHARS: Tuple[str, ...] = ("_", "-")
 
+
 class Col:
-    """ Columns used in this script. """
+    """ DataFrame Columns used in this script. """
     madx: str = "madx"
     lsa: str = "lsa"
     scaling: str = "scaling"
     value: str = "value"
+
+
+class Head:
+    """ TFS Headers used in this script."""
+    time: str = "EXTRACTION_TIME"
 
 
 KNOB_CATEGORIES: Dict[str, List[str]] = {
@@ -219,7 +225,7 @@ def get_params():
         prog="Knob Extraction Tool."
     )
 )
-def main(opt) -> Optional[pd.DataFrame]:
+def main(opt) -> Optional[tfs.TfsDataFrame]:
     """ Main knob extracting function. """
     ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR)
     time = _parse_time(opt.time, opt.timedelta)
@@ -236,7 +242,7 @@ def main(opt) -> Optional[pd.DataFrame]:
     knobs_dict = _parse_knobs_defintions(opt.knob_definitions)
     knobs_extract = _extract_and_gather(ldb, knobs_dict, opt.knobs, time)
     if opt.output:
-        _write_knobsfile(opt.output, knobs_extract, time)
+        _write_knobsfile(opt.output, knobs_extract)
     return knobs_extract
 
 
@@ -285,7 +291,7 @@ def extract(ldb, knob_categories: Sequence[str], time: datetime) -> Dict[str, fl
 
 def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
                         knob_categories: Sequence[str],
-                        time: datetime) -> pd.DataFrame:
+                        time: datetime) -> tfs.TfsDataFrame:
     """
     Main function to gather data from  the state-tracker.
 
@@ -309,13 +315,15 @@ def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
         )
 
     knob_names = list(extracted_knobs.keys())
-    knobs = pd.DataFrame(index=knob_names, columns=[Col.lsa, Col.madx, Col.scaling, Col.value])
+    knobs = tfs.TfsDataFrame(index=knob_names,
+                             columns=[Col.lsa, Col.madx, Col.scaling, Col.value],
+                             headers={Head.time: time})
     knobs[[Col.lsa, Col.madx, Col.scaling]] = knobs_definitions.loc[knob_names, :]
     knobs[Col.value] = pd.Series(extracted_knobs)
     return knobs
 
 
-def _write_knobsfile(output: Union[Path, str], collected_knobs: pd.DataFrame, time):
+def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame):
     """ Takes the collected knobs and writes them out into a text-file. """
     collected_knobs = collected_knobs.copy()  # to not modify the return df
 
@@ -333,7 +341,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: pd.DataFrame, ti
     # Write them out
     with open(output, "w") as outfile:
         outfile.write(f"!! --- knobs extracted by knob_extractor\n")
-        outfile.write(f"!! --- extracted knobs for time {time}\n\n")
+        outfile.write(f"!! --- extracted knobs for time {collected_knobs.headers[Head.time]}\n\n")
         for category, knobs_df in category_knobs.items():
             outfile.write(f"!! --- {category:10} --------------------\n")
             for knob, knob_entry in knobs_df.iterrows():
