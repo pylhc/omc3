@@ -336,7 +336,9 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame
 
         category_knobs[category] = collected_knobs.loc[names, :]
         collected_knobs = collected_knobs.drop(index=names)
-    category_knobs["Other Knobs"] = collected_knobs
+
+    if len(collected_knobs):  # leftover knobs without category
+        category_knobs["Other Knobs"] = collected_knobs
 
     # Write them out
     with open(output, "w") as outfile:
