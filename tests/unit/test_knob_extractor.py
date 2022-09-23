@@ -175,7 +175,7 @@ class TestIO:
         for knobs in KNOB_CATEGORIES.values():
             for knob in knobs:
                 assert knob in knob_defs.index
-                knob_entry = knob_defs.loc[knob, :]
+                knob_entry = knob_defs.loc[knob, :].copy()
 
                 assert abs(knob_entry[Col.scaling]) == 1
                 assert lsa2name(knob_entry[Col.lsa]) == knob

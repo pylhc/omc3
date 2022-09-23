@@ -390,9 +390,13 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> pd.DataFrame:
         df = tfs.read_tfs(file_path)
     else:
         # parse csv file (the official way)
-        dtypes = {Col.madx: str, Col.lsa: str, Col.scaling: float, "test": float}
         converters = {Col.madx: str.strip, Col.lsa: str.strip}  # strip whitespaces
-        df = pd.read_csv(file_path, comment="#", names=dtypes.keys(), dtype=dtypes, converters=converters)
+        dtypes = {Col.scaling: float, "test": float}
+        df = pd.read_csv(file_path,
+                         comment="#",
+                         names=list(converters.keys()) + list(dtypes.keys()),
+                         dtype=dtypes,
+                         converters=converters)
     return _to_knobs_dataframe(df)
 
 
