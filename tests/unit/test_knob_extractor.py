@@ -280,6 +280,51 @@ class TestIO:
         for knob in knobs_undefined:
             assert knob in str(e)
 
+    @pytest.mark.basic
+    def test_load_knobdefinitions_with_any_number_entries(self, tmp_path):
+        definition_file = tmp_path / "knob_defs_tmp.txt"
+        values = [18.8, 12.0, 10, 108.8]
+        definition_file.write_text(
+            f"knob1_madx, knob1/lsa, {values[0]}, 19.8, 38\n"
+            f"knob2_madx, knob2/lsa, {values[1]}, 483.8\n"
+            f"knob3_madx, knob3/lsa, {values[2]}\n"
+            f"knob4_madx, knob4/lsa, {values[3]}, 19.8, other stuff\n"
+        )
+
+        df = load_knobs_definitions(definition_file)
+        assert len(df) == len(values)
+
+        for idx, value in enumerate(values, start=1):
+            name = f"knob{idx}:lsa"
+            assert name in df.index
+            assert df.loc[name, Col.scaling] == value
+            assert df.loc[name, Col.madx] == f"knob{idx}_madx"
+            assert df.loc[name, Col.lsa] == f"knob{idx}/lsa"
+
+    @pytest.mark.basic
+    def test_load_knobdefinitions_fail_no_scaling(self, tmp_path):
+        definition_file = tmp_path / "knob_defs_tmp.txt"
+        definition_file.write_text(
+            f"knob1_madx, knob1/lsa\n"
+            f"knob2_madx, knob2/lsa\n"
+        )
+
+        with pytest.raises(pd.errors.ParserError) as e:
+            load_knobs_definitions(definition_file)
+        assert "expected 3 and found 2" in str(e)
+
+    @pytest.mark.basic
+    def test_load_knobdefinitions_fail_wrong_scaling(self, tmp_path):
+        definition_file = tmp_path / "knob_defs_tmp.txt"
+        definition_file.write_text(
+            f"knob1_madx, knob1/lsa, wrong\n"
+        )
+
+        # with pytest.raises(pd.errors.ParserError):
+        with pytest.raises(ValueError) as e:
+            load_knobs_definitions(definition_file)
+        assert "could not convert string to float" in str(e)
+
 
 class TestTime:
     @pytest.mark.basic

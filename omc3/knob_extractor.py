@@ -246,13 +246,15 @@ def main(opt) -> Optional[tfs.TfsDataFrame]:
     return knobs_extract
 
 
-def extract(ldb, knob_categories: Sequence[str], time: datetime) -> Dict[str, float]:
+def extract(ldb, knobs: Sequence[str], time: datetime) -> Dict[str, float]:
     """
-    Main function to gather data from  the state-tracker.
+    Standalone function to gather data from  the StateTracker.
+    Extracts data via pytimber's LoggingDB for the knobs given
+    (either by name or by category) in knobs.
 
     Args:
         ldb (pytimber.LoggingDB): The pytimber database.
-        knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.
+        knobs (Sequence[str]): Knob Categories or Knob-Names to extract.
         time (datetime): The time, when to extract.
 
     Returns:
@@ -261,12 +263,12 @@ def extract(ldb, knob_categories: Sequence[str], time: datetime) -> Dict[str, fl
 
     """
     LOGGER.info(f"---- EXTRACTING KNOBS @ {time} ----")
-    knobs = {}
+    knobs_extracted = {}
 
-    for category in knob_categories:
+    for category in knobs:
         for knob in KNOB_CATEGORIES.get(category, [category]):
             knobkey = f"LhcStateTracker:{knob}:target"
-            knobs[knob] = None  # to log that this was tried to be extracted.
+            knobs_extracted[knob] = None  # to log that this was tried to be extracted.
 
             knobvalue = ldb.get(knobkey, time.timestamp())  # use timestamp to preserve timezone info
             if knobkey not in knobvalue:
@@ -284,9 +286,9 @@ def extract(ldb, knob_categories: Sequence[str], time: datetime) -> Dict[str, fl
                 continue
 
             LOGGER.info(f"Knob value for {knob} extracted: {value} (unscaled)")
-            knobs[knob] = value
+            knobs_extracted[knob] = value
 
-    return knobs
+    return knobs_extracted
 
 
 def check_for_undefined_knobs(knobs_definitions: pd.DataFrame, knob_categories: Sequence[str]):
@@ -294,7 +296,7 @@ def check_for_undefined_knobs(knobs_definitions: pd.DataFrame, knob_categories: 
 
 
     Args:
-        knobs_definitions (KnobsDict): A mapping of all knob-names to KnobEntries.
+        knobs_definitions (pd.DataFrame): A mapping of all knob-names to KnobEntries.
         knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.
 
     Raises:
@@ -314,21 +316,26 @@ def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
                         knob_categories: Sequence[str],
                         time: datetime) -> tfs.TfsDataFrame:
     """
-    Main function to gather data from  the state-tracker.
+    Main function to gather data from the StateTracker and the knob-definitions.
+    All given knobs (either in categories or as knob names) to be extracted
+    are checked for being present in the ``knob_definitions``.
+    A TfsDataFrame is returned, containing the knob-definitions of the
+    requested knobs and the extracted value (or NAN if not successful).
 
     Args:
         ldb (pytimber.LoggingDB): The pytimber database.
-        knobs_definitions (KnobsDict): A mapping of all knob-names to KnobEntries.
+        knobs_definitions (pd.DataFrame): A mapping of all knob-names to KnobEntries.
         knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.
         time (datetime): The time, when to extract.
 
     Returns:
-        tfs.TfsDataframe: Contains all the extracted knobs.
-        When extraction was not possible, the value attribute of the respective entry is NAN
+        tfs.TfsDataframe: Contains all the extracted knobs, in columns containing
+        their madx-name, lsa-name, scaling and extracted value.
+        When extraction was not possible, the value of the respective entry is NAN.
 
     """
     check_for_undefined_knobs(knobs_definitions, knob_categories)
-    extracted_knobs = extract(ldb, knob_categories=knob_categories, time=time)
+    extracted_knobs = extract(ldb, knobs=knob_categories, time=time)
 
     knob_names = list(extracted_knobs.keys())
     knobs = tfs.TfsDataFrame(index=knob_names,
@@ -368,7 +375,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame
         outfile.write("\n")
 
 
-# Knobs Dict -------------------------------------------------------------------
+# Knobs Definitions ------------------------------------------------------------
 
 def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path:
     """ Check which knobs-definition file is appropriate to take. """
@@ -390,8 +397,9 @@ def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path
 
 def load_knobs_definitions(file_path: Union[Path, str]) -> pd.DataFrame:
     """ Load the knobs-definition file and convert into a DataFrame.
-    Each line in this file should consist of four comma separated entries:
-    madx-name, lsa-name, scaling factor, knob-test value.
+    Each line in this file should consist of at least three comma separated
+    entries in the following order: madx-name, lsa-name, scaling factor.
+    Other columns are ignored.
     Alternatively, a TFS-file is also allowed, but needs to have the suffix ``.tfs``.
 
     Args:
@@ -408,7 +416,7 @@ def load_knobs_definitions(file_path: Union[Path, str]) -> pd.DataFrame:
         # parse csv file (the official way)
         converters = {Col.madx: str.strip, Col.lsa: str.strip}  # strip whitespaces
         dtypes = {Col.scaling: float}
-        names = list(converters.keys()) + list(dtypes.keys())
+        names = (Col.madx, Col.lsa, Col.scaling)
         df = pd.read_csv(file_path,
                          comment="#",
                          usecols=list(range(len(names))),  # only read the first columns
