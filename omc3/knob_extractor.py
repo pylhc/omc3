@@ -302,7 +302,7 @@ def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
         time (datetime): The time, when to extract.
 
     Returns:
-        pd.Dataframe: Contains all the extracted knobs.
+        tfs.TfsDataframe: Contains all the extracted knobs.
         When extraction was not possible, the value attribute of the respective entry is NAN
 
     """
@@ -325,7 +325,7 @@ def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
 
 def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame):
     """ Takes the collected knobs and writes them out into a text-file. """
-    collected_knobs = collected_knobs.copy()  # to not modify the return df
+    collected_knobs = collected_knobs.copy()  # to not modify the df
 
     # Sort the knobs by category
     category_knobs = {}
@@ -391,17 +391,20 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> pd.DataFrame:
     else:
         # parse csv file (the official way)
         converters = {Col.madx: str.strip, Col.lsa: str.strip}  # strip whitespaces
-        dtypes = {Col.scaling: float, "test": float}
+        dtypes = {Col.scaling: float}
+        names = list(converters.keys()) + list(dtypes.keys())
         df = pd.read_csv(file_path,
                          comment="#",
-                         names=list(converters.keys()) + list(dtypes.keys()),
+                         columns=list(range(len(names))),  # only read the first columns
+                         names=names,
                          dtype=dtypes,
                          converters=converters)
     return _to_knobs_dataframe(df)
 
 
 def _to_knobs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    """ Converts a DataFrame into the required Dictionary structure.
+    """ Adapts a DataFrame to the conventions used here:
+    StateTracker variable name as index, all columns lower-case.
 
     Args:
         df (pd.DataFrame): DataFrame containing at least the columns
