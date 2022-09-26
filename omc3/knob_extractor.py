@@ -259,7 +259,7 @@ def extract(ldb, knobs: Sequence[str], time: datetime) -> Dict[str, float]:
 
     Returns:
         Dict[str, float]: Contains all the extracted knobs.
-        When extraction was not possible, the value attribute of the respective KnobEntry is still None
+        When extraction was not possible, the value is None.
 
     """
     LOGGER.info(f"---- EXTRACTING KNOBS @ {time} ----")
