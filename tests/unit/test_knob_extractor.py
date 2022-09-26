@@ -7,8 +7,8 @@ from typing import Dict, Tuple, List, Any
 import numpy as np
 import pandas as pd
 import pytest
-import tfs
 
+import tfs
 from generic_parser import EntryPoint
 from generic_parser.dict_parser import ArgumentError
 from omc3 import knob_extractor
@@ -18,7 +18,6 @@ from omc3.knob_extractor import (KNOB_CATEGORIES, _add_time_delta,
                                  get_params, Col, get_madx_command, Head,
                                  check_for_undefined_knobs, load_knobs_definitions
                                  )
-
 from tests.conftest import cli_args
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
@@ -162,7 +161,6 @@ class TestFullRun:
 
         for knob in knobs_undefined:
             assert knob in str(e)
-
 
 
 class TestKnobExtraction:

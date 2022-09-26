@@ -72,9 +72,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
-import tfs
 from dateutil.relativedelta import relativedelta
 
+import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 from omc3.utils.logging_tools import get_logger
