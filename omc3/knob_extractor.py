@@ -289,6 +289,27 @@ def extract(ldb, knob_categories: Sequence[str], time: datetime) -> Dict[str, fl
     return knobs
 
 
+def check_for_undefined_knobs(knobs_definitions: pd.DataFrame, knob_categories: Sequence[str]):
+    """ Check that all knobs are actually defined in the knobs-definitions.
+
+
+    Args:
+        knobs_definitions (KnobsDict): A mapping of all knob-names to KnobEntries.
+        knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.
+
+    Raises:
+        KeyError: If one or more of the knobs don't have a definition.
+
+    """
+    knob_names = [knob for category in knob_categories for knob in KNOB_CATEGORIES.get(category, [category])]
+    undefined_knobs = [knob for knob in knob_names if knob not in knobs_definitions.index]
+    if undefined_knobs:
+        raise KeyError(
+            "The following knob(s) could not be found "
+            f"in the knob-definitions: '{', '.join(undefined_knobs)}'"
+        )
+
+
 def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
                         knob_categories: Sequence[str],
                         time: datetime) -> tfs.TfsDataFrame:
@@ -306,13 +327,8 @@ def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
         When extraction was not possible, the value attribute of the respective entry is NAN
 
     """
+    check_for_undefined_knobs(knobs_definitions, knob_categories)
     extracted_knobs = extract(ldb, knob_categories=knob_categories, time=time)
-    undefined_knobs = [knob for knob in extracted_knobs if knob not in knobs_definitions.index]
-    if undefined_knobs:
-        raise KeyError(
-            "The following knob(s) could not be found "
-            f"in the knob-definitions: '{', '.join(undefined_knobs)}'"
-        )
 
     knob_names = list(extracted_knobs.keys())
     knobs = tfs.TfsDataFrame(index=knob_names,
@@ -372,8 +388,8 @@ def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path
     raise FileNotFoundError("None of the knobs-definition files are available.")
 
 
-def _load_knobs_dict(file_path: Union[Path, str]) -> pd.DataFrame:
-    """ Load the knobs-definition file and convert into KnobsDict.
+def load_knobs_definitions(file_path: Union[Path, str]) -> pd.DataFrame:
+    """ Load the knobs-definition file and convert into a DataFrame.
     Each line in this file should consist of four comma separated entries:
     madx-name, lsa-name, scaling factor, knob-test value.
     Alternatively, a TFS-file is also allowed, but needs to have the suffix ``.tfs``.
@@ -395,7 +411,7 @@ def _load_knobs_dict(file_path: Union[Path, str]) -> pd.DataFrame:
         names = list(converters.keys()) + list(dtypes.keys())
         df = pd.read_csv(file_path,
                          comment="#",
-                         columns=list(range(len(names))),  # only read the first columns
+                         usecols=list(range(len(names))),  # only read the first columns
                          names=names,
                          dtype=dtypes,
                          converters=converters)
@@ -428,7 +444,7 @@ def _parse_knobs_defintions(knobs_def_input: Optional[Union[Path, str, pd.DataFr
 
     # input points to a file or is None
     knobs_def_file = _get_knobs_def_file(knobs_def_input)
-    return _load_knobs_dict(knobs_def_file)
+    return load_knobs_definitions(knobs_def_file)
 
 
 def get_madx_command(knob_data: pd.Series) -> str:

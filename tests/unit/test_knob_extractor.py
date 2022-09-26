@@ -15,7 +15,8 @@ from omc3 import knob_extractor
 from omc3.knob_extractor import (KNOB_CATEGORIES, _add_time_delta,
                                  _extract_and_gather, _parse_knobs_defintions,
                                  _parse_time, _write_knobsfile, lsa2name, main,
-                                 get_params, Col, get_madx_command, Head
+                                 get_params, Col, get_madx_command, Head,
+                                 check_for_undefined_knobs, load_knobs_definitions
                                  )
 
 from tests.conftest import cli_args
@@ -122,7 +123,7 @@ class TestFullRun:
         assert "The State of the affairs" in caplog.text
 
     @pytest.mark.basic
-    def test_knob_not_defined(self, knob_definitions, monkeypatch):
+    def test_knob_not_defined_run(self, knob_definitions, monkeypatch):
         # Mock Pytimber ---
         class MyLDB:
             def __init__(self, *args, **kwargs):
@@ -130,18 +131,38 @@ class TestFullRun:
 
             @staticmethod
             def get(key, time):
-                return {key: [[478973], [343.343]]}
+                raise ArgumentError("Got past the KnobCheck!")
+                # return {key: [[478973], [343.343]]}
 
         class MockTimber:
             LoggingDB = MyLDB
 
         monkeypatch.setattr(knob_extractor, "pytimber", MockTimber())
+        knob_definitions_df = load_knobs_definitions(knob_definitions)
 
-        # run ---
-        knob_name = "non_existent_knob"
+        # run ------------------------------------------------------------------
+        knobs_undefined = ["non_existent_knob", "other_knob"]
+        knobs_defined = knob_definitions_df.index.tolist()
+
+        # undefined only ---
         with pytest.raises(KeyError) as e:
-            main(knob_definitions=knob_definitions, knobs=[knob_name])
-        assert knob_name in str(e)
+            main(knob_definitions=knob_definitions, knobs=knobs_undefined)
+
+        for knob in knobs_undefined:
+            assert knob in str(e)
+
+        # defined only ---
+        with pytest.raises(ArgumentError) as e:
+            main(knob_definitions=knob_definitions, knobs=knobs_defined)
+        assert "KnobCheck" in str(e)  # see mock Pytimber above
+
+        # both ---
+        with pytest.raises(KeyError) as e:
+            main(knob_definitions=knob_definitions, knobs=knobs_undefined+knobs_defined)
+
+        for knob in knobs_undefined:
+            assert knob in str(e)
+
 
 
 class TestKnobExtraction:
@@ -229,6 +250,35 @@ class TestIO:
         assert len(read_as_dict) == len(knobs_defs)
         for _, entry in knobs_defs.iterrows():
             assert read_as_dict[entry.madx] == entry[Col.value] * entry[Col.scaling]
+
+    @pytest.mark.basic
+    def test_knob_not_defined(self, knob_definitions, monkeypatch):
+        knob_definitions_df = load_knobs_definitions(knob_definitions)
+
+        # run ------------------------------------------------------------------
+        knobs_undefined = ["this_knob_does_not_exist", "Knobby_McKnobface"]
+        knobs_defined = knob_definitions_df.index.tolist()
+        knob_categories = list(KNOB_CATEGORIES.keys())
+
+        # undefined only ---
+        with pytest.raises(KeyError) as e:
+            check_for_undefined_knobs(knob_definitions_df, knobs_undefined)
+
+        for knob in knobs_undefined:
+            assert knob in str(e)
+
+        # defined only ---
+            check_for_undefined_knobs(knob_definitions_df, knobs_defined)
+            check_for_undefined_knobs(knob_definitions_df, knob_categories)
+            check_for_undefined_knobs(knob_definitions_df, knobs_defined + knob_categories)
+
+        # all ---
+        with pytest.raises(KeyError) as e:
+            check_for_undefined_knobs(knob_definitions_df,
+                                      knob_categories + knobs_undefined + knobs_defined)
+
+        for knob in knobs_undefined:
+            assert knob in str(e)
 
 
 class TestTime:
