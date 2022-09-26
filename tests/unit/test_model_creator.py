@@ -119,6 +119,28 @@ def test_lhc_creation_nominal_driven(tmp_path):
 
 
 @pytest.mark.basic
+@pytest.mark.parametrize(
+    "test_year, uses_ats, uses_run3", 
+    [("2012", False, False), ("2018", True, False), ("2022", False, True), ("hllhc1.3", False, False)]
+)
+def test_lhc_creation_use_ats_and_run3_macros(test_year, uses_ats, uses_run3):
+    accel_opt = dict(
+        accel="lhc",
+        year=test_year,
+        beam=1,
+        nat_tunes=[0.28, 0.31],
+        drv_tunes=[0.27, 0.332],
+        driven_excitation="acd",
+        dpp=0.0,
+        energy=6.5,
+        modifiers=[COMP_MODEL / "opticsfile.24_ctpps2"],
+    )
+    accel = get_accelerator(**accel_opt)
+    assert accel._uses_ats_knobs() is uses_ats
+    assert accel._uses_run3_macros() is uses_run3
+
+
+@pytest.mark.basic
 def test_lhc_creation_nominal_free(tmp_path):
     accel_opt = dict(
         accel="lhc",

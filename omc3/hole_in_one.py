@@ -204,6 +204,11 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--window**
         Choices: ``('rectangle', 'welch', 'triangle', 'hann', 'hamming', 'nuttal3', 'nuttal4')``
         Default: ``hann``
+      - **resonances** *(int)*: Maximum magnet order of resonance lines to calculate.
+
+        Flags: **--resonances**
+        Choices: ``(2 <= n <= 8)``
+        Default: ``4``
 
 
     Optics Kwargs:
@@ -232,11 +237,23 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--coupling_method**
         Choices: ``(0, 1, 2)``
         Default: ``2``
+      - **coupling_pairing**: Pairing mode for 2 BPM coupling method. If 0 is given, omc3 
+        will try to determine the best candidate. If a number n>=1 is given, then some BPMs are 
+        skipped and the n-th following BPM downstream is used for the pairing.
+
+        Flags: **--coupling_pairing**
+        Choices: ``(0, n>=1)``
+        Default: ``0``.
       - **nonlinear**: Calculate higher order RDTs or CRDT
 
         Flags: **--nonlinear**
         Choices: ``(rdt, crdt)``
         Default: ``None``
+      - **rdt_magnet_order**: Maximum magnet order for RDTs calculation if --nonlinear is given
+
+        Flags: **--rdt_magnet_order**
+        Choices: ``(2 <= n <= 8)``
+        Default: ``4``
       - **only_coupling**: Calculate only coupling.
 
         Flags: **--only_coupling**
@@ -405,6 +422,9 @@ def _harpy_entrypoint(params):
         options.wrong_polarity_bpms = []
     if options.is_free_kick:
         options.window = "rectangle"
+    if not 2 <= options.resonances <= 8:
+        raise AttributeError("The magnet order for resonance lines calculation should be between 2 and 8 (inclusive).")
+
     return options, rest
 
 
@@ -422,7 +442,7 @@ def harpy_params():
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output.")
     params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],
-                         choices=list(tbt.io.DATA_READERS.keys()),
+                         choices=list(tbt.io.TBT_MODULES.keys()),
                          help="Choose the datatype from which to import. ")
 
     # Cleaning parameters
@@ -490,11 +510,18 @@ def harpy_params():
                               "is up to 2 ** output_bits (maximal in case full spectra is output). "
                               "There is one pair (with maximal amplitude of complex coefficient) "
                               "per interval of size 2 ** (- output_bits - 1).")
+    params.add_parameter(name="resonances", type=int, default=HARPY_DEFAULTS["resonances"],
+                        help="Maximum magnet order of resonance lines to calculate.")
     return params
 
 
 def _optics_entrypoint(params):
-    return EntryPoint(optics_params(), strict=False).parse(params)
+    options, rest = EntryPoint(optics_params(), strict=False).parse(params)
+    
+    if "rdt" in options.nonlinear and not 2 <= options.rdt_magnet_order <= 8:
+        raise AttributeError("The magnet order for RDT calculation should be between 2 and 8 (inclusive).")
+
+    return options, rest
 
 
 def optics_params():
@@ -508,6 +535,11 @@ def optics_params():
     params.add_parameter(name="coupling_method", type=int,
                          choices=(0, 1, 2), default=OPTICS_DEFAULTS["coupling_method"],
                          help="Analysis option for coupling: disabled, 1 BPM or 2 BPMs method")
+    params.add_parameter(name="coupling_pairing", type=int,
+                         default=OPTICS_DEFAULTS["coupling_pairing"],
+                         help="Pairing mode for 2 BPM coupling method. If 0 is given, omc3 will try to "
+                              "determine the best candidate. If a number n>=1 is given, then some BPMs are skipped "
+                              "and the n-th following BPM downstream is used for the pairing.")
     params.add_parameter(name="range_of_bpms", type=int,
                          choices=(5, 7, 9, 11, 13, 15),  default=OPTICS_DEFAULTS["range_of_bpms"],
                          help="Range of BPMs for beta from phase calculation")
@@ -517,6 +549,8 @@ def optics_params():
     params.add_parameter(name="nonlinear", nargs='*', default=[],
                          choices=('rdt', 'crdt'),
                          help="Choose which rdt analysis is conducted.")
+    params.add_parameter(name="rdt_magnet_order", type=int, default=OPTICS_DEFAULTS["rdt_magnet_order"],
+                         help="Maximum magnet order for the RDT calculation.")
     params.add_parameter(name="three_bpm_method", action="store_true",
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")
@@ -548,13 +582,16 @@ HARPY_DEFAULTS = {
     "turn_bits": 20,
     "output_bits": 12,
     "to_write": ["lin", "bpm_summary"],
-    "tbt_datatype": "lhc"
+    "tbt_datatype": "lhc",
+    "resonances": 4,
 }
 
 OPTICS_DEFAULTS = {
         "coupling_method": 2,
+        "coupling_pairing": 0,
         "range_of_bpms": 11,
         "compensation": "model",
+        "rdt_magnet_order": 4,
 }
 
 
