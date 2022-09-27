@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.6.2 documentation</title>
+  <title>Model &mdash; omc3 0.6.3 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -17,6 +17,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -47,37 +48,96 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/analysis.html">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#omc3.hole_in_one.hole_in_one_entrypoint"><code class="docutils literal notranslate"><span class="pre">hole_in_one_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections"><code class="docutils literal notranslate"><span class="pre">analyse_with_bbq_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.double_action_analysis"><code class="docutils literal notranslate"><span class="pre">double_action_analysis()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.get_approx_bbq_interval"><code class="docutils literal notranslate"><span class="pre">get_approx_bbq_interval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.get_kick_and_bbq_df"><code class="docutils literal notranslate"><span class="pre">get_kick_and_bbq_df()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.single_action_analysis"><code class="docutils literal notranslate"><span class="pre">single_action_analysis()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#omc3.run_kmod.analyse_kmod"><code class="docutils literal notranslate"><span class="pre">analyse_kmod()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.tbt_converter.converter_entrypoint"><code class="docutils literal notranslate"><span class="pre">converter_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.model_creator.create_instance_and_model"><code class="docutils literal notranslate"><span class="pre">create_instance_and_model()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.Col"><code class="docutils literal notranslate"><span class="pre">Col</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.Head"><code class="docutils literal notranslate"><span class="pre">Head</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.check_for_undefined_knobs"><code class="docutils literal notranslate"><span class="pre">check_for_undefined_knobs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.extract"><code class="docutils literal notranslate"><span class="pre">extract()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.load_knobs_definitions"><code class="docutils literal notranslate"><span class="pre">load_knobs_definitions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.lsa2name"><code class="docutils literal notranslate"><span class="pre">lsa2name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.knob_extractor.name2lsa"><code class="docutils literal notranslate"><span class="pre">name2lsa()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.madx_wrapper.MadxError"><code class="docutils literal notranslate"><span class="pre">MadxError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.madx_wrapper.run_file"><code class="docutils literal notranslate"><span class="pre">run_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#omc3.madx_wrapper.run_string"><code class="docutils literal notranslate"><span class="pre">run_string()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/plotting.html">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_tfs.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr"><code class="docutils literal notranslate"><span class="pre">plot_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr_3d"><code class="docutils literal notranslate"><span class="pre">plot_odr_3d()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_bbq.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude"><code class="docutils literal notranslate"><span class="pre">convert_old_beta_from_amplitude()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase"><code class="docutils literal notranslate"><span class="pre">convert_old_beta_from_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit"><code class="docutils literal notranslate"><span class="pre">convert_old_closed_orbit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_coupling"><code class="docutils literal notranslate"><span class="pre">convert_old_coupling()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new"><code class="docutils literal notranslate"><span class="pre">convert_old_directory_to_new()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion"><code class="docutils literal notranslate"><span class="pre">convert_old_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion"><code class="docutils literal notranslate"><span class="pre">convert_old_normalised_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_phase"><code class="docutils literal notranslate"><span class="pre">convert_old_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase"><code class="docutils literal notranslate"><span class="pre">convert_old_total_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.converter_entrypoint"><code class="docutils literal notranslate"><span class="pre">converter_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs"><code class="docutils literal notranslate"><span class="pre">get_kmod_ip_subdirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.get_lumi_imbalance"><code class="docutils literal notranslate"><span class="pre">get_lumi_imbalance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.merge_kmod_results"><code class="docutils literal notranslate"><span class="pre">merge_kmod_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.merge_tfs"><code class="docutils literal notranslate"><span class="pre">merge_tfs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.append_model"><code class="docutils literal notranslate"><span class="pre">append_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_beta"><code class="docutils literal notranslate"><span class="pre">create_beta()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_coupling"><code class="docutils literal notranslate"><span class="pre">create_coupling()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_dispersion"><code class="docutils literal notranslate"><span class="pre">create_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_measurement"><code class="docutils literal notranslate"><span class="pre">create_measurement()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_normalized_dispersion"><code class="docutils literal notranslate"><span class="pre">create_normalized_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_phase"><code class="docutils literal notranslate"><span class="pre">create_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_phase_advance"><code class="docutils literal notranslate"><span class="pre">create_phase_advance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_total_phase"><code class="docutils literal notranslate"><span class="pre">create_total_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.generate"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.linfile_clean.clean_columns"><code class="docutils literal notranslate"><span class="pre">clean_columns()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.linfile_clean.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#omc3.scripts.linfile_clean.restore_files"><code class="docutils literal notranslate"><span class="pre">restore_files()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -86,91 +146,291 @@
 <li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.filters.filter_measurement"><code class="docutils literal notranslate"><span class="pre">filter_measurement()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.filters.filter_response_index"><code class="docutils literal notranslate"><span class="pre">filter_response_index()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.handler.correct"><code class="docutils literal notranslate"><span class="pre">correct()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.handler.get_measurement_data"><code class="docutils literal notranslate"><span class="pre">get_measurement_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.model_appenders.add_coupling_to_model"><code class="docutils literal notranslate"><span class="pre">add_coupling_to_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.model_appenders.add_differences_to_model_to_measurements"><code class="docutils literal notranslate"><span class="pre">add_differences_to_model_to_measurements()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.model_diff.diff_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">diff_twiss_parameters()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_madx.create_fullresponse"><code class="docutils literal notranslate"><span class="pre">create_fullresponse()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_twiss.TwissResponse"><code class="docutils literal notranslate"><span class="pre">TwissResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_twiss.create_response"><code class="docutils literal notranslate"><span class="pre">create_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_twiss.dphi"><code class="docutils literal notranslate"><span class="pre">dphi()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_twiss.get_phase_advances"><code class="docutils literal notranslate"><span class="pre">get_phase_advances()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_twiss.response_add"><code class="docutils literal notranslate"><span class="pre">response_add()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_twiss.tau"><code class="docutils literal notranslate"><span class="pre">tau()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_twiss.upper"><code class="docutils literal notranslate"><span class="pre">upper()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.sequence_evaluation.check_varmap_file"><code class="docutils literal notranslate"><span class="pre">check_varmap_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.sequence_evaluation.evaluate_for_variables"><code class="docutils literal notranslate"><span class="pre">evaluate_for_variables()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-matrix-io">Response Matrix IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_io.read_fullresponse"><code class="docutils literal notranslate"><span class="pre">read_fullresponse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_io.read_varmap"><code class="docutils literal notranslate"><span class="pre">read_varmap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_io.write_fullresponse"><code class="docutils literal notranslate"><span class="pre">write_fullresponse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.correction.response_io.write_varmap"><code class="docutils literal notranslate"><span class="pre">write_varmap()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#omc3.definitions.formats.get_config_filename"><code class="docutils literal notranslate"><span class="pre">get_config_filename()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="harpy.html">Harpy</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.clean.clean"><code class="docutils literal notranslate"><span class="pre">clean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.clean.svd_decomposition"><code class="docutils literal notranslate"><span class="pre">svd_decomposition()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="harpy.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.frequency.clean_by_tune"><code class="docutils literal notranslate"><span class="pre">clean_by_tune()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.frequency.estimate_tunes"><code class="docutils literal notranslate"><span class="pre">estimate_tunes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.frequency.find_resonances"><code class="docutils literal notranslate"><span class="pre">find_resonances()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.frequency.get_freq_mask"><code class="docutils literal notranslate"><span class="pre">get_freq_mask()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.frequency.harpy_per_plane"><code class="docutils literal notranslate"><span class="pre">harpy_per_plane()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.frequency.windowed_padded_rfft"><code class="docutils literal notranslate"><span class="pre">windowed_padded_rfft()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.frequency.windowing"><code class="docutils literal notranslate"><span class="pre">windowing()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.handler.run_per_bunch"><code class="docutils literal notranslate"><span class="pre">run_per_bunch()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="harpy.html#kicker">Kicker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#omc3.harpy.kicker.phase_correction"><code class="docutils literal notranslate"><span class="pre">phase_correction()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="kmod.html">Kmod</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#omc3.kmod.analysis.average_beta_from_Tune"><code class="docutils literal notranslate"><span class="pre">average_beta_from_Tune()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#omc3.kmod.analysis.get_phase_from_model"><code class="docutils literal notranslate"><span class="pre">get_phase_from_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="kmod.html#omc3.kmod.analysis.return_sign_for_err"><code class="docutils literal notranslate"><span class="pre">return_sign_for_err()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="kmod.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kmod.html#helper">Helper</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.manager.get_accelerator"><code class="docutils literal notranslate"><span class="pre">get_accelerator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.manager.get_parsed_opt"><code class="docutils literal notranslate"><span class="pre">get_parsed_opt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.accelerator.AccElementTypes"><code class="docutils literal notranslate"><span class="pre">AccElementTypes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator"><code class="docutils literal notranslate"><span class="pre">Accelerator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.accelerator.AcceleratorDefinitionError"><code class="docutils literal notranslate"><span class="pre">AcceleratorDefinitionError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.accelerator.Element"><code class="docutils literal notranslate"><span class="pre">Element</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.accelerator.Variable"><code class="docutils literal notranslate"><span class="pre">Variable</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.esrf.Esrf"><code class="docutils literal notranslate"><span class="pre">Esrf</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc"><code class="docutils literal notranslate"><span class="pre">Lhc</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.ps.Ps"><code class="docutils literal notranslate"><span class="pre">Ps</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.psbooster.Psbooster"><code class="docutils literal notranslate"><span class="pre">Psbooster</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.skekb.SKekB"><code class="docutils literal notranslate"><span class="pre">SKekB</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.iota.Iota"><code class="docutils literal notranslate"><span class="pre">Iota</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.accelerators.petra.Petra"><code class="docutils literal notranslate"><span class="pre">Petra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator"><code class="docutils literal notranslate"><span class="pre">LhcBestKnowledgeCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator"><code class="docutils literal notranslate"><span class="pre">LhcCouplingCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator"><code class="docutils literal notranslate"><span class="pre">LhcModelCreator</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator"><code class="docutils literal notranslate"><span class="pre">PsModelCreator</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator"><code class="docutils literal notranslate"><span class="pre">PsboosterModelCreator</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.measure_optics.InputFiles"><code class="docutils literal notranslate"><span class="pre">InputFiles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.measure_optics.chromatic_beating"><code class="docutils literal notranslate"><span class="pre">chromatic_beating()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.measure_optics.measure_optics"><code class="docutils literal notranslate"><span class="pre">measure_optics()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.beta_from_amplitude.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination"><code class="docutils literal notranslate"><span class="pre">calculate_beta_alpha_from_single_combination()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.beta_from_phase.n_bpm_method"><code class="docutils literal notranslate"><span class="pre">n_bpm_method()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.beta_from_phase.three_bpm_method"><code class="docutils literal notranslate"><span class="pre">three_bpm_method()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#chromatic">Chromatic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#combined-rdts">Combined RDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.dispersion.calculate_dispersion"><code class="docutils literal notranslate"><span class="pre">calculate_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.dispersion.calculate_normalised_dispersion"><code class="docutils literal notranslate"><span class="pre">calculate_normalised_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.dispersion.calculate_orbit"><code class="docutils literal notranslate"><span class="pre">calculate_orbit()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.dpp.arrange_dpps"><code class="docutils literal notranslate"><span class="pre">arrange_dpps()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#isolation-forest">Isolation Forest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.interaction_point.betastar_from_phase"><code class="docutils literal notranslate"><span class="pre">betastar_from_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.interaction_point.phase_to_betastar"><code class="docutils literal notranslate"><span class="pre">phase_to_betastar()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.kick.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.phase.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.rdt.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.rdt.complex_secondary_lines"><code class="docutils literal notranslate"><span class="pre">complex_secondary_lines()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.rdt.get_linearized_problem"><code class="docutils literal notranslate"><span class="pre">get_linearized_problem()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.ang_interval_check"><code class="docutils literal notranslate"><span class="pre">ang_interval_check()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.ang_sum"><code class="docutils literal notranslate"><span class="pre">ang_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_ang_diff"><code class="docutils literal notranslate"><span class="pre">df_ang_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_diff"><code class="docutils literal notranslate"><span class="pre">df_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_diff_with_err"><code class="docutils literal notranslate"><span class="pre">df_diff_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_err_sum"><code class="docutils literal notranslate"><span class="pre">df_err_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_prod"><code class="docutils literal notranslate"><span class="pre">df_prod()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_prod_with_err"><code class="docutils literal notranslate"><span class="pre">df_prod_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio"><code class="docutils literal notranslate"><span class="pre">df_ratio()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio_with_err"><code class="docutils literal notranslate"><span class="pre">df_ratio_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff"><code class="docutils literal notranslate"><span class="pre">df_rel_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff_with_err"><code class="docutils literal notranslate"><span class="pre">df_rel_diff_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_err_sum"><code class="docutils literal notranslate"><span class="pre">df_rel_err_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_sum"><code class="docutils literal notranslate"><span class="pre">df_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.toolbox.df_sum_with_err"><code class="docutils literal notranslate"><span class="pre">df_sum_with_err()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#tune">Tune</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#omc3.optics_measurements.tune.TuneDict"><code class="docutils literal notranslate"><span class="pre">TuneDict</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#spectrum-plots">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.AmpDetData"><code class="docutils literal notranslate"><span class="pre">AmpDetData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.FakeOdrOutput"><code class="docutils literal notranslate"><span class="pre">FakeOdrOutput</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_action_col"><code class="docutils literal notranslate"><span class="pre">get_action_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_action_err_col"><code class="docutils literal notranslate"><span class="pre">get_action_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_action_label"><code class="docutils literal notranslate"><span class="pre">get_action_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_bbq_col"><code class="docutils literal notranslate"><span class="pre">get_bbq_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_corr_natq_err_col"><code class="docutils literal notranslate"><span class="pre">get_corr_natq_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_detuning_exponent_for_order"><code class="docutils literal notranslate"><span class="pre">get_detuning_exponent_for_order()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_fine_cut_header"><code class="docutils literal notranslate"><span class="pre">get_fine_cut_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_fine_window_header"><code class="docutils literal notranslate"><span class="pre">get_fine_window_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_mav_col"><code class="docutils literal notranslate"><span class="pre">get_mav_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_mav_err_col"><code class="docutils literal notranslate"><span class="pre">get_mav_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_mav_window_header"><code class="docutils literal notranslate"><span class="pre">get_mav_window_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_max_tune_header"><code class="docutils literal notranslate"><span class="pre">get_max_tune_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_min_tune_header"><code class="docutils literal notranslate"><span class="pre">get_min_tune_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_natq_col"><code class="docutils literal notranslate"><span class="pre">get_natq_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_natq_corr_col"><code class="docutils literal notranslate"><span class="pre">get_natq_corr_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_natq_err_col"><code class="docutils literal notranslate"><span class="pre">get_natq_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_coeff"><code class="docutils literal notranslate"><span class="pre">get_odr_header_coeff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_coeff_corrected"><code class="docutils literal notranslate"><span class="pre">get_odr_header_coeff_corrected()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_err_coeff"><code class="docutils literal notranslate"><span class="pre">get_odr_header_err_coeff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_err_coeff_corrected"><code class="docutils literal notranslate"><span class="pre">get_odr_header_err_coeff_corrected()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_outlier_limit_header"><code class="docutils literal notranslate"><span class="pre">get_outlier_limit_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_tend_head"><code class="docutils literal notranslate"><span class="pre">get_tend_head()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_timber_bbq_key"><code class="docutils literal notranslate"><span class="pre">get_timber_bbq_key()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_time_col"><code class="docutils literal notranslate"><span class="pre">get_time_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_tstart_head"><code class="docutils literal notranslate"><span class="pre">get_tstart_head()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_tune_label"><code class="docutils literal notranslate"><span class="pre">get_tune_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.constants.get_used_in_mav_col"><code class="docutils literal notranslate"><span class="pre">get_used_in_mav_col()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.bbq_tools.MinMaxFilterOpt"><code class="docutils literal notranslate"><span class="pre">MinMaxFilterOpt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.bbq_tools.OutlierFilterOpt"><code class="docutils literal notranslate"><span class="pre">OutlierFilterOpt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average"><code class="docutils literal notranslate"><span class="pre">clean_outliers_moving_average()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average"><code class="docutils literal notranslate"><span class="pre">get_moving_average()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.fitting_tools.do_2d_kicks_odr"><code class="docutils literal notranslate"><span class="pre">do_2d_kicks_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.fitting_tools.do_odr"><code class="docutils literal notranslate"><span class="pre">do_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.fitting_tools.first_order_detuning_2d"><code class="docutils literal notranslate"><span class="pre">first_order_detuning_2d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jacobian"><code class="docutils literal notranslate"><span class="pre">first_order_detuning_2d_jacobian()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.fitting_tools.get_poly_fun"><code class="docutils literal notranslate"><span class="pre">get_poly_fun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.fitting_tools.map_odr_fit_to_planes"><code class="docutils literal notranslate"><span class="pre">map_odr_fit_to_planes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_bbq_data"><code class="docutils literal notranslate"><span class="pre">add_bbq_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes"><code class="docutils literal notranslate"><span class="pre">add_corrected_natural_tunes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_moving_average"><code class="docutils literal notranslate"><span class="pre">add_moving_average()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_odr"><code class="docutils literal notranslate"><span class="pre">add_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickdataframe"><code class="docutils literal notranslate"><span class="pre">convert_bbs_kickdataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickfile"><code class="docutils literal notranslate"><span class="pre">convert_bbs_kickfile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data"><code class="docutils literal notranslate"><span class="pre">get_ampdet_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_odr_data"><code class="docutils literal notranslate"><span class="pre">get_odr_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.timber_extract.extract_between_times"><code class="docutils literal notranslate"><span class="pre">extract_between_times()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.timber_extract.get_fill_times"><code class="docutils literal notranslate"><span class="pre">get_fill_times()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables"><code class="docutils literal notranslate"><span class="pre">get_tune_and_coupling_variables()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs"><code class="docutils literal notranslate"><span class="pre">lhc_fill_to_tfs()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.contexts.log_out"><code class="docutils literal notranslate"><span class="pre">log_out()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.contexts.silence"><code class="docutils literal notranslate"><span class="pre">silence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.contexts.suppress_warnings"><code class="docutils literal notranslate"><span class="pre">suppress_warnings()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.contexts.timeit"><code class="docutils literal notranslate"><span class="pre">timeit()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.PathOrStr"><code class="docutils literal notranslate"><span class="pre">PathOrStr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.PathOrStrOrDataFrame"><code class="docutils literal notranslate"><span class="pre">PathOrStrOrDataFrame</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.UnionPathStr"><code class="docutils literal notranslate"><span class="pre">UnionPathStr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.UnionPathStrInt"><code class="docutils literal notranslate"><span class="pre">UnionPathStrInt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.convert_paths_in_dict_to_strings"><code class="docutils literal notranslate"><span class="pre">convert_paths_in_dict_to_strings()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.TempFile"><code class="docutils literal notranslate"><span class="pre">TempFile</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.TempStringLogger"><code class="docutils literal notranslate"><span class="pre">TempStringLogger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.add_module_handler"><code class="docutils literal notranslate"><span class="pre">add_module_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.add_root_handler"><code class="docutils literal notranslate"><span class="pre">add_root_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.file_handler"><code class="docutils literal notranslate"><span class="pre">file_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.getLogger"><code class="docutils literal notranslate"><span class="pre">getLogger()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.get_my_logger_name"><code class="docutils literal notranslate"><span class="pre">get_my_logger_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.list2str"><code class="docutils literal notranslate"><span class="pre">list2str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.log_pandas_settings_with_copy"><code class="docutils literal notranslate"><span class="pre">log_pandas_settings_with_copy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.logging_silence"><code class="docutils literal notranslate"><span class="pre">logging_silence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.odr_pprint"><code class="docutils literal notranslate"><span class="pre">odr_pprint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.stream_handler"><code class="docutils literal notranslate"><span class="pre">stream_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.logging_tools.unformatted_console_logging"><code class="docutils literal notranslate"><span class="pre">unformatted_console_logging()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.mock.CERNNetworkMockPackage"><code class="docutils literal notranslate"><span class="pre">CERNNetworkMockPackage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.mock.cern_network_import"><code class="docutils literal notranslate"><span class="pre">cern_network_import()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.outliers.get_filter_mask"><code class="docutils literal notranslate"><span class="pre">get_filter_mask()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.circular_error"><code class="docutils literal notranslate"><span class="pre">circular_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.weighted_mean"><code class="docutils literal notranslate"><span class="pre">weighted_mean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.weighted_nanmean"><code class="docutils literal notranslate"><span class="pre">weighted_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.weighted_nanrms"><code class="docutils literal notranslate"><span class="pre">weighted_nanrms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.weighted_rms"><code class="docutils literal notranslate"><span class="pre">weighted_rms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.stats.weights_from_errors"><code class="docutils literal notranslate"><span class="pre">weights_from_errors()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#time-tools">Time Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.AccDatetime"><code class="docutils literal notranslate"><span class="pre">AccDatetime</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.AcceleratorDatetime"><code class="docutils literal notranslate"><span class="pre">AcceleratorDatetime</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.CERNDatetime"><code class="docutils literal notranslate"><span class="pre">CERNDatetime</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.cern_utc_string_to_utc"><code class="docutils literal notranslate"><span class="pre">cern_utc_string_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.check_tz"><code class="docutils literal notranslate"><span class="pre">check_tz()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.get_cern_time_format"><code class="docutils literal notranslate"><span class="pre">get_cern_time_format()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.get_cern_timezone"><code class="docutils literal notranslate"><span class="pre">get_cern_timezone()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.get_readable_time_format"><code class="docutils literal notranslate"><span class="pre">get_readable_time_format()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.local_string_to_utc"><code class="docutils literal notranslate"><span class="pre">local_string_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.local_to_utc"><code class="docutils literal notranslate"><span class="pre">local_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.utc_now"><code class="docutils literal notranslate"><span class="pre">utc_now()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.utc_string_to_utc"><code class="docutils literal notranslate"><span class="pre">utc_string_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#omc3.utils.time_tools.utc_to_local"><code class="docutils literal notranslate"><span class="pre">utc_to_local()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -200,13 +460,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-omc3.model.manager">
-<span id="model"></span><h1>Model<a class="headerlink" href="#module-omc3.model.manager" title="Permalink to this heading"></a></h1>
+  <section id="model">
+<h1>Model<a class="headerlink" href="#model" title="Permalink to this heading"></a></h1>
 <section id="manager">
 <h2>Manager<a class="headerlink" href="#manager" title="Permalink to this heading"></a></h2>
 <p>This module provides high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">model</span></code>.
 It contains entrypoint wrappers to get accelerator classes or their instances.</p>
-<dl class="py function">
+</section>
+<span class="target" id="module-omc3.model.manager"></span><dl class="py function">
 <dt class="sig sig-object py" id="omc3.model.manager.get_accelerator">
 <span class="sig-prename descclassname"><span class="pre">omc3.model.manager.</span></span><span class="sig-name descname"><span class="pre">get_accelerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_accelerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.manager.get_accelerator" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the <cite>Accelerator</cite> instance of the desired accelerator, as given at the commandline.</p>
@@ -218,17 +479,17 @@ It contains entrypoint wrappers to get accelerator classes or their instances.</
 <dd><p>Get all accelerator related options as a <cite>dict</cite>.</p>
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.constants"></span><section id="constants">
+<section id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this heading"></a></h2>
 <p>This module provides high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">model</span></code>.
 Specific constants to be used in <code class="docutils literal notranslate"><span class="pre">model</span></code>, to help with consistency.</p>
 </section>
-<span class="target" id="module-omc3.model.accelerators.accelerator"></span><section id="accelerator">
+<span class="target" id="module-omc3.model.constants"></span><section id="accelerator">
 <h2>Accelerator<a class="headerlink" href="#accelerator" title="Permalink to this heading"></a></h2>
 <p>This module provides high-level classes to define most functionality of <code class="docutils literal notranslate"><span class="pre">model.accelerators</span></code>.
 It contains entrypoint the parent <cite>Accelerator</cite> class as well as other support classes.</p>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.accelerator"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.AccElementTypes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">AccElementTypes</span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AccElementTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="Permalink to this definition"></a></dt>
 <dd><p>Defines the strings for the element types <code class="docutils literal notranslate"><span class="pre">BPMS</span></code>, <code class="docutils literal notranslate"><span class="pre">MAGNETS</span></code> and <code class="docutils literal notranslate"><span class="pre">ARC_BPMS</span></code>.</p>
@@ -341,8 +602,7 @@ affects. These variables should be logical variables that have and effect in the
 modified.</p>
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.accelerators.esrf"></span><section id="esrf">
+<section id="esrf">
 <h2>ESRF<a class="headerlink" href="#esrf" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">ESRF</span></code> machine.</p>
 <dl>
@@ -394,13 +654,13 @@ modified.</p>
 </ul>
 </dd>
 </dl>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.esrf"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.esrf.Esrf">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.esrf.</span></span><span class="sig-name descname"><span class="pre">Esrf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/esrf.html#Esrf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.esrf.Esrf" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.accelerators.lhc"></span><section id="lhc">
+<section id="lhc">
 <h2>LHC<a class="headerlink" href="#lhc" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> collider.</p>
 <dl>
@@ -473,7 +733,8 @@ modified.</p>
 </ul>
 </dd>
 </dl>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.lhc"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.lhc.</span></span><span class="sig-name descname"><span class="pre">Lhc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for LHC-types.</p>
@@ -535,8 +796,7 @@ Will Raise an <code class="docutils literal notranslate"><span class="pre">Accel
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.accelerators.ps"></span><section id="ps">
+<section id="ps">
 <h2>PS<a class="headerlink" href="#ps" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PS</span></code> machine.</p>
 <dl>
@@ -588,7 +848,8 @@ Will Raise an <code class="docutils literal notranslate"><span class="pre">Accel
 </ul>
 </dd>
 </dl>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.ps"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.ps.</span></span><span class="sig-name descname"><span class="pre">Ps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for PS-types.</p>
@@ -633,8 +894,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.accelerators.psbooster"></span><section id="ps-booster">
+<section id="ps-booster">
 <h2>PS Booster<a class="headerlink" href="#ps-booster" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PSB</span></code> machine.</p>
 <dl>
@@ -692,7 +952,8 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </ul>
 </dd>
 </dl>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.psbooster"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.psbooster.</span></span><span class="sig-name descname"><span class="pre">Psbooster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for Psbooster-types.</p>
@@ -725,8 +986,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.accelerators.skekb"></span><section id="superkekb">
+<section id="superkekb">
 <h2>SuperKEKB<a class="headerlink" href="#superkekb" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">SuperKEKB</span></code> machine.</p>
 <dl>
@@ -787,7 +1047,8 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </ul>
 </dd>
 </dl>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.skekb"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.skekb.SKekB">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.skekb.</span></span><span class="sig-name descname"><span class="pre">SKekB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB" title="Permalink to this definition"></a></dt>
 <dd><p>KEK’s SuperKEKB accelerator.</p>
@@ -799,8 +1060,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.accelerators.iota"></span><section id="iota">
+<section id="iota">
 <h2>Iota<a class="headerlink" href="#iota" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">Iota</span></code> machine.</p>
 <dl>
@@ -858,7 +1118,8 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </ul>
 </dd>
 </dl>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.iota"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.iota.Iota">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.iota.</span></span><span class="sig-name descname"><span class="pre">Iota</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/iota.html#Iota"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.iota.Iota" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -869,12 +1130,12 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.accelerators.petra"></span><section id="petra">
+<section id="petra">
 <h2>PETRA<a class="headerlink" href="#petra" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PETRA</span></code> machine.
 Model creation not implemented yet.</p>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.accelerators.petra"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.petra.Petra">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.petra.</span></span><span class="sig-name descname"><span class="pre">Petra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -900,11 +1161,11 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.model_creators.lhc_model_creator"></span><section id="lhc-model-creator">
+<section id="lhc-model-creator">
 <h2>LHC Model Creator<a class="headerlink" href="#lhc-model-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">LHC</span></code>.</p>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.model_creators.lhc_model_creator"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcBestKnowledgeCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1007,11 +1268,11 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.model_creators.ps_model_creator"></span><section id="ps-model-creator">
+<section id="ps-model-creator">
 <h2>PS Model Creator<a class="headerlink" href="#ps-model-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PS</span></code>.</p>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.model_creators.ps_model_creator"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.ps_model_creator.PsModelCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.ps_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1063,11 +1324,11 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.model_creators.psbooster_model_creator"></span><section id="ps-booster-model-creator">
+<section id="ps-booster-model-creator">
 <h2>PS Booster Model Creator<a class="headerlink" href="#ps-booster-model-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PSB</span></code>.</p>
-<dl class="py class">
+</section>
+<span class="target" id="module-omc3.model.model_creators.psbooster_model_creator"></span><dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.psbooster_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsboosterModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1119,12 +1380,11 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 
 </dd></dl>
 
-</section>
-<span class="target" id="module-omc3.model.model_creators.segment_creator"></span><section id="segment-creator">
+<section id="segment-creator">
 <h2>Segment Creator<a class="headerlink" href="#segment-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of a <code class="docutils literal notranslate"><span class="pre">segment</span></code>.</p>
 </section>
-</section>
+<span class="target" id="module-omc3.model.model_creators.segment_creator"></span></section>
 
 
            </div>
