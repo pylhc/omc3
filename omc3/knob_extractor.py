@@ -95,7 +95,9 @@ STATE_VARIABLES: Dict[str, str] = {
     'beamProcess': 'Beam Process',
     'opticId': 'Optics ID',
     'hyperCycle': 'HyperCycle',
+    'secondsInBeamProcess ': 'Beam Process running (s)',
 }
+
 
 class Col:
     """ DataFrame Columns used in this script. """
