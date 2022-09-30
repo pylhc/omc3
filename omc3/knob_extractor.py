@@ -278,7 +278,7 @@ def get_state(ldb, time: datetime) -> Dict[str, str]:
     for variable, name in STATE_VARIABLES.items():
         tracker_variable = f"LhcStateTracker:State:{variable}"
         state = ldb.get(tracker_variable, time.timestamp())[tracker_variable][1][-1]
-        LOGGER.info(f"{name}: {state}")
+        LOGGER.info(f"{f'{name}:':<13s} {state}")
         state_dict[variable] = state
     return state_dict
 
