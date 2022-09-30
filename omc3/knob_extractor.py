@@ -298,7 +298,7 @@ def _get_state_as_df(state_dict: Dict[str, str], time: datetime) -> tfs.TfsDataF
     state_df = tfs.TfsDataFrame(index=list(STATE_VARIABLES.keys()),
                                 columns=[Col.value],
                                 headers={Head.time: time})
-    for name, value in state_dict:
+    for name, value in state_dict.items():
         state_df.loc[STATE_VARIABLES[name], Col.value] = value
     return state_df
 
