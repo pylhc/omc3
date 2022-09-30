@@ -1,5 +1,11 @@
 # OMC3 Changelog
 
+#### 2022-09-30 - v0.6.4
+
+- Added to `knob_extractor`:
+  - proper state extraction. 
+  - IP2 and IP8 separation/crossing variables.
+
 #### 2022-09-27 - v0.6.3
 
 - Pandafied `knob_extractor` internally and python output.
