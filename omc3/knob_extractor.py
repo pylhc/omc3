@@ -95,7 +95,7 @@ STATE_VARIABLES: Dict[str, str] = {
     'beamProcess': 'Beam Process',
     'opticId': 'Optics ID',
     'hyperCycle': 'HyperCycle',
-    'secondsInBeamProcess ': 'Beam Process running (s)',
+    # 'secondsInBeamProcess ': 'Beam Process running (s)',
 }
 
 
@@ -277,7 +277,7 @@ def get_state(ldb, time: datetime) -> Dict[str, str]:
     LOGGER.info(f"---- STATE @ {time} ----")
     for variable, name in STATE_VARIABLES.items():
         tracker_variable = f"LhcStateTracker:State:{variable}"
-        state = ldb.get(tracker_variable, time.timestamp())[tracker_variable][-1]
+        state = ldb.get(tracker_variable, time.timestamp())[tracker_variable][1][-1]
         LOGGER.info(f"{name}: {state}")
         state_dict[variable] = state
     return state_dict
