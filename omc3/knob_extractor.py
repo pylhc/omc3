@@ -295,10 +295,11 @@ def _get_state_as_df(state_dict: Dict[str, str], time: datetime) -> tfs.TfsDataF
     Returns:
         tfs.DataFrame: States packed into dataframe with readable index.
     """
-    state_df = tfs.TfsDataFrame(index=list(STATE_VARIABLES.keys()),
-                                columns=[Col.value],
+    state_df = tfs.TfsDataFrame(index=list(STATE_VARIABLES.values()),
+                                columns=[Col.value, Col.lsa],
                                 headers={Head.time: time})
     for name, value in state_dict.items():
+        state_df.loc[STATE_VARIABLES[name], Col.lsa] = name
         state_df.loc[STATE_VARIABLES[name], Col.value] = value
     return state_df
 
