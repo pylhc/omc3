@@ -1,5 +1,18 @@
 # OMC3 Changelog
 
+#### 2022-09-27 - v0.6.3
+
+- Pandafied `knob_extractor` internally and python output.
+
+#### 2022-09-22 - v0.6.2
+
+- Cleaned logging in `knob_extractor`
+
+#### 2022-09-21 - v0.6.1
+
+- Added: 
+  - tbt output datatype for converter.
+
 #### 2022-09-20 - v0.6.0
 
 - Added:
