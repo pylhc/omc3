@@ -72,9 +72,9 @@ def _get_params():
         help="If path fetcher is selected, this option sets the path",
     )
     params.add_parameter(
-        name="list_modifiers",
+        name="list_opticsfiles",
         action="store_true",
-        help="if selected, a list of valid modifier files is printed",
+        help="if selected, a list of valid optics files is printed",
     )
     params.add_parameter(name="show_help", action="store_true", help="instructs the subsequent modules to print a help message")
     return params
@@ -157,13 +157,15 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
 
-    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type]
+    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type]()
 
-    # now that the creator is initialised, we can ask for modifiers that are actually present using the fetcher we chose
+    # now that the creator is initialised, we can ask for modifiers that are actually present
+    # using the fetcher we chose
     if not creator.get_options(accel_inst, opt):
         return None
 
-    # the rest is really only the model creation itself we are not going to stop anymore to print help / info stuff
+    # the rest is really only the model creation itself we are not going to stop anymore tool
+    # print help / info stuff
     accel_inst.verify_object()
     require_param("outputdir", _get_params(), opt)
 

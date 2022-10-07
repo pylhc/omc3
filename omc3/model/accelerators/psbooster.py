@@ -85,6 +85,9 @@ class Psbooster(Accelerator):
     def get_parameters():
         params = super(Psbooster, Psbooster).get_parameters()
         params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
+        params.add_parameter(name="year", type=str, help="Optics tag.")
+        params.add_parameter(name="scenario", type=str, help="Scenario.")
+        params.add_parameter(name="cycle_point", type=str, help="Cycle Point.")
         return params
 
     def __init__(self, *args, **kwargs):
@@ -92,6 +95,11 @@ class Psbooster(Accelerator):
         opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
         self.ring = opt.ring
+        self.year = opt.year
+        self.scenario = opt.scenario
+        self.cycle_point = opt.cycle_point
+        self.beam_file = None
+        self.str_file = None
 
     @property
     def ring(self):
@@ -107,6 +115,7 @@ class Psbooster(Accelerator):
         self._ring = value
 
     def verify_object(self):
+        Accelerator.verify_object(self)
         _ = self.ring
         if self.modifiers:
             raise AcceleratorDefinitionError(f"Accelerator {self.NAME} cannot handle modifiers,"
@@ -133,6 +142,9 @@ class Psbooster(Accelerator):
             "NAT_TUNE_X": self.nat_tunes[0],
             "NAT_TUNE_Y": self.nat_tunes[1],
             "KINETICENERGY": self.energy,
+            "ACC_MODELS_DIR": self.acc_model_path,
+            "BEAM_FILE": self.beam_file,
+            "STR_FILE": self.str_file,
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
         }

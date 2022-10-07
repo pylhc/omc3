@@ -1,20 +1,22 @@
-/******************************************************************************************
-*
-* MAD-X File for PS Booster optics calculations
-*
-*
-* PSB Extraction working point:
-* New working point: QX = 4.172 and QY = 4.23.  21 Dec 2006 O.Berrig
-*
-*
-* This file is for protons at 0.348 GeV/c at time c = 301
-*
-*
-* Execute with:  >madx < psb_orbit.madx
-*
-******************************************************************************************/
-
  title, 'BOOSTER lattice';
+
+ /******************************************************************
+ * Energy and particle type definition
+ ******************************************************************/
+ 
+call, file="%(BEAM_FILE)s";
+BRHO      := BEAM->PC * 3.3356;
+
+set,  format="20.10f";
+
+/******************************************************************
+ * Call lattice files
+ ******************************************************************/
+
+call, file = '%(ACC_MODELS_DIR)s/psb.seq';
+call, file = '%(ACC_MODELS_DIR)s/psb_aperture.dbx';
+call, file = '%(STR_FILE)s';
+call, file = '%(ACC_MODELS_DIR)s/_scripts/macros.madx';
 
  !for the time being not used
  beam_Ek=%(KINETICENERGY)s;
@@ -25,25 +27,6 @@
  option, echo;
  option, RBARC=FALSE;
 
-/******************************************************************************************
- * BOOSTER
- ******************************************************************************************/
- call, file = '%(FILES_DIR)s/psb.ele';
- call, file = '%(FILES_DIR)s/psb.seq';
- call, file = '%(FILES_DIR)s/defseries.seq';
- call, file = '%(FILES_DIR)s/powering.seq';
- call, file = '%(FILES_DIR)s/psb.dbx';
- call, file = '%(FILES_DIR)s/psb_orbit.str';
-
-
-/******************************************************************************************
- * beam, use
- ******************************************************************************************/
- 
- 
- beam, particle=PROTON, pc=beam_pc;  ! change depending on c-time of orbit measurement; pc=momentum
-
- 
  use, sequence=psb%(RING)s;
 
 /******************************************************************************************
@@ -55,12 +38,28 @@
  Qxd = %(DRV_TUNE_X)s;
  Qyd = %(DRV_TUNE_Y)s;
 
- ! diable acdipole element, redefine correctly when needed under if (ac_s == 1)
- !   this avoids division by zero errors
- hacmap21 = 0;
- vacmap43 = 0;
+/******************************************************************************************
+ * Install the AC-Dipole (this may be refactored into a `macros.madx`
+ ******************************************************************************************/
+hacmap21 = 0;
+vacmap43 = 0;
+
+hacmap: matrix, l=0, rm21 := hacmap21;
+vacmap: matrix, l=0, rm43 := vacmap43;
+
+seqedit, sequence=psb%(RING)s;
+    flatten;
+    // 0.565 is the length of BR[1-4].DES3L1
+    install, element=hacmap, at=0.565/2, from=BR%(RING)s.DES3L1;
+    install, element=vacmap, at=0.565/2, from=BR%(RING)s.DES3L1;
+endedit;
+
+ use, sequence=psb%(RING)s;
 
 
+/******************************************************************************************
+ * Tune Matching
+ ******************************************************************************************/
  MATCH,sequence=psb%(RING)s;
   vary, NAME=kKF, step = 0.0001;
   vary, NAME=kKD, step = 0.0001;

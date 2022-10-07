@@ -51,15 +51,15 @@ def _b2_columns() -> List[str]:
 
 class LhcModelCreator(ModelCreator):
 
-    def get_options(accel_inst, opt) -> bool:
+    def get_options(self, accel_inst, opt) -> bool:
         if opt.fetch == PATHFETCHER:
             accel_inst.acc_model_path = Path(opt.path)
         elif opt.fetch == AFSFETCHER:
-            accel_inst.acc_model_path = ACCELERATOR_MODEL_REPOSITORY / accel_inst.year
+            accel_inst.acc_model_path = ACCELERATOR_MODEL_REPOSITORY / "lhc" / accel_inst.year
 
-        if opt.list_modifiers:
+        if opt.list_opticsfiles:
             if accel_inst.acc_model_path is None:
-                raise ValueError("can't list modifiers if lattice source is not an `acc-models` repository")
+                raise ValueError("can't list optics files if lattice source is not an `acc-models` repository")
 
             for root, subdirs, files in os.walk(Path(accel_inst.acc_model_path) / MODIFIER_BRANCH):
                 for f in files:

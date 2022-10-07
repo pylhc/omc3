@@ -20,7 +20,7 @@ class ModelCreator(ABC):
 
 
     @abstractmethod
-    def get_options(self, options) -> bool:
+    def get_options(self, accel_inst: Accelerator, options) -> bool:
         """
         Parses additional commandline options (if any)
         Args:

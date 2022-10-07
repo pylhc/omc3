@@ -35,5 +35,5 @@ B2_SETTINGS_MADX = "b2_settings.madx"
 B2_ERRORS_TFS = "b2_errors.tfs"
 PLANE_TO_HV = dict(X="H", Y="V")
 
-ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models/lhc")
+ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models")
 MODIFIER_BRANCH = "operation/optics"
