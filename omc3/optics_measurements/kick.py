@@ -80,7 +80,10 @@ def _get_kick(measure_input, files, plane):
 def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
     """
     Calculates action (2J and sqrt(2J)) and its errors from BPM data in lin-df.
-    Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation.
+    Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation,
+    as the amplitude of the oscillations for single kicks falls off over turns,
+    and hence the amplitude of the main line does not represent the initial kick,
+    whereas it is constant for the driven excitation.
     Reminder: A = sqrt(2J \beta) .
 
     TODO (jdilly 07.09.2022):
