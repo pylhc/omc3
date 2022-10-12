@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Other &mdash; omc3 0.6.3 documentation</title>
+  <title>Other &mdash; omc3 0.6.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -300,9 +300,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -460,14 +460,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="other">
-<h1>Other<a class="headerlink" href="#other" title="Permalink to this heading"></a></h1>
+  <section id="module-omc3.tbt_converter">
+<span id="other"></span><h1>Other<a class="headerlink" href="#module-omc3.tbt_converter" title="Permalink to this heading"></a></h1>
 <section id="tbt-converter">
 <h2>TbT Converter<a class="headerlink" href="#tbt-converter" title="Permalink to this heading"></a></h2>
 <p>Top-level script to convert turn-by-turn files from various formats to <code class="docutils literal notranslate"><span class="pre">LHC</span></code> binary SDDS files.
 Optionally, it can replicate files with added noise.</p>
 </section>
-<span class="target" id="module-omc3.tbt_converter"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.tbt_converter.converter_entrypoint">
 <span class="sig-prename descclassname"><span class="pre">omc3.tbt_converter.</span></span><span class="sig-name descname"><span class="pre">converter_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt_converter.html#converter_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt_converter.converter_entrypoint" title="Permalink to this definition"></a></dt>
 <dd><p>Converts turn-by-turn files from various formats to <code class="docutils literal notranslate"><span class="pre">LHC</span></code> binary SDDS files.
@@ -511,11 +511,11 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 </dl>
 </dd></dl>
 
-<section id="model-creator">
+<span class="target" id="module-omc3.model_creator"></span><section id="model-creator">
 <h2>Model Creator<a class="headerlink" href="#model-creator" title="Permalink to this heading"></a></h2>
 <p>Entrypoint to run the model creator for LHC, PSBooster and PS models.</p>
 </section>
-<span class="target" id="module-omc3.model_creator"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.model_creator.create_instance_and_model">
 <span class="sig-prename descclassname"><span class="pre">omc3.model_creator.</span></span><span class="sig-name descname"><span class="pre">create_instance_and_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a></span></span><a class="reference internal" href="../_modules/omc3/model_creator.html#create_instance_and_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model_creator.create_instance_and_model" title="Permalink to this definition"></a></dt>
 <dd><dl>
@@ -565,7 +565,7 @@ provided it will be written to sys.stdout.</p>
 </dl>
 </dd></dl>
 
-<section id="knob-extractor">
+<span class="target" id="module-omc3.knob_extractor"></span><section id="knob-extractor">
 <h2>Knob Extractor<a class="headerlink" href="#knob-extractor" title="Permalink to this heading"></a></h2>
 <p>Entrypoint to extract knobs from <code class="docutils literal notranslate"><span class="pre">NXCALS</span></code> at a given time, and eventually write them out to a file.
 This script can also be used to display information about the StateTracker State.
@@ -624,7 +624,7 @@ timedelta. This allows for easily getting the setting e.g. 2h ago:
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.knob_extractor"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.knob_extractor.Col">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">Col</span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#Col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.Col" title="Permalink to this definition"></a></dt>
 <dd><p>DataFrame Columns used in this script.</p>
@@ -714,12 +714,12 @@ keys and KnobEntries (without values) as value.</p>
 <dd><p>Variable in Timber/StateTracker -&gt; LSA name conversion.</p>
 </dd></dl>
 
-<section id="mad-x-wrapper">
+<span class="target" id="module-omc3.madx_wrapper"></span><section id="mad-x-wrapper">
 <h2>MAD-X Wrapper<a class="headerlink" href="#mad-x-wrapper" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">madx_wrapper</span></code> is high-level wrapper for running <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> codes within <code class="docutils literal notranslate"><span class="pre">omc3</span></code>.</p>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">madx_wrapper.py</span> <span class="pre">--file</span> <span class="pre">your_madx_file.madx</span></code></p>
 </section>
-<span class="target" id="module-omc3.madx_wrapper"></span><dl class="py exception">
+<dl class="py exception">
 <dt class="sig sig-object py" id="omc3.madx_wrapper.MadxError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">MadxError</span></span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#MadxError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.MadxError" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>

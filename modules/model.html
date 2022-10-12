@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.6.3 documentation</title>
+  <title>Model &mdash; omc3 0.6.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -300,9 +300,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
@@ -460,14 +460,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="model">
-<h1>Model<a class="headerlink" href="#model" title="Permalink to this heading"></a></h1>
+  <section id="module-omc3.model.manager">
+<span id="model"></span><h1>Model<a class="headerlink" href="#module-omc3.model.manager" title="Permalink to this heading"></a></h1>
 <section id="manager">
 <h2>Manager<a class="headerlink" href="#manager" title="Permalink to this heading"></a></h2>
 <p>This module provides high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">model</span></code>.
 It contains entrypoint wrappers to get accelerator classes or their instances.</p>
 </section>
-<span class="target" id="module-omc3.model.manager"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.model.manager.get_accelerator">
 <span class="sig-prename descclassname"><span class="pre">omc3.model.manager.</span></span><span class="sig-name descname"><span class="pre">get_accelerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_accelerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.manager.get_accelerator" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the <cite>Accelerator</cite> instance of the desired accelerator, as given at the commandline.</p>
@@ -479,17 +479,17 @@ It contains entrypoint wrappers to get accelerator classes or their instances.</
 <dd><p>Get all accelerator related options as a <cite>dict</cite>.</p>
 </dd></dl>
 
-<section id="constants">
+<span class="target" id="module-omc3.model.constants"></span><section id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this heading"></a></h2>
 <p>This module provides high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">model</span></code>.
 Specific constants to be used in <code class="docutils literal notranslate"><span class="pre">model</span></code>, to help with consistency.</p>
 </section>
-<span class="target" id="module-omc3.model.constants"></span><section id="accelerator">
+<span class="target" id="module-omc3.model.accelerators.accelerator"></span><section id="accelerator">
 <h2>Accelerator<a class="headerlink" href="#accelerator" title="Permalink to this heading"></a></h2>
 <p>This module provides high-level classes to define most functionality of <code class="docutils literal notranslate"><span class="pre">model.accelerators</span></code>.
 It contains entrypoint the parent <cite>Accelerator</cite> class as well as other support classes.</p>
 </section>
-<span class="target" id="module-omc3.model.accelerators.accelerator"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.AccElementTypes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">AccElementTypes</span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#AccElementTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="Permalink to this definition"></a></dt>
 <dd><p>Defines the strings for the element types <code class="docutils literal notranslate"><span class="pre">BPMS</span></code>, <code class="docutils literal notranslate"><span class="pre">MAGNETS</span></code> and <code class="docutils literal notranslate"><span class="pre">ARC_BPMS</span></code>.</p>
@@ -602,7 +602,7 @@ affects. These variables should be logical variables that have and effect in the
 modified.</p>
 </dd></dl>
 
-<section id="esrf">
+<span class="target" id="module-omc3.model.accelerators.esrf"></span><section id="esrf">
 <h2>ESRF<a class="headerlink" href="#esrf" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">ESRF</span></code> machine.</p>
 <dl>
@@ -655,12 +655,12 @@ modified.</p>
 </dd>
 </dl>
 </section>
-<span class="target" id="module-omc3.model.accelerators.esrf"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.esrf.Esrf">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.esrf.</span></span><span class="sig-name descname"><span class="pre">Esrf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/esrf.html#Esrf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.esrf.Esrf" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<section id="lhc">
+<span class="target" id="module-omc3.model.accelerators.lhc"></span><section id="lhc">
 <h2>LHC<a class="headerlink" href="#lhc" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> collider.</p>
 <dl>
@@ -734,7 +734,7 @@ modified.</p>
 </dd>
 </dl>
 </section>
-<span class="target" id="module-omc3.model.accelerators.lhc"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.lhc.Lhc">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.lhc.</span></span><span class="sig-name descname"><span class="pre">Lhc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for LHC-types.</p>
@@ -796,7 +796,7 @@ Will Raise an <code class="docutils literal notranslate"><span class="pre">Accel
 
 </dd></dl>
 
-<section id="ps">
+<span class="target" id="module-omc3.model.accelerators.ps"></span><section id="ps">
 <h2>PS<a class="headerlink" href="#ps" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PS</span></code> machine.</p>
 <dl>
@@ -849,7 +849,7 @@ Will Raise an <code class="docutils literal notranslate"><span class="pre">Accel
 </dd>
 </dl>
 </section>
-<span class="target" id="module-omc3.model.accelerators.ps"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.ps.Ps">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.ps.</span></span><span class="sig-name descname"><span class="pre">Ps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/ps.html#Ps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.ps.Ps" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for PS-types.</p>
@@ -894,7 +894,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-<section id="ps-booster">
+<span class="target" id="module-omc3.model.accelerators.psbooster"></span><section id="ps-booster">
 <h2>PS Booster<a class="headerlink" href="#ps-booster" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PSB</span></code> machine.</p>
 <dl>
@@ -953,7 +953,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </dd>
 </dl>
 </section>
-<span class="target" id="module-omc3.model.accelerators.psbooster"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.psbooster.Psbooster">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.psbooster.</span></span><span class="sig-name descname"><span class="pre">Psbooster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/psbooster.html#Psbooster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.psbooster.Psbooster" title="Permalink to this definition"></a></dt>
 <dd><p>Parent Class for Psbooster-types.</p>
@@ -986,7 +986,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-<section id="superkekb">
+<span class="target" id="module-omc3.model.accelerators.skekb"></span><section id="superkekb">
 <h2>SuperKEKB<a class="headerlink" href="#superkekb" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">SuperKEKB</span></code> machine.</p>
 <dl>
@@ -1048,7 +1048,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </dd>
 </dl>
 </section>
-<span class="target" id="module-omc3.model.accelerators.skekb"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.skekb.SKekB">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.skekb.</span></span><span class="sig-name descname"><span class="pre">SKekB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/skekb.html#SKekB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.skekb.SKekB" title="Permalink to this definition"></a></dt>
 <dd><p>KEK’s SuperKEKB accelerator.</p>
@@ -1060,7 +1060,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-<section id="iota">
+<span class="target" id="module-omc3.model.accelerators.iota"></span><section id="iota">
 <h2>Iota<a class="headerlink" href="#iota" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">Iota</span></code> machine.</p>
 <dl>
@@ -1119,7 +1119,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 </dd>
 </dl>
 </section>
-<span class="target" id="module-omc3.model.accelerators.iota"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.iota.Iota">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.iota.</span></span><span class="sig-name descname"><span class="pre">Iota</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/iota.html#Iota"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.iota.Iota" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1130,12 +1130,12 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-<section id="petra">
+<span class="target" id="module-omc3.model.accelerators.petra"></span><section id="petra">
 <h2>PETRA<a class="headerlink" href="#petra" title="Permalink to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">PETRA</span></code> machine.
 Model creation not implemented yet.</p>
 </section>
-<span class="target" id="module-omc3.model.accelerators.petra"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.accelerators.petra.Petra">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.petra.</span></span><span class="sig-name descname"><span class="pre">Petra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/petra.html#Petra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.petra.Petra" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1161,11 +1161,11 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 </dd></dl>
 
-<section id="lhc-model-creator">
+<span class="target" id="module-omc3.model.model_creators.lhc_model_creator"></span><section id="lhc-model-creator">
 <h2>LHC Model Creator<a class="headerlink" href="#lhc-model-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">LHC</span></code>.</p>
 </section>
-<span class="target" id="module-omc3.model.model_creators.lhc_model_creator"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcBestKnowledgeCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1268,11 +1268,11 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 
 </dd></dl>
 
-<section id="ps-model-creator">
+<span class="target" id="module-omc3.model.model_creators.ps_model_creator"></span><section id="ps-model-creator">
 <h2>PS Model Creator<a class="headerlink" href="#ps-model-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PS</span></code>.</p>
 </section>
-<span class="target" id="module-omc3.model.model_creators.ps_model_creator"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.ps_model_creator.PsModelCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.ps_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1324,11 +1324,11 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 
 </dd></dl>
 
-<section id="ps-booster-model-creator">
+<span class="target" id="module-omc3.model.model_creators.psbooster_model_creator"></span><section id="ps-booster-model-creator">
 <h2>PS Booster Model Creator<a class="headerlink" href="#ps-booster-model-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of the <code class="docutils literal notranslate"><span class="pre">PSB</span></code>.</p>
 </section>
-<span class="target" id="module-omc3.model.model_creators.psbooster_model_creator"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.psbooster_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsboosterModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
@@ -1380,11 +1380,11 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 
 </dd></dl>
 
-<section id="segment-creator">
+<span class="target" id="module-omc3.model.model_creators.segment_creator"></span><section id="segment-creator">
 <h2>Segment Creator<a class="headerlink" href="#segment-creator" title="Permalink to this heading"></a></h2>
 <p>This module provides convenience functions for model creation of a <code class="docutils literal notranslate"><span class="pre">segment</span></code>.</p>
 </section>
-<span class="target" id="module-omc3.model.model_creators.segment_creator"></span></section>
+</section>
 
 
            </div>

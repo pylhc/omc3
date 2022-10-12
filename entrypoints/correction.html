@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.6.3 documentation</title>
+  <title>Correction &mdash; omc3 0.6.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -301,9 +301,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -461,8 +461,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="correction">
-<h1>Correction<a class="headerlink" href="#correction" title="Permalink to this heading"></a></h1>
+  <section id="module-omc3.global_correction">
+<span id="correction"></span><h1>Correction<a class="headerlink" href="#module-omc3.global_correction" title="Permalink to this heading"></a></h1>
 <section id="global-correction">
 <h2>Global Correction<a class="headerlink" href="#global-correction" title="Permalink to this heading"></a></h2>
 <p>Iterative Correction Scheme.</p>
@@ -484,7 +484,7 @@ observables are recalculated by Mad-X.
 <a class="reference internal" href="#equation-eq1">(1)</a> is then solved again.</p>
 <p>Input arguments are split into correction arguments and accelerator arguments.
 The former are listed below, the latter depend on the accelerator you want
-to use. Check <a class="reference internal" href="../modules/model.html#model"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
+to use. Check <a class="reference internal" href="../modules/model.html#module-omc3.model.manager"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
 <ul>
@@ -609,20 +609,20 @@ optics_params.</p>
 </dd>
 </dl>
 </section>
-<span class="target" id="module-omc3.global_correction"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.global_correction.global_correction_entrypoint">
 <span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.global_correction.global_correction_entrypoint" title="Permalink to this definition"></a></dt>
 <dd><p>Do the global correction. Iteratively.</p>
 </dd></dl>
 
-<section id="response-creator">
+<span class="target" id="module-omc3.response_creator"></span><section id="response-creator">
 <h2>Response Creator<a class="headerlink" href="#response-creator" title="Permalink to this heading"></a></h2>
 <p>Provides a response generation wrapper.
 The response matrices can be either created by <a class="reference internal" href="../modules/correction.html#module-omc3.correction.response_madx" title="omc3.correction.response_madx"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_madx</span></code></a>
 or analytically via <a class="reference internal" href="../modules/correction.html#module-omc3.correction.response_twiss" title="omc3.correction.response_twiss"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_twiss</span></code></a>.</p>
 <p>Input arguments are split into response creation arguments and accelerator arguments.
 The former are listed below, the latter depend on the accelerator you want
-to use. Check <a class="reference internal" href="../modules/model.html#model"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
+to use. Check <a class="reference internal" href="../modules/model.html#module-omc3.model.manager"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Optional--</em></p>
 <ul>
@@ -663,7 +663,7 @@ to use. Check <a class="reference internal" href="../modules/model.html#model"><
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.response_creator"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.response_creator.create_response_entrypoint">
 <span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.create_response_entrypoint" title="Permalink to this definition"></a></dt>
 <dd><p>Entry point for creating pandas-based response matrices.</p>

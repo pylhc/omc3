@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kmod &mdash; omc3 0.6.3 documentation</title>
+  <title>Kmod &mdash; omc3 0.6.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -300,9 +300,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
@@ -460,14 +460,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="kmod">
-<h1>Kmod<a class="headerlink" href="#kmod" title="Permalink to this heading"></a></h1>
+  <section id="module-omc3.kmod.analysis">
+<span id="kmod"></span><h1>Kmod<a class="headerlink" href="#module-omc3.kmod.analysis" title="Permalink to this heading"></a></h1>
 <section id="analysis">
 <h2>Analysis<a class="headerlink" href="#analysis" title="Permalink to this heading"></a></h2>
 <p>This module contains the analysis functionality of <code class="docutils literal notranslate"><span class="pre">kmod</span></code>.
 It provides functions to calculate beta functions at different locations from K-modulation data.</p>
 </section>
-<span class="target" id="module-omc3.kmod.analysis"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.kmod.analysis.average_beta_from_Tune">
 <span class="sig-prename descclassname"><span class="pre">omc3.kmod.analysis.</span></span><span class="sig-name descname"><span class="pre">average_beta_from_Tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TdQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/kmod/analysis.html#average_beta_from_Tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.kmod.analysis.average_beta_from_Tune" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates average beta function in quadrupole from tune change <code class="docutils literal notranslate"><span class="pre">TdQ</span></code> and <code class="docutils literal notranslate"><span class="pre">delta</span> <span class="pre">K</span></code>.</p>
@@ -493,16 +493,16 @@ It provides functions to calculate beta functions at different locations from K-
 Columns corresponds to error, i.e. first column for <cite>dQ</cite> etc.</p>
 </dd></dl>
 
-<section id="constants">
+<span class="target" id="module-omc3.kmod.constants"></span><section id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this heading"></a></h2>
 <p>Specific constants to be used in <code class="docutils literal notranslate"><span class="pre">kmod</span></code>, to help with consistency.</p>
 </section>
-<span class="target" id="module-omc3.kmod.constants"></span><section id="helper">
+<span class="target" id="module-omc3.kmod.helper"></span><section id="helper">
 <h2>Helper<a class="headerlink" href="#helper" title="Permalink to this heading"></a></h2>
 <p>This module contains helper functionality for <code class="docutils literal notranslate"><span class="pre">kmod</span></code>.
 It provides functions to perform data cleaning, IO loading and plotting.</p>
 </section>
-<span class="target" id="module-omc3.kmod.helper"></span></section>
+</section>
 
 
            </div>

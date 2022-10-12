@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plotting &mdash; omc3 0.6.3 documentation</title>
+  <title>Plotting &mdash; omc3 0.6.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -300,9 +300,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -460,8 +460,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="plotting">
-<h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this heading"></a></h1>
+  <section id="module-omc3.plotting.plot_optics_measurements">
+<span id="plotting"></span><h1>Plotting<a class="headerlink" href="#module-omc3.plotting.plot_optics_measurements" title="Permalink to this heading"></a></h1>
 <section id="plot-optics-measurements">
 <h2>Plot Optics Measurements<a class="headerlink" href="#plot-optics-measurements" title="Permalink to this heading"></a></h2>
 <p>Wrapper for <cite>plot_tfs</cite> to easily plot the results from optics measurements.</p>
@@ -545,13 +545,13 @@ Default: <code class="docutils literal notranslate"><span class="pre">location</
 <li><p><strong>y_lim</strong> <em>(float, int, None)</em>: Limits on the y axis (Tupel)</p></li>
 </ul>
 </section>
-<span class="target" id="module-omc3.plotting.plot_optics_measurements"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_optics_measurements.plot">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_optics_measurements.</span></span><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_optics_measurements.html#plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_optics_measurements.plot" title="Permalink to this definition"></a></dt>
 <dd><p>Main plotting function.</p>
 </dd></dl>
 
-<section id="plot-tfs">
+<span class="target" id="module-omc3.plotting.plot_tfs"></span><section id="plot-tfs">
 <h2>Plot TFS<a class="headerlink" href="#plot-tfs" title="Permalink to this heading"></a></h2>
 <p>Easily plot tfs-files with all kinds of additional functionality and ways to combine plots.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">omc3.plotting.plot_tfs</span> <span class="kn">import</span> <span class="n">plot</span>
@@ -642,7 +642,7 @@ If the respective length is 1, the same label will be used for all figures or ax
 <li><p><strong>y_lim</strong> <em>(float, int None)</em>: Limits on the y axis (Tupel)</p></li>
 </ul>
 </section>
-<span class="target" id="module-omc3.plotting.plot_tfs"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_tfs.get_id">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_tfs.</span></span><span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_parts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">same_axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">same_figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_tfs.html#get_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_tfs.get_id" title="Permalink to this definition"></a></dt>
 <dd><p>Get the right IDs for the current sorting way.
@@ -662,7 +662,7 @@ options.</p>
 <dd><p>Load all data from files and sort into figures.</p>
 </dd></dl>
 
-<section id="plot-spectrum">
+<span class="target" id="module-omc3.plotting.plot_spectrum"></span><section id="plot-spectrum">
 <h2>Plot Spectrum<a class="headerlink" href="#plot-spectrum" title="Permalink to this heading"></a></h2>
 <p>Spectrum plotter for frequency analysis output-data (supports also DRIVE output).</p>
 <p>The spectra can be either plotted as <cite>stem</cite>-plots or as <cite>waterfall</cite>-plots.
@@ -820,14 +820,14 @@ until the next one.</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.plotting.plot_spectrum"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_spectrum.get_reshuffled_tab20c">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_spectrum.</span></span><span class="sig-name descname"><span class="pre">get_reshuffled_tab20c</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_spectrum.html#get_reshuffled_tab20c"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_spectrum.get_reshuffled_tab20c" title="Permalink to this definition"></a></dt>
 <dd><p>Reshuffel tab20c so that the colors change between next lines.
 Needs to be up here as it is used in <code class="docutils literal notranslate"><span class="pre">DEFAULTS</span></code> which is loaded early.</p>
 </dd></dl>
 
-<section id="plot-amplitude-detuning-results">
+<span class="target" id="module-omc3.plotting.plot_amplitude_detuning"></span><section id="plot-amplitude-detuning-results">
 <h2>Plot Amplitude Detuning Results<a class="headerlink" href="#plot-amplitude-detuning-results" title="Permalink to this heading"></a></h2>
 <p>Provides the plotting function for amplitude detuning analysis</p>
 <p><strong>Arguments:</strong></p>
@@ -921,7 +921,7 @@ An id for the 4 different plots will be added before the suffix.</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.plotting.plot_amplitude_detuning"></span><dl class="py class">
+<dl class="py class">
 <dt class="sig sig-object py" id="omc3.plotting.plot_amplitude_detuning.FitFuncs">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_amplitude_detuning.</span></span><span class="sig-name descname"><span class="pre">FitFuncs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">callable&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">callable&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">callable&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_amplitude_detuning.html#FitFuncs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_amplitude_detuning.FitFuncs" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -944,7 +944,7 @@ An id for the 4 different plots will be added before the suffix.</p>
 <dd><p>Plot the odr fit in 3D.</p>
 </dd></dl>
 
-<section id="plot-bbq">
+<span class="target" id="module-omc3.plotting.plot_bbq"></span><section id="plot-bbq">
 <h2>Plot BBQ<a class="headerlink" href="#plot-bbq" title="Permalink to this heading"></a></h2>
 <p>Provides the plotting function for the extracted and cleaned BBQ data from timber.</p>
 <p><strong>Arguments:</strong></p>
@@ -1010,7 +1010,7 @@ or default mpl.</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.plotting.plot_bbq"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_bbq.main">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_bbq.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_bbq.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_bbq.main" title="Permalink to this definition"></a></dt>
 <dd><p>Plot BBQ wrapper.</p>

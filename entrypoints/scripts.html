@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.6.3 documentation</title>
+  <title>Scripts &mdash; omc3 0.6.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -301,9 +301,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -461,8 +461,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="scripts">
-<h1>Scripts<a class="headerlink" href="#scripts" title="Permalink to this heading"></a></h1>
+  <section id="module-omc3.scripts.betabeatsrc_output_converter">
+<span id="scripts"></span><h1>Scripts<a class="headerlink" href="#module-omc3.scripts.betabeatsrc_output_converter" title="Permalink to this heading"></a></h1>
 <section id="betabeat-src-output-converter">
 <h2>BetaBeat.src Output Converter<a class="headerlink" href="#betabeat-src-output-converter" title="Permalink to this heading"></a></h2>
 <p>Script to convert most important output files produced by <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> / <code class="docutils literal notranslate"><span class="pre">GetLLM</span></code> into the standard
@@ -471,7 +471,7 @@ format used in <code class="docutils literal notranslate"><span class="pre">omc3
 compensation by analytic equation while <code class="docutils literal notranslate"><span class="pre">_free2</span></code> corresponds to compensation via effective model. It is
 written in GetLLM (at least once) here: <a class="reference external" href="https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606">https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606</a></p>
 </section>
-<span class="target" id="module-omc3.scripts.betabeatsrc_output_converter"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude">
 <span class="sig-prename descclassname"><span class="pre">omc3.scripts.betabeatsrc_output_converter.</span></span><span class="sig-name descname"><span class="pre">convert_old_beta_from_amplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ampbeta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'beta_amplitude_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/betabeatsrc_output_converter.html#convert_old_beta_from_amplitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude" title="Permalink to this definition"></a></dt>
 <dd><p>Looks in the provided directory for expected beta from amplitude file from <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> for a given
@@ -680,7 +680,7 @@ compensation by equation, ‘_free2’ by model).</p>
 </ul>
 </dd></dl>
 
-<section id="merge-kmod-results">
+<span class="target" id="module-omc3.scripts.merge_kmod_results"></span><section id="merge-kmod-results">
 <h2>Merge KMOD Results<a class="headerlink" href="#merge-kmod-results" title="Permalink to this heading"></a></h2>
 <p>Script to merge the results from KMOD into one <cite>TfsDataFrame</cite>.
 The script takes the kmod-results folders as input and merges the lsa-result tfs-files in these
@@ -710,7 +710,7 @@ calculated and written into the header, as well as logged.</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.scripts.merge_kmod_results"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs">
 <span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">get_kmod_ip_subdirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kmod_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_kmod_ip_subdirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the paths to the ip-subdirectories in the kmod result directories.</p>
@@ -774,7 +774,7 @@ files with the results of kmod analysis.</p></li>
 </dl>
 </dd></dl>
 
-<section id="update-natural-tune-in-lin-files">
+<span class="target" id="module-omc3.scripts.update_nattune_in_linfile"></span><section id="update-natural-tune-in-lin-files">
 <h2>Update Natural Tune in Lin-Files<a class="headerlink" href="#update-natural-tune-in-lin-files" title="Permalink to this heading"></a></h2>
 <p>Script to update the natural tune in lin files, based on the spectrum data (amps and freqs) and a
 given frequency interval.</p>
@@ -806,7 +806,7 @@ then the omc3 filename convention will be used.</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.scripts.update_nattune_in_linfile"></span><section id="write-mad-x-macros">
+<span class="target" id="module-omc3.scripts.write_madx_macros"></span><section id="write-mad-x-macros">
 <h2>Write MAD-X Macros<a class="headerlink" href="#write-mad-x-macros" title="Permalink to this heading"></a></h2>
 <p>Write out madx scripts for the tracking macros.</p>
 <p><strong>Arguments:</strong></p>
@@ -824,7 +824,7 @@ then the omc3 filename convention will be used.</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.scripts.write_madx_macros"></span><section id="fake-measurement-from-model">
+<span class="target" id="module-omc3.scripts.fake_measurement_from_model"></span><section id="fake-measurement-from-model">
 <h2>Fake Measurement from Model<a class="headerlink" href="#fake-measurement-from-model" title="Permalink to this heading"></a></h2>
 <p>Script to generate a pseudo-measurement from a twiss-model.</p>
 <p>The <cite>model</cite> the then generated measurement is compared to can be different
@@ -881,7 +881,7 @@ values in order of parameters.</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.scripts.fake_measurement_from_model"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.append_model">
 <span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">append_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#append_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.append_model" title="Permalink to this definition"></a></dt>
 <dd><p>Add the values to the measurement.</p>
@@ -942,7 +942,7 @@ values in order of parameters.</p>
 global_correction_entrypoint uses (same format you would get from hole_in_one).</p>
 </dd></dl>
 
-<section id="linfile-cleaning">
+<span class="target" id="module-omc3.scripts.linfile_clean"></span><section id="linfile-cleaning">
 <h2>Linfile Cleaning<a class="headerlink" href="#linfile-cleaning" title="Permalink to this heading"></a></h2>
 <p>Performs an automated cleaning of different columns in the lin-file
 as a standalone script to allow for manual refinement after harpy is done.</p>
@@ -1009,7 +1009,7 @@ also use isolation forest, BUT this probably needs some modification there
 as well, as it only cleans on TUNE, not on NATTUNE.
 And it requires an accelerator instance.</p>
 </section>
-<span class="target" id="module-omc3.scripts.linfile_clean"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.scripts.linfile_clean.clean_columns">
 <span class="sig-prename descclassname"><span class="pre">omc3.scripts.linfile_clean.</span></span><span class="sig-name descname"><span class="pre">clean_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/linfile_clean.html#clean_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.linfile_clean.clean_columns" title="Permalink to this definition"></a></dt>
 <dd><p>Clean the columns in the given files.</p>

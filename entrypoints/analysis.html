@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; omc3 0.6.3 documentation</title>
+  <title>Analysis &mdash; omc3 0.6.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -300,9 +300,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -460,8 +460,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="analysis">
-<h1>Analysis<a class="headerlink" href="#analysis" title="Permalink to this heading"></a></h1>
+  <section id="module-omc3.hole_in_one">
+<span id="analysis"></span><h1>Analysis<a class="headerlink" href="#module-omc3.hole_in_one" title="Permalink to this heading"></a></h1>
 <section id="hole-in-one">
 <h2>Hole in One<a class="headerlink" href="#hole-in-one" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">hole_in_one</span></code> is the top-level script of analysis functionality offered in <code class="docutils literal notranslate"><span class="pre">omc3</span></code>. In most of
@@ -518,7 +518,7 @@ by a different set of files:</p>
 </table>
 <p>To run either of the two or both steps, see options <code class="docutils literal notranslate"><span class="pre">--harpy</span></code> and <code class="docutils literal notranslate"><span class="pre">--optics</span></code>.</p>
 </section>
-<span class="target" id="module-omc3.hole_in_one"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.hole_in_one.hole_in_one_entrypoint">
 <span class="sig-prename descclassname"><span class="pre">omc3.hole_in_one.</span></span><span class="sig-name descname"><span class="pre">hole_in_one_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/hole_in_one.html#hole_in_one_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.hole_in_one.hole_in_one_entrypoint" title="Permalink to this definition"></a></dt>
 <dd><p>Runs frequency analysis and measures lattice optics.</p>
@@ -760,7 +760,7 @@ which are declared in <code class="docutils literal notranslate"><span class="pr
 </dl>
 </dd></dl>
 
-<section id="amplitude-detuning-analysis">
+<span class="target" id="module-omc3.amplitude_detuning_analysis"></span><section id="amplitude-detuning-analysis">
 <h2>Amplitude Detuning Analysis<a class="headerlink" href="#amplitude-detuning-analysis" title="Permalink to this heading"></a></h2>
 <p>Entrypoint for amplitude detuning analysis.</p>
 <p>This module provides functionality to run amplitude detuning analysis with additionally getting
@@ -866,7 +866,7 @@ BBQ cleaning (Method ‘minmax’).</p>
 </li>
 </ul>
 </section>
-<span class="target" id="module-omc3.amplitude_detuning_analysis"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections">
 <span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">analyse_with_bbq_corrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#analyse_with_bbq_corrections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections" title="Permalink to this definition"></a></dt>
 <dd><p>Create amplitude detuning analysis with BBQ correction from timber data.</p>
@@ -901,12 +901,12 @@ BBQ cleaning (Method ‘minmax’).</p>
 <dd><p>Performs the fit one action and tune pane at a time.</p>
 </dd></dl>
 
-<section id="run-kmod">
+<span class="target" id="module-omc3.run_kmod"></span><section id="run-kmod">
 <h2>Run Kmod<a class="headerlink" href="#run-kmod" title="Permalink to this heading"></a></h2>
 <p>Top-level script to analyse Kmod-results from the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> and creating files for GUI and plotting
 as well as returning beta-star and waist shift.</p>
 </section>
-<span class="target" id="module-omc3.run_kmod"></span><dl class="py function">
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.run_kmod.analyse_kmod">
 <span class="sig-prename descclassname"><span class="pre">omc3.run_kmod.</span></span><span class="sig-name descname"><span class="pre">analyse_kmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/run_kmod.html#analyse_kmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.run_kmod.analyse_kmod" title="Permalink to this definition"></a></dt>
 <dd><p>Run Kmod analysis.</p>
