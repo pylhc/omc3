@@ -97,8 +97,8 @@ def calculate_coupling(
     )
     joined = joined.loc[joined_index].copy()
 
-    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
-    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
+    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
+    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
@@ -243,7 +243,7 @@ def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
            tries to find the best candidate. If a value ``n>=1`` is given,
            then takes the n-th following BPM downstream for the pairing.
    """
-    indices = np.roll(np.arange(phases.to_numpy().shape[0]), shift)
+    indices = np.roll(np.arange(phases.to_numpy().shape[0]), -shift)
     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
 
