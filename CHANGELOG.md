@@ -1,5 +1,9 @@
 # OMC3 Changelog
 
+#### 2022-10-12 - v0.6.4
+
+- Fixed the phase filtering for coupling calculation to not forget columns.
+
 #### 2022-09-27 - v0.6.3
 
 - Pandafied `knob_extractor` internally and python output.
