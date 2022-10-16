@@ -503,7 +503,7 @@ def knob_definitions() -> Path:
 
 @pytest.fixture()
 def state_tfs() -> Path:
-    return INPUTS / "state.tfs"
+    return INPUTS / "state_2022-06-25.tfs"
 
 
 @pytest.fixture()
