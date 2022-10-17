@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.knob_extractor &mdash; omc3 0.6.4 documentation</title>
+  <title>omc3.knob_extractor &mdash; omc3 0.6.5 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -73,6 +73,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#omc3.knob_extractor.Head"><code class="docutils literal notranslate"><span class="pre">Head</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#omc3.knob_extractor.check_for_undefined_knobs"><code class="docutils literal notranslate"><span class="pre">check_for_undefined_knobs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#omc3.knob_extractor.extract"><code class="docutils literal notranslate"><span class="pre">extract()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#omc3.knob_extractor.get_state"><code class="docutils literal notranslate"><span class="pre">get_state()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#omc3.knob_extractor.load_knobs_definitions"><code class="docutils literal notranslate"><span class="pre">load_knobs_definitions()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#omc3.knob_extractor.lsa2name"><code class="docutils literal notranslate"><span class="pre">lsa2name()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/other.html#omc3.knob_extractor.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
@@ -549,6 +550,13 @@
 <span class="n">KNOBS_FILE_AFS</span> <span class="o">=</span> <span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">&quot;operation&quot;</span> <span class="o">/</span> <span class="s2">&quot;knobs.txt&quot;</span>
 
 <span class="n">MINUS_CHARS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+<span class="n">STATE_VARIABLES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;opticName&#39;</span><span class="p">:</span> <span class="s1">&#39;Optics&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;beamProcess&#39;</span><span class="p">:</span> <span class="s1">&#39;Beam Process&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;opticId&#39;</span><span class="p">:</span> <span class="s1">&#39;Optics ID&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hyperCycle&#39;</span><span class="p">:</span> <span class="s1">&#39;HyperCycle&#39;</span><span class="p">,</span>
+    <span class="c1"># &#39;secondsInBeamProcess &#39;: &#39;Beam Process running (s)&#39;,</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="Col"><a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.Col">[docs]</a><span class="k">class</span> <span class="nc">Col</span><span class="p">:</span>
@@ -570,12 +578,20 @@
         <span class="s2">&quot;LHCBEAM:IP1-SEP-V-MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-SEP-H-MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-SEP-V-MM&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP2-SEP-H-MM&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP2-SEP-V-MM&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP8-SEP-H-MM&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP8-SEP-V-MM&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="s2">&quot;xing&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM:IP1-XING-V-MURAD&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP1-XING-H-MURAD&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-XING-V-MURAD&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-XING-H-MURAD&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP2-XING-V-MURAD&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP2-XING-H-MURAD&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP8-XING-V-MURAD&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP8-XING-H-MURAD&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="s2">&quot;chroma&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM1:QPH&quot;</span><span class="p">,</span>
@@ -588,12 +604,14 @@
         <span class="s2">&quot;LHCBEAM:IP2-OFFSET-V-MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-OFFSET-H-MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP8-OFFSET-H-MM&quot;</span><span class="p">,</span>
+        <span class="c1"># hint: knobs for the other planes do not exist</span>
     <span class="p">],</span>
     <span class="s2">&quot;disp&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-SEP&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-XING&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-SEP&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-XING&quot;</span><span class="p">,</span>
+        <span class="c1"># hint: these knobs do not exist for IP2 and IP8</span>
     <span class="p">],</span>
     <span class="s2">&quot;mo&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM1:LANDAU_DAMPING&quot;</span><span class="p">,</span>
@@ -684,26 +702,69 @@
         <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;Knob Extraction Tool.&quot;</span>
     <span class="p">)</span>
 <span class="p">)</span>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Main knob extracting function. &quot;&quot;&quot;</span>
     <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">_parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
-        <span class="c1"># only print the state of the StateTracker - the MetaState!</span>
-        <span class="c1"># I still don&#39;t know what this does,</span>
-        <span class="c1"># because I only get back that the variable does not exist. (jdilly)</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="n">ldb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LhcStateTracker:State&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>  <span class="c1"># do first to have output together</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;---- STATE ------------------------------------&quot;</span><span class="p">)</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    
+        <span class="c1"># Only print the state of the machine.</span>
+        <span class="n">state_dict</span> <span class="o">=</span> <span class="n">get_state</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_get_state_as_df</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+    <span class="c1"># Actually extract knobs.</span>
     <span class="n">knobs_dict</span> <span class="o">=</span> <span class="n">_parse_knobs_defintions</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">knob_definitions</span><span class="p">)</span>
     <span class="n">knobs_extract</span> <span class="o">=</span> <span class="n">_extract_and_gather</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">knobs_dict</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">knobs</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
         <span class="n">_write_knobsfile</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">knobs_extract</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">knobs_extract</span></div>
 
+
+<span class="c1"># State Extraction -------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="get_state"><a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.get_state">[docs]</a><span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standalone function to gather and log state data from  the StateTracker.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ldb (pytimber.LoggingDB): The pytimber database.</span>
+<span class="sd">        time (datetime): The time, when to get the state.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict[str, str]: Dictionary of state-variable and the extracted state value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">state_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---- STATE @ </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2"> ----&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">STATE_VARIABLES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">tracker_variable</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;LhcStateTracker:State:</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">ldb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tracker_variable</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())[</span><span class="n">tracker_variable</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">:&#39;</span><span class="si">:</span><span class="s2">&lt;13s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">state_dict</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="k">return</span> <span class="n">state_dict</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_state_as_df</span><span class="p">(</span><span class="n">state_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert extracted StateTracker state-data into a TfsDataFrame</span>
+<span class="sd">    To be consistent with the main functions output.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        state_dict (Dict[str, str]): Extracted State Dictionary</span>
+<span class="sd">        time (datetime): The time, when to get the state.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.DataFrame: States packed into dataframe with readable index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">state_df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">STATE_VARIABLES</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">],</span>
+                                <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="n">Head</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">time</span><span class="p">})</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">state_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATE_VARIABLES</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">state_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATE_VARIABLES</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">state_df</span>
+
+
+<span class="c1"># Knobs Extraction -------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="extract"><a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.extract">[docs]</a><span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">knobs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -731,7 +792,7 @@
 
             <span class="n">knobvalue</span> <span class="o">=</span> <span class="n">ldb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">knobkey</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>  <span class="c1"># use timestamp to preserve timezone info</span>
             <span class="k">if</span> <span class="n">knobkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">knobvalue</span><span class="p">:</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> found&quot;</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> not found in StateTracker&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">timestamps</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">knobvalue</span><span class="p">[</span><span class="n">knobkey</span><span class="p">]</span>

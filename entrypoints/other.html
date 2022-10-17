@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Other &mdash; omc3 0.6.4 documentation</title>
+  <title>Other &mdash; omc3 0.6.5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -76,6 +76,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#omc3.knob_extractor.Head"><code class="docutils literal notranslate"><span class="pre">Head</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.knob_extractor.check_for_undefined_knobs"><code class="docutils literal notranslate"><span class="pre">check_for_undefined_knobs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.knob_extractor.extract"><code class="docutils literal notranslate"><span class="pre">extract()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.knob_extractor.get_state"><code class="docutils literal notranslate"><span class="pre">get_state()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.knob_extractor.load_knobs_definitions"><code class="docutils literal notranslate"><span class="pre">load_knobs_definitions()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.knob_extractor.lsa2name"><code class="docutils literal notranslate"><span class="pre">lsa2name()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.knob_extractor.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
@@ -678,6 +679,26 @@ When extraction was not possible, the value is None.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="omc3.knob_extractor.get_state">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Standalone function to gather and log state data from  the StateTracker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ldb</strong> (<em>pytimber.LoggingDB</em>) -- The pytimber database.</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) -- The time, when to get the state.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary of state-variable and the extracted state value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.knob_extractor.load_knobs_definitions">
 <span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">load_knobs_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#load_knobs_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.load_knobs_definitions" title="Permalink to this definition"></a></dt>
 <dd><p>Load the knobs-definition file and convert into a DataFrame.
@@ -704,7 +725,7 @@ keys and KnobEntries (without values) as value.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.knob_extractor.main">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.main" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.main" title="Permalink to this definition"></a></dt>
 <dd><p>Main knob extracting function.</p>
 </dd></dl>
 
