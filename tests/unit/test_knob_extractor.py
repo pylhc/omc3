@@ -459,7 +459,7 @@ class TestInsideCERNNetwork:
 
         # check frames
         assert_dict_equal(state_df.headers, old_df.headers)
-        assert_frame_equal(state_df, old_df)  # dframe_y already pandas
+        assert_frame_equal(state_df, old_df)
 
 
 # Helper -----------------------------------------------------------------------
