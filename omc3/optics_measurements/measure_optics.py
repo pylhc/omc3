@@ -128,6 +128,7 @@ class InputFiles(dict):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
         read_files = isinstance(files_to_analyse[0], str)
         for file_in in files_to_analyse:
+            print(file_in)
             for plane in PLANES:
                 df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME", drop=False)
                               if read_files else file_in[plane])
@@ -136,7 +137,8 @@ class InputFiles(dict):
 
         if len(self['X']) + len(self['Y']) == 0:
             raise IOError("No valid input files")
-        dpp_values = dpp.calculate_dpoverp(self, optics_opt)
+        # dpp_values = dpp.calculate_dpoverp(self, optics_opt)
+        dpp_values = [0.0]
         LOGGER.info(f"DPPS: {dpp_values}")
         amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)
         LOGGER.info(f"DPP_AMPS: {amp_dpp_values}")
