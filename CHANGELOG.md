@@ -1,5 +1,8 @@
 # OMC3 Changelog
 
+#### 2022-11-01 - v0.6.6
+
+- Bugfix in correction: fullresponse is converted to Path.
 
 #### 2022-10-15 - v0.6.5
 
@@ -10,7 +13,6 @@
 #### 2022-10-12 - v0.6.4
 
 - Fixed the phase filtering for coupling calculation to not forget columns.
-
 
 #### 2022-09-27 - v0.6.3
 
