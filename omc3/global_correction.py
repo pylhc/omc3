@@ -175,6 +175,7 @@ from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
                                        NORM_DISP, PHASE, TUNE)
 from omc3.model import manager
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -201,11 +202,14 @@ def correction_params():
     params = EntryPointParameters()
     params.add_parameter(name="meas_dir",
                          required=True,
+                         type=PathOrStr,
                          help="Path to the directory containing the measurement files.",)
     params.add_parameter(name="output_dir",
                          required=True,
+                         type=PathOrStr,
                          help="Path to the directory where to write the output files.", )
     params.add_parameter(name="fullresponse_path",
+                         type=PathOrStr,
                          help="Path to the fullresponse binary file.If not given, "
                               "calculates the response analytically.",)
     params.add_parameter(name="optics_params",
@@ -293,6 +297,8 @@ def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
         opt[key] = dict(zip(opt.optics_params, opt[key]))
     opt.meas_dir = Path(opt.meas_dir)
     opt.output_dir = Path(opt.output_dir)
+    if opt.fullresponse_path:
+        opt.fullresponse_path = Path(opt.fullresponse_path)
     return opt
 
 
