@@ -2,7 +2,9 @@
 
 #### 2022-11-01 - v0.6.6
 
-- Bugfix in correction: fullresponse is converted to Path.
+- Bugfixes 
+  - correction: fullresponse is converted to Path.
+  - fake measurement from model: dont randomize errors and values by default. 
 
 #### 2022-10-15 - v0.6.5
 

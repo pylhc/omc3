@@ -47,7 +47,7 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
     choices: ``['values', 'errors']``
 
-    default: ``['values', 'errors']``
+    default: ``[]``
 
 
 - **relative_errors** *(float)*:
@@ -143,7 +143,7 @@ def get_params():
               "values and the errors will be equal to the relative error * measurement."
               ),
         choices=[VALUES, ERRORS],
-        default=[VALUES, ERRORS],
+        default=[],
         type=str,
         nargs="*",
     )
@@ -472,11 +472,16 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> 
 
 def _get_random_errors(errors: np.array, values: np.array) -> np.array:
     """ Creates normal distributed error-values that will not be lower than EPSILON. """
+    LOG.debug("Calculating normal distributed random errors.")
     random_errors = np.zeros_like(errors)
     too_small = np.ones_like(errors, dtype=bool)
-    while sum(too_small):
+    n_too_small = 1
+    while n_too_small:
         random_errors[too_small] = np.random.normal(errors[too_small], errors[too_small])
         too_small = random_errors < EPSILON * np.abs(values)
+        n_too_small = sum(too_small)
+        LOG.debug(f"{n_too_small} error values are smaller than given eps.")
+    LOG.debug("Random errors created.")
     return random_errors
 
 
