@@ -9,6 +9,24 @@ import tfs
 from omc3.optics_measurements.constants import EXT
 from pathlib import Path
 
+def _some_combs():
+    return [
+        (1,2,3),  # ijkl
+        (2,3,4),  # i-jkl
+        (1,3,4),  # ij-kl
+        (1,2,4),  # ijk-l
+        (3,4,5),  # i--jkl
+        (1,4,5),  # ij--kl
+    ]
+
+def _combs_in_range(combrange: int):
+    return [(j,k,l) 
+            for l in range(3, combrange)
+            for k in range(2, l)
+            for j in range(1, k)
+           ]
+
+
 
 def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     print("starting LObster")
@@ -25,14 +43,7 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     tilted_beating = tilted_meas - tilted_model
     cot_model = 1.0 / tan(tilted_model)
 
-    for (j,k,l) in [
-        (1,2,3),  # ijkl
-        (2,3,4),  # i-jkl
-        (1,3,4),  # ij-kl
-        (1,2,4),  # ijk-l
-        (3,4,5),  # i--jkl
-        (1,4,5),  # ij--kl
-    ]:
+    for (j,k,l) in _combs_in_range(8):
         phi = []
         errphi = []
         names = []
