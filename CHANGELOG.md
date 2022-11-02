@@ -1,5 +1,25 @@
 # OMC3 Changelog
 
+
+#### 2022-10-15 - v0.6.5
+
+- Added to `knob_extractor`:
+  - proper state extraction. 
+  - IP2 and IP8 separation/crossing variables.
+
+#### 2022-10-12 - v0.6.4
+
+- Fixed the phase filtering for coupling calculation to not forget columns.
+
+
+#### 2022-09-27 - v0.6.3
+
+- Pandafied `knob_extractor` internally and python output.
+
+#### 2022-09-22 - v0.6.2
+
+- Cleaned logging in `knob_extractor`
+
 #### 2022-09-21 - v0.6.1
 
 - Added: 
