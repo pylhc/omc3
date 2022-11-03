@@ -202,6 +202,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
     if opt.outputdir is not None:
         LOG.info("Writing fake measurements to files.")
         output_path = Path(opt.outputdir)
+        output_path.mkdir(parents=True, exist_ok=True)
         for filename, df in results.items():
             full_path = output_path / f"{filename}{EXT}"
             tfs.write(full_path, df, save_index=NAME)

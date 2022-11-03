@@ -358,5 +358,4 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
 
 
 if __name__ == "__main__":
-    with logging_tools.DebugMode(active=False, log_file="iterative_correction.log"):
-        global_correction_entrypoint()
+    global_correction_entrypoint()
