@@ -122,6 +122,11 @@ def get_measurement_data(
     filtered_keys = keys
     if w_dict is not None:
         filtered_keys = [key for key in keys if w_dict[key] != 0]
+        if not len(filtered_keys):
+            raise ValueError(
+                "All Parameters have been filtered due to all-zero weights. "
+                "Check given weights and weight default values."
+            )
 
     for key in filtered_keys:
         if key.startswith(f"{PHASE}"):
