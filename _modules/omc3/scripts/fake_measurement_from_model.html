@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.scripts.fake_measurement_from_model &mdash; omc3 0.6.5 documentation</title>
+  <title>omc3.scripts.fake_measurement_from_model &mdash; omc3 0.6.6 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -446,9 +446,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>omc3.scripts.fake_measurement_from_model</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.scripts.fake_measurement_from_model</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -507,7 +507,7 @@
 
 <span class="sd">    choices: ``[&#39;values&#39;, &#39;errors&#39;]``</span>
 
-<span class="sd">    default: ``[&#39;values&#39;, &#39;errors&#39;]``</span>
+<span class="sd">    default: ``[]``</span>
 
 
 <span class="sd">- **relative_errors** *(float)*:</span>
@@ -603,7 +603,7 @@
               <span class="s2">&quot;values and the errors will be equal to the relative error * measurement.&quot;</span>
               <span class="p">),</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="n">VALUES</span><span class="p">,</span> <span class="n">ERRORS</span><span class="p">],</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">VALUES</span><span class="p">,</span> <span class="n">ERRORS</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -662,6 +662,7 @@
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing fake measurements to files.&quot;</span><span class="p">)</span>
         <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+        <span class="n">output_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">full_path</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
@@ -932,11 +933,16 @@
 
 <span class="k">def</span> <span class="nf">_get_random_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Creates normal distributed error-values that will not be lower than EPSILON. &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculating normal distributed random errors.&quot;</span><span class="p">)</span>
     <span class="n">random_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
     <span class="n">too_small</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="k">while</span> <span class="nb">sum</span><span class="p">(</span><span class="n">too_small</span><span class="p">):</span>
+    <span class="n">n_too_small</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">n_too_small</span><span class="p">:</span>
         <span class="n">random_errors</span><span class="p">[</span><span class="n">too_small</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">errors</span><span class="p">[</span><span class="n">too_small</span><span class="p">],</span> <span class="n">errors</span><span class="p">[</span><span class="n">too_small</span><span class="p">])</span>
         <span class="n">too_small</span> <span class="o">=</span> <span class="n">random_errors</span> <span class="o">&lt;</span> <span class="n">EPSILON</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">n_too_small</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">too_small</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_too_small</span><span class="si">}</span><span class="s2"> error values are smaller than given eps.&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Random errors created.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">random_errors</span>
 
 
