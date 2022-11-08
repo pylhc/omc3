@@ -14,7 +14,11 @@ finite-sized sample.
 import numpy as np
 from scipy.special import erf
 from scipy.stats import t
+
 from omc3.definitions.constants import PI2, PI2I
+from omc3.utils import logging_tools
+
+LOGGER = logging_tools.get_logger(__name__)
 
 CONFIDENCE_LEVEL = (1 + erf(1 / np.sqrt(2))) / 2
 
@@ -36,7 +40,6 @@ def circular_mean(data, period=PI2, errors=None, axis=None):
     Returns:
         Returns the weighted circular average along the specified axis.
     """
-
     phases = data * PI2I / period
     weights = weights_from_errors(errors, period=period)
 

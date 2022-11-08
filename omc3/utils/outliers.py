@@ -7,8 +7,8 @@ Helper functions for outlier detection.
 import numpy as np
 from numpy.typing import ArrayLike
 from scipy.stats import t
-from omc3.utils import logging_tools
 
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 
