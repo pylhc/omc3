@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2022-05-30 - v0.5.x - _jdilly_
+#### 2022-11-08 - v0.7.0 - _jdilly_
 
 - Added:
   - Tune error based on deviation of filtered BBQ data to the moving average
@@ -8,6 +8,53 @@
   - Action error calculated from error on the spectral line
     (which in turn is the same as NOISE)
   
+#### 2022-11-01 - v0.6.6
+
+- Bugfixes 
+  - correction: fullresponse is converted to Path.
+  - fake measurement from model: dont randomize errors and values by default. 
+
+#### 2022-10-15 - v0.6.5
+
+- Added to `knob_extractor`:
+  - proper state extraction. 
+  - IP2 and IP8 separation/crossing variables.
+
+#### 2022-10-12 - v0.6.4
+
+- Fixed the phase filtering for coupling calculation to not forget columns.
+
+#### 2022-09-27 - v0.6.3
+
+- Pandafied `knob_extractor` internally and python output.
+
+#### 2022-09-22 - v0.6.2
+
+- Cleaned logging in `knob_extractor`
+
+#### 2022-09-21 - v0.6.1
+
+- Added: 
+  - tbt output datatype for converter.
+
+#### 2022-09-20 - v0.6.0
+
+- Added:
+  - The `knob_extractor` script to get LHC knob values from `NXCALS` at a given time
+
+#### 2022-09-19 - v0.5.2
+
+- Bugfix:
+  - Correction Dataframe initialized as float (before as int)
+
+- Added:
+  - Plotting: Transposed legend order
+  - Plotting: Create markers from any text
+
+#### 2022-09-12 - v0.5.1
+
+- Updated to turn_by_turn v0.4.0: Includes SPS reader
+
 #### 2022-07-25 - v0.5.0 - _Mael-Le-Garrec_
 
 - Added:

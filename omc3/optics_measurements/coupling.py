@@ -97,8 +97,8 @@ def calculate_coupling(
     )
     joined = joined.loc[joined_index].copy()
 
-    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
-    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
+    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
+    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
