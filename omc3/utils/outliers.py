@@ -1,4 +1,4 @@
-r"""
+"""
 Outliers
 --------
 
@@ -7,13 +7,46 @@ Helper functions for outlier detection.
 import numpy as np
 from numpy.typing import ArrayLike
 from scipy.stats import t
+from omc3.utils import logging_tools
+
+
+LOGGER = logging_tools.get_logger(__name__)
 
 
 def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.0,
                     niter: int = 20, nsig: int = None, mask: ArrayLike = None) -> ArrayLike:
-    """
+    r"""
     Filters the array of values which are meant to be constant or a linear function of the x-data
     array if that is provided, by checking how many sigmas they are deviating from the average.
+
+    The outlier filtering function is utilized at multiple stages of the data analysis.
+    It removes data points in the tails of the measured distribution,
+    which are too populated due to the finite sample size,
+    assuming a normal distribution specified by measured mean and standard
+    deviation of the given data.
+    A data point, outside of a user-specified limit,
+    is removed if there is less than a 50% chance
+    that it is from the specified normal distribution.
+
+    In particular:
+    The function gets an array :math:`y` of data of length :math:`n_y`,
+    which can be any scalar data and is currently used for e.g. tune data
+    measured per BPM or a time series from the BBQ.
+    In addition, a cleaning ``limit`` can be given,
+    inside which the data points are always kept.
+    Further an optional array :math:`x` (via the parameter ``x_data``)
+    can be given, in which case a linear fit :math:`y = ax + c` is attempted
+    to remove any slope on the data, before calculating momenta on the data.
+    An upper boundary in :math:`n_\sigma` is then determined from the
+    percent point function (ppf) of a Student's t-distribution,
+    given :math:`n_x` degrees of freedom at :math:`100\% - 50\% / n_y`.
+    Iteratively, mean :math:`\left< y \right>` and standard deviation :math:`\sigma`
+    of the data is calculated and only data within :math:`n_\sigma \cdot \sigma`,
+    or the given cleaning limit, around :math:`\left< y \right>`
+    is kept for the next iteration. The loop stops either after 20 iterations,
+    when there is no more data outside the boundaries or
+    when there are less than three data points remaining.
+    
     Returns a filter mask for the original array (meaning ``True`` for elements that should be kept).
 
     Args:
@@ -36,6 +69,8 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
                    and ``False`` for the ones that should be filtered.
 
     """
+    LOGGER.debug("Creating Outlier-Filter mask.")
+
     if x_data is not None:
         if not len(data) == len(x_data):
             raise ValueError("Datasets are not equally long.")
@@ -49,40 +84,40 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
     if nsig is None:
         nsig = _get_significance_cut_from_length(np.sum(mask))
 
-    # To fulfill the condition for the first iteration:
-    prevlen = np.sum(mask) + 1
+    # Set number of remaining points to check decrease in loop
+    n_previous = np.sum(mask) + 1  # initialization for the first check
 
     # Cleaning iteration
     for _ in range(niter):
         # check that number of points decreases and some are left
-        if not ((np.sum(mask) < prevlen) and
-                (np.sum(mask) > 2)):
+        n_current = np.sum(mask)
+        if not ((n_current < n_previous) and (n_current > 2)):
             break
-        prevlen = np.sum(mask)
+        n_previous = n_current
 
         # get the (remaining) data-points used to get moments from,
         # if x-data is given, fit and remove slope.
         if x_data is None:
-            y, y_orig = _get_data(mask, data)
+            y, y_orig = data[mask], data
         else:
             y, y_orig = _get_data_without_slope(mask, x_data, data)
 
         # keep only points within nsig sigma of the remaining data.
         avg, std = np.mean(y), np.std(y)
         mask = np.logical_and(mask, np.abs(y_orig - avg) < np.max([limit, nsig * std]))
+    else:
+        LOGGER.debug("Outlier Filter loop exceeds maximum number of iterations."
+                     " Current filter-mask will be use.")
     return mask
 
 
 def _get_data_without_slope(mask, x, y):
+    """ Remove the slope on the data by performing a linear fit. """
     m, b = np.polyfit(x[mask], y[mask], 1)
     return y[mask] - b - m * x[mask], y - b - m * x
 
 
-def _get_data(mask, data):
-    return data[mask], data
-
-
-# Set the sigma cut, that expects 1 value to be cut
-# if it is sample of normal distribution
 def _get_significance_cut_from_length(length):
+    """ Set the sigma cut,
+    that expects 1 value to be cut if it is sample of normal distribution."""
     return t.ppf(1 - 0.5 / length, length)

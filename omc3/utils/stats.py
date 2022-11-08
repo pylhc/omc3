@@ -293,10 +293,15 @@ def unbias_variance(data, weights, axis=None):
 
 def t_value_correction(sample_size):
     """
-    Calculates the multiplicative correction factor to determine standard deviation of normally
-    distributed quantity from standard deviation of its finite-sized sample
+    Calculates the multiplicative correction factor to determine standard deviation of
+    a normally distributed quantity from standard deviation of its finite-sized sample
     the minimum allowed sample size is 2 to avoid non-reasonable error blow-up
-    for smaller sample sizes 2 is used instead
+    for smaller sample sizes 2 is used instead.
+
+    Note (jdilly): In other words, this transforms the area of 1 sigma under
+    the given student t distribution to the 1 sigma area of a normal distribution
+    (this transformation is where the ``CONFIDENCE LEVEL`` comes in).
+    I hope that makes the intention more clear.
 
     Args:
         sample_size: array-like
