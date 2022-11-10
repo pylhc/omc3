@@ -137,7 +137,7 @@ def _get_shape(orig_shape, axis):
 def weighted_error(data, errors=None, axis=None, t_value_corr=True):
     """
     Computes error of weighted average along the specified axis.
-    This similar to calculating the standard deviation on the data,
+    This is similar to calculating the standard deviation on the data,
     but with both, the average to which the deviation is calculated,
     as well as then the averaging over the deviations weighted by
     weights based on the errors.
@@ -227,7 +227,7 @@ def weights_from_errors(errors, period=PI2):
 
 def effective_sample_size(data, weights, axis=None):
     r"""
-    Computes effective sample size of weighted data along specifies axis,
+    Computes effective sample size of weighted data along specified axis,
     the minimum value returned is 2 to avoid non-reasonable error blow-up.
     
     It is calculated via Kish's approximate formula 
@@ -297,8 +297,8 @@ def unbias_variance(data, weights, axis=None):
 def t_value_correction(sample_size):
     """
     Calculates the multiplicative correction factor to determine standard deviation of
-    a normally distributed quantity from standard deviation of its finite-sized sample
-    the minimum allowed sample size is 2 to avoid non-reasonable error blow-up
+    a normally distributed quantity from standard deviation of its finite-sized sample.
+    The minimum allowed sample size is 2 to avoid non-reasonable error blow-up
     for smaller sample sizes 2 is used instead.
 
     Note (jdilly): In other words, this transforms the area of 1 sigma under

@@ -52,7 +52,7 @@ class MinMaxFilterOpt:
 FilterOpts = Union[OutlierFilterOpt, Tuple[MinMaxFilterOpt, MinMaxFilterOpt]]
 
 
-def get_moving_average(data_series, filter_opt: MinMaxFilterOpt)->Tuple[pd.Series, pd.Series, ArrayLike]:
+def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> Tuple[pd.Series, pd.Series, ArrayLike]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered
     beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)

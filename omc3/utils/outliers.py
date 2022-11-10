@@ -107,7 +107,7 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
         mask = np.logical_and(mask, np.abs(y_orig - avg) < np.max([limit, nsig * std]))
     else:
         LOGGER.debug("Outlier Filter loop exceeds maximum number of iterations."
-                     " Current filter-mask will be use.")
+                     " Current filter-mask will be used.")
     return mask
 
 
