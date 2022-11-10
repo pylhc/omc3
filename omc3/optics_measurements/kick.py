@@ -20,7 +20,7 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 NAT_TUNE, PEAK2PEAK,
                                                 RES,
                                                 RESCALE_FACTOR, RMS,
-                                                SQRT_ACTION, TIME, TUNE, S, NOISE, CO)
+                                                SQRT_ACTION, TIME, TUNE, S, NOISE, CLOSED_ORBIT)
 from omc3.utils.stats import weighted_mean, weighted_error
 
 
@@ -101,7 +101,7 @@ def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
         err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
     else:
         amps = frame.loc[:, PEAK2PEAK].to_numpy() / 2.0
-        err_amps = frame.loc[:, f"{CO}{RMS}"].to_numpy()
+        err_amps = frame.loc[:, f"{CLOSED_ORBIT}{RMS}"].to_numpy()
 
     # sqrt(2J) ---
     sqrt_beta = np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
