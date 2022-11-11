@@ -17,6 +17,7 @@ NORM_DISP_NAME: str = "normalised_dispersion_"
 ORBIT_NAME: str = "orbit_"
 KICK_NAME: str = "kick_"
 IP_NAME: str = "interaction_point_"
+CALIBRATION_FILE: str = "calibration_{plane}.out"
 
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe
@@ -40,20 +41,28 @@ BETA: str = "BET"
 DPP: str = "DPP"
 DPPAMP: str = "DPPAMP"
 AMPLITUDE: str = "AMP"
+NAT_AMPLITUDE: str = "NATAMP"
 PHASE: str = "PHASE"
 PHASE_ADV: str = "MU"
 F1001: str = "F1001"
 F1010: str = "F1010"
+NOISE: str = "NOISE"
+CLOSED_ORBIT: str = "CO"
 
 SECONDARY_AMPLITUDE_X: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum
 SECONDARY_FREQUENCY_X: str = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
 SECONDARY_FREQUENCY_Y: str = "PHASE10_Y"  # frequency of secondary line in vertical spectrum
 
+# Kick files
 TIME: str = "TIME"
 ACTION: str = "2J"
 SQRT_ACTION: str = "sqrt2J"
 
+# Calibration files
+CALIBRATION = "CALIBRATION"
+ERR_CALIBRATION = "ERROR_CALIBRATION"
 
 # Headers ----------------------------------------------------------------------
 RESCALE_FACTOR: str = "RescalingFactor"
+BPM_RESOLUTION: str = "BPMResolution"
