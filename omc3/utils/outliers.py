@@ -118,6 +118,6 @@ def _get_data_without_slope(mask, x, y):
 
 
 def _get_significance_cut_from_length(length):
-    """ Set the sigma cut,
-    that expects 1 value to be cut if it is sample of normal distribution."""
+    """ Set the sigma cut, that expects one value to be cut
+    if it is sample of normal distribution."""
     return t.ppf(1 - 0.5 / length, length)

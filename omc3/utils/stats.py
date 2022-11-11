@@ -217,7 +217,7 @@ def weights_from_errors(errors, period=PI2):
     if errors is None:
         return None
     if np.any(np.isnan(errors)):
-        LOGGER.warning("Nans found, weights are not used.")
+        LOGGER.warning("NaNs found, weights are not used.")
         return None
     if np.any(np.logical_not(errors)):
         LOGGER.warning("Zeros found, weights are not used.")
