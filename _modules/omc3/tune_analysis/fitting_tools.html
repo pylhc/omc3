@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tune_analysis.fitting_tools &mdash; omc3 0.6.6 documentation</title>
+  <title>omc3.tune_analysis.fitting_tools &mdash; omc3 0.7.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.6
+                0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -467,7 +467,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -495,12 +495,14 @@
 <div class="viewcode-block" id="do_odr"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.do_odr">[docs]</a><span class="k">def</span> <span class="nf">do_odr</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">xerr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the odr fit.</span>
+
 <span class="sd">    Important Convention:</span>
-<span class="sd">        The beta-parameter in the ODR models go upwards with order, i.e.</span>
-<span class="sd">        |  beta[0] = y-Axis offset</span>
-<span class="sd">        |  beta[1] = slope</span>
-<span class="sd">        |  beta[2] = quadratic term</span>
-<span class="sd">        |  etc.</span>
+<span class="sd">    The beta-parameter in the ODR models go upwards with order, i.e.</span>
+
+<span class="sd">    |  beta[0] = y-Axis offset</span>
+<span class="sd">    |  beta[1] = slope</span>
+<span class="sd">    |  beta[2] = quadratic term</span>
+<span class="sd">    |  etc.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x: `Series` of x data.</span>
@@ -518,6 +520,7 @@
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ODR fit input (from polynomial fit): </span><span class="si">{</span><span class="n">fit_np</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Actual ODR ---</span>
+    <span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_check_exact_zero_errors</span><span class="p">(</span><span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span><span class="p">)</span>
     <span class="n">odr</span> <span class="o">=</span> <span class="n">ODR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">RealData</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="n">xerr</span><span class="p">,</span> <span class="n">sy</span><span class="o">=</span><span class="n">yerr</span><span class="p">),</span>
               <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="p">(</span><span class="n">get_poly_fun</span><span class="p">(</span><span class="n">order</span><span class="p">)),</span>
               <span class="n">beta0</span><span class="o">=</span><span class="n">fit_np</span><span class="o">.</span><span class="n">coef</span><span class="p">)</span>
@@ -617,6 +620,7 @@
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Detuning estimate without errors (curve fit):</span><span class="se">\n</span><span class="si">{</span><span class="n">res_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Actual ODR ---</span>
+    <span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_check_exact_zero_errors</span><span class="p">(</span><span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span><span class="p">)</span>
     <span class="n">odr</span> <span class="o">=</span> <span class="n">ODR</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">RealData</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="n">xerr</span><span class="p">,</span> <span class="n">sy</span><span class="o">=</span><span class="n">yerr</span><span class="p">),</span>
               <span class="c1"># model=Model(first_order_detuning_2d),</span>
               <span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="p">(</span><span class="n">first_order_detuning_2d</span><span class="p">,</span> <span class="n">fjacd</span><span class="o">=</span><span class="n">first_order_detuning_2d_jacobian</span><span class="p">),</span>
@@ -639,6 +643,33 @@
     <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_check_exact_zero_errors</span><span class="p">(</span><span class="n">xerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Check if errors are exact zero and replace with minimum error, if so.</span>
+<span class="sd">    Done because ODR crashes on exact zero error-bars.</span>
+
+<span class="sd">    Beware that the output will always be np.arrays, even if the input is pd.Series.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">check_exact_zero_per_plane</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>  <span class="c1"># no problem</span>
+            <span class="k">return</span> <span class="n">err</span>
+
+        <span class="c1"># best way to work with array and series?</span>
+        <span class="n">minval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">err</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>  <span class="c1"># assumes all values &gt;=0</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">minval</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All errors are exactly zero in the </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2"> plane.&quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot; ODR cannot be performed.&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exact zeros in </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2"> errors found.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; Replaced by </span><span class="si">{</span><span class="n">minval</span><span class="si">}</span><span class="s2"> (the minimum value) to be able to perform ODR.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">err</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">minval</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+
+    <span class="n">xerr</span> <span class="o">=</span> <span class="n">check_exact_zero_per_plane</span><span class="p">(</span><span class="n">xerr</span><span class="p">,</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
+    <span class="n">yerr</span> <span class="o">=</span> <span class="n">check_exact_zero_per_plane</span><span class="p">(</span><span class="n">yerr</span><span class="p">,</span> <span class="s2">&quot;vertical&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span>
+
+
 
 </pre></div>
 

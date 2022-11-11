@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.stats &mdash; omc3 0.6.6 documentation</title>
+  <title>omc3.utils.stats &mdash; omc3 0.7.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.6
+                0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -474,7 +474,11 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">erf</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">t</span>
+
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PI2</span><span class="p">,</span> <span class="n">PI2I</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">CONFIDENCE_LEVEL</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">erf</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">2</span>
 
@@ -496,7 +500,6 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the weighted circular average along the specified axis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">phases</span> <span class="o">=</span> <span class="n">data</span> <span class="o">*</span> <span class="n">PI2I</span> <span class="o">/</span> <span class="n">period</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
 
@@ -594,10 +597,19 @@
 <div class="viewcode-block" id="weighted_error"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.weighted_error">[docs]</a><span class="k">def</span> <span class="nf">weighted_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_value_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes error of weighted average along the specified axis.</span>
+<span class="sd">    This is similar to calculating the standard deviation on the data,</span>
+<span class="sd">    but with both, the average to which the deviation is calculated,</span>
+<span class="sd">    as well as then the averaging over the deviations weighted by</span>
+<span class="sd">    weights based on the errors.</span>
+
+<span class="sd">    In addition, the weighted variance is unbiased by an unbias-factor</span>
+<span class="sd">    n / (n-1), where n is the :meth:`omc3.utils.stats.effective_sample_size` .</span>
+<span class="sd">    Additionally, a (student) t-value correction can be performed (done by default)</span>
+<span class="sd">    which corrects the estimate for small data sets.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        data: array-like</span>
-<span class="sd">            Contains the data to be averaged</span>
+<span class="sd">            Contains the data on which the weighted error on the average is calculated.</span>
 <span class="sd">        errors: array-like, optional</span>
 <span class="sd">            Contains errors associated with the values in data, it is used to calculated weights</span>
 <span class="sd">        axis: int or tuple of ints, optional</span>
@@ -610,8 +622,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
     <span class="n">weighted_average</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
-    <span class="p">(</span><span class="n">sample_variance</span><span class="p">,</span> <span class="n">sum_of_weights</span><span class="p">)</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">weighted_average</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-            <span class="n">_get_shape</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">axis</span><span class="p">)))),</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">returned</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">weighted_average</span> <span class="o">=</span> <span class="n">weighted_average</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">_get_shape</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">sample_variance</span><span class="p">,</span> <span class="n">sum_of_weights</span><span class="p">)</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">average</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">weighted_average</span><span class="p">)),</span>
+        <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">returned</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sample_variance</span> <span class="o">=</span> <span class="n">sample_variance</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sum_of_weights</span>
     <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sample_variance</span> <span class="o">*</span> <span class="n">unbias_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)))</span>
@@ -662,18 +677,33 @@
     <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">errors</span><span class="p">)):</span>
-        <span class="c1"># LOGGER.warning(&quot;Nans found, weights are not used.&quot;)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;NaNs found, weights are not used.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">errors</span><span class="p">)):</span>
-        <span class="c1"># LOGGER.warning(&quot;Zeros found, weights are not used.&quot;)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Zeros found, weights are not used.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">errors</span> <span class="o">*</span> <span class="n">PI2</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="effective_sample_size"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.effective_sample_size">[docs]</a><span class="k">def</span> <span class="nf">effective_sample_size</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes effective sample size of weighted data along specifies axis,</span>
-<span class="sd">    the minimum value returned is 2 to avoid non-reasonable error blow-up</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes effective sample size of weighted data along specified axis,</span>
+<span class="sd">    the minimum value returned is 2 to avoid non-reasonable error blow-up.</span>
+<span class="sd">    </span>
+<span class="sd">    It is calculated via Kish&#39;s approximate formula </span>
+<span class="sd">    from the (not necessarily normalized) weights :math:`w_i` (see wikipedia):</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        n_\mathrm{eff} = \frac{\left(\sum_i w_i\right)^2}{\sum_i w_i^2}</span>
+
+<span class="sd">    What it represents:</span>
+<span class="sd">    &quot;In most instances, weighting causes a decrease in the statistical significance of results. </span>
+<span class="sd">    The effective sample size is a measure of the precision of the survey </span>
+<span class="sd">    (e.g., even if you have a sample of 1,000 people, an effective sample size of 100 would indicate </span>
+<span class="sd">    that the weighted sample is no more robust than a well-executed un-weighted </span>
+<span class="sd">    simple random sample of 100 people).&quot; -</span>
+<span class="sd">    https://wiki.q-researchsoftware.com/wiki/Weights,_Effective_Sample_Size_and_Design_Effects</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        data: array-like</span>
@@ -693,8 +723,19 @@
 
 
 <div class="viewcode-block" id="unbias_variance"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.unbias_variance">[docs]</a><span class="k">def</span> <span class="nf">unbias_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes a correction factor to unbias variance of weighted average of data along specified axis</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes a correction factor to unbias variance of weighted average of data along specified axis,</span>
+<span class="sd">    e.g. transform the standard deviation 1</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \sigma^2 = \frac{1}{N} \sum_{i=1}^N (x_i - x_\mathrm{mean})^2</span>
+
+<span class="sd">    into an un-biased estimator</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \sigma^2 = \frac{1}{N-1} \sum_{i=1}^N (x_i - x_\mathrm{mean})^2</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        data: array-like</span>
@@ -715,17 +756,22 @@
 
 <div class="viewcode-block" id="t_value_correction"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.t_value_correction">[docs]</a><span class="k">def</span> <span class="nf">t_value_correction</span><span class="p">(</span><span class="n">sample_size</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the multiplicative correction factor to determine standard deviation of normally</span>
-<span class="sd">    distributed quantity from standard deviation of its finite-sized sample</span>
-<span class="sd">    the minimum allowed sample size is 2 to avoid non-reasonable error blow-up</span>
-<span class="sd">    for smaller sample sizes 2 is used instead</span>
+<span class="sd">    Calculates the multiplicative correction factor to determine standard deviation of</span>
+<span class="sd">    a normally distributed quantity from standard deviation of its finite-sized sample.</span>
+<span class="sd">    The minimum allowed sample size is 2 to avoid non-reasonable error blow-up</span>
+<span class="sd">    for smaller sample sizes 2 is used instead.</span>
+
+<span class="sd">    Note (jdilly): In other words, this transforms the area of 1 sigma under</span>
+<span class="sd">    the given student t distribution to the 1 sigma area of a normal distribution</span>
+<span class="sd">    (this transformation is where the ``CONFIDENCE LEVEL`` comes in).</span>
+<span class="sd">    I hope that makes the intention more clear.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        sample_size: array-like</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        multiplicative correction factor(s) of same shape as sample_size</span>
-<span class="sd">            can contain nans</span>
+<span class="sd">        multiplicative correction factor(s) of same shape as sample_size.</span>
+<span class="sd">        Can contain nans.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">CONFIDENCE_LEVEL</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sample_size</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
 </pre></div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.amplitude_detuning_analysis &mdash; omc3 0.6.6 documentation</title>
+  <title>omc3.amplitude_detuning_analysis &mdash; omc3 0.7.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
             <img src="../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.6
+                0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -575,8 +575,6 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
@@ -584,20 +582,20 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
-<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">save_options_to_config</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
 <span class="kn">from</span> <span class="nn">tfs.frame</span> <span class="kn">import</span> <span class="n">TfsDataFrame</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions</span> <span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">fitting_tools</span><span class="p">,</span> <span class="n">kick_file_modifiers</span><span class="p">,</span> <span class="n">timber_extract</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis.bbq_tools</span> <span class="kn">import</span> <span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span>
+<span class="kn">from</span> <span class="nn">omc3.tune_analysis.bbq_tools</span> <span class="kn">import</span> <span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span><span class="p">,</span> <span class="n">FilterOpts</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis.constants</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_bbq_col</span><span class="p">,</span>
     <span class="n">get_bbq_out_name</span><span class="p">,</span>
     <span class="n">get_kick_out_name</span><span class="p">,</span>
-    <span class="n">get_mav_col</span><span class="p">,</span>
-    <span class="n">get_timber_bbq_key</span><span class="p">,</span> <span class="n">INPUT_KICK</span><span class="p">,</span> <span class="n">INPUT_PREVIOUS</span><span class="p">,</span> <span class="n">CORRECTED</span><span class="p">,</span>
+    <span class="n">get_timber_bbq_key</span><span class="p">,</span>
+    <span class="n">get_natq_err_col</span><span class="p">,</span>
+    <span class="n">INPUT_KICK</span><span class="p">,</span> <span class="n">INPUT_PREVIOUS</span><span class="p">,</span> <span class="n">CORRECTED</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis.kick_file_modifiers</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">read_timed_dataframe</span><span class="p">,</span>
@@ -726,7 +724,8 @@
 
     <span class="n">opt</span><span class="p">,</span> <span class="n">filter_opt</span> <span class="o">=</span> <span class="n">_check_analyse_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
     <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">get_kick_and_bbq_df</span><span class="p">(</span><span class="n">kick</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">kick</span><span class="p">,</span> <span class="n">bbq_in</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">bbq_in</span><span class="p">,</span>
-                                          <span class="n">beam</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">=</span><span class="n">filter_opt</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+                                          <span class="n">beam</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span>
+                                          <span class="n">filter_opt</span><span class="o">=</span><span class="n">filter_opt</span><span class="p">)</span>
 
     <span class="n">kick_plane</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">plane</span>
 
@@ -737,23 +736,34 @@
             <span class="n">kick_df</span> <span class="o">=</span> <span class="n">double_action_analysis</span><span class="p">(</span><span class="n">kick_df</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">detuning_order</span><span class="p">,</span> <span class="n">corrected</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing kick data to file in directory &#39;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">write_timed_dataframe</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span> <span class="o">/</span> <span class="n">get_kick_out_name</span><span class="p">(),</span> <span class="n">kick_df</span><span class="p">)</span>
-
+        <span class="n">_write_dataframes</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span></div>
 
 
 <div class="viewcode-block" id="get_kick_and_bbq_df"><a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.amplitude_detuning_analysis.get_kick_and_bbq_df">[docs]</a><span class="k">def</span> <span class="nf">get_kick_and_bbq_df</span><span class="p">(</span><span class="n">kick</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">bbq_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-                        <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filter_opt</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">filter_opt</span><span class="p">:</span> <span class="n">FilterOpts</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Load the input data.&quot;&quot;&quot;</span>
     <span class="n">bbq_df</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">bbq_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bbq_in</span> <span class="o">==</span> <span class="n">INPUT_PREVIOUS</span><span class="p">:</span>
+        <span class="c1"># NOTE: this is not the same as the &quot;previous BBQ data&quot; option in the GUI.</span>
+        <span class="c1"># That one just uses the previous bbq_ampdet.tfs file (loaded in the &quot;else&quot; below).</span>
+        <span class="c1"># The use-case for the INPUT_PREVIOUS option here is,</span>
+        <span class="c1"># that you can modify the kick_ampdet_xy file manually (e.g. removing kicks)</span>
+        <span class="c1"># and run the fitting on the new data again,</span>
+        <span class="c1"># without having to touch the whole BBQ stuff again (as the values are already in the file).</span>
+        <span class="c1"># Tips:</span>
+        <span class="c1">#  - Remove full columns to get rid of the whole kick</span>
+        <span class="c1">#  - Add NaNs into NATQ columns you want to ignore (in case you want to keep the other plane for this kick)</span>
+        <span class="c1">#  - Add NaNs to the ERRNATQ columns if you want to plot the point (w/o error bars) but not use it for fit</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting data from previous ampdet kick file&quot;</span><span class="p">)</span>
         <span class="n">kick_df</span> <span class="o">=</span> <span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">kick</span><span class="p">)</span> <span class="o">/</span> <span class="n">get_kick_out_name</span><span class="p">())</span>
         <span class="n">kick_df</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kick_df</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ODR_&quot;</span><span class="p">)}</span>
+
+        <span class="c1"># redo the corrected columns, so you only need to add NaNs into the NATQ columns</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding corrected natural tunes and stdev to kick data&quot;</span><span class="p">)</span>
+        <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kick_df</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Getting data from kick files&quot;</span><span class="p">)</span>
         <span class="n">kick_df</span> <span class="o">=</span> <span class="n">read_two_kick_files_from_folder</span><span class="p">(</span><span class="n">kick</span><span class="p">)</span>
@@ -767,15 +777,6 @@
             <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding corrected natural tunes and stdev to kick data&quot;</span><span class="p">)</span>
             <span class="n">kick_df</span> <span class="o">=</span> <span class="n">kick_file_modifiers</span><span class="o">.</span><span class="n">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kick_df</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing BBQ data to file in directory &#39;</span><span class="si">{</span><span class="n">output</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">window</span> <span class="o">=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                    <span class="n">window</span> <span class="o">=</span> <span class="n">filter_opt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">window</span>
-
-                <span class="n">x_interval</span> <span class="o">=</span> <span class="n">get_approx_bbq_interval</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">,</span> <span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
-                <span class="n">write_timed_dataframe</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="n">get_bbq_out_name</span><span class="p">(),</span> <span class="n">bbq_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">x_interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">x_interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
     <span class="k">return</span> <span class="n">kick_df</span><span class="p">,</span> <span class="n">bbq_df</span></div>
 
 
@@ -879,7 +880,7 @@
 <span class="c1"># Private Functions ------------------------------------------------------------</span>
 
 
-<span class="k">def</span> <span class="nf">_check_analyse_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_check_analyse_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DotDict</span><span class="p">,</span> <span class="n">FilterOpts</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Perform manual checks on opt-sturcture.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking Options.&quot;</span><span class="p">)</span>
 
@@ -1000,6 +1001,15 @@
 <span class="sd">          [Jy0, Jy1, Jy2, ....]]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+
+
+<span class="k">def</span> <span class="nf">_write_dataframes</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">kick_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">):</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing kick data to file in directory &#39;</span><span class="si">{</span><span class="n">output</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">write_timed_dataframe</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="n">get_kick_out_name</span><span class="p">(),</span> <span class="n">kick_df</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bbq_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing BBQ data to file in directory &#39;</span><span class="si">{</span><span class="n">output</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">write_timed_dataframe</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="n">get_bbq_out_name</span><span class="p">(),</span> <span class="n">bbq_df</span><span class="p">)</span>
 
 
 <span class="c1"># Script Mode ##################################################################</span>

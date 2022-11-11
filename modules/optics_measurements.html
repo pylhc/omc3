@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optics Measurements &mdash; omc3 0.6.6 documentation</title>
+  <title>Optics Measurements &mdash; omc3 0.7.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -34,7 +34,7 @@
             <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.6
+                0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -481,6 +481,17 @@ It provides functions to compute various lattice optics parameters from frequenc
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.calibrate">
+<span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calibs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.calibrate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.calibrate" title="Permalink to this definition"></a></dt>
+<dd><p>Use calibration data to rescale amplitude and amplitude error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>calibs</strong> (<em>Dict</em>) -- Plane-Dictionary with DataFrames of calibration data.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.dpps">
 <span class="sig-name descname"><span class="pre">dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.dpps" title="Permalink to this definition"></a></dt>

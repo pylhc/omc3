@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tune_analysis.bbq_tools &mdash; omc3 0.6.6 documentation</title>
+  <title>omc3.tune_analysis.bbq_tools &mdash; omc3 0.7.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
             <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.6
+                0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -473,7 +473,7 @@
 
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.outliers</span> <span class="kn">import</span> <span class="n">get_filter_mask</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span>  <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -512,7 +512,7 @@
 <span class="n">FilterOpts</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">MinMaxFilterOpt</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span><span class="p">]]</span>
 
 
-<div class="viewcode-block" id="get_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average">[docs]</a><span class="k">def</span> <span class="nf">get_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">MinMaxFilterOpt</span><span class="p">):</span>
+<div class="viewcode-block" id="get_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average">[docs]</a><span class="k">def</span> <span class="nf">get_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">MinMaxFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered</span>
 <span class="sd">    beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)</span>
@@ -523,7 +523,7 @@
 <span class="sd">        filter_opt: Options for the filtering, see `:class:`omc3.tune_analysis.bbq_tools.MinMaxFilterOpt`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A filtered and averaged `Series` and the mask used for filtering data.</span>
+<span class="sd">        A filtered and averaged `Series`, another `Series` with the error and the mask used for filtering data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cutting data and calculating moving average of length </span><span class="si">{</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
@@ -543,16 +543,16 @@
 
     <span class="n">cut_mask</span> <span class="o">=</span> <span class="n">min_mask</span> <span class="o">|</span> <span class="n">max_mask</span> <span class="o">|</span> <span class="n">data_series</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
     <span class="n">_is_almost_empty_mask</span><span class="p">(</span><span class="o">~</span><span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
-    <span class="n">data_mav</span><span class="p">,</span> <span class="n">std_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
+    <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">min_mask</span> <span class="o">=</span> <span class="n">data_series</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">data_mav</span> <span class="o">-</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">)</span>
         <span class="n">max_mask</span> <span class="o">=</span> <span class="n">data_series</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">data_mav</span> <span class="o">+</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">)</span>
         <span class="n">cut_mask</span> <span class="o">=</span> <span class="n">min_mask</span> <span class="o">|</span> <span class="n">max_mask</span> <span class="o">|</span> <span class="n">data_series</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
         <span class="n">_is_almost_empty_mask</span><span class="p">(</span><span class="o">~</span><span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">)</span>
-        <span class="n">data_mav</span><span class="p">,</span> <span class="n">std_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">)</span>
+        <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">std_mav</span><span class="p">,</span> <span class="o">~</span><span class="n">cut_mask</span></div>
+    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span><span class="p">,</span> <span class="o">~</span><span class="n">cut_mask</span></div>
 
 
 <div class="viewcode-block" id="clean_outliers_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average">[docs]</a><span class="k">def</span> <span class="nf">clean_outliers_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
@@ -574,8 +574,8 @@
         <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">window</span><span class="p">]</span> <span class="o">&amp;=</span> <span class="n">get_filter_mask</span><span class="p">(</span><span class="n">data_series</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">window</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">init_mask</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">window</span><span class="p">])</span>
 
     <span class="n">_is_almost_empty_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
-    <span class="n">data_mav</span><span class="p">,</span> <span class="n">std_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">std_mav</span><span class="p">,</span> <span class="n">mask</span></div>
+    <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span><span class="p">,</span> <span class="n">mask</span></div>
 
 
 <span class="c1"># Private methods ############################################################</span>
@@ -611,18 +611,22 @@
 
     <span class="n">shift</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">((</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Shift average to middle value</span>
 
-    <span class="c1"># calculate mean and std, fill NaNs at the ends</span>
+    <span class="c1"># calculate mean and fill NaNs at the ends</span>
     <span class="n">data_mav</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
         <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bfill&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;ffill&quot;</span><span class="p">)</span>
-    <span class="n">std_mav</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
-        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bfill&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;ffill&quot;</span><span class="p">)</span>
+
+    <span class="c1"># calculate deviation to the moving average and fill NaNs at the ends</span>
+    <span class="n">std_mav</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">data</span><span class="o">-</span><span class="n">data_mav</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bfill&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;ffill&quot;</span><span class="p">))</span>
+    <span class="n">err_mav</span> <span class="o">=</span> <span class="n">std_mav</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">is_datetime_index</span><span class="p">:</span>
         <span class="c1"># restore index from input series</span>
         <span class="n">data_mav</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">index</span>
         <span class="n">std_mav</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">err_mav</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">index</span>
 
-    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">std_mav</span>
+    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span>
 
 
 <span class="k">def</span> <span class="nf">_is_almost_empty_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">av_length</span><span class="p">):</span>
