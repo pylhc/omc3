@@ -1,13 +1,23 @@
- title, 'BOOSTER lattice';
+title, 'BOOSTER lattice';
+set,  format="20.10f";
 
  /******************************************************************
  * Energy and particle type definition
  ******************************************************************/
  
-call, file="%(BEAM_FILE)s";
+if (%(USE_CUSTOM_PC)s == 1) {
+    !for the time being not used
+    beam_Ek=%(KINETICENERGY)s;
+    beam_Etot = beam_Ek + pmass;
+    beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+
+    BEAM, PARTICLE=PROTON, PC=beam_pc;
+} else {
+    call, file="%(BEAM_FILE)s";
+};
+
 BRHO      := BEAM->PC * 3.3356;
 
-set,  format="20.10f";
 
 /******************************************************************
  * Call lattice files
@@ -17,12 +27,6 @@ call, file = '%(ACC_MODELS_DIR)s/psb.seq';
 call, file = '%(ACC_MODELS_DIR)s/psb_aperture.dbx';
 call, file = '%(STR_FILE)s';
 call, file = '%(ACC_MODELS_DIR)s/_scripts/macros.madx';
-
- !for the time being not used
- beam_Ek=%(KINETICENERGY)s;
- beam_Etot = beam_Ek + pmass;
- beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
- 
 
  option, echo;
  option, RBARC=FALSE;
@@ -61,8 +65,8 @@ endedit;
  * Tune Matching
  ******************************************************************************************/
  MATCH,sequence=psb%(RING)s;
-  vary, NAME=kKF, step = 0.0001;
-  vary, NAME=kKD, step = 0.0001;
+  vary, NAME=kBRQF, step = 0.0001;
+  vary, NAME=kBRQD, step = 0.0001;
   constraint, range=#E, MUX=Qx, MUY=Qy;
   lmdif, calls = 10000, tolerance = 1.0E-21;
  ENDMATCH;

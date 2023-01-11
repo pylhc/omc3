@@ -63,7 +63,7 @@ Model Creation Keyword Args:
 import logging
 from pathlib import Path
 
-from generic_parser import EntryPoint
+from generic_parser import DotDict, EntryPoint
 
 from omc3.model.accelerators.accelerator import (Accelerator,
                                                  AcceleratorDefinitionError, AccElementTypes, AccExcitationMode)
@@ -72,8 +72,29 @@ from omc3.model.constants import PLANE_TO_HV, MODIFIER_TAG
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent
 
+class PsBase(Accelerator):
+    """ Base class for Ps and PsBooster"""
+    NAME = None
 
-class Psbooster(Accelerator):
+    @staticmethod
+    def get_parameters():
+        params = super(PsBase, PsBase).get_parameters()
+        params.add_parameter(name="year", type=str, help="Optics tag.")
+        params.add_parameter(name="scenario", type=str, help="Scenario.")
+        params.add_parameter(name="cycle_point", type=str, help="Cycle Point.")
+        params.add_parameter(name="str_file", type=str, help="Strength File")
+        return params
+
+    def __init__(self, opt: DotDict):
+        super().__init__(opt)
+        self.year = opt.year
+        self.scenario = opt.scenario
+        self.cycle_point = opt.cycle_point
+        self.beam_file = None
+        self.str_file = opt.str_file
+
+
+class Psbooster(PsBase):
     """Parent Class for Psbooster-types."""
     NAME = "psbooster"
     RE_DICT = {AccElementTypes.BPMS: r"BR\d\.BPM[^T]",
@@ -85,9 +106,6 @@ class Psbooster(Accelerator):
     def get_parameters():
         params = super(Psbooster, Psbooster).get_parameters()
         params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
-        params.add_parameter(name="year", type=str, help="Optics tag.")
-        params.add_parameter(name="scenario", type=str, help="Scenario.")
-        params.add_parameter(name="cycle_point", type=str, help="Cycle Point.")
         return params
 
     def __init__(self, *args, **kwargs):
@@ -95,11 +113,6 @@ class Psbooster(Accelerator):
         opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
         self.ring = opt.ring
-        self.year = opt.year
-        self.scenario = opt.scenario
-        self.cycle_point = opt.cycle_point
-        self.beam_file = None
-        self.str_file = None
 
     @property
     def ring(self):
@@ -117,9 +130,6 @@ class Psbooster(Accelerator):
     def verify_object(self):
         Accelerator.verify_object(self)
         _ = self.ring
-        if self.modifiers:
-            raise AcceleratorDefinitionError(f"Accelerator {self.NAME} cannot handle modifiers,"
-                                             f" yet modifiers were given.")
 
     def get_exciter_bpm(self, plane, bpms):
         if not self.excitation:
@@ -134,14 +144,16 @@ class Psbooster(Accelerator):
         if best_knowledge:
             raise NotImplementedError(f"Best knowledge model not implemented for accelerator {self.NAME}")
 
+        print("--- PsBooster get_base_madx_script")
         use_acd = self.excitation == AccExcitationMode.ACD
         replace_dict = {
             "FILES_DIR": str(self.get_dir()),
             "USE_ACD": str(int(use_acd)),
-            "RING": self.ring,
+            "RING": str(self.ring),
             "NAT_TUNE_X": self.nat_tunes[0],
             "NAT_TUNE_Y": self.nat_tunes[1],
-            "KINETICENERGY": self.energy,
+            "KINETICENERGY": 0 if self.energy is None else self.energy,
+            "USE_CUSTOM_PC": "0" if self.energy is None else "1",
             "ACC_MODELS_DIR": self.acc_model_path,
             "BEAM_FILE": self.beam_file,
             "STR_FILE": self.str_file,
@@ -152,6 +164,8 @@ class Psbooster(Accelerator):
             replace_dict["DRV_TUNE_X"] = self.drv_tunes[0]
             replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
         mask = self.get_file('base.mask').read_text()
+        print(mask)
+        print("================================================================================")
         return mask % replace_dict
 
 

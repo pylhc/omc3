@@ -18,7 +18,7 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcModelCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
-from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
+from omc3.model.model_creators.psbooster_model_creator import PsOrBoosterModelCreator, BoosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools
@@ -34,7 +34,7 @@ CREATORS = {
             "best_knowledge": LhcBestKnowledgeCreator,
             "segment": SegmentCreator,
             "coupling_correction": LhcCouplingCreator},
-    "psbooster": {"nominal": PsboosterModelCreator,
+    "psbooster": {"nominal": BoosterModelCreator,
                   "segment": SegmentCreator},
     "ps": {"nominal": PsModelCreator,
            "segment": SegmentCreator},
@@ -157,12 +157,15 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
 
-    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type]()
+    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type]
 
     # now that the creator is initialised, we can ask for modifiers that are actually present
     # using the fetcher we chose
     if not creator.get_options(accel_inst, opt):
         return None
+
+    print(accel_inst)
+    print(vars(accel_inst))
 
     # the rest is really only the model creation itself we are not going to stop anymore tool
     # print help / info stuff
@@ -178,6 +181,8 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     # Prepare paths
     create_dirs(opt.outputdir)
+    print(creator)
+    print(vars(creator))
     creator.prepare_run(accel_inst)
 
     madx_script = creator.get_madx_script(accel_inst)

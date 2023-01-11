@@ -57,14 +57,26 @@ from pathlib import Path
 
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes, AccExcitationMode
-from omc3.model.constants import PLANE_TO_HV, MODIFIER_TAG
+from omc3.model.accelerators.accelerator import (
+    AccElementTypes,
+    AccExcitationMode,
+    Accelerator,
+)
+from omc3.utils.parsertools import require_param
+from omc3.model.constants import MODIFIER_TAG, PLANE_TO_HV
+from omc3.model.accelerators.psbooster import PsBase
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent
 
+TUNE_METHODS = {
+    "qf": 1,
+    "pfw": 2,
+    "bh": 3,
+    "f8l": 4,
+}
 
-class Ps(Accelerator):
+class Ps(PsBase):
     """Parent Class for PS-types."""
     NAME = "ps"
     RE_DICT = {AccElementTypes.BPMS: r"PR\.BPM",
@@ -76,26 +88,21 @@ class Ps(Accelerator):
     @staticmethod
     def get_parameters():
         params = super(Ps, Ps).get_parameters()
-        params.add_parameter(
-            name="year",
-            type=int,
-            default=2021,
-            choices=(2018, 2021),
-            help="Year of the optics.",
-        )
+        params.add_parameter(name="tune_method",
+                             choices = list(TUNE_METHODS.keys()),
+                             type=str, help="Tune method")
         return params
 
     def __init__(self, *args, **kwargs):
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
-        self.year = opt.year
+
+        require_param("tune_method", Ps.get_parameters(), opt)
+        self.tune_method = TUNE_METHODS[opt.tune_method]
 
     def verify_object(self):
         pass
-
-    def get_dir(self):
-        return CURRENT_DIR / self.NAME / str(self.year)
 
     def get_file(self, filename: str) -> Path:
         """Get filepaths for PS files."""
@@ -130,19 +137,23 @@ class Ps(Accelerator):
             "USE_ACD": str(int(use_acd)),
             "NAT_TUNE_X": self.nat_tunes[0],
             "NAT_TUNE_Y": self.nat_tunes[1],
-            "KINETICENERGY": self.energy,
+            "KINETICENERGY": 0 if self.energy is None else self.energy,
+            "USE_CUSTOM_PC": "0" if self.energy is None else "1",
+            "ACC_MODELS_DIR": self.acc_model_path,
+            "BEAM_FILE": self.beam_file,
+            "STR_FILE": self.str_file,
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
             "MODIFIERS": "",
-            "BEAM_FILE": "",  # From 2021
+            "USE_MACROS": "0" if self.year == "2018" else "1",  # 2018 doesn't provide a macros file
+            "PS_TUNE_METHOD": self.tune_method,
         }
         if self.modifiers:
             replace_dict["MODIFIERS"] = '\n'.join([f" call, file = '{m}'; {MODIFIER_TAG}" for m in self.modifiers])
-            replace_dict["BEAM_FILE"] = '\n'.join([f" call, file = '{m.with_suffix('.beam')}';" for m in self.modifiers])
         if use_acd:
             replace_dict["DRV_TUNE_X"] = self.drv_tunes[0]
             replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
-        mask = self.get_file('base.mask').read_text()
+        mask = self.get_file('base.madx').read_text()
         return mask % replace_dict
 
 

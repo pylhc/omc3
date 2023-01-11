@@ -51,7 +51,8 @@ def _b2_columns() -> List[str]:
 
 class LhcModelCreator(ModelCreator):
 
-    def get_options(self, accel_inst, opt) -> bool:
+    @classmethod
+    def get_options(cls, accel_inst, opt) -> bool:
         if opt.fetch == PATHFETCHER:
             accel_inst.acc_model_path = Path(opt.path)
         elif opt.fetch == AFSFETCHER:
