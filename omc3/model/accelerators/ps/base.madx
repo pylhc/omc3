@@ -6,6 +6,7 @@ title, "PS model by OMC3 model creator";
 
 ps_tune_matching_method = %(PS_TUNE_METHOD)s;
 
+// low energy quads (leq)
 tune_matching_method1(qx, qy): macro = {
   match, sequence=ps;
     vary, name = kf;
@@ -17,10 +18,13 @@ tune_matching_method1(qx, qy): macro = {
   endmatch;
 };
 
+// combined function magnet components
+
+// pole face windings
 tune_matching_method2(qx, qy): macro = {
   match, sequence=ps;
     vary, name = k1prpfwf;
-    vary, name = kfprpfwd;
+    vary, name = k1prpfwd;
     !constraint, expr = table(summ,Q1)  = qx;
     !constraint, expr = table(summ,Q2)  = qy;
     constraint, range=#E, MUX=Qx, MUY=Qy;
@@ -28,10 +32,11 @@ tune_matching_method2(qx, qy): macro = {
   endmatch;
 };
 
+// actual quad of combined function magnets
 tune_matching_method3(qx, qy): macro = {
   match, sequence=ps;
     vary, name = k1prbhf;
-    vary, name = kfprbhd;
+    vary, name = k1prbhd;
     !constraint, expr = table(summ,Q1)  = qx;
     !constraint, expr = table(summ,Q2)  = qy;
     constraint, range=#E, MUX=Qx, MUY=Qy;
@@ -39,6 +44,7 @@ tune_matching_method3(qx, qy): macro = {
   endmatch;
 };
 
+// figure 8 loop
 tune_matching_method4(qx, qy): macro = {
   match, sequence=ps;
     vary, name = k1prf8l;
