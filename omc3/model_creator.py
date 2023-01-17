@@ -176,8 +176,6 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     # Prepare paths
     create_dirs(opt.outputdir)
-    print(creator)
-    print(vars(creator))
     creator.prepare_run(accel_inst)
 
     madx_script = creator.get_madx_script(accel_inst)
