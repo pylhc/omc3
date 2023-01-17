@@ -78,6 +78,7 @@ TUNE_METHODS = {
 
 class Ps(PsBase):
     """Parent Class for PS-types."""
+
     NAME = "ps"
     RE_DICT = {AccElementTypes.BPMS: r"PR\.BPM",
                AccElementTypes.MAGNETS: r".*",
