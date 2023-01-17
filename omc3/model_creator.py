@@ -164,11 +164,6 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     if not creator.get_options(accel_inst, opt):
         return None
 
-    print(accel_inst)
-    print(vars(accel_inst))
-
-    # the rest is really only the model creation itself we are not going to stop anymore tool
-    # print help / info stuff
     accel_inst.verify_object()
     require_param("outputdir", _get_params(), opt)
 
