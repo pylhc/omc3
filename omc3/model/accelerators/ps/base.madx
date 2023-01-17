@@ -1,12 +1,13 @@
 title, "PS model by OMC3 model creator";
 
-// ------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 // ---- Macros, TODO: move into macros.madx --------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
 
 ps_tune_matching_method = %(PS_TUNE_METHOD)s;
 
-// low energy quads (leq)
+// low energy quads (leq) --------------------------------------------------------------------------
+
 tune_matching_method1(qx, qy): macro = {
   match, sequence=ps;
     vary, name = kf;
@@ -18,7 +19,7 @@ tune_matching_method1(qx, qy): macro = {
   endmatch;
 };
 
-// combined function magnet components
+// combined function magnet components -------------------------------------------------------------
 
 // pole face windings
 tune_matching_method2(qx, qy): macro = {
@@ -60,7 +61,6 @@ tune_matching_method4(qx, qy): macro = {
 // ------------------------------------------------------------------------------------------------
 
 if (%(USE_CUSTOM_PC)s == 1) {
-    !for the time being not used
     beam_Ek=%(KINETICENERGY)s;
     beam_Etot = beam_Ek + pmass;
     beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
@@ -119,18 +119,18 @@ if (%(USE_MACROS)s == 1) {
 
 if (ps_tune_matching_method == 1) {
   exec, tune_matching_method1(Qx, Qy);
-}
+};
 
 if (ps_tune_matching_method == 2) {
   exec, tune_matching_method2(Qx, Qy);
-}
+};
 
 if (ps_tune_matching_method == 3) {
   exec, tune_matching_method3(Qx, Qy);
-}
+};
 
 if (ps_tune_matching_method == 4) {
   exec, tune_matching_method4(Qx, Qy);
-}
+};
 
 use, sequence=PS;
