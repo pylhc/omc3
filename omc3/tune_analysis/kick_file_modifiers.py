@@ -213,7 +213,7 @@ def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
             odr_data.beta[idx] = kickac_df.headers[header_val(q_plane=tune_plane, j_plane=action_plane, order=idx)]
             odr_data.sd_beta[idx] = kickac_df.headers[header_err(q_plane=tune_plane, j_plane=action_plane, order=idx)]
         except KeyError as e:
-            LOG.debug(f"Fit data for order {order} nor found. ({str(e)})")
+            LOG.debug(f"Fit data for order {order} not found. ({str(e)})")
     return odr_data
 
 

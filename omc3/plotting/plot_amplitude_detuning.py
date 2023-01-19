@@ -314,7 +314,7 @@ def _plot_2d(tune_plane: str, opt: DotDict) -> Dict[str, Figure]:
                 continue  # don't save/return empty figures
 
             if opt.correct_acd and tune_plane == action_plane:
-                    ax.text(0.0, 1.02, "* corrected for AC-Dipole.",
+                ax.text(0.0, 1.02, "* corrected for AC-Dipole.",
                         fontsize="x-small",
                         ha="left",
                         va='bottom',
