@@ -1,5 +1,15 @@
 # OMC3 Changelog
 
+#### 2022-01-20 - v0.7.1 - _jdilly_
+
+- Added:
+  - Amplitude Detuning plots: Switch to plot only with/without BBQ correction 
+
+- Fix: 
+  - Second Order Amplitude Detuning fit now working
+  - Correct print/calculation of second order direct terms for forced 
+    kicks in plot-labels.
+
 #### 2022-11-08 - v0.7.0 - _jdilly_
 
 - Added:

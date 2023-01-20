@@ -209,8 +209,11 @@ def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
     header_val, header_err = _get_odr_headers(corrected)
     odr_data = FakeOdrOutput(beta=[0] * (order+1), sd_beta=[0] * (order+1))
     for idx in range(order+1):
-        odr_data.beta[idx] = kickac_df.headers[header_val(q_plane=tune_plane, j_plane=action_plane, order=idx)]
-        odr_data.sd_beta[idx] = kickac_df.headers[header_err(q_plane=tune_plane, j_plane=action_plane, order=idx)]
+        try:
+            odr_data.beta[idx] = kickac_df.headers[header_val(q_plane=tune_plane, j_plane=action_plane, order=idx)]
+            odr_data.sd_beta[idx] = kickac_df.headers[header_err(q_plane=tune_plane, j_plane=action_plane, order=idx)]
+        except KeyError as e:
+            LOG.debug(f"Fit data for order {order} not found. ({str(e)})")
     return odr_data
 
 

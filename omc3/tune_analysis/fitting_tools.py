@@ -56,7 +56,7 @@ def do_odr(x: pd.Series, y: pd.Series, xerr: pd.Series, yerr: pd.Series, order: 
     LOG.debug("Starting ODR fit.")
 
     # Poly-Fit for starting point ---
-    fit_np = Polynomial.fit(x, y, deg=1).convert()
+    fit_np = Polynomial.fit(x, y, deg=order).convert()
     LOG.debug(f"ODR fit input (from polynomial fit): {fit_np}")
 
     # Actual ODR ---
