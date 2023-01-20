@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.manager &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.model.manager &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -489,7 +489,7 @@
 
 <div class="viewcode-block" id="get_accelerator"><a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">get_accelerator</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the `Accelerator` instance of the desired accelerator, as given at the commandline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -500,7 +500,7 @@
 
 <div class="viewcode-block" id="get_parsed_opt"><a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_parsed_opt">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">get_parsed_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get all accelerator related options as a `dict`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all accelerator related options as a `dict`.&quot;&quot;&quot;</span>
     <span class="n">accel</span> <span class="o">=</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">]</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">accel_opt</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">other_opt</span><span class="p">)</span>

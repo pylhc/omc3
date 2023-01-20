@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.scripts.merge_kmod_results &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.scripts.merge_kmod_results &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -542,7 +542,7 @@
 
 <div class="viewcode-block" id="merge_kmod_results"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.merge_kmod_results">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">merge_kmod_results</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main function to merge K-Mod output.</span>
 <span class="sd">    See :mod:`omc3.scripts.merge_kmod_results`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -568,7 +568,7 @@
 
 
 <span class="k">def</span> <span class="nf">_validate_for_imbalance</span><span class="p">(</span><span class="n">data_frame</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks that the provided `TfsDataFrame` contains the expected labels and columns for a</span>
 <span class="sd">    luminosity imbalance calculation.</span>
 
@@ -589,7 +589,7 @@
 
 
 <div class="viewcode-block" id="get_lumi_imbalance"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.get_lumi_imbalance">[docs]</a><span class="k">def</span> <span class="nf">get_lumi_imbalance</span><span class="p">(</span><span class="n">data_frame</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">UFloat</span><span class="p">,</span> <span class="n">UFloat</span><span class="p">,</span> <span class="n">UFloat</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the IP1 / IP5 luminosity imbalance. The luminosity is taken as defined in</span>
 <span class="sd">    `Concept of luminosity`, Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf</span>
 
@@ -643,7 +643,7 @@
         <span class="n">beta_ip1</span><span class="p">:</span> <span class="n">UFloat</span><span class="p">,</span>
         <span class="n">beta_ip5</span><span class="p">:</span> <span class="n">UFloat</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to add the calculated imablance and effective betas to the header</span>
 
 <span class="sd">    Args:</span>
@@ -666,7 +666,7 @@
 
 
 <div class="viewcode-block" id="merge_tfs"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.merge_tfs">[docs]</a><span class="k">def</span> <span class="nf">merge_tfs</span><span class="p">(</span><span class="n">directories</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">],</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Merge different kmod analysis results from a list of directories into a single `TfsDataFrame`.</span>
 
 <span class="sd">    Args:</span>
@@ -696,7 +696,7 @@
 
 
 <div class="viewcode-block" id="get_kmod_ip_subdirs"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.merge_kmod_results.get_kmod_ip_subdirs">[docs]</a><span class="k">def</span> <span class="nf">get_kmod_ip_subdirs</span><span class="p">(</span><span class="n">kmod_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Returns the paths to the ip-subdirectories in the kmod result directories.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the paths to the ip-subdirectories in the kmod result directories.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        kmod_dirs (List[Path]): Main kmod result directories with IP-subdirectories.</span>

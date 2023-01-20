@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.frequency &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.harpy.frequency &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -504,7 +504,7 @@
 
 
 <div class="viewcode-block" id="estimate_tunes"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.estimate_tunes">[docs]</a><span class="k">def</span> <span class="nf">estimate_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">usvs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimates the tunes from the `FFT` of decomposed data.</span>
 
 <span class="sd">    Args:</span>
@@ -533,7 +533,7 @@
 
 
 <div class="viewcode-block" id="harpy_per_plane"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.harpy_per_plane">[docs]</a><span class="k">def</span> <span class="nf">harpy_per_plane</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_matrix</span><span class="p">,</span> <span class="n">usv</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the spectra of TbT data, finds the main lines and cleans the BPMs for which the</span>
 <span class="sd">    main line hasn&#39;t been found or is too far from its average over BPMs.</span>
 
@@ -578,7 +578,7 @@
 
 
 <div class="viewcode-block" id="find_resonances"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.find_resonances">[docs]</a><span class="k">def</span> <span class="nf">find_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">nturns</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="n">order_resonances</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds higher order lines in the spectra.</span>
 
 <span class="sd">    Args:</span>
@@ -644,7 +644,7 @@
 
 
 <div class="viewcode-block" id="clean_by_tune"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.clean_by_tune">[docs]</a><span class="k">def</span> <span class="nf">clean_by_tune</span><span class="p">(</span><span class="n">tunes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">tune_clean_limit</span><span class="p">:</span> <span class="n">Number</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks for outliers in the tunes pandas Series and returns their indices.</span>
 
 <span class="sd">    Args:</span>
@@ -663,7 +663,7 @@
 
 
 <span class="k">def</span> <span class="nf">_search_highest_coefs</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the highest coefficients in frequencies/coefficients in freq +- tolerance.</span>
 
 <span class="sd">    Args:</span>
@@ -693,11 +693,11 @@
 
 <span class="k">def</span> <span class="nf">_get_resonance_suffix</span><span class="p">(</span><span class="n">resonance</span><span class="p">):</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">resonance</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}{</span><span class="n">y</span><span class="si">}{</span><span class="n">z</span> <span class="k">if</span> <span class="n">z</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}{</span><span class="n">y</span><span class="si">}{</span><span class="n">z</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_compute_resonances_with_freqs</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">resonance_lines</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the frequencies in [0, 1) for all the resonances listed in the ``RESONANCE_LISTS``,</span>
 <span class="sd">    together with the natural tunes frequencies if given.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -715,7 +715,7 @@
 
 
 <div class="viewcode-block" id="windowed_padded_rfft"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.windowed_padded_rfft">[docs]</a><span class="k">def</span> <span class="nf">windowed_padded_rfft</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">svd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the spectra using specified windowing function and zero-padding.</span>
 
 <span class="sd">    Args:</span>
@@ -753,7 +753,7 @@
 
 
 <div class="viewcode-block" id="windowing"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.windowing">[docs]</a><span class="k">def</span> <span class="nf">windowing</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hamming&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides specified windowing function of given length.</span>
 
 <span class="sd">    Currently, the following windowing functions are implemented (sorted by increasing width of</span>
@@ -783,7 +783,7 @@
 
 
 <div class="viewcode-block" id="get_freq_mask"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.get_freq_mask">[docs]</a><span class="k">def</span> <span class="nf">get_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">auto_tol</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes mask to get intervals around resonances in frequency domain.</span>
 
 <span class="sd">    Args:</span>

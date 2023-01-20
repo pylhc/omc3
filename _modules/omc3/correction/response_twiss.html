@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.response_twiss &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.correction.response_twiss &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -600,7 +600,7 @@
 
 
 <div class="viewcode-block" id="TwissResponse"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse">[docs]</a><span class="k">class</span> <span class="nc">TwissResponse</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Provides Response Matrices calculated from sequence, model and given variables.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Provides Response Matrices calculated from sequence, model and given variables.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        accel_inst (accelerator): Accelerator Instance (needs to contain elements model).</span>
@@ -656,7 +656,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_model_twiss</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Load model, but keep only BPMs and Magnets &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Load model, but keep only BPMs and Magnets &quot;&quot;&quot;</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">elements</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing non-necessary entries:&quot;</span><span class="p">)</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Entries total: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -669,7 +669,7 @@
         <span class="k">return</span> <span class="n">model</span>
 
     <span class="k">def</span> <span class="nf">_get_variable_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varmap_or_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get variable mapping as dictionary</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get variable mapping as dictionary</span>
 
 <span class="sd">        Dev hint: Define _variables first!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -697,7 +697,7 @@
         <span class="k">return</span> <span class="n">mapping</span>
 
     <span class="k">def</span> <span class="nf">_get_input_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return variable names of input elements.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return variable names of input elements.</span>
 
 <span class="sd">        Dev hint: Define _var_to_el and _twiss first!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -717,7 +717,7 @@
         <span class="k">return</span> <span class="n">el_in</span>
 
     <span class="k">def</span> <span class="nf">_get_output_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at_elements</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return name-array of elements to use for output.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name-array of elements to use for output.</span>
 
 <span class="sd">        Dev hint: Define _elements_in first!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -748,7 +748,7 @@
     <span class="c1">################################</span>
 
     <span class="k">def</span> <span class="nf">_calc_coupling_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Response Matrix for coupling.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for coupling.&quot;&quot;&quot;</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Coupling Matrix&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
@@ -771,7 +771,7 @@
         <span class="k">return</span> <span class="n">dcoupl</span>
 
     <span class="k">def</span> <span class="nf">_calc_beta_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Response Matrix for delta beta.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta beta.&quot;&quot;&quot;</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Beta Response Matrix&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
@@ -799,7 +799,7 @@
         <span class="k">return</span> <span class="n">dbeta</span>
 
     <span class="k">def</span> <span class="nf">_calc_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Dispersion Response Matrix&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
@@ -851,7 +851,7 @@
         <span class="k">return</span> <span class="n">disp_resp</span>
 
     <span class="k">def</span> <span class="nf">_calc_norm_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Normalized Dispersion Response Matrix&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
@@ -921,7 +921,7 @@
         <span class="k">return</span> <span class="n">disp_resp</span>
 
     <span class="k">def</span> <span class="nf">_calc_phase_advance_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Response Matrix for delta DPhi.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta DPhi.</span>
 
 <span class="sd">        Reduced to only phase advances between consecutive elements,</span>
 <span class="sd">        as the 3D-Matrix of all elements exceeds memory space</span>
@@ -973,7 +973,7 @@
         <span class="k">return</span> <span class="n">dmu</span>
 
     <span class="k">def</span> <span class="nf">_calc_phase_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Response Matrix for delta DPhi.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta DPhi.</span>
 
 <span class="sd">        This calculation could also be achieved by applying np.cumsum to the DataFrames of</span>
 <span class="sd">        _calc_phase_adv_response() (tested!), but _calc_phase_response() is about 4x faster.</span>
@@ -1017,7 +1017,7 @@
         <span class="k">return</span> <span class="n">dmu</span>
 
     <span class="k">def</span> <span class="nf">_calc_tune_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Response vectors for Tune.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response vectors for Tune.&quot;&quot;&quot;</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Tune Response Matrix&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
@@ -1042,7 +1042,7 @@
     <span class="c1">################################</span>
 
     <span class="k">def</span> <span class="nf">_normalize_beta_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Convert to Beta Beating &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Convert to Beta Beating &quot;&quot;&quot;</span>
         <span class="n">el_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements_out</span>
         <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
 
@@ -1057,7 +1057,7 @@
     <span class="c1">################################</span>
 
     <span class="k">def</span> <span class="nf">_map_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disp</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Maps all dispersion matrices &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Maps all dispersion matrices &quot;&quot;&quot;</span>
         <span class="n">disp_mapped</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">disp</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">m2v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_variables</span>
         <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">disp</span><span class="p">:</span>
@@ -1067,7 +1067,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_map_to_variables</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Maps from magnets to variables using self._var_to_el.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Maps from magnets to variables using self._var_to_el.</span>
 <span class="sd">        Could actually be done by matrix multiplication :math:&#39;A \cdot var_to_el&#39;,</span>
 <span class="sd">         yet, as var_to_el is very sparsely populated, looping is easier.</span>
 
@@ -1079,7 +1079,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">map_fun</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot; Actual mapping function &quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot; Actual mapping function &quot;&quot;&quot;</span>
             <span class="n">df_map</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">magnets</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">df_map</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">upper</span><span class="p">(</span><span class="n">magnets</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">magnets</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
@@ -1099,7 +1099,7 @@
     <span class="c1">################################</span>
 
 <div class="viewcode-block" id="TwissResponse.get_beta_beat"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_beta_beat">[docs]</a>    <span class="k">def</span> <span class="nf">get_beta_beat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Beta Beating &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for Beta Beating &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_beta_response</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat</span><span class="p">:</span>
@@ -1110,7 +1110,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat_mapped</span> <span class="k">if</span> <span class="n">mapped</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_beat</span></div>
 
 <div class="viewcode-block" id="TwissResponse.get_dispersion"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_dispersion">[docs]</a>    <span class="k">def</span> <span class="nf">get_dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Dispersion &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for Dispersion &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_dispersion_response</span><span class="p">()</span>
 
@@ -1120,7 +1120,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion_mapped</span> <span class="k">if</span> <span class="n">mapped</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispersion</span></div>
 
 <div class="viewcode-block" id="TwissResponse.get_norm_dispersion"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_norm_dispersion">[docs]</a>    <span class="k">def</span> <span class="nf">get_norm_dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Normalized Dispersion &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for Normalized Dispersion &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_norm_dispersion_response</span><span class="p">()</span>
 
@@ -1129,7 +1129,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion_mapped</span> <span class="k">if</span> <span class="n">mapped</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span></div>
 
 <div class="viewcode-block" id="TwissResponse.get_phase"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Total Phase &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for Total Phase &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_response</span><span class="p">()</span>
 
@@ -1142,7 +1142,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span></div>
 
 <div class="viewcode-block" id="TwissResponse.get_phase_adv"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_phase_adv">[docs]</a>    <span class="k">def</span> <span class="nf">get_phase_adv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for Phase Advance &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for Phase Advance &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_phase_advance_response</span><span class="p">()</span>
 
@@ -1155,7 +1155,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_adv</span></div>
 
 <div class="viewcode-block" id="TwissResponse.get_tune"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_tune">[docs]</a>    <span class="k">def</span> <span class="nf">get_tune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for the Tunes &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for the Tunes &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tune</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_tune</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_tune_response</span><span class="p">()</span>
 
@@ -1168,7 +1168,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tune</span></div>
 
 <div class="viewcode-block" id="TwissResponse.get_coupling"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_coupling">[docs]</a>    <span class="k">def</span> <span class="nf">get_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns Response Matrix for the coupling &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for the coupling &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupling</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_coupling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_coupling_response</span><span class="p">()</span>
 
@@ -1190,7 +1190,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_to_el</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
 
 <div class="viewcode-block" id="TwissResponse.get_response_for"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_response_for">[docs]</a>    <span class="k">def</span> <span class="nf">get_response_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observables</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># Dict[str, ???]</span>
-        <span class="sd">&quot;&quot;&quot; Calculates and returns only desired response matrices &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Calculates and returns only desired response matrices &quot;&quot;&quot;</span>
         <span class="c1"># calling functions for the getters to call functions only if needed</span>
         <span class="k">def</span> <span class="nf">caller</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">()[</span><span class="n">plane</span><span class="p">]</span>
@@ -1249,7 +1249,7 @@
 
 
 <div class="viewcode-block" id="response_add"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.response_add">[docs]</a><span class="k">def</span> <span class="nf">response_add</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Merges two or more Response Matrix DataFrames &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Merges two or more Response Matrix DataFrames &quot;&quot;&quot;</span>
     <span class="n">base_df</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="n">base_df</span> <span class="o">=</span> <span class="n">base_df</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
@@ -1257,12 +1257,12 @@
 
 
 <div class="viewcode-block" id="upper"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.upper">[docs]</a><span class="k">def</span> <span class="nf">upper</span><span class="p">(</span><span class="n">list_of_strings</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Set all items of list to uppercase &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Set all items of list to uppercase &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_of_strings</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="get_phase_advances"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.get_phase_advances">[docs]</a><span class="k">def</span> <span class="nf">get_phase_advances</span><span class="p">(</span><span class="n">twiss_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate phase advances between all elements</span>
 
 <span class="sd">    Returns:</span>
@@ -1285,12 +1285,12 @@
 
 
 <div class="viewcode-block" id="dphi"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.dphi">[docs]</a><span class="k">def</span> <span class="nf">dphi</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return dphi from phase advances in data, see Eq. 7 in [#DillyUpdatedGlobalOpticsCorrection2018]_&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return dphi from phase advances in data, see Eq. 7 in [#DillyUpdatedGlobalOpticsCorrection2018]_&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">data</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># &#39;&lt;=&#39; seems to be what MAD-X does</span></div>
 
 
 <div class="viewcode-block" id="tau"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.tau">[docs]</a><span class="k">def</span> <span class="nf">tau</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return tau from phase advances in data, see Eq. 8 in [#DillyUpdatedGlobalOpticsCorrection2018]_&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return tau from phase advances in data, see Eq. 8 in [#DillyUpdatedGlobalOpticsCorrection2018]_&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">data</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">q</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># &#39;&lt;=&#39; seems to be what MAD-X does</span></div>
 
 
@@ -1302,7 +1302,7 @@
     <span class="n">vars_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">optics_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Wrapper to create response via TwissResponse &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Wrapper to create response via TwissResponse &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating response via TwissResponse.&quot;</span><span class="p">)</span>
     <span class="n">varmap_path</span> <span class="o">=</span> <span class="n">check_varmap_file</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">vars_categories</span><span class="p">)</span>
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tune_analysis.bbq_tools &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.tune_analysis.bbq_tools &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -481,7 +481,7 @@
 
 <div class="viewcode-block" id="OutlierFilterOpt"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.OutlierFilterOpt">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">OutlierFilterOpt</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Options for moving average with outlier filter.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for moving average with outlier filter.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window: length of the averaging window.</span>
@@ -493,7 +493,7 @@
 
 <div class="viewcode-block" id="MinMaxFilterOpt"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.MinMaxFilterOpt">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">MinMaxFilterOpt</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Options for moving average with min/max filter.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for moving average with min/max filter.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window: length of the averaging window.</span>
@@ -513,7 +513,7 @@
 
 
 <div class="viewcode-block" id="get_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average">[docs]</a><span class="k">def</span> <span class="nf">get_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">MinMaxFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered</span>
 <span class="sd">    beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)</span>
 <span class="sd">    values previous and floor((length-1)/2) following values into account.</span>
@@ -556,7 +556,7 @@
 
 
 <div class="viewcode-block" id="clean_outliers_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average">[docs]</a><span class="k">def</span> <span class="nf">clean_outliers_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries, by means of</span>
 <span class="sd">    :func:`outlier filter &lt;omc3.utils.outliers.get_filter_mask&gt;`.</span>
 <span class="sd">    The values are shifted, so that the averaged value takes ceil((length-1)/2) values previous</span>
@@ -582,7 +582,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">clean_mask</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">],</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the moving average of data series with a window of length and interpolated ``NaNs``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -630,7 +630,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_almost_empty_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">av_length</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Checks if masked data could be used to calculate moving average.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if masked data could be used to calculate moving average.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">av_length</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many points have been filtered. Maybe wrong filtering parameters?&quot;</span><span class="p">)</span>
 </pre></div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.utils.lines &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.plotting.utils.lines &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -481,7 +481,7 @@
 
 
 <div class="viewcode-block" id="MarkerList"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.MarkerList">[docs]</a><span class="k">class</span> <span class="nc">MarkerList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a list of predefined markers.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a list of predefined markers.&quot;&quot;&quot;</span>
     <span class="c1"># markers = [&quot;s&quot;, &quot;o&quot;, &quot;&gt;&quot;, &quot;D&quot;, &quot;v&quot;, &quot;*&quot;, &quot;h&quot;, &quot;^&quot;, &quot;p&quot;, &quot;X&quot;, &quot;&lt;&quot;, &quot;P&quot;]  # matplotlib 2.++</span>
     <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">]</span>
 
@@ -490,7 +490,7 @@
 
 <div class="viewcode-block" id="MarkerList.get_marker"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.MarkerList.get_marker">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_marker</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">marker_num</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return marker of index marker_num</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return marker of index marker_num</span>
 
 <span class="sd">         Args:</span>
 <span class="sd">             marker_num (int): return maker at this position in list (mod len(list))</span>
@@ -498,14 +498,14 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">markers</span><span class="p">[</span><span class="n">marker_num</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">markers</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="MarkerList.get_next_marker"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.MarkerList.get_next_marker">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return the next marker in the list (circularly wrapped) &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the next marker in the list (circularly wrapped) &quot;&quot;&quot;</span>
         <span class="n">marker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_marker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">marker</span></div></div>
 
 
 <div class="viewcode-block" id="text_to_marker"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.text_to_marker">[docs]</a><span class="k">def</span> <span class="nf">text_to_marker</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the given `text` to path</span>
 <span class="sd">    which can be used as a marker in matplotlib plots,</span>
 <span class="sd">    including the options of setting `markerfacecolor` and `markeredgecolor`.</span>
@@ -530,7 +530,7 @@
 
 
 <div class="viewcode-block" id="plot_vertical_lines_fast"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.plot_vertical_lines_fast">[docs]</a><span class="k">def</span> <span class="nf">plot_vertical_lines_fast</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plots vertical lines, similar to axvline, but also in 3D, all at once and with only one label.</span>
 
 <span class="sd">    Args:</span>
@@ -545,7 +545,7 @@
 
 <div class="viewcode-block" id="plot_vertical_line"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.lines.plot_vertical_line">[docs]</a><span class="k">def</span> <span class="nf">plot_vertical_line</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">axvline_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">text_loc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                        <span class="n">label_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot a vertical line into the plot, where mline is a dictionary with arguments for ``axvline``.</span>
 <span class="sd">    Advanced capabilities include: Automatic alpha value (if not overwritten), automatic</span>
 <span class="sd">    zorder = -1 (if not overwritten), and adding a label to the line, where the location is given</span>

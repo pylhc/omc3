@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.utils.colors &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.plotting.utils.colors &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -472,7 +472,7 @@
 
 
 <div class="viewcode-block" id="get_mpl_color"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.get_mpl_color">[docs]</a><span class="k">def</span> <span class="nf">get_mpl_color</span><span class="p">(</span><span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Gets the &#39;new&#39; default ``matplotlib`` colors by index, or the whole cycle.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the &#39;new&#39; default ``matplotlib`` colors by index, or the whole cycle.&quot;&quot;&quot;</span>
     <span class="n">c</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;#1f77b4&#39;</span><span class="p">,</span>  <span class="c1"># muted blue</span>
         <span class="s1">&#39;#ff7f0e&#39;</span><span class="p">,</span>  <span class="c1"># safety orange</span>
@@ -491,7 +491,7 @@
 
 
 <div class="viewcode-block" id="rgb_plotly_to_mpl"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.rgb_plotly_to_mpl">[docs]</a><span class="k">def</span> <span class="nf">rgb_plotly_to_mpl</span><span class="p">(</span><span class="n">rgb_string</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper function to transforn plotly rbg to ``matplotlib`` rgb.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to transforn plotly rbg to ``matplotlib`` rgb.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">rgb_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">rgb_string</span>
 
@@ -502,7 +502,7 @@
 
 
 <div class="viewcode-block" id="change_color_brightness"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.change_color_brightness">[docs]</a><span class="k">def</span> <span class="nf">change_color_brightness</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Lightens the given color by multiplying (1-luminosity) by the given amount. Input can be</span>
 <span class="sd">    ``matplotlib`` color string, hex string, or RGB tuple. An amount of 1 equals to no change. 0</span>
 <span class="sd">    is very bright (white) and 2 is very dark. Original code by Ian Hincks</span>
@@ -524,7 +524,7 @@
 
 
 <div class="viewcode-block" id="change_ebar_alpha_for_line"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.change_ebar_alpha_for_line">[docs]</a><span class="k">def</span> <span class="nf">change_ebar_alpha_for_line</span><span class="p">(</span><span class="n">ebar</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Changes the alpha value of an error-bar container.</span>
 <span class="sd">    Loop through bars (ebar[1]) and caps (ebar[2]) and set the alpha value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -534,7 +534,7 @@
 
 
 <div class="viewcode-block" id="change_ebar_alpha_for_axes"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.change_ebar_alpha_for_axes">[docs]</a><span class="k">def</span> <span class="nf">change_ebar_alpha_for_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapper for change_ebar_alpha_for_line to change all in one axes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for change_ebar_alpha_for_line to change all in one axes.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">ebar</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">containers</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ebar</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">ErrorbarContainer</span><span class="p">):</span>
             <span class="n">change_ebar_alpha_for_line</span><span class="p">(</span><span class="n">ebar</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span></div>

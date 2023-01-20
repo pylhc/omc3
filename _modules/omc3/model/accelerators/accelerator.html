@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.accelerator &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.model.accelerators.accelerator &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -501,7 +501,7 @@
 
 
 <div class="viewcode-block" id="AccElementTypes"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.AccElementTypes">[docs]</a><span class="k">class</span> <span class="nc">AccElementTypes</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Defines the strings for the element types ``BPMS``, ``MAGNETS`` and ``ARC_BPMS``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines the strings for the element types ``BPMS``, ``MAGNETS`` and ``ARC_BPMS``.&quot;&quot;&quot;</span>
 
     <span class="n">BPMS</span> <span class="o">=</span> <span class="s2">&quot;bpm&quot;</span>
     <span class="n">MAGNETS</span> <span class="o">=</span> <span class="s2">&quot;magnet&quot;</span>
@@ -509,7 +509,7 @@
 
 
 <div class="viewcode-block" id="Accelerator"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator">[docs]</a><span class="k">class</span> <span class="nc">Accelerator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class to serve as an interface to implement the rest of the accelerators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># RE_DICT needs to use MAD-X compatible patterns (jdilly, 2021)</span>
@@ -625,7 +625,7 @@
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Elements twiss not found&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">elements_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
 
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  model path = </span><span class="si">{</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  model path = </span><span class="si">{</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_DAT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
@@ -665,7 +665,7 @@
 
 <div class="viewcode-block" id="Accelerator.get_element_types_mask"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_element_types_mask</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">list_of_elements</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">types</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the</span>
 <span class="sd">        specified types.</span>
 <span class="sd">        Needs to handle: `bpm`, `magnet`, `arc_bpm` (see :class:`AccElementTypes`)</span>
@@ -688,7 +688,7 @@
 
 <div class="viewcode-block" id="Accelerator.get_variables"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_variables">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_variables</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">frm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the variables with elements in the given range and the given classes. ``None`` means</span>
 <span class="sd">        everything.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -696,7 +696,7 @@
 
 <div class="viewcode-block" id="Accelerator.get_correctors_variables"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_correctors_variables">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_correctors_variables</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">frm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the set of corrector variables between ``frm`` and ``to``, with classes in</span>
 <span class="sd">        classes. ``None`` means select all.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -713,13 +713,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_beam_direction</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="Accelerator.verify_object"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.verify_object">[docs]</a>    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verifies that this instance of an `Accelerator` is properly instantiated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;A function should have been overwritten, check stack trace.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Accelerator.get_exciter_bpm"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm">[docs]</a>    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the BPM next to the exciter.</span>
 <span class="sd">        The `Accelerator` instance knows already which excitation method is used.</span>
 
@@ -740,7 +740,7 @@
 
 <div class="viewcode-block" id="Accelerator.get_dir"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_dir">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Default directory for accelerator. Should be overwritten if more specific.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Default directory for accelerator. Should be overwritten if more specific.&quot;&quot;&quot;</span>
         <span class="n">dir_path</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span>
         <span class="k">if</span> <span class="n">dir_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">dir_path</span>
@@ -748,7 +748,7 @@
 
 <div class="viewcode-block" id="Accelerator.get_file"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_file">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Default location for accelerator files. Should be overwritten if more specific.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Default location for accelerator files. Should be overwritten if more specific.&quot;&quot;&quot;</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">cls</span><span class="o">.</span><span class="n">NAME</span> <span class="o">/</span> <span class="n">filename</span>
         <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">file_path</span>
@@ -759,14 +759,14 @@
     <span class="c1"># Jobs ###################################################################</span>
 
 <div class="viewcode-block" id="Accelerator.get_update_correction_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_update_correction_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_correction_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiwss_out_path</span><span class="p">,</span> <span class="n">corrections_file_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns job (string) to create an updated model from changeparameters input (used in</span>
 <span class="sd">        iterative correction).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;A function should have been overwritten, check stack trace.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Accelerator.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns job (string) to create the basic accelerator sequence.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;A function should have been overwritten, check stack trace.&quot;</span><span class="p">)</span></div></div>
@@ -775,7 +775,7 @@
 
 
 <div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Variable">[docs]</a><span class="k">class</span> <span class="nc">Variable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic corrector variable class that holds `name`, `position (s)` and physical elements it</span>
 <span class="sd">    affects. These variables should be logical variables that have and effect in the model if</span>
 <span class="sd">    modified.</span>
@@ -788,7 +788,7 @@
 
 
 <div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic corrector element class that holds `name` and `position (s)` of the corrector. This</span>
 <span class="sd">    element should represent a physical element of the accelerator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -799,7 +799,7 @@
 
 
 <div class="viewcode-block" id="AcceleratorDefinitionError"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.AcceleratorDefinitionError">[docs]</a><span class="k">class</span> <span class="nc">AcceleratorDefinitionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised when an `Accelerator` instance is wrongly used, for example by calling a method that</span>
 <span class="sd">    should have been overwritten.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -811,7 +811,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_modifiers_from_modeldir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Parse modifiers from job.create_model.madx or use modifiers.madx file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse modifiers from job.create_model.madx or use modifiers.madx file.&quot;&quot;&quot;</span>
     <span class="n">job_file</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">JOB_MODEL_MADX</span>
     <span class="k">if</span> <span class="n">job_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">job_madx</span> <span class="o">=</span> <span class="n">job_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>

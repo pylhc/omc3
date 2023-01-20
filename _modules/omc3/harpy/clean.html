@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.clean &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.harpy.clean &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -475,7 +475,7 @@
 
 
 <div class="viewcode-block" id="clean"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.clean.clean">[docs]</a><span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleans BPM TbT matrix: removes BPMs not present in the model and based on specified cuts.</span>
 <span class="sd">    Also cleans the noise using singular value decomposition.</span>
 
@@ -550,12 +550,12 @@
 
 
 <span class="k">def</span> <span class="nf">_detect_known_bad_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">list_of_bad_bpms</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Searches for known bad BPMs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Searches for known bad BPMs.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">list_of_bad_bpms</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_detect_flat_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">min_peak_to_peak</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Detects BPMs with the same values for all turns.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detects BPMs with the same values for all turns.&quot;&quot;&quot;</span>
     <span class="n">cond</span> <span class="o">=</span> <span class="p">((</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">min_peak_to_peak</span><span class="p">)</span>
     <span class="n">bpm_flatness</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">cond</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">if</span> <span class="n">bpm_flatness</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
@@ -565,7 +565,7 @@
 
 
 <span class="k">def</span> <span class="nf">_detect_bpms_with_spikes</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">max_peak_cut</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Detects BPMs with spikes &gt; `max_peak_cut`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detects BPMs with spikes &gt; `max_peak_cut`.&quot;&quot;&quot;</span>
     <span class="n">too_high</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_peak_cut</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="n">too_low</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">max_peak_cut</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="n">bpm_spikes</span> <span class="o">=</span> <span class="n">too_high</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">too_low</span><span class="p">)</span>
@@ -575,7 +575,7 @@
 
 
 <span class="k">def</span> <span class="nf">_detect_bpms_with_exact_zeros</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">keep_exact_zeros</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Detects BPMs with exact zeros due to OP workaround.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detects BPMs with exact zeros due to OP workaround.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">keep_exact_zeros</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipped exact zero check&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([])</span>
@@ -600,8 +600,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Total Number of BPMs after filtering is zero.&quot;</span><span class="p">)</span>
     <span class="n">n_bad_bpms</span> <span class="o">=</span> <span class="n">n_total_bpms</span> <span class="o">-</span> <span class="n">n_good_bpms</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(Statistics for file reading) Total BPMs: </span><span class="si">{</span><span class="n">n_total_bpms</span><span class="si">}</span><span class="s2">, &quot;</span>
-                 <span class="sa">f</span><span class="s2">&quot;Good BPMs: </span><span class="si">{</span><span class="n">n_good_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">n_good_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%), &quot;</span>
-                 <span class="sa">f</span><span class="s2">&quot;Bad BPMs: </span><span class="si">{</span><span class="n">n_bad_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">n_bad_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+                 <span class="sa">f</span><span class="s2">&quot;Good BPMs: </span><span class="si">{</span><span class="n">n_good_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_good_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%), &quot;</span>
+                 <span class="sa">f</span><span class="s2">&quot;Bad BPMs: </span><span class="si">{</span><span class="n">n_bad_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_bad_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_good_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than half of BPMs are bad. &quot;</span>
                          <span class="s2">&quot;This could be because a bunch not present in the machine has been &quot;</span>
@@ -616,13 +616,13 @@
 
 
 <span class="k">def</span> <span class="nf">_fix_polarity</span><span class="p">(</span><span class="n">wrong_polarity_names</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fixes wrong polarity.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixes wrong polarity.&quot;&quot;&quot;</span>
     <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">wrong_polarity_names</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">wrong_polarity_names</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">bpm_data</span>
 
 
 <span class="k">def</span> <span class="nf">_resync_bpms</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Resynchronizes BPMs between the injection point and start of the lattice.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resynchronizes BPMs between the injection point and start of the lattice.&quot;&quot;&quot;</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Will resynchronize BPMs&quot;</span><span class="p">)</span>
     <span class="n">bpm_pos</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">first_bpm</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">opposite_direction</span><span class="p">:</span>
@@ -634,7 +634,7 @@
 
 
 <div class="viewcode-block" id="svd_decomposition"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.clean.svd_decomposition">[docs]</a><span class="k">def</span> <span class="nf">svd_decomposition</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">num_singular_values</span><span class="p">,</span> <span class="n">dominance_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes reduced (K largest values) singular value decomposition of a matrix.</span>
 <span class="sd">    Requiring K singular values from MxN matrix results in matrices sized:</span>
 <span class="sd">    `((M,K) x diag(K) x (K,N))`</span>

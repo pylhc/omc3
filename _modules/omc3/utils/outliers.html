@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.outliers &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.utils.outliers &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -475,7 +475,7 @@
 
 <div class="viewcode-block" id="get_filter_mask"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.outliers.get_filter_mask">[docs]</a><span class="k">def</span> <span class="nf">get_filter_mask</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">x_data</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
                     <span class="n">niter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">nsig</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Filters the array of values which are meant to be constant or a linear function of the x-data</span>
 <span class="sd">    array if that is provided, by checking how many sigmas they are deviating from the average.</span>
 
@@ -572,13 +572,13 @@
 
 
 <span class="k">def</span> <span class="nf">_get_data_without_slope</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Remove the slope on the data by performing a linear fit. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Remove the slope on the data by performing a linear fit. &quot;&quot;&quot;</span>
     <span class="n">m</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">y</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">y</span> <span class="o">-</span> <span class="n">b</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x</span>
 
 
 <span class="k">def</span> <span class="nf">_get_significance_cut_from_length</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Set the sigma cut, that expects one value to be cut</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Set the sigma cut, that expects one value to be cut</span>
 <span class="sd">    if it is sample of normal distribution.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">length</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
 </pre></div>

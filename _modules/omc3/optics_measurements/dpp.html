@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.dpp &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.optics_measurements.dpp &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -476,7 +476,7 @@
 
 
 <div class="viewcode-block" id="arrange_dpps"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dpp.arrange_dpps">[docs]</a><span class="k">def</span> <span class="nf">arrange_dpps</span><span class="p">(</span><span class="n">dpps</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">closest_to_zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dpps</span><span class="p">))</span>

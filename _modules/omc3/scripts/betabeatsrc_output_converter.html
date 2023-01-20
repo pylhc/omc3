@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.scripts.betabeatsrc_output_converter &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.scripts.betabeatsrc_output_converter &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -519,7 +519,7 @@
 
 <div class="viewcode-block" id="converter_entrypoint"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.converter_entrypoint">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">converter_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">converter_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks for expected ``BetaBeat.src`` output files in the provided input directory, converts them to</span>
 <span class="sd">    the format used in ``omc3`` and writes the converted files in the provided output directory.</span>
 
@@ -557,7 +557,7 @@
 
 
 <div class="viewcode-block" id="convert_old_directory_to_new"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new">[docs]</a><span class="k">def</span> <span class="nf">convert_old_directory_to_new</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected ``BetaBeat.src`` output files, converts it to the output</span>
 <span class="sd">    format used by ``omc3`` and  write them to the new location.</span>
 
@@ -590,7 +590,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ampbeta&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">AMP_BETA_NAME</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected beta from amplitude file from ``BetaBeat.src`` for a given</span>
 <span class="sd">    plane, converts it to the output format used by ``omc3`` and  write them to the new location.</span>
 
@@ -628,7 +628,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">BETA_NAME</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected beta from phase file from ``BetaBeat.src`` for a given</span>
 <span class="sd">    plane, converts it to the output format used by ``omc3`` and  write them to the new location.</span>
 
@@ -674,7 +674,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;phase&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">PHASE_NAME</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected phase file from ``BetaBeat.src`` for a given</span>
 <span class="sd">    plane, converts it to the output format used by ``omc3`` and  write them to the new location.</span>
 
@@ -716,7 +716,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;phasetot&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected total phase file from ``BetaBeat.src`` for a given</span>
 <span class="sd">    plane, converts it to the output format used by ``omc3`` and  write them to the new location.</span>
 
@@ -757,7 +757,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;CO&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ORBIT_NAME</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected closed orbit file from ``BetaBeat.src`` for a given</span>
 <span class="sd">    plane, converts it to the output format used by ``omc3`` and  write them to the new location.</span>
 
@@ -791,7 +791,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected dispersion file from ``BetaBeat.src`` for a given</span>
 <span class="sd">    plane, converts it to the output format used by ``omc3`` and  write them to the new location.</span>
 
@@ -825,7 +825,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ND&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected normalized dispersion file from ``BetaBeat.src`` for a</span>
 <span class="sd">    given plane, converts it to the output format used by ``omc3`` and  write them to the new location.</span>
 
@@ -864,7 +864,7 @@
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;couple&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;f&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected coupling file from ``BetaBeat.src``, converts it to the</span>
 <span class="sd">    output format used by ``omc3`` and  write them to the new location.</span>
 

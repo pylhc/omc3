@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.tune &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.optics_measurements.tune &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -492,7 +492,7 @@
 
 
 <div class="viewcode-block" id="TuneDict"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict">[docs]</a><span class="k">class</span> <span class="nc">TuneDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Data structure to hold tunes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: detail each key</span>
@@ -501,7 +501,7 @@
                                                     <span class="p">{</span><span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;QF&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;QM&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;QFM&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;ac2bpm&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})))</span>
 
 <div class="viewcode-block" id="TuneDict.get_lambda"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict.get_lambda">[docs]</a>    <span class="k">def</span> <span class="nf">get_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes lambda compensation factor.</span>
 
 <span class="sd">        Args:</span>
@@ -514,7 +514,7 @@
                 <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;Q&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">])))</span></div>
 
 <div class="viewcode-block" id="TuneDict.phase_ac2bpm"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict.phase_ac2bpm">[docs]</a>    <span class="k">def</span> <span class="nf">phase_ac2bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_idx_by_bpms</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the necessary values for the exciter compensation.</span>
 <span class="sd">        See **DOI: 10.1103/PhysRevSTAB.11.084002**</span>
 

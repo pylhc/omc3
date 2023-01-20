@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.kmod.analysis &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.kmod.analysis &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -485,7 +485,7 @@
 
 
 <div class="viewcode-block" id="return_sign_for_err"><a class="viewcode-back" href="../../../modules/kmod.html#omc3.kmod.analysis.return_sign_for_err">[docs]</a><span class="k">def</span> <span class="nf">return_sign_for_err</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates an array for error calculation, of form:</span>
 <span class="sd">    [[ 0.  0.  0.]</span>
 <span class="sd">    [ 1.  0.  0.]</span>
@@ -618,7 +618,7 @@
 
 
 <div class="viewcode-block" id="average_beta_from_Tune"><a class="viewcode-back" href="../../../modules/kmod.html#omc3.kmod.analysis.average_beta_from_Tune">[docs]</a><span class="k">def</span> <span class="nf">average_beta_from_Tune</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">TdQ</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">Dk</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Calculates average beta function in quadrupole from tune change ``TdQ`` and ``delta K``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates average beta function in quadrupole from tune change ``TdQ`` and ``delta K``.&quot;&quot;&quot;</span>
 
     <span class="n">beta_av</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">Q</span><span class="p">)</span> <span class="o">*</span>
               <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">TdQ</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">TdQ</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span> <span class="n">Dk</span><span class="p">)</span>
@@ -752,7 +752,7 @@
 
 
 <div class="viewcode-block" id="get_phase_from_model"><a class="viewcode-back" href="../../../modules/kmod.html#omc3.kmod.analysis.get_phase_from_model">[docs]</a><span class="k">def</span> <span class="nf">get_phase_from_model</span><span class="p">(</span><span class="n">kmod_input_params</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the phase from twiss model.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the phase from twiss model.&quot;&quot;&quot;</span>
     <span class="n">twiss_df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">kmod_input_params</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
     <span class="n">BPML</span><span class="p">,</span> <span class="n">BPMR</span> <span class="o">=</span> <span class="n">get_BPM</span><span class="p">(</span><span class="n">kmod_input_params</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">get_BPM</span><span class="p">(</span><span class="n">kmod_input_params</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">phase_adv_model</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">twiss_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">BPMR</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">twiss_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">BPML</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span>

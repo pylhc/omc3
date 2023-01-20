@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.mock &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.utils.mock &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -475,7 +475,7 @@
 
 
 <div class="viewcode-block" id="CERNNetworkMockPackage"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.CERNNetworkMockPackage">[docs]</a><span class="k">class</span> <span class="nc">CERNNetworkMockPackage</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mock class to raise an error if the desired package functionality is called when the package is not</span>
 <span class="sd">    actually installed. Designed for packages installable only from inside the CERN network,</span>
 <span class="sd">    that are declared as ``cern`` extra. See module documentation.</span>
@@ -493,7 +493,7 @@
 
 
 <div class="viewcode-block" id="cern_network_import"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.cern_network_import">[docs]</a><span class="k">def</span> <span class="nf">cern_network_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function to try and import packages only available (and installable) on the CERN network.</span>
 <span class="sd">    If installed, the module is returned, otherwise a mock class is returned, which will raise an</span>
 <span class="sd">    insightful ``ImportError`` on attempted use.</span>

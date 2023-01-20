@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.handler &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.harpy.handler &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -488,7 +488,7 @@
 
 
 <div class="viewcode-block" id="run_per_bunch"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.handler.run_per_bunch">[docs]</a><span class="k">def</span> <span class="nf">run_per_bunch</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleans data, analyses frequencies and searches for resonances.</span>
 
 <span class="sd">    Args:</span>
@@ -582,12 +582,12 @@
         <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">lin_frame</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="k">if</span> <span class="n">name_root</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
             <span class="n">lin_frame</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_spectral_phase_error</span><span class="p">(</span>
-                <span class="n">lin_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">name_root</span><span class="p">,</span> <span class="n">COL_AMP</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">noise</span><span class="p">)</span>
+                <span class="n">lin_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">name_root</span><span class="p">,</span><span class="w"> </span><span class="n">COL_AMP</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">noise</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">lin_frame</span>
 
 
 <span class="k">def</span> <span class="nf">_get_spectral_phase_error</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">noise</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    When the error is too big (&gt; 2*pi*0.25 more or less) the noise is not Gaussian anymore.</span>
 <span class="sd">    In such a case the distribution is almost uniform, so we set the error to be 0.3, which is</span>
 <span class="sd">    the standard deviation of uniformly distributed phases.</span>
@@ -598,7 +598,7 @@
 
 
 <span class="k">def</span> <span class="nf">_sync_phase</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces ``MUXSYNC`` and ``MUYSYNC`` columns that are ``MUX/MUY`` but shifted such that for</span>
 <span class="sd">    BPM at index 0 is always 0. It allows to compare phases of consecutive measurements and if</span>
 <span class="sd">    some measurements stick out remove them from the data set. Original author is **skowron**.</span>
@@ -645,7 +645,7 @@
 
 
 <span class="k">def</span> <span class="nf">_rescale_amps_to_main_line_and_compute_noise</span><span class="p">(</span><span class="n">panda</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TODO    follows non-transpararent convention</span>
 <span class="sd">    TODO    the consequent analysis has to be changed if removed</span>
 <span class="sd">    &quot;&quot;&quot;</span>

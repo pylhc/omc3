@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.contexts &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.utils.contexts &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -475,7 +475,7 @@
 
 <div class="viewcode-block" id="log_out"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.log_out">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">log_out</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Temporarily changes ``sys.stdout`` and ``sys.stderr``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Temporarily changes ``sys.stdout`` and ``sys.stderr``.&quot;&quot;&quot;</span>
     <span class="n">old_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
     <span class="n">old_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">stdout</span>
@@ -489,7 +489,7 @@
 
 <div class="viewcode-block" id="silence"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.silence">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">silence</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">devnull</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
@@ -502,7 +502,7 @@
 
 <div class="viewcode-block" id="timeit"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.timeit">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">timeit</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Prints the time at the end of the context via ``function``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints the time at the end of the context via ``function``.&quot;&quot;&quot;</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">yield</span>
@@ -513,7 +513,7 @@
 
 <div class="viewcode-block" id="suppress_warnings"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.contexts.suppress_warnings">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">suppress_warnings</span><span class="p">(</span><span class="n">warning_classes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Suppress all warnings of given classes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Suppress all warnings of given classes.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">warn_list</span><span class="p">:</span>
         <span class="k">yield</span>
     <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">warn_list</span><span class="p">:</span>

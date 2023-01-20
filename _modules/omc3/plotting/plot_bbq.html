@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.plot_bbq &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.plotting.plot_bbq &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -623,7 +623,7 @@
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_bbq.main">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Plot BBQ wrapper.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot BBQ wrapper.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting BBQ.&quot;</span><span class="p">)</span>
     <span class="n">_save_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
     <span class="n">pstyle</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;plot_styles&quot;</span><span class="p">),</span> <span class="n">opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;manual_style&quot;</span><span class="p">))</span>
@@ -658,7 +658,7 @@
 
 
 <span class="k">def</span> <span class="nf">_plot_bbq_data</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_lim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_lim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">two_plots</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot BBQ data.</span>
 
 <span class="sd">    Args:</span>

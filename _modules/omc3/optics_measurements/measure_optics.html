@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.measure_optics &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.optics_measurements.measure_optics &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -492,7 +492,7 @@
 
 
 <div class="viewcode-block" id="measure_optics"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.measure_optics">[docs]</a><span class="k">def</span> <span class="nf">measure_optics</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main function to compute various lattice optics parameters from frequency spectra.</span>
 
 <span class="sd">    Args:</span>
@@ -540,7 +540,7 @@
 
 
 <div class="viewcode-block" id="chromatic_beating"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.chromatic_beating">[docs]</a><span class="k">def</span> <span class="nf">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main function to compute chromatic optics beating.</span>
 
 <span class="sd">    Args:</span>
@@ -578,7 +578,7 @@
 
 
 <div class="viewcode-block" id="InputFiles"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.InputFiles">[docs]</a><span class="k">class</span> <span class="nc">InputFiles</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stores the input files, provides methods to gather quantity specific data</span>
 
 <span class="sd">    Public methods:</span>
@@ -611,7 +611,7 @@
 
     <span class="nd">@staticmethod</span>  <span class="c1"># TODO later remove</span>
     <span class="k">def</span> <span class="nf">_repair_backwards_compatible_frame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones.</span>
 <span class="sd">        This is for backwards compatibility with Drive,</span>
 <span class="sd">        i.e. harpy has this</span>
@@ -622,7 +622,7 @@
         <span class="k">return</span> <span class="n">df</span>
 
 <div class="viewcode-block" id="InputFiles.dpps"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.InputFiles.dpps">[docs]</a>    <span class="k">def</span> <span class="nf">dpps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gathers measured DPPs from input files corresponding to given plane</span>
 
 <span class="sd">        Args:</span>
@@ -645,7 +645,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
 
 <div class="viewcode-block" id="InputFiles.joined_frame"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.InputFiles.joined_frame">[docs]</a>    <span class="k">def</span> <span class="nf">joined_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpp_amp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructs merged DataFrame from InputFiles.</span>
 
 <span class="sd">        Args:</span>
@@ -685,7 +685,7 @@
         <span class="k">return</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <div class="viewcode-block" id="InputFiles.calibrate"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.InputFiles.calibrate">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calibs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use calibration data to rescale amplitude and amplitude error.</span>
 
 <span class="sd">        Args:</span>
@@ -715,7 +715,7 @@
 
 <div class="viewcode-block" id="InputFiles.get_columns"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.InputFiles.get_columns">[docs]</a>    <span class="o">@</span> <span class="nb">staticmethod</span>
     <span class="k">def</span> <span class="nf">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns list of columns of frame corresponding to column in original files.</span>
 
 <span class="sd">        Args:</span>
@@ -731,7 +731,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">new_list</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="InputFiles.get_data"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.InputFiles.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns data in columns of frame corresponding to column in original files.</span>
 
 <span class="sd">        Args:</span>

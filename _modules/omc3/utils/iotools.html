@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.iotools &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.utils.iotools &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -481,7 +481,7 @@
 
 
 <div class="viewcode-block" id="copy_content_of_dir"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.copy_content_of_dir">[docs]</a><span class="k">def</span> <span class="nf">copy_content_of_dir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">dst_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copies all files and directories from ``src_dir`` to ``dst_dir``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copies all files and directories from ``src_dir`` to ``dst_dir``.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">):</span>
         <span class="k">return</span>
 
@@ -494,7 +494,7 @@
 
 
 <div class="viewcode-block" id="create_dirs"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.create_dirs">[docs]</a><span class="k">def</span> <span class="nf">create_dirs</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates all dirs to ``path_to_dir`` if not exists.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates all dirs to ``path_to_dir`` if not exists.&quot;&quot;&quot;</span>
     <span class="n">path_to_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path_to_dir</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">path_to_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">path_to_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -502,7 +502,7 @@
 
 
 <div class="viewcode-block" id="copy_item"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.copy_item">[docs]</a><span class="k">def</span> <span class="nf">copy_item</span><span class="p">(</span><span class="n">src_item</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copies a file or a directory to ``dest``, which may be a directory.</span>
 <span class="sd">    If ``src_item`` is a directory then all containing files and dirs will be copied into ``dest``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -518,7 +518,7 @@
 
 
 <div class="viewcode-block" id="PathOrStr"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.PathOrStr">[docs]</a><span class="k">class</span> <span class="nc">PathOrStr</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot;A class that behaves like a Path when possible, otherwise like a string.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that behaves like a Path when possible, otherwise like a string.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\&#39;\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER</span>
@@ -526,7 +526,7 @@
 
 
 <div class="viewcode-block" id="PathOrStrOrDataFrame"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.PathOrStrOrDataFrame">[docs]</a><span class="k">class</span> <span class="nc">PathOrStrOrDataFrame</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot;A class that behaves like a Path when possible, otherwise like a string.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that behaves like a Path when possible, otherwise like a string.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\&#39;\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER</span>
@@ -537,7 +537,7 @@
 
 
 <div class="viewcode-block" id="UnionPathStr"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.UnionPathStr">[docs]</a><span class="k">class</span> <span class="nc">UnionPathStr</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot;A class that can be used as Path and string parser input, but does not convert.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that can be used as Path and string parser input, but does not convert.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\&#39;\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER</span>
@@ -545,7 +545,7 @@
 
 
 <div class="viewcode-block" id="UnionPathStrInt"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.UnionPathStrInt">[docs]</a><span class="k">class</span> <span class="nc">UnionPathStrInt</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot;A class that can be used as Path, string, int parser input, but does not convert.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that can be used as Path, string, int parser input, but does not convert.</span>
 <span class="sd">    Very special and used e.g. in the BBQ Input.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -554,7 +554,7 @@
 
 
 <div class="viewcode-block" id="convert_paths_in_dict_to_strings"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.convert_paths_in_dict_to_strings">[docs]</a><span class="k">def</span> <span class="nf">convert_paths_in_dict_to_strings</span><span class="p">(</span><span class="n">dict_</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Converts all Paths in the dict to strings, including those in iterables.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts all Paths in the dict to strings, including those in iterables.&quot;&quot;&quot;</span>
     <span class="n">dict_</span> <span class="o">=</span> <span class="n">dict_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dict_</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
@@ -576,7 +576,7 @@
 
 
 <div class="viewcode-block" id="remove_none_dict_entries"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries">[docs]</a><span class="k">def</span> <span class="nf">remove_none_dict_entries</span><span class="p">(</span><span class="n">dict_</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes ``None`` entries from dict. This can be used as a workaround to</span>
 <span class="sd">    https://github.com/pylhc/generic_parser/issues/26.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -584,7 +584,7 @@
 
 
 <div class="viewcode-block" id="save_config"><a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.save_config">[docs]</a><span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Quick wrapper for ``save_options_to_config``.</span>
 
 <span class="sd">    Args:</span>

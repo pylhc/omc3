@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.ps &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.model.accelerators.ps &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -525,7 +525,7 @@
 
 
 <div class="viewcode-block" id="Ps"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps">[docs]</a><span class="k">class</span> <span class="nc">Ps</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parent Class for PS-types.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parent Class for PS-types.&quot;&quot;&quot;</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;ps&quot;</span>
     <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;PR\.BPM&quot;</span><span class="p">,</span>
                <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
@@ -558,7 +558,7 @@
         <span class="k">return</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Ps.get_file"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_file">[docs]</a>    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get filepaths for PS files.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get filepaths for PS files.&quot;&quot;&quot;</span>
         <span class="n">ps_dir</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span>
         <span class="n">ps_year_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()</span>
 

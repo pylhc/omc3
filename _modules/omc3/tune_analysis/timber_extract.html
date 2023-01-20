@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tune_analysis.timber_extract &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.tune_analysis.timber_extract &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -501,7 +501,7 @@
 <div class="viewcode-block" id="lhc_fill_to_tfs"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs">[docs]</a><span class="k">def</span> <span class="nf">lhc_fill_to_tfs</span><span class="p">(</span>
     <span class="n">fill_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts data for keys of fill from ``Timber``.</span>
 
 <span class="sd">    Args:</span>
@@ -523,7 +523,7 @@
     <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts data for keys between ``t_start`` and ``t_end`` from ``Timber``.</span>
 
 <span class="sd">    Args:</span>
@@ -558,7 +558,7 @@
             <span class="p">)</span> <span class="kn">from</span> <span class="nn">java_state_error</span>
         <span class="k">except</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JException</span> <span class="k">as</span> <span class="n">java_exception</span><span class="p">:</span>  <span class="c1"># Might be a case for retries</span>
             <span class="k">if</span> <span class="s2">&quot;RetryableException&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">java_exception</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">MAX_RETRIES</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not get data from Timber! Trial no </span><span class="si">{</span><span class="n">tries</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">MAX_RETRIES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not get data from Timber! Trial no </span><span class="si">{</span><span class="n">tries</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">MAX_RETRIES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>  <span class="c1"># will go to the next iteratoin of the loop, so retry</span>
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Could not get data from timber!&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">java_exception</span>
         <span class="k">else</span><span class="p">:</span>
@@ -591,7 +591,7 @@
 
 
 <div class="viewcode-block" id="get_tune_and_coupling_variables"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables">[docs]</a><span class="k">def</span> <span class="nf">get_tune_and_coupling_variables</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the tune and coupling variable names.</span>
 
 <span class="sd">    Args:</span>
@@ -612,7 +612,7 @@
 <div class="viewcode-block" id="get_fill_times"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_fill_times">[docs]</a><span class="k">def</span> <span class="nf">get_fill_times</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span> <span class="n">fill_number</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns start and end time of fill with fill number.</span>
 
 <span class="sd">    Args:</span>

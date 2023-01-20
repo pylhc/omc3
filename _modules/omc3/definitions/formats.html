@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.definitions.formats &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.definitions.formats &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -473,7 +473,7 @@
 
 
 <div class="viewcode-block" id="get_config_filename"><a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.formats.get_config_filename">[docs]</a><span class="k">def</span> <span class="nf">get_config_filename</span><span class="p">(</span><span class="n">script</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Default Filename for config-files. Call from script with ``__file__``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default Filename for config-files. Call from script with ``__file__``.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">script</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">script</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">TIME</span><span class="p">)</span>

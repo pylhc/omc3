@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.dispersion &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.optics_measurements.dispersion &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -479,7 +479,7 @@
 
 
 <div class="viewcode-block" id="calculate_orbit"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dispersion.calculate_orbit">[docs]</a><span class="k">def</span> <span class="nf">calculate_orbit</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates orbit.</span>
 
 <span class="sd">    Args:</span>
@@ -501,7 +501,7 @@
 
 
 <div class="viewcode-block" id="calculate_dispersion"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dispersion.calculate_dispersion">[docs]</a><span class="k">def</span> <span class="nf">calculate_dispersion</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates dispersion.</span>
 
 <span class="sd">    Args:</span>
@@ -519,7 +519,7 @@
 
 
 <div class="viewcode-block" id="calculate_normalised_dispersion"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dispersion.calculate_normalised_dispersion">[docs]</a><span class="k">def</span> <span class="nf">calculate_normalised_dispersion</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates normalised dispersion.</span>
 
 <span class="sd">    Args:</span>
@@ -562,7 +562,7 @@
 
 
 <span class="k">def</span> <span class="nf">_calculate_dispersion_3d</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes dispersion from 3D kicks.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes dispersion from 3D kicks.&quot;&quot;&quot;</span>
     <span class="n">output</span><span class="p">,</span> <span class="n">accelerator</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">accelerator</span><span class="o">.</span><span class="n">model</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">_get_merged_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;AMPZ&#39;</span><span class="p">,</span> <span class="s1">&#39;MUZ&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
@@ -618,7 +618,7 @@
 
 
 <span class="k">def</span> <span class="nf">_calculate_normalised_dispersion_3d</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes horizontal normalised dispersion from 3D kicks, and performs model-based</span>
 <span class="sd">    compensation, i.e. as in _free2 files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

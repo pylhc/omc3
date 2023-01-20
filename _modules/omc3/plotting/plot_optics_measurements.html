@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.plot_optics_measurements &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.plotting.plot_optics_measurements &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -694,7 +694,7 @@
 
 <div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Main plotting function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main plotting function.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting plotting of optics measurement data: &quot;</span>
              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_parameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">folders</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -737,7 +737,7 @@
 
 
 <span class="k">def</span> <span class="nf">_plot_rdt</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span><span class="p">,</span> <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span><span class="p">,</span> <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Main plotting function for RDTs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main plotting function for RDTs.&quot;&quot;&quot;</span>
     <span class="n">fig_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">x_axis</span> <span class="o">!=</span> <span class="s1">&#39;location&#39;</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Phase advance not yet implemented in RDT-files. Skipping.&quot;</span><span class="p">)</span>
@@ -818,7 +818,7 @@
 
 
 <span class="k">def</span> <span class="nf">_plot_param</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span><span class="p">,</span> <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span><span class="p">,</span> <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Main plotting function for all parameters but RDTs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main plotting function for all parameters but RDTs.&quot;&quot;&quot;</span>
     <span class="n">y_column</span><span class="p">,</span> <span class="n">error_column</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">y_label</span> <span class="o">=</span> <span class="n">_get_columns_and_label</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
 
     <span class="n">same_fig</span> <span class="o">=</span> <span class="kc">None</span>
@@ -908,7 +908,7 @@
 
 
 <span class="k">def</span> <span class="nf">_create_ip_list</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;ip_dict can be series as well.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ip_dict can be series as well.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
              <span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;k&#39;</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ip_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
 

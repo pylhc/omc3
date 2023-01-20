@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.phase &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.optics_measurements.phase &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -484,7 +484,7 @@
 <div class="viewcode-block" id="calculate"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.phase.calculate">[docs]</a><span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span>
     <span class="n">meas_input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">no_errors</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate phases for &#39;free&#39; and &#39;uncompensated&#39; cases from the measurement files, and return a</span>
 <span class="sd">    dictionary combining the results for each transverse plane.</span>
 
@@ -532,7 +532,7 @@
 
 
 <span class="k">def</span> <span class="nf">_calculate_with_compensation</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">model_df</span><span class="p">,</span> <span class="n">compensation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">no_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates phase advances.</span>
 
 <span class="sd">    Args:</span>
@@ -638,7 +638,7 @@
     <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="n">dfs</span><span class="p">,</span> <span class="p">(</span><span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="o">+</span><span class="s2">&quot;driven_&quot;</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="o">+</span><span class="s2">&quot;driven_&quot;</span><span class="p">)):</span>
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">df</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase advance beating in </span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2"> = &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">weighted_rms</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}</span><span class="s1">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">weighted_rms</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}</span><span class="s1">PHASE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_create_output_df</span><span class="p">(</span><span class="n">phase_advances</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

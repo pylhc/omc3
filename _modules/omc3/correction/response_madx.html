@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.response_madx &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.correction.response_madx &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -502,7 +502,7 @@
     <span class="n">num_proc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(),</span>
     <span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Generate a dictionary containing response matrices for</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Generate a dictionary containing response matrices for</span>
 <span class="sd">        beta, phase, dispersion, tune and coupling and saves it to a file.</span>
 
 <span class="sd">        Args:</span>
@@ -541,7 +541,7 @@
     <span class="n">num_proc</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Generates madx job-files &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Generates madx job-files &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generating MADX jobfiles.&quot;</span><span class="p">)</span>
     <span class="n">incr_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
     <span class="n">vars_per_proc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_proc</span><span class="p">))</span>
@@ -559,11 +559,11 @@
             <span class="n">var</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span>
             <span class="n">incr_dict</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_k</span>
             <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">var</span><span class="si">}{</span><span class="n">delta_k</span><span class="si">:</span><span class="s2">+f</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;twiss.</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39;twiss.</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">var</span><span class="si">}{</span><span class="o">-</span><span class="n">delta_k</span><span class="si">:</span><span class="s2">+f</span><span class="si">}</span><span class="s2">;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="n">proc_idx</span> <span class="o">==</span> <span class="n">num_proc</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span> <span class="o">/</span> <span class="s1">&#39;twiss.0&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;twiss.0&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="n">jobfile_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">current_job</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">incr_dict</span>
@@ -582,7 +582,7 @@
 
 
 <span class="k">def</span> <span class="nf">_call_madx</span><span class="p">(</span><span class="n">process_pool</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_proc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Call madx in parallel &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Call madx in parallel &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting </span><span class="si">{</span><span class="n">num_proc</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> MAD-X jobs...&quot;</span><span class="p">)</span>
     <span class="n">madx_jobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">_get_jobfiles</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_proc</span><span class="p">)]</span>
     <span class="n">process_pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_launch_single_job</span><span class="p">,</span> <span class="n">madx_jobs</span><span class="p">)</span>
@@ -590,7 +590,7 @@
 
 
 <span class="k">def</span> <span class="nf">_clean_up</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">num_proc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Merge Logfiles and clean temporary outputfiles &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Merge Logfiles and clean temporary outputfiles &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cleaning output and building log...&quot;</span><span class="p">)</span>
     <span class="n">full_log</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_proc</span><span class="p">):</span>
@@ -609,7 +609,7 @@
     <span class="n">incr_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Load the madx results in parallel and return var-tfs dictionary &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Load the madx results in parallel and return var-tfs dictionary &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading Madx Results.&quot;</span><span class="p">)</span>
     <span class="n">vars_and_paths</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">variables</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">]:</span>
@@ -622,7 +622,7 @@
 
 
 <span class="k">def</span> <span class="nf">_create_fullresponse_from_dict</span><span class="p">(</span><span class="n">var_to_twiss</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Convert var-tfs dictionary to fullresponse dictionary. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Convert var-tfs dictionary to fullresponse dictionary. &quot;&quot;&quot;</span>
     <span class="n">var_to_twiss</span> <span class="o">=</span> <span class="n">_add_coupling</span><span class="p">(</span><span class="n">var_to_twiss</span><span class="p">)</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">var_to_twiss</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
@@ -683,18 +683,18 @@
 
 
 <span class="k">def</span> <span class="nf">_get_jobfiles</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Return names for jobfile and iterfile according to index &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return names for jobfile and iterfile according to index &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;job.iterate.</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.madx&quot;</span>
 
 
 <span class="k">def</span> <span class="nf">_launch_single_job</span><span class="p">(</span><span class="n">inputfile_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Function for pool to start a single madx job &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Function for pool to start a single madx job &quot;&quot;&quot;</span>
     <span class="n">log_file</span> <span class="o">=</span> <span class="n">inputfile_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">inputfile_path</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span><span class="p">)</span>
     <span class="n">madx_wrapper</span><span class="o">.</span><span class="n">run_file</span><span class="p">(</span><span class="n">inputfile_path</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="n">log_file</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">inputfile_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_load_and_remove_twiss</span><span class="p">(</span><span class="n">var_and_path</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot; Function for pool to retrieve results &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Function for pool to retrieve results &quot;&quot;&quot;</span>
     <span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="o">=</span> <span class="n">var_and_path</span>
     <span class="n">twissfile</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;twiss.</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">tfs_data</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">twissfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
@@ -705,7 +705,7 @@
 
 
 <span class="k">def</span> <span class="nf">_add_coupling</span><span class="p">(</span><span class="n">dict_of_tfs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For each TfsDataFrame in the input dictionary, computes the coupling RDTs and adds a column for</span>
 <span class="sd">    the real and imaginary parts of the computed coupling RDTs. Returns a copy of the input dictionary with</span>
 <span class="sd">    the aforementioned computed columns added for each TfsDataFrame.</span>

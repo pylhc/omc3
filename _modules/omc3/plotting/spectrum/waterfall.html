@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.spectrum.waterfall &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.plotting.spectrum.waterfall &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -478,7 +478,7 @@
 
 
 <div class="viewcode-block" id="create_waterfall_plots"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.waterfall.create_waterfall_plots">[docs]</a><span class="k">def</span> <span class="nf">create_waterfall_plots</span><span class="p">(</span><span class="n">figures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Main loop for waterfall plot creation. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Main loop for waterfall plot creation. &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ...creating Waterfall Plot&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">fig_id</span><span class="p">,</span> <span class="n">fig_cont</span> <span class="ow">in</span> <span class="n">figures</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -495,7 +495,7 @@
 
 
 <span class="k">def</span> <span class="nf">_plot_waterfall</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">,</span> <span class="n">line_width</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">common_plane_colors</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Create the waterfall plot for this figure container. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create the waterfall plot for this figure container. &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">idx_plane</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PLANES</span><span class="p">):</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">fig_cont</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">idx_plane</span><span class="p">]</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">_get_color_norm</span><span class="p">(</span><span class="n">fig_cont</span><span class="o">.</span><span class="n">minmax</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">common_plane_colors</span><span class="p">)</span>
@@ -514,7 +514,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_color_norm</span><span class="p">(</span><span class="n">minmax</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">common</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Returns the color-norm calculated from the min and max values. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the color-norm calculated from the min and max values. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">common</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">(</span><span class="o">*</span><span class="n">minmax</span><span class="p">[</span><span class="n">plane</span><span class="p">])</span>
 
@@ -523,7 +523,7 @@
 
 
 <span class="k">def</span> <span class="nf">_plot_color_mesh</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">amps</span><span class="p">,</span> <span class="n">idx_data</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Plots the frequencies as a mesh, with amplitudes as colors. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Plots the frequencies as a mesh, with amplitudes as colors. &quot;&quot;&quot;</span>
     <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
     <span class="n">amps</span> <span class="o">=</span> <span class="n">amps</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">freqs</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 
@@ -534,7 +534,7 @@
 
 
 <span class="k">def</span> <span class="nf">_plot_vlines</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">amps</span><span class="p">,</span> <span class="n">idx_data</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">line_width</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Plots the frequencies as vertical lines, with amplitudes as colors. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Plots the frequencies as vertical lines, with amplitudes as colors. &quot;&quot;&quot;</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">idx_data</span> <span class="o">-</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">idx_data</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">,</span>
                       <span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
                       <span class="n">linewidths</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span>

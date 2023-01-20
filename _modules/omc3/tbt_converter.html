@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tbt_converter &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.tbt_converter &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -522,7 +522,7 @@
 
 <div class="viewcode-block" id="converter_entrypoint"><a class="viewcode-back" href="../../entrypoints/other.html#omc3.tbt_converter.converter_entrypoint">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">converter_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">converter_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts turn-by-turn files from various formats to ``LHC`` binary SDDS files.</span>
 <span class="sd">    Optionally can replicate files with added noise.</span>
 
@@ -599,7 +599,7 @@
 
 
 <span class="k">def</span> <span class="nf">_drop_elements</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">elements_to_drop</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drops the provided elements from the matrices in the provided TbtData object.</span>
 <span class="sd">    For any element not found in the matrices, a warning is logged and the element is skipped.</span>
 
@@ -624,7 +624,7 @@
 
 
 <span class="k">def</span> <span class="nf">_file_name_without_sdds</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the file name without suffix if the suffix is **.sdds**, else the filename.</span>
 <span class="sd">    Previous elements in the file path are discarded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

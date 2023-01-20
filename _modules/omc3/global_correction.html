@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.global_correction &mdash; omc3 0.7.0 documentation</title>
+  <title>omc3.global_correction &mdash; omc3 0.7.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -736,7 +736,7 @@
 
 <div class="viewcode-block" id="global_correction_entrypoint"><a class="viewcode-back" href="../../entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">correction_params</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">global_correction_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Do the global correction. Iteratively.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Do the global correction. Iteratively.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting Iterative Global Correction.&quot;</span><span class="p">)</span>
     <span class="n">opt</span> <span class="o">=</span> <span class="n">_check_opt_add_dicts</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
     <span class="n">opt</span> <span class="o">=</span> <span class="n">_add_hardcoded_paths</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
@@ -746,7 +746,7 @@
 
 
 <span class="k">def</span> <span class="nf">_check_opt_add_dicts</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># acts inplace...</span>
-    <span class="sd">&quot;&quot;&quot; Check on options and put in missing values &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Check on options and put in missing values &quot;&quot;&quot;</span>
     <span class="n">def_dict</span> <span class="o">=</span> <span class="n">_get_default_values</span><span class="p">()</span>
     <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETABEAT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;modelcut&quot;</span><span class="p">,</span> <span class="s2">&quot;errorcut&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">):</span>
