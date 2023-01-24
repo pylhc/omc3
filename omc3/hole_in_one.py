@@ -553,6 +553,8 @@ def optics_params():
                          help="Maximum magnet order for the RDT calculation.")
     params.add_parameter(name="three_bpm_method", action="store_true",
                          help="Use 3 BPM method in beta from phase")
+    params.add_parameter(name="lobster_rescaling", action="store_true",
+                         help="Rescale lobster values or not.")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")
     params.add_parameter(name="compensation", type=str, default=OPTICS_DEFAULTS["compensation"],
                          choices=("model", "equation", "none"),

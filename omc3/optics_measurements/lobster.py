@@ -72,10 +72,13 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
 #            if index_j >= index_k or index_k >= index_l:
 #                continue
 
-            rescaling = 1.0/tan(model_line[index_l] - model_line[index_j]) \
-                +1.0/tan(model_line[index_k] - model_line[index_j]) \
-                +1.0/tan(model_line[index_k]) \
-                -1.0/tan(model_line[index_l])
+            if meas_input.lobster_rescaling:
+                rescaling = 1.0/tan(model_line[index_l] - model_line[index_j]) \
+                    +1.0/tan(model_line[index_k] - model_line[index_j]) \
+                    +1.0/tan(model_line[index_k]) \
+                    -1.0/tan(model_line[index_l])
+            else:
+                rescaling = 1.0
 
             names.append(phase["MODEL"].index[line_index])
 
@@ -109,6 +112,7 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
         local_df["LOCALOBS"] = phi
         local_df["ERR"] = errphi
         local_df["MODEL_PHASES"] = modelph
+        local_df["RESCALING"] = meas_input.lobster_rescaling
 
         tfs.write(Path(meas_input.outputdir) / f"lobster_{tuple_to_string((0,j,k,l))}{EXT}", local_df, header_dict)
 
