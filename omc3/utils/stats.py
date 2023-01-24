@@ -14,7 +14,11 @@ finite-sized sample.
 import numpy as np
 from scipy.special import erf
 from scipy.stats import t
+
 from omc3.definitions.constants import PI2, PI2I
+from omc3.utils import logging_tools
+
+LOGGER = logging_tools.get_logger(__name__)
 
 CONFIDENCE_LEVEL = (1 + erf(1 / np.sqrt(2))) / 2
 
@@ -36,7 +40,6 @@ def circular_mean(data, period=PI2, errors=None, axis=None):
     Returns:
         Returns the weighted circular average along the specified axis.
     """
-
     phases = data * PI2I / period
     weights = weights_from_errors(errors, period=period)
 
@@ -134,10 +137,19 @@ def _get_shape(orig_shape, axis):
 def weighted_error(data, errors=None, axis=None, t_value_corr=True):
     """
     Computes error of weighted average along the specified axis.
+    This is similar to calculating the standard deviation on the data,
+    but with both, the average to which the deviation is calculated,
+    as well as then the averaging over the deviations weighted by
+    weights based on the errors.
+
+    In addition, the weighted variance is unbiased by an unbias-factor
+    n / (n-1), where n is the :meth:`omc3.utils.stats.effective_sample_size` .
+    Additionally, a (student) t-value correction can be performed (done by default)
+    which corrects the estimate for small data sets.
 
     Parameters:
         data: array-like
-            Contains the data to be averaged
+            Contains the data on which the weighted error on the average is calculated.
         errors: array-like, optional
             Contains errors associated with the values in data, it is used to calculated weights
         axis: int or tuple of ints, optional
@@ -150,8 +162,11 @@ def weighted_error(data, errors=None, axis=None, t_value_corr=True):
     """
     weights = weights_from_errors(errors)
     weighted_average = np.average(data, axis=axis, weights=weights)
-    (sample_variance, sum_of_weights) = np.ma.average(np.square(np.abs(data - weighted_average.reshape(
-            _get_shape(data.shape, axis)))), weights=weights, axis=axis, returned=True)
+    weighted_average = weighted_average.reshape(_get_shape(data.shape, axis))
+    (sample_variance, sum_of_weights) = np.ma.average(
+        np.square(np.abs(data - weighted_average)),
+        weights=weights, axis=axis, returned=True
+    )
     if weights is not None:
         sample_variance = sample_variance + 1 / sum_of_weights
     error = np.nan_to_num(np.sqrt(sample_variance * unbias_variance(data, weights, axis=axis)))
@@ -202,18 +217,33 @@ def weights_from_errors(errors, period=PI2):
     if errors is None:
         return None
     if np.any(np.isnan(errors)):
-        # LOGGER.warning("Nans found, weights are not used.")
+        LOGGER.warning("NaNs found, weights are not used.")
         return None
     if np.any(np.logical_not(errors)):
-        # LOGGER.warning("Zeros found, weights are not used.")
+        LOGGER.warning("Zeros found, weights are not used.")
         return None
     return 1 / np.square(errors * PI2 / period)
 
 
 def effective_sample_size(data, weights, axis=None):
-    """
-    Computes effective sample size of weighted data along specifies axis,
-    the minimum value returned is 2 to avoid non-reasonable error blow-up
+    r"""
+    Computes effective sample size of weighted data along specified axis,
+    the minimum value returned is 2 to avoid non-reasonable error blow-up.
+    
+    It is calculated via Kish's approximate formula 
+    from the (not necessarily normalized) weights :math:`w_i` (see wikipedia):
+    
+    .. math::
+
+        n_\mathrm{eff} = \frac{\left(\sum_i w_i\right)^2}{\sum_i w_i^2}
+
+    What it represents:
+    "In most instances, weighting causes a decrease in the statistical significance of results. 
+    The effective sample size is a measure of the precision of the survey 
+    (e.g., even if you have a sample of 1,000 people, an effective sample size of 100 would indicate 
+    that the weighted sample is no more robust than a well-executed un-weighted 
+    simple random sample of 100 people)." -
+    https://wiki.q-researchsoftware.com/wiki/Weights,_Effective_Sample_Size_and_Design_Effects
 
     Parameters:
         data: array-like
@@ -233,8 +263,19 @@ def effective_sample_size(data, weights, axis=None):
 
 
 def unbias_variance(data, weights, axis=None):
-    """
-    Computes a correction factor to unbias variance of weighted average of data along specified axis
+    r"""
+    Computes a correction factor to unbias variance of weighted average of data along specified axis,
+    e.g. transform the standard deviation 1
+
+    .. math::
+
+        \sigma^2 = \frac{1}{N} \sum_{i=1}^N (x_i - x_\mathrm{mean})^2
+
+    into an un-biased estimator
+
+    .. math::
+
+        \sigma^2 = \frac{1}{N-1} \sum_{i=1}^N (x_i - x_\mathrm{mean})^2
 
     Parameters:
         data: array-like
@@ -255,16 +296,21 @@ def unbias_variance(data, weights, axis=None):
 
 def t_value_correction(sample_size):
     """
-    Calculates the multiplicative correction factor to determine standard deviation of normally
-    distributed quantity from standard deviation of its finite-sized sample
-    the minimum allowed sample size is 2 to avoid non-reasonable error blow-up
-    for smaller sample sizes 2 is used instead
+    Calculates the multiplicative correction factor to determine standard deviation of
+    a normally distributed quantity from standard deviation of its finite-sized sample.
+    The minimum allowed sample size is 2 to avoid non-reasonable error blow-up
+    for smaller sample sizes 2 is used instead.
+
+    Note (jdilly): In other words, this transforms the area of 1 sigma under
+    the given student t distribution to the 1 sigma area of a normal distribution
+    (this transformation is where the ``CONFIDENCE LEVEL`` comes in).
+    I hope that makes the intention more clear.
 
     Args:
         sample_size: array-like
 
     Returns:
-        multiplicative correction factor(s) of same shape as sample_size
-            can contain nans
+        multiplicative correction factor(s) of same shape as sample_size.
+        Can contain nans.
     """
     return t.ppf(CONFIDENCE_LEVEL, np.where(sample_size > 2, sample_size, 2) - 1)

@@ -200,4 +200,4 @@ def get_action_label(plane: str, unit: str) -> str:
 
 def get_detuning_exponent_for_order(order: int) -> int:
     """ Returns the default exponent for detuning orders. Highly Empirical. """
-    return {1: 3, 2: 9, 3: 15}[order]
+    return {1: 3, 2: 11, 3: 15}[order]

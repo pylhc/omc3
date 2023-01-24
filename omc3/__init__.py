@@ -11,7 +11,7 @@ omc3 is a tool package for the optics measurements and corrections group (OMC) a
 __title__ = "omc3"
 __description__ = "An accelerator physics tools package for the OMC team at CERN."
 __url__ = "https://github.com/pylhc/omc3"
-__version__ = "0.6.6"
+__version__ = "0.7.1"
 __author__ = "pylhc"
 __author_email__ = "pylhc@github.com"
 __license__ = "MIT"

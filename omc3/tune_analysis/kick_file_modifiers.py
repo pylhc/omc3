@@ -4,17 +4,14 @@ Kick File Modifiers
 
 Functions to add data to or extract data from **kick_ac** files.
 """
-import os
 from pathlib import Path
 from typing import Tuple, Union, Sequence
 
 import numpy as np
 import pandas as pd
-from numpy.typing import ArrayLike, NDArray
-from scipy import odr
 import tfs
+from scipy import odr
 from tfs import TfsDataFrame
-from generic_parser.dict_parser import DotDict
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import KICK_NAME, TIME, ERR, NAT_TUNE, ACTION
@@ -117,11 +114,10 @@ def _filter_bbq_outliers(bbq_df: tfs.TfsDataFrame, filter_opt: OutlierFilterOpt)
     bbq_df.headers[header_window] = filter_opt.window
     bbq_df.headers[header_limit] = filter_opt.limit
     for plane in PLANES:
-        bbq_mav, bbq_std, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)],
+        bbq_mav, bbq_err, mask = bbq_tools.clean_outliers_moving_average(bbq_df[get_bbq_col(plane)],
                                                                          filter_opt=filter_opt)
         bbq_df[get_mav_col(plane)] = bbq_mav
-        # bbq_df[get_mav_err_col(plane)] = bbq_std  # this is too large
-        bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
+        bbq_df[get_mav_err_col(plane)] = bbq_err  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
         bbq_df[get_used_in_mav_col(plane)] = mask
     return bbq_df
 
@@ -132,14 +128,13 @@ def _filter_bbq_cut(bbq_df: tfs.TfsDataFrame, filter_opts: Sequence[MinMaxFilter
     bbq_df.headers[get_fine_cut_header()] = filter_opts[0].fine_cut
 
     for idx, plane in enumerate(PLANES):
-        bbq_mav, bbq_std, mask = bbq_tools.get_moving_average(bbq_df[get_bbq_col(plane)], filter_opts[idx])
+        bbq_mav, bbq_err, mask = bbq_tools.get_moving_average(bbq_df[get_bbq_col(plane)], filter_opts[idx])
 
         bbq_df.headers[get_min_tune_header(plane)] = filter_opts[idx].min
         bbq_df.headers[get_max_tune_header(plane)] = filter_opts[idx].max
 
         bbq_df[get_mav_col(plane)] = bbq_mav
-        # bbq_df[get_mav_err_col(plane)] = bbq_std  # this is too large
-        bbq_df[get_mav_err_col(plane)] = 0.  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
+        bbq_df[get_mav_err_col(plane)] = bbq_err  # TODO to be discussed with Ewen and Tobias (jdilly, 2022-05-23)
         bbq_df[get_used_in_mav_col(plane)] = mask
     return bbq_df
 
@@ -214,8 +209,11 @@ def get_odr_data(kickac_df: pd.DataFrame, action_plane: str, tune_plane: str,
     header_val, header_err = _get_odr_headers(corrected)
     odr_data = FakeOdrOutput(beta=[0] * (order+1), sd_beta=[0] * (order+1))
     for idx in range(order+1):
-        odr_data.beta[idx] = kickac_df.headers[header_val(q_plane=tune_plane, j_plane=action_plane, order=idx)]
-        odr_data.sd_beta[idx] = kickac_df.headers[header_err(q_plane=tune_plane, j_plane=action_plane, order=idx)]
+        try:
+            odr_data.beta[idx] = kickac_df.headers[header_val(q_plane=tune_plane, j_plane=action_plane, order=idx)]
+            odr_data.sd_beta[idx] = kickac_df.headers[header_err(q_plane=tune_plane, j_plane=action_plane, order=idx)]
+        except KeyError as e:
+            LOG.debug(f"Fit data for order {order} not found. ({str(e)})")
     return odr_data
 
 
@@ -331,10 +329,10 @@ def convert_bbs_kickdataframe(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
         if COEFFICIENT.format(order=1) in key:
             df.headers[key] = df.headers[key] * 1e6  # inverse um to inverse m
 
-        # use uncorrected error columns for corrected data
-        if ERR in key:
-            new_key = key.replace(ERR, f"{ERR}{CORRECTED}")
-            df.headers[new_key] = df.headers[key]
+        # # use uncorrected error columns for corrected data
+        # if ERR in key:
+        #     new_key = key.replace(ERR, f"{ERR}{CORRECTED}")
+        #     df.headers[new_key] = df.headers[key]
 
     # add err headers for coefficient 0 (offset)
     for tune in PLANES:
@@ -367,12 +365,12 @@ def _rename_old_header(key: str):
             key = key.replace(old, new)
     key = key.replace("OFFSET", COEFFICIENT.format(order=0)).replace("SLOPE", COEFFICIENT.format(order=1))
 
-    # this was the last prefix in the old file, so replace this first
+    # CORR was the last prefix in the old file, so replace this first
     if "_CORR" in key:
         parts = key.split("_")
-        key = "_".join(parts[:-2] + [f"{CORRECTED}{parts[-2]}"])
+        key = "_".join(parts[:2] + [f"{CORRECTED}{parts[2]}"] + parts[3:-1])
 
-    # and then remove also this and add ERR
+    # and then remove also STD and add ERR
     if "_STD" in key:
         parts = key.split("_")
         key = "_".join(parts[:-2] + [f"{ERR}{parts[-2]}"])

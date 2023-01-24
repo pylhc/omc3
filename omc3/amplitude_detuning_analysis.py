@@ -115,8 +115,6 @@ the measurements.
 
 
 """
-import os
-from collections import OrderedDict
 from datetime import timedelta
 from pathlib import Path
 from typing import List, Sequence, Tuple, Dict, Any, Union
@@ -124,20 +122,20 @@ from typing import List, Sequence, Tuple, Dict, Any, Union
 import numpy as np
 import tfs
 from generic_parser import DotDict
-from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, save_options_to_config
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 from numpy.typing import ArrayLike
 from tfs.frame import TfsDataFrame
 
-from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
-from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, MinMaxFilterOpt
+from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, MinMaxFilterOpt, FilterOpts
 from omc3.tune_analysis.constants import (
     get_bbq_col,
     get_bbq_out_name,
     get_kick_out_name,
-    get_mav_col,
-    get_timber_bbq_key, INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
+    get_timber_bbq_key,
+    get_natq_err_col,
+    INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
     read_timed_dataframe,
@@ -266,7 +264,8 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 
     opt, filter_opt = _check_analyse_opt(opt)
     kick_df, bbq_df = get_kick_and_bbq_df(kick=opt.kick, bbq_in=opt.bbq_in,
-                                          beam=opt.beam, filter_opt=filter_opt, output=opt.output)
+                                          beam=opt.beam,
+                                          filter_opt=filter_opt)
 
     kick_plane = opt.plane
 
@@ -277,23 +276,34 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
             kick_df = double_action_analysis(kick_df, opt.detuning_order, corrected)
 
     if opt.output:
-        LOG.info(f"Writing kick data to file in directory '{opt.output.absolute()}'")
-        opt.output.mkdir(parents=True, exist_ok=True)
-        write_timed_dataframe(opt.output / get_kick_out_name(), kick_df)
-
+        _write_dataframes(opt.output, kick_df, bbq_df)
     return kick_df, bbq_df
 
 
 def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
-                        beam: int = None, filter_opt = None,
-                        output: Path = None
+                        beam: int = None,
+                        filter_opt: FilterOpts = None,
                         ) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """Load the input data."""
     bbq_df = None
     if bbq_in is not None and bbq_in == INPUT_PREVIOUS:
+        # NOTE: this is not the same as the "previous BBQ data" option in the GUI.
+        # That one just uses the previous bbq_ampdet.tfs file (loaded in the "else" below).
+        # The use-case for the INPUT_PREVIOUS option here is,
+        # that you can modify the kick_ampdet_xy file manually (e.g. removing kicks)
+        # and run the fitting on the new data again,
+        # without having to touch the whole BBQ stuff again (as the values are already in the file).
+        # Tips:
+        #  - Remove full columns to get rid of the whole kick
+        #  - Add NaNs into NATQ columns you want to ignore (in case you want to keep the other plane for this kick)
+        #  - Add NaNs to the ERRNATQ columns if you want to plot the point (w/o error bars) but not use it for fit
         LOG.debug("Getting data from previous ampdet kick file")
         kick_df = read_timed_dataframe(Path(kick) / get_kick_out_name())
         kick_df.headers = {k: v for k, v in kick_df.headers.items() if not k.startswith("ODR_")}
+
+        # redo the corrected columns, so you only need to add NaNs into the NATQ columns
+        LOG.debug("Adding corrected natural tunes and stdev to kick data")
+        kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
     else:
         LOG.debug("Getting data from kick files")
         kick_df = read_two_kick_files_from_folder(kick)
@@ -307,15 +317,6 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
             LOG.debug("Adding corrected natural tunes and stdev to kick data")
             kick_df = kick_file_modifiers.add_corrected_natural_tunes(kick_df)
 
-            if output:
-                LOG.info(f"Writing BBQ data to file in directory '{output.absolute()}'")
-                try:
-                    window = filter_opt.window
-                except AttributeError:
-                    window = filter_opt[0].window
-
-                x_interval = get_approx_bbq_interval(bbq_df, kick_df.index, window)
-                write_timed_dataframe(output / get_bbq_out_name(), bbq_df.loc[x_interval[0]: x_interval[1]])
     return kick_df, bbq_df
 
 
@@ -419,7 +420,7 @@ def get_approx_bbq_interval(
 # Private Functions ------------------------------------------------------------
 
 
-def _check_analyse_opt(opt: DotDict):
+def _check_analyse_opt(opt: DotDict) -> Tuple[DotDict, FilterOpts]:
     """Perform manual checks on opt-sturcture."""
     LOG.debug("Checking Options.")
 
@@ -540,6 +541,15 @@ def _get_ampdet_data_as_array(data: Dict[Any, AmpDetData], column: str) -> Array
           [Jy0, Jy1, Jy2, ....]]
     """
     return np.vstack([getattr(d, column) for d in data.values()])
+
+
+def _write_dataframes(output: Path, kick_df: TfsDataFrame, bbq_df: TfsDataFrame):
+    LOG.info(f"Writing kick data to file in directory '{output.absolute()}'")
+    output.mkdir(parents=True, exist_ok=True)
+    write_timed_dataframe(output / get_kick_out_name(), kick_df)
+    if bbq_df is not None:
+        LOG.info(f"Writing BBQ data to file in directory '{output.absolute()}'")
+        write_timed_dataframe(output / get_bbq_out_name(), bbq_df)
 
 
 # Script Mode ##################################################################
