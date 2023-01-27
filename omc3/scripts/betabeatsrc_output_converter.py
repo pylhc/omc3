@@ -1,6 +1,6 @@
 """
 BetaBeat.src Output Converter
--------------
+-----------------------------
 
 Script to convert most important output files produced by ``BetaBeat.src`` / ``GetLLM`` into the standard
 format used in ``omc3`` to allow straight forward comparison of the two.

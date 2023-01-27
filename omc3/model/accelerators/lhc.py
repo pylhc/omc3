@@ -364,10 +364,11 @@ class Lhc(Accelerator):
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n"
         )
-        madx_script += "".join(
-            f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
-            for modifier in self.modifiers
-        )
+        if self.modifiers is not None:
+            madx_script += "".join(
+                f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
+                for modifier in self.modifiers
+            )
 
         if self.year.startswith("hl") or int(self.year) <= 2021:
             madx_script += (

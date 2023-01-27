@@ -7,6 +7,7 @@ from typing import Dict, Tuple, List, Any
 import numpy as np
 import pandas as pd
 import pytest
+from pandas._testing import assert_dict_equal, assert_frame_equal
 
 import tfs
 from generic_parser import EntryPoint
@@ -16,7 +17,7 @@ from omc3.knob_extractor import (KNOB_CATEGORIES, _add_time_delta,
                                  _extract_and_gather, _parse_knobs_defintions,
                                  _parse_time, _write_knobsfile, lsa2name, main,
                                  get_params, Col, get_madx_command, Head,
-                                 check_for_undefined_knobs, load_knobs_definitions
+                                 check_for_undefined_knobs, load_knobs_definitions, STATE_VARIABLES
                                  )
 from tests.conftest import cli_args
 
@@ -84,6 +85,8 @@ class TestFullRun:
     @pytest.mark.basic
     @pytest.mark.parametrize("commandline", [True, False], ids=["as function", "cli"])
     def test_state(self, tmp_path, monkeypatch, caplog, commandline):
+        returns = {v: np.random.random() for v in STATE_VARIABLES.keys()}
+
         # Mock Pytimber ---
         class MyLDB:
             def __init__(self, *args, **kwargs):
@@ -91,8 +94,9 @@ class TestFullRun:
             
             @staticmethod
             def get(key, time):
-                if key == "LhcStateTracker:State":
-                    return {key: f"The State of the affairs at {time} is good!"}
+                intro = "LhcStateTracker:State:"
+                if key.startswith(intro):
+                    return {key: ([time], [returns[key[len(intro):]]])}
                 else:
                     raise ValueError("This test failed, probably because the StateKey changed. Update Test.")
 
@@ -111,15 +115,17 @@ class TestFullRun:
 
             else:
                 path = tmp_path / "knobs.txt"
-                knobs_extracted = main(
+                state_extracted = main(
                     time=str(time), state=True,
                     output=path, knobs=["fsf"]  # these should not matter, but if state is false
                 )
                 assert not path.is_file()
-                assert knobs_extracted is None
-
-        assert str(time) in caplog.text
-        assert "The State of the affairs" in caplog.text
+                assert len(state_extracted)
+                for name in state_extracted.index:
+                    value = state_extracted.loc[name, Col.value]
+                    lsa_name = state_extracted.loc[name, Col.lsa]
+                    assert value == returns[lsa_name]
+                    assert len(re.findall(fr"{name}:\s*{str(value)}", caplog.text)) == 1
 
     @pytest.mark.basic
     def test_knob_not_defined_run(self, knob_definitions, monkeypatch):
@@ -437,6 +443,24 @@ class TestInsideCERNNetwork:
         for key in parsed_output.keys():
             assert parsed_output[key] == parsed_saved[key]
 
+    @pytest.mark.cern_network
+    def test_state_in_cern_network(self, state_tfs):
+        # get recorded data
+        old_df = tfs.read_tfs(state_tfs, index="NAME")
+        time = old_df.headers[Head.time]
+
+        # run main
+        state_df = main(time=time, state=True)
+
+        # format a bit to make frames equal
+        state_df = state_df.applymap(str)
+        state_df.headers[Head.time] = str(state_df.headers[Head.time])
+        state_df.index.name = "NAME"
+
+        # check frames
+        assert_dict_equal(state_df.headers, old_df.headers)
+        assert_frame_equal(state_df, old_df)
+
 
 # Helper -----------------------------------------------------------------------
 
@@ -475,6 +499,11 @@ def dict2args(args_dict: Dict[str, Any]) -> List[str]:
 @pytest.fixture()
 def knob_definitions() -> Path:
     return INPUTS / "knob_definitions.txt"
+
+
+@pytest.fixture()
+def state_tfs() -> Path:
+    return INPUTS / "state_2022-06-25.tfs"
 
 
 @pytest.fixture()

@@ -6,12 +6,20 @@ on_sep1_h := 0.0;
 ! on_sep1_v : No Value extracted
 ! on_sep5_h : No Value extracted
 on_sep5_v := 0.0;
+on_sep2h := 1.0;
+! on_sep2v : No Value extracted
+! on_sep8h : No Value extracted
+on_sep8v := -1.0;
 
 !! --- xing       --------------------
 on_x1_v := -160.0;
 ! on_x1_h : No Value extracted
 ! on_x5_v : No Value extracted
 on_x5_h := 160.0;
+on_x2v := 200.0;
+! on_x2h : No Value extracted
+! on_x8v : No Value extracted
+on_x8h := -200.0;
 
 !! --- chroma     --------------------
 dQpx.b1_op := 2.0;

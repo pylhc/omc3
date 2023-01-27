@@ -90,6 +90,13 @@ KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
 KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
 
 MINUS_CHARS: Tuple[str, ...] = ("_", "-")
+STATE_VARIABLES: Dict[str, str] = {
+    'opticName': 'Optics',
+    'beamProcess': 'Beam Process',
+    'opticId': 'Optics ID',
+    'hyperCycle': 'HyperCycle',
+    # 'secondsInBeamProcess ': 'Beam Process running (s)',
+}
 
 
 class Col:
@@ -111,12 +118,20 @@ KNOB_CATEGORIES: Dict[str, List[str]] = {
         "LHCBEAM:IP1-SEP-V-MM",
         "LHCBEAM:IP5-SEP-H-MM",
         "LHCBEAM:IP5-SEP-V-MM",
+        "LHCBEAM:IP2-SEP-H-MM",
+        "LHCBEAM:IP2-SEP-V-MM",
+        "LHCBEAM:IP8-SEP-H-MM",
+        "LHCBEAM:IP8-SEP-V-MM",
     ],
     "xing": [
         "LHCBEAM:IP1-XING-V-MURAD",
         "LHCBEAM:IP1-XING-H-MURAD",
         "LHCBEAM:IP5-XING-V-MURAD",
         "LHCBEAM:IP5-XING-H-MURAD",
+        "LHCBEAM:IP2-XING-V-MURAD",
+        "LHCBEAM:IP2-XING-H-MURAD",
+        "LHCBEAM:IP8-XING-V-MURAD",
+        "LHCBEAM:IP8-XING-H-MURAD",
     ],
     "chroma": [
         "LHCBEAM1:QPH",
@@ -129,12 +144,14 @@ KNOB_CATEGORIES: Dict[str, List[str]] = {
         "LHCBEAM:IP2-OFFSET-V-MM",
         "LHCBEAM:IP5-OFFSET-H-MM",
         "LHCBEAM:IP8-OFFSET-H-MM",
+        # hint: knobs for the other planes do not exist
     ],
     "disp": [
         "LHCBEAM:IP1-SDISP-CORR-SEP",
         "LHCBEAM:IP1-SDISP-CORR-XING",
         "LHCBEAM:IP5-SDISP-CORR-SEP",
         "LHCBEAM:IP5-SDISP-CORR-XING",
+        # hint: these knobs do not exist for IP2 and IP8
     ],
     "mo": [
         "LHCBEAM1:LANDAU_DAMPING",
@@ -225,26 +242,69 @@ def get_params():
         prog="Knob Extraction Tool."
     )
 )
-def main(opt) -> Optional[tfs.TfsDataFrame]:
+def main(opt) -> tfs.TfsDataFrame:
     """ Main knob extracting function. """
     ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR)
     time = _parse_time(opt.time, opt.timedelta)
 
     if opt.state:
-        # only print the state of the StateTracker - the MetaState!
-        # I still don't know what this does,
-        # because I only get back that the variable does not exist. (jdilly)
-        state = ldb.get("LhcStateTracker:State", time)  # do first to have output together
-        LOGGER.info("---- STATE ------------------------------------")
-        LOGGER.info(state)
-        return None
-    
+        # Only print the state of the machine.
+        state_dict = get_state(ldb, time)
+        return _get_state_as_df(state_dict, time)
+
+    # Actually extract knobs.
     knobs_dict = _parse_knobs_defintions(opt.knob_definitions)
     knobs_extract = _extract_and_gather(ldb, knobs_dict, opt.knobs, time)
     if opt.output:
         _write_knobsfile(opt.output, knobs_extract)
     return knobs_extract
 
+
+# State Extraction -------------------------------------------------------------
+
+def get_state(ldb, time: datetime) -> Dict[str, str]:
+    """
+    Standalone function to gather and log state data from  the StateTracker.
+
+    Args:
+        ldb (pytimber.LoggingDB): The pytimber database.
+        time (datetime): The time, when to get the state.
+
+    Returns:
+        Dict[str, str]: Dictionary of state-variable and the extracted state value.
+    """
+    state_dict = {}
+    LOGGER.info(f"---- STATE @ {time} ----")
+    for variable, name in STATE_VARIABLES.items():
+        tracker_variable = f"LhcStateTracker:State:{variable}"
+        state = ldb.get(tracker_variable, time.timestamp())[tracker_variable][1][-1]
+        LOGGER.info(f"{f'{name}:':<13s} {state}")
+        state_dict[variable] = state
+    return state_dict
+
+
+def _get_state_as_df(state_dict: Dict[str, str], time: datetime) -> tfs.TfsDataFrame:
+    """
+    Convert extracted StateTracker state-data into a TfsDataFrame
+    To be consistent with the main functions output.
+
+    Args:
+        state_dict (Dict[str, str]): Extracted State Dictionary
+        time (datetime): The time, when to get the state.
+
+    Returns:
+        tfs.DataFrame: States packed into dataframe with readable index.
+    """
+    state_df = tfs.TfsDataFrame(index=list(STATE_VARIABLES.values()),
+                                columns=[Col.value, Col.lsa],
+                                headers={Head.time: time})
+    for name, value in state_dict.items():
+        state_df.loc[STATE_VARIABLES[name], Col.lsa] = name
+        state_df.loc[STATE_VARIABLES[name], Col.value] = value
+    return state_df
+
+
+# Knobs Extraction -------------------------------------------------------------
 
 def extract(ldb, knobs: Sequence[str], time: datetime) -> Dict[str, float]:
     """
@@ -272,7 +332,7 @@ def extract(ldb, knobs: Sequence[str], time: datetime) -> Dict[str, float]:
 
             knobvalue = ldb.get(knobkey, time.timestamp())  # use timestamp to preserve timezone info
             if knobkey not in knobvalue:
-                LOGGER.warning(f"No value for {knob} found")
+                LOGGER.debug(f"{knob} not found in StateTracker")
                 continue
 
             timestamps, values = knobvalue[knobkey]

@@ -45,6 +45,12 @@ Provides the plotting function for amplitude detuning analysis
     default: ``m``
 
 
+- **bbq_corrected** *(bool)*:
+
+    Plot the data with BBQ correction (``True``) or without (``False``).
+    ``None`` plots both in separate plots. Default: ``None``.
+
+
 - **correct_acd**:
 
     Correct for AC-Dipole kicks.
@@ -111,6 +117,8 @@ from pathlib import Path
 from typing import Dict, Sequence
 
 import numpy as np
+from matplotlib.figure import Figure
+
 from generic_parser import entrypoint, EntryPointParameters, DotDict
 from generic_parser.entry_datatypes import DictAsString
 from matplotlib import colors as mcolors, MatplotlibDeprecationWarning
@@ -211,6 +219,11 @@ def get_params():
             help="Plotting exponent of the tune.",
             default=-3,
             type=int,
+        ),
+        bbq_corrected=dict(
+            help="Plot the data with BBQ correction (``True``) or without (``False``)."
+                 " ``None`` plots both in separate plots. Default: ``None``.",
+            type=bool,
         )
     )
 
@@ -241,15 +254,14 @@ def main(opt):
 
 # 2D Plots ----------------------------
 
-def _plot_2d(tune_plane: str, opt: DotDict):
+def _plot_2d(tune_plane: str, opt: DotDict) -> Dict[str, Figure]:
     """ 2D Plots per kick-plane and with/without BBQ correction. """
     figs = {}
     limits = opt.get_subdict(['x_lim', 'y_lim'])
     tune_scale = 10 ** opt.tune_scale
 
     for action_plane in opt.plane:
-        do_acd_correction = opt.correct_acd and (action_plane == tune_plane)
-        for corrected in [False, True]:  # with and without BBQ correction
+        for corrected in opt.bbq_corrected:  # with / without BBQ correction
             corr_label = "_corrected" if corrected else ""
 
             fig = plt.figure()
@@ -265,9 +277,8 @@ def _plot_2d(tune_plane: str, opt: DotDict):
                                                     corrected=corrected
                                                     )
                 except KeyError as e:
-                    if corrected:
-                        continue  # should only happen when there is no 'corrected' columns
-                    raise
+                    LOG.debug(f"Entries not found in dataframe: {str(e)}")
+                    continue  # should only happen when there is no 'corrected' columns
 
                 # Read data from kick_df headers ---
                 odr_fit = kick_mod.get_odr_data(kick_df,
@@ -282,7 +293,7 @@ def _plot_2d(tune_plane: str, opt: DotDict):
                                            tune_plane=tune_plane,
                                            action_plane=action_plane,
                                            action_unit=opt.action_unit,
-                                           do_acd_correction=do_acd_correction
+                                           do_acd_correction=opt.correct_acd
                                            )
 
                 # Scale and Plot ---
@@ -302,7 +313,7 @@ def _plot_2d(tune_plane: str, opt: DotDict):
                 plt.close(fig)  # don't show empty figs
                 continue  # don't save/return empty figures
 
-            if do_acd_correction:
+            if opt.correct_acd and tune_plane == action_plane:
                 ax.text(0.0, 1.02, "* corrected for AC-Dipole.",
                         fontsize="x-small",
                         ha="left",
@@ -393,7 +404,7 @@ def _plot_3d(tune_plane: str, opt: DotDict):
     limits = opt.get_subdict(['x_lim', 'y_lim'])
     tune_scale = 10 ** opt.tune_scale
 
-    for corrected in [False, True]:  # with and without BBQ correction
+    for corrected in opt.bbq_corrected:  # with / without BBQ correction
         corr_label = "_corrected" if corrected else ""
 
         # hack to draw spines properly, as their style is
@@ -650,24 +661,30 @@ def _get_odr_label(odr_fit: odr.Output, tune_plane: str, action_plane: str,
     order = len(odr_fit.beta) - 1
     str_list = [None] * order
     for o in range(order):
-         label = _get_scaled_odr_label(
+        acd_correction = 1
+        if do_acd_correction:
+            if order == 1 and tune_plane == action_plane:
+                acd_correction = 0.5
+            if order == 2 and tune_plane == action_plane:
+                acd_correction = 1/3
+
+        label = _get_scaled_odr_label(
             odr_fit,
             order=o+1,
             action_unit=action_unit,
-            do_acd_correction=do_acd_correction,
+            acd_correction=acd_correction,
             magnitude_exponent=const.get_detuning_exponent_for_order(o+1)
-         )
-         order_str = f"^{o+1}" if o else ""
-         str_list[o] = f"$Q{order_str}_{{{tune_plane},{action_plane}}}$: {label}"
+        )
+        order_str = f"^{o+1}" if o else ""
+        str_list[o] = f"$Q_{{{tune_plane},{action_plane}{order_str}}}$: {label}"
     return ", ".join(str_list)
 
 
-def _get_scaled_odr_label(odr_fit, order, action_unit, do_acd_correction, magnitude_exponent=3):
+def _get_scaled_odr_label(odr_fit, order, action_unit, acd_correction, magnitude_exponent=3):
     """ Returns the label for the ODR fit after scaling to readable units and accounting for AC-Dipole correction."""
-    acd_scale = 0.5 if do_acd_correction else 1
-    str_acd_scale = "$^*$" if do_acd_correction else ""
+    str_acd_scale = "$^*$" if acd_correction != 1  else ""
 
-    scale = acd_scale * (10 ** -magnitude_exponent) / (UNIT_IN_METERS[action_unit] ** order)
+    scale = acd_correction * (10 ** -magnitude_exponent) / (UNIT_IN_METERS[action_unit] ** order)
     str_val, str_std = _get_scaled_labels(odr_fit.beta[order], odr_fit.sd_beta[order], scale)
     str_mag = ''
     if magnitude_exponent != 0:
@@ -707,6 +724,11 @@ def _save_options(opt):
 
 
 def _check_opt(opt):
+    if opt.bbq_corrected is None:
+        opt.bbq_corrected = (False, True)  # loop both
+    else:
+        opt.bbq_corrected = (opt.bbq_corrected,)  # make iterable
+
     if len(opt.labels) != len(opt.kicks):
         raise ValueError("'kicks' and 'labels' need to be of same size!")
 
