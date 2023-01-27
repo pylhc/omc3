@@ -18,7 +18,7 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcModelCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
-from omc3.model.model_creators.psbooster_model_creator import PsOrBoosterModelCreator, BoosterModelCreator
+from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs
 from omc3.utils import logging_tools

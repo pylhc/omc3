@@ -64,7 +64,7 @@ from omc3.model.accelerators.accelerator import (
 )
 from omc3.utils.parsertools import require_param
 from omc3.model.constants import MODIFIER_TAG, PLANE_TO_HV
-from omc3.model.accelerators.psbooster import PsBase
+from omc3.model.accelerators.psbase import PsBase
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent

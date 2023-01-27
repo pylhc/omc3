@@ -8,16 +8,10 @@ import logging
 import shutil
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
-from omc3.model.accelerators.ps import Ps
-from omc3.model.constants import ERROR_DEFFS_TXT
-from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.model.accelerators.psbooster import PsBase
-from omc3.model.model_creators.psbooster_model_creator import PsOrBoosterModelCreator
+from omc3.model.model_creators.ps_base_model_creator import PsBaseModelCreator
 
-LOGGER = logging.getLogger(__name__)
-
-
-class PsModelCreator(PsOrBoosterModelCreator):
+class PsModelCreator(PsBaseModelCreator):
     acc_model_name = "ps"
 
     @classmethod

@@ -112,11 +112,9 @@ class LhcModelCreator(ModelCreator):
     def prepare_run(cls, accel: Lhc) -> None:
         LOGGER.info("preparing run ...")
         if accel.acc_model_path is not None:
-            LOGGER.info("creating symlinks")
             link = Path(accel.model_dir)/LHC_REPOSITORY_NAME
             target = accel.acc_model_path
             if not link.exists():
-                LOGGER.debug("link will be created")
                 link.absolute().symlink_to(target)
 
         cls.check_accelerator_instance(accel)
