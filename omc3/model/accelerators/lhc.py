@@ -132,15 +132,23 @@ class Lhc(Accelerator):
         params.add_parameter(
             name="year",
             type=str,
-            required=True,
-            choices=("2012", "2015", "2016", "2017", "2018", "2022", "hllhc1.3"),
             help="Year of the optics (or hllhc1.x version).",
         )
         params.add_parameter(
             name="ats",
             action="store_true",
             help="Force use of ATS macros and knobs for years which are not ATS by default.",
-            )
+        )
+        params.add_parameter(
+            name="b2_errors",
+            type=str,
+            help="The B2 error table to load for the best knowledge model.",
+        )
+        params.add_parameter(
+            name="list_b2_errors",
+            action="store_true",
+            help="Lists all available b2 error tables",
+        )
         return params
 
     def __init__(self, *args, **kwargs):
@@ -150,6 +158,8 @@ class Lhc(Accelerator):
         self.correctors_dir = "2012"
         self.year = opt.year
         self.ats = opt.ats
+        self.b2_errors = opt.b2_errors
+        self.list_b2_errors = opt.list_b2_errors
         if self.year == "hllhc1.3":
             self.correctors_dir = "hllhc1.3"
         self.beam = opt.beam
@@ -172,15 +182,21 @@ class Lhc(Accelerator):
         if self.excitation is None:
             raise AcceleratorDefinitionError("Excitation mode not set.")
         if (self.excitation != AccExcitationMode.FREE) and (self.drv_tunes is None):
-            raise AcceleratorDefinitionError("An excitation mode was given but driven tunes are not set.")
+            raise AcceleratorDefinitionError(
+                "An excitation mode was given but driven tunes are not set."
+            )
 
         # TODO: write more output prints
-        LOGGER.debug("... verification passed. \nSome information about the accelerator:")
+        LOGGER.debug(
+            "... verification passed. \nSome information about the accelerator:"
+        )
         LOGGER.debug(f"Class name       {self.__class__.__name__}")
         LOGGER.debug(f"Beam             {self.beam}")
         LOGGER.debug(f"Beam direction   {self.beam_direction}")
         if self.modifiers:
-            LOGGER.debug(f"Modifiers        {', '.join([str(m) for m in self.modifiers])}")
+            LOGGER.debug(
+                f"Modifiers        {', '.join([str(m) for m in self.modifiers])}"
+            )
 
     @property
     def beam(self) -> int:
@@ -212,23 +228,35 @@ class Lhc(Accelerator):
         if my_classes is None:
             my_classes = all_corrs.keys()
         vars_by_class = set(
-            _flatten_list([all_corrs[corr_cls] for corr_cls in my_classes if corr_cls in all_corrs])
+            _flatten_list(
+                [
+                    all_corrs[corr_cls]
+                    for corr_cls in my_classes
+                    if corr_cls in all_corrs
+                ]
+            )
         )
         if frm is None and to is None:
             return list(vars_by_class)
         elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
-                elems_matrix = elems_matrix[(elems_matrix.S >= frm) | (elems_matrix.S <= to)]
+                elems_matrix = elems_matrix[
+                    (elems_matrix.S >= frm) | (elems_matrix.S <= to)
+                ]
             else:
-                elems_matrix = elems_matrix[(elems_matrix.S >= frm) & (elems_matrix.S <= to)]
+                elems_matrix = elems_matrix[
+                    (elems_matrix.S >= frm) & (elems_matrix.S <= to)
+                ]
         elif frm is not None:
             elems_matrix = elems_matrix[elems_matrix.S >= frm]
         elif to is not None:
             elems_matrix = elems_matrix[elems_matrix.S <= to]
 
         vars_by_position = _remove_dups_keep_order(
-            _flatten_list([raw_vars.split(",") for raw_vars in elems_matrix.loc[:, "VARS"]])
+            _flatten_list(
+                [raw_vars.split(",") for raw_vars in elems_matrix.loc[:, "VARS"]]
+            )
         )
         return _list_intersect_keep_order(vars_by_position, vars_by_class)
 
@@ -272,6 +300,8 @@ class Lhc(Accelerator):
         LOGGER.info(f"> Driven Tune Y     [{self.drv_tunes[1]:10.3f}]")
 
     def load_main_seq_madx(self) -> str:
+        if self.acc_model_path is not None:
+            return f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
         try:
             return _get_call_main_for_year(self.year)
         except AttributeError:
@@ -298,19 +328,28 @@ class Lhc(Accelerator):
         if self.excitation == AccExcitationMode.ACD:
             try:
                 return (
-                    _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms),
+                    _is_one_of_in(
+                        [f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms
+                    ),
                     f"MKQA.6L4.B{beam}",
                 )
             except KeyError as e:
-                raise KeyError("AC-Dipole BPM not found in the common BPMs. Maybe cleaned?") from e
+                raise KeyError(
+                    "AC-Dipole BPM not found in the common BPMs. Maybe cleaned?"
+                ) from e
         if self.excitation == AccExcitationMode.ADT:
             try:
                 return (
-                    _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"], commonbpms),
+                    _is_one_of_in(
+                        [f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"],
+                        commonbpms,
+                    ),
                     f"ADTK{adt}5{l_r}4.B{beam}",
                 )
             except KeyError as e:
-                raise KeyError("ADT BPM not found in the common BPMs. Maybe cleaned?") from e
+                raise KeyError(
+                    "ADT BPM not found in the common BPMs. Maybe cleaned?"
+                ) from e
         return None
 
     def important_phase_advances(self) -> List[List[str]]:
@@ -353,16 +392,17 @@ class Lhc(Accelerator):
             f"! ----- Calling Sequence and Optics -----\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
-            )
+        )
         if self._uses_run3_macros():
-            LOGGER.debug("According to the optics year, Run 3 versions of the macros will be used")
+            LOGGER.debug(
+                "According to the optics year, Run 3 versions of the macros will be used"
+            )
             madx_script += (
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
 
         madx_script += (
-            f"{self.load_main_seq_madx()}\n"
-            f"exec, define_nominal_beams();\n"
+            f"{self.load_main_seq_madx()}\n" f"exec, define_nominal_beams();\n"
         )
         if self.modifiers is not None:
             madx_script += "".join(
@@ -370,7 +410,13 @@ class Lhc(Accelerator):
                 for modifier in self.modifiers
             )
 
-        if self.year.startswith("hl") or int(self.year) <= 2021:
+        model_year = 100000000
+        try:
+            model_year = int(self.year)
+        except:
+            pass
+
+        if self.year.startswith("hl") or model_year <= 2021:
             madx_script += (
                 f"\n! ----- Defining Configuration Specifics -----\n"
                 f"xing_angles = {'1' if self.xing else '0'};\n"
@@ -381,8 +427,7 @@ class Lhc(Accelerator):
                 f"}}\n"
             )
         else:
-            madx_script += "call, file=\"knobs.madx\";\n\n"
-
+            madx_script += 'call, file="knobs.madx";\n\n'
 
         madx_script += (
             "exec, cycle_sequences();\n"
@@ -401,14 +446,19 @@ class Lhc(Accelerator):
             madx_script += "exec, high_beta_matcher();\n"
 
         madx_script += f"\n! ----- Matching Knobs and Output Files -----\n"
-        if self._uses_ats_knobs():
-            LOGGER.debug("According to the optics year or the --ats flag being provided, ATS macros and knobs will be used")
-            madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-            madx_script += f"exec, coupling_knob_ats({self.beam});\n"
-        else:
-            madx_script += f"exec, match_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-            madx_script += f"exec, coupling_knob({self.beam});\n"
-        
+
+        # in the best knowledge case, all knobs are loaded from actual knowledge
+        if not best_knowledge:
+            if self._uses_ats_knobs():
+                LOGGER.debug(
+                    "According to the optics year or the --ats flag being provided, ATS macros and knobs will be used"
+                )
+                madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+                madx_script += f"exec, coupling_knob_ats({self.beam});\n"
+            else:
+                madx_script += f"exec, match_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+                madx_script += f"exec, coupling_knob({self.beam});\n"
+
         if ats_md:
             madx_script += "exec, full_response_ats();\n"
 
@@ -441,13 +491,16 @@ class Lhc(Accelerator):
         except ValueError:  # if a "hllhc1.x" year is given
             return False
 
+
 # General functions ##########################################################
 
 
 def _get_call_main_for_year(year: str) -> str:
     call_main = f"call, file = '{_get_file_for_year(year, 'main.seq')}';\n"
     if year == "2012":
-        call_main += f"call, file = '{LHC_DIR / '2012' / 'install_additional_elements.madx'}';\n"
+        call_main += (
+            f"call, file = '{LHC_DIR / '2012' / 'install_additional_elements.madx'}';\n"
+        )
     if year == "hllhc1.3":
         call_main += f"call, file = '{LHC_DIR / 'hllhc1.3' / 'main_update.seq'}';\n"
     return call_main

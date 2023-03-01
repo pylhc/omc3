@@ -72,7 +72,7 @@ def _get_params():
         help="If path fetcher is selected, this option sets the path",
     )
     params.add_parameter(
-        name="list_opticsfiles",
+        name="list_choices",
         action="store_true",
         help="if selected, a list of valid optics files is printed",
     )

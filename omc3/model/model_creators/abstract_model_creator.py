@@ -12,6 +12,29 @@ from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
 from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 
 
+def always_true(_: Path) -> bool:
+    return True
+
+
+def check_folder_choices(parent: Path, msg: str,
+                          selection: str,
+                          list_choices: bool = False,
+                          predicate=always_true) -> Path:
+    """
+    A helper function that scans a selected folder for children, which will then be displayed as possible choices
+    """
+    choices = [d.name for d in parent.iterdir() if predicate(d)]
+    if selection is None or selection not in choices:
+        if list_choices:
+            for choice in choices:
+                print(choice)
+            return None
+        raise AttributeError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
+    return parent / selection
+
+
+
+
 class ModelCreator(ABC):
     """
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
