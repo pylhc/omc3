@@ -390,6 +390,7 @@ class Lhc(Accelerator):
         madx_script = (
             f"{self._get_madx_script_info_comments()}"
             f"! ----- Calling Sequence and Optics -----\n"
+            f"option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
         )
