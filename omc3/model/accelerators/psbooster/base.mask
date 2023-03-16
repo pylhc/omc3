@@ -1,72 +1,77 @@
-title, 'BOOSTER lattice';
-set,  format="20.10f";
+TITLE, 'BOOSTER lattice';
+SET,   format="20.10f";
 
- /******************************************************************
- * Energy and particle type definition
- ******************************************************************/
- 
+! --------------------------------------------------------------------------------------------------
+! ---Energy and particle type ----------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+
 if (%(USE_CUSTOM_PC)s == 1) {
-    !for the time being not used
     beam_Ek=%(KINETICENERGY)s;
     beam_Etot = beam_Ek + pmass;
     beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
 
     BEAM, PARTICLE=PROTON, PC=beam_pc;
 } else {
-    call, file="%(BEAM_FILE)s";
+    CALL, file="%(BEAM_FILE)s";
 };
 
-BRHO      := BEAM->PC * 3.3356;
+BRHO := BEAM->PC * 3.3356;
 
 
-/******************************************************************
- * Call lattice files
- ******************************************************************/
+! --------------------------------------------------------------------------------------------------
+! --- Call lattice files ---------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+OPTION, -echo;
+CALL, file = '%(ACC_MODELS_DIR)s/psb.seq';
+CALL, file = '%(ACC_MODELS_DIR)s/psb_aperture.dbx';
+CALL, file = '%(STR_FILE)s';
+CALL, file = '%(ACC_MODELS_DIR)s/_scripts/macros.madx';
+OPTION, echo;
 
-call, file = '%(ACC_MODELS_DIR)s/psb.seq';
-call, file = '%(ACC_MODELS_DIR)s/psb_aperture.dbx';
-call, file = '%(STR_FILE)s';
-call, file = '%(ACC_MODELS_DIR)s/_scripts/macros.madx';
+OPTION, RBARC=FALSE;
 
- option, echo;
- option, RBARC=FALSE;
+USE, sequence=psb%(RING)s;
 
- use, sequence=psb%(RING)s;
+! --------------------------------------------------------------------------------------------------
+! --- Match for new working point ------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 
-/******************************************************************************************
- * Match for new working point
- ******************************************************************************************/
+Qx = %(NAT_TUNE_X)s;
+Qy = %(NAT_TUNE_Y)s;
+Qxd = %(DRV_TUNE_X)s;
+Qyd = %(DRV_TUNE_Y)s;
 
- Qx = %(NAT_TUNE_X)s;
- Qy = %(NAT_TUNE_Y)s;
- Qxd = %(DRV_TUNE_X)s;
- Qyd = %(DRV_TUNE_Y)s;
+! find integer tune
+TWISS;
+int_qx = floor(table(summ, q1));
+int_qy = floor(table(summ, q2));
+total_qx = int_qx + qx;
+total_qy = int_qy + qy;
 
-/******************************************************************************************
- * Install the AC-Dipole (this may be refactored into a `macros.madx`
- ******************************************************************************************/
+! --------------------------------------------------------------------------------------------------
+! --- Install AC-Dipole ----------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
 hacmap21 = 0;
 vacmap43 = 0;
 
 hacmap: matrix, l=0, rm21 := hacmap21;
 vacmap: matrix, l=0, rm43 := vacmap43;
 
-seqedit, sequence=psb%(RING)s;
-    flatten;
+SEQEDIT, sequence=psb%(RING)s;
+    FLATTEN;
     // 0.565 is the length of BR[1-4].DES3L1
-    install, element=hacmap, at=0.565/2, from=BR%(RING)s.DES3L1;
-    install, element=vacmap, at=0.565/2, from=BR%(RING)s.DES3L1;
-endedit;
+    INSTALL, element=hacmap, at=0.565/2, from=BR%(RING)s.DES3L1;
+    INSTALL, element=vacmap, at=0.565/2, from=BR%(RING)s.DES3L1;
+ENDEDIT;
 
- use, sequence=psb%(RING)s;
+USE, sequence=psb%(RING)s;
 
-
-/******************************************************************************************
- * Tune Matching
- ******************************************************************************************/
- MATCH,sequence=psb%(RING)s;
-  vary, NAME=kBRQF, step = 0.0001;
-  vary, NAME=kBRQD, step = 0.0001;
-  constraint, range=#E, MUX=Qx, MUY=Qy;
-  lmdif, calls = 10000, tolerance = 1.0E-21;
- ENDMATCH;
+! --------------------------------------------------------------------------------------------------
+! --- Tune Matching --------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------------
+MATCH,sequence=psb%(RING)s;
+  VARY, NAME=kBRQF, step = 0.0001;
+  VARY, NAME=kBRQD, step = 0.0001;
+  CONSTRAINT, range=#E, MUX=total_qx, MUY=total_qy;
+  LMDIF, calls = 10000, tolerance = 1.0E-21;
+ENDMATCH;

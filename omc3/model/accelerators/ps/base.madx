@@ -6,15 +6,24 @@ title, "PS model by OMC3 model creator";
 
 ps_tune_matching_method = %(PS_TUNE_METHOD)s;
 
+find_integer_tunes(qx, qy): macro = {
+twiss;
+int_qx = floor(table(summ, q1));
+int_qy = floor(table(summ, q2));
+total_qx = int_qx + qx;
+total_qy = int_qy + qy;
+}
+
 // low energy quads (leq) --------------------------------------------------------------------------
 
 tune_matching_method1(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
   match, sequence=ps;
     vary, name = kf;
     vary, name = kd;
     !constraint, expr = table(summ,Q1)  = qx;
     !constraint, expr = table(summ,Q2)  = qy;
-    constraint, range=#E, MUX=Qx, MUY=Qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
     jacobian,calls=50000,bisec=3, tolerance = 1E-15;
   endmatch;
 };
@@ -23,35 +32,38 @@ tune_matching_method1(qx, qy): macro = {
 
 // pole face windings
 tune_matching_method2(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
   match, sequence=ps;
     vary, name = k1prpfwf;
     vary, name = k1prpfwd;
     !constraint, expr = table(summ,Q1)  = qx;
     !constraint, expr = table(summ,Q2)  = qy;
-    constraint, range=#E, MUX=Qx, MUY=Qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
     jacobian,calls=50000,bisec=3, tolerance = 1E-15;
   endmatch;
 };
 
 // actual quad of combined function magnets
 tune_matching_method3(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
   match, sequence=ps;
     vary, name = k1prbhf;
     vary, name = k1prbhd;
     !constraint, expr = table(summ,Q1)  = qx;
     !constraint, expr = table(summ,Q2)  = qy;
-    constraint, range=#E, MUX=Qx, MUY=Qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
     jacobian,calls=50000,bisec=3, tolerance = 1E-15;
   endmatch;
 };
 
 // figure 8 loop
 tune_matching_method4(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
   match, sequence=ps;
     vary, name = k1prf8l;
     !constraint, expr = table(summ,Q1)  = qx;
     !constraint, expr = table(summ,Q2)  = qy;
-    constraint, range=#E, MUX=Qx, MUY=Qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
     jacobian,calls=50000,bisec=3, tolerance = 1E-15;
   endmatch;
 };
