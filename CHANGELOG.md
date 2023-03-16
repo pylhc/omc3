@@ -1,11 +1,6 @@
 # OMC3 Changelog
 
-#### 2023-03-16 - v0.7.2 - _jdilly_
-
-- Fix: 
-  - Added missing columns to coupling in BBS-OMC3 converter
-
-#### 2023-01-20 - v0.7.1 - _jdilly_
+#### 2022-01-20 - v0.7.1 - _jdilly_
 
 - Added:
   - Amplitude Detuning plots: Switch to plot only with/without BBQ correction 
