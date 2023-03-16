@@ -20,7 +20,7 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
-from omc3.utils.iotools import create_dirs
+from omc3.utils.iotools import create_dirs, PathOrStr
 from omc3.utils import logging_tools
 from omc3.utils.parsertools import print_help, require_param
 from generic_parser.tools import silence
@@ -68,7 +68,7 @@ def _get_params():
     )
     params.add_parameter(
         name="path",
-        type=str,
+        type=PathOrStr,
         help="If path fetcher is selected, this option sets the path",
     )
     params.add_parameter(

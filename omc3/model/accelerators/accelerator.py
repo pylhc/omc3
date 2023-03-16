@@ -100,7 +100,7 @@ class Accelerator:
         )
         params.add_parameter(
             name="modifiers",
-            type=Path,
+            type=PathOrStr,
             nargs="*",
             help="Path to the optics file to use (modifiers file).",
         )
