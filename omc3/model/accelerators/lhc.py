@@ -392,6 +392,8 @@ class Lhc(Accelerator):
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
         )
+        madx_script += f"NRJ = {self.energy};\n"
+        madx_script += "exec, define_nominal_beams();\n\n"
         if self._uses_run3_macros():
             LOGGER.debug(
                 "According to the optics year, Run 3 versions of the macros will be used"
@@ -411,7 +413,6 @@ class Lhc(Accelerator):
                 for modifier in self.modifiers
             )
 
-        madx_script += "exec, define_nominal_beams();\n\n"
 
         model_year = 100000000
         try:
