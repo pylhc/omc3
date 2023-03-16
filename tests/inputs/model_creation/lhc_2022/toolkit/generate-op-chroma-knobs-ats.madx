@@ -1,0 +1,20 @@
+create, table=chromaknobs_b1, column=KSD1.A12B1,KSD1.A23B1,KSD1.A34B1,KSD1.A45B1,KSD1.A56B1,KSD1.A67B1,KSD1.A78B1,KSD1.A81B1,KSD2.A12B1,KSD2.A23B1,KSD2.A34B1,KSD2.A45B1,KSD2.A56B1,KSD2.A67B1,KSD2.A78B1,KSD2.A81B1,KSF1.A12B1,KSF1.A23B1,KSF1.A34B1,KSF1.A45B1,KSF1.A56B1,KSF1.A67B1,KSF1.A78B1,KSF1.A81B1,KSF2.A12B1,KSF2.A23B1,KSF2.A34B1,KSF2.A45B1,KSF2.A56B1,KSF2.A67B1,KSF2.A78B1,KSF2.A81B1;
+
+fill_knob,table=chromaknobs_b1,row=1,knob=dQpx.b1_sq,scale=1;
+fill_knob,table=chromaknobs_b1,row=2,knob=dQpy.b1_sq,scale=1;
+setvars_knob,table=chromaknobs_b1,row=1,knob=dQpx.b1_op;
+setvars_knob,table=chromaknobs_b1,row=2,knob=dQpy.b1_op;
+
+delete,table=chromaknobs_b1;
+
+create, table=chromaknobs_b2, column=KSD1.A12B2,KSD1.A23B2,KSD1.A34B2,KSD1.A45B2,KSD1.A56B2,KSD1.A67B2,KSD1.A78B2,KSD1.A81B2,KSD2.A12B2,KSD2.A23B2,KSD2.A34B2,KSD2.A45B2,KSD2.A56B2,KSD2.A67B2,KSD2.A78B2,KSD2.A81B2,KSF1.A12B2,KSF1.A23B2,KSF1.A34B2,KSF1.A45B2,KSF1.A56B2,KSF1.A67B2,KSF1.A78B2,KSF1.A81B2,KSF2.A12B2,KSF2.A23B2,KSF2.A34B2,KSF2.A45B2,KSF2.A56B2,KSF2.A67B2,KSF2.A78B2,KSF2.A81B2;
+
+fill_knob,table=chromaknobs_b2,row=1,knob=dQpx.b2_sq,scale=1;
+fill_knob,table=chromaknobs_b2,row=2,knob=dQpy.b2_sq,scale=1;
+setvars_knob,table=chromaknobs_b2,row=1,knob=dQpx.b2_op;
+setvars_knob,table=chromaknobs_b2,row=2,knob=dQpy.b2_op;
+
+delete,table=chromaknobs_b2;
+
+
+

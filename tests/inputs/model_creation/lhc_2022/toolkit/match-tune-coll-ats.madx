@@ -1,0 +1,15 @@
+! match tunes to injection values 0.31,0.32 for ATS
+
+use, sequence=lhcb1;
+use, sequence=lhcb2;
+
+match,sequence=lhcb1, lhcb2;
+global, q1=62.31, q2=60.32;
+vary, name=dQx.b1 ,step=0.001;
+vary, name=dQy.b1 ,step=0.001;
+vary, name=dQx.b2 ,step=0.001;
+vary, name=dQy.b2 ,step=0.001;
+lmdif,calls=500,tolerance=1.0e-20;
+endmatch;
+
+return;

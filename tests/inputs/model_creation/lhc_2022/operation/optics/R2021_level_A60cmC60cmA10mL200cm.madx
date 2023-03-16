@@ -1,0 +1,9 @@
+! JMad export of model LHC 2022 optic R2021_level_A60cmC60cmA10mL200cm
+! Generated: 2022-03-09T09:02:44.555157Z
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ATS_Nominal/2022/squeeze/ats_60cm_leveling.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";
+call, file="acc-models-lhc/toolkit/match-lumiknobs.madx";
+call, file="acc-models-lhc/toolkit/generate-op-tune-knobs-ats.madx";

@@ -1,0 +1,10 @@
+! JMad export of model LHC 2022 optic R2022h_A12_6mC12_6mA12_6mL12_6m
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ATS_Nominal/VdM/ats_12_6.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";
+call, file="acc-models-lhc/toolkit/match-lumiknobs.madx";
+call, file="acc-models-lhc/toolkit/generate-op-tune-knobs-non-ats.madx";
+call, file="acc-models-lhc/toolkit/generate-op-chroma-knobs-non-ats.madx";
+call, file="acc-models-lhc/toolkit/generate-op-coupling-knobs-non-ats.madx";

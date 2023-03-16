@@ -1,0 +1,10 @@
+! JMad export of model LHC 2022 optic R2023a_A64cmC64cmA10mL200cm
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ATS_Nominal/2023_MD/ats_64cm.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";
+call, file="acc-models-lhc/toolkit/match-lumiknobs.madx";
+call, file="acc-models-lhc/toolkit/generate-op-tune-knobs-ats.madx";
+call, file="acc-models-lhc/toolkit/generate-op-chroma-knobs-ats.madx";
+call, file="acc-models-lhc/toolkit/generate-op-coupling-knobs-ats.madx";

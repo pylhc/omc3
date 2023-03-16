@@ -1,0 +1,121 @@
+! start LHCBEAM1/IP1_SEPSCAN_X_MM
+add2expr,var=acbch5.r1b1,expr=-8.231390106e-05*on_xip1b1;
+add2expr,var=acbyhs4.l1b1,expr=0.0*on_xip1b1;
+add2expr,var=acbyh4.l1b1,expr=6.345245854e-05*on_xip1b1;
+add2expr,var=acbyhs4.r1b1,expr=0.0001247816927*on_xip1b1;
+add2expr,var=acbch6.l1b1,expr=-3.709702139e-05*on_xip1b1;
+! end LHCBEAM1/IP1_SEPSCAN_X_MM
+! start LHCBEAM2/IP1_SEPSCAN_X_MM
+add2expr,var=acbyhs4.r1b2,expr=0.0*on_xip1b2;
+add2expr,var=acbch5.l1b2,expr=-7.115190539e-05*on_xip1b2;
+add2expr,var=acbyh4.r1b2,expr=7.040265344e-05*on_xip1b2;
+add2expr,var=acbyhs4.l1b2,expr=0.0001064563542*on_xip1b2;
+add2expr,var=acbch6.r1b2,expr=-4.033546873e-05*on_xip1b2;
+! end LHCBEAM2/IP1_SEPSCAN_X_MM
+! start LHCBEAM1/IP1_SEPSCAN_Y_MM
+add2expr,var=acbcv5.l1b1,expr=-7.129728982e-05*on_yip1b1;
+add2expr,var=acbyv4.r1b1,expr=6.64162475e-05*on_yip1b1;
+add2expr,var=acbyvs4.r1b1,expr=0.0*on_yip1b1;
+add2expr,var=acbcv7.l1b1,expr=0.0*on_yip1b1;
+add2expr,var=acbyvs4.l1b1,expr=0.0001099784038*on_yip1b1;
+add2expr,var=acbcv6.r1b1,expr=-3.907877832e-05*on_yip1b1;
+! end LHCBEAM1/IP1_SEPSCAN_Y_MM
+! start LHCBEAM2/IP1_SEPSCAN_Y_MM
+add2expr,var=acbyvs4.l1b2,expr=0.0*on_yip1b2;
+add2expr,var=acbcv7.r1b2,expr=0.0*on_yip1b2;
+add2expr,var=acbcv5.r1b2,expr=-8.28491457e-05*on_yip1b2;
+add2expr,var=acbcv6.l1b2,expr=-3.845226217e-05*on_yip1b2;
+add2expr,var=acbyv4.l1b2,expr=6.723284768e-05*on_yip1b2;
+add2expr,var=acbyvs4.r1b2,expr=0.0001213811336*on_yip1b2;
+! end LHCBEAM2/IP1_SEPSCAN_Y_MM
+! start LHCBEAM1/IP2_SEPSCAN_X_MM
+add2expr,var=acbyh5.l2b1,expr=-4.177250672e-05*on_xip2b1;
+add2expr,var=acbyhs4.l2b1,expr=9.112157322e-05*on_xip2b1;
+add2expr,var=acbyhs4.r2b1,expr=0.0*on_xip2b1;
+add2expr,var=acbyhs5.l2b1,expr=0.0*on_xip2b1;
+add2expr,var=acbchs5.r2b1,expr=-7.435115413e-05*on_xip2b1;
+add2expr,var=acbyh4.r2b1,expr=6.532200431e-05*on_xip2b1;
+! end LHCBEAM1/IP2_SEPSCAN_X_MM
+! start LHCBEAM2/IP2_SEPSCAN_X_MM
+add2expr,var=acbyhs4.r2b2,expr=0.0001029782051*on_xip2b2;
+add2expr,var=acbyhs4.l2b2,expr=0.0*on_xip2b2;
+add2expr,var=acbch5.r2b2,expr=-4.751407884e-05*on_xip2b2;
+add2expr,var=acbyh4.l2b2,expr=4.001754195e-05*on_xip2b2;
+add2expr,var=acbyhs5.l2b2,expr=-4.816204648e-05*on_xip2b2;
+add2expr,var=acbchs5.r2b2,expr=0.0*on_xip2b2;
+! end LHCBEAM2/IP2_SEPSCAN_X_MM
+! start LHCBEAM1/IP2_SEPSCAN_Y_MM
+add2expr,var=acbyvs4.l2b1,expr=0.0*on_yip2b1;
+add2expr,var=acbyvs5.l2b1,expr=-4.789454666e-05*on_yip2b1;
+add2expr,var=acbyv4.l2b1,expr=4.357149049e-05*on_yip2b1;
+add2expr,var=acbcv5.r2b1,expr=-4.799780642e-05*on_yip2b1;
+add2expr,var=acbcvs5.r2b1,expr=0.0*on_yip2b1;
+add2expr,var=acbyvs4.r2b1,expr=0.0001005378394*on_yip2b1;
+! end LHCBEAM1/IP2_SEPSCAN_Y_MM
+! start LHCBEAM2/IP2_SEPSCAN_Y_MM
+add2expr,var=acbyvs4.l2b2,expr=9.323669403e-05*on_yip2b2;
+add2expr,var=acbyv5.l2b2,expr=-4.150420447e-05*on_yip2b2;
+add2expr,var=acbyv4.r2b2,expr=6.128685739e-05*on_yip2b2;
+add2expr,var=acbyvs4.r2b2,expr=0.0*on_yip2b2;
+add2expr,var=acbcvs5.r2b2,expr=-7.503530331e-05*on_yip2b2;
+add2expr,var=acbyvs5.l2b2,expr=0.0*on_yip2b2;
+! end LHCBEAM2/IP2_SEPSCAN_Y_MM
+! start LHCBEAM1/IP5_SEPSCAN_X_MM
+add2expr,var=acbch5.r5b1,expr=-7.129738203e-05*on_xip5b1;
+add2expr,var=acbyhs4.r5b1,expr=0.0001099788199*on_xip5b1;
+add2expr,var=acbyhs4.l5b1,expr=0.0*on_xip5b1;
+add2expr,var=acbch6.l5b1,expr=-3.907881316e-05*on_xip5b1;
+add2expr,var=acbyh4.l5b1,expr=6.641662487e-05*on_xip5b1;
+! end LHCBEAM1/IP5_SEPSCAN_X_MM
+! start LHCBEAM2/IP5_SEPSCAN_X_MM
+add2expr,var=acbch6.r5b2,expr=-3.837856868e-05*on_xip5b2;
+add2expr,var=acbyh4.r5b2,expr=6.723680788e-05*on_xip5b2;
+add2expr,var=acbyhs4.l5b2,expr=0.0001213815645*on_xip5b2;
+add2expr,var=acbch5.l5b2,expr=-8.284925285e-05*on_xip5b2;
+add2expr,var=acbyhs4.r5b2,expr=0.0*on_xip5b2;
+! end LHCBEAM2/IP5_SEPSCAN_X_MM
+! start LHCBEAM1/IP5_SEPSCAN_Y_MM
+add2expr,var=acbcv5.l5b1,expr=-8.23137946e-05*on_yip5b1;
+add2expr,var=acbyv4.r5b1,expr=6.34476414e-05*on_yip5b1;
+add2expr,var=acbcv6.r5b1,expr=-3.71914783e-05*on_yip5b1;
+add2expr,var=acbyvs4.l5b1,expr=0.0001247812575*on_yip5b1;
+add2expr,var=acbyvs4.r5b1,expr=0.0*on_yip5b1;
+! end LHCBEAM1/IP5_SEPSCAN_Y_MM
+! start LHCBEAM2/IP5_SEPSCAN_Y_MM
+add2expr,var=acbyv4.l5b2,expr=7.040227251e-05*on_yip5b2;
+add2expr,var=acbcv6.l5b2,expr=-4.033543278e-05*on_yip5b2;
+add2expr,var=acbyvs4.r5b2,expr=0.0001064559427*on_yip5b2;
+add2expr,var=acbcv5.r5b2,expr=-7.115181336e-05*on_yip5b2;
+add2expr,var=acbyvs4.l5b2,expr=0.0*on_yip5b2;
+! end LHCBEAM2/IP5_SEPSCAN_Y_MM
+! start LHCBEAM1/IP8_SEPSCAN_X_MM
+add2expr,var=acbyh4.r8b1,expr=2.659065646e-05*on_xip8b1;
+add2expr,var=acbyhs4.l8b1,expr=8.711106733e-05*on_xip8b1;
+add2expr,var=acbch6.r8b1,expr=-1.404199457e-05*on_xip8b1;
+add2expr,var=acbyhs4.r8b1,expr=0.0*on_xip8b1;
+add2expr,var=acbch5.l8b1,expr=-4.173563368e-05*on_xip8b1;
+! end LHCBEAM1/IP8_SEPSCAN_X_MM
+! start LHCBEAM2/IP8_SEPSCAN_X_MM
+add2expr,var=acbyh5.r8b2,expr=-4.094581771e-05*on_xip8b2;
+add2expr,var=acbyhs5.r8b2,expr=0.0*on_xip8b2;
+add2expr,var=acbyh4.l8b2,expr=4.756402325e-05*on_xip8b2;
+add2expr,var=acbyhs4.r8b2,expr=8.841062798e-05*on_xip8b2;
+add2expr,var=acbchs5.l8b2,expr=-4.913005442e-05*on_xip8b2;
+add2expr,var=acbyhs4.l8b2,expr=0.0*on_xip8b2;
+! end LHCBEAM2/IP8_SEPSCAN_X_MM
+! start LHCBEAM1/IP8_SEPSCAN_Y_MM
+add2expr,var=acbyvs4.l8b1,expr=0.0*on_yip8b1;
+add2expr,var=acbyv5.r8b1,expr=-4.077355395e-05*on_yip8b1;
+add2expr,var=acbyvs5.r8b1,expr=0.0*on_yip8b1;
+add2expr,var=acbyvs4.r8b1,expr=8.738209089e-05*on_yip8b1;
+add2expr,var=acbyv4.l8b1,expr=4.976560746e-05*on_yip8b1;
+add2expr,var=acbcvs5.l8b1,expr=-4.780062176e-05*on_yip8b1;
+! end LHCBEAM1/IP8_SEPSCAN_Y_MM
+! start LHCBEAM2/IP8_SEPSCAN_Y_MM
+add2expr,var=acbcv5.l8b2,expr=-4.067346388e-05*on_yip8b2;
+add2expr,var=acbyv4.r8b2,expr=4.762188779e-05*on_yip8b2;
+add2expr,var=acbyvs4.r8b2,expr=0.0*on_yip8b2;
+add2expr,var=acbyvs5.r8b2,expr=-4.872686021e-05*on_yip8b2;
+add2expr,var=acbyvs4.l8b2,expr=8.846517692e-05*on_yip8b2;
+add2expr,var=acbcvs5.l8b2,expr=0.0*on_yip8b2;
+! end LHCBEAM2/IP8_SEPSCAN_Y_MM

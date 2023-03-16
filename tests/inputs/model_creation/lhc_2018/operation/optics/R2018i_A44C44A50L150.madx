@@ -1,0 +1,8 @@
+! JMad export of model LHC 2018 optic R2018i_A44C44A50L150
+! Generated: 2020-07-07T12:58:06.429427Z
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ats/ions/ats-ion_44cm.madx";
+call, file="acc-models-lhc/strengths/R2018i_A44C44A50L150_lsaknobs.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

@@ -1,0 +1,8 @@
+! JMad export of model LHC 2018 optic R2017a_A530C530A10mL530
+! Generated: 2020-07-07T12:58:06.405446Z
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ats/low-beta/ats_530cm.madx";
+call, file="acc-models-lhc/strengths/R2017a_A530C530A10mL530_lsaknobs.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

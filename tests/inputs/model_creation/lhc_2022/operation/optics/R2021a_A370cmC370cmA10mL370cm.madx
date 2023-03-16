@@ -1,0 +1,8 @@
+! JMad export of model LHC 2021 optic R2021a_A370cmC370cmA10mL370cm
+! Generated: 2022-02-01T09:22:28.800286Z
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ATS_Nominal/2021-BeamTest/ats_370cm.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";
+call, file="acc-models-lhc/toolkit/match-lumiknobs.madx";

@@ -1,0 +1,43 @@
+!dQpx.b1_op   =   0   ;
+!dQpy.b1_op   =   0   ;
+!dQpx.b2_op   =   0   ;
+!dQpy.b2_op   =   0   ;
+!CMRS.b1_op  =   0   ;
+!CMIS.b1_op  =   0   ;
+!CMRS.b1_op  =   0   ;
+!CMIS.b1_op  =   0   ;
+!dQx.b1_op    =   0   ;
+!dQy.b1_op    =   0   ;
+!dQx.b2_op    =   0   ;
+!dQy.b2_op    =   0   ;
+
+Qknobdef      = 1;
+Qpknobdef    = 1;
+Coupknobdef = 1;
+
+dQx.b1_sq    :=   Qknobdef * dQx.b1_op   ;
+dQy.b1_sq    :=   Qknobdef * dQy.b1_op   ;
+dQx.b2_sq    :=   Qknobdef * dQx.b2_op   ;
+dQy.b2_sq    :=   Qknobdef * dQy.b2_op   ;
+dQx.b1       :=   (1-Qknobdef)  * dQx.b1_op   ;
+dQy.b1       :=   (1-Qknobdef)  * dQy.b1_op   ;
+dQx.b2       :=   (1-Qknobdef)  * dQx.b2_op   ;
+dQy.b2       :=   (1-Qknobdef)  * dQy.b2_op   ;
+
+dQpx.b1_sq   :=   Qpknobdef * dQpx.b1_op   ;
+dQpy.b1_sq   :=   Qpknobdef * dQpy.b1_op   ;
+dQpx.b2_sq   :=   Qpknobdef * dQpx.b2_op   ;
+dQpy.b2_sq   :=   Qpknobdef * dQpy.b2_op   ;
+dQpx.b1      :=   (1-Qpknobdef)  * dQpx.b1_op   ;
+dQpy.b1      :=   (1-Qpknobdef)  * dQpy.b1_op   ;
+dQpx.b2      :=   (1-Qpknobdef)  * dQpx.b2_op   ;
+dQpy.b2      :=   (1-Qpknobdef)  * dQpy.b2_op   ;
+
+CMRS.b1_sq  :=   Coupknobdef * CMRS.b1_op   ;
+CMIS.b1_sq  :=   Coupknobdef * CMRS.b1_op   ;
+CMRS.b1_sq  :=   Coupknobdef * CMRS.b2_op   ;
+CMIS.b1_sq  :=   Coupknobdef * CMRS.b2_op   ;
+CMRS.b1     :=  (1-Coupknobdef) *  CMRS.b1_op   ;
+CMIS.b1     :=  (1-Coupknobdef) *  CMRS.b1_op   ;
+CMRS.b1     :=  (1-Coupknobdef) *  CMRS.b2_op   ;
+CMIS.b1     :=  (1-Coupknobdef) *  CMRS.b2_op   ;

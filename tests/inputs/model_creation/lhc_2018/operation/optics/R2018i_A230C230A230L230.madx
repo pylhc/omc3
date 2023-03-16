@@ -1,0 +1,8 @@
+! JMad export of model LHC 2018 optic R2018i_A230C230A230L230
+! Generated: 2020-07-07T12:58:06.426611Z
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ats/ions/ats-ion_230cm.madx";
+call, file="acc-models-lhc/strengths/R2018i_A230C230A230L230_lsaknobs.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

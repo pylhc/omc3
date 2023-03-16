@@ -1,0 +1,4 @@
+DELTAKQF := 2E-5;
+DELTAKQD := -2E-5;
+
+return;

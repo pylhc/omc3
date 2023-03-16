@@ -1,0 +1,7 @@
+! JMad export of model LHC 2018 optic R2018aT92_A30C30A10mL300
+! Generated: 2020-07-07T12:58:06.433640Z
+
+
+call, file="acc-models-lhc/toolkit/zero-strengths.madx";
+call, file="acc-models-lhc/strengths/ATS_RoundHighTele/30cm.madx";
+call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";
