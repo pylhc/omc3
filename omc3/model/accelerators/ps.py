@@ -99,6 +99,10 @@ class Ps(PsBase):
         opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
 
+        if opt.model_dir is not None:
+            self.init_from_model_dir(opt.model_dir)
+            return  # if we create the model from the model dir, none of the following needs to happen
+
         require_param("tune_method", Ps.get_parameters(), opt)
         self.tune_method = TUNE_METHODS[opt.tune_method]
 
