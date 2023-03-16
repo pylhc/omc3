@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.7.1 documentation</title>
+  <title>Model &mdash; omc3 0.7.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -30,15 +30,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -449,7 +453,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Model</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
@@ -526,13 +530,13 @@ classes. <code class="docutils literal notranslate"><span class="pre">None</span
 specified types.
 Needs to handle: <cite>bpm</cite>, <cite>magnet</cite>, <cite>arc_bpm</cite> (see <a class="reference internal" href="#omc3.model.accelerators.accelerator.AccElementTypes" title="omc3.model.accelerators.accelerator.AccElementTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccElementTypes</span></code></a>)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>list_of_elements</strong> -- list of elements.</p></li>
 <li><p><strong>types</strong> -- the kinds of elements to look for.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A boolean array of elements of specified kinds.</p>
 </dd>
 </dl>
@@ -544,7 +548,7 @@ Needs to handle: <cite>bpm</cite>, <cite>magnet</cite>, <cite>arc_bpm</cite> (se
 <dd><p>Returns the BPM next to the exciter.
 The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
@@ -751,7 +755,7 @@ modified.</p>
 <dd><p>Returns the BPM next to the exciter.
 The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
@@ -765,10 +769,10 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <span class="sig-name descname"><span class="pre">get_ips</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_ips"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.lhc.Lhc.get_ips" title="Permalink to this definition"></a></dt>
 <dd><p>Returns an iterable with this accelerator’s IPs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(<code class="docutils literal notranslate"><span class="pre">ip</span> <span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span> <span class="pre">BPM</span> <span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span> <span class="pre">BPM</span> <span class="pre">name</span></code>)</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>An iterator returning <cite>tuples</cite> with</p>
 </dd>
 </dl>
@@ -872,7 +876,7 @@ Will Raise an <code class="docutils literal notranslate"><span class="pre">Accel
 <dd><p>Returns the BPM next to the exciter.
 The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
@@ -970,7 +974,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dd><p>Returns the BPM next to the exciter.
 The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
@@ -1145,7 +1149,7 @@ Model creation not implemented yet.</p>
 <dd><p>Returns the BPM next to the exciter.
 The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
@@ -1176,7 +1180,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 appropriate directories are created, and that macros and other files are in place.
 Checks the accelerator instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_instance_and_model</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
 </dl>
@@ -1187,10 +1191,10 @@ Checks the accelerator instance. Called by the <code class="docutils literal not
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.get_madx_script" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
 </dd>
 </dl>
@@ -1206,10 +1210,10 @@ Checks the accelerator instance. Called by the <code class="docutils literal not
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcCouplingCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcCouplingCreator.get_madx_script" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
 </dd>
 </dl>
@@ -1226,14 +1230,14 @@ Checks the accelerator instance. Called by the <code class="docutils literal not
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections. This script should create twiss
 files for before (<code class="docutils literal notranslate"><span class="pre">twiss_no.dat</span></code>) and after (<code class="docutils literal notranslate"><span class="pre">twiss_corr.dat</span></code>) correction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p></li>
 <li><p><strong>corr_file</strong> (<em>str</em>) -- File containing the corrections (madx-readable).</p></li>
 <li><p><strong>chrom</strong> (<em>bool</em>) -- Flag for chromatic corrections deltapm and deltapp.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections.</p>
 </dd>
 </dl>
@@ -1244,10 +1248,10 @@ files for before (<code class="docutils literal notranslate"><span class="pre">t
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.lhc.Lhc" title="omc3.model.accelerators.lhc.Lhc"><span class="pre">Lhc</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_madx_script" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
 </dd>
 </dl>
@@ -1261,7 +1265,7 @@ are created, and that macros and other files are in place.
 Should also check that all necessary data for model creation is available in the accelerator
 instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_accel_and_instance</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
 </dl>
@@ -1282,14 +1286,14 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections. This script should create twiss
 files for before (<code class="docutils literal notranslate"><span class="pre">twiss_no.dat</span></code>) and after (<code class="docutils literal notranslate"><span class="pre">twiss_corr.dat</span></code>) correction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p></li>
 <li><p><strong>corr_file</strong> (<em>str</em>) -- File containing the corrections (madx-readable).</p></li>
 <li><p><strong>chrom</strong> (<em>bool</em>) -- Flag for chromatic corrections deltapm and deltapp.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections.</p>
 </dd>
 </dl>
@@ -1300,10 +1304,10 @@ files for before (<code class="docutils literal notranslate"><span class="pre">t
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.ps.Ps" title="omc3.model.accelerators.ps.Ps"><span class="pre">Ps</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.ps_model_creator.PsModelCreator.get_madx_script" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
 </dd>
 </dl>
@@ -1317,7 +1321,7 @@ are created, and that macros and other files are in place.
 Should also check that all necessary data for model creation is available in the accelerator
 instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_accel_and_instance</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
 </dl>
@@ -1338,14 +1342,14 @@ instance. Called by the <code class="docutils literal notranslate"><span class="
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections. This script should create twiss
 files for before (<code class="docutils literal notranslate"><span class="pre">twiss_no.dat</span></code>) and after (<code class="docutils literal notranslate"><span class="pre">twiss_corr.dat</span></code>) correction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p></li>
 <li><p><strong>corr_file</strong> (<em>str</em>) -- File containing the corrections (madx-readable).</p></li>
 <li><p><strong>chrom</strong> (<em>bool</em>) -- Flag for chromatic corrections deltapm and deltapp.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections.</p>
 </dd>
 </dl>
@@ -1356,10 +1360,10 @@ files for before (<code class="docutils literal notranslate"><span class="pre">t
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.accelerators.psbooster.Psbooster" title="omc3.model.accelerators.psbooster.Psbooster"><span class="pre">Psbooster</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator.get_madx_script" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
 </dd>
 </dl>
@@ -1373,7 +1377,7 @@ are created, and that macros and other files are in place.
 Should also check that all necessary data for model creation is available in the accelerator
 instance. Called by the <code class="docutils literal notranslate"><span class="pre">model_creator.create_accel_and_instance</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>accel</strong> (<a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance used for the model creation.</p>
 </dd>
 </dl>

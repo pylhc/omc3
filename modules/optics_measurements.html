@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optics Measurements &mdash; omc3 0.7.1 documentation</title>
+  <title>Optics Measurements &mdash; omc3 0.7.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -30,15 +30,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -449,7 +453,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Optics Measurements</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
@@ -486,7 +490,7 @@ It provides functions to compute various lattice optics parameters from frequenc
 <span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calibs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.calibrate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.calibrate" title="Permalink to this definition"></a></dt>
 <dd><p>Use calibration data to rescale amplitude and amplitude error.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>calibs</strong> (<em>Dict</em>) -- Plane-Dictionary with DataFrames of calibration data.</p>
 </dd>
 </dl>
@@ -497,10 +501,10 @@ It provides functions to compute various lattice optics parameters from frequenc
 <span class="sig-name descname"><span class="pre">dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.dpps" title="Permalink to this definition"></a></dt>
 <dd><p>Gathers measured DPPs from input files corresponding to given plane</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A <cite>np.ndarray</cite> of DPPs.</p>
 </dd>
 </dl>
@@ -511,13 +515,13 @@ It provides functions to compute various lattice optics parameters from frequenc
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.get_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.get_columns" title="Permalink to this definition"></a></dt>
 <dd><p>Returns list of columns of frame corresponding to column in original files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>frame</strong> -- joined frame.</p></li>
 <li><p><strong>column</strong> -- name of column in original files.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of columns.</p>
 </dd>
 </dl>
@@ -528,13 +532,13 @@ It provides functions to compute various lattice optics parameters from frequenc
 <span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.get_data" title="Permalink to this definition"></a></dt>
 <dd><p>Returns data in columns of frame corresponding to column in original files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>frame</strong> -- joined frame.</p></li>
 <li><p><strong>column</strong> -- name of column in original files.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A <cite>np.narray</cite> corresponding to column in original files.</p>
 </dd>
 </dl>
@@ -545,7 +549,7 @@ It provides functions to compute various lattice optics parameters from frequenc
 <span class="sig-name descname"><span class="pre">joined_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_amp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">how</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inner'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.joined_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.joined_frame" title="Permalink to this definition"></a></dt>
 <dd><p>Constructs merged DataFrame from InputFiles.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>columns</strong> -- list of columns from input files.</p></li>
@@ -555,7 +559,7 @@ It provides functions to compute various lattice optics parameters from frequenc
 default is <code class="docutils literal notranslate"><span class="pre">inner</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A merged <cite>DataFrame</cite> from <cite>InputFiles</cite>.</p>
 </dd>
 </dl>
@@ -568,7 +572,7 @@ default is <code class="docutils literal notranslate"><span class="pre">inner</s
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">chromatic_beating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#chromatic_beating"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.chromatic_beating" title="Permalink to this definition"></a></dt>
 <dd><p>Main function to compute chromatic optics beating.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tune_dict</strong> -- </p></li>
 <li><p><strong>input_files</strong> -- <cite>InputFiles</cite> object containing frequency spectra files (linx/y).</p></li>
@@ -584,7 +588,7 @@ default is <code class="docutils literal notranslate"><span class="pre">inner</s
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">measure_optics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#measure_optics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.measure_optics" title="Permalink to this definition"></a></dt>
 <dd><p>Main function to compute various lattice optics parameters from frequency spectra.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_files</strong> -- <cite>InputFiles</cite> object containing frequency spectra files (linx/y).</p></li>
 <li><p><strong>measure_input</strong> -- <cite>OpticsInput</cite> object containing analysis settings.</p></li>
@@ -604,7 +608,7 @@ It provides functions to calculate beta functions from amplitude data.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_amplitude.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_amplitude.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_amplitude.calculate" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates beta and fills the following <cite>TfsFiles</cite>: <code class="docutils literal notranslate"><span class="pre">f&quot;{AMP_BETA_NAME}{plane.lower()}{EXT}&quot;</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object.</p></li>
 <li><p><strong>input_files</strong> -- <cite>InputFiles</cite> object contains measurement files.</p></li>
@@ -628,7 +632,7 @@ It provides functions to calculate beta and alpha functions from phase advance d
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.calculate" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates betas and alphas from phase advances.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object</p></li>
 <li><p><strong>tunes</strong> -- <cite>TuneDict</cite> contains measured tunes.</p></li>
@@ -637,7 +641,7 @@ It provides functions to calculate beta and alpha functions from phase advance d
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>BetaDict</cite> object containing specific <cite>TfsDataFrame</cite> with results.</p>
 </dd>
 </dl>
@@ -649,7 +653,7 @@ It provides functions to calculate beta and alpha functions from phase advance d
 <dd><p>Calculates beta and alpha functions as well as the respective covariance matrix lines for the
 given BPM combination (triplet).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>c</strong> -- relative indices of other two BPMs wrt probed one.</p></li>
 <li><p><strong>sin_squared_elements</strong> -- </p></li>
@@ -673,7 +677,7 @@ given BPM combination (triplet).</p>
 <dd><p>Calculates betas and alphas from using all BPM combination within <strong>range_of_bpms</strong>. It also
 accounts for systematic errors</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- Optics measurement configuration object.</p></li>
 <li><p><strong>phase</strong> -- phase matrices of measurement with errors and model tfs (bpm x bpm).</p></li>
@@ -681,7 +685,7 @@ accounts for systematic errors</p>
 <li><p><strong>meas_and_mdl_tunes</strong> -- measured and model tunes.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>TfsDataFrame</cite> containing betas and alfas from phase.</p>
 </dd>
 </dl>
@@ -694,13 +698,6 @@ accounts for systematic errors</p>
 <code class="docutils literal notranslate"><span class="pre">phase[&quot;MEAS&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">phase[&quot;MODEL&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">phase[&quot;ERRMEAS&quot;]</span></code> (from <code class="docutils literal notranslate"><span class="pre">get_phases</span></code>) are of the
 form:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td></td>
 <td><p>BPM1</p></td>
@@ -730,13 +727,6 @@ form:</p>
 </table>
 <p>and <code class="docutils literal notranslate"><span class="pre">tilt_slice_matrix(matrix,</span> <span class="pre">shift,</span> <span class="pre">slice,</span> <span class="pre">tune)</span></code> brings it into the form:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 26%" />
-<col style="width: 19%" />
-<col style="width: 19%" />
-<col style="width: 19%" />
-<col style="width: 19%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td></td>
 <td><p>BPM1</p></td>
@@ -766,11 +756,6 @@ form:</p>
 </table>
 <p><code class="docutils literal notranslate"><span class="pre">cot_phase_*_shift1</span></code>:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p>cot(phi_1n) - cot(phi_1n-1)</p></td>
 <td><p>cot(phi_21) - cot(phi_2n)</p></td>
@@ -796,7 +781,7 @@ form:</p>
 <li><p>for the combination xxBABxx: second row of <code class="docutils literal notranslate"><span class="pre">cot_phase_*_shift2</span></code>.</p></li>
 </ul>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- Optics measurement configuration object.</p></li>
 <li><p><strong>phase</strong> -- phase matrices of measurement with errors and model tfs (bpm x bpm).</p></li>
@@ -804,7 +789,7 @@ form:</p>
 <li><p><strong>meas_and_mdl_tunes</strong> -- measured  and model tunes.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>TfsDataFrame</cite> containing betas and alfas from phase.</p>
 </dd>
 </dl>
@@ -836,7 +821,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.dispersion.calculate_dispersion" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates dispersion.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object.</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
@@ -844,7 +829,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>TfsDataFrame</cite> corresponding to output file.</p>
 </dd>
 </dl>
@@ -855,7 +840,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_normalised_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_normalised_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.dispersion.calculate_normalised_dispersion" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates normalised dispersion.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object.</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
@@ -863,7 +848,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 <li><p><strong>header_dict</strong> -- <cite>OrderedDict</cite> containing information about the analysis.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>TfsDataFrame</cite> corresponding to output file.</p>
 </dd>
 </dl>
@@ -874,7 +859,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_orbit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_orbit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.dispersion.calculate_orbit" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates orbit.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
@@ -882,7 +867,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>TfsDataFrame</cite> corresponding to output file.</p>
 </dd>
 </dl>
@@ -914,13 +899,13 @@ It provides functions to compute beta* from phase.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.interaction_point.</span></span><span class="sig-name descname"><span class="pre">betastar_from_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/interaction_point.html#betastar_from_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.interaction_point.betastar_from_phase" title="Permalink to this definition"></a></dt>
 <dd><p>Writes the <strong>getIP</strong> files with the betastar computed using phase advance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>Measurement_input</cite> object.</p></li>
 <li><p><strong>phase_d</strong> -- Output of calculation.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A nested <cite>dict</cite> with the same structure as the <code class="docutils literal notranslate"><span class="pre">phase_d</span></code> <cite>dict</cite>.</p>
 </dd>
 </dl>
@@ -933,7 +918,7 @@ It provides functions to compute beta* from phase.</p>
 <p>This function computes the betastar using the phase advance between the BPMs around the IP
 and their distance (lstar). The phase and error in the phase must be given in radians.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lstar</strong> -- The distance between the BPMs and the IR.</p></li>
 <li><p><strong>phase</strong> -- The phase advance between the BPMs at each side of the IP. Must be given in radians.</p></li>
@@ -952,7 +937,7 @@ It provides functions to compute kick actions.</p>
 <dt class="sig sig-object py" id="omc3.optics_measurements.kick.calculate">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.kick.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/kick.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.kick.calculate" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>measure_input</strong> -- <cite>OpticsInput</cite> object.</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
@@ -961,7 +946,7 @@ It provides functions to compute kick actions.</p>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>TfsDataFrame</cite> containing actions and their errors.</p>
 </dd>
 </dl>
@@ -978,7 +963,7 @@ It provides functions to compute betatron phase advances and structures to store
 <dd><p>Calculate phases for ‘free’ and ‘uncompensated’ cases from the measurement files, and return a
 dictionary combining the results for each transverse plane.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> (<em>dict</em>) -- <cite>OpticsInput</cite> object containing analysis settings from the command-line.</p></li>
 <li><p><strong>input_files</strong> (<em>dict</em>) -- <cite>InputFiles</cite> object containing frequency spectra files (linx/y).</p></li>
@@ -987,7 +972,7 @@ dictionary combining the results for each transverse plane.</p>
 <li><p><strong>no_errors</strong> -- </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry
 is a dictionary with the measured phase advances for ‘free’ and ‘uncompensated’ cases, as well as
 the location of the output <code class="docutils literal notranslate"><span class="pre">TfsDataFrames</span></code> for the phases.</p>
@@ -1004,7 +989,7 @@ It provides functions to compute global resonance driving terms <strong>f_jklm</
 <dt class="sig sig-object py" id="omc3.optics_measurements.rdt.calculate">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.rdt.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/rdt.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.rdt.calculate" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>measure_input</strong> -- </p></li>
 <li><p><strong>input_files</strong> -- </p></li>
@@ -1021,7 +1006,7 @@ It provides functions to compute global resonance driving terms <strong>f_jklm</
 <dt class="sig sig-object py" id="omc3.optics_measurements.rdt.complex_secondary_lines">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.rdt.</span></span><span class="sig-name descname"><span class="pre">complex_secondary_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_adv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_padv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/rdt.html#complex_secondary_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.rdt.complex_secondary_lines" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>phase_adv</strong> -- phase advances between two BPMs.</p></li>
 <li><p><strong>err_padv</strong> -- error on the phase advance between two BPMs.</p></li>
@@ -1029,7 +1014,7 @@ It provides functions to compute global resonance driving terms <strong>f_jklm</
 <li><p><strong>sig2</strong> -- Complex coefficients of a secondary lines at the second BPM of the pairs.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>Tuple</cite> with amplitudes, phases err_amplitudes and err_phases of the complex signal.</p>
 </dd>
 </dl>
@@ -1151,10 +1136,10 @@ It provides functions to compute betatron tunes and structures to store them.</p
 <span class="sig-name descname"><span class="pre">get_lambda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/tune.html#TuneDict.get_lambda"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.tune.TuneDict.get_lambda" title="Permalink to this definition"></a></dt>
 <dd><p>Computes lambda compensation factor.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>lambda compensation factor (driven vs free motion).</p>
 </dd>
 </dl>
@@ -1166,14 +1151,14 @@ It provides functions to compute betatron tunes and structures to store them.</p
 <dd><p>Returns the necessary values for the exciter compensation.
 See <strong>DOI: 10.1103/PhysRevSTAB.11.084002</strong></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df_idx_by_bpms</strong> (<em>pandas.DataFrame</em>) -- commonbpms (see GetLLM._get_commonbpms)</p></li>
 <li><p><strong>plane</strong> (<em>str</em>) -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>accelerator</strong> -- an <cite>Accelerator</cite> object.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>A <cite>Tuple</cite> consisting of four elements a, b, c, d.</dt><dd><ul class="simple">
 <li><p>a (string): name of the nearest BPM.</p></li>

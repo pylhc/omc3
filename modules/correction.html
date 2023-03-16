@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.7.1 documentation</title>
+  <title>Correction &mdash; omc3 0.7.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -31,15 +31,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -450,7 +454,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Correction</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
@@ -504,7 +508,7 @@ If <cite>opt.use_errorbars</cite> is <cite>True</cite> the weights will be also 
 <span class="sig-prename descclassname"><span class="pre">omc3.correction.handler.</span></span><span class="sig-name descname"><span class="pre">correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/correction/handler.html#correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.handler.correct" title="Permalink to this definition"></a></dt>
 <dd><p>Perform global correction as described in <a class="reference internal" href="../entrypoints/correction.html#module-omc3.global_correction" title="omc3.global_correction"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.global_correction</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>accel_inst</strong> (<a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance</p></li>
 <li><p><strong>opt</strong> (<em>DotDict</em>) -- Correction options,
@@ -532,10 +536,10 @@ the measurement data (for corrections).</p>
 <dd><p>Computes the coupling RDTs from the input model TfsDataFrame and returns a copy of said TfsDataFrame with
 columns for the real and imaginary parts of the computed coupling RDTs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> (<em>tfs.TfsDataFrame</em>) -- Twiss dataframe.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A TfsDataFrame with the added columns.</p>
 </dd>
 </dl>
@@ -547,7 +551,7 @@ columns for the real and imaginary parts of the computed coupling RDTs.</p>
 <dd><p>Provided with DataFrames from a model and a measurement, and a number of keys to be found in both,
 returns a dictionary with the variation from measurement to model for each key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<em>pd.DataFrame</em>) -- DataFrame of the model.</p></li>
 <li><p><strong>measurement</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>pd.DataFrame</em><em>]</em>) -- DataFrames of the measurement.</p></li>
@@ -555,7 +559,7 @@ returns a dictionary with the variation from measurement to model for each key.<
 If omitted, all entries in <cite>measurement</cite> are used.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary of optics parameters and the resulting DataFrames.</p>
 </dd>
 </dl>
@@ -582,7 +586,7 @@ madx calls.</p>
 class).</p>
 <p>For now, the response matrix is stored in a hdf5 file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">author</dt>
+<dt class="field-odd">author<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Lukas Malina, Joschua Dilly, Jaime (…) Coello de Portugal</p>
 </dd>
 </dl>
@@ -593,7 +597,7 @@ class).</p>
 <dd><p>Generate a dictionary containing response matrices for
 beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>accel_inst</strong> -- Accelerator Instance.</p></li>
 <li><p><strong>variable_categories</strong> (<em>list</em>) -- Categories of the variables/knobs to use. (from .json)</p></li>
@@ -613,8 +617,8 @@ beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 <p>The responses are only valid for MAD-X Beam 1 and Beam 2 twiss-files, <strong>not for Beam 4</strong> !!
 Also, it only works properly for on-orbit twiss files.</p>
 </div>
-<p>The calculation is based on formulas in <a class="footnote-reference brackets" href="#franchianalyticformulasrapid2017" id="id1">1</a>, <a class="footnote-reference brackets" href="#tomasreviewlinearoptics2017" id="id2">2</a>
-and is summarized in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id3">3</a>, where the following
+<p>The calculation is based on formulas in <a class="footnote-reference brackets" href="#franchianalyticformulasrapid2017" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#tomasreviewlinearoptics2017" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>
+and is summarized in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, where the following
 equations can be found in Eq. 10 - Eq. 15.</p>
 <ul class="simple">
 <li><p>Beta Response:</p></li>
@@ -683,33 +687,37 @@ At the end (of the calculation) the matrix is then transposed
 to fit the <span class="math notranslate nohighlight">\(M \cdot \delta K\)</span> orientation.</p>
 <p>Also <span class="math notranslate nohighlight">\(\Delta \Phi_{z,wj}\)</span> needs to be multiplied by <span class="math notranslate nohighlight">\(2\pi\)</span> to be consistent.</p>
 <p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="franchianalyticformulasrapid2017"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>A. Franchi et al.,
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="franchianalyticformulasrapid2017" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>A. Franchi et al.,
 Analytic formulas for the rapid evaluation of the orbit response matrix
 and chromatic functions from lattice parameters in circular accelerators. (2017)
 <a class="reference external" href="https://arxiv.org/abs/1711.06589">https://arxiv.org/abs/1711.06589</a></p>
-</dd>
-<dt class="label" id="tomasreviewlinearoptics2017"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>R. Tomas, et al.,
+</aside>
+<aside class="footnote brackets" id="tomasreviewlinearoptics2017" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>R. Tomas, et al.,
 ‘Review of linear optics measurement and correction for charged particle
 accelerators.’
 Physical Review Accelerators and Beams, 20(5), 54801. (2017)
 <a class="reference external" href="https://doi.org/10.1103/PhysRevAccelBeams.20.054801">https://doi.org/10.1103/PhysRevAccelBeams.20.054801</a></p>
-</dd>
-<dt class="label" id="dillyupdatedglobalopticscorrection2018"><span class="brackets">3</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>,<a href="#id5">3</a>)</span></dt>
-<dd><p>J. Dilly et al.,
+</aside>
+<aside class="footnote brackets" id="dillyupdatedglobalopticscorrection2018" role="note">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>,<a role="doc-backlink" href="#id5">3</a>)</span>
+<p>J. Dilly et al.,
 An updated global optics correction scheme. (2018)
 <a class="reference external" href="https://cds.cern.ch/record/2632945/">https://cds.cern.ch/record/2632945/</a></p>
-</dd>
-</dl>
+</aside>
+</aside>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.correction.response_twiss.TwissResponse">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">TwissResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varmap_or_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bpms'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#TwissResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.TwissResponse" title="Permalink to this definition"></a></dt>
 <dd><p>Provides Response Matrices calculated from sequence, model and given variables.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>accel_inst</strong> (<em>accelerator</em>) -- Accelerator Instance (needs to contain elements model).</p></li>
 <li><p><strong>variable_categories</strong> (<em>list</em>) -- List of variable categories to get from the accelerator class.</p></li>
@@ -781,7 +789,7 @@ either as dict-structure of Series or path to a pickled-file.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.correction.response_twiss.dphi">
 <span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">dphi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#dphi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.dphi" title="Permalink to this definition"></a></dt>
-<dd><p>Return dphi from phase advances in data, see Eq. 7 in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id4">3</a></p>
+<dd><p>Return dphi from phase advances in data, see Eq. 7 in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
 </dd></dl>
 
 <dl class="py function">
@@ -789,7 +797,7 @@ either as dict-structure of Series or path to a pickled-file.</p></li>
 <span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">get_phase_advances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">twiss_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#get_phase_advances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.get_phase_advances" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate phase advances between all elements</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Matrices similar to DPhi(i,j) = Phi(j) - Phi(i)</p>
 </dd>
 </dl>
@@ -804,7 +812,7 @@ either as dict-structure of Series or path to a pickled-file.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.correction.response_twiss.tau">
 <span class="sig-prename descclassname"><span class="pre">omc3.correction.response_twiss.</span></span><span class="sig-name descname"><span class="pre">tau</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/response_twiss.html#tau"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_twiss.tau" title="Permalink to this definition"></a></dt>
-<dd><p>Return tau from phase advances in data, see Eq. 8 in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id5">3</a></p>
+<dd><p>Return tau from phase advances in data, see Eq. 8 in <a class="footnote-reference brackets" href="#dillyupdatedglobalopticscorrection2018" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
 </dd></dl>
 
 <dl class="py function">
@@ -832,7 +840,7 @@ Then: Set one variable at a time to 1</p>
 <dd><p>Generate a dictionary containing response matrices for
 beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>accel_inst</strong> (<a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator Instance.</p></li>
 <li><p><strong>variable_categories</strong> (<em>list</em>) -- Categories of the variables/knobs to use. (from .json)</p></li>

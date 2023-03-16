@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Other &mdash; omc3 0.7.1 documentation</title>
+  <title>Other &mdash; omc3 0.7.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -30,15 +30,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -449,7 +453,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Other</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
@@ -642,13 +646,13 @@ timedelta. This allows for easily getting the setting e.g. 2h ago:
 <span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">check_for_undefined_knobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knobs_definitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knob_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#check_for_undefined_knobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.check_for_undefined_knobs" title="Permalink to this definition"></a></dt>
 <dd><p>Check that all knobs are actually defined in the knobs-definitions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>knobs_definitions</strong> (<em>pd.DataFrame</em>) -- A mapping of all knob-names to KnobEntries.</p></li>
 <li><p><strong>knob_categories</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) -- Knob Categories or Knob-Names to extract.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>KeyError</strong> -- If one or more of the knobs don’t have a definition.</p>
 </dd>
 </dl>
@@ -661,18 +665,18 @@ timedelta. This allows for easily getting the setting e.g. 2h ago:
 Extracts data via pytimber’s LoggingDB for the knobs given
 (either by name or by category) in knobs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ldb</strong> (<em>pytimber.LoggingDB</em>) -- The pytimber database.</p></li>
 <li><p><strong>knobs</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) -- Knob Categories or Knob-Names to extract.</p></li>
 <li><p><strong>time</strong> (<em>datetime</em>) -- The time, when to extract.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Contains all the extracted knobs.
 When extraction was not possible, the value is None.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[str, float]</p>
 </dd>
 </dl>
@@ -683,16 +687,16 @@ When extraction was not possible, the value is None.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.get_state" title="Permalink to this definition"></a></dt>
 <dd><p>Standalone function to gather and log state data from  the StateTracker.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ldb</strong> (<em>pytimber.LoggingDB</em>) -- The pytimber database.</p></li>
 <li><p><strong>time</strong> (<em>datetime</em>) -- The time, when to get the state.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary of state-variable and the extracted state value.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[str, str]</p>
 </dd>
 </dl>
@@ -707,10 +711,10 @@ entries in the following order: madx-name, lsa-name, scaling factor.
 Other columns are ignored.
 Alternatively, a TFS-file is also allowed, but needs to have the suffix <code class="docutils literal notranslate"><span class="pre">.tfs</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>file_path</strong> (<em>Path</em>) -- Path to the knobs definition file.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dataframe with LSA names (but with colon instead of /) as
 keys and KnobEntries (without values) as value.</p>
 </dd>
@@ -750,7 +754,7 @@ keys and KnobEntries (without values) as value.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">run_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">madx_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.run_file" title="Permalink to this definition"></a></dt>
 <dd><p>Runs <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> on a given script in a subprocess.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_file</strong> -- <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> input file.</p></li>
 <li><p><strong>output_file</strong> -- If given writes <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script.</p></li>
@@ -766,7 +770,7 @@ keys and KnobEntries (without values) as value.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">run_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">madx_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.run_string" title="Permalink to this definition"></a></dt>
 <dd><p>Runs <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> on a given string in a subprocess.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_string</strong> -- <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> input string.</p></li>
 <li><p><strong>output_file</strong> -- If given writes <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script.</p></li>

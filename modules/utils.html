@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utils &mdash; omc3 0.7.1 documentation</title>
+  <title>Utils &mdash; omc3 0.7.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -30,15 +30,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -449,7 +453,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Utils</li>
       <li class="wy-breadcrumbs-aside">
               <!-- User defined GitHub URL -->
@@ -557,7 +561,7 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#save_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.save_config" title="Permalink to this definition"></a></dt>
 <dd><p>Quick wrapper for <code class="docutils literal notranslate"><span class="pre">save_options_to_config</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output_dir</strong> (<em>Path</em>) -- Path to the output directory (does not need to exist).</p></li>
 <li><p><strong>opt</strong> (<em>dict</em>) -- opt-structure to be saved.</p></li>
@@ -580,7 +584,7 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 Hint: Does not work with <code class="docutils literal notranslate"><span class="pre">&#64;contextmanager</span></code> from contextlib (even though nicer code),
 as the <code class="docutils literal notranslate"><span class="pre">_get_caller</span></code> would find <strong>contextlib.py</strong>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>active</strong> (<em>bool</em>) -- Defines if this manager is doing anything. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><strong>log_file</strong> (<em>str</em>) -- File to log into.</p></li>
@@ -601,7 +605,7 @@ as the <code class="docutils literal notranslate"><span class="pre">_get_caller<
 <dd><p>Context Manager. Lets another function write into a temporary file and logs its contents.
 It won’t open the file, so only the files path is returned.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_path</strong> (<em>str</em>) -- Place to write the tempfile to.</p></li>
 <li><p><strong>log_func</strong> (<em>func</em>) -- The function with which the content should be logged (e.g. LOG.info).</p></li>
@@ -615,7 +619,7 @@ It won’t open the file, so only the files path is returned.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">TempStringLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#TempStringLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.TempStringLogger" title="Permalink to this definition"></a></dt>
 <dd><p>Temporarily log into a string that can be retrieved by <code class="docutils literal notranslate"><span class="pre">get_log</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>module</strong> -- module to log, defaults to the caller file.</p></li>
 <li><p><strong>level</strong> -- logging level, defaults to <code class="docutils literal notranslate"><span class="pre">INFO</span></code>.</p></li>
@@ -659,7 +663,7 @@ It won’t open the file, so only the files path is returned.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level_console</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%(levelname)7s</span> <span class="pre">|</span> <span class="pre">%(message)s</span> <span class="pre">|</span> <span class="pre">%(name)s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.logging_tools.get_logger" title="Permalink to this definition"></a></dt>
 <dd><p>Sets up logger if name is <strong>__main__</strong>. Returns logger based on module name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> -- only used to check if __name__ is __main__.</p></li>
 <li><p><strong>level_root</strong> -- main logging level, defaults to <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>.</p></li>
@@ -669,7 +673,7 @@ It won’t open the file, so only the files path is returned.</p>
 <cite>False</cite> will never use colors and <cite>True</cite> will always enforce them.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Logger instance.</p>
 </dd>
 </dl>
@@ -742,7 +746,7 @@ that are declared as <code class="docutils literal notranslate"><span class="pre
 If installed, the module is returned, otherwise a mock class is returned, which will raise an
 insightful <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> on attempted use.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>package</strong> (<em>str</em>) -- name of the package to try and import.</p>
 </dd>
 </dl>
@@ -785,7 +789,7 @@ when there is no more data outside the boundaries or
 when there are less than three data points remaining.</p>
 <p>Returns a filter mask for the original array (meaning <code class="docutils literal notranslate"><span class="pre">True</span></code> for elements that should be kept).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>ArrayLike</em>) -- Data to filter.</p></li>
 <li><p><strong>x_data</strong> (<em>ArrayLike</em>) -- Additional x-data. If given a linear function is fit on the data,
@@ -802,14 +806,14 @@ considered outliers. If not given, nsigmas is got from the
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all data is considered.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Boolean array containing <code class="docutils literal notranslate"><span class="pre">True</span></code> entries for data-points that are good,</dt><dd><p>and <code class="docutils literal notranslate"><span class="pre">False</span></code> for the ones that should be filtered.</p>
 </dd>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ArrayLike</p>
 </dd>
 </dl>
@@ -832,7 +836,7 @@ finite-sized sample.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">circular_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_value_corr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#circular_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.circular_error" title="Permalink to this definition"></a></dt>
 <dd><p>Computes error of weighted circular average along the specified axis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> -- array-like
 Contains the data to be averaged</p></li>
@@ -846,7 +850,7 @@ Axis or axes along which to average data</p></li>
 Species if the error is corrected for small sample size, default True</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the error of weighted circular average along the specified axis.</p>
 </dd>
 </dl>
@@ -857,7 +861,7 @@ Species if the error is corrected for small sample size, default True</p></li>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">circular_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#circular_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.circular_mean" title="Permalink to this definition"></a></dt>
 <dd><p>Computes weighted circular average along the specified axis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> -- array-like
 Contains the data to be averaged</p></li>
@@ -869,7 +873,7 @@ Contains errors associated with the values in data, it is used to calculated wei
 Axis or axes along which to average data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the weighted circular average along the specified axis.</p>
 </dd>
 </dl>
@@ -904,7 +908,7 @@ that the weighted sample is no more robust than a well-executed un-weighted
 simple random sample of 100 people).” -
 <a class="reference external" href="https://wiki.q-researchsoftware.com/wiki/Weights,_Effective_Sample_Size_and_Design_Effects">https://wiki.q-researchsoftware.com/wiki/Weights,_Effective_Sample_Size_and_Design_Effects</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> -- array-like</p></li>
 <li><p><strong>weights</strong> -- array-like
@@ -913,7 +917,7 @@ Contains weights associated with the values in data</p></li>
 Axis or axes along which the effective sample size is computed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the error of weighted circular average along the specified axis.</p>
 </dd>
 </dl>
@@ -931,10 +935,10 @@ the given student t distribution to the 1 sigma area of a normal distribution
 (this transformation is where the <code class="docutils literal notranslate"><span class="pre">CONFIDENCE</span> <span class="pre">LEVEL</span></code> comes in).
 I hope that makes the intention more clear.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>sample_size</strong> -- array-like</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>multiplicative correction factor(s) of same shape as sample_size.
 Can contain nans.</p>
 </dd>
@@ -952,7 +956,7 @@ e.g. transform the standard deviation 1</p>
 <div class="math notranslate nohighlight">
 \[\sigma^2 = \frac{1}{N-1} \sum_{i=1}^N (x_i - x_\mathrm{mean})^2\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> -- array-like</p></li>
 <li><p><strong>weights</strong> -- array-like
@@ -961,7 +965,7 @@ Contains weights associated with the values in data</p></li>
 Axis or axes along which the effective sample size is computed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the error of weighted circular average along the specified axis.</p>
 </dd>
 </dl>
@@ -980,7 +984,7 @@ n / (n-1), where n is the <a class="reference internal" href="#omc3.utils.stats.
 Additionally, a (student) t-value correction can be performed (done by default)
 which corrects the estimate for small data sets.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> -- array-like
 Contains the data on which the weighted error on the average is calculated.</p></li>
@@ -992,7 +996,7 @@ Axis or axes along which to average data</p></li>
 Species if the error is corrected for small sample size, default True</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the error of weighted average along the specified axis.</p>
 </dd>
 </dl>
@@ -1003,7 +1007,7 @@ Species if the error is corrected for small sample size, default True</p></li>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">weighted_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#weighted_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.weighted_mean" title="Permalink to this definition"></a></dt>
 <dd><p>Computes weighted average along the specified axis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> -- array-like
 Contains the data to be averaged</p></li>
@@ -1013,7 +1017,7 @@ Contains errors associated with the values in data, it is used to calculated wei
 Axis or axes along which to average data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the weighted average along the specified axis.</p>
 </dd>
 </dl>
@@ -1036,7 +1040,7 @@ Axis or axes along which to average data</p></li>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">weighted_rms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#weighted_rms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.weighted_rms" title="Permalink to this definition"></a></dt>
 <dd><p>Computes weighted root mean square along the specified axis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> -- array-like
 Contains the data to be averaged</p></li>
@@ -1046,7 +1050,7 @@ Contains errors associated with the values in data, it is used to calculated wei
 Axis or axes along which to average data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns weighted root mean square along the specified axis.</p>
 </dd>
 </dl>
@@ -1057,7 +1061,7 @@ Axis or axes along which to average data</p></li>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">weights_from_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">errors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#weights_from_errors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.weights_from_errors" title="Permalink to this definition"></a></dt>
 <dd><p>Computes weights from measurement errors, weights are not output if errors contain zeros or nans</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>errors</strong> -- array-like
 Contains errors which are used to calculated weights</p></li>
@@ -1065,7 +1069,7 @@ Contains errors which are used to calculated weights</p></li>
 Periodicity period of data, default is (2 * np.pi)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the error of weighted circular average along the specified axis.</p>
 </dd>
 </dl>
@@ -1184,7 +1188,7 @@ different presentations.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.time_tools.</span></span><span class="sig-name descname"><span class="pre">AcceleratorDatetime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'lhc':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;,</span> <span class="pre">'ps':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;,</span> <span class="pre">'sps':</span> <span class="pre">&lt;class</span> <span class="pre">'omc3.utils.time_tools.CERNDatetime'&gt;}</span></em><a class="headerlink" href="#omc3.utils.time_tools.AcceleratorDatetime" title="Permalink to this definition"></a></dt>
 <dd><p>Accelerator name to AccDatetime mapping.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
