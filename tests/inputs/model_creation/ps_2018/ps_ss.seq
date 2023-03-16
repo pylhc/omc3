@@ -1,0 +1,937 @@
+/**********************************************************************************
+* Edited on 10 October 2019 to update position and length of various elements
+* PS version STUDY in MAD X SEQUENCE format
+* Generated the 07-JUN-2019 18:23:18 from LHCLAYOUT@EDMSDB Database
+*
+* Generated from LHCLAYOUT@EDMSDB since                 10/04/2017 P.Le Roux
+************************************************************************************/
+
+/************************************************************************************/
+/*                       TYPES DEFINITION                                           */
+/************************************************************************************/
+
+//---------------------- DRIFT          ---------------------------------------------
+BFA       : DRIFT       , L := 1;         ! Bending magnet. Fast bumper
+//---------------------- HKICKER        ---------------------------------------------
+BLG       : HKICKER     , L := .2;        ! Dipole magnet, bumper horizontal, type 213
+KFA__001  : HKICKER     , L := 1;         ! Fast Kicker
+KFA__002  : HKICKER     , L := .8;        ! Fast Kicker
+KFA__003  : HKICKER     , L := 2.4;       ! Fast Kicker
+KFA__004  : HKICKER     , L := .888;      ! Fast Kicker
+KFA__005  : HKICKER     , L := 0;         ! Fast Kicker
+MCHBAWWP  : HKICKER     , L := .23;       ! Corrector magnet, dipole horizontal, type 205
+MCHBBWWP  : HKICKER     , L := .27;       ! Corrector magnet, dipole horizontal, type 206
+MDBBBCWP  : HKICKER     , L := .19;       ! Dipole magnet, bumper horizontal, type 209
+MDBCAWWP  : HKICKER     , L := .3;        ! Dipole magnet, bumper vertical, type 210
+SEH__001  : HKICKER     , L := 0.8;       ! Electrostatic septum, mechanical length according to J. Borburgh
+SMH__001  : HKICKER     , L := 2.4;       ! Septum Magnet Horizontal
+SMH__003  : HKICKER     , L := .83;       ! Septum Magnet Horizontal, magnetic length according to J. Borburgh
+SMH__004  : HKICKER     , L := 1.2;       ! Septum Magnet Horizontal
+SMH__007  : HKICKER     , L := 0;         ! Septum Magnet Horizontal
+//---------------------- KICKER        ---------------------------------------------
+KFB       : KICKER       , L := 1;         ! kicker (Damper)
+//---------------------- MARKER         ---------------------------------------------
+TDI__001  : MARKER      , L := 0;         ! Internal beam dump (PS)
+TDIRB001  : MARKER      , L := 0;         ! Internal Beam Dump, Retarding, type B
+TPS       : MARKER      , L := 0;         ! Septum Shielding  (Absorber)
+VVS       : MARKER      , L := 0;         ! Vacuum Sector Valve (PS Complex)
+//---------------------- MONITOR        ---------------------------------------------
+BCT       : MONITOR     , L := 0;         ! Beam current transformer
+BCTF      : MONITOR     , L := 0;         ! Fast Beam Current Transformers
+BCW_A     : MONITOR     , L := 0;         ! Beam Wall Current monitor type A
+BGIHA     : MONITOR     , L := 0;         ! Beam Gas Ionisation Horizontal, type A
+BPMTS     : MONITOR     , L := 1;         ! 2 planes Stripline BPM with 4 long electrodes for PS Tune
+BPUNO     : MONITOR     , L := 0;         ! Beam Position, Normal Pick-up
+BPUWA     : MONITOR     , L := 0;         ! Beam Position Pickup, Wideband, type A
+BSGW      : MONITOR     , L := 0;         ! SEM Grid with Wire
+BTVMA001  : MONITOR     , L := 0;         ! Beam observation TV, with Magnetic coupling, type A, variant 001
+BTVMF005  : MONITOR     , L := 0;         ! Beam TV Motorised Flip, variant 005
+BTVPL001  : MONITOR     , L := 0;         ! Beam observation TV Pneumatic Linear, variant 001
+BWSRB     : MONITOR     , L := 0;         ! Beam Wire Scanner, Rotational, type B
+MSG       : MONITOR     , L := 0;         ! SEM grid
+MTV       : MONITOR     , L := 0;         ! TV screen (scintillation monitor)
+UDP       : MONITOR     , L := 1;         ! Pick-ups  (p.u. electrode). damper
+UFB       : MONITOR     , L := 0;         ! Feedback pick-up.
+ULF       : MONITOR     , L := 0;         ! Low Frequency pick-up
+ULG       : MONITOR     , L := 0;         ! Closed orbit. Large pick-up
+UPH__001  : MONITOR     , L := 0;         ! Pick-up  (p.u. electrode). Beam control, phase.
+URL       : MONITOR     , L := 0;         ! Pick-up  (p.u. electrode). Beam control, radial.
+URP       : MONITOR     , L := 0;         ! Pick-up  (p.u. electrode). Resistive position.
+URS       : MONITOR     , L := 0;         ! Pick-up  (p.u. electrode). Wide band, resistive.(wall current moniteur).
+USP       : MONITOR     , L := 0;         ! Pick-ups  (p.u. electrode). Special (low intensity)
+//---------------------- MULTIPOLE      ---------------------------------------------
+MM_AAIAP  : MULTIPOLE   , L := 0;         ! Multipole magnet, type 403
+//---------------------- OCTUPOLE       ---------------------------------------------
+MONAAFWP  : OCTUPOLE    , L := 0.22;      ! Octupole magnet, type 802
+MONDAFWP  : OCTUPOLE    , L :=  .5;       ! Octupole magnet, type MTE
+//---------------------- QUADRUPOLE     ---------------------------------------------
+MQNAAIAP  : QUADRUPOLE  , L := 0.12;      ! Quadrupole magnet, type 401, magnetic length according to EDMS371500
+MQNABIAP  : QUADRUPOLE  , L := 0.12;      ! Quadrupole magnet, type 402, magnetic length according to EDMS371500
+MQNBAFAP  : QUADRUPOLE  , L := .19;       ! Quadrupole magnet, type 406
+MQNBCAWP  : QUADRUPOLE  , L := .24;       ! Quadrupole magnet, type 407
+MQNBDAAP  : QUADRUPOLE  , L := .19;       ! Quadrupole magnet, type 408
+MQNCAAWP  : QUADRUPOLE  , L := .25;       ! Quadrupole magnet, type 409
+MQNCHAWP  : QUADRUPOLE  , L := .30;       ! Quadrupole magnet, type 414
+MQSAAIAP  : QUADRUPOLE  , L := 0.16;      ! Quadrupole magnet, skew, type 404
+//---------------------- RFCAVITY       ---------------------------------------------
+AARFB     : RFCAVITY    , L := 1;         ! RF CAVITY 40/80 MHZ
+ACC10     : RFCAVITY    , L := 2.45;      ! 10 MHz radio frequency cavity
+ACC20     : RFCAVITY    , L := 1.0;       ! 20 MHz radio frequency cavity
+ACC200    : RFCAVITY    , L := .40;       ! RF Cavity 200 MHz
+ACC40     : RFCAVITY    , L := 1.0;       ! 40 MHz radio frequency cavity
+ACWFA     : RFCAVITY    , L := .88;       ! Accelerating Cavities - Wide-band - Finemet - Type A (for PSring)
+//---------------------- SEXTUPOLE       ---------------------------------------------
+MXNBAFWP  : SEXTUPOLE   , L := .2;        ! Sextupole Magnet, type 608
+MXNCAAWP  : SEXTUPOLE   , L := 0.66;      ! Sextupole Magnet, type 610
+MX_AAIAP  : SEXTUPOLE   , L := 0.16;      ! Sextupole Magnet, type 601
+MX_ABIAP  : SEXTUPOLE   , L := 0.34;      ! Sextupole magnet, type 602
+//---------------------- VKICKER      ---------------------------------------------
+MCVAAWAP  : VKICKER       , L := .12;     ! Corrector magnet, dipole vertical, type 202
+
+/************************************************************************************/
+/*                       PS STRAIGHTSECTION                                         */
+/************************************************************************************/
+
+PS01: SEQUENCE, L=3;
+ PR.XSE01.A     : MXNBAFWP  , AT = .42  , SLOT_ID = 2369746;
+ PR.XSE01.B     : MXNBAFWP  , AT = .675 , SLOT_ID = 2369747;
+ENDSEQUENCE;
+
+PS02: SEQUENCE, L=1.6;
+ PA.UFB02       : BPUNO     , AT = .0934, SLOT_ID = 2253327;
+ PA.CWB02       : ACWFA     , AT = .775 , SLOT_ID = 10338559;
+ PR.MM02        : MM_AAIAP  , AT = 1.47 , SLOT_ID = 8178825;
+ENDSEQUENCE;
+
+PS03: SEQUENCE, L=1.6;
+ PR.BPM03       : BPUNO     , AT = .0934, SLOT_ID = 2253342; ! Position is based on optics definition
+ PR.BCW03.A     : BCW_A     , AT = .5137, SLOT_ID = 36269910; ! Position is an estimate
+ PR.BCW03.B     : BCW_A     , AT = 1.036, SLOT_ID = 36269911; ! Position is an estimate
+ PR.MM03        : MM_AAIAP  , AT = 1.47 , SLOT_ID = 5365801; ! Position is based on optics definition
+ENDSEQUENCE;
+
+PS04: SEQUENCE, L=1.6;
+ PE.KFA04       : KFA__004  , AT = .694 , SLOT_ID = 2369736;
+ PR.MM04        : MM_AAIAP  , AT = 1.47 , SLOT_ID = 5365802;
+ENDSEQUENCE;
+
+PS05: SEQUENCE, L=1.6;
+ PR.BPM05       : BPUNO     , AT = .0934, SLOT_ID = 2253375;
+ PE.QKE16.05    : MQNCHAWP  , AT = .436 , SLOT_ID = 2253376;
+ PR.DHZOC05     : MDBCAWWP  , AT = .929 , SLOT_ID = 8178824;
+ PR.QFN05       : MQNAAIAP  , AT = 1.47 , SLOT_ID = 2253379;
+ENDSEQUENCE;
+
+PS06: SEQUENCE, L=3;
+ PA.C200.06.A   : ACC200    , AT = .4, SLOT_ID = 2253393;
+ PA.C200.06.B   : ACC200    , AT = .8, SLOT_ID = 2253394;
+ PA.C200.06.C   : ACC200    , AT = 1.2, SLOT_ID = 2253395;
+ PA.C200.06.D   : ACC200    , AT = 1.6, SLOT_ID = 2253396;
+ PA.C200.06.E   : ACC200    , AT = 2., SLOT_ID = 2253397;
+ PA.C200.06.F   : ACC200    , AT = 2.4, SLOT_ID = 2253398;
+ PR.QDW06       : MQNABIAP  , AT = 2.859, SLOT_ID = 2253399;
+ENDSEQUENCE;
+
+PS07: SEQUENCE, L=1.6;
+ PR.BPM07       : ULG       , AT = .0934, SLOT_ID = 2253413;
+ PR.XSE07       : MXNCAAWP  , AT = .6252, SLOT_ID = 2253414;
+ PR.QTRTB07     : MQNCAAWP  , AT = 1.115, SLOT_ID = 2253416;
+ PR.QSK07       : MQSAAIAP  , AT = 1.471, SLOT_ID = 2253417;
+ENDSEQUENCE;
+
+PS08: SEQUENCE, L=1.6;
+ PR.C80.08      : AARFB     , AT = .775 , SLOT_ID = 2253431;
+ PR.MM08        : MM_AAIAP  , AT = 1.475, SLOT_ID = 5365803;
+ENDSEQUENCE;
+
+PS09: SEQUENCE, L=1.6;
+ PE.BFA09.P     : BFA       , AT = .775 , SLOT_ID = 2253447;
+ PR.QFN09       : MQNAAIAP  , AT = 1.459, SLOT_ID = 2253449;
+ENDSEQUENCE;
+
+PS10: SEQUENCE, L=1.6;
+ PR.BPM10       : BPUNO     , AT = .0934, SLOT_ID = 2253463;
+ PR.XSK10       : MX_AAIAP  , AT = .78  , SLOT_ID = 10414023; ! Position is approximate
+ PR.VVS10       : VVS       , AT = 1.25 , SLOT_ID = 13720377; ! Position is estimated
+ PR.QDN10       : MQNAAIAP  , AT = 1.475, SLOT_ID = 2253464;
+ENDSEQUENCE;
+
+PS11: SEQUENCE, L=3;
+ PA.C10.11      : ACC10     , AT = 1.509, SLOT_ID = 2253478;
+ENDSEQUENCE;
+
+PS12: SEQUENCE, L=1.6;
+ PR.UEP12       : ULG       , AT = .0934, SLOT_ID = 2253493;
+ PR.RAL12       : TDIRB001  , AT = .3077, SLOT_ID = 8178823;
+ PE.BSW12       : MCHBAWWP  , AT = .6990, SLOT_ID = 2253494;
+ PR.DVT12       : MCVAAWAP  , AT = .9550, SLOT_ID = 2253495;
+ENDSEQUENCE;
+
+PS13: SEQUENCE, L=1.6;
+ PR.BPM13       : BPUNO     , AT = .0934, SLOT_ID = 2253509;
+ PE.KFA13       : KFA__004  , AT = .694 , SLOT_ID = 2369737;
+ENDSEQUENCE;
+
+PS14: SEQUENCE, L=1.6;
+ PR.XSK14       : MX_ABIAP  , AT = .6231, SLOT_ID = 10414025;
+ PE.BSW14       : MCHBAWWP  , AT = 1.091, SLOT_ID = 2253524;
+ENDSEQUENCE;
+
+PS15: SEQUENCE, L=1.6;
+ PR.BPM15       : ULG       , AT = .0895, SLOT_ID = 2253538;
+ PE.TPS15       : TPS       , AT = .7766, SLOT_ID = 6894625;
+ENDSEQUENCE;
+
+PS16: SEQUENCE, L=3;
+ PE.BTV16       : MTV       , AT = .2, SLOT_ID = 2253555;
+ PE.SMH16       : SMH__001  , AT = 1.472, SLOT_ID = 2253556;
+ENDSEQUENCE;
+
+PS17: SEQUENCE, L=1.6;
+ PR.BPM17       : ULG       , AT = .445 , SLOT_ID = 2253570;
+ PR.QFW17       : MQNABIAP  , AT = 1.470, SLOT_ID = 2253572;
+ENDSEQUENCE;
+
+PS18: SEQUENCE, L=1.6;
+ PA.UPH18       : UPH__001  , AT = .0934, SLOT_ID = 2253586;
+ PR.DHZOC18     : MCHBAWWP  , AT = .4173, SLOT_ID = 2253587;
+ PR.QDW18       : MQNABIAP  , AT = 1.469, SLOT_ID = 2253588;
+ENDSEQUENCE;
+
+PS19: SEQUENCE, L=1.6;
+ PE.BSW23.19    : MCHBAWWP  , AT = .6327, SLOT_ID = 2253605;
+ PR.QTRDA19     : MQNBAFAP  , AT = 1.033, SLOT_ID = 2253606;
+ PR.QSK19       : MQSAAIAP  , AT = 1.480, SLOT_ID = 2253607;
+ENDSEQUENCE;
+
+PS20: SEQUENCE, L=1.6;
+ PR.BPM20       : BPUNO     , AT = .0934, SLOT_ID = 2253621;
+ PE.BSW20       : MCHBAWWP  , AT = .4653, SLOT_ID = 2253622;
+ PR.VVS20       : VVS       , AT = 1.25 , SLOT_ID = 13720428; ! Position is an estimate
+ PR.MM20        : MM_AAIAP  , AT = 1.470, SLOT_ID = 5365804;
+ENDSEQUENCE;
+
+PS21: SEQUENCE, L=3;
+ PE.KFA21       : KFA__004  , AT = 2.094, SLOT_ID = 2369738;
+ PR.QFN21       : MQNAAIAP  , AT = 2.859, SLOT_ID = 2253643;
+ENDSEQUENCE;
+
+PS22: SEQUENCE, L=1.6;
+ PA.URL22       : URL       , AT = .0934, SLOT_ID = 2253657;
+ PI.BSW26.22    : MCHBBWWP  , AT = .4662, SLOT_ID = 2253658;
+ PE.BSW22       : MCHBAWWP  , AT = .7562, SLOT_ID = 2253659;
+ PR.DVT22       : MCVAAWAP  , AT = 1.093, SLOT_ID = 2253660;
+ PR.QDW22       : MQNABIAP  , AT = 1.491, SLOT_ID = 2253661;
+ENDSEQUENCE;
+
+PS23: SEQUENCE, L=1.6;
+ PR.BPM23       : BPUNO     , AT = .0934, SLOT_ID = 2253675;
+ PE.SEH23       : SEH__001  , AT = .7748, SLOT_ID = 2253676;
+ PR.QSK23       : MQSAAIAP  , AT = 1.470, SLOT_ID = 2253678;
+ENDSEQUENCE;
+
+PS24: SEQUENCE, L=1.6;
+ PR.DVT24       : MCVAAWAP  , AT = .8146, SLOT_ID = 2253692;
+ PR.QSK24       : MQSAAIAP  , AT = 1.471, SLOT_ID = 2253693;
+ENDSEQUENCE;
+
+PS25: SEQUENCE, L=1.6;
+ PR.BPM25       : ULG       , AT = .0934, SLOT_ID = 2253707;
+ PE.QKE16.25    : MQNCHAWP  , AT = .5206, SLOT_ID = 2253708;
+ENDSEQUENCE;
+
+PS26: SEQUENCE, L=3;
+ PI.SMH26       : SMH__007  , AT = 1.788, SLOT_ID = 2253724;
+ PI.BTV26       : BTVPL001  , AT = 1.788, SLOT_ID = 2253725;
+ PI.BSF26       : MSG       , AT = 1.788, SLOT_ID = 2253726;
+ENDSEQUENCE;
+
+PS27: SEQUENCE, L=1.6;
+ PR.BPM27       : ULG       , AT = .0934, SLOT_ID = 2253740;
+ PR.QTRDA27     : MQNBAFAP  , AT = .4748, SLOT_ID = 2253741;
+ PE.BSW23.27    : MCHBAWWP  , AT = 1.105, SLOT_ID = 2253744;
+ PR.QFW27       : MQNABIAP  , AT = 1.469, SLOT_ID = 2253745;
+ENDSEQUENCE;
+
+PS28: SEQUENCE, L=1.6;
+ PI.KFA28       : KFA__005  , AT = .775 , SLOT_ID = 2253760;
+ PR.QDW28       : MQNABIAP  , AT = 1.471, SLOT_ID = 2253761;
+ENDSEQUENCE;
+
+PS29: SEQUENCE, L=1.6;
+ PR.QSE29       : MQNCAAWP  , AT = .626 , SLOT_ID = 2253775;
+ PR.QTRDB29     : MQNBAFAP  , AT = 1.081, SLOT_ID = 2253777;
+ PR.QSK29       : MQSAAIAP  , AT = 1.47 , SLOT_ID = 2253778;
+ENDSEQUENCE;
+
+PS30: SEQUENCE, L=1.6;
+ PR.BPM30       : ULG       , AT = .0934, SLOT_ID = 2253792;
+ PR.DVT30       : MCVAAWAP  , AT = .5465, SLOT_ID = 2253793;
+ PI.BSW26.30    : MCHBBWWP  , AT = .9505, SLOT_ID = 2253794;
+ PR.VVS30       : VVS       , AT = 1.21 , SLOT_ID = 13720429; ! Position is an estimate
+ PR.QSK30       : MQSAAIAP  , AT = 1.488, SLOT_ID = 2253795;
+ENDSEQUENCE;
+
+PS31: SEQUENCE, L=3;
+ PR.QFW31       : MQNABIAP  , AT = 2.870, SLOT_ID = 2253811;
+ENDSEQUENCE;
+
+PS32: SEQUENCE, L=1.6;
+ PR.UFB32       : UFB       , AT = .2999, SLOT_ID = 2253825; ! Not connected
+ PR.QDW32       : MQNABIAP  , AT = 1.471, SLOT_ID = 2253826;
+ENDSEQUENCE;
+
+PS33: SEQUENCE, L=1.6;
+ PR.BPM33       : ULG       , AT = .0934, SLOT_ID = 2253840;
+ PI.QLB33       : MQNCHAWP  , AT = .52  , SLOT_ID = 47643341;
+ PA.UFB33       : UFB       , AT = 1.18 , SLOT_ID = 2253842; ! Not connected
+ PR.QSK33       : MQSAAIAP  , AT = 1.469, SLOT_ID = 2253843;
+ENDSEQUENCE;
+
+PS34: SEQUENCE, L=1.6;
+ PR.BCT34       : BCT       , AT = .775 , SLOT_ID = 2253858;
+ PR.MM34        : MM_AAIAP  , AT = 1.470, SLOT_ID = 5365805;
+ENDSEQUENCE;
+
+PS35: SEQUENCE, L=1.6;
+ PR.BPM35       : BPUNO     , AT = .0934, SLOT_ID = 2253874;
+ PR.QFN35       : MQNAAIAP  , AT = 1.459, SLOT_ID = 2253877;
+ENDSEQUENCE;
+
+PS36: SEQUENCE, L=3;
+ PA.URL36       : URL       , AT = .0934, SLOT_ID = 2253891;
+ PA.C10.36      : ACC10     , AT = 1.475, SLOT_ID = 2253892;
+ PR.QDN36       : MQNAAIAP  , AT = 2.863, SLOT_ID = 2253893;
+ENDSEQUENCE;
+
+PS37: SEQUENCE, L=1.6;
+ PR.BPM37       : BPUNO     , AT = .0934, SLOT_ID = 2253907;
+ PR.QTRDB37     : MQNBDAAP  , AT = .4407, SLOT_ID = 2253908;
+ PA.UPH37       : BPUNO     , AT = 1.180, SLOT_ID = 2253910;
+ PR.MM37        : MM_AAIAP  , AT = 1.459, SLOT_ID = 5365806;
+ENDSEQUENCE;
+
+PS38: SEQUENCE, L=1.6;
+ PA.UPH38       : UPH__001  , AT = .0934, SLOT_ID = 2253926;
+ PR.BCT38       : BCTF      , AT = .775 , SLOT_ID = 2253927;
+ PR.MM38        : MM_AAIAP  , AT = 1.470, SLOT_ID = 5365807;
+ENDSEQUENCE;
+
+PS39: SEQUENCE, L=1.6;
+ PR.XNO39.A     : MXNBAFWP  , AT = .398 , SLOT_ID = 2369739;
+ PR.ONO39       : MONDAFWP  , AT = .7745, SLOT_ID = 2369740;
+ PR.XNO39.B     : MXNBAFWP  , AT = 1.151, SLOT_ID = 2369741;
+ PR.QFN39       : MQNAAIAP  , AT = 1.459, SLOT_ID = 2253944;
+ENDSEQUENCE;
+
+PS40: SEQUENCE, L=1.6;
+ PR.BPM40       : BPUNO     , AT = .0934, SLOT_ID = 2253958;
+ PI.BSW40       : MDBBBCWP  , AT = .472 , SLOT_ID = 2253959;
+ PR.ODN40       : MONAAFWP  , AT = .802 , SLOT_ID = 2253960;
+ PR.VVS40       : VVS       , AT = 1.251, SLOT_ID = 13720430; ! Position is an estimate
+ PR.QDN40       : MQNAAIAP  , AT = 1.481, SLOT_ID = 2253961;
+ENDSEQUENCE;
+
+PS41: SEQUENCE, L=3;
+ PR.QTRTA41     : MQNBCAWP  , AT = 1.475, SLOT_ID = 2253976;
+ PR.QSK41       : MQSAAIAP  , AT = 2.895, SLOT_ID = 2253977;
+ENDSEQUENCE;
+
+PS42: SEQUENCE, L=1.6;
+ PI.BTV42.A     : BTVMA001  , AT = 0    , SLOT_ID = 42854779;
+ PI.BSW42       : MDBBBCWP  , AT = .472 ;
+ PI.BSF42       : MSG       , AT = 1.47 , SLOT_ID = 2253993; ! Slot type is to be checked
+ENDSEQUENCE;
+
+PS43: SEQUENCE, L=1.6;
+ PR.BPM43       : ULG       , AT = .0934, SLOT_ID = 2254008;
+ PI.BSW43       : MDBBBCWP  , AT = .5362, SLOT_ID = 2254009;
+ PR.QSK43       : MQSAAIAP  , AT = 1.495, SLOT_ID = 2254011;
+ENDSEQUENCE;
+
+PS44: SEQUENCE, L=1.6;
+ PI.BSW44       : MDBBBCWP  , AT = 1.073, SLOT_ID = 2254026;
+ PR.MM44        : MM_AAIAP  , AT = 1.473, SLOT_ID = 5365808;
+ENDSEQUENCE;
+
+PS45: SEQUENCE, L=1.6;
+ PR.BPM45       : BPUNO     , AT = .0934, SLOT_ID = 2254042;
+ PI.KFA45       : KFA__002  , AT = .775 , SLOT_ID = 2254043;
+ PR.QFN45       : MQNAAIAP  , AT = 1.459, SLOT_ID = 2254045;
+ENDSEQUENCE;
+
+PS46: SEQUENCE, L=3;
+ PA.C10.46      : ACC10     , AT = 1.475, SLOT_ID = 2254059;
+ PR.QDN46       : MQNAAIAP  , AT = 2.873, SLOT_ID = 2254060;
+ENDSEQUENCE;
+
+PS47: SEQUENCE, L=1.6;
+ PR.BPM47       : BPUNO     , AT = .0934, SLOT_ID = 2254074;
+ PR.TDI47       : TDI__001  , AT = .775 , SLOT_ID = 2254075;
+ PR.QSK47       : MQSAAIAP  , AT = 1.495, SLOT_ID = 2254077;
+ENDSEQUENCE;
+
+PS48: SEQUENCE, L=1.6;
+ PI.BSG48       : BSGW      , AT = .0934, SLOT_ID = 2254091;
+ PR.TDI48       : TDI__001  , AT = .775 , SLOT_ID = 2254092;
+ PR.QSK48       : MQSAAIAP  , AT = 1.496, SLOT_ID = 2254093;
+ENDSEQUENCE;
+
+PS49: SEQUENCE, L=1.6;
+ PI.QLB49       : MQNCHAWP  , AT = .52  , SLOT_ID = 47643342;
+ PR.QTRTA49     : MQNCAAWP  , AT = 1.093, SLOT_ID = 2254108;
+ PR.QFN49       : MQNAAIAP  , AT = 1.481, SLOT_ID = 2254109;
+ENDSEQUENCE;
+
+PS50: SEQUENCE, L=1.6;
+ PR.BPM50       : BPUNO     , AT = .0934, SLOT_ID = 2254123;
+ PR.ODN50       : MONAAFWP  , AT = .9725, SLOT_ID = 2254124;
+ PR.VVS50       : VVS       , AT = 1.302, SLOT_ID = 13720431; ! Position is an estimate
+ PR.QDN50       : MQNAAIAP  , AT = 1.470, SLOT_ID = 2254125;
+ENDSEQUENCE;
+
+PS51: SEQUENCE, L=3;
+ PA.URL51       : URL       , AT = .0934, SLOT_ID = 2254139;
+ PA.C10.51      : ACC10     , AT = 1.475, SLOT_ID = 2254140;
+ENDSEQUENCE;
+
+PS52: SEQUENCE, L=1.6;
+ PI.BSG52       : BSGW      , AT = .0934, SLOT_ID = 2254155;
+ PR.ODN52.A     : MONAAFWP  , AT = .5155, SLOT_ID = 10430397; ! Position is estimated
+ PR.XSK52       : MX_AAIAP  , AT = .75  , SLOT_ID = 10414027; ! Position estimated after installation of new octupole in the same straight section
+ PR.ODN52.B     : MONAAFWP  , AT = .9955, SLOT_ID = 2254156; ! Position is estimated
+ PR.QSK52       : MQSAAIAP  , AT = 1.496, SLOT_ID = 2253994; ! Moved from Section 42 according to ECR: PS-VC-EC-0001
+ENDSEQUENCE;
+
+PS53: SEQUENCE, L=1.6;
+ PR.BPM53       : BPUNO     , AT = .0934, SLOT_ID = 2254170;
+ PE.BSW57.53    : MCHBBWWP  , AT = .8333, SLOT_ID = 2254171;
+ PR.MM53        : MM_AAIAP  , AT = 1.469, SLOT_ID = 5365809;
+ENDSEQUENCE;
+
+PS54: SEQUENCE, L=1.6;
+ PI.BSG54       : BSGW      , AT = .0934, SLOT_ID = 2254188;
+ PR.BPM54       : BPUNO     , AT = .3615, SLOT_ID = 10414030; ! Position is estimated!
+ PR.BWSH54      : BWSRB     , AT = .8035, SLOT_ID = 2254189;
+ PR.MM54        : MM_AAIAP  , AT = 1.470, SLOT_ID = 5365810;
+ENDSEQUENCE;
+
+PS55: SEQUENCE, L=1.6;
+ PR.BPM55       : BPUNO     , AT = .0934, SLOT_ID = 2254205;
+ PR.XNO55.A     : MXNBAFWP  , AT = .3981, SLOT_ID = 2254206; ! Estimated position
+ PR.ONO55       : MONDAFWP  , AT = .7746, SLOT_ID = 2369742;
+ PR.XNO55.B     : MXNBAFWP  , AT = 1.151, SLOT_ID = 2254207; ! Estimated position
+ PR.QFN55       : MQNAAIAP  , AT = 1.459, SLOT_ID = 2254209;
+ENDSEQUENCE;
+
+PS56: SEQUENCE, L=3;
+ PA.C10.56      : ACC10     , AT = 1.475 , SLOT_ID = 2254223;
+ PR.QDW56       : MQNABIAP  , AT = 2.859, SLOT_ID = 2254224;
+ENDSEQUENCE;
+
+PS57: SEQUENCE, L=1.6;
+ PR.BPM57       : ULG       , AT = .0934, SLOT_ID = 2254238;
+ PE.BTV57       : BTVMF005  , AT = .3584, SLOT_ID = 2254242;
+ PE.SMH57       : SMH__003  , AT = .775 , SLOT_ID = 2254240;
+ PR.QSK57       : MQSAAIAP  , AT = 1.496, SLOT_ID = 2254241;
+ENDSEQUENCE;
+
+PS58: SEQUENCE, L=1.6;
+ PR.XSK58       : MX_ABIAP  , AT = .755 , SLOT_ID = 10414032; ! Position is an estimate!
+ PR.QSK58       : MQSAAIAP  , AT = 1.481, SLOT_ID = 2254256;
+ENDSEQUENCE;
+
+PS59: SEQUENCE, L=1.6;
+ PE.BSW57.59    : MCHBAWWP  , AT = .4454, SLOT_ID = 2254271;
+ PR.QFW59       : MQNABIAP  , AT = 1.470, SLOT_ID = 2254273;
+ENDSEQUENCE;
+
+PS60: SEQUENCE, L=1.6;
+ PR.BPM60       : ULG       , AT = .0934, SLOT_ID = 2254287;
+ PR.DHZOC60     : MCHBBWWP  , AT = .434 , SLOT_ID = 2254288;
+ PR.XNO60       : MXNBAFWP  , AT = .85  , SLOT_ID = 10428678; ! Position is an estimate
+ PR.VVS60       : VVS       , AT = 1.209, SLOT_ID = 13720432; ! Position is an estimate
+ PR.QDW60       : MQNABIAP  , AT = 1.475, SLOT_ID = 2254289;
+ENDSEQUENCE;
+
+PS61: SEQUENCE, L=3;
+ PR.QTRDB61     : MQNBAFAP  , AT = .4323, SLOT_ID = 2254304;
+ PE.SMH61       : SMH__004  , AT = 1.195 , SLOT_ID = 2254307;
+ PE.BSW57.61    : BLG       , AT = 1.955, SLOT_ID = 2254305;
+ENDSEQUENCE;
+
+PS62: SEQUENCE, L=1.6;
+ENDSEQUENCE;
+
+PS63: SEQUENCE, L=1.6;
+ PR.BPM63       : ULG       , AT = .3685, SLOT_ID = 2254334;
+ENDSEQUENCE;
+
+PS64: SEQUENCE, L=1.6;
+ PR.BPM64       : BPUNO     , AT = .357 , SLOT_ID = 42548391; ! Position is to be checked
+ PR.BWSV64      : BWSRB     , AT = .803 , SLOT_ID = 2254349; ! Position is to be confirmed
+ PR.MM64        : MM_AAIAP  , AT = 1.470, SLOT_ID = 5365829;
+ENDSEQUENCE;
+
+PS65: SEQUENCE, L=1.6;
+ PR.BPM65       : BPUNO     , AT = .0934, SLOT_ID = 2254365;
+ PR.BWSH65      : BWSRB     , AT = .803 , SLOT_ID = 2369743;
+ENDSEQUENCE;
+
+PS66: SEQUENCE, L=3;
+ PA.C10.66      : ACC10     , AT = 1.475, SLOT_ID = 2254380;
+ENDSEQUENCE;
+
+PS67: SEQUENCE, L=1.6;
+ PR.BPM67       : BPUNO     , AT = .0934, SLOT_ID = 2254394;
+ PE.BSW57.67    : MCHBBWWP  , AT = .4422, SLOT_ID = 2254395;
+ PR.QFN67       : MQNAAIAP  , AT = 1.469, SLOT_ID = 2254398;
+ENDSEQUENCE;
+
+PS68: SEQUENCE, L=1.6;
+ PA.UPH68       : UPH__001  , AT = .0934, SLOT_ID = 2254412;
+ PR.BPM68       : BPUNO     , AT = .357 , SLOT_ID = 10414035;
+ PR.BWSH68      : BWSRB     , AT = .803 , SLOT_ID = 10414037;
+ PR.QDN68       : MQNAAIAP  , AT = 1.462, SLOT_ID = 2254413;
+ENDSEQUENCE;
+
+PS69: SEQUENCE, L=1.6;
+ PR.BQS69       : ULF       , AT = .0934, SLOT_ID = 2254427;
+ PR.QTRDB69     : MQNBDAAP  , AT = 1.160, SLOT_ID = 2254429;
+ PR.MM69        : MM_AAIAP  , AT = 1.459, SLOT_ID = 5365811;
+ENDSEQUENCE;
+
+PS70: SEQUENCE, L=1.6;
+ PR.BPM70       : BPUNO     , AT = .0934, SLOT_ID = 2254445;
+ PR.ODN70.A     : MONAAFWP  , AT = .6305, SLOT_ID = 10430399; ! Position is an estimate
+ PR.ODN70.B     : MONAAFWP  , AT = .978 , SLOT_ID = 2254446;
+ PR.VVS70       : VVS       , AT = 1.344, SLOT_ID = 13720433; ! Position is an estimate
+ PR.MM70        : MM_AAIAP  , AT = 1.469, SLOT_ID = 5365812;
+ENDSEQUENCE;
+
+PS71: SEQUENCE, L=3;
+ PE.KFA71       : KFA__003  , AT = 1.472, SLOT_ID = 2254462;
+ PR.QFN71       : MQNAAIAP  , AT = 2.859, SLOT_ID = 2254464;
+ENDSEQUENCE;
+
+PS72: SEQUENCE, L=1.6;
+ PR.BQS72       : ULF       , AT = .0934, SLOT_ID = 2254478;
+ PR.BQL72       : BPMTS     , AT = .775 , SLOT_ID = 6078900;
+ PR.QDN72       : MQNAAIAP  , AT = 1.472, SLOT_ID = 2254479;
+ENDSEQUENCE;
+
+PS73: SEQUENCE, L=1.6;
+ PR.BPM73       : BPUNO     , AT = .0934, SLOT_ID = 2254493;
+ PR.QTRTA73     : MQNBCAWP  , AT = .4542, SLOT_ID = 2254494;
+ PR.QSK73       : MQSAAIAP  , AT = 1.469, SLOT_ID = 2254497;
+ENDSEQUENCE;
+
+PS74: SEQUENCE, L=1.6;
+ PR.MM74        : MM_AAIAP  , AT = 1.467, SLOT_ID = 5365813;
+ENDSEQUENCE;
+
+PS75: SEQUENCE, L=1.6;
+ PR.BPM75       : BPUNO     , AT = .0934, SLOT_ID = 2254526;
+ENDSEQUENCE;
+
+PS76: SEQUENCE, L=3;
+ PA.URL76       : URL       , AT = .0934, SLOT_ID = 10410423;
+ PA.C10.76      : ACC10     , AT = 1.475, SLOT_ID = 2254542;
+ PR.MM76        : MM_AAIAP  , AT = 2.872, SLOT_ID = 5365830;
+ENDSEQUENCE;
+
+PS77: SEQUENCE, L=1.6;
+ PR.BPM77       : BPUNO     , AT = .0934, SLOT_ID = 2254558;
+ PA.C40.77      : ACC40     , AT = .775 , SLOT_ID = 2254560;
+ PR.QFN77       : MQNAAIAP  , AT = 1.481, SLOT_ID = 2254561;
+ENDSEQUENCE;
+
+PS78: SEQUENCE, L=1.6;
+ PA.C40.78      : ACC40     , AT = .775 , SLOT_ID = 2254575;
+ PR.QDN78       : MQNAAIAP  , AT = 1.472, SLOT_ID = 2254576;
+ENDSEQUENCE;
+
+PS79: SEQUENCE, L=1.6;
+ PE.KFA79       : KFA__001  , AT = .696 , SLOT_ID = 2254591;
+ PR.VVS79       : VVS       , AT = 1.25 , SLOT_ID = 13720434; ! Position is an estimate
+ PR.MM79        : MM_AAIAP  , AT = 1.472, SLOT_ID = 5365814;
+ENDSEQUENCE;
+
+PS80: SEQUENCE, L=1.6;
+ PR.BPM80       : BPUNO     , AT = .0934, SLOT_ID = 2254607;
+ PA.C20.80      : ACC20     , AT = .775 , SLOT_ID = 2254608;
+ PR.MM80        : MM_AAIAP  , AT = 1.472, SLOT_ID = 5365815;
+ENDSEQUENCE;
+
+PS81: SEQUENCE, L=3;
+ PA.C10.81      : ACC10     , AT = 1.475, SLOT_ID = 2254624;
+ PR.QFN81       : MQNAAIAP  , AT = 2.881, SLOT_ID = 2254626;
+ENDSEQUENCE;
+
+PS82: SEQUENCE, L=1.6;
+ PR.BGI82       : BGIHA     , AT = .775 , SLOT_ID = 41479404; ! Position is not mechanically accurate. Placed at the centre of the optics defined straight section.
+ PR.QDN82       : MQNAAIAP  , AT = 1.480, SLOT_ID = 2254641;
+ENDSEQUENCE;
+
+PS83: SEQUENCE, L=1.6;
+ PR.BPM83       : ULG       , AT = .0934, SLOT_ID = 2254655;
+ PR.USP83       : USP       , AT = .775 , SLOT_ID = 2254656;
+ PR.MM83        : MM_AAIAP  , AT = 1.472, SLOT_ID = 5365816;
+ENDSEQUENCE;
+
+PS84: SEQUENCE, L=1.6;
+ PR.MM84        : MM_AAIAP  , AT = 1.480, SLOT_ID = 5365817;
+ENDSEQUENCE;
+
+PS85: SEQUENCE, L=1.6;
+ PR.BPM85       : ULG       , AT = .0934, SLOT_ID = 2254689;
+ PR.BWSV85      : BWSRB     , AT = .803 , SLOT_ID = 2254690;
+ PR.QFN85       : MQNAAIAP  , AT = 1.481, SLOT_ID = 2254692;
+ENDSEQUENCE;
+
+PS86: SEQUENCE, L=3;
+ PA.C10.86      : ACC10     , AT = 1.475, SLOT_ID = 2254706;
+ PR.QDN86       : MQNAAIAP  , AT = 2.880, SLOT_ID = 2254707;
+ENDSEQUENCE;
+
+PS87: SEQUENCE, L=1.6;
+ PR.BPM87       : BPUNO     , AT = .0934, SLOT_ID = 2254721;
+ PR.QTRDA87     : MQNBDAAP  , AT = .4167, SLOT_ID = 2254722;
+ PR.QSE87       : MQNCAAWP  , AT = .843 , SLOT_ID = 2254724;
+ PR.MM87        : MM_AAIAP  , AT = 1.472, SLOT_ID = 5365818;
+ENDSEQUENCE;
+
+PS88: SEQUENCE, L=1.6;
+ PA.UPH88       : UPH__001  , AT = .0934, SLOT_ID = 2254740;
+ PR.C80.88      : AARFB     , AT = .775 , SLOT_ID = 2254741;
+ PR.MM88        : MM_AAIAP  , AT = 1.481, SLOT_ID = 5365819;
+ENDSEQUENCE;
+
+PS89: SEQUENCE, L=1.6;
+ PR.C80.89      : AARFB     , AT = .775 , SLOT_ID = 2254758;
+ PR.QFN89       : MQNAAIAP  , AT = 1.481, SLOT_ID = 2254759;
+ENDSEQUENCE;
+
+PS90: SEQUENCE, L=1.6;
+ PR.BPM90       : BPUNO     , AT = .0934, SLOT_ID = 2254773;
+ PR.BPMW90      : BPUWA     , AT = .4216, SLOT_ID = 42401369; ! Absolute position is not mechanically accurate. It is positioned using the design drawings of the section, and using the optics file position for the centre of PR.ODN90 as the cumulative distance reference
+ PR.ODN90       : MONAAFWP  , AT = .9892, SLOT_ID = 2254774;
+ PR.VVS90       : VVS       , AT = 1.251, SLOT_ID = 13720435; ! Position is an estimate
+ PR.QDN90       : MQNAAIAP  , AT = 1.472, SLOT_ID = 2254775;
+ENDSEQUENCE;
+
+PS91: SEQUENCE, L=3;
+ PA.C10.91      : ACC10     , AT = 1.475, SLOT_ID = 2254789;
+ PR.MM91        : MM_AAIAP  , AT = 2.881, SLOT_ID = 5365820;
+ENDSEQUENCE;
+
+PS92: SEQUENCE, L=1.6;
+ PR.C20.92      : ACC20     , AT = .775 , SLOT_ID = 2254806;
+ PR.QSK92       : MQSAAIAP  , AT = 1.503, SLOT_ID = 2254807;
+ENDSEQUENCE;
+
+PS93: SEQUENCE, L=1.6;
+ PR.BPM93       : ULG       , AT = .0934, SLOT_ID = 2254821;
+ PR.USP93       : UDP       , AT = .775 , SLOT_ID = 2254822;
+ PR.QSK93       : MQSAAIAP  , AT = 1.495, SLOT_ID = 2254824;
+ENDSEQUENCE;
+
+PS94: SEQUENCE, L=1.6;
+ PR.XNO94       : MXNBAFWP  , AT = .7706, SLOT_ID = 10428460; ! Position is an estimate
+ PR.UWB94       : BPUWA     , AT = 1.125, SLOT_ID = 2254839;
+ PR.MM94        : MM_AAIAP  , AT = 1.480, SLOT_ID = 5365821;
+ENDSEQUENCE;
+
+PS95: SEQUENCE, L=1.6;
+ PR.BPM95       : BPUNO     , AT = .0934, SLOT_ID = 2254855;
+ PR.UWB95       : URS       , AT = .4624, SLOT_ID = 2254856;
+ PR.QTRDA95     : MQNBDAAP  , AT = 1.122, SLOT_ID = 2254858;
+ PR.QFN95       : MQNAAIAP  , AT = 1.481, SLOT_ID = 2254859;
+ENDSEQUENCE;
+
+PS96: SEQUENCE, L=3;
+ PA.URL96       : URL       , AT = .0934, SLOT_ID = 2254873;
+ PA.C10.96      : ACC10     , AT = 1.475, SLOT_ID = 2254874;
+ PR.QDN96       : MQNAAIAP  , AT = 2.880, SLOT_ID = 2254875;
+ENDSEQUENCE;
+
+PS97: SEQUENCE, L=1.6;
+ PR.BPM97       : BPUNO     , AT = .0934, SLOT_ID = 2254889;
+ PR.KFB97       : KFB       , AT = .775 , SLOT_ID = 2254890;
+ PR.MM97        : MM_AAIAP  , AT = 1.481, SLOT_ID = 5365822;
+ENDSEQUENCE;
+
+PS98: SEQUENCE, L=1.6;
+ PR.UFB98       : BPUNO     , AT = .0934, SLOT_ID = 2254907;
+ PR.MM98        : MM_AAIAP  , AT = 1.473, SLOT_ID = 5365823;
+ENDSEQUENCE;
+
+PS99: SEQUENCE, L=1.6;
+ PR.QTRTB99.A   : MQNBCAWP  , AT = .6532, SLOT_ID = 2254926;
+ PR.QTRTB99.B   : MQNBCAWP  , AT = 1.078, SLOT_ID = 5706126;
+ PR.QFN99       : MQNAAIAP  , AT = 1.472, SLOT_ID = 2254927;
+ENDSEQUENCE;
+
+PS00: SEQUENCE, L=1.6;
+ PR.BPM00       : BPUNO     , AT = .0934, SLOT_ID = 2254941;
+ PR.WCM00       : URP       , AT = .5092, SLOT_ID = 2254942;
+ PR.ODN00       : MONAAFWP  , AT = .9508, SLOT_ID = 2254943;
+ PR.VVS00       : VVS       , AT = 1.251, SLOT_ID = 13720436; ! Position is an estimate
+ PR.QDN00       : MQNAAIAP  , AT = 1.472, SLOT_ID = 2254944;
+ENDSEQUENCE;
+
+
+/************************************************************************************/
+/*                       PS Sectors                                                 */
+/************************************************************************************/
+
+SEC01 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS01      , AT = 0.          ;
+ PR.BHT01  , AT = 3.          ;
+ PS02      , AT = 7.403185    ;
+ PR.BHU02  , AT = 9.003185    ;
+ PS03      , AT = 13.40637    ;
+ PR.BHT03  , AT = 15.00637    ;
+ PS04      , AT = 19.409555   ;
+ PR.BHR04  , AT = 21.009555   ;
+ PS05      , AT = 25.41274    ;
+ PR.BHT05  , AT = 27.01274    ;
+ PS06      , AT = 31.415925   ;
+ PR.BHR06  , AT = 34.415925   ;
+ PS07      , AT = 38.81911    ;
+ PR.BHS07  , AT = 40.41911    ;
+ PS08      , AT = 44.822295   ;
+ PR.BHR08  , AT = 46.422295   ;
+ PS09      , AT = 50.82548    ;
+ PR.BHT09  , AT = 52.42548    ;
+ PS10      , AT = 56.828665   ;
+ PR.BHR10  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC02 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS11      , AT = 0.          ;
+ PR.BHS11  , AT = 3.          ;
+ PS12      , AT = 7.403185    ;
+ PR.BHR12  , AT = 9.003185    ;
+ PS13      , AT = 13.40637    ;
+ PR.BHS13  , AT = 15.00637    ;
+ PS14      , AT = 19.409555   ;
+ PR.BHU14  , AT = 21.009555   ;
+ PS15      , AT = 25.41274    ;
+ PR.BHT15  , AT = 27.01274    ;
+ PS16      , AT = 31.415925   ;
+ PR.BHU16  , AT = 34.415925   ;
+ PS17      , AT = 38.81911    ;
+ PR.BHT17  , AT = 40.41911    ;
+ PS18      , AT = 44.822295   ;
+ PR.BHU18  , AT = 46.422295   ;
+ PS19      , AT = 50.82548    ;
+ PR.BHS19  , AT = 52.42548    ;
+ PS20      , AT = 56.828665   ;
+ PR.BHR20  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC03 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS21      , AT = 0.          ;
+ PR.BHT21  , AT = 3.          ;
+ PS22      , AT = 7.403185    ;
+ PR.BHR22  , AT = 9.003185    ;
+ PS23      , AT = 13.40637    ;
+ PR.BHT23  , AT = 15.00637    ;
+ PS24      , AT = 19.409555   ;
+ PR.BHU24  , AT = 21.009555   ;
+ PS25      , AT = 25.41274    ;
+ PR.BHT25  , AT = 27.01274    ;
+ PS26      , AT = 31.415925   ;
+ PR.BHR26  , AT = 34.415925   ;
+ PS27      , AT = 38.81911    ;
+ PR.BHS27  , AT = 40.41911    ;
+ PS28      , AT = 44.822295   ;
+ PR.BHU28  , AT = 46.422295   ;
+ PS29      , AT = 50.82548    ;
+ PR.BHT29  , AT = 52.42548    ;
+ PS30      , AT = 56.828665   ;
+ PR.BHR30  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC04 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS31      , AT = 0.          ;
+ PR.BHT31  , AT = 3.          ;
+ PS32      , AT = 7.403185    ;
+ PR.BHR32  , AT = 9.003185    ;
+ PS33      , AT = 13.40637    ;
+ PR.BHS33  , AT = 15.00637    ;
+ PS34      , AT = 19.409555   ;
+ PR.BHR34  , AT = 21.009555   ;
+ PS35      , AT = 25.41274    ;
+ PR.BHT35  , AT = 27.01274    ;
+ PS36      , AT = 31.415925   ;
+ PR.BHR36  , AT = 34.415925   ;
+ PS37      , AT = 38.81911    ;
+ PR.BHT37  , AT = 40.41911    ;
+ PS38      , AT = 44.822295   ;
+ PR.BHR38  , AT = 46.422295   ;
+ PS39      , AT = 50.82548    ;
+ PR.BHT39  , AT = 52.42548    ;
+ PS40      , AT = 56.828665   ;
+ PR.BHU40  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC05 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS41      , AT = 0.          ;
+ PR.BHT41  , AT = 3.          ;
+ PS42      , AT = 7.403185    ;
+ PR.BHR42  , AT = 9.003185    ;
+ PS43      , AT = 13.40637    ;
+ PR.BHT43  , AT = 15.00637    ;
+ PS44      , AT = 19.409555   ;
+ PR.BHR44  , AT = 21.009555   ;
+ PS45      , AT = 25.41274    ;
+ PR.BHT45  , AT = 27.01274    ;
+ PS46      , AT = 31.415925   ;
+ PR.BHR46  , AT = 34.415925   ;
+ PS47      , AT = 38.81911    ;
+ PR.BHS47  , AT = 40.41911    ;
+ PS48      , AT = 44.822295   ;
+ PR.BHR48  , AT = 46.422295   ;
+ PS49      , AT = 50.82548    ;
+ PR.BHT49  , AT = 52.42548    ;
+ PS50      , AT = 56.828665   ;
+ PR.BHR50  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC06 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS51      , AT = 0.          ;
+ PR.BHT51  , AT = 3.          ;
+ PS52      , AT = 7.403185    ;
+ PR.BHR52  , AT = 9.003185    ;
+ PS53      , AT = 13.40637    ;
+ PR.BHS53  , AT = 15.00637    ;
+ PS54      , AT = 19.409555   ;
+ PR.BHR54  , AT = 21.009555   ;
+ PS55      , AT = 25.41274    ;
+ PR.BHT55  , AT = 27.01274    ;
+ PS56      , AT = 31.415925   ;
+ PR.BHU56  , AT = 34.415925   ;
+ PS57      , AT = 38.81911    ;
+ PR.BHT57  , AT = 40.41911    ;
+ PS58      , AT = 44.822295   ;
+ PR.BHU58  , AT = 46.422295   ;
+ PS59      , AT = 50.82548    ;
+ PR.BHT59  , AT = 52.42548    ;
+ PS60      , AT = 56.828665   ;
+ PR.BHU60  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC07 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS61      , AT = 0.          ;
+ PR.BHT61  , AT = 3.          ;
+ PS62	   , AT = 7.403185    ;
+ PR.BHU62  , AT = 9.003185    ;
+ PS63      , AT = 13.40637    ;
+ PR.BHT63  , AT = 15.00637    ;
+ PS64      , AT = 19.409555   ;
+ PR.BHU64  , AT = 21.009555   ;
+ PS65      , AT = 25.41274    ;
+ PR.BHT65  , AT = 27.01274    ;
+ PS66      , AT = 31.415925   ;
+ PR.BHR66  , AT = 34.415925   ;
+ PS67      , AT = 38.81911    ;
+ PR.BHS67  , AT = 40.41911    ;
+ PS68      , AT = 44.822295   ;
+ PR.BHU68  , AT = 46.422295   ;
+ PS69      , AT = 50.82548    ;
+ PR.BHT69  , AT = 52.42548    ;
+ PS70      , AT = 56.828665   ;
+ PR.BHR70  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC08 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS71      , AT = 0.          ;
+ PR.BHT71  , AT = 3.          ;
+ PS72      , AT = 7.403185    ;
+ PR.BHR72  , AT = 9.003185    ;
+ PS73      , AT = 13.40637    ;
+ PR.BHS73  , AT = 15.00637    ;
+ PS74      , AT = 19.409555   ;
+ PR.BHU74  , AT = 21.009555   ;
+ PS75      , AT = 25.41274    ;
+ PR.BHT75  , AT = 27.01274    ;
+ PS76      , AT = 31.415925   ;
+ PR.BHR76  , AT = 34.415925   ;
+ PS77      , AT = 38.81911    ;
+ PR.BHT77  , AT = 40.41911    ;
+ PS78      , AT = 44.822295   ;
+ PR.BHR78  , AT = 46.422295   ;
+ PS79      , AT = 50.82548    ;
+ PR.BHS79  , AT = 52.42548    ;
+ PS80      , AT = 56.828665   ;
+ PR.BHR80  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC09 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS81      , AT = 0.          ;
+ PR.BHT81  , AT = 3.          ;
+ PS82      , AT = 7.403185    ;
+ PR.BHR82  , AT = 9.003185    ;
+ PS83      , AT = 13.40637    ;
+ PR.BHS83  , AT = 15.00637    ;
+ PS84      , AT = 19.409555   ;
+ PR.BHR84  , AT = 21.009555   ;
+ PS85      , AT = 25.41274    ;
+ PR.BHT85  , AT = 27.01274    ;
+ PS86      , AT = 31.415925   ;
+ PR.BHR86  , AT = 34.415925   ;
+ PS87      , AT = 38.81911    ;
+ PR.BHS87  , AT = 40.41911    ;
+ PS88      , AT = 44.822295   ;
+ PR.BHU88  , AT = 46.422295   ;
+ PS89      , AT = 50.82548    ;
+ PR.BHT89  , AT = 52.42548    ;
+ PS90      , AT = 56.828665   ;
+ PR.BHR90  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+SEC00 : SEQUENCE, REFER=ENTRY, L = 62.83185;
+ PS91      , AT = 0.          ;
+ PR.BHT91  , AT = 3.          ;
+ PS92      , AT = 7.403185    ;
+ PR.BHR92  , AT = 9.003185    ;
+ PS93      , AT = 13.40637    ;
+ PR.BHS93  , AT = 15.00637    ;
+ PS94      , AT = 19.409555   ;
+ PR.BHR94  , AT = 21.009555   ;
+ PS95      , AT = 25.41274    ;
+ PR.BHT95  , AT = 27.01274    ;
+ PS96      , AT = 31.415925   ;
+ PR.BHR96  , AT = 34.415925   ;
+ PS97      , AT = 38.81911    ;
+ PR.BHT97  , AT = 40.41911    ;
+ PS98      , AT = 44.822295   ;
+ PR.BHR98  , AT = 46.422295   ;
+ PS99      , AT = 50.82548    ;
+ PR.BHS99  , AT = 52.42548    ;
+ PS00      , AT = 56.828665   ;
+ PR.BHR00  , AT = 58.428665   ;
+ENDSEQUENCE;
+
+
+/************************************************************************************/
+/*                       PS Sequence                                                */
+/************************************************************************************/
+
+PS : SEQUENCE, REFER=ENTRY, L = 628.3185;
+ SEC01, AT = 0.0          ;
+ SEC02, AT = 62.83185     ;
+ SEC03, AT = 125.6637     ;
+ SEC04, AT = 188.49555    ;
+ SEC05, AT = 251.3274     ;
+ SEC06, AT = 314.15925    ;
+ SEC07, AT = 376.9911     ;
+ SEC08, AT = 439.82295    ;
+ SEC09, AT = 502.6548     ;
+ SEC00, AT = 565.48665    ;
+ENDSEQUENCE;
+
+return;
+

@@ -1,0 +1,15 @@
+executable              = /afs/cern.ch/user/m/mad/bin/madx
+arguments               = $Fnx(filename)
+output                  = $Fn(filename).out
+error                   = $Fn(filename).err
+log                     = job.$(ClusterId).$(ProcId).log
+initial_dir             = $Fp(filename)
+transfer_input_files    = $Fnx(filename), $Fn(filename).str, $Fn(filename).beam, ../../../ps_mu.seq, ../../../ps_ss.seq, ../../../_scripts/macros.madx
+transfer_output_files   = output/
++JobFlavour             = "espresso"
+notification            = Always
+notify_user             = alexander.huschauer@cern.ch
+queue filename matching (/afs/cern.ch/eng/acc-models/ps/2021/scenarios/*/*/*.madx_job)
+
+transfer_input_files    = $Fnx(filename), ../ps_mu.seq, ../ps_ss.seq
+queue filename matching (/afs/cern.ch/eng/acc-models/ps/2021/survey/*.madx_job)

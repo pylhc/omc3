@@ -389,8 +389,6 @@ class Lhc(Accelerator):
         high_beta = False
         madx_script = (
             f"{self._get_madx_script_info_comments()}"
-            f"! ----- Calling Sequence and Optics -----\n"
-            f"option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
         )
@@ -402,14 +400,18 @@ class Lhc(Accelerator):
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
 
-        madx_script += (
-            f"{self.load_main_seq_madx()}\n" f"exec, define_nominal_beams();\n"
-        )
+        madx_script += "! ----- Calling Sequence and Optics -----\n"
+        madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
+        madx_script += self.load_main_seq_madx()
+        madx_script += "\n\n"
+
         if self.modifiers is not None:
             madx_script += "".join(
                 f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
                 for modifier in self.modifiers
             )
+
+        madx_script += "exec, define_nominal_beams();\n\n"
 
         model_year = 100000000
         try:

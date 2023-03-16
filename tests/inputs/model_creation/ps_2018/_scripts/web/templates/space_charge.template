@@ -1,0 +1,28 @@
+<h1> PS lattice for space charge simulations </h1>
+
+In general, PyORBIT space charge simulations using the PS lattice can be very time consuming. 
+It is therefore advisable to include only as few elements as required in the lattice, while removing all the others using the MAD-X SEQEDIT command. On this page a MAD-X example is presented, which allows to remove all auxiliary elements from the ring apart from the low-energy quadrupoles, one 10 MHz cavity and the wire scanners.
+Based on the needs of a given study, additional elements can be included in the lattice by commenting the respective line in the file *remove_elements.seq*. 
+
+The MAD-X example furthermore includes the possibility to cycle the sequence and to create a PTC flat file for simulations in PyORBIT.
+
+??? "MAD-X example script to remove elements- [direct download]({{ ps_sc }})"
+{{ ps_sc_content | indent(8, True) }}
+
+??? "SEQEDIT script - [direct download]({{ seqedit }})"
+{{ seqedit_content | indent(8, True) }}
+
+??? "PTC script to print flat file - [direct download]({{ ptc_flat }})"
+{{ ptc_flat_content | indent(8, True) }}
+
+??? "MAD-X strength file - [direct download]({{ ps_fb_lhc_rel_path }})"
+{{ ps_fb_lhc_content | indent(8, True)}}
+
+??? "MAD-X sequence of straight section elements - [direct download](../../{{ ps_ss_seq }})"
+{{ ps_ss_content | indent(8, True)}}
+
+??? "MAD-X sequence of main units - [direct download](../../{{ ps_mu_seq }})"
+{{ ps_mu_content | indent(8, True)}}
+
+??? "MAD-X strength definition - [direct download](../../{{ ps_str }})"
+{{ ps_str_content | indent(8, True)}}

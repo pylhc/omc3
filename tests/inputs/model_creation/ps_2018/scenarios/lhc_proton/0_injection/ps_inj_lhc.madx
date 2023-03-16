@@ -1,0 +1,37 @@
+/**********************************************************************************
+*
+* MAD-X input script for the injection optics of the LHC cycle with low-chromaticity 
+* setup.
+* 17/10/2019 - Alexander Huschauer
+************************************************************************************/
+ 
+/******************************************************************
+ * Energy and particle type definition
+ ******************************************************************/
+
+BEAM, PARTICLE=PROTON, PC = 2.14;
+BRHO      := BEAM->PC * 3.3356;
+
+/******************************************************************
+ * Call lattice files
+ ******************************************************************/
+
+call, file="../../../ps_mu.seq";
+call, file="../../../ps_ss.seq";
+call, file="../../../ps.str";
+call, file="./ps_inj_lhc.str";
+call, file="../../../macros.ptc";
+
+/**********************************************************************************
+ * PTC Twiss
+***********************************************************************************/
+
+use, sequence=PS;
+exec, ptc_twiss_macro(2,0,0);
+exec, write_ptc_twiss("ps_inj_lhc.tfs");
+
+stop;
+
+! obtain smooth optics functions by slicing the elements
+exec, ptc_twiss_macro(2,0,1);
+exec, write_ptc_twiss("ps_inj_lhc_interpolated.tfs");

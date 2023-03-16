@@ -1,0 +1,19 @@
+---
+template: overrides/main.html
+---
+
+<h1> Publications </h1>
+
+Important publications related to the PS are centralized on this webpage.
+
+{% for title in bibliography['Title'].unique() %}
+<h2>{{ title }}</h2>
+{% for idx, row in bibliography[bibliography['Title'] == title].iterrows() %}
+- {{ row['item']}}
+{% endfor %}
+{% endfor %}
+
+
+
+
+

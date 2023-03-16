@@ -1,0 +1,649 @@
+ptc_twiss_macro(order, dp, slice_flag): macro={
+  ptc_create_universe;
+  ptc_create_layout, time=false, model=2, exact=true, method=6, nst=3;
+  !ptc_setswitch, debuglevel=0, nocavity=false, fringe=true, exact_mis=true, time=false, totalpath=true;
+  !PTC_ALIGN; 
+  IF (slice_flag == 1){
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,keyword,s,l,x,px,beta11,beta22,mu1,mu2,disp1,k1l;
+    ptc_twiss, closed_orbit, icase=56, no=order, deltap=dp, table=ptc_twiss, summary_table=ptc_twiss_summary, slice_magnets=true;
+  }
+  ELSE{
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,keyword,s,x,px,beta11,alfa11,beta22,alfa22,disp1,disp2,mu1,mu2,energy,l,angle,K1L,K2L,K3L,HKICK,SLOT_ID;    
+    ptc_twiss, closed_orbit, icase=56, no=order, deltap=dp, table=ptc_twiss, summary_table=ptc_twiss_summary, normal;
+  }
+  ptc_end;
+};
+
+match_tunes(QX, QY): macro={
+  MATCH,sequence = psb1;
+   vary, NAME = kBRQF, step = 0.0001;
+   vary, NAME = kBRQD, step = 0.0001;
+   constraint, range=#E, MUX=QX, MUY=QY;
+   lmdif, calls = 10000, tolerance = 1.0E-21;
+  ENDMATCH;
+};
+
+write_ptc_twiss(filename) : macro = {
+  write, table=ptc_twiss, file=filename;
+};
+
+unassign_KSW_BSW: macros = {
+
+  kbi1ksw1l4  = 0;
+  kbi1ksw2l1  = 0;
+  kbi1ksw16l1 = 0;
+  kbi1ksw16l4 = 0;
+
+  k0bi1bsw1l11 = 0; 
+  k0bi1bsw1l12 = 0; 
+  k0bi1bsw1l13 = 0; 
+  k0bi1bsw1l14 = 0;  
+
+  k2bi1bsw1l11 = 0; 
+  k2bi1bsw1l12 = 0; 
+  k2bi1bsw1l13 = 0; 
+  k2bi1bsw1l14 = 0;   
+
+}
+
+unassign_BSW_strength: macros = {
+
+  k0bi1bsw1l11 = 0; 
+  k0bi1bsw1l12 = 0; 
+  k0bi1bsw1l13 = 0; 
+  k0bi1bsw1l14 = 0;  
+
+  k2bi1bsw1l11 = 0; 
+  k2bi1bsw1l12 = 0; 
+  k2bi1bsw1l13 = 0; 
+  k2bi1bsw1l14 = 0;   
+
+}
+
+assign_BSW_strength: macro = {
+
+  k0BI1BSW1L11 :=  bsw_k0l / BI1.BSW1L1.1->L;
+  k0BI1BSW1L12 := -bsw_k0l / BI1.BSW1L1.2->L;
+  k0BI1BSW1L13 := -bsw_k0l / BI1.BSW1L1.3->L;
+  k0BI1BSW1L14 :=  bsw_k0l / BI1.BSW1L1.4->L;
+
+  k2BI1BSW1L11 :=  bsw_k2l / BI1.BSW1L1.1->L;
+  k2BI1BSW1L12 := -bsw_k2l / BI1.BSW1L1.2->L;
+  k2BI1BSW1L13 := -bsw_k2l / BI1.BSW1L1.3->L;
+  k2BI1BSW1L14 :=  bsw_k2l / BI1.BSW1L1.4->L;
+
+ };
+
+assign_BSW_alignment: macro = {
+  SELECT,FLAG=ERROR,CLEAR;
+  SELECT,FLAG=ERROR,PATTERN=BI1.BSW1L1.1;
+  EALIGN, DX=-0.0057;
+
+  SELECT,FLAG=ERROR,CLEAR;
+  SELECT,FLAG=ERROR,PATTERN=BI1.BSW1L1.2;
+  SELECT,FLAG=ERROR,PATTERN=BI1.BSW1L1.3;
+  SELECT,FLAG=ERROR,PATTERN=BI1.BSW1L1.4;
+  EALIGN, DX=-0.0442;
+};
+
+assign_KSW_strength: macro = {
+
+  ksw_factor := 1.0;
+  kBI1KSW1L4 := KSW1L4 * ksw_factor;
+  kBI1KSW2L1 := KSW2L1 * ksw_factor;
+  kBI1KSW16L1 := KSW16L1 * ksw_factor;
+  kBI1KSW16L4 := KSW16L4 * ksw_factor;
+
+};
+
+/******************************************************************
+ * KSW bump 
+******************************************************************/
+
+ksw_knob_factors(): macro = {
+
+  dkBI1KSW1L4_x  = kBI1KSW1L4  / (-35.);
+  dkBI1KSW2L1_x  = kBI1KSW2L1  / (-35.);
+  dkBI1KSW16L1_x = kBI1KSW16L1 / (-35.);
+  dkBI1KSW16L4_x = kBI1KSW16L4 / (-35.);
+
+};
+
+/******************************************************************
+ * Extraction bump 
+******************************************************************/
+
+match_bebsw_bump(dx, dpx, compute_x_knob, compute_px_knob) : macro = {
+
+  IF (compute_x_knob == 1 || compute_px_knob == 1) {
+    twiss;
+    x0 = table(twiss, BE1.SMH15L1, x);    
+    px0 = table(twiss, BE1.SMH15L1, px);
+  }
+
+  match, sequence=psb1;
+  vary,name=kBEBSW14L4, step=0.00001; 
+  vary,name=kBEBSW15L1, step=0.00001; 
+  vary,name=kBEBSW15L4, step=0.00001; 
+  IF (compute_x_knob == 0 && compute_px_knob == 0) {
+  ! nominal bump amplitude is based on operational currents
+    constraint, range=BE1.SMH15L1, x = -0.0167 + dx;
+    constraint, range=BR.QFO152, x = 0.0, px = 0.0;
+  }
+  ELSEIF (compute_x_knob == 1) {
+    constraint, range=BE1.SMH15L1, x = -0.0167 + dx, px = px0;
+    constraint, range=BR.BHZ11/BR.BHZ91, x > -1E-3, x < 1E-3;
+  }
+  ELSEIF (compute_px_knob == 1) {
+    constraint, range=BE1.SMH15L1, x = -0.0167 + dx, px = px0 + dpx;
+    constraint, range=BR.BHZ11/BR.BHZ91, x > -5E-3, x < 5E-3;
+  }  Jacobian, calls=50000, tolerance=1.0e-25;
+  endmatch;
+
+};
+
+bebsw_knob_factors(): macro = {
+  
+  kBEBSW14L4_0 = kBEBSW14L4; 
+  kBEBSW15L1_0 = kBEBSW15L1;
+  kBEBSW15L4_0 = kBEBSW15L4;
+
+  dx  = 1E-3;
+  dpx = 1E-4;
+
+  exec, match_bebsw_bump(dx, 0., 1, 0);
+
+  dkBEBSW14L4_x = (kBEBSW14L4 - kBEBSW14L4_0) / dx * 1E-3;
+  dkBEBSW15L1_x = (kBEBSW15L1 - kBEBSW15L1_0) / dx * 1E-3;
+  dkBEBSW15L4_x = (kBEBSW15L4 - kBEBSW15L4_0) / dx * 1E-3;
+
+  exec, match_bebsw_bump(0., dpx, 0, 1);
+
+  dkBEBSW14L4_px = (kBEBSW14L4 - kBEBSW14L4_0) / dpx * 1E-6;
+  dkBEBSW15L1_px = (kBEBSW15L1 - kBEBSW15L1_0) / dpx * 1E-6;
+  dkBEBSW15L4_px = (kBEBSW15L4 - kBEBSW15L4_0) / dpx * 1E-6;
+
+  bebsw_x_mm = 0;
+  bebsw_px_urad = 0;
+
+  exec, bebsw_knob;
+
+};
+
+bebsw_knob(): macro = {
+  
+  kBEBSW14L4 := kBEBSW14L4_0 + dkBEBSW14L4_x * bebsw_x_mm + dkBEBSW14L4_px * bebsw_px_urad;
+  kBEBSW15L1 := kBEBSW15L1_0 + dkBEBSW15L1_x * bebsw_x_mm + dkBEBSW15L1_px * bebsw_px_urad;
+  kBEBSW15L4 := kBEBSW15L4_0 + dkBEBSW15L4_x * bebsw_x_mm + dkBEBSW15L4_px * bebsw_px_urad;
+
+};
+
+absolute_bebsw_bump_knob(): macro = {
+
+  match, sequence=psb1;
+  vary,name=kBEBSW14L4, step=0.00001; 
+  vary,name=kBEBSW15L1, step=0.00001; 
+  vary,name=kBEBSW15L4, step=0.00001; 
+  ! nominal bump amplitude is based on operational currents
+  constraint, range=BE1.SMH15L1, x = -0.0167;
+  Jacobian, calls=50000, tolerance=1.0e-25;
+  endmatch;
+
+  dkBEBSW14L4_x = kBEBSW14L4 / (-16.7);
+  dkBEBSW15L1_x = kBEBSW15L1 / (-16.7);
+  dkBEBSW15L4_x = kBEBSW15L4 / (-16.7);
+
+};
+
+/******************************************************************
+ * Correction bumps on top of the extraction bump 
+******************************************************************/
+
+match_bedhzdvt_bump(x0, px0, dxy, dpxy) : macro = {
+
+  match, sequence=psb1;
+  vary,name=kBE1DHZ4L1, step=0.00001; 
+  vary,name=kBE1DHZ11L1, step=0.00001; 
+  vary,name=kBE1DVT4L1, step=0.00001; 
+  vary,name=kBE1DVT11L1, step=0.00001;   
+  IF (dxy <> 0.) {
+    constraint, range=BE1.SMH15L1, x = x0 + dxy, px = px0;
+    constraint, range=BE1.SMH15L1, y = dxy, py = 0.;
+  }
+  ELSEIF (dpxy <> 0.) {
+    constraint, range=BE1.SMH15L1, x = x0, px = px0 + dpxy;
+    constraint, range=BE1.SMH15L1, y = 0., py = dpxy;
+  }
+  Jacobian, calls=50000, tolerance=1.0e-25;
+  endmatch;
+
+};
+
+bedhzdvt_knob_factors(): macro = {
+  
+  twiss;
+  x0  = table(twiss, BE1.SMH15L1, x);    
+  px0 = table(twiss, BE1.SMH15L1, px);
+
+  dxy  = 1E-3;
+  dpxy = 1E-4;
+
+  exec, match_bedhzdvt_bump(x0, px0, dxy, 0.);
+
+  dkBE1DHZ4L1_x  = kBE1DHZ4L1  / dxy * 1E-3;
+  dkBE1DHZ11L1_x = kBE1DHZ11L1 / dxy * 1E-3;
+
+  dkBE1DVT4L1_y  = kBE1DVT4L1  / dxy * 1E-3;
+  dkBE1DVT11L1_y = kBE1DVT11L1 / dxy * 1E-3;
+
+  exec, match_bedhzdvt_bump(x0, px0, 0., dpxy);
+
+  dkBE1DHZ4L1_px  = kBE1DHZ4L1  / dpxy * 1E-6;
+  dkBE1DHZ11L1_px = kBE1DHZ11L1 / dpxy * 1E-6;
+
+  dkBE1DVT4L1_py  = kBE1DVT4L1  / dpxy * 1E-6;
+  dkBE1DVT11L1_py = kBE1DVT11L1 / dpxy * 1E-6;
+
+  bedhz_x_mm = 0;
+  bedhz_px_urad = 0;
+
+  bedvt_y_mm = 0;
+  bedvt_py_urad = 0;
+
+  exec, bedhzdvt_knob;
+
+};
+
+bedhzdvt_knob(): macro = {
+  
+  kBE1DHZ4L1  := dkBE1DHZ4L1_x  * bedhz_x_mm + dkBE1DHZ4L1_px  * bedhz_px_urad;
+  kBE1DHZ11L1 := dkBE1DHZ11L1_x * bedhz_x_mm + dkBE1DHZ11L1_px * bedhz_px_urad;
+
+  kBE1DVT4L1  := dkBE1DVT4L1_y  * bedvt_y_mm + dkBE1DVT4L1_py  * bedvt_py_urad;
+  kBE1DVT11L1 := dkBE1DVT11L1_y * bedvt_y_mm + dkBE1DVT11L1_py * bedvt_py_urad;
+
+};
+
+/******************************************************************
+ * Shaver bumps
+******************************************************************/
+
+shaver_bump_knob_factors(): macro = {
+
+  kbr1dshahL4 = 0.001;
+  kbr1dshavL4 = 0.001;
+
+  twiss;
+
+  x_shah = table(twiss,br1.tsab8l4,x);
+  y_shav = table(twiss,br1.tsab8l4,y);  
+
+  dkbr1dshahL4 = 1.E-3 * kbr1dshahL4 / x_shah;
+  dkbr1dshavL4 = 1.E-3 * kbr1dshavL4 / y_shav;
+
+  shaverr1_x_mm = 0;
+  shaverr1_y_mm = 0;
+
+  exec, shaver_bump_knobs();
+};
+
+shaver_bump_knobs(): macro = {
+  
+  kbr1dshahL4 := dkbr1dshahL4 * shaverr1_x_mm;
+  kbr1dshavL4 := dkbr1dshavL4 * shaverr1_y_mm;
+
+};
+
+/******************************************************************
+ * Tune control
+******************************************************************/
+
+ tune_control(Qxmin, Qymin, Qxmax, Qymax, dQ, filename): macro = {
+  Qx = Qxmin;
+  while (Qx < Qxmax){
+    Qy = Qymin;
+      while (Qy < Qymax){
+
+      value, Qx, Qy;
+
+      use, sequence=psb1;
+      MATCH,sequence=psb1;
+       vary, NAME=kBRQF, step = 0.0001;
+       vary, NAME=kBRQD, step = 0.0001;
+       constraint, range=#E, MUX=Qx, MUY=Qy;
+       lmdif, calls = 10000, tolerance = 1.0E-21;
+      ENDMATCH;
+
+      twiss, table=mytwiss;
+
+      if (q1>0){
+
+            /******************************************************************
+            * Knobs for bump at the shavers
+            ******************************************************************/
+
+            exec, shaver_bump_knob_factors();
+
+            exec, shaver_bump_knobs();
+
+            !if (q1 > 4.16 && q1 < 4.24) {
+
+              !if (q2 > 4.19 && q2 < 4.27) {
+
+                /******************************************************************
+                * Extraction bump
+                ******************************************************************/
+
+                !exec, match_bebsw_bump(0., 0., 0, 0);
+
+                !exec, bebsw_knob_factors();
+
+                !exec, bedhzdvt_knob_factors();
+
+                !}
+
+            !}
+
+            fill, table = mytable;
+            write, table = mytable, file = filename;
+            value, Qx, Qy, dkbr1dshahL4, dkbr1dshavL4;
+
+          };
+
+          !kBEBSW14L4 = 0.;
+          !kBEBSW15L1 = 0.;
+          !kBEBSW15L4 = 0.;
+          !kBEBSW14L4_0 = 0.;
+          !kBEBSW15L1_0 = 0.;
+          !kBEBSW15L4_0 = 0.;
+          !dkBEBSW14L4_x = 0.; 
+          !dkBEBSW15L1_x = 0.; 
+          !dkBEBSW15L4_x = 0.; 
+          !dkBEBSW14L4_px = 0.; 
+          !dkBEBSW15L1_px = 0.; 
+          !dkBEBSW15L4_px = 0.; 
+          !dkBE1DHZ4L1_x = 0.;
+          !dkBE1DHZ11L1_x = 0.;
+          !dkBE1DHZ4L1_px = 0.;
+          !dkBE1DHZ11L1_px = 0.;
+          !dkBE1DVT4L1_y = 0.;
+          !dkBE1DVT11L1_y = 0.;
+          !dkBE1DVT4L1_py = 0.;
+          !dkBE1DVT11L1_py = 0.;
+
+          Qy = Qy + dQ;
+    };
+      Qx = Qx + dQ; 
+  };
+};
+
+/******************************************************************
+ * Tune control injection optics
+******************************************************************/
+
+install_beta_beat_marker: macro = {
+  seqedit, sequence=psb1;
+    matchingmarker: marker;
+      flatten;
+      install, element= matchingmarker, at = 1.32695+BR.BHZ82->L/2, from=BR.BHZ82;
+      flatten;
+  endedit;
+};
+
+match_reference_ksw_factor: macro = {
+  Qx = 4.28;
+  Qy = 4.45;
+
+  kBRQD3CORR = 0;
+  kBRQD14CORR = 0;
+
+  exec, unassign_KSW_BSW;
+
+  use, sequence = psb1;
+  exec, match_tunes(Qx, Qy);
+
+  exec, assign_KSW_strength;
+
+  MATCH, USE_MACRO;
+    VARY, NAME = kBRQF, STEP = 1e-6;
+    VARY, NAME = kBRQD, STEP = 1e-6;
+    VARY, NAME = KSW1L4,  STEP=1.E-8, UPPER= 0.002;
+    VARY, NAME = KSW2L1,  STEP=1.E-8, UPPER= 0.00665;
+    VARY, NAME = KSW16L1, STEP=1.E-8, UPPER= 0.00665;
+    VARY, NAME = KSW16L4, STEP=1.E-8, UPPER= 0.002;
+    USE_MACRO, name = ptc_twiss_macro(2,0,0);
+    CONSTRAINT, EXPR = Table(ptc_twiss, PSB1$END, MU1) = Qx;
+    CONSTRAINT, EXPR = Table(ptc_twiss, PSB1$END, MU2) = Qy;
+    CONSTRAINT, EXPR = Table(ptc_twiss, BI1.TSTR1L1, X) = -0.035;
+    CONSTRAINT, EXPR = Table(ptc_twiss, BI1.TSTR1L1, PX) = 0.00;
+    CONSTRAINT, EXPR = Table(ptc_twiss, BR.BHZ21, X) = 0.00;
+    CONSTRAINT, EXPR = Table(ptc_twiss, BR.BHZ21, PX) = 0.00;
+    jacobian, calls=50000, bisec=3, tolerance=1e-15;
+  ENDMATCH; 
+};
+
+extract_optics_at_marker: macro = {
+
+  MATCH, USE_MACRO;
+  VARY, NAME = kBRQF, STEP = 1e-6;
+  VARY, NAME = kBRQD, STEP = 1e-6;
+  USE_MACRO, name = ptc_twiss_macro(2,0,0);
+  CONSTRAINT, EXPR=Table(ptc_twiss, PSB1$END, MU1) = Qx;
+  CONSTRAINT, EXPR=Table(ptc_twiss, PSB1$END, MU2) = Qy;
+  jacobian, calls=50000, bisec=3, tolerance=1e-15;
+  ENDMATCH; 
+
+  exec, ptc_twiss_macro(2,0,0);
+  bety_target = Table(ptc_twiss, matchingmarker, BETA22);
+  alfy_target = Table(ptc_twiss, matchingmarker, ALFA22);
+
+};
+
+match_ksw_factor: macro = {
+
+  MATCH, USE_MACRO;
+    VARY, NAME = kBRQF, STEP = 1e-6;
+    VARY, NAME = kBRQD, STEP = 1e-6;
+    VARY, NAME = ksw_factor, STEP = 1.E-8;
+    USE_MACRO, name = ptc_twiss_macro(2,0,0);
+    CONSTRAINT, EXPR = Table(ptc_twiss, PSB1$END, MU1) = Qx;
+    CONSTRAINT, EXPR = Table(ptc_twiss, PSB1$END, MU2) = Qy;
+    CONSTRAINT, EXPR = Table(ptc_twiss, BI1.TSTR1L1, X) = -0.035;
+    jacobian, calls=50000, bisec=3, tolerance=1e-18;
+  ENDMATCH;
+
+};
+
+activate_BSW_correct_beta_beat: macro = {
+
+  exec, assign_BSW_strength;
+  exec, assign_BSW_alignment;
+
+   MATCH, USE_MACRO;
+    VARY, NAME = kBRQD3CORR,  STEP = 1e-6;
+    VARY, NAME = kBRQD14CORR, STEP = 1e-6;
+    VARY, NAME = kBRQF, STEP = 1e-6;
+    VARY, NAME = kBRQD, STEP = 1e-6;  
+    USE_MACRO, name = ptc_twiss_macro(2,0,0);
+    Constraint, EXPR = Table(ptc_twiss, matchingmarker, BETA22) = bety_target;
+    Constraint, EXPR = Table(ptc_twiss, matchingmarker, ALFA22) = alfy_target;
+    CONSTRAINT, EXPR = Table(ptc_twiss, PSB1$END, MU1) = Qx;
+    CONSTRAINT, EXPR = Table(ptc_twiss, PSB1$END, MU2) = Qy;
+    jacobian, calls=50000, bisec=3, tolerance=1e-18;
+   ENDMATCH;
+
+};
+
+
+/******************************************************************
+ * Writing strengths and knobs to file
+******************************************************************/
+
+write_str_file(filename): macro = {
+  assign, echo = filename;
+  print, text = "/**********************************************************************************";
+  print, text = "*                             MAIN QUADRUPOLES";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, kBRQF, kBRQD;
+  print, text = "";
+  !IF (kBI1KSW1L4 <> 0.) {
+  print, text = "/**********************************************************************************";
+  print, text = "*                             INJECTION BUMP";
+  print, text = "***********************************************************************************/";  
+  print,  text = "";
+  value, bsw_k0l, bsw_k2l;
+  i = 1;
+  while (i < 5){
+    print,  text = "";      
+    print,  text = "!-------------------------------------------------";      
+    printf,  text = "! Ring %.0g", value = i;      
+    print,  text = "!-------------------------------------------------";
+    print,  text = "";
+    printf, text = "kbi%.0gksw1l4         = %F ;", value = i, kbi1ksw1l4;
+    printf, text = "kbi%.0gksw2l1         = %F ;", value = i, kbi1ksw2l1;
+    printf, text = "kbi%.0gksw16l1        = %F ;", value = i, kbi1ksw16l1;
+    printf, text = "kbi%.0gksw16l4        = %F ;", value = i, kbi1ksw16l4;   
+    print,  text = "";
+    printf, text = "k0bi%.0gbsw1l11       = %F ;", value = i, k0bi1bsw1l11;
+    printf, text = "k0bi%.0gbsw1l12       = %F ;", value = i, k0bi1bsw1l12;
+    printf, text = "k0bi%.0gbsw1l13       = %F ;", value = i, k0bi1bsw1l13;
+    printf, text = "k0bi%.0gbsw1l14       = %F ;", value = i, k0bi1bsw1l14;    
+    print,  text = "";    
+    i = i + 1;         
+  }
+  print, text = "/**********************************************************************************";
+  print, text = "*                             BETA-BEATING CORRECTION";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, kBRQD3CORR, kBRQD14CORR;
+  print, text = "";
+  !}
+  !IF (kBEBSW14L4 <> 0.) {  
+  print, text = "/**********************************************************************************";
+  print, text = "*                             EXTRACTION BUMP";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, kBEBSW14L4, kBEBSW15L1, kBEBSW15L4;
+  print, text = "";
+  !}
+  print, text = "/**********************************************************************************";
+  print, text = "*                                   KNOBS";
+  print, text = "***********************************************************************************/";
+
+  IF (dkBE1DHZ4L1_x <> 0.) {
+    print,  text = "";      
+    print,  text = "!-------------------------------------------------";      
+    print,  text = "! Common to all rings";      
+    print,  text = "!-------------------------------------------------";   
+  }
+  
+  /*
+  IF (dkBEBSW14L4_x <> 0.) {
+    print,  text = "";      
+    print,  text = "! Extraction bump";      
+    print,  text = "";      
+    print, text = "bebsw_x_mm         =         0.0000000000 ;";
+    print, text = "bebsw_px_urad      =         0.0000000000 ;";
+    print,  text = "";      
+    printf, text = "dkbebsw14L4_x      = %F ;", value = dkBEBSW14L4_x;
+    printf, text = "dkbebsw15L1_x      = %F ;", value = dkBEBSW15L1_x;
+    printf, text = "dkbebsw15L4_x      = %F ;", value = dkBEBSW15L4_x;
+    print,  text = "";      
+    printf, text = "dkbebsw14L4_px     = %F ;", value = dkBEBSW14L4_px;
+    printf, text = "dkbebsw15L1_px     = %F ;", value = dkBEBSW15L1_px;
+    printf, text = "dkbebsw15L4_px     = %F ;", value = dkBEBSW15L4_px;
+    print,  text = "";      
+    printf, text = "kbebsw14l4 := %F + dkbebsw14L4_x * bebsw_x_mm + dkbebsw14L4_px * bebsw_px_urad;", value = kBEBSW14L4_0;
+    printf, text = "kbebsw15l1 := %F + dkbebsw15L1_x * bebsw_x_mm + dkbebsw15L1_px * bebsw_px_urad;", value = kBEBSW15L1_0;
+    printf, text = "kbebsw15l4 := %F + dkbebsw15L4_x * bebsw_x_mm + dkbebsw15L4_px * bebsw_px_urad;", value = kBEBSW15L4_0;
+  } 
+  */
+
+  IF (dkBEBSW14L4_x <> 0.) {
+    print,  text = "";      
+    print,  text = "! Extraction bump knob using the absoute position";      
+    print,  text = "";  
+    print,  text = "bebsw_x_mm         =         -16.7000000000 ;";
+    print,  text = "";      
+    printf, text = "dkbebsw14L4_x      = %F ;", value = dkBEBSW14L4_x;
+    printf, text = "dkbebsw15L1_x      = %F ;", value = dkBEBSW15L1_x;
+    printf, text = "dkbebsw15L4_x      = %F ;", value = dkBEBSW15L4_x;  
+    print,  text = "";      
+    print, text = "kbebsw14l4 := dkbebsw14L4_x * bebsw_x_mm;";
+    print, text = "kbebsw15l1 := dkbebsw15L1_x * bebsw_x_mm;";
+    print, text = "kbebsw15l4 := dkbebsw15L4_x * bebsw_x_mm;";
+  }
+
+  IF (dkbr1dshahL4 <> 0. || dkBE1DHZ4L1_x <> 0.) {
+    i = 1;
+    while (i < 5){
+        print,  text = "";      
+        print,  text = "!-------------------------------------------------";      
+        printf,  text = "! Ring %.0g", value = i;      
+        print,  text = "!-------------------------------------------------";      
+
+        IF (dkBI1KSW1L4_x <> 0. ) {
+          print,  text = "";  
+          print,  text = "! KSW bump";      
+          print,  text = "";                 
+          printf, text = "bi%.0gksw_x_mm       =         -35.00000000 ;", value = i;
+          print,  text = "";      
+          printf, text = "dkbi%.0gksw1l4_x     = %F ;", value = i, dkBI1KSW1L4_x;
+          printf, text = "dkbi%.0gksw2l1_x     = %F ;", value = i, dkBI1KSW2L1_x;
+          printf, text = "dkbi%.0gksw16l1_x    = %F ;", value = i, dkBI1KSW16L1_x;
+          printf, text = "dkbi%.0gksw16l4_x    = %F ;", value = i, dkBI1KSW16L4_x;
+          print,  text = "";      
+          printf, text = "kbi%.0gksw1l4  := dkbi%.0gksw1l4_x * bi%.0gksw_x_mm;", value = i,i,i;
+          printf, text = "kbi%.0gksw2l1  := dkbi%.0gksw2l1_x * bi%.0gksw_x_mm;", value = i,i,i;
+          printf, text = "kbi%.0gksw16l1 := dkbi%.0gksw16l1_x * bi%.0gksw_x_mm;", value = i,i,i;
+          printf, text = "kbi%.0gksw16l4 := dkbi%.0gksw16l4_x * bi%.0gksw_x_mm;", value = i,i,i;        
+        }
+        
+        IF (dkbr1dshahL4 <> 0. ) {
+          print,  text = "";  
+          print,  text = "! Shaver bumps";      
+          print,  text = "";                 
+          printf, text = "shaverr%.0g_x_mm      =         0.0000000000 ;", value = i;
+          printf, text = "shaverr%.0g_y_mm      =         0.0000000000 ;", value = i;
+          print,  text = "";      
+          printf, text = "dkbr%.0gdshahl4       = %F ;", value = i, dkbr1dshahL4;
+          printf, text = "dkbr%.0gdshavl4       = %F ;", value = i, dkbr1dshavL4;
+          print,  text = "";      
+          printf, text = "kbr%.0gdshahl4 := dkbr%.0gdshahl4 * shaverr%.0g_x_mm ;", value = i,i,i;
+          printf, text = "kbr%.0gdshavl4 := dkbr%.0gdshavl4 * shaverr%.0g_y_mm ;", value = i,i,i;
+        
+        }
+
+        IF (dkBE1DHZ4L1_x <> 0. ) {
+          print,  text = "";  
+          print,  text = "! Extraction bump correction";      
+          print,  text = "";                 
+          printf, text = "be%.0gdhz_x_mm        =         0.0000000000 ;", value = i;
+          printf, text = "be%.0gdvt_y_mm        =         0.0000000000 ;", value = i;
+          printf, text = "be%.0gdhz_px_urad     =         0.0000000000 ;", value = i;
+          printf, text = "be%.0gdvt_py_urad     =         0.0000000000 ;", value = i;
+          print,  text = "";      
+          printf, text = "dkbe%.0gdhz4l1_x      = %F ;", value = i, dkBE1DHZ4L1_x;
+          printf, text = "dkbe%.0gdhz11l1_x     = %F ;", value = i, dkBE1DHZ11L1_x;
+          printf, text = "dkbe%.0gdhz4l1_px     = %F ;", value = i, dkBE1DHZ4L1_px;
+          printf, text = "dkbe%.0gdhz11l1_px    = %F ;", value = i, dkBE1DHZ11L1_px;
+          print,  text = "";      
+          printf, text = "dkbe%.0gdvt4l1_y      = %F ;", value = i, dkBE1DVT4L1_y;
+          printf, text = "dkbe%.0gdvt11l1_y     = %F ;", value = i, dkBE1DVT11L1_y;
+          printf, text = "dkbe%.0gdvt4l1_py     = %F ;", value = i, dkBE1DVT4L1_py;
+          printf, text = "dkbe%.0gdvt11l1_py    = %F ;", value = i, dkBE1DVT11L1_py;
+          print,  text = "";      
+          printf, text = "kbe%.0gdhz4l1   := dkbe%.0gdhz4l1_x  * be%.0gdhz_x_mm + dkbe%.0gdhz4l1_px  * be%.0gdhz_px_urad ;", value = i,i,i,i,i;
+          printf, text = "kbe%.0gdhz11l1  := dkbe%.0gdhz11l1_x * be%.0gdhz_x_mm + dkbe%.0gdhz11l1_px * be%.0gdhz_px_urad ;", value = i,i,i,i,i;
+          printf, text = "kbe%.0gdvt4l1   := dkbe%.0gdvt4l1_y  * be%.0gdvt_y_mm + dkbe%.0gdvt4l1_py  * be%.0gdvt_py_urad ;", value = i,i,i,i,i;
+          printf, text = "kbe%.0gdvt11l1  := dkbe%.0gdvt11l1_y * be%.0gdvt_y_mm + dkbe%.0gdvt11l1_py * be%.0gdvt_py_urad ;", value = i,i,i,i,i;
+        }
+
+        i = i + 1;
+    };
+  };       
+  assign, echo = terminal;
+};

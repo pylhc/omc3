@@ -1,0 +1,10 @@
+pandas
+numpy
+matplotlib
+datetime
+scipy
+jinja2
+pyyaml
+tfs-pandas
+bokeh
+httpimport

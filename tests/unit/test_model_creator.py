@@ -4,12 +4,13 @@ from pathlib import Path
 
 import pytest
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
-from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
+from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, PATHFETCHER
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
 
 INPUTS = Path(__file__).parent.parent / "inputs"
+MODEL_CREATOR_INPUT = INPUTS / "model_creation"
 COMP_MODEL = INPUTS / "models" / "25cm_beam1"
 CODEBASE_PATH = Path(__file__).parent.parent.parent / "omc3"
 PS_MODEL = CODEBASE_PATH / "model" / "accelerators" / "ps"
@@ -26,6 +27,11 @@ def test_booster_creation_nominal_driven(tmp_path):
         dpp=0.0,
         energy=0.16,
         modifiers=None,
+        fetch=PATHFETCHER,
+        path=MODEL_CREATOR_INPUT / "psb",
+        scenario="lhc",
+        cycle_point="0_injection",
+        str_file="psb_inj_lhc.str",
     )
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -41,6 +47,11 @@ def test_booster_creation_nominal_free(tmp_path):
         dpp=0.0,
         energy=0.16,
         modifiers=None,
+        fetch=PATHFETCHER,
+        path=MODEL_CREATOR_INPUT / "psb",
+        scenario="lhc",
+        cycle_point="0_injection",
+        str_file="psb_inj_lhc.str",
     )
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -57,8 +68,13 @@ def test_ps_creation_nominal_driven_2018(tmp_path):
         driven_excitation="acd",
         dpp=0.0,
         energy=1.4,
-        year=2018,
-        modifiers=[PS_MODEL / "2018" / "strength" / "PS_LE_LHC_low_chroma.str"],
+        year="2018",
+        fetch=PATHFETCHER,
+        path=MODEL_CREATOR_INPUT / "ps_2018",
+        scenario="lhc_proton",
+        cycle_point="0_injection",
+        str_file="ps_inj_lhc.str",
+        tune_method="qf",
     )
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -73,8 +89,13 @@ def test_ps_creation_nominal_free_2018(tmp_path):
         nat_tunes=[6.32, 6.29],
         dpp=0.0,
         energy=1.4,
-        year=2018,
-        modifiers=[PS_MODEL / "2018" / "strength" / "PS_LE_LHC_low_chroma.str"],
+        year="2018",
+        fetch=PATHFETCHER,
+        path=MODEL_CREATOR_INPUT / "ps_2018",
+        scenario="lhc_proton",
+        cycle_point="0_injection",
+        str_file="ps_inj_lhc.str",
+        tune_method="qf",
     )
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -89,8 +110,13 @@ def test_ps_creation_nominal_free_2021(tmp_path):
         nat_tunes=[6.32, 6.29],
         dpp=0.0,
         energy=1.4,
-        year=2021,
-        modifiers=[PS_MODEL / "2021" / "strength" / "ps_fb_lhc.str"],
+        year="2021",
+        fetch=PATHFETCHER,
+        path=MODEL_CREATOR_INPUT / "ps",
+        scenario="lhc_proton",
+        cycle_point="0_injection",
+        str_file="ps_inj_lhc.str",
+        tune_method="qf",
     )
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -109,8 +135,8 @@ def test_lhc_creation_nominal_driven(tmp_path):
         drv_tunes=[0.298, 0.335],
         driven_excitation="acd",
         dpp=0.0,
-        energy=6.5,
-        modifiers=[COMP_MODEL / "opticsfile.24_ctpps2"],
+        energy=6500,
+        fetch=PATHFETCHER,
     )
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -132,8 +158,8 @@ def test_lhc_creation_use_ats_and_run3_macros(test_year, uses_ats, uses_run3):
         drv_tunes=[0.27, 0.332],
         driven_excitation="acd",
         dpp=0.0,
-        energy=6.5,
-        modifiers=[COMP_MODEL / "opticsfile.24_ctpps2"],
+        energy=6500,
+        fetch=PATHFETCHER,
     )
     accel = get_accelerator(**accel_opt)
     assert accel._uses_ats_knobs() is uses_ats
@@ -187,6 +213,7 @@ def test_lhc_creation_relative_modifier_path(tmp_path):
         dpp=0.0,
         energy=6.5,
         modifiers=[Path("opticsfile.24_ctpps2")],
+        fetch=PATHFETCHER,
     )
     shutil.copy(COMP_MODEL / "opticsfile.24_ctpps2", tmp_path / "opticsfile.24_ctpps2")
 
@@ -207,6 +234,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path):
         dpp=0.0,
         energy=6.5,
         modifiers=[COMP_MODEL / "opticsfile.non_existent"],
+        fetch=PATHFETCHER,
     )
     with pytest.raises(FileNotFoundError) as creation_error:
         create_instance_and_model(
@@ -234,6 +262,7 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
         dpp=0.0,
         energy=6.5,
         modifiers=[optics_file_relpath],
+        fetch=PATHFETCHER,
     )
 
     # sometimes create_instance_and_model seems to run but does not create twiss-files ...

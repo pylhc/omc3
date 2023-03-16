@@ -43,8 +43,10 @@ def get_accelerator(opt, other_opt) -> Accelerator:
 
     if not isinstance(opt.accel, str):
         # if it's the class already, we just return it
+        print(f"returning instance: {opt.accel}\n opt: {opt} \n otheropt: {other_opt} ")
         return opt.accel
 
+    print(f"returning accelerator {opt.accel}\n opt: {opt} \n otheropt: {other_opt} ")
     return ACCELS[opt.accel](other_opt)
 
 

@@ -1,0 +1,83 @@
+ptc_twiss_macro(order, dp, slice_flag): macro = {
+  ptc_create_universe;
+  ptc_create_layout, time=false, model=2, exact=true, method=6, nst=3;
+  IF (slice_flag == 1){
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,keyword,s,l,x,px,beta11,beta22,disp1,k1l;
+    ptc_twiss, closed_orbit, icase=56, no=order, deltap=dp, table=ptc_twiss, summary_table=ptc_twiss_summary, slice_magnets=true;
+  }
+  ELSE{
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,keyword,s,x,px,beta11,alfa11,beta22,alfa22,disp1,disp2,mu1,mu2,energy,l,angle,K1L,K2L,K3L,HKICK,SLOT_ID;    
+    ptc_twiss, closed_orbit, icase=56, no=order, deltap=dp, table=ptc_twiss, summary_table=ptc_twiss_summary, normal;
+  }
+  ptc_end;
+};
+
+write_ptc_twiss(filename) : macro = {
+  write, table=ptc_twiss, file=filename;
+};
+
+ptc_twiss_MTE_macro(order, x1, x2, slice_flag): macro = {
+  ptc_create_universe;
+  ptc_create_layout, time=false, model=2, method=6, nst=3, exact=true;
+  IF (slice_flag == 1){
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,keyword,s,l,x,px,beta11,beta22,disp1,k1l;
+    ptc_twiss, closed_orbit, icase=56, no=order, table=ptc_twiss, summary_table=ptc_twiss_summary, x = x1, px = x2, slice_magnets=true;
+  }
+  ELSE{
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,keyword,s,x,px,beta11,alfa11,beta22,alfa22,disp1,disp2,mu1,mu2,energy,l,angle,K1L,K2L,K3L,HKICK,SLOT_ID;    
+    ptc_twiss, closed_orbit, icase=56, no=order, table=ptc_twiss, summary_table=ptc_twiss_summary, x = x1, px = x2;
+  }
+  ptc_end;
+};
+
+write_str_file(filename): macro = {
+  assign, echo = filename;
+  print, text = "/**********************************************************************************";
+  print, text = "*                             SBENDs and MULTIPOLES in MUs";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, K1_F, K1_D, K2_F, K2_D, MPK2, MPK2_J, MPK3_F, MPK3_D;
+  print, text = "";
+  print, text = "/**********************************************************************************";
+  print, text = "*                                    PFW and F8L";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, PFWK1_F, PFWK1_D, PFWK2_F, PFWK2_D, PFWK3_F, PFWK3_D, F8LK1;
+  print, text = "";
+  print, text = "/**********************************************************************************";
+  print, text = "*                                    Injection dipoles";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, BSW26;
+  value, BSW40, BSW42, BSW43, BSW44;
+  print, text = "";
+  print, text = "/**********************************************************************************";
+  print, text = "*                                    Extraction dipoles";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, BSW12, BSW14, BSW20, BSW22;
+  value, BSW23, BSW57;
+  print, text = ""; 
+  print, text = "/**********************************************************************************";
+  print, text = "*                                      Quadrupoles";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, KF, KD, kQSE, kQKE16;
+  print, text = "";
+  print, text = "/**********************************************************************************";
+  print, text = "*                                       Sextupoles";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, kXNO39, kXNO55, kXNO, kXSE1, kXSE2;
+  print, text = "";
+  print, text = "/**********************************************************************************";
+  print, text = "*                                       Octupoles";
+  print, text = "***********************************************************************************/";
+  print, text = "";
+  value, KONO39, KONO55, KODN;
+  assign, echo = terminal;
+};

@@ -1,0 +1,22 @@
+---
+template: overrides/main.html
+---
+
+<h1> PSB survey file </h1>
+
+On this page the MAD-X input scripts for the PSB survey and the survey file can be found. 
+Furthermore, the following interactive plot shows the coordinates of the individual elements and the survey output file is available below the plot.
+
+<span style="color:red">Disclaimer: The initial survey coordinates still need to be verified!</span>
+
+<object width="520px" height="520px" data="psb_survey.html"></object> 
+<p style="text-align: center;"><b>Figure 1:</b> Result of the MAD-X survey for the PSB. The shaded areas indicate the different periods and the lightest color corresponds to the first period.</p>
+
+??? "MAD-X output for PSB survey - [direct download]({{ psb_survey_tfs }})"
+{{ psb_survey_tfs_content | indent(8, True) }}
+
+??? "MAD-X example script for PSB survey - [direct download]({{ psb_survey }})"
+{{ psb_survey_content | indent(8, True) }}
+
+??? "MAD-X sequence file - [direct download](../../{{ branch }}/{{psb_seq}})"
+{{ psb_seq_content | indent(8, True)}}

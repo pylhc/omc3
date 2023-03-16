@@ -1,0 +1,111 @@
+system, "mkdir output";
+
+/**********************************************************************************
+*
+* MAD-X input script for the injection optics of the LHC cycle with low-chromaticity 
+* setup.
+* 30/03/2020 - Alexander Huschauer
+************************************************************************************/
+ 
+/******************************************************************
+ * Energy and particle type definition
+ ******************************************************************/
+
+call, file="ps_inj_lhc.beam";
+BRHO      := BEAM->PC * 3.3356;
+
+/******************************************************************
+ * Call lattice files
+ ******************************************************************/
+
+call, file="ps_mu.seq";
+call, file="ps_ss.seq";
+call, file="ps_inj_lhc.str";
+call, file="macros.madx";
+
+exec, unassign_LEQ;
+exec, unassign_BSW42;
+
+/**********************************************************************************
+ *                        Matching using the PFW
+ *
+ * Tune values based on measurement without LEQ along the flat bottom 
+ * recorded on 06.11.2018
+ * Values based on non-linear chromaticity measurement along the cycle 
+ * recorded on 01.11.2018
+***********************************************************************************/
+
+! Qx = 0.21122 + 0.73706*x + 49.71225*x^2
+Qx := 0.21122;
+Qxp := 0.73706;
+Qxp2 := 49.71225;
+
+! Qy = 0.32396 + -2.92869*x + 4.99208*x^2
+Qy := 0.32396;
+Qyp := -2.92869;
+Qyp2 := 4.99208;
+
+use, sequence=PS;
+match, use_macro;
+        vary, name = k1prpfwf;
+        vary, name = k1prpfwd;
+        vary, name = k2prpfwf;
+        vary, name = k2prpfwd;
+        use_macro, name = ptc_twiss_macro(2,0,0);
+        constraint, expr = table(ptc_twiss_summary,Q1)  = Qx;
+        constraint, expr = table(ptc_twiss_summary,Q2)  = Qy;
+        constraint, expr = table(ptc_twiss_summary,DQ1) = Qxp;
+        constraint, expr = table(ptc_twiss_summary,DQ2) = Qyp;
+jacobian,calls=50000,bisec=3,tolerance=1e-15;
+ENDMATCH;
+
+use, sequence=PS;
+match, use_macro;
+        vary, name = k3prpfwf;
+        vary, name = k3prpfwd;
+        use_macro, name = ptc_twiss_macro(3,0,0);
+        constraint, expr = table(nonlin,value,5)  = Qxp2;
+        constraint, expr = table(nonlin,value,10) = Qyp2;
+jacobian,calls=50000,bisec=3,tolerance=1e-15;
+ENDMATCH;
+
+/**********************************************************************************
+ *             Tune matching using the LEQ to standard working point
+***********************************************************************************/
+
+Qx := 0.210;
+Qy := 0.245;
+
+use, sequence=PS;
+exec, match_tunes_ptc(Qx, Qy);
+
+/**********************************************************************************
+* Low energy quadrupoles tune knobs
+***********************************************************************************/
+
+exec, tunes_leq_knob_factors(Qx, Qy);
+
+/**********************************************************************************
+ *                        Injection bump matching
+***********************************************************************************/
+
+use, sequence=ps;
+exec, match_bsw42_bump(0);
+
+/**********************************************************************************
+* Injection bump knobs
+***********************************************************************************/
+
+exec, bsw42_knob_factors(0);
+second_injection = 1;
+
+exec, write_str_file("./output/ps_inj_lhc.str");
+
+/**********************************************************************************
+ * PTC Twiss
+***********************************************************************************/
+
+! obtain smooth optics functions by slicing the elements
+use, sequence=PS;
+exec, ptc_twiss_macro(2,0,1);
+exec, write_ptc_twiss("./output/ps_inj_lhc.tfs");

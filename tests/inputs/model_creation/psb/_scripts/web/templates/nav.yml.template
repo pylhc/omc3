@@ -1,0 +1,10 @@
+        - {{ branch }}:
+            - Overview: psb/{{ branch }}/index.md
+            {% for idx, row in scenarios.iterrows() %}
+            - {{ row['label'] }}:
+                - Overview: psb/{{ branch }}/scenarios/{{ idx }}/index.md
+                {% for config in row['config_list'] -%}
+                {% set conf = row['configs'][0][config] -%}
+                - {{ conf['label'] }}: psb/{{ branch }}/scenarios/{{ idx }}/{{ config }}/index.md
+                {% endfor -%}
+            {%- endfor %}

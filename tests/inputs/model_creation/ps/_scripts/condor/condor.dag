@@ -1,0 +1,3 @@
+JOB A /afs/cern.ch/eng/acc-models/ps/2021/_scripts/condor/madxjob.sub
+JOB B /afs/cern.ch/eng/acc-models/ps/2021/_scripts/condor/gitjob.sub
+PARENT A CHILD B

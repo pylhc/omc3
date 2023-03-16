@@ -1,0 +1,34 @@
+
+/******************************************************************************************
+ *
+ * MAD-X input script for the injection optics of the LHC cycle.
+ *
+ * 20/11/2020 - Fanouria Antoniou, Hannes Bartosik, Chiara Bracco, 
+ * Gian Piero di Giovanni, Alexander Huschauer, Elisabeth Renner
+ ******************************************************************************************/
+
+ /******************************************************************
+ * Energy and particle type definition
+ ******************************************************************/
+ 
+call, file="psb_inj_lhc.beam";
+BRHO      := BEAM->PC * 3.3356;
+
+set,  format="20.10f";
+
+/******************************************************************
+ * Call lattice files
+ ******************************************************************/
+
+call, file = '../../../psb.seq';
+call, file = '../../../psb_aperture.dbx';
+call, file = 'psb_inj_lhc.str';
+call, file = '../../../_scripts/macros.madx';
+
+/******************************************************************
+ * PTC Twiss
+ ******************************************************************/ 
+
+use, sequence = psb1;
+exec, ptc_twiss_macro(2,0,0);
+exec, write_ptc_twiss("psb_inj_lhc.tfs");

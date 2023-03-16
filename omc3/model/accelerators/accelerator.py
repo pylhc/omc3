@@ -96,7 +96,7 @@ class Accelerator:
         params.add_parameter(
             name="energy",
             type=float,
-            help="Energy in Tev.",
+            help="Energy in GeV.",
         )
         params.add_parameter(
             name="modifiers",
