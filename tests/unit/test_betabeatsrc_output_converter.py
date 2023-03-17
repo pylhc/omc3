@@ -5,6 +5,8 @@ import tfs
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import (
+    NAME,
+    S,
     AMPLITUDE,
     AMP_BETA_NAME,
     BETA_NAME,
