@@ -447,8 +447,8 @@ def convert_old_coupling(
                 f"MDLF{rdt}I": f"{IMAG}{MDL}",
             }
         )
-        rdt_dfs[rdt][f"{ERR}{REAL}"] = rdt_dfs[rdt][f"{ERR}{AMP}"]
-        rdt_dfs[rdt][f"{ERR}{IMAG}"] = rdt_dfs[rdt][f"{ERR}{AMP}"]
+        rdt_dfs[rdt][f"{ERR}{REAL}"] = rdt_dfs[rdt][f"{ERR}{AMPLITUDE}"]
+        rdt_dfs[rdt][f"{ERR}{IMAG}"] = rdt_dfs[rdt][f"{ERR}{AMPLITUDE}"]
         tfs.write(Path(outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
 
 
