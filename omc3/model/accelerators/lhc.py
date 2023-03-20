@@ -392,7 +392,7 @@ class Lhc(Accelerator):
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
         )
-        madx_script += f"NRJ = {self.energy};\n"
+        madx_script += f"omc3_beam_energy = {self.energy};\n"
         madx_script += "exec, define_nominal_beams();\n\n"
         if self._uses_run3_macros():
             LOGGER.debug(
