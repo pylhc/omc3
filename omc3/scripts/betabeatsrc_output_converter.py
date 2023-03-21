@@ -427,9 +427,9 @@ def convert_old_coupling(
 
     dframe = tfs.read(old_file_path)
     rdt_dfs = {
-        "1001": dframe.loc[: , ["S", "COUNT", "F1001W", "FWSTD1", "F1001R", "F1001I",
+        "1001": dframe.loc[: , ["NAME", "S", "COUNT", "F1001W", "FWSTD1", "F1001R", "F1001I",
                                 "Q1001", "Q1001STD", "MDLF1001R", "MDLF1001I"]],
-        "1010": dframe.loc[: , ["S", "COUNT", "F1010W", "FWSTD2", "F1010R", "F1010I",
+        "1010": dframe.loc[: , ["NAME", "S", "COUNT", "F1010W", "FWSTD2", "F1010R", "F1010I",
                                 "Q1010", "Q1010STD", "MDLF1010R", "MDLF1010I"]],
     }
 
@@ -447,6 +447,8 @@ def convert_old_coupling(
                 f"MDLF{rdt}I": f"{IMAG}{MDL}",
             }
         )
+        rdt_dfs[rdt][f"{ERR}{REAL}"] = rdt_dfs[rdt][f"{ERR}{AMPLITUDE}"]
+        rdt_dfs[rdt][f"{ERR}{IMAG}"] = rdt_dfs[rdt][f"{ERR}{AMPLITUDE}"]
         tfs.write(Path(outputdir) / f"{new_file_name}{rdt}{EXT}", rdt_dfs[rdt])
 
 
