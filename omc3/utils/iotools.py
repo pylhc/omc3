@@ -4,6 +4,10 @@ IO Tools
 
 Helper functions for input/output issues.
 """
+from typing import Iterable
+
+import re
+
 import json
 import os
 import shutil
@@ -55,6 +59,17 @@ def copy_item(src_item, dest):
             raise IOError
     except IOError:
         LOG.error("Could not copy item because of IOError. Item: '{}'".format(src_item))
+
+
+def glob_regex(path: Path, pattern: str) -> "filter object":
+    """ Do a glob on the given `path` based on the regular expression `pattern`.
+
+    Args:
+        path (Path): Folder path to look in.
+        pattern (str): Pattern to match.
+
+    """
+    return filter(re.compile(pattern).match, (str(p) for p in path.glob("*")))
 
 
 class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):

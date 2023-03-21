@@ -80,7 +80,7 @@ Model Creation Keyword Args:
 import json
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Iterator, List, Sequence, Tuple
+from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 import tfs
 from generic_parser import EntryPoint
@@ -405,12 +405,11 @@ class Lhc(Accelerator):
 
         return madx_script
 
-    def get_update_correction_script(self, outpath: Path, corr_file: Path) -> str:
+    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
         madx_script = self.get_base_madx_script()
-        madx_script += (
-            f"call, file = '{str(corr_file)}';\n"
-            f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
-        )
+        for corr_file in corr_files:
+            madx_script += f"call, file = '{str(corr_file)}';\n"
+        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
         return madx_script
 
     def _uses_ats_knobs(self) -> bool:

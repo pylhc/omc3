@@ -93,7 +93,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 - **modelcut** *(float)*:
 
     Reject BPMs whose deviation to the model is higher than the
-    correspoding input. Input in order of optics_params.
+    corresponding input. Input in order of optics_params.
 
 
 - **n_correctors** *(int)*:
@@ -105,7 +105,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
     List of parameters to correct upon (e.g. BETX BETY)
 
-    choices: ``('PHASEX', 'PHASEY', 'BBX', 'BBY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
+    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
 
     default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'NDX', 'Q']``
 
@@ -175,7 +175,7 @@ from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
                                        NORM_DISP, PHASE, TUNE)
 from omc3.model import manager
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr
+from omc3.utils.iotools import PathOrStr, save_config
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -194,7 +194,7 @@ CORRECTION_DEFAULTS = {
     "variable_categories": ["MQM", "MQT", "MQTL", "MQY"],
     "beta_file_name": "beta_phase_",
     "method": "pinv",
-    "max_iter": 3,
+    "iterations": 4,
 }
 
 
@@ -229,7 +229,7 @@ def correction_params():
                          nargs="+",
                          type=float,
                          help="Reject BPMs whose deviation to the model is higher "
-                              "than the correspoding input. Input in order of optics_params.",)
+                              "than the corresponding input. Input in order of optics_params.",)
     params.add_parameter(name="errorcut",
                          nargs="+",
                          type=float,
@@ -260,11 +260,13 @@ def correction_params():
     params.add_parameter(name="n_correctors",
                          type=int,
                          help="Maximum number of correctors to use. (Method: 'omp')")
-    params.add_parameter(name="max_iter",
+    params.add_parameter(name="iterations",
                          type=int,
-                         default=CORRECTION_DEFAULTS["max_iter"],
-                         help="Maximum number of correction re-iterations to perform. "
-                              "A value of `0` means the correction is calculated once.", )
+                         default=CORRECTION_DEFAULTS["iterations"],
+                         help="Maximum number of correction iterations to perform. "
+                              "A value of `1` means the correction is calculated once."
+                              "In this case, the accelerator instance does not need to be able"
+                              "to produce a new model.", )
     params.add_parameter(name="use_errorbars",
                          action="store_true",
                          help="Take into account the measured errorbars in the correction.", )
@@ -278,6 +280,9 @@ def correction_params():
 def global_correction_entrypoint(opt: DotDict, accel_opt) -> None:
     """Do the global correction. Iteratively."""
     LOG.info("Starting Iterative Global Correction.")
+    save_config(Path(opt.output_dir), opt, __file__)
+    save_config(Path(opt.output_dir), accel_opt, Path(__file__).name + "_accelopt")
+
     opt = _check_opt_add_dicts(opt)
     opt = _add_hardcoded_paths(opt)
     opt.output_dir.mkdir(parents=True, exist_ok=True)
@@ -288,13 +293,16 @@ def global_correction_entrypoint(opt: DotDict, accel_opt) -> None:
 def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
     """ Check on options and put in missing values """
     def_dict = _get_default_values()
-    opt.optics_params = [param.replace(f"{BETABEAT}", f"{BETA}") for param in opt.optics_params]
+
+    # Check cuts and fill defaults
     for key in ("modelcut", "errorcut", "weights"):
         if opt[key] is None:
             opt[key] = [def_dict[key][p] for p in opt.optics_params]
         elif len(opt[key]) != len(opt.optics_params):
             raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
         opt[key] = dict(zip(opt.optics_params, opt[key]))
+
+    # Convert Strings to Paths
     opt.meas_dir = Path(opt.meas_dir)
     opt.output_dir = Path(opt.output_dir)
     if opt.fullresponse_path:
