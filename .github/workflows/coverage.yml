@@ -16,7 +16,7 @@ jobs:
     name: ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix:  # only lowest supported Python on latest ubuntu
+      matrix:  # only a single supported Python on latest ubuntu
         os: [ubuntu-latest]
         python-version: [3.9]
 

@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, macos-latest, windows-latest]
+        os: [ubuntu-20.04, ubuntu-22.04, macos-latest, windows-latest]
         # Make sure to escape 3.10 with quotes so it doesn't get interpreted as float 3.1 by GA's parser
         python-version: [3.8, 3.9, "3.10", 3.x]  # crons should always run latest python hence 3.x
         exclude:
