@@ -67,7 +67,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 
     # ######### Iteration Phase ######### #
     for iteration in range(opt.iterations):
-        LOG.info(f"Correction Iteration {iteration} of {opt.max_iter}.")
+        LOG.info(f"Correction Iteration {iteration+1} of {opt.iterations}.")
 
         # ######### Update Model and Response ######### #
         if iteration > 0:
@@ -160,7 +160,6 @@ def get_measurement_data(
                 },
                 index=[f"{TUNE}1", f"{TUNE}2"],
             )
-
         else:
             measurement[key] = read_measurement_file(meas_dir, file_name)
     return filtered_keys, measurement

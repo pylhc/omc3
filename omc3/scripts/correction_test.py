@@ -110,13 +110,16 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
 
     # get nominal model (for filtering)
     nominal_model = _maybe_add_coupling_to_model(accel_inst.model, optics_params)
-    # apply filters to data
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
 
-
+    # sort the given correction files, either all files in one scenario or by folder
     corrections = _get_corrections(opt.corrections, opt.file_pattern)
     corrected_measurements = {"nominal": meas_dict}
 
+    # loop over different correction scenarios and create a new corrected/matched
+    # model with the given changed parameters. Then compare the new model with
+    # the measurement and calculate differences. These are written out into the
+    # scenario folders, so that also the GUI can plot them.
     for correction_name, correction_files in corrections.items():
         output_dir = opt.output_dir
         if correction_name:
@@ -141,19 +144,17 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
 
 
 def _write_corrected_measurement_data(output_dir: Path, meas_dict: Dict[str, TfsDataFrame], beta_file_name: str):
-    # Update Tunes:
+    # Update Tunes in all files
     tune_headers = {
             f"{DIFF}{TUNE}1": meas_dict[TUNE].loc[f"{TUNE}1", DIFF],
             f"{DIFF}{TUNE}2": meas_dict[TUNE].loc[f"{TUNE}2", DIFF],
         }
 
     for key, data in meas_dict.items():
-        file_name = get_filename_from_parameter(key, beta_file_name)
-
         if key == f"{TUNE}":
             continue
-
         data.headers.update(tune_headers)
+        file_name = get_filename_from_parameter(key, beta_file_name)
         tfs.write(output_dir / file_name, data, save_index=NAME)
 
 

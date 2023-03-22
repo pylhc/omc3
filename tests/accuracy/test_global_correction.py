@@ -67,7 +67,7 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
     beam = model_inj_beams.beam
     twiss_path, optics_params, variables, fullresponse, seed = get_skew_params(beam) if orientation == 'skew' else get_normal_params(beam)
-    iterations = 2
+    iterations = 3
 
     # create and load fake measurement
     error_val = 0.1
@@ -86,11 +86,11 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
         output_dir=tmp_path,
         weights=[1.0] * len(optics_params),
         svd_cut=0.01,
-        max_iter=iterations,
+        iterations=iterations,
     )
 
     # Test if corrected model is closer to model used to create measurement
-    for iter_step in range(iterations+1):
+    for iter_step in range(iterations):
         if iter_step == 0:
             model_iter_df = model_df
         else:
