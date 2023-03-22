@@ -97,8 +97,8 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         # remove unused correctors from vars_list
         delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix, opt.min_corrector_strength)
 
-        writeparams(opt.change_params_path, delta, "! Values to match model to measurement.")
-        writeparams(opt.change_params_correct_path, -delta, "! Values to correct the measurement.")
+        writeparams(opt.change_params_path, delta, "Values to match model to measurement.")
+        writeparams(opt.change_params_correct_path, -delta, "Values to correct the measurement.")
         LOG.debug(f"Cumulative delta: {np.sum(np.abs(delta.loc[:, DELTA].to_numpy())):.5e}")
     write_knob(opt.knob_path, delta)
     LOG.info("Finished Iterative Global Correction.")
@@ -341,7 +341,8 @@ def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
 
 def writeparams(path_to_file: Path, delta: pd.DataFrame, extra: str = "") -> None:
     with open(path_to_file, "w") as madx_script:
-        madx_script.write(extra)
+        if extra:
+            madx_script.write(f"! {extra} \n")
 
         for var in delta.index.to_numpy():
             value = delta.loc[var, DELTA]

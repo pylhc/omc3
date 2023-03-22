@@ -29,8 +29,8 @@ CORRECTION_INPUTS = INPUTS / "correction"
 # Correction Input Parameters ---
 
 RMS_TOL_DICT = {
-    f"{PHASE}X": 0.0015,
-    f"{PHASE}Y": 0.0015,
+    f"{PHASE}X": 0.001,
+    f"{PHASE}Y": 0.001,
     f"{BETA}X": 0.01,
     f"{BETA}Y": 0.01,
     f"{DISP}X": 0.0015,
@@ -57,11 +57,11 @@ class CorrectionParameters:
 def get_skew_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_skew_quadrupole_error.dat",
-        optics_params=[f"{F1001}R", f"{F1001}I"],
-        weights=[1., 1.],
+        optics_params=[f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"],
+        weights=[1., 1., 1., 1.],
         variables=["MQSl"],
         fullresponse="fullresponse_MQSl.h5",
-        seed=22234,
+        seed=2234,
     )
 
 
@@ -72,13 +72,13 @@ def get_normal_params(beam):
         weights=[1., 1., 1., 1., 1., 10.],
         variables=["MQY"],
         fullresponse="fullresponse_MQY.h5",
-        seed=12368,
+        seed=1268,
     )
 
 
 @pytest.mark.basic
 # @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-@pytest.mark.parametrize('orientation', ('skew',))
+@pytest.mark.parametrize('orientation', ('normal',))
 def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
@@ -107,7 +107,7 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
         optics_params=correction_params.optics_params,
         output_dir=tmp_path,
         weights=correction_params.weights,
-        # svd_cut=0.01,
+        svd_cut=0.01,
         iterations=iterations,
     )
 
@@ -125,14 +125,14 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
         diff_rms = {param: _rms(diff_df[f"{DELTA}{param}"] * weight)
                     for param, weight in zip(correction_params.optics_params, correction_params.weights)}
 
-        # ############ FOR DEBUGGING #############
-        # # Iteration 0 == fake uncorrected model
-        # print()
-        # print(f"ITERATION {iter_step}")
-        # for param in correction_params.optics_params:
-        #     print(f"{param}: {diff_rms[param]}")
-        # print(f"Weighted Sum: {sum(diff_rms.values())}")
-        # print()
+        ############ FOR DEBUGGING #############
+        # Iteration 0 == fake uncorrected model
+        print()
+        print(f"ITERATION {iter_step}")
+        for param in correction_params.optics_params:
+            print(f"{param}: {diff_rms[param]}")
+        print(f"Weighted Sum: {sum(diff_rms.values())}")
+        print()
         # continue
         # ########################################
 
