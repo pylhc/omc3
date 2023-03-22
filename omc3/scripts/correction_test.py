@@ -28,6 +28,7 @@ LOG = logging_tools.get_logger(__name__)
 
 MATCHED_MODEL_NAME = f"twiss_matched{EXT}"
 
+
 def correction_test_params():
     params = EntryPointParameters()
     # IO ---
@@ -94,8 +95,7 @@ def correction_test_params():
 def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
     """ Test the given corrections. """
     LOG.info("Starting Correction Test.")
-    save_config(Path(opt.output_dir), opt, __file__)
-    save_config(Path(opt.output_dir), accel_opt, Path(__file__).name + "_accelopt")
+    save_config(Path(opt.output_dir), {**opt, **accel_opt}, __file__)
 
     opt = _check_opt_add_dicts(opt)
     opt.output_dir.mkdir(parents=True, exist_ok=True)
