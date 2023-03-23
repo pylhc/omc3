@@ -61,7 +61,7 @@ def get_skew_params(beam):
         weights=[1., 1., 1., 1.],
         variables=["MQSl"],
         fullresponse="fullresponse_MQSl.h5",
-        seed=2234,
+        seed=2234,  # iteration test might not work with other seeds (converges too fast)
     )
 
 
@@ -69,16 +69,15 @@ def get_normal_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat",
         optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISP}X", f"{TUNE}"],
-        weights=[1., 1., 1., 1., 1., 10.],
+        weights=[1., 1., 1., 1., 1., 1.],
         variables=["MQY"],
         fullresponse="fullresponse_MQY.h5",
-        seed=1268,
+        seed=12368,  # iteration test might not work with other seeds (converges too fast)
     )
 
 
 @pytest.mark.basic
-# @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-@pytest.mark.parametrize('orientation', ('normal',))
+@pytest.mark.parametrize('orientation', ('skew', 'normal'))
 def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
@@ -140,14 +139,14 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
             # assert RMS after correction smaller than tolerances
             for param in correction_params.optics_params:
                 assert diff_rms[param] < RMS_TOL_DICT[param], (
-                    f"RMS for {param} in iteration {iter_step+1} larger than tolerance: "
+                    f"RMS for {param} in iteration {iter_step} larger than tolerance: "
                     f"{diff_rms[param]} >= {RMS_TOL_DICT[param]}."
                     )
 
             # assert total (weighted) RMS decreases between steps
             # ('skew' is converged after one step, still works with seed 2234)
             assert sum(diff_rms_prev.values()) > sum(diff_rms.values()), (
-                f"Total RMS in iteration {iter_step+1} larger than in previous iteration."
+                f"Total RMS in iteration {iter_step} larger than in previous iteration."
                 f"{sum(diff_rms.values())} >= {sum(diff_rms_prev.values())}."
             )
 
