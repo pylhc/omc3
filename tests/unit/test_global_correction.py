@@ -32,10 +32,10 @@ def test_read_measurement_data(tmp_path, model_inj_beams, orientation):
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
     is_skew = orientation == 'skew'
     beam = model_inj_beams.beam
-    twiss, optics_params, variables, fullresponse, _ = get_skew_params(beam) if is_skew else get_normal_params(beam)
+    correction_params = get_skew_params(beam) if is_skew else get_normal_params(beam)
     meas_fake = fake_measurement(
         model=model_inj_beams.model_dir / "twiss.dat",
-        twiss=twiss,
+        twiss=correction_params.twiss,
         randomize=[],
         relative_errors=[0.1],
         outputdir=tmp_path,
