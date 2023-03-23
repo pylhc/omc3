@@ -31,19 +31,19 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
     # parameter setup
     is_skew = orientation == 'skew'
     beam = model_inj_beams.beam
-    _, optics_params, variables, fullresponse, _ = get_skew_params(beam) if is_skew else get_normal_params(beam)
-    optics_params = _adapt_optics_params(optics_params, creator, is_skew)
+    correction_params = get_skew_params(beam) if is_skew else get_normal_params(beam)
+    optics_params = _adapt_optics_params(correction_params.optics_params, creator, is_skew)
 
     # response creation
     new_response = create_response(
         **model_inj_beams,
         creator=creator,
         delta_k=DELTA_K,
-        variable_categories=variables,
+        variable_categories=correction_params.variables,
     )
 
     # compare to original response matrix
-    original_response = read_fullresponse(model_inj_beams.model_dir / fullresponse)
+    original_response = read_fullresponse(model_inj_beams.model_dir / correction_params.fullresponse)
     for key in optics_params:
         original = original_response[key]
         new = new_response[key].loc[original.index, original.columns]
