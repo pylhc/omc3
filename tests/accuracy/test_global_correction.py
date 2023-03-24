@@ -25,6 +25,7 @@ LOG = logging_tools.get_logger(__name__)
 # Paths ---
 INPUTS = Path(__file__).parent.parent / 'inputs'
 CORRECTION_INPUTS = INPUTS / "correction"
+CORRECTION_TEST_INPUTS = INPUTS / "correction_test"
 
 # Correction Input Parameters ---
 
@@ -47,6 +48,7 @@ RMS_TOL_DICT = {
 @dataclass
 class CorrectionParameters:
     twiss: Path
+    correction_filename: Path
     optics_params: Sequence[str]
     variables: Sequence[str]
     weights: Sequence[float]
@@ -57,6 +59,7 @@ class CorrectionParameters:
 def get_skew_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_skew_quadrupole_error.dat",
+        correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_skewquadrupole.madx",
         optics_params=[f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"],
         weights=[1., 1., 1., 1.],
         variables=["MQSl"],
@@ -68,6 +71,7 @@ def get_skew_params(beam):
 def get_normal_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat",
+        correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_quadrupole.madx",
         optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISP}X", f"{TUNE}"],
         weights=[1., 1., 1., 1., 1., 1.],
         variables=["MQY"],
@@ -126,12 +130,12 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
 
         ############ FOR DEBUGGING #############
         # Iteration 0 == fake uncorrected model
-        print()
-        print(f"ITERATION {iter_step}")
-        for param in correction_params.optics_params:
-            print(f"{param}: {diff_rms[param]}")
-        print(f"Weighted Sum: {sum(diff_rms.values())}")
-        print()
+        # print()
+        # print(f"ITERATION {iter_step}")
+        # for param in correction_params.optics_params:
+        #     print(f"{param}: {diff_rms[param]}")
+        # print(f"Weighted Sum: {sum(diff_rms.values())}")
+        # print()
         # continue
         # ########################################
 

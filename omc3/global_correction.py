@@ -269,7 +269,7 @@ def correction_params():
                               "to produce a new model.", )
     params.add_parameter(name="use_errorbars",
                          action="store_true",
-                         help="Take into account the measured errorbars in the correction.", )
+                         help="Take into account the measured errorbars as weights.", )
     params.add_parameter(name="update_response",
                          action="store_true",
                          help="Update the (analytical) response per iteration.", )

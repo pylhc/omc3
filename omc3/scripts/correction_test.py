@@ -13,9 +13,9 @@ from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import handler, filters, model_appenders
 from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
-                                       NORM_DISP, PHASE, TUNE, DIFF, NAME)
-from omc3.correction.handler import get_measurement_data, _create_corrected_model, _maybe_add_coupling_to_model, \
-    get_filename_from_parameter
+                                       NORM_DISP, PHASE, TUNE, DIFF, NAME, MODEL, ERROR)
+from omc3.correction.handler import (get_measurement_data, _create_corrected_model,
+                                     _maybe_add_coupling_to_model, get_filename_from_parameter)
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
@@ -27,6 +27,7 @@ from tfs import TfsDataFrame
 LOG = logging_tools.get_logger(__name__)
 
 MATCHED_MODEL_NAME = f"twiss_matched{EXT}"
+NOMINAL_MEASUREMENT = "CorrectionTest_Nominal"
 
 
 def correction_test_params():
@@ -55,7 +56,7 @@ def correction_test_params():
                          type=str,
                          default=r"^changeparameters*?\.madx$",
                          )
-    # Parameters ---
+    # Parameters (same as in global correction) ---
     params.add_parameter(name="optics_params",
                          type=str,
                          nargs="+",
@@ -107,14 +108,17 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
         opt.meas_dir,
         opt.beta_file_name,
     )
-
     # get nominal model (for filtering)
     nominal_model = _maybe_add_coupling_to_model(accel_inst.model, optics_params)
+
+    # write filtered nominal measured out (for plotting)
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
+    meas_dict = model_appenders.add_differences_to_model_to_measurements(nominal_model, meas_dict)
+    _write_corrected_measurement_data(opt.output_dir / NOMINAL_MEASUREMENT, meas_dict, opt.beta_file_name)
+    corrected_measurements = {NOMINAL_MEASUREMENT: meas_dict}
 
     # sort the given correction files, either all files in one scenario or by folder
     corrections = _get_corrections(opt.corrections, opt.file_pattern)
-    corrected_measurements = {"nominal": meas_dict}
 
     # loop over different correction scenarios and create a new corrected/matched
     # model with the given changed parameters. Then compare the new model with
@@ -129,6 +133,7 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
         corr_model_elements = _create_corrected_model(corr_model_path, correction_files, accel_inst)  # writes twiss files!
         corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, nominal_model.columns)
         corr_meas_dict = model_appenders.add_differences_to_model_to_measurements(corr_model_elements, meas_dict)
+
         corrected_measurements[correction_name] = corr_meas_dict
 
         _write_corrected_measurement_data(output_dir, corr_meas_dict, opt.beta_file_name)
@@ -144,6 +149,8 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
 
 
 def _write_corrected_measurement_data(output_dir: Path, meas_dict: Dict[str, TfsDataFrame], beta_file_name: str):
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     # Update Tunes in all files
     tune_headers = {
             f"{DIFF}{TUNE}1": meas_dict[TUNE].loc[f"{TUNE}1", DIFF],
@@ -153,9 +160,11 @@ def _write_corrected_measurement_data(output_dir: Path, meas_dict: Dict[str, Tfs
     for key, data in meas_dict.items():
         if key == f"{TUNE}":
             continue
-        data.headers.update(tune_headers)
         file_name = get_filename_from_parameter(key, beta_file_name)
-        tfs.write(output_dir / file_name, data, save_index=NAME)
+        data.headers.update(tune_headers)
+        headers = data.headers
+
+        tfs.write(output_dir / file_name, data.loc[:, [MODEL, DIFF, ERROR]], headers_dict=headers, save_index=NAME)
 
 
 def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
@@ -172,6 +181,10 @@ def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
             given_keys = dict(zip(opt.optics_params, opt[key]))
         opt[key] = {param: given_keys.get(param, def_dict[key][param]) for param in OPTICS_PARAMS_CHOICES}
     opt.optics_params = OPTICS_PARAMS_CHOICES
+
+    # add weights and use_errorbars as used in filters (but we don't care here)
+    opt.use_errorbars = False
+    opt.weights = {param: 1.0 for param in opt.optics_params}
 
     # Convert Strings to Paths
     opt.meas_dir = Path(opt.meas_dir)
