@@ -4,6 +4,9 @@ Constants
 
 Constants and definitions for the ``plotting`` module.
 """
+from dataclasses import dataclass
+from typing import Optional
+
 from omc3.optics_measurements.constants import (
     S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
     AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,
@@ -50,19 +53,53 @@ DEFAULTS = {
 }
 
 
-XAXIS = { # Column, Label
-    'location': (S, 'Location [m]'),
-    'phase-advance': (f'{PHASE_ADV}{{0}}{MDL}', 'Phase Advance [$2 \pi$]')
+@dataclass
+class ColumnsAndLabels:
+    column: str
+    label: str  # for plot
+    text_label: str  # in text
+    _error_column: str = None
+    _delta_column: str = None
+    _delta_label: str = None
+
+    @property
+    def delta_label(self):
+        if self._delta_label:
+            return self._delta_label
+
+        if self.label.startswith("$"):
+            return f"$\Delta {self.label[1:]}"
+        return f"$\Delta$ {self.label}"
+
+    @property
+    def delta_column(self):
+        if self._delta_column:
+            return self._delta_column
+        return f"{DELTA}{self.column}"
+
+    @property
+    def error_column(self):
+        if self._error_column:
+            return self._error_column
+        return f"{ERR}{self.column}"
+
+
+XAXIS = {
+    'location': ColumnsAndLabels(S, 'Location [m]', 'longitudinal location'),
+    'phase-advance': ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', 'Phase Advance [$2 \pi$]', 'phase advance'),
 }
 
-YAXIS = {  # column, column label, yaxis-label [, Delta yaxis-label]
-    BETA_NAME:        (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
-    AMP_BETA_NAME:    (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
-    ORBIT_NAME:       ('', 'orbit', ylabels['co'], f"$\Delta$ {ylabels['co']}"),
-    PHASE_NAME:       (PHASE, 'phase', ylabels['phase']),
-    TOTAL_PHASE_NAME: (PHASE, 'total phase', ylabels['phase']),
-    'rdt_amp':        (AMPLITUDE, None, ylabels['absolute']),
-    'rdt_phase':      (PHASE, None, ylabels['phase']),
-    'rdt_real':       (REAL, None, ylabels['real']),
-    'rdt_imag':       (IMAG, None, ylabels['imag']),
+
+YAXIS = {
+    BETA_NAME:        ColumnsAndLabels(BETA, ylabels['beta'], 'beta', _delta_label=ylabels['betabeat']),
+    AMP_BETA_NAME:    ColumnsAndLabels(BETA, ylabels['beta'], 'beta', _delta_label=ylabels['betabeat']),
+    ORBIT_NAME:       ColumnsAndLabels('', ylabels['co'], 'orbit'),
+    DISPERSION_NAME:  ColumnsAndLabels('D', ylabels['dispersion'], 'dispersion'),
+    NORM_DISP_NAME:   ColumnsAndLabels('ND', ylabels['norm_dispersion'], 'normalized dispersion'),
+    PHASE_NAME:       ColumnsAndLabels(PHASE, ylabels['phase'], 'phase'),
+    TOTAL_PHASE_NAME: ColumnsAndLabels(PHASE, ylabels['phase'], 'total phase'),
+    'rdt_amp':        ColumnsAndLabels(AMPLITUDE, ylabels['absolute'], 'amplitude'),
+    'rdt_phase':      ColumnsAndLabels(PHASE, ylabels['phase'], 'phase'),
+    'rdt_real':       ColumnsAndLabels(REAL, ylabels['real'], 'real'),
+    'rdt_imag':       ColumnsAndLabels(IMAG, ylabels['imag'], 'imaginary'),
 }
