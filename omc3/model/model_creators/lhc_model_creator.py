@@ -37,7 +37,6 @@ from omc3.model.constants import (
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import iotools
 
-LHC_REPOSITORY_NAME = "acc-models-lhc"
 B2_ERRORS_ROOT = pathlib.Path("/afs/cern.ch/eng/sl/lintrack/error_tables/")
 
 LOGGER = logging.getLogger(__name__)
@@ -131,7 +130,7 @@ class LhcModelCreator(ModelCreator):
     def prepare_run(cls, accel: Lhc) -> None:
         LOGGER.info("preparing run ...")
         if accel.acc_model_path is not None:
-            link = Path(accel.model_dir)/LHC_REPOSITORY_NAME
+            link = Path(accel.model_dir)/accel.REPOSITORY
             target = accel.acc_model_path
             if not link.exists():
                 link.absolute().symlink_to(target)

@@ -113,6 +113,7 @@ class Lhc(Accelerator):
     """
 
     NAME = "lhc"
+    REPOSITORY = "acc-models-lhc"
     RE_DICT: Dict[str, str] = {
         AccElementTypes.BPMS: r"BPM",
         AccElementTypes.MAGNETS: r"M",

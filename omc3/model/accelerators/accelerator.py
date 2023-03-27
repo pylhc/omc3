@@ -6,6 +6,7 @@ This module provides high-level classes to define most functionality of ``model.
 It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
 import re
+import os
 from pathlib import Path
 from typing import List
 
@@ -60,6 +61,7 @@ class Accelerator:
     }
     BPM_INITIAL = "B"
     NAME=None
+    REPOSITORY=None
 
     @staticmethod
     def get_parameters():
@@ -190,6 +192,15 @@ class Accelerator:
         best_knowledge_path = model_dir / TWISS_BEST_KNOWLEDGE_DAT
         if best_knowledge_path.is_file():
             self.model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
+
+        # Base Model ########################################
+        if self.REPOSITORY:
+            acc_models = model_dir / self.REPOSITORY
+            if acc_models.exists():
+                if acc_models.is_symlink():
+                    self.acc_model_path = Path(os.readlink(acc_models)).absolute()
+                else:
+                    self.acc_model_path = acc_models
 
         # Modifiers #########################################
         self.modifiers = _get_modifiers_from_modeldir(model_dir)
@@ -363,7 +374,7 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> List[Path]:
 
         # find modifier tag in lines and return called file in these lines
         modifiers = re.findall(
-            fr"\s+call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
+            fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
             job_madx,
             flags=re.IGNORECASE,
         )
