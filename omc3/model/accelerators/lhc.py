@@ -250,12 +250,11 @@ class Lhc(Accelerator):
         )
         sorted_vars = _list_intersect_keep_order(vars_by_position, variables)
 
-        # Check if no filtering was supposed to happen, if we still filter variables
+        # Check if no filtering but only sorting was required
         if (frm is None) and (to is None) and (len(sorted_vars) != len(variables)):
-            unknown_vars = [var for var in variables if var not in sorted_vars]
-            raise ValueError("The following variables are unknown to the LHC accelerator class. "
-                             "Please check your input, the variable .json files and"
-                             f" {str(self._get_corrector_elems())}:\n{str(unknown_vars)}")
+            unknown_vars = list(sorted(var for var in variables if var not in sorted_vars))
+            LOGGER.debug(f"The following variables do not have a location: {str(unknown_vars)}")
+            sorted_vars = sorted_vars + unknown_vars
         return sorted_vars
 
     def get_ips(self) -> Iterator[Tuple[str]]:
