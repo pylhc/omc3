@@ -181,7 +181,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     madx_script = creator.get_madx_script(accel_inst)
     # Run madx to create model
     run_string(madx_script,
-               output_file=opt.outputdir / JOB_MODEL_MADX,
+               output_file=opt.outputdir / JOB_MODEL_MADX.format(opt.type),
                log_file=opt.logfile,
                cwd=opt.outputdir)
     # Return accelerator instance

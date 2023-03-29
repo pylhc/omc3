@@ -19,7 +19,7 @@ TWISS_AC_DAT = "twiss_ac.dat"
 TWISS_ELEMENTS_DAT = "twiss_elements.dat"
 TWISS_DAT = "twiss.dat"
 ERROR_DEFFS_TXT = "error_deffs.txt"
-JOB_MODEL_MADX = "job.create_model.madx"
+JOB_MODEL_MADX = "job.create_model_{}.madx"
 
 # fetcher command names
 PATHFETCHER = "path"
