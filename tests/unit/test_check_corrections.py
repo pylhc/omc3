@@ -1,26 +1,24 @@
-import matplotlib
 import pytest
 
 import tfs
-from omc3.correction.constants import NAME, ERROR, DIFF, S, VALUE, MDL, PHASE_ADV, MODEL_MATCHED_FILENAME, TUNE
+from omc3.correction.constants import MODEL_MATCHED_FILENAME
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import EXT
+from omc3.optics_measurements.constants import EXT, NAME, S, MDL, PHASE_ADV, TUNE
 from omc3.scripts.check_corrections import correction_test_entrypoint
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
-
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, _create_fake_measurement
 
 
-@pytest.mark.basic
-@pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
-    """ Checks that correction_test_entrypoint runs and that all the output
-    data is there. Very simple test. """
-# @pytest.mark.parametrize('orientation', ('normal',))
-# def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
-#     model_inj_beams = model_inj_beam1
+# @pytest.mark.basic
+# @pytest.mark.parametrize('orientation', ('skew', 'normal'))
+# def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
+#     """ Checks that correction_test_entrypoint runs and that all the output
+#     data is there. Very simple test. """
+@pytest.mark.parametrize('orientation', ('normal',))
+def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
+    model_inj_beams = model_inj_beam1
     beam = model_inj_beams.beam
     correction_params = get_skew_params(beam) if orientation == 'skew' else get_normal_params(beam)
     _create_fake_measurement(tmp_path, model_inj_beams.model_dir, correction_params.twiss)

@@ -153,8 +153,8 @@ class ColumnsAndLabels:
 
 
 POSITION_COLUMN_MAPPING = {
-    'location': ColumnsAndLabels(S, 'Location [m]', 'longitudinal location'),
-    'phase-advance': ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', 'Phase Advance [$2 \pi$]', 'phase advance'),
+    'location': ColumnsAndLabels(S, _label='Location [m]', _text_label='longitudinal location', needs_plane=False),
+    'phase-advance': ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', _label='Phase Advance [$2 \pi$]', _text_label='phase advance'),
 }
 
 
@@ -169,7 +169,7 @@ FILE_COLUMN_MAPPING = {
     PHASE_NAME:       ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase'),
     TOTAL_PHASE_NAME: ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase'),
     # Based on Column
-    TUNE:             ColumnsAndLabels(TUNE, _expected_column=f"{EXPECTED}{TUNE}{{0}}",  _label=ylabels['tune'], _text_label='tune'),
+    TUNE:       ColumnsAndLabels(TUNE, _expected_column=f"{EXPECTED}{TUNE}{{0}}",  _label=ylabels['tune'], _text_label='tune'),
     AMPLITUDE:  ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False),
     PHASE:      ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase', needs_plane=False),
     REAL:       ColumnsAndLabels(REAL, _label=ylabels['real'], _text_label='real', needs_plane=False),

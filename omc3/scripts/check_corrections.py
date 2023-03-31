@@ -14,17 +14,15 @@ from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 from omc3.correction import filters
 from omc3.correction import handler as global_correction
-from omc3.correction.constants import (BETA, TUNE, DIFF, NAME, S, MDL, PHASE_ADV, WEIGHT,
-                                       MODEL_MATCHED_FILENAME, F1001, F1010, COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX)
+from omc3.correction.constants import MODEL_MATCHED_FILENAME, COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
-from omc3.correction.utils_check import get_plotting_style_parameters, Measurements
-from omc3.definitions.constants import PLANES
+from omc3.correction.utils_check import get_plotting_style_parameters
 from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, IMAG, REAL, PHASE, AMPLITUDE
+from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, TUNE, F1001, F1010
 from omc3.plotting.plot_correction_test import plot_correction_test
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config, glob_regex
@@ -44,7 +42,7 @@ def get_correction_test_params():
                          required=True,
                          type=PathOrStr,
                          help=("Path to the directory where to write the output files. "
-                              "If the input consists of multiple folders, their name will "
+                              "If the input ``corrections`` input consists of multiple folders, their name will "
                                "be used to sort the output data into subfolders.", ))
     # Parameters (similar/same as in global correction) ---
     params.add_parameter(name="optics_params",
@@ -65,7 +63,7 @@ def get_correction_test_params():
                               "input. Input in order of optics_params.",)
     params.add_parameter(name="beta_filename",
                          default=CORRECTION_DEFAULTS["beta_filename"],
-                         help="Prefix of the beta file to use. E.g.: beta_phase_", )
+                         help="Prefix of the beta file to use. E.g.: ``beta_phase_``", )
     params.add_parameter(name="corrections",
                          required=True,
                          nargs="+",
@@ -203,15 +201,18 @@ def _create_model_and_write_diff_to_measurements(
     folder(s). """
     if correction_name:
         output_dir = output_dir / correction_name
+    LOG.info(f"Checking correction for {output_dir.name}")
 
     # Created matched model
     corr_model_path = output_dir / MODEL_MATCHED_FILENAME
     corr_model_elements = global_correction._create_corrected_model(corr_model_path, correction_files, accel_inst)  # writes out twiss file!
     corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, measurement)
+    LOG.debug(f"Matched model created in {str(corr_model_path)}.")
 
     # Get diff to nominal model
     diff_columns = list(OPTICS_PARAMS_CHOICES[:-4]) + [col for col in corr_model_elements.columns if col.startswith("F1")]
     diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
+    LOG.debug(f"Differences to nominal model calculated.")
 
      # Crate new "measurement" with additional columns
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
@@ -221,8 +222,11 @@ def _create_model_and_write_diff_to_measurements(
         try:
             colmap = FILE_COLUMN_MAPPING[filename[:-1]]
         except KeyError:
+            if filename not in (F1001_NAME, F1010_NAME):
+                LOG.debug(f"Attribute {attribute} will not be checked.")
             # Coupling RDTS:
             # get F1### column map without the I, R, A, P part based on the rdt-filename:
+            LOG.debug(f"Checking coupling correction for {attribute}")
             colmap_model_generic = ColumnsAndLabels(COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX[filename])
             for idx, colmap_meas in enumerate(RDT_COLUMN_MAPPING.values()):  # AMP, PHASE, REAL or IMAG as column-map
                 colmap_model = colmap_model_generic.set_plane(colmap_meas.column[0])  # F1### with I, R, A, P
@@ -237,6 +241,7 @@ def _create_model_and_write_diff_to_measurements(
                 )
         else:
             # "Normal" optics parameters
+            LOG.debug(f"Checking correction for {attribute}")
             plane = filename[-1].upper()
             cols = colmap.set_plane(plane)
             _create_check_columns(
@@ -286,6 +291,12 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         attribute (str): attribute/property name of the OpticsMeasurement of the current measurement
 
     """
+    LOG.debug(
+        f"Creating columns for {attribute} ({colmap_meas.column}):\n"
+        f"Model Diff: {colmap_model.delta_column} -> {colmap_meas.diff_correction_column}\n"
+        f"Expected: {colmap_meas.delta_column} - diff ->  {colmap_meas.expected_column}\n"
+        f"Error: {colmap_meas.error_delta_column} -> {colmap_meas.error_expected_column}"
+    )
     df = measurement[attribute]
 
     diff = diff_models.loc[:, colmap_model.delta_column]
@@ -295,6 +306,12 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
     df[colmap_meas.error_expected_column] = df[colmap_meas.error_delta_column]
 
     for tune_map in (FILE_COLUMN_MAPPING[TUNE].set_plane(n) for n in (1, 2)):
+        LOG.debug(
+            f"Creating columns for tune {tune_map.column}:\n"
+            f"Model Diff: {tune_map.delta_column} -> {tune_map.diff_correction_column}\n"
+            f"Expected: {tune_map.column} - diff ->  {tune_map.expected_column}"
+        )
+
         diff_tune = diff_models.headers[tune_map.delta_column]
         df.headers[tune_map.diff_correction_column] = diff_tune
         df.headers[tune_map.expected_column] = df.headers[tune_map.column] - diff_tune
@@ -330,7 +347,8 @@ def _do_plots(corrections: Dict[str, Any], opt: DotDict):
     opt_plot["input_dir"] = opt.output_dir
     opt_plot["output_dir"] = opt.output_dir
     opt_plot["corrections"] = list(corrections.keys())
-    plot_correction_test(opt_plot)
+    opt_plot["show"] = True  # debug
+    plot_correction_test(**opt_plot)
 
 
 if __name__ == '__main__':

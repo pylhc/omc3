@@ -69,15 +69,15 @@ from typing import Tuple, Sequence, List, Dict
 
 import numpy as np
 import pandas as pd
+
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-
-from omc3.correction.constants import DISPERSION, NORM_DISPERSION, F1001, F1010
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_NAME,
                                                 TOTAL_PHASE_NAME,
                                                 DISPERSION_NAME, NORM_DISP_NAME,
+                                                DISPERSION, NORM_DISPERSION, F1001, F1010,
                                                 EXT, DELTA, ERR,
                                                 PHASE_ADV, BETA, PHASE,
                                                 TUNE, NAME, NAME2, S, MDL, REAL, IMAG,

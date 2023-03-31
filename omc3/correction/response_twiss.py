@@ -117,17 +117,17 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
     https://cds.cern.ch/record/2632945/
 
 """
-import copy
 from typing import Dict, List, Sequence
 
 import numpy as np
 import pandas as pd
-import tfs
 
-from omc3.correction.constants import BETA, DISPERSION, F1001, F1010, NORM_DISPERSION, PHASE_ADV, TUNE, S, PHASE
 from omc3.correction.response_io import read_varmap
 from omc3.correction.sequence_evaluation import check_varmap_file
 from omc3.model.accelerators.accelerator import Accelerator
+from omc3.optics_measurements.constants import (
+    BETA, DISPERSION, F1001, F1010, NORM_DISPERSION, PHASE_ADV, TUNE, S, PHASE
+)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 

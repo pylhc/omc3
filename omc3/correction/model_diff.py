@@ -10,11 +10,11 @@ yet operates on two twiss files instead.
 from collections import defaultdict
 from typing import Sequence
 
-import tfs
-
-from omc3.correction.constants import DISPERSION, BETA, PHASE_ADV, TUNE, PHASE, NORM_DISPERSION, DELTA
-from omc3.optics_measurements.toolbox import ang_diff
 import numpy as np
+
+import tfs
+from omc3.optics_measurements.constants import DISPERSION, BETA, PHASE_ADV, TUNE, PHASE, NORM_DISPERSION, DELTA
+from omc3.optics_measurements.toolbox import ang_diff
 
 
 def diff_twiss_parameters(model_a: tfs.TfsDataFrame,

@@ -21,7 +21,8 @@ import pandas as pd
 import tfs
 from generic_parser import DotDict
 
-from omc3.correction.constants import DELTA, ERR, ERROR, NAME2, PHASE, PHASE_ADV, TUNE, VALUE, WEIGHT
+from omc3.correction.constants import ERROR, VALUE, WEIGHT
+from omc3.optics_measurements.constants import DELTA, ERR, NAME2, PHASE, PHASE_ADV, TUNE
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import AMPLITUDE, F1001, F1010, IMAG, REAL
 from omc3.utils import logging_tools, stats

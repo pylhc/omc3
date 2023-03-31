@@ -1,23 +1,23 @@
-from typing import Sequence
-
 from dataclasses import dataclass
-
-import logging
 from pathlib import Path
+from typing import Sequence
 
 import numpy as np
 import pytest
+
 import tfs
-from omc3.correction.constants import (BETA, DISPERSION, NORM_DISPERSION, F1001, F1010, TUNE, PHASE, VALUE, ERROR,
-                                       ERR, WEIGHT, DELTA)
-from omc3.correction.handler import get_measurement_data, _rms
+from omc3.correction.constants import VALUE, ERROR, WEIGHT
+from omc3.correction.handler import get_measurement_data
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
-from omc3.global_correction import global_correction_entrypoint as global_correction, OPTICS_PARAMS_CHOICES
-from omc3.optics_measurements.constants import NAME, AMPLITUDE, IMAG, REAL
+from omc3.global_correction import global_correction_entrypoint as global_correction
+from omc3.optics_measurements.constants import (
+    NAME, AMPLITUDE, IMAG, REAL, BETA, DISPERSION,
+    NORM_DISPERSION, F1001, F1010, TUNE, PHASE, ERR, DELTA)
 from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
+from omc3.utils.stats import rms
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -125,7 +125,7 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
         diff_df = diff_twiss_parameters(model_iter_df, twiss_df, correction_params.optics_params)
         if TUNE in correction_params.optics_params:
             diff_df.headers[f"{DELTA}{TUNE}"] = np.array([diff_df[f"{DELTA}{TUNE}1"], diff_df[f"{DELTA}{TUNE}2"]])
-        diff_rms = {param: _rms(diff_df[f"{DELTA}{param}"] * weight)
+        diff_rms = {param: rms(diff_df[f"{DELTA}{param}"] * weight)
                     for param, weight in zip(correction_params.optics_params, correction_params.weights)}
 
         ############ FOR DEBUGGING #############

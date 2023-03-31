@@ -175,6 +175,22 @@ def weighted_error(data, errors=None, axis=None, t_value_corr=True):
     return error
 
 
+def rms(data, axis=None):
+    """
+    Computes the root mean square along the specified axis.
+
+    Parameters:
+        data: array-like
+            Contains the data to be averaged
+        axis: int or tuple of ints, optional
+            Axis or axes along which to average data
+
+    Returns:
+        Returns root mean square along the specified axis.
+    """
+    return weighted_rms(data, axis=axis)
+
+
 def weighted_rms(data, errors=None, axis=None):
     """
     Computes weighted root mean square along the specified axis.

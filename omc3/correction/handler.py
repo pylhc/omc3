@@ -18,15 +18,17 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
-from omc3.correction.constants import (BETA, DELTA, DIFF, DISPERSION, ERROR, F1001,
-                                       F1010, NORM_DISPERSION, PHASE, TUNE,
-                                       VALUE, WEIGHT)
+from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, F1001,
+                                                F1010, NORM_DISPERSION, PHASE, TUNE,
+                                                DISPERSION_NAME, EXT, REAL, IMAG,
+                                                NORM_DISP_NAME, PHASE_NAME, NAME
+                                                )
+from omc3.correction.constants import ERROR, VALUE, WEIGHT, DIFF
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT, REAL, IMAG,
-                                                NORM_DISP_NAME, PHASE_NAME, NAME)
 from omc3.utils import logging_tools
+from omc3.utils.stats import rms
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -309,21 +311,16 @@ def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
     f_str = "{:>20s} : {:.5e}"
     LOG.debug("RMS Measure - Model (before correction, w/o weigths):")
     for key in meas:
-        LOG.debug(f_str.format(key, _rms(meas[key].loc[:, DIFF].to_numpy())))
+        LOG.debug(f_str.format(key, rms(meas[key].loc[:, DIFF].to_numpy())))
 
     LOG.info("RMS Measure - Model (before correction, w/ weigths):")
     for key in meas:
-        LOG.info(f_str.format(key, _rms(meas[key].loc[:, DIFF].to_numpy() * meas[key].loc[:, WEIGHT].to_numpy())))
+        LOG.info(f_str.format(key, rms(meas[key].loc[:, DIFF].to_numpy() * meas[key].loc[:, WEIGHT].to_numpy())))
 
-    LOG.info(f_str.format("All", _rms(diff_w)))
-    LOG.debug(f_str.format("R * delta", _rms(r_delta_w)))
+    LOG.info(f_str.format("All", rms(diff_w)))
+    LOG.debug(f_str.format("R * delta", rms(r_delta_w)))
     LOG.debug("(Measure - Model) - (R * delta)   ")
-    LOG.debug(f_str.format("", _rms(diff_w - r_delta_w)))
-
-
-def _rms(a):
-    """Calculate root mean square error of a number or an ndarray."""
-    return np.sqrt(np.mean(np.square(a)))
+    LOG.debug(f_str.format("", rms(diff_w - r_delta_w)))
 
 
 # Output -----------------------------------------------------------------------
