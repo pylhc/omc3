@@ -18,8 +18,8 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
-from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
-                                       F1010, NORM_DISP, PHASE, TUNE,
+from omc3.correction.constants import (BETA, DELTA, DIFF, DISPERSION, ERROR, F1001,
+                                       F1010, NORM_DISPERSION, PHASE, TUNE,
                                        VALUE, WEIGHT)
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
@@ -46,7 +46,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     optics_params, meas_dict = get_measurement_data(
         opt.optics_params,
         opt.meas_dir,
-        opt.beta_file_name,
+        opt.beta_filename,
         opt.weights,
     )
 
@@ -111,14 +111,14 @@ def read_measurement_file(meas_dir: Path, filename: str) -> tfs.TfsDataFrame:
     return tfs.read(meas_dir / filename, index="NAME")
 
 
-def get_filename_from_parameter(parameter: str, beta_file_name: str) -> str:
+def get_filename_from_parameter(parameter: str, beta_filename: str) -> str:
     if parameter.startswith(f"{PHASE}"):
         return f"{PHASE_NAME}{parameter[-1].lower()}{EXT}"
 
-    elif parameter.startswith(f"{DISP}"):
+    elif parameter.startswith(f"{DISPERSION}"):
         return f"{DISPERSION_NAME}{parameter[-1].lower()}{EXT}"
 
-    elif parameter == f"{NORM_DISP}X":
+    elif parameter == f"{NORM_DISPERSION}X":
         return f"{NORM_DISP_NAME}{parameter[-1].lower()}{EXT}"
 
     elif parameter[:5] in (F1010, F1001):
@@ -128,13 +128,13 @@ def get_filename_from_parameter(parameter: str, beta_file_name: str) -> str:
         return f"{PHASE_NAME}x{EXT}"
 
     elif parameter.startswith(f"{BETA}"):
-        return f"{beta_file_name}{parameter[-1].lower()}{EXT}"
+        return f"{beta_filename}{parameter[-1].lower()}{EXT}"
 
 
 def get_measurement_data(
         keys: Sequence[str],
         meas_dir: Path,
-        beta_file_name: str,
+        beta_filename: str,
         w_dict: Dict[str, float] = None,
 ) -> Tuple[List[str], Dict[str, tfs.TfsDataFrame]]:
     """ Loads all measurements defined by `keys` into a dictionary. """
@@ -149,7 +149,7 @@ def get_measurement_data(
             )
 
     for key in filtered_keys:
-        file_name = get_filename_from_parameter(key, beta_file_name)
+        file_name = get_filename_from_parameter(key, beta_filename)
         if key == f"{TUNE}":
             measurement[key] = pd.DataFrame(
                 {  # Just fractional tunes:

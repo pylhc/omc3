@@ -12,7 +12,7 @@ from typing import Sequence
 
 import tfs
 
-from omc3.correction.constants import DISP, BETA, PHASE_ADV, TUNE, PHASE, NORM_DISP, DELTA
+from omc3.correction.constants import DISPERSION, BETA, PHASE_ADV, TUNE, PHASE, NORM_DISPERSION, DELTA
 from omc3.optics_measurements.toolbox import ang_diff
 import numpy as np
 
@@ -57,7 +57,7 @@ def _get_mapping():
             PHASE_ADV: _phase_advance_diff,
             PHASE: _phase_advance_diff,
             BETA: _beta_beating,
-            NORM_DISP: _normalized_dispersion_diff,
+            NORM_DISPERSION: _normalized_dispersion_diff,
         }
     )
 
@@ -90,6 +90,6 @@ def _beta_beating(model_a, model_b, column):
 def _normalized_dispersion_diff(model_a, model_b, column):
     plane = column[-1]
     return -np.diff([
-        np.divide(model.loc[:, f"{DISP}{plane}"], np.sqrt(model.loc[:, f"{BETA}{plane}"])).to_numpy()
+        np.divide(model.loc[:, f"{DISPERSION}{plane}"], np.sqrt(model.loc[:, f"{BETA}{plane}"])).to_numpy()
         for model in (model_a, model_b)
     ], axis=0).T

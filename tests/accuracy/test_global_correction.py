@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 import tfs
-from omc3.correction.constants import (BETA, DISP, NORM_DISP, F1001, F1010, TUNE, PHASE, VALUE, ERROR,
+from omc3.correction.constants import (BETA, DISPERSION, NORM_DISPERSION, F1001, F1010, TUNE, PHASE, VALUE, ERROR,
                                        ERR, WEIGHT, DELTA)
 from omc3.correction.handler import get_measurement_data, _rms
 from omc3.correction.model_appenders import add_coupling_to_model
@@ -34,9 +34,9 @@ RMS_TOL_DICT = {
     f"{PHASE}Y": 0.001,
     f"{BETA}X": 0.01,
     f"{BETA}Y": 0.01,
-    f"{DISP}X": 0.0015,
-    f"{DISP}Y": 0.0015,
-    f"{NORM_DISP}X": 0.001,
+    f"{DISPERSION}X": 0.0015,
+    f"{DISPERSION}Y": 0.0015,
+    f"{NORM_DISPERSION}X": 0.001,
     f"{TUNE}": 0.01,
     f"{F1001}R": 0.0015,
     f"{F1001}I": 0.0015,
@@ -72,7 +72,7 @@ def get_normal_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat",
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_quadrupole.madx",
-        optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISP}X", f"{TUNE}"],
+        optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISPERSION}X", f"{TUNE}"],
         weights=[1., 1., 1., 1., 1., 1.],
         variables=["MQY"],
         fullresponse="fullresponse_MQY.h5",
@@ -181,7 +181,7 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics
     _, meas_dict = get_measurement_data(
         optics_params,
         meas_dir=tmp_path,
-        beta_file_name='beta_phase_',
+        beta_filename='beta_phase_',
     )
 
     # map to VALUE, ERROR and WEIGHT, similar to filter_measurement

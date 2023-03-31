@@ -4,7 +4,7 @@ import numpy as np
 import tfs
 import pytest
 
-from omc3.correction.constants import DELTA, BETA, TUNE, NORM_DISP, DISP, PHASE_ADV, PHASE
+from omc3.correction.constants import DELTA, BETA, TUNE, NORM_DISPERSION, DISPERSION, PHASE_ADV, PHASE
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
@@ -38,8 +38,8 @@ def test_simple_diff(model_error_path):
         delta = f"{DELTA}{param}"
         if param[:-1] == BETA:
             check = model[param] * (1 + diff[delta]) - model_errors[param]
-        elif param[:-1] == NORM_DISP:
-            beta, disp = f"{BETA}{param[-1]}", f"{DISP}{param[-1]}"
+        elif param[:-1] == NORM_DISPERSION:
+            beta, disp = f"{BETA}{param[-1]}", f"{DISPERSION}{param[-1]}"
             check = model[disp]/np.sqrt(model[beta]) + diff[delta] - model_errors[disp]/np.sqrt(model_errors[beta])
         elif param[:-1] in (PHASE, PHASE_ADV):
             param = f"{PHASE_ADV}{param[-1]}"

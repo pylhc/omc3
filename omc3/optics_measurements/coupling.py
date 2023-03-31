@@ -37,7 +37,7 @@ from omc3.optics_measurements.constants import (
     ERR,
     EXT,
     MDL,
-    DELTA
+    DELTA, F1010_NAME, F1001_NAME
 )
 from omc3.utils import logging_tools, stats
 
@@ -167,8 +167,8 @@ def calculate_coupling(
     f1001_df = _rdt_to_output_df(f1001, model_coupling[F1001], meas_input.accelerator.model, joined_index)
     f1010_df = _rdt_to_output_df(f1010, model_coupling[F1010], meas_input.accelerator.model, joined_index)
 
-    tfs.write(Path(meas_input.outputdir) / f"{F1001.lower()}{EXT}", f1001_df, header_dict)
-    tfs.write(Path(meas_input.outputdir) / f"{F1010.lower()}{EXT}", f1010_df, header_dict)
+    tfs.write(Path(meas_input.outputdir) / f"{F1001_NAME}{EXT}", f1001_df, header_dict)
+    tfs.write(Path(meas_input.outputdir) / f"{F1010_NAME}{EXT}", f1010_df, header_dict)
 
 
 def compensate_rdts_by_model(

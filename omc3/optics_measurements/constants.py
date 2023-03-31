@@ -8,16 +8,22 @@ Specific constants to be used in optics_measurements, to help with consistency.
 EXT: str = ".tfs"
 AMP_BETA_NAME: str = "beta_amplitude_"
 BETA_NAME: str = "beta_phase_"
+KMOD_BETA_NAME: str = "beta_kmod_"  # TODO Check in Michis repo
+KMOD_IP_NAME: str = "interaction_point_kmod_"  # TODO Check in Michis repo
 CHROM_BETA_NAME: str = "chrom_beta_"
 PHASE_NAME: str = "phase_"
 SPECIAL_PHASE_NAME: str = "special_phase_"
 TOTAL_PHASE_NAME: str = "total_phase_"
+DRIVEN_PHASE_NAME: str = f"{PHASE_NAME}driven_"
+DRIVEN_TOTAL_PHASE_NAME: str = f"{TOTAL_PHASE_NAME}driven_"
 DISPERSION_NAME: str = "dispersion_"
 NORM_DISP_NAME: str = "normalised_dispersion_"
 ORBIT_NAME: str = "orbit_"
 KICK_NAME: str = "kick_"
 IP_NAME: str = "interaction_point_"
 CALIBRATION_FILE: str = "calibration_{plane}.out"
+F1001_NAME: str = "f1001"
+F1010_NAME: str = "f1010"
 
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe
@@ -47,7 +53,10 @@ PHASE_ADV: str = "MU"
 F1001: str = "F1001"
 F1010: str = "F1010"
 NOISE: str = "NOISE"
+ORBIT: str = ""  # Column is plane (X or Y) in files
 CLOSED_ORBIT: str = "CO"
+DISPERSION: str = "D"
+NORM_DISPERSION: str = "ND"
 
 SECONDARY_AMPLITUDE_X: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum

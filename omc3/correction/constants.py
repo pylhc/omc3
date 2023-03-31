@@ -4,39 +4,60 @@ Constants
 
 Specific constants to be used in correction, to help with consistency.
 """
-from omc3.model.constants import TWISS_DAT
+# Same as in optics-measurements:
+
+from omc3.optics_measurements.constants import (
+    BETA_NAME,
+    AMP_BETA_NAME,
+    ORBIT_NAME,
+    DISPERSION_NAME,
+    NORM_DISP_NAME,
+    PHASE_NAME,
+    TOTAL_PHASE_NAME,
+    F1001_NAME,
+    F1010_NAME,
+
+    # Column Suffixes
+    ERR,  # Error of the measurement
+    RMS,  # Root-Mean-Square
+    RES,  # Rescaled measurement
+    DELTA,  # Delta between measurement and model (sometimes beating)
+    MDL,  # Model
+
+    # Column Names
+    NAME,
+    NAME2,
+    S,
+    BETA,
+    DISPERSION,
+    NORM_DISPERSION,
+    F1001,
+    F1010,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+    AMPLITUDE,
+    REAL,
+    IMAG,
+)
 
 # Column Names -----------------------------------------------------------------
-# Pre- and Suffixe
-ERR: str = "ERR"  # Error of the measurement
-RMS: str = "RMS"  # Root-Mean-Square
-RES: str = "RES"  # Rescaled measurement
-DELTA: str = "DELTA"  # Delta between measurement and model (sometimes beating)
-MDL: str = "MDL"  # Model
 VALUE: str = "VALUE"
 WEIGHT: str = "WEIGHT"
 ERROR: str = "ERROR"
 MODEL: str = "MODEL"
 DIFF: str = "DIFF"
-
-# Names
-NAME: str = "NAME"
-NAME2: str = "NAME2"
-S: str = "S"
-BETA: str = "BET"
-BETABEAT: str = "BB"
-DISP: str = "D"
-F1001: str = "F1001"
-F1010: str = "F1010"
-INCR: str = "incr"
-NORM_DISP: str = "ND"
-PHASE: str = "PHASE"
-PHASE_ADV: str = "MU"
-TUNE: str = "Q"
+NCR: str = "incr"
 
 # Correction Test Constants ----------------------------------------------------
+MODEL_NOMINAL_FILENAME: str = "twiss_nominal.tfs"
 MODEL_MATCHED_FILENAME: str = "twiss_matched.tfs"
-NOMINAL_MEASUREMENT: str = "CorrectionTest_Nominal"
+NOMINAL_MEASUREMENT: str = "CorrectionTest_Nominal.tfs"
 UNCORRECTED_LABEL: str = "Uncorrected"
 CORRECTED_LABEL: str = "Corrected"
+EXPECTED: str = "EXP"
 
+COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX = {  # I know, I know ... (jdilly, 2023)
+    F1001_NAME: F1001,
+    F1010_NAME: F1010,
+}

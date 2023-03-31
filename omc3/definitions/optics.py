@@ -1,0 +1,167 @@
+from dataclasses import dataclass, fields
+
+import tfs
+from omc3.correction.constants import EXPECTED, DIFF
+from omc3.optics_measurements.constants import (
+    BETA_NAME, AMP_BETA_NAME, ORBIT_NAME, DISPERSION_NAME, NORM_DISP_NAME,
+    PHASE_NAME, TOTAL_PHASE_NAME, AMPLITUDE, REAL, IMAG, DISPERSION, NORM_DISPERSION, PHASE_ADV, MDL, S, KMOD_BETA_NAME,
+    F1001, F1010, EXT, NAME, DELTA, ERR, DRIVEN_TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, IP_NAME,
+    KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME)
+from omc3.plotting.utils.annotations import ylabels
+from tfs import TfsDataFrame
+from tfs.collection import TfsCollection, Tfs
+
+
+class OpticsMeasurement(TfsCollection):
+    """Class to hold and load the measurements from `omc3.optics_measurements`.
+
+    Arguments:
+        directory: The path to the measurement directory, usually the
+                   `optics_measurements` output directory.
+    """
+    NAME = NAME
+
+    beta_phase = Tfs(BETA_NAME)
+    beta_amplitude = Tfs(AMP_BETA_NAME)
+    beta_kmod = Tfs(KMOD_BETA_NAME)
+    phase = Tfs(PHASE_NAME)
+    total_phase = Tfs(TOTAL_PHASE_NAME)
+    phase_driven = Tfs(DRIVEN_PHASE_NAME)
+    total_phase_driven = Tfs(DRIVEN_TOTAL_PHASE_NAME)
+    dispersion = Tfs(DISPERSION_NAME)
+    norm_dispersion = Tfs(NORM_DISP_NAME)
+    orbit = Tfs(ORBIT_NAME)
+    kick = Tfs(KICK_NAME)
+    ip = Tfs(IP_NAME)
+    ip_kmod = Tfs(KMOD_IP_NAME)
+    f1001 = Tfs(F1001_NAME, two_planes=False)
+    f1010 = Tfs(F1010_NAME, two_planes=False)
+
+    def _get_filename(self, name, plane="") -> str:
+        """ Default way `optics_measurements` filenames are defined,
+        where `name` is the first argument in `Tfs` above.
+        `plane` is added if `two_planes` is `True` or not given."""
+        return f"{name}{plane}{EXT}"
+
+    def read_tfs(self, filename: str) -> TfsDataFrame:
+        """ Override for NAME convenience. """
+        return tfs.read(self.directory / filename, index=self.NAME)
+
+    def write_tfs(self, filename: str, data_frame: TfsDataFrame):
+        """ Override for NAME convenience. """
+        tfs.write(self.directory / filename, data_frame, save_index=self.NAME)
+
+
+@dataclass(frozen=True)
+class ColumnsAndLabels:
+    # Columns
+    _column: str  # Main data column (Measurement)
+    _error_column: str = None  # Error on the data
+    _model_column: str = None  # Model value of the data
+    _delta_column: str = None   # Difference between Measurement and Model
+    _error_delta_column: str = None   # Difference between Measurement and Model
+    _expected_column: str = None   # Expected value after a correction
+    _diff_correction_column: str = None   # Expected difference coming from correction (models)
+    # Labels
+    _label: str  = None  # Name for plot axis
+    _delta_label: str = None   # Name for delta column on a plot axis
+    _text_label: str = None # Name in text
+    # Other
+    needs_plane: bool = True
+
+    def set_plane(self, plane: str):
+        """ Fixes the plane in a new object. """
+        if not self.needs_plane:
+            raise AttributeError("Cannot set the plane of a non-planed definition.")
+        values_fixed_plane = {f.name: getattr(self, f.name[1:]).format(plane.upper()) for f in fields(self) if f.name[0] == "_"}
+        return ColumnsAndLabels(
+            needs_plane=False,
+            **values_fixed_plane,
+        )
+
+    @property
+    def column(self):
+        if self.needs_plane and not any(ph in self._column for ph in ("{}", "{0}")):
+            return f"{self._column}{{0}}"
+
+        return self._column
+
+    @property
+    def label(self):
+        if self._label:
+            return self._label
+        return self.column
+
+    @property
+    def text_label(self):
+        if self._text_label:
+            return self._text_label
+        return self.column
+
+
+    @property
+    def delta_label(self):
+        if self._delta_label:
+            return self._delta_label
+
+        if self.label.startswith("$"):
+            return f"$\Delta {self.label[1:]}"
+        return f"$\Delta$ {self.label}"
+
+    @property
+    def error_column(self):
+        if self._error_column:
+            return self._error_column
+        return f"{ERR}{self.column}"
+
+    @property
+    def delta_column(self):
+        if self._delta_column:
+            return self._delta_column
+        return f"{DELTA}{self.column}"
+
+    @property
+    def error_delta_column(self):
+        if self._delta_column:
+            return self._delta_column
+        return f"{ERR}{DELTA}{self.column}"
+
+    @property
+    def model_column(self):
+        if self._model_column:
+            return self._model_column
+        return f"{self.column}{MDL}"
+
+    @property
+    def expected_column(self):
+        if self._expected_column:
+            return self._expected_column
+        return f"{EXPECTED}{self.column}"
+
+    @property
+    def diff_correction_column(self):
+        if self._diff_correction_column:
+            return self._diff_correction_column
+        return f"{DIFF}{self.column}{MDL}"
+
+
+POSITION_COLUMN_MAPPING = {
+    'location': ColumnsAndLabels(S, 'Location [m]', 'longitudinal location'),
+    'phase-advance': ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', 'Phase Advance [$2 \pi$]', 'phase advance'),
+}
+
+
+""" Map the file name to it's main columns and the respective label for a plot. """
+FILE_COLUMN_MAPPING = {
+    BETA_NAME:        ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat']),
+    AMP_BETA_NAME:    ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat']),
+    ORBIT_NAME:       ColumnsAndLabels(ORBIT, _label=ylabels['co'], _text_label='orbit'),
+    DISPERSION_NAME:  ColumnsAndLabels(DISPERSION, _label=ylabels['dispersion'], _text_label='dispersion'),
+    NORM_DISP_NAME:   ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion'),
+    PHASE_NAME:       ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase'),
+    TOTAL_PHASE_NAME: ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase'),
+    'rdt_amplitude':  ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False),
+    'rdt_phase':      ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase', needs_plane=False),
+    'rdt_real':       ColumnsAndLabels(REAL, _label=ylabels['real'], _text_label='real', needs_plane=False),
+    'rdt_imag':       ColumnsAndLabels(IMAG, _label=ylabels['imag'], _text_label='imaginary', needs_plane=False),
+}

@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.correction.constants import (BETA, DIFF, MODEL, NORM_DISP, PHASE_ADV,
+from omc3.correction.constants import (BETA, DIFF, MODEL, NORM_DISPERSION, PHASE_ADV,
                                        TUNE, VALUE, F1001, F1010, PHASE)
 from omc3.utils import logging_tools
 from omc3.optics_measurements.toolbox import df_diff, df_rel_diff
@@ -54,7 +54,7 @@ def _get_model_appenders() -> Dict[str, Callable]:
     return defaultdict(lambda:  _get_model_generic, {
         f"{PHASE}X": _get_model_phases, f"{PHASE}Y": _get_model_phases,
         f"{BETA}X": _get_model_betabeat, f"{BETA}Y": _get_model_betabeat,
-        f"{NORM_DISP}X": _get_model_norm_disp, f"{TUNE}": _get_model_tunes, })
+        f"{NORM_DISPERSION}X": _get_model_norm_disp, f"{TUNE}": _get_model_tunes, })
 
 
 def _get_model_generic(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.DataFrame:
@@ -112,9 +112,15 @@ def add_coupling_to_model(model: pd.DataFrame) -> pd.DataFrame:
     """
     result_tfs_df = model.copy()
     coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
+    # F1001 ---
     result_tfs_df[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
     result_tfs_df[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
+    result_tfs_df[f"{F1001}A"] = np.abs(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
+    result_tfs_df[f"{F1001}P"] = np.angle(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
+    # F1010 ---
     result_tfs_df[f"{F1010}R"] = np.real(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
     result_tfs_df[f"{F1010}I"] = np.imag(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
+    result_tfs_df[f"{F1010}A"] = np.abs(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
+    result_tfs_df[f"{F1010}P"] = np.angle(coupling_rdts_df[f"{F1010}"]).astype(np.float64)
     return result_tfs_df
 

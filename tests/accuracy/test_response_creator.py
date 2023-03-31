@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from omc3.correction.constants import (DISP, PHASE, PHASE_ADV)
+from omc3.correction.constants import (DISPERSION, PHASE, PHASE_ADV)
 from omc3.correction.handler import _rms
 from omc3.correction.response_io import read_fullresponse, read_varmap
 from omc3.correction.sequence_evaluation import evaluate_for_variables
@@ -92,7 +92,7 @@ def _adapt_optics_params(optics_params, creator, is_skew):
         optics_params = OPTICS_PARAMS_CHOICES
     elif is_skew:
         # twiss calculates (N)D[X,Y] but (N)DX is all zero and NDY not in madx.
-        optics_params = list(optics_params) + [f"{DISP}Y"]
+        optics_params = list(optics_params) + [f"{DISPERSION}Y"]
 
     # replace PHASE with MU, as the responses operate on MU
     return [f"{PHASE_ADV}{k[-1]}" if k[:-1] == PHASE else k for k in optics_params]

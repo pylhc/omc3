@@ -47,7 +47,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 *--Optional--*
 
-- **beta_file_name**:
+- **beta_filename**:
 
     Prefix of the beta file to use. E.g.: getkmodbeta
 
@@ -169,10 +169,9 @@ from typing import Dict
 
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-
 from omc3.correction import handler
-from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
-                                       NORM_DISP, PHASE, TUNE)
+from omc3.correction.constants import (BETA, DISPERSION, F1001, F1010,
+                                       NORM_DISPERSION, PHASE, TUNE)
 from omc3.model import manager
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
@@ -181,9 +180,9 @@ LOG = logging_tools.get_logger(__name__)
 
 OPTICS_PARAMS_CHOICES = (f"{PHASE}X", f"{PHASE}Y",
                          f"{BETA}X", f"{BETA}Y",
-                         f"{NORM_DISP}X",
+                         f"{NORM_DISPERSION}X",
                          f"{TUNE}",
-                         f"{DISP}X", f"{DISP}Y",
+                         f"{DISPERSION}X", f"{DISPERSION}Y",
                          f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I")
 
 CORRECTION_DEFAULTS = {
@@ -192,7 +191,7 @@ CORRECTION_DEFAULTS = {
     "svd_cut": 0.01,
     "optics_params": OPTICS_PARAMS_CHOICES[:6],
     "variable_categories": ["MQM", "MQT", "MQTL", "MQY"],
-    "beta_file_name": "beta_phase_",
+    "beta_filename": "beta_phase_",
     "method": "pinv",
     "iterations": 4,
 }
@@ -243,9 +242,9 @@ def correction_params():
                          nargs="+",
                          default=CORRECTION_DEFAULTS["variable_categories"],
                          help="List of names of the variables classes to use.", )
-    params.add_parameter(name="beta_file_name",
-                         default=CORRECTION_DEFAULTS["beta_file_name"],
-                         help="Prefix of the beta file to use. E.g.: getkmodbeta", )
+    params.add_parameter(name="beta_filename",
+                         default=CORRECTION_DEFAULTS["beta_filename"],
+                         help="Prefix of the beta file to use. E.g.: beta_phase_", )
     params.add_parameter(name="method",
                          type=str,
                          choices=("pinv", "omp"),
@@ -324,9 +323,9 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{PHASE}Y": 0.05,
             f"{BETA}X": 0.2,
             f"{BETA}Y": 0.2,
-            f"{DISP}X": 0.2,
-            f"{DISP}Y": 0.2,
-            f"{NORM_DISP}X": 0.2,
+            f"{DISPERSION}X": 0.2,
+            f"{DISPERSION}Y": 0.2,
+            f"{NORM_DISPERSION}X": 0.2,
             f"{TUNE}": 0.1,
             f"{F1001}R": 0.2,
             f"{F1001}I": 0.2,
@@ -338,9 +337,9 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{PHASE}Y": 0.035,
             f"{BETA}X": 0.02,
             f"{BETA}Y": 0.02,
-            f"{DISP}X": 0.02,
-            f"{DISP}Y": 0.02,
-            f"{NORM_DISP}X": 0.02,
+            f"{DISPERSION}X": 0.02,
+            f"{DISPERSION}Y": 0.02,
+            f"{NORM_DISPERSION}X": 0.02,
             f"{TUNE}": 0.027,
             f"{F1001}R": 0.02,
             f"{F1001}I": 0.02,
@@ -352,9 +351,9 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{PHASE}Y": 1,
             f"{BETA}X": 0,
             f"{BETA}Y": 0,
-            f"{DISP}X": 0,
-            f"{DISP}Y": 0,
-            f"{NORM_DISP}X": 0,
+            f"{DISPERSION}X": 0,
+            f"{DISPERSION}Y": 0,
+            f"{NORM_DISPERSION}X": 0,
             f"{TUNE}": 10,
             f"{F1001}R": 0,
             f"{F1001}I": 0,

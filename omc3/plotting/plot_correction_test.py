@@ -10,9 +10,9 @@ from typing import Dict
 from generic_parser import DotDict, EntryPointParameters, entrypoint
 from omc3.correction.constants import (DIFF, ERROR, NOMINAL_MEASUREMENT,
                                        CORRECTED_LABEL, UNCORRECTED_LABEL)
-from omc3.correction.correction_test_utils import get_plotting_style_parameters
+from omc3.correction.utils_check import get_plotting_style_parameters
 from omc3.optics_measurements.constants import EXT
-from omc3.plotting.optics_measurements.constants import YAXIS, ColumnsAndLabels
+from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels
 from omc3.plotting.plot_optics_measurements import (_get_x_axis_column_and_label, _get_ip_positions)
 from omc3.plotting.plot_tfs import plot as plot_tfs
 from omc3.utils import logging_tools
@@ -62,7 +62,7 @@ def plot_correction_test(opt: DotDict):
         if tfs_file.stem.startswith("f1"):
             continue
 
-        cal: ColumnsAndLabels = YAXIS[tfs_file.stem[:-1]]
+        cal: ColumnsAndLabels = FILE_COLUMN_MAPPING[tfs_file.stem[:-1]]
 
         fig_dict[tfs_file] = plot_tfs(
             files=[path / tfs_file.name for path in correction_dirs.values()],

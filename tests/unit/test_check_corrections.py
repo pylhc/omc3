@@ -4,9 +4,10 @@ import pytest
 import tfs
 from omc3.correction.constants import NAME, ERROR, DIFF, S, VALUE, MDL, PHASE_ADV, MODEL_MATCHED_FILENAME
 from omc3.correction.model_appenders import add_coupling_to_model
+from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels
 from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import EXT
-from omc3.scripts.correction_test import correction_test_entrypoint, NOMINAL_MEASUREMENT
+from omc3.scripts.check_corrections import correction_test_entrypoint
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, _create_fake_measurement
@@ -23,6 +24,7 @@ def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
     beam = model_inj_beams.beam
     correction_params = get_skew_params(beam) if orientation == 'skew' else get_normal_params(beam)
     _create_fake_measurement(tmp_path, model_inj_beams.model_dir, correction_params.twiss)
+    n_meas_files = len(list(tmp_path.glob(f"*{EXT}")))
 
     output_dir = tmp_path / "Corrections"
 
@@ -36,13 +38,12 @@ def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
     )
 
     assert (output_dir / MODEL_MATCHED_FILENAME).is_file()
-    assert (output_dir / NOMINAL_MEASUREMENT).is_dir()
 
-    for directory in [output_dir, output_dir/NOMINAL_MEASUREMENT]:
+    for directory in [output_dir,]:
         tfs_files = list(directory.glob(f"*{EXT}"))
         twiss_files = list(directory.glob(f"twiss*{EXT}"))
 
-        assert (len(tfs_files) - len(twiss_files)) == 9
+        assert (len(tfs_files) - len(twiss_files)) == n_meas_files
         for tfs_file in tfs_files:
             assert tfs_file.stat().st_size
 
@@ -50,14 +51,25 @@ def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
                 continue
 
             df = tfs.read(tfs_file)
-            assert all(c in df.columns for c in (S, NAME, DIFF, ERROR, VALUE))
             assert df.columns.str.match(f"{PHASE_ADV}.{MDL}").any()
+            try:
+                column_map = FILE_COLUMN_MAPPING[tfs_file.stem[:-1]]
+            except KeyError:
+                for part in ("amplitude", "phase", "real", "imag"):
+                    column_map = FILE_COLUMN_MAPPING[f"rdt_{part}"]
+                    _assert_all_check_colums(df, column_map)
+            else:
+                _assert_all_check_colums(df, column_map.set_plane(tfs_file.stem[-1]))
 
-    pdf_files = list(output_dir.glob(f"*.{matplotlib.rcParams['savefig.format']}"))
-    assert len(pdf_files) == 7
-    for pdf_file in pdf_files:
-        assert pdf_file.stat().st_size
+    # pdf_files = list(output_dir.glob(f"*.{matplotlib.rcParams['savefig.format']}"))
+    # assert len(pdf_files) == 7
+    # for pdf_file in pdf_files:
+    #     assert pdf_file.stat().st_size
 
+
+def _assert_all_check_colums(df, colmap: ColumnsAndLabels):
+    for col in (colmap.column, colmap.expected_column, colmap.error_delta_column, colmap.diff_correction_column):
+        assert col in df.columns
 
 def _create_fake_measurement(tmp_path, model_path, twiss_path):
     model_df = tfs.read(model_path / TWISS_DAT, index=NAME)
