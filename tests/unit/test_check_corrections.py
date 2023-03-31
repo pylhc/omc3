@@ -2,9 +2,9 @@ import matplotlib
 import pytest
 
 import tfs
-from omc3.correction.constants import NAME, ERROR, DIFF, S, VALUE, MDL, PHASE_ADV, MODEL_MATCHED_FILENAME
+from omc3.correction.constants import NAME, ERROR, DIFF, S, VALUE, MDL, PHASE_ADV, MODEL_MATCHED_FILENAME, TUNE
 from omc3.correction.model_appenders import add_coupling_to_model
-from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels
+from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
 from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import EXT
 from omc3.scripts.check_corrections import correction_test_entrypoint
@@ -50,16 +50,29 @@ def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
             if tfs_file in twiss_files:
                 continue
 
+            # can read?
             df = tfs.read(tfs_file)
+
+            # has longitudinal columns?
+            assert df.columns.str.match(S).any()
             assert df.columns.str.match(f"{PHASE_ADV}.{MDL}").any()
+
+            # Check tune in header
+            for ntune in (1, 2):
+                tune_map = FILE_COLUMN_MAPPING[TUNE].set_plane(ntune)
+                assert len([k for k in df.headers.keys() if tune_map.column in k]) == 3
+                assert tune_map.column in df.headers
+                assert tune_map.diff_correction_column in df.headers
+                assert tune_map.expected_column in df.headers
+
+            # has the needed correction columns?
             try:
                 column_map = FILE_COLUMN_MAPPING[tfs_file.stem[:-1]]
             except KeyError:
-                for part in ("amplitude", "phase", "real", "imag"):
-                    column_map = FILE_COLUMN_MAPPING[f"rdt_{part}"]
+                for column_map in RDT_COLUMN_MAPPING.values():
                     _assert_all_check_colums(df, column_map)
             else:
-                _assert_all_check_colums(df, column_map.set_plane(tfs_file.stem[-1]))
+                _assert_all_check_colums(df, column_map.set_plane(tfs_file.stem[-1].upper()))
 
     # pdf_files = list(output_dir.glob(f"*.{matplotlib.rcParams['savefig.format']}"))
     # assert len(pdf_files) == 7
@@ -68,7 +81,7 @@ def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
 
 
 def _assert_all_check_colums(df, colmap: ColumnsAndLabels):
-    for col in (colmap.column, colmap.expected_column, colmap.error_delta_column, colmap.diff_correction_column):
+    for col in (colmap.column, colmap.expected_column, colmap.error_expected_column, colmap.error_delta_column, colmap.diff_correction_column):
         assert col in df.columns
 
 def _create_fake_measurement(tmp_path, model_path, twiss_path):

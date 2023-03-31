@@ -6,7 +6,7 @@ from omc3.optics_measurements.constants import (
     BETA_NAME, AMP_BETA_NAME, ORBIT_NAME, DISPERSION_NAME, NORM_DISP_NAME,
     PHASE_NAME, TOTAL_PHASE_NAME, AMPLITUDE, REAL, IMAG, DISPERSION, NORM_DISPERSION, PHASE_ADV, MDL, S, KMOD_BETA_NAME,
     F1001, F1010, EXT, NAME, DELTA, ERR, DRIVEN_TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, IP_NAME,
-    KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME)
+    KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME, TUNE)
 from omc3.plotting.utils.annotations import ylabels
 from tfs import TfsDataFrame
 from tfs.collection import TfsCollection, Tfs
@@ -60,7 +60,8 @@ class ColumnsAndLabels:
     _model_column: str = None  # Model value of the data
     _delta_column: str = None   # Difference between Measurement and Model
     _error_delta_column: str = None   # Difference between Measurement and Model
-    _expected_column: str = None   # Expected value after a correction
+    _expected_column: str = None   # Expected (delta) value after a correction
+    _error_expected_column: str = None   # Expected error value after a correction
     _diff_correction_column: str = None   # Expected difference coming from correction (models)
     # Labels
     _label: str  = None  # Name for plot axis
@@ -73,7 +74,7 @@ class ColumnsAndLabels:
         """ Fixes the plane in a new object. """
         if not self.needs_plane:
             raise AttributeError("Cannot set the plane of a non-planed definition.")
-        values_fixed_plane = {f.name: getattr(self, f.name[1:]).format(plane.upper()) for f in fields(self) if f.name[0] == "_"}
+        values_fixed_plane = {f.name: getattr(self, f.name[1:]).format(plane) for f in fields(self) if f.name[0] == "_"}
         return ColumnsAndLabels(
             needs_plane=False,
             **values_fixed_plane,
@@ -90,7 +91,7 @@ class ColumnsAndLabels:
     def label(self):
         if self._label:
             return self._label
-        return self.column
+        return self.text_label
 
     @property
     def text_label(self):
@@ -122,9 +123,9 @@ class ColumnsAndLabels:
 
     @property
     def error_delta_column(self):
-        if self._delta_column:
-            return self._delta_column
-        return f"{ERR}{DELTA}{self.column}"
+        if self._error_delta_column:
+            return self._error_delta_column
+        return f"{ERR}{self.delta_column}"
 
     @property
     def model_column(self):
@@ -136,7 +137,13 @@ class ColumnsAndLabels:
     def expected_column(self):
         if self._expected_column:
             return self._expected_column
-        return f"{EXPECTED}{self.column}"
+        return f"{EXPECTED}{DELTA}{self.column}"
+
+    @property
+    def error_expected_column(self):
+        if self._error_expected_column:
+            return self._error_expected_column
+        return f"{ERR}{self.expected_column}"
 
     @property
     def diff_correction_column(self):
@@ -153,6 +160,7 @@ POSITION_COLUMN_MAPPING = {
 
 """ Map the file name to it's main columns and the respective label for a plot. """
 FILE_COLUMN_MAPPING = {
+    # Based on Filename
     BETA_NAME:        ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat']),
     AMP_BETA_NAME:    ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat']),
     ORBIT_NAME:       ColumnsAndLabels(ORBIT, _label=ylabels['co'], _text_label='orbit'),
@@ -160,8 +168,12 @@ FILE_COLUMN_MAPPING = {
     NORM_DISP_NAME:   ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion'),
     PHASE_NAME:       ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase'),
     TOTAL_PHASE_NAME: ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase'),
-    'rdt_amplitude':  ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False),
-    'rdt_phase':      ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase', needs_plane=False),
-    'rdt_real':       ColumnsAndLabels(REAL, _label=ylabels['real'], _text_label='real', needs_plane=False),
-    'rdt_imag':       ColumnsAndLabels(IMAG, _label=ylabels['imag'], _text_label='imaginary', needs_plane=False),
+    # Based on Column
+    TUNE:             ColumnsAndLabels(TUNE, _expected_column=f"{EXPECTED}{TUNE}{{0}}",  _label=ylabels['tune'], _text_label='tune'),
+    AMPLITUDE:  ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False),
+    PHASE:      ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase', needs_plane=False),
+    REAL:       ColumnsAndLabels(REAL, _label=ylabels['real'], _text_label='real', needs_plane=False),
+    IMAG:       ColumnsAndLabels(IMAG, _label=ylabels['imag'], _text_label='imaginary', needs_plane=False),
 }
+
+RDT_COLUMN_MAPPING = {k: FILE_COLUMN_MAPPING[k] for k in [AMPLITUDE, PHASE, REAL, IMAG]}

@@ -20,7 +20,7 @@ from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.utils_check import get_plotting_style_parameters, Measurements
 from omc3.definitions.constants import PLANES
-from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, ColumnsAndLabels
+from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
@@ -216,20 +216,16 @@ def _create_model_and_write_diff_to_measurements(
      # Crate new "measurement" with additional columns
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
 
-    tune_headers = {diff_tune: diff_models.headers[diff_tune]
-                    for diff_tune in (f"{DIFF}{TUNE}{n:d}" for n in (1, 2))
-                    if diff_tune in diff_models.headers}
-
     for attribute, filename in measurement.filenames(exist=True).items():
         filename = filename.replace(EXT, "")
         try:
             colmap = FILE_COLUMN_MAPPING[filename[:-1]]
         except KeyError:
             # Coupling RDTS:
+            # get F1### column map without the I, R, A, P part based on the rdt-filename:
             colmap_model_generic = ColumnsAndLabels(COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX[filename])
-            for idx, rdt_part in enumerate((AMPLITUDE, PHASE, REAL, IMAG)):
-                colmap_meas = ColumnsAndLabels(rdt_part, needs_plane=False)
-                colmap_model = colmap_model_generic.set_plane(rdt_part[0])
+            for idx, colmap_meas in enumerate(RDT_COLUMN_MAPPING.values()):  # AMP, PHASE, REAL or IMAG as column-map
+                colmap_model = colmap_model_generic.set_plane(colmap_meas.column[0])  # F1### with I, R, A, P
                 output_measurement.allow_write = (idx == 3)  # write out only after the last column is set
                 _create_check_columns(
                     measurement=measurement,
@@ -290,14 +286,20 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         attribute (str): attribute/property name of the OpticsMeasurement of the current measurement
 
     """
-    df = getattr(measurement, attribute)
+    df = measurement[attribute]
 
     diff = diff_models.loc[:, colmap_model.delta_column]
 
     df[colmap_meas.diff_correction_column] = diff
     df[colmap_meas.expected_column] = df[colmap_meas.delta_column] - diff
+    df[colmap_meas.error_expected_column] = df[colmap_meas.error_delta_column]
 
-    setattr(output_measurement, attribute, df)  # writes file if allow_write is set.
+    for tune_map in (FILE_COLUMN_MAPPING[TUNE].set_plane(n) for n in (1, 2)):
+        diff_tune = diff_models.headers[tune_map.delta_column]
+        df.headers[tune_map.diff_correction_column] = diff_tune
+        df.headers[tune_map.expected_column] = df.headers[tune_map.column] - diff_tune
+
+    output_measurement[attribute] = df  # writes file if allow_write is set.
 
 
 # Helper -----------------------------------------------------------------------

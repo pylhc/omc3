@@ -96,8 +96,8 @@ import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 from omc3.definitions.constants import PLANES
-from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING, ColumnsAndLabels
-from omc3.optics_measurements.constants import EXT
+from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
+from omc3.optics_measurements.constants import EXT, AMPLITUDE, PHASE, REAL, IMAG
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
 from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT)
 from omc3.plotting.plot_tfs import plot as plot_tfs, float_or_none
@@ -355,12 +355,11 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
 
 
 def _get_rdt_columns():
-    rdt_measures = ['rdt_amplitude', 'rdt_phase', 'rdt_real', 'rdt_imag']
-    result = {key: [None] * len(rdt_measures) for key in ['y_columns', 'y_labels', 'error_columns']}
-    for idx, meas in enumerate(rdt_measures):
-        result['y_columns'][idx] = FILE_COLUMN_MAPPING[meas].column
-        result['error_columns'][idx] = FILE_COLUMN_MAPPING[meas].error_column  # should now all be there in the files
-        result['y_labels'][idx] = FILE_COLUMN_MAPPING[meas].ylabel
+    result = {key: [None] * len(RDT_COLUMN_MAPPING) for key in ['y_columns', 'y_labels', 'error_columns']}
+    for idx, col_map in enumerate(RDT_COLUMN_MAPPING.items()):
+        result['y_columns'][idx] = col_map.column
+        result['error_columns'][idx] = col_map.error_column  # should now all be there in the files
+        result['y_labels'][idx] = col_map.ylabel
     return result
 
 
