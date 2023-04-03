@@ -1,3 +1,4 @@
+import matplotlib
 import pytest
 
 import tfs
@@ -16,7 +17,7 @@ from tests.accuracy.test_global_correction import get_skew_params, get_normal_pa
 # def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
 #     """ Checks that correction_test_entrypoint runs and that all the output
 #     data is there. Very simple test. """
-@pytest.mark.parametrize('orientation', ('normal',))
+@pytest.mark.parametrize('orientation', ('skew',))
 def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
     model_inj_beams = model_inj_beam1
     beam = model_inj_beams.beam
@@ -31,6 +32,7 @@ def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
         meas_dir=tmp_path,
         output_dir=output_dir,
         corrections=[correction_params.correction_filename],
+        plot=True,
         # accelerator class params:
         **model_inj_beams
     )
@@ -72,10 +74,10 @@ def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
             else:
                 _assert_all_check_colums(df, column_map.set_plane(tfs_file.stem[-1].upper()))
 
-    # pdf_files = list(output_dir.glob(f"*.{matplotlib.rcParams['savefig.format']}"))
-    # assert len(pdf_files) == 7
-    # for pdf_file in pdf_files:
-    #     assert pdf_file.stat().st_size
+    pdf_files = list(output_dir.glob(f"*.{matplotlib.rcParams['savefig.format']}"))
+    assert len(pdf_files) == (n_meas_files + 6) * 2  # rdts split into 4; plotting combined and individual
+    for pdf_file in pdf_files:
+        assert pdf_file.stat().st_size
 
 
 def _assert_all_check_colums(df, colmap: ColumnsAndLabels):

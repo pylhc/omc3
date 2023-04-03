@@ -4,7 +4,7 @@ IO Tools
 
 Helper functions for input/output issues.
 """
-from typing import Iterable
+from typing import Iterable, Any
 
 import re
 
@@ -13,7 +13,7 @@ import os
 import shutil
 from pathlib import Path
 
-from generic_parser.entry_datatypes import get_instance_faker_meta
+from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
 from pandas import DataFrame
 from tfs import TfsDataFrame
@@ -75,16 +75,13 @@ def glob_regex(path: Path, pattern: str) -> "filter object":
 class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
     """A class that behaves like a Path when possible, otherwise like a string."""
     def __new__(cls, value):
-        if isinstance(value, str):
-            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
-        return Path(value)
+        return Path(strip_quotes(value))
 
 
 class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path, str)):
     """A class that behaves like a Path when possible, otherwise like a string."""
     def __new__(cls, value):
-        if isinstance(value, str):
-            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+        value = strip_quotes(value)
         try:
             return Path(value)
         except TypeError:
@@ -94,18 +91,47 @@ class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path,
 class UnionPathStr(metaclass=get_instance_faker_meta(Path, str)):
     """A class that can be used as Path and string parser input, but does not convert."""
     def __new__(cls, value):
-        if isinstance(value, str):
-            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
-        return value
+        return
 
 
 class UnionPathStrInt(metaclass=get_instance_faker_meta(Path, str, int)):
     """A class that can be used as Path, string, int parser input, but does not convert.
     Very special and used e.g. in the BBQ Input."""
     def __new__(cls, value):
-        if isinstance(value, str):
-            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
-        return value
+        return strip_quotes(value)
+
+
+class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
+    """A class that allows `str` or `None`.
+    Can be used in string-lists when individual entries can be `None`."""
+    def __new__(cls, value):
+        return strip_quotes(value)
+
+
+"""A class that allows `float`, 'int' or `None`.
+Can be used in numeric-lists when individual entries can be `None`."""
+OptionalFloat = get_multi_class(float, int, type(None))
+
+
+def strip_quotes(value: Any) -> Any:
+    """Strip quotes around string-objects. If not a string, nothing
+    is changed. This is because the input from commandline or json files
+    could be surrounded by quotes (if they are strings).
+    The dict-parser removes them automatically as well.
+    This behaviour is important for basically every string-faker!
+
+    Args:
+        value (Any): The input value that goes into the function.
+                     Can be of any type.
+
+    Returns:
+        If the input was a string, then it will be the string with stripped
+        quotes (if there were any). Otherwise just the value.
+
+    """
+    if isinstance(value, str):
+        value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+    return value
 
 
 def convert_paths_in_dict_to_strings(dict_: dict) -> dict:

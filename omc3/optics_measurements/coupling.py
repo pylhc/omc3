@@ -335,8 +335,8 @@ def _rdt_to_output_df(
     df[AMPLITUDE + MDL] = np.abs(fterm_mdl)
 
     LOGGER.debug("Computing phase values")
-    df[PHASE] = np.angle(fterm)
-    df[PHASE + MDL] = np.angle(fterm_mdl)
+    df[PHASE] = np.angle(fterm) / PI2
+    df[PHASE + MDL] = np.angle(fterm_mdl) / PI2
 
     LOGGER.debug("Computing deviation from model")
     df[DELTA + AMPLITUDE] = df[AMPLITUDE] - df[AMPLITUDE + MDL]

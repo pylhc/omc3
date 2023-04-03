@@ -100,7 +100,7 @@ from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING
 from omc3.optics_measurements.constants import EXT, AMPLITUDE, PHASE, REAL, IMAG
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
 from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT)
-from omc3.plotting.plot_tfs import plot as plot_tfs, float_or_none
+from omc3.plotting.plot_tfs import plot as plot_tfs, OptionalFloat
 from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.iotools import PathOrStr, save_config
@@ -227,13 +227,13 @@ def get_plottfs_style_params() -> EntryPointParameters:
     params.add_parameter(
         name="x_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the x axis (Tupel)'
     )
     params.add_parameter(
         name="y_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the y axis (Tupel)'
     )
     params.add_parameter(

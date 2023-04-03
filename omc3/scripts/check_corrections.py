@@ -23,7 +23,7 @@ from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPT
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, TUNE, F1001, F1010
-from omc3.plotting.plot_correction_test import plot_correction_test
+from omc3.plotting.plot_checked_corrections import plot_checked_corrections
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config, glob_regex
 from tfs import TfsDataFrame
@@ -77,6 +77,11 @@ def get_correction_test_params():
                          type=str,
                          default=r"^changeparameters*?\.madx$",
                          )
+    # Plotting -----------------------------------------------------------------
+    params.add_parameter(name="plot",
+                         action="store_true",
+                         help="Activate plotting."
+                         )
     params.update(get_plotting_style_parameters())
     return params
 
@@ -120,8 +125,8 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
             meas_masks,
         )
 
-    # plotting (maybe make optional, e.g. if run from the GUI?)
-    _do_plots(corrections, opt)
+    if opt.plot:
+        _do_plots(corrections, opt)
 
 
 # Input Parameters -------------------------------------------------------------
@@ -224,6 +229,7 @@ def _create_model_and_write_diff_to_measurements(
         except KeyError:
             if filename not in (F1001_NAME, F1010_NAME):
                 LOG.debug(f"Attribute {attribute} will not be checked.")
+                continue
             # Coupling RDTS:
             # get F1### column map without the I, R, A, P part based on the rdt-filename:
             LOG.debug(f"Checking coupling correction for {attribute}")
@@ -347,8 +353,7 @@ def _do_plots(corrections: Dict[str, Any], opt: DotDict):
     opt_plot["input_dir"] = opt.output_dir
     opt_plot["output_dir"] = opt.output_dir
     opt_plot["corrections"] = list(corrections.keys())
-    opt_plot["show"] = True  # debug
-    plot_correction_test(**opt_plot)
+    plot_checked_corrections(**opt_plot)
 
 
 if __name__ == '__main__':

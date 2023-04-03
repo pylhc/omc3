@@ -84,7 +84,6 @@ class ColumnsAndLabels:
     def column(self):
         if self.needs_plane and not any(ph in self._column for ph in ("{}", "{0}")):
             return f"{self._column}{{0}}"
-
         return self._column
 
     @property

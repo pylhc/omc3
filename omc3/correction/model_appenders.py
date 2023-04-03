@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 from optics_functions.coupling import coupling_via_cmatrix
 
+from omc3.definitions.constants import PI2
 from omc3.optics_measurements.constants import (BETA, NORM_DISPERSION, PHASE_ADV,
                                        TUNE, F1001, F1010, PHASE)
 from omc3.correction.constants import DIFF, MODEL, VALUE
@@ -115,7 +116,7 @@ def add_coupling_to_model(model: pd.DataFrame) -> pd.DataFrame:
     result_tfs_df = model.copy()
     coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
 
-    function_map = {"R": np.real, "I": np.imag, "A": np.abs, "P": np.angle}
+    function_map = {"R": np.real, "I": np.imag, "A": np.abs, "P": lambda x: np.angle(x) / PI2}
 
     for rdt in (F1001, F1010):
         for suffix, func in function_map.items():
