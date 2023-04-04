@@ -34,6 +34,7 @@ DELTA: str = "DELTA"  # Delta between measurement and model (sometimes beating)
 MDL: str = "MDL"  # Model
 REAL: str = "REAL"
 IMAG: str = "IMAG"
+MASKED: str = "MASKED"
 
 # Names
 S: str = "S"

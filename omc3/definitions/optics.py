@@ -6,11 +6,13 @@ from omc3.optics_measurements.constants import (
     BETA_NAME, AMP_BETA_NAME, ORBIT_NAME, DISPERSION_NAME, NORM_DISP_NAME,
     PHASE_NAME, TOTAL_PHASE_NAME, AMPLITUDE, REAL, IMAG, DISPERSION, NORM_DISPERSION, PHASE_ADV, MDL, S, KMOD_BETA_NAME,
     F1001, F1010, EXT, NAME, DELTA, ERR, DRIVEN_TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, IP_NAME,
-    KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME, TUNE)
+    KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME, TUNE, RMS, MASKED)
 from omc3.plotting.utils.annotations import ylabels
 from tfs import TfsDataFrame
 from tfs.collection import TfsCollection, Tfs
 
+
+# Files ------------------------------------------------------------------------
 
 class OpticsMeasurement(TfsCollection):
     """Class to hold and load the measurements from `omc3.optics_measurements`.
@@ -52,8 +54,14 @@ class OpticsMeasurement(TfsCollection):
         tfs.write(self.directory / filename, data_frame, save_index=self.NAME)
 
 
+# Columns ----------------------------------------------------------------------
+
 @dataclass(frozen=True)
 class ColumnsAndLabels:
+    """ Class to store information about derived columns from the main column.
+    For convenience, also labels (e.g. for plotting) related to that column
+    are stored in this dataclass.
+    """
     # Columns
     _column: str  # Main data column (Measurement)
     _error_column: str = None  # Error on the data
@@ -67,6 +75,9 @@ class ColumnsAndLabels:
     _label: str  = None  # Name for plot axis
     _delta_label: str = None   # Name for delta column on a plot axis
     _text_label: str = None # Name in text
+    # Headers:
+    _delta_rms_header: str = None
+    _expected_rms_header: str = None
     # Other
     needs_plane: bool = True
 
@@ -80,6 +91,7 @@ class ColumnsAndLabels:
             **values_fixed_plane,
         )
 
+    # Properties ----
     @property
     def column(self):
         if self.needs_plane and not any(ph in self._column for ph in ("{}", "{0}")):
@@ -87,32 +99,17 @@ class ColumnsAndLabels:
         return self._column
 
     @property
-    def label(self):
-        if self._label:
-            return self._label
-        return self.text_label
-
-    @property
-    def text_label(self):
-        if self._text_label:
-            return self._text_label
-        return self.column
-
-
-    @property
-    def delta_label(self):
-        if self._delta_label:
-            return self._delta_label
-
-        if self.label.startswith("$"):
-            return f"$\Delta {self.label[1:]}"
-        return f"$\Delta$ {self.label}"
-
-    @property
     def error_column(self):
         if self._error_column:
             return self._error_column
         return f"{ERR}{self.column}"
+
+    # With Model ---
+    @property
+    def model_column(self):
+        if self._model_column:
+            return self._model_column
+        return f"{self.column}{MDL}"
 
     @property
     def delta_column(self):
@@ -126,12 +123,7 @@ class ColumnsAndLabels:
             return self._error_delta_column
         return f"{ERR}{self.delta_column}"
 
-    @property
-    def model_column(self):
-        if self._model_column:
-            return self._model_column
-        return f"{self.column}{MDL}"
-
+    # Corrections ---
     @property
     def expected_column(self):
         if self._expected_column:
@@ -150,29 +142,86 @@ class ColumnsAndLabels:
             return self._diff_correction_column
         return f"{DIFF}{self.column}{MDL}"
 
+    # Headers ---
+    @property
+    def delta_rms_header(self):
+        if self._delta_rms_header:
+            return self._delta_rms_header
+        return f"{self.delta_column}{RMS}"
 
+    @property
+    def expected_rms_header(self):
+        if self._expected_rms_header:
+            return self._expected_rms_header
+        return f"{self.expected_column}{RMS}"
+
+    @property
+    def delta_masked_rms_header(self):
+        return f"{self.delta_rms_header}{MASKED}"
+
+    @property
+    def expected_masked_rms_header(self):
+        return f"{self.expected_rms_header}{MASKED}"
+
+    # Labels ---
+    @property
+    def label(self):
+        if self._label:
+            return self._label
+        return self.text_label
+
+    @property
+    def text_label(self):
+        if self._text_label:
+            return self._text_label
+        return self.column
+
+    @property
+    def delta_label(self):
+        if self._delta_label:
+            return self._delta_label
+
+        if self.label.startswith("$"):
+            return f"$\Delta {self.label[1:]}"
+        return f"$\Delta$ {self.label}"
+
+
+# Defined Columns --------------------------------------------------------------
+TUNE_COLUMN =            ColumnsAndLabels(TUNE, _expected_column=f"{EXPECTED}{TUNE}{{0}}",  _label=ylabels['tune'], _text_label='tune')
+BETA_COLUMN =            ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat'])
+ORBIT_COLUMN =           ColumnsAndLabels(ORBIT, _label=ylabels['co'], _text_label='orbit')
+DISPERSION_COLUMN =      ColumnsAndLabels(DISPERSION, _label=ylabels['dispersion'], _text_label='dispersion')
+NORM_DISPERSION_COLUMN = ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion')
+PHASE_COLUMN =           ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase')
+TOTAL_PHASE_COLUMN =     ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase')
+PHASE_ADVANCE_COLUMN =   ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', _label='Phase Advance [$2 \pi$]', _text_label='phase advance')
+S_COLUMN =               ColumnsAndLabels(S, _label='Location [m]', _text_label='longitudinal location', needs_plane=False)
+
+RDT_AMPLITUDE_COLUMN = ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False)  # label needs rdt
+RDT_PHASE_COLUMN =     ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase', needs_plane=False)  # label needs rdt
+RDT_REAL_COLUMN =      ColumnsAndLabels(REAL, _label=ylabels['real'], _text_label='real', needs_plane=False)   # label needs rdt
+RDT_IMAG_COLUMN =      ColumnsAndLabels(IMAG, _label=ylabels['imag'], _text_label='imaginary', needs_plane=False)  # label needs rdt
+
+
+# And Column Mappings ----------------------------------------------------------
+
+""" Map for the x-axis of plots. """
 POSITION_COLUMN_MAPPING = {
-    'location': ColumnsAndLabels(S, _label='Location [m]', _text_label='longitudinal location', needs_plane=False),
-    'phase-advance': ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', _label='Phase Advance [$2 \pi$]', _text_label='phase advance'),
+    'location': S_COLUMN,
+    'phase-advance': PHASE_ADVANCE_COLUMN,
 }
-
 
 """ Map the file name to it's main columns and the respective label for a plot. """
 FILE_COLUMN_MAPPING = {
     # Based on Filename
-    BETA_NAME:        ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat']),
-    AMP_BETA_NAME:    ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat']),
-    ORBIT_NAME:       ColumnsAndLabels(ORBIT, _label=ylabels['co'], _text_label='orbit'),
-    DISPERSION_NAME:  ColumnsAndLabels(DISPERSION, _label=ylabels['dispersion'], _text_label='dispersion'),
-    NORM_DISP_NAME:   ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion'),
-    PHASE_NAME:       ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase'),
-    TOTAL_PHASE_NAME: ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase'),
-    # Based on Column
-    TUNE:       ColumnsAndLabels(TUNE, _expected_column=f"{EXPECTED}{TUNE}{{0}}",  _label=ylabels['tune'], _text_label='tune'),
-    AMPLITUDE:  ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False),
-    PHASE:      ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase', needs_plane=False),
-    REAL:       ColumnsAndLabels(REAL, _label=ylabels['real'], _text_label='real', needs_plane=False),
-    IMAG:       ColumnsAndLabels(IMAG, _label=ylabels['imag'], _text_label='imaginary', needs_plane=False),
+    BETA_NAME:        BETA_COLUMN,
+    AMP_BETA_NAME:    BETA_COLUMN,
+    ORBIT_NAME:       ORBIT_COLUMN,
+    DISPERSION_NAME:  DISPERSION_COLUMN,
+    NORM_DISP_NAME:   NORM_DISPERSION_COLUMN,
+    PHASE_NAME:       PHASE_COLUMN,
+    TOTAL_PHASE_NAME: TOTAL_PHASE_COLUMN,
 }
 
-RDT_COLUMN_MAPPING = {k: FILE_COLUMN_MAPPING[k] for k in [AMPLITUDE, PHASE, REAL, IMAG]}
+""" Find the Column Dataclass by column name for RDTs. """
+RDT_COLUMN_MAPPING = {c.column: c for c in [RDT_AMPLITUDE_COLUMN, RDT_PHASE_COLUMN, RDT_IMAG_COLUMN, RDT_REAL_COLUMN]}

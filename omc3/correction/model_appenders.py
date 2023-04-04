@@ -116,7 +116,7 @@ def add_coupling_to_model(model: pd.DataFrame) -> pd.DataFrame:
     result_tfs_df = model.copy()
     coupling_rdts_df = coupling_via_cmatrix(result_tfs_df)
 
-    function_map = {"R": np.real, "I": np.imag, "A": np.abs, "P": lambda x: np.angle(x) / PI2}
+    function_map = {"R": np.real, "I": np.imag, "A": np.abs, "P": lambda x: (np.angle(x) / PI2) % 1}
 
     for rdt in (F1001, F1010):
         for suffix, func in function_map.items():

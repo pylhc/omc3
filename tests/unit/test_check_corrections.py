@@ -4,7 +4,7 @@ import pytest
 import tfs
 from omc3.correction.constants import MODEL_MATCHED_FILENAME
 from omc3.correction.model_appenders import add_coupling_to_model
-from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
+from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, TUNE_COLUMN
 from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import EXT, NAME, S, MDL, PHASE_ADV, TUNE
 from omc3.scripts.check_corrections import correction_test_entrypoint
@@ -59,7 +59,7 @@ def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
 
             # Check tune in header
             for ntune in (1, 2):
-                tune_map = FILE_COLUMN_MAPPING[TUNE].set_plane(ntune)
+                tune_map = TUNE_COLUMN.set_plane(ntune)
                 assert len([k for k in df.headers.keys() if tune_map.column in k]) == 3
                 assert tune_map.column in df.headers
                 assert tune_map.diff_correction_column in df.headers

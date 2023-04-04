@@ -156,7 +156,6 @@ def _create_correction_plots_per_filename(filename, measurements, correction_dir
     )
 
     # Plot expectation and correction individually
-
     for name, path in correction_dirs.items():
         figs.update(
             plot_tfs(
@@ -204,6 +203,8 @@ def show_plots(show: bool):
     # plt.show()
     if show:
         plt.show()
+
+
 def save_plots(output_dir, figure_dict, input_dir=None):
     """ Save the plots. """
     if not output_dir and not input_dir:
@@ -233,6 +234,7 @@ def save_plots(output_dir, figure_dict, input_dir=None):
             LOG.info(f"Saving Corrections Plot to '{output_path}'")
             fig.savefig(output_path)
 
+
 def _get_corrected_measurement_names(correction_dirs: Iterable[Path]) -> Set[str]:
     """ Check all the corrections dirs for common tfs files."""
     tfs_files = None
@@ -245,6 +247,3 @@ def _get_corrected_measurement_names(correction_dirs: Iterable[Path]) -> Set[str
         tfs_files &= new_files
     # tfs_files -= {Path(MODEL_MATCHED_FILENAME).stem, Path(MODEL_NOMINAL_FILENAME).stem}  # no need, filtered later anyway
     return tfs_files
-
-
-

@@ -175,6 +175,24 @@ def weighted_error(data, errors=None, axis=None, t_value_corr=True):
     return error
 
 
+def circular_rms(data, period=PI2, axis=None):
+    """
+    Computes the circular root mean square along the specified axis.
+
+    Parameters:
+        data: array-like
+            Contains the data to be averaged
+        period: scalar, optional
+            Periodicity period of data, default is (2 * np.pi)
+        axis: int or tuple of ints, optional
+            Axis or axes along which to average data
+
+    Returns:
+        Returns the circular root mean square along the specified axis.
+    """
+    return np.sqrt(circular_mean(np.square(data / period), period=1, axis=axis) * period)
+
+
 def rms(data, axis=None):
     """
     Computes the root mean square along the specified axis.
@@ -186,7 +204,7 @@ def rms(data, axis=None):
             Axis or axes along which to average data
 
     Returns:
-        Returns root mean square along the specified axis.
+        Returns the root mean square along the specified axis.
     """
     return weighted_rms(data, axis=axis)
 

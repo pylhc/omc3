@@ -18,14 +18,17 @@ from omc3.correction.constants import MODEL_MATCHED_FILENAME, COUPLING_NAME_TO_M
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.utils_check import get_plotting_style_parameters
-from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
+from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, \
+    TUNE_COLUMN
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, TUNE, F1001, F1010
+from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, TUNE, F1001, F1010, PHASE
+from omc3.optics_measurements.toolbox import ang_diff
 from omc3.plotting.plot_checked_corrections import plot_checked_corrections
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config, glob_regex
+from omc3.utils.stats import rms, circular_rms
 from tfs import TfsDataFrame
 
 LOG = logging_tools.get_logger(__name__)
@@ -146,7 +149,6 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:  # acts inplace...
         opt[key] = {param: given_keys.get(param, def_dict[key][param]) for param in OPTICS_PARAMS_CHOICES}
     opt.optics_params = OPTICS_PARAMS_CHOICES
 
-
     # Convert Strings to Paths
     opt.meas_dir = Path(opt.meas_dir)
     opt.output_dir = Path(opt.output_dir)
@@ -190,6 +192,8 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> Dict[s
     opt.use_errorbars = False
     opt.weights = {param: 1.0 for param in opt.optics_params}
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
+
+    # use the indices as filters
     filter_dict = {
         global_correction.get_filename_from_parameter(k, opt.beta_filename): v.index for k, v in meas_dict.items()
     }
@@ -224,6 +228,8 @@ def _create_model_and_write_diff_to_measurements(
 
     for attribute, filename in measurement.filenames(exist=True).items():
         filename = filename.replace(EXT, "")
+        rms_mask = rms_masks.get(filename, None)
+
         try:
             colmap = FILE_COLUMN_MAPPING[filename[:-1]]
         except KeyError:
@@ -244,6 +250,7 @@ def _create_model_and_write_diff_to_measurements(
                     colmap_meas=colmap_meas,
                     colmap_model=colmap_model,
                     attribute=attribute,
+                    rms_mask=rms_mask,
                 )
         else:
             # "Normal" optics parameters
@@ -257,6 +264,7 @@ def _create_model_and_write_diff_to_measurements(
                 colmap_meas=cols,
                 colmap_model=cols,
                 attribute=attribute,
+                rms_mask=rms_mask,
             )
 
     # df_rms_mask = rms_masks.get(filename, df.index)
@@ -265,7 +273,8 @@ def _create_model_and_write_diff_to_measurements(
 
 
 def _create_check_columns(measurement: OpticsMeasurement, output_measurement: OpticsMeasurement, diff_models: TfsDataFrame,
-                          colmap_meas: ColumnsAndLabels, colmap_model: ColumnsAndLabels, attribute: str):
+                          colmap_meas: ColumnsAndLabels, colmap_model: ColumnsAndLabels, attribute: str,
+                          rms_mask: Dict = None):
     """
     Creates the columns in the measurements, that allow for checking the corrections.
     These are:
@@ -295,6 +304,7 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         colmap_meas (ColumnsAndLabels): Columns of the measurement
         colmap_model (ColumnsAndLabels): Columns of the model
         attribute (str): attribute/property name of the OpticsMeasurement of the current measurement
+        rms_mask (pd.Index): Indices to use when calculating RMS
 
     """
     LOG.debug(
@@ -308,10 +318,38 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
     diff = diff_models.loc[:, colmap_model.delta_column]
 
     df[colmap_meas.diff_correction_column] = diff
-    df[colmap_meas.expected_column] = df[colmap_meas.delta_column] - diff
+    if colmap_meas.column == PHASE:
+        df[colmap_meas.expected_column] = ang_diff(df[colmap_meas.delta_column], diff)  # assumes period 1
+        df.headers[colmap_meas.delta_rms_header] = circular_rms(df[colmap_meas.delta_column], period=1)
+        df.headers[colmap_meas.expected_rms_header] = circular_rms(df[colmap_meas.expected_column], period=1)
+        if rms_mask:
+            df.headers[colmap_meas.delta_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.delta_column], period=1)
+            df.headers[colmap_meas.expected_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.expected_column], period=1)
+
+    else:
+        df[colmap_meas.expected_column] = df[colmap_meas.delta_column] - diff
+        df.headers[colmap_meas.delta_rms_header] = rms(df[colmap_meas.delta_column])
+        df.headers[colmap_meas.expected_rms_header] = rms(df[colmap_meas.expected_column])
+        if rms_mask:
+            df.headers[colmap_meas.delta_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.delta_column], period=1)
+            df.headers[colmap_meas.expected_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.expected_column], period=1)
+
+    LOG.info(
+        f"\nRMS {attribute} ({colmap_meas.column}):\n"
+        f"    measured {df.headers[colmap_meas.delta_rms_header]:.2e}\n"
+        f"    expected {df.headers[colmap_meas.expected_rms_header]:.2e}"
+    )
+
+    if rms_mask:
+        LOG.info(
+            f"\nRMS {attribute} ({colmap_meas.column}) after filtering:\n"
+            f"    measured {df.headers[colmap_meas.delta_masked_rms_header]:.2e}\n"
+            f"    expected {df.headers[colmap_meas.expected_masked_rms_header]:.2e}"
+        )
+
     df[colmap_meas.error_expected_column] = df[colmap_meas.error_delta_column]
 
-    for tune_map in (FILE_COLUMN_MAPPING[TUNE].set_plane(n) for n in (1, 2)):
+    for tune_map in (TUNE_COLUMN.set_plane(n) for n in (1, 2)):
         LOG.debug(
             f"Creating columns for tune {tune_map.column}:\n"
             f"Model Diff: {tune_map.delta_column} -> {tune_map.diff_correction_column}\n"
