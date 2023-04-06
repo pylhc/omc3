@@ -24,6 +24,8 @@ from omc3.utils.iotools import PathOrStr
 
 LOG = logging_tools.get_logger(__name__)
 
+SPLIT_ID = "#_#"  # will appear in the figure ID, but should be fine to read
+
 
 def get_plotting_params() -> EntryPointParameters:
     params = EntryPointParameters()
@@ -163,7 +165,7 @@ def _create_correction_plots_per_filename(filename, measurements, correction_dir
                 x_labels=[x_colmap.label],
                 vertical_lines=ip_positions + opt.lines_manual,
                 same_axes=["columns"],
-                output_prefix=f"{name}_",  # used in the id, which is the fig_dict key
+                output_prefix=f"{name}{SPLIT_ID}",  # used in the id, which is the fig_dict key
                 **opt.get_subdict([
                     'plot_styles', 'manual_style',
                     'change_marker', 'errorbar_alpha',
@@ -176,12 +178,21 @@ def _create_correction_plots_per_filename(filename, measurements, correction_dir
     # Add the measurement data to the plots (has different column names) -------
     df_measurement = tfs.read_tfs(measurements / full_filename)
     xlim = opt.x_lim or (df_measurement[x_colmap.column].min(), df_measurement[x_colmap.column].max())
+    errors = None
+    try:
+        errors = df_measurement[y_colmap.error_delta_column]
+    except KeyError:
+        LOG.warning(
+            f"Could not find {y_colmap.error_delta_column} in {full_filename}. "
+            f"Probably an old file? Assuming zero errors."
+        )
+
     for fig in figs.values():
         ax = fig.gca()
         ax.errorbar(
             df_measurement[x_colmap.column],
             df_measurement[y_colmap.delta_column],
-            df_measurement[y_colmap.error_delta_column],
+            errors,
             label=UNCORRECTED_LABEL,
             color="k",
             zorder=-1,
@@ -206,24 +217,24 @@ def save_plots(output_dir, figure_dict, input_dir=None):
 
     for figname, fig in figure_dict.items():
         outdir = output_dir
-        figname_parts = figname.split("_")
-        if figname_parts[0] == "plot":
+        figname_parts = figname.split(SPLIT_ID)
+        if len(figname_parts) == 1:  # no SPLIT_ID
             # these are the combined plots. They have the column name at the end,
             # which we do not care for here at the moment.
             # In case of multiple columns per file, this could be brought back
             # (then we would also not need the RDT check).
-            figname_parts = figname_parts[:-1]
+            figname = "_".join(figname.split("_")[:-1])
         else:
             # this is then the individual plots
             if input_dir:
                 # files go directly into the correction-scenario folders
                 outdir = input_dir / figname_parts[0]
-                figname_parts = ["plot"] + figname_parts[1:]
+                figname = figname_parts[1]
             else:
                 # everything goes into the output-dir (if given), but needs plot_ prefix
-                figname_parts = ["plot"] + figname_parts
+                figname = "_".join(["plot"] + figname_parts)
 
-        output_path = get_full_output_path(outdir, "_".join(figname_parts))
+        output_path = get_full_output_path(outdir, figname)
         if output_path is not None:
             LOG.info(f"Saving Corrections Plot to '{output_path}'")
             fig.savefig(output_path)

@@ -17,6 +17,7 @@ from omc3.correction import handler as global_correction
 from omc3.correction.constants import MODEL_MATCHED_FILENAME, COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
+from omc3.correction.response_twiss import PLANES
 from omc3.correction.utils_check import get_plotting_style_parameters
 from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, \
     TUNE_COLUMN
@@ -96,7 +97,7 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
           But I don't see a usecase at the moment (jdilly 2023)
     """
     LOG.info("Starting Correction Test.")
-    save_config(Path(opt.output_dir), opt, __file__, unkown_opt=accel_opt)
+    save_config(Path(opt.output_dir), opt, __file__, unknown_opt=accel_opt)
 
     opt = _check_opt_add_dicts(opt)
     opt.output_dir.mkdir(parents=True, exist_ok=True)
@@ -216,7 +217,12 @@ def _create_model_and_write_diff_to_measurements(
     LOG.debug(f"Matched model created in {str(corr_model_path)}.")
 
     # Get diff to nominal model
-    diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model)
+    diff_columns = (
+            list(OPTICS_PARAMS_CHOICES[:-4]) +
+            [col for col in corr_model_elements.columns if col.startswith("F1")] +
+            list(PLANES)
+    )
+    diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
     LOG.debug(f"Differences to nominal model calculated.")
 
      # Crate new "measurement" with additional columns
@@ -311,7 +317,7 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
     )
     df = measurement[attribute]
 
-    diff = diff_models.loc[:, colmap_model.delta_column]
+    diff = diff_models.loc[df.index, colmap_model.delta_column]
 
     df[colmap_meas.diff_correction_column] = diff
     if colmap_meas.column == PHASE:
@@ -343,7 +349,12 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
             f"    expected {df.headers[colmap_meas.expected_masked_rms_header]:.2e}"
         )
 
-    df[colmap_meas.error_expected_column] = df[colmap_meas.error_delta_column]
+    try:
+        df[colmap_meas.error_expected_column] = df[colmap_meas.error_delta_column]
+    except KeyError:
+        LOG.warning(f"The error-delta column {colmap_meas.error_delta_column} was "
+                    f"not found in {attribute}. Probably an old file. Assuming zero errors.")
+        df[colmap_meas.error_expected_column] = 0.0
 
     for tune_map in (TUNE_COLUMN.set_plane(n) for n in (1, 2)):
         LOG.debug(

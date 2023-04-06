@@ -345,6 +345,8 @@ def _rdt_to_output_df(
     LOGGER.debug("Computing error values")
     df[ERR + AMPLITUDE] = 0  # TODO: will need to implement this calculation later
     df[ERR + PHASE] = 0
+    df[ERR + DELTA + AMPLITUDE] = df[ERR + AMPLITUDE]
+    df[ERR + DELTA + PHASE] = df[ERR + PHASE]
 
     LOGGER.debug("Adding real and imaginary parts columns")
     df[REAL] = np.real(fterm)

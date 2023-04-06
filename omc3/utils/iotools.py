@@ -4,6 +4,7 @@ IO Tools
 
 Helper functions for input/output issues.
 """
+import sys
 from typing import Iterable, Any, Union
 
 import re
@@ -164,8 +165,26 @@ def remove_none_dict_entries(dict_: dict) -> dict:
     return {key: value for key, value in dict_.items() if value is not None}
 
 
+def maybe_add_command(opt: dict, script: str) -> dict:
+    """ Add a comment ';command' to the opt-dict,
+    which is gotten from sys.argv but only if the executed file
+    equals the given script.
+
+    Args:
+        opt (dict): Options datastructure
+        script (str): Name of the script that called save_config.
+
+    Returns:
+        Updated dict with ;command entry, or
+        if the script names were different, just the original opt.
+    """
+    if script == sys.argv[0]:
+        opt[";command"] = " ".join([sys.executable] + sys.argv)  # will be sorted to the beginning below
+    return opt
+
+
 def save_config(output_dir: Path, opt: dict, script: str,
-                unkown_opt: Union[dict, list] = None):
+                unknown_opt: Union[dict, list] = None):
     """
     Quick wrapper for ``save_options_to_config``.
 
@@ -177,10 +196,11 @@ def save_config(output_dir: Path, opt: dict, script: str,
         unknown_opt (dict|list): un-parsed opt-structure to be saved.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    opt = remove_none_dict_entries(opt)  # temporary fix (see docstring)
+    # opt = remove_none_dict_entries(opt)  # fixed in 2020
     opt = convert_paths_in_dict_to_strings(opt)
+    opt = maybe_add_command(opt, script)
     save_options_to_config(
         output_dir / formats.get_config_filename(script),
         dict(sorted(opt.items())),
-        unknown=unkown_opt
+        unknown=unknown_opt
     )
