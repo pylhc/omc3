@@ -23,7 +23,7 @@ from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, Colu
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, TUNE, F1001, F1010, PHASE
+from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE
 from omc3.optics_measurements.toolbox import ang_diff
 from omc3.plotting.plot_checked_corrections import plot_checked_corrections
 from omc3.utils import logging_tools
@@ -89,7 +89,6 @@ def get_correction_test_params():
     return params
 
 
-
 @entrypoint(get_correction_test_params())
 def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
     """ Test the given corrections.
@@ -98,7 +97,7 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
           But I don't see a usecase at the moment (jdilly 2023)
     """
     LOG.info("Starting Correction Test.")
-    save_config(Path(opt.output_dir), {**opt, **accel_opt}, __file__)
+    save_config(Path(opt.output_dir), opt, __file__, unkown_opt=accel_opt)
 
     opt = _check_opt_add_dicts(opt)
     opt.output_dir.mkdir(parents=True, exist_ok=True)

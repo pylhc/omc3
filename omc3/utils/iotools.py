@@ -4,7 +4,7 @@ IO Tools
 
 Helper functions for input/output issues.
 """
-from typing import Iterable, Any
+from typing import Iterable, Any, Union
 
 import re
 
@@ -164,7 +164,8 @@ def remove_none_dict_entries(dict_: dict) -> dict:
     return {key: value for key, value in dict_.items() if value is not None}
 
 
-def save_config(output_dir: Path, opt: dict, script: str):
+def save_config(output_dir: Path, opt: dict, script: str,
+                unkown_opt: Union[dict, list] = None):
     """
     Quick wrapper for ``save_options_to_config``.
 
@@ -173,10 +174,13 @@ def save_config(output_dir: Path, opt: dict, script: str):
         opt (dict): opt-structure to be saved.
         script (str): path/name of the invoking script (becomes name of the .ini) usually
             ``__file__``.
+        unknown_opt (dict|list): un-parsed opt-structure to be saved.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     opt = remove_none_dict_entries(opt)  # temporary fix (see docstring)
     opt = convert_paths_in_dict_to_strings(opt)
-    save_options_to_config(output_dir / formats.get_config_filename(script),
-                           dict(sorted(opt.items()))
-                           )
+    save_options_to_config(
+        output_dir / formats.get_config_filename(script),
+        dict(sorted(opt.items())),
+        unknown=unkown_opt
+    )

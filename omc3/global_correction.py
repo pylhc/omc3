@@ -279,7 +279,7 @@ def correction_params():
 def global_correction_entrypoint(opt: DotDict, accel_opt) -> None:
     """Do the global correction. Iteratively."""
     LOG.info("Starting Iterative Global Correction.")
-    save_config(Path(opt.output_dir), {**opt, **accel_opt}, __file__)
+    save_config(Path(opt.output_dir), opt, __file__, unkown_opt=accel_opt)
 
     opt = _check_opt_add_dicts(opt)
     opt = _add_hardcoded_paths(opt)
