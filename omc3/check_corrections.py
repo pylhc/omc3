@@ -137,15 +137,14 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:  # acts inplace...
     def_dict = _get_default_values()
 
     # Check cuts and fill defaults
-    for key in ("modelcut", "errorcut"):
-        if opt[key] is not None and len(opt[key]) != len(opt.optics_params):
-            raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
-        if opt[key] is None:
-            given_keys = {}
-        else:
-            given_keys = dict(zip(opt.optics_params, opt[key]))
-        opt[key] = {param: given_keys.get(param, def_dict[key][param]) for param in OPTICS_PARAMS_CHOICES}
-    opt.optics_params = OPTICS_PARAMS_CHOICES
+    if opt.optics_params:
+        for key in ("modelcut", "errorcut"):
+            if opt[key] is not None and len(opt[key]) != len(opt.optics_params):
+                raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
+            if opt[key] is not None:
+                opt[key] = dict(zip(opt.optics_params, opt[key]))
+            else:
+                opt[key] = {param: def_dict[key][param] for param in opt.optics_params}
 
     # Convert Strings to Paths
     opt.meas_dir = Path(opt.meas_dir)
