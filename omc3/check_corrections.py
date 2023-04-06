@@ -64,7 +64,6 @@ def get_correction_test_params():
     params.add_parameter(name="optics_params",
                          type=str,
                          nargs="+",
-                         default=list(CORRECTION_DEFAULTS["optics_params"]),
                          choices=OPTICS_PARAMS_CHOICES,
                          help=f"List of parameters for which the cuts should be applied (e.g. {BETA}X {BETA}Y)", )
     params.add_parameter(name="modelcut",
