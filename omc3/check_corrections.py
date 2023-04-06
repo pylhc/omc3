@@ -216,8 +216,7 @@ def _create_model_and_write_diff_to_measurements(
     LOG.debug(f"Matched model created in {str(corr_model_path)}.")
 
     # Get diff to nominal model
-    diff_columns = list(OPTICS_PARAMS_CHOICES[:-4]) + [col for col in corr_model_elements.columns if col.startswith("F1")]
-    diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
+    diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model)
     LOG.debug(f"Differences to nominal model calculated.")
 
      # Crate new "measurement" with additional columns
