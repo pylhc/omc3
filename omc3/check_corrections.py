@@ -47,6 +47,19 @@ def get_correction_test_params():
                          help=("Path to the directory where to write the output files. "
                               "If the input ``corrections`` input consists of multiple folders, their name will "
                                "be used to sort the output data into subfolders.", ))
+    params.add_parameter(name="corrections",
+                         required=True,
+                         nargs="+",
+                         type=PathOrStr,
+                         help="Paths to the correction files/directories to use. "
+                              "If files are given, these will all be applied as corrections at the same time. "
+                              "If folders are given, these are assumed to individually containing "
+                              "the correction files. See then also ``file_pattern``.",)
+    params.add_parameter(name="file_pattern",
+                         help="Filepattern to use to find correction files in folders (as regex).",
+                         type=str,
+                         default=r"^changeparameters*?\.madx$",
+                         )
     # Parameters (similar/same as in global correction) ---
     params.add_parameter(name="optics_params",
                          type=str,
@@ -67,19 +80,6 @@ def get_correction_test_params():
     params.add_parameter(name="beta_filename",
                          default=CORRECTION_DEFAULTS["beta_filename"],
                          help="Prefix of the beta file to use. E.g.: ``beta_phase_``", )
-    params.add_parameter(name="corrections",
-                         required=True,
-                         nargs="+",
-                         type=PathOrStr,
-                         help="Paths to the correction files/directories to use. "
-                              "If files are given, these will all be applied as corrections at the same time. "
-                              "If folders are given, these are assumed to individually containing "
-                              "the correction files. See then also ``file_pattern``.",)
-    params.add_parameter(name="file_pattern",
-                         help="Filepattern to use to find correction files in folders (as regex).",
-                         type=str,
-                         default=r"^changeparameters*?\.madx$",
-                         )
     # Plotting -----------------------------------------------------------------
     params.add_parameter(name="plot",
                          action="store_true",

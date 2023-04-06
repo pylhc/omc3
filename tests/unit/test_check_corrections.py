@@ -6,8 +6,8 @@ from omc3.correction.constants import MODEL_MATCHED_FILENAME
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, TUNE_COLUMN
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import EXT, NAME, S, MDL, PHASE_ADV, TUNE
-from omc3.scripts.check_corrections import correction_test_entrypoint
+from omc3.optics_measurements.constants import EXT, NAME, S, MDL, PHASE_ADV
+from omc3.check_corrections import correction_test_entrypoint
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, _create_fake_measurement
 

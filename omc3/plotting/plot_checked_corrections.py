@@ -47,12 +47,6 @@ def get_plotting_params() -> EntryPointParameters:
                          type=PathOrStr,
                          help="Path to save the plots into. If not given, no plots will be saved.",
                          )
-    params.add_parameter(name="individual_to_input",
-                         action="store_true",
-                         help="Save plots for the individual corrections "
-                              "into the corrections input folders. "
-                              "Otherwise they go with suffix into the output_folders."
-                         )
     params.update(get_plotting_style_parameters())
     return params
 
