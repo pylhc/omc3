@@ -164,10 +164,23 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:  # acts inplace...
 def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> Dict[str, Sequence[Path]]:
     """ Sort the given correction files:
     If given by individual files, they all go into one bucket,
-    if given by folders (i.e. scenarios) they are sorted by its name."""
+    if given by folders (i.e. scenarios) they are sorted by its name.
+    It is also checked, that they are valid!"""
+    # create correction mapping
     if corrections[0].is_file():  # checked above, that all are files or all are dirs
-        return {"": corrections}
-    return {c.name: glob_regex(c, file_pattern) for c in corrections}
+        corr_dict = {"": corrections}
+    else:
+        corr_dict = {c.name: Path(p) for c in corrections for p in glob_regex(c, file_pattern)}
+
+    # check correction files
+    for name, corr_files in corr_dict:
+        if not len(corr_files):
+            raise IOError(f"No corrections found for scenario {name}.")
+
+        do_not_exist = [f for f in corr_files if not f.exists()]
+        if len(do_not_exist):
+            raise IOError(f"Some correction files do not exist for scenario {name}:"
+                          f" {str(do_not_exist)}")
 
 
 # Main and Output --------------------------------------------------------------
@@ -178,7 +191,6 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> Dict[s
     if not opt.optics_params:
         LOG.debug("No filters selected, returning empty dict.")
         return {}
-
 
     optics_params, meas_dict = global_correction.get_measurement_data(
         opt.optics_params,
