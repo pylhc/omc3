@@ -23,7 +23,7 @@ import tfs
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010, INCR,
+from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
                                        NORM_DISPERSION, PHASE_ADV, TUNE, PHASE)
 from omc3.correction.constants import INCR
 from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
