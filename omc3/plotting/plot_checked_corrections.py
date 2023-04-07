@@ -25,7 +25,7 @@ from omc3.utils.iotools import PathOrStr
 LOG = logging_tools.get_logger(__name__)
 
 SPLIT_ID = "#_#"  # will appear in the figure ID, but should be fine to read
-
+PREFIX = "plot_corrections"
 
 def get_plotting_params() -> EntryPointParameters:
     params = EntryPointParameters()
@@ -142,7 +142,7 @@ def _create_correction_plots_per_filename(filename, measurements, correction_dir
         x_labels=[x_colmap.label],
         vertical_lines=ip_positions + opt.lines_manual,
         same_axes=["files"],
-        output_prefix=f"plot_corrections_{file_label}_",  # used in the id, which is the fig_dict key
+        output_prefix=f"{PREFIX}_{file_label}_",  # used in the id, which is the fig_dict key
         **opt.get_subdict([
             'plot_styles', 'manual_style',
             'change_marker', 'errorbar_alpha',
@@ -229,10 +229,10 @@ def save_plots(output_dir, figure_dict, input_dir=None):
             if input_dir:
                 # files go directly into the correction-scenario folders
                 outdir = input_dir / figname_parts[0]
-                figname = figname_parts[1]
+                figname = f"{PREFIX}_{figname_parts[1]}"
             else:
-                # everything goes into the output-dir (if given), but needs plot_ prefix
-                figname = "_".join(["plot"] + figname_parts)
+                # everything goes into the output-dir (if given), but needs prefix
+                figname = "_".join([PREFIX] + figname_parts)
 
         output_path = get_full_output_path(outdir, figname)
         if output_path is not None:
