@@ -11,7 +11,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, MODIFIER_BRANCH
+from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, MODIFIER_BRANCH
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
@@ -181,7 +181,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     madx_script = creator.get_madx_script(accel_inst)
     # Run madx to create model
     run_string(madx_script,
-               output_file=opt.outputdir / JOB_MODEL_MADX.format(opt.type),
+               output_file=opt.outputdir / JOB_MODEL_MADX_MASK.format(opt.type),
                log_file=opt.logfile,
                cwd=opt.outputdir)
     # Return accelerator instance

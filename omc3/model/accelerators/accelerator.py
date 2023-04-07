@@ -17,7 +17,7 @@ from generic_parser.entrypoint_parser import EntryPointParameters
 
 from omc3.model.constants import (
     ERROR_DEFFS_TXT,
-    JOB_MODEL_MADX,
+    JOB_MODEL_MADX_NOMINAL,
     MODIFIER_TAG,
     MODIFIERS_MADX,
     TWISS_AC_DAT,
@@ -368,7 +368,7 @@ class AcceleratorDefinitionError(Exception):
 
 def _get_modifiers_from_modeldir(model_dir: Path) -> List[Path]:
     """Parse modifiers from job.create_model.madx or use modifiers.madx file."""
-    job_file = model_dir / JOB_MODEL_MADX
+    job_file = model_dir / JOB_MODEL_MADX_NOMINAL
     if job_file.exists():
         job_madx = job_file.read_text()
 

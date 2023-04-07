@@ -19,7 +19,9 @@ TWISS_AC_DAT = "twiss_ac.dat"
 TWISS_ELEMENTS_DAT = "twiss_elements.dat"
 TWISS_DAT = "twiss.dat"
 ERROR_DEFFS_TXT = "error_deffs.txt"
-JOB_MODEL_MADX = "job.create_model_{}.madx"
+JOB_MODEL_MADX_MASK = "job.create_model_{}.madx"
+JOB_MODEL_MADX_NOMINAL = JOB_MODEL_MADX_MASK.format("nominal")
+JOB_MODEL_MADX_BEST_KNOWLEDGE = JOB_MODEL_MADX_MASK.format("best_knowledge")
 
 # fetcher command names
 PATHFETCHER = "path"
