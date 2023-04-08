@@ -64,6 +64,7 @@ def copy_item(src_item, dest):
 
 def glob_regex(path: Path, pattern: str) -> "filter object":
     """ Do a glob on the given `path` based on the regular expression `pattern`.
+    Returns only the matching filenames (as strings).
 
     Args:
         path (Path): Folder path to look in.

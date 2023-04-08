@@ -5,7 +5,7 @@ Correction Test
 Run a test, i.e. a MAD-X simulation to check how well the correction settings work.
 """
 from pathlib import Path
-from typing import Dict, Sequence, Any
+from typing import Dict, Sequence, Any, List
 
 import pandas as pd
 
@@ -171,7 +171,7 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
     if corrections[0].is_file():  # checked above, that all are files or all are dirs
         corr_dict = {"": corrections}
     else:
-        corr_dict = {c.name: [Path(p) for p in glob_regex(c, file_pattern)] for c in corrections}
+        corr_dict = {c.name:  _glob_regex_paths(c, file_pattern) for c in corrections}
 
     # check correction files
     for name, corr_files in corr_dict.items():
@@ -184,6 +184,11 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
                           f" {str(do_not_exist)}")
 
     return corr_dict
+
+
+def _glob_regex_paths(path: Path, pattern: str) -> List[Path]:
+    """ Filter the files in path by pattern and return a list of paths. """
+    return [path / f for f in glob_regex(path, pattern)]
 
 
 # Main and Output --------------------------------------------------------------
