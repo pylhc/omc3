@@ -70,7 +70,7 @@ def glob_regex(path: Path, pattern: str) -> "filter object":
         pattern (str): Pattern to match.
 
     """
-    return filter(re.compile(pattern).match, (str(p) for p in path.glob("*")))
+    return filter(re.compile(pattern).match, (p.name for p in path.glob("*")))
 
 
 class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):

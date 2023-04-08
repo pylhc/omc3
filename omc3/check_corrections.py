@@ -97,7 +97,7 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
           But I don't see a usecase at the moment (jdilly 2023)
     """
     LOG.info("Starting Correction Test.")
-    save_config(Path(opt.output_dir), opt, __file__, unknown_opt=accel_opt)
+    # save_config(Path(opt.output_dir), opt, __file__, unknown_opt=accel_opt)
 
     opt = _check_opt_add_dicts(opt)
     opt.output_dir.mkdir(parents=True, exist_ok=True)
@@ -171,7 +171,7 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
     if corrections[0].is_file():  # checked above, that all are files or all are dirs
         corr_dict = {"": corrections}
     else:
-        corr_dict = {c.name: Path(p) for c in corrections for p in glob_regex(c, file_pattern)}
+        corr_dict = {c.name: [Path(p) for p in glob_regex(c, file_pattern)] for c in corrections}
 
     # check correction files
     for name, corr_files in corr_dict.items():
