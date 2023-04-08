@@ -182,6 +182,8 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
             raise IOError(f"Some correction files do not exist for scenario {name}:"
                           f" {str(do_not_exist)}")
 
+    return corr_dict
+
 
 # Main and Output --------------------------------------------------------------
 
