@@ -161,6 +161,7 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:  # acts inplace...
 
     return opt
 
+
 def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> Dict[str, Sequence[Path]]:
     """ Sort the given correction files:
     If given by individual files, they all go into one bucket,
@@ -173,7 +174,7 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
         corr_dict = {c.name: Path(p) for c in corrections for p in glob_regex(c, file_pattern)}
 
     # check correction files
-    for name, corr_files in corr_dict:
+    for name, corr_files in corr_dict.items():
         if not len(corr_files):
             raise IOError(f"No corrections found for scenario {name}.")
 
