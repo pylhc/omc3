@@ -31,6 +31,7 @@ DEPENDENCIES = [
     "uncertainties>=3.1.4",
     "optics-functions>=0.1.0",
     "turn_by_turn>=0.4.0",
+    "pylogbook>=3.4.0",
 ]
 
 # Extra dependencies
