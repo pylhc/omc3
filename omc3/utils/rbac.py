@@ -5,11 +5,12 @@ RBAC
 Provider for RBAC tokens.
 Does not use pyRBAC, because there is no KERBEROS login, instead this follows
 https://gitlab.cern.ch/mihostet/lhc-access-screenshot/-/blob/master/lhc_access_screenshot/minirbac.py
+
 """
 import os
+import pathlib
 import sys
 from typing import Optional
-import pathlib
 
 import requests
 
@@ -18,6 +19,7 @@ from omc3.utils.logging_tools import get_logger
 LOGGER = get_logger(__name__)
 CONFIG_FILE = 'rbac-krb5.conf'  # needs to be in the same directory as this file
 RBAC_USERNAME = "OMCRBACUSERNAME"  # set this as environment variable to get a username
+
 
 class RBAC:
     """ Class to handle RBAC authentication.
@@ -100,9 +102,6 @@ class RBAC:
         """
         Authenticate explicitly via username and password.
 
-        Args:
-            user (str): Username to register with (Optional)
-
         Returns:
             The RBAC token as a string.
         """
@@ -153,7 +152,7 @@ class RBAC:
 
 
 def get_os_username():
-    """ Get the current username from the operation system. """
+    """ Get the current username from the operating system. """
 
     # Check this manual environment variable first, so it can be used as
     # an override:
