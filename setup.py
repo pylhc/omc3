@@ -31,7 +31,8 @@ DEPENDENCIES = [
     "uncertainties>=3.1.4",
     "optics-functions>=0.1.0",
     "turn_by_turn>=0.4.0",
-    "pylogbook>=3.4.0",
+    "requests>=2.27.0",
+    "kerberos>=1.3.1",
 ]
 
 # Extra dependencies
@@ -39,6 +40,10 @@ EXTRA_DEPENDENCIES = {
     "cern": [
         "jpype1>=1.3.0",
         "pytimber>=2.8.0",
+        "pylogbook>=3.4.0",
+    ],
+    "optional": [
+        "pymupdf>=1.22.0",  # logbook for conversion from pdf to png
     ],
     "test": [
         "pytest>=5.2",
