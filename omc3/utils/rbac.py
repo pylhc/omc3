@@ -4,6 +4,7 @@ RBAC
 
 Provider for RBAC tokens.
 Does not use pyRBAC, because there is no KERBEROS login, instead this follows
+the poor man's (aka Michi) pure python RBAC
 https://gitlab.cern.ch/mihostet/lhc-access-screenshot/-/blob/master/lhc_access_screenshot/minirbac.py
 
 """
@@ -25,7 +26,6 @@ class RBAC:
     """ Class to handle RBAC authentication.
     Implemented as a class, so that the BASE and KRB5 Service variables
     can be set on __init__, if needed. """
-    # poor man's (aka Michi) pure python RBAC
     _BASE = "https://rbac-pro1.cern.ch:8443/rba/api/v1"
     _KRB5_SERVICE = "RBAC@rbac-pro-lb.cern.ch"
 
@@ -153,7 +153,6 @@ class RBAC:
 
 def get_os_username():
     """ Get the current username from the operating system. """
-
     # Check this manual environment variable first, so it can be used as
     # an override:
     try:
