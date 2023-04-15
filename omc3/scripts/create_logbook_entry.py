@@ -46,7 +46,6 @@ from commandline.
     Tags to be added to the event.
 
 """
-import tempfile
 from pathlib import Path
 from typing import Iterable, Union, List
 
@@ -75,7 +74,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 CONNECTION_ERRORS = (HTTPError, ConnectionError, ConnectTimeout, ImportError, RuntimeError)
 
 OMC_LOGBOOK = "LHC_OMC"
-DEFAULT_DPI = 72  # assumed DPI by fitz
 PNG_DPI = 300  # dpi for converted png (from pdf)
 
 LOGGER = get_logger(__name__)
@@ -229,7 +227,6 @@ def _convert_pdf_to_png(filepath: Path):
         return None
 
     doc = fitz.open(filepath)  # open document
-    zoom = PNG_DPI / DEFAULT_DPI  # zoom factor for higher resolution png
 
     if len(doc) > 1:
         LOGGER.warning(f"Big PDF-File with {len(doc)} pages found. "
@@ -237,13 +234,12 @@ def _convert_pdf_to_png(filepath: Path):
                        "Skipping conversion.")
 
     page = doc[0]  # assume single page pdf
-    pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom))  # render page to an image
-
-    # TODO: Get the png bytecode from memory, without writing to file (not sure if possible)
-    tempdir = Path(tempfile.gettempdir())
-    new_file = tempdir / filepath.with_suffix(".png")
-    pix.save(new_file)
-    attachment = pylogbook._attachment_builder.AttachmentBuilder.from_file(new_file)
+    pix = page.get_pixmap(dpi=PNG_DPI)  # render page to an image
+    attachment = pylogbook._attachment_builder.AttachmentBuilder.from_bytes(
+        contents=pix.tobytes("png"),
+        mime_type="image/png",
+        name=filepath.with_suffix(".png").name
+    )
     return attachment
 
 
