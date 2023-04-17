@@ -47,7 +47,7 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
     choices: ``['values', 'errors']``
 
-    default: ``['values', 'errors']``
+    default: ``[]``
 
 
 - **relative_errors** *(float)*:
@@ -80,7 +80,7 @@ from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_
                                                 DISPERSION_NAME, NORM_DISP_NAME,
                                                 EXT, DELTA, ERR,
                                                 PHASE_ADV, BETA, PHASE,
-                                                TUNE, NAME, NAME2, S, MDL)
+                                                TUNE, NAME, NAME2, S, MDL, REAL, IMAG)
 from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check, ang_diff
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
@@ -143,7 +143,7 @@ def get_params():
               "values and the errors will be equal to the relative error * measurement."
               ),
         choices=[VALUES, ERRORS],
-        default=[VALUES, ERRORS],
+        default=[],
         type=str,
         nargs="*",
     )
@@ -202,6 +202,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
     if opt.outputdir is not None:
         LOG.info("Writing fake measurements to files.")
         output_path = Path(opt.outputdir)
+        output_path.mkdir(parents=True, exist_ok=True)
         for filename, df in results.items():
             full_path = output_path / f"{filename}{EXT}"
             tfs.write(full_path, df, save_index=NAME)
@@ -329,11 +330,15 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
                     relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates coupling measurements for either the difference or sum RDT. """
     LOG.info(f"Creating fake coupling for {parameter}.")
+    # Naming with R and I as long as model is involved
     re = create_measurement(df_twiss, f'{parameter}R', relative_error, randomize)
     im = create_measurement(df_twiss, f'{parameter}I', relative_error, randomize)
     df = pd.concat([re, im], axis=1)
     df = append_model(df, df_model, f'{parameter}R')
     df = append_model(df, df_model, f'{parameter}I', planes='XY')
+
+    # Go to RDT naming scheme
+    df.columns = df.columns.str.replace(f'{parameter}R', REAL).str.replace(f'{parameter}I', IMAG)
     df.headers = headers.copy()
     return {parameter.lower(): df}
 
@@ -342,7 +347,7 @@ CREATOR_MAP = {
     BETA: create_beta,
     DISP: create_dispersion,
     PHASE: create_phase,
-    F1010[:-1]: create_coupling,
+    F1010[:-1]: create_coupling,  # normally the plane is removed but here is no plane
     F1001[:-1]: create_coupling,
 }
 
@@ -468,11 +473,16 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> 
 
 def _get_random_errors(errors: np.array, values: np.array) -> np.array:
     """ Creates normal distributed error-values that will not be lower than EPSILON. """
+    LOG.debug("Calculating normal distributed random errors.")
     random_errors = np.zeros_like(errors)
     too_small = np.ones_like(errors, dtype=bool)
-    while sum(too_small):
+    n_too_small = 1
+    while n_too_small:
         random_errors[too_small] = np.random.normal(errors[too_small], errors[too_small])
         too_small = random_errors < EPSILON * np.abs(values)
+        n_too_small = sum(too_small)
+        LOG.debug(f"{n_too_small} error values are smaller than given eps.")
+    LOG.debug("Random errors created.")
     return random_errors
 
 

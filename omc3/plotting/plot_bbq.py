@@ -8,30 +8,67 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 
 *--Required--*
 
-- **input**: BBQ data as data frame or tfs file.
+- **input**:
 
-  Flags: **--in**
+    BBQ data as data frame or tfs file.
+
 
 *--Optional--*
 
-- **interval** *(float)*: x_axis interval that was used in calculations.
+- **interval** *(float)*:
 
-  Flags: **--interval**
-- **kick**: Kick file as data frame or tfs file.
+    x_axis interval that was used in calculations.
 
-- **output** *(str)*: Save figure to this location.
 
-  Flags: **--out**
-- **show**: Show plot.
+- **kick**:
 
-  Action: ``store_true``
-- **two_plots**: Plot two axis into the figure.
+    Kick file as data frame or tfs file.
 
-  Flags: **--two**
-  Action: ``store_true``
-- **x_lim** *(float)*: X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)
 
-- **y_lim** *(float)*: Y-Axis limits.
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **output** *(str)*:
+
+    Save figure to this location.
+
+
+- **plot_styles** *(UnionPathStr)*:
+
+    Which plotting styles to use, either from plotting.styles.*.mplstyles
+    or default mpl.
+
+    default: ``['standard', 'bbq']``
+
+
+- **show**:
+
+    Show plot.
+
+    action: ``store_true``
+
+
+- **two_plots**:
+
+    Plot two axis into the figure.
+
+    action: ``store_true``
+
+
+- **x_lim** *(float)*:
+
+    X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)
+
+
+- **y_lim** *(float)*:
+
+    Y-Axis limits.
+    
+
 """
 from collections import OrderedDict
 from contextlib import suppress
@@ -40,8 +77,9 @@ from pathlib import Path
 import matplotlib.dates as mdates
 import numpy as np
 from generic_parser import entrypoint, EntryPointParameters
+from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import save_options_to_config
-from matplotlib import pyplot as plt, gridspec
+from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.plotting import register_matplotlib_converters
 
@@ -53,6 +91,7 @@ from omc3.tune_analysis import kick_file_modifiers as kick_mod
 from omc3.tune_analysis.constants import (get_mav_window_header, get_used_in_mav_col,
                                           get_bbq_col, get_mav_col)
 from omc3.utils import logging_tools
+from omc3.utils.iotools import UnionPathStr, PathOrStr, PathOrStrOrDataFrame
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -63,46 +102,61 @@ register_matplotlib_converters()
 def get_params():
     params = EntryPointParameters()
     params.add_parameter(
-        help="BBQ data as data frame or tfs file.",
         name="input",
+        help="BBQ data as data frame or tfs file.",
         required=True,
+        type=PathOrStrOrDataFrame
     )
     params.add_parameter(
-        help="Kick file as data frame or tfs file.",
         name="kick",
+        help="Kick file as data frame or tfs file.",
+        type=PathOrStrOrDataFrame
     )
     params.add_parameter(
-        help="Save figure to this location.",
         name="output",
-        type=str,
+        help="Save figure to this location.",
+        type=PathOrStr,
     )
     params.add_parameter(
-        help="Show plot.",
         name="show",
+        help="Show plot.",
         action="store_true"
     )
     params.add_parameter(
-        help="X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)",
         name="x_lim",
+        help="X-Axis limits. (yyyy-mm-dd HH:mm:ss.mmm)",
         type=float,
         nargs=2,
     )
     params.add_parameter(
-        help="Y-Axis limits.",
         name="y_lim",
+        help="Y-Axis limits.",
         type=float,
         nargs=2,
     )
     params.add_parameter(
-        help="x_axis interval that was used in calculations.",
         name="interval",
+        help="x_axis interval that was used in calculations.",
         type=float,
         nargs=2,
     )
     params.add_parameter(
-        help="Plot two axis into the figure.",
         name="two_plots",
+        help="Plot two axis into the figure.",
         action="store_true",
+    )
+    params.add_parameter(
+        name="plot_styles",
+        type=UnionPathStr,
+        nargs="+",
+        default=['standard', 'bbq'],
+        help='Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.'
+    )
+    params.add_parameter(
+        name="manual_style",
+        type=DictAsString,
+        default={},
+        help='Additional style rcParameters which update the set of predefined ones.'
     )
     return params
 
@@ -112,7 +166,9 @@ def main(opt):
     """Plot BBQ wrapper."""
     LOG.info("Plotting BBQ.")
     _save_options(opt)
-    bbq_df = kick_mod.read_timed_dataframe(opt.input) if isinstance(opt.input, str) else opt.input
+    pstyle.set_style(opt.pop("plot_styles"), opt.pop("manual_style"))
+
+    bbq_df = kick_mod.read_timed_dataframe(opt.input) if isinstance(opt.input, (Path, str)) else opt.input
     opt.pop("input")
 
     if opt.kick is not None:
@@ -120,11 +176,10 @@ def main(opt):
             raise ValueError("interval and kick-file given. Both are used for the same purpose. Please only use one.")
 
         window = 0  # not too important, bars will then indicate first and last kick directly
-        for p in PLANES:
-            with suppress(KeyError):
-                window = bbq_df.headers[get_mav_window_header(p)]
+        with suppress(KeyError):
+            window = bbq_df.headers[get_mav_window_header()]
 
-        kick_df = kick_mod.read_timed_dataframe(opt.kick) if isinstance(opt.kick, str) else opt.kick
+        kick_df = kick_mod.read_timed_dataframe(opt.kick) if isinstance(opt.kick, (Path, str)) else opt.kick
         opt.interval = ad_ana.get_approx_bbq_interval(bbq_df, kick_df.index, window)
         bbq_df = bbq_df.loc[opt.interval[0]:opt.interval[1]]
     opt.pop("kick")
@@ -159,13 +214,6 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
         Plotted figure.
     """
     LOG.debug("Plotting BBQ data.")
-
-    pstyle.set_style("standard", {
-        u'figure.figsize': [12.24, 7.68],
-        u"lines.marker": u"",
-        u"lines.linestyle": u""}
-                     )
-
     fig, axs = plt.subplots(1+two_plots, 1)
 
     if not two_plots:
@@ -184,7 +232,7 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
                                     label="$Q_{:s}$".format(plane.lower(),)
                                     )[0]
         filtered_data = bbq_df.loc[mask, get_bbq_col(plane)].dropna()
-        handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.values,
+        handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.to_numpy(),
                                                 color=pcolors.change_color_brightness(color, .7),
                                                 marker=".",
                                                 label="filtered".format(plane.lower())
@@ -231,9 +279,6 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
             # reorder legend
             axs[idx].legend(handles, [h.get_label() for h in handles],
                            loc='lower right', bbox_to_anchor=(1.0, 1.01), ncol=3,)
-
-    fig.tight_layout()
-    fig.tight_layout()
     return fig
 
 

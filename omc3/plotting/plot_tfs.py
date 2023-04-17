@@ -616,7 +616,7 @@ def _get_axes_ids(opt):
     """
     Get's all id's first (to know how many axes to use). So the `get_id` is done later for
     actual plotting again.
-    The order matters, as this function detemines the order in which the data is distributed on
+    The order matters, as this function determines the order in which the data is distributed on
     the figure axes (if multiple), which is important if one gives the manual y-labels option.
     Couldn't find a quicker way... (jdilly)
     """

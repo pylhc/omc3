@@ -1,6 +1,9 @@
 Scripts
 **************************
 
+.. automodule:: omc3.scripts.betabeatsrc_output_converter
+    :members:
+
 .. automodule:: omc3.scripts.merge_kmod_results
     :members:
 
@@ -12,3 +15,7 @@ Scripts
 
 .. automodule:: omc3.scripts.fake_measurement_from_model
     :members:
+
+.. automodule:: omc3.scripts.linfile_clean
+    :members:
+

@@ -321,6 +321,23 @@ def test_kmod_outputdir_default(tmp_path, _kmod_inputs_path):
     assert (tmp_path / "MQM.7L4.B2-MQY.6L4.B2").exists()
 
 
+@pytest.mark.extended
+def test_kmod_error_default(tmp_path, _kmod_inputs_path):
+    """
+    Test that default errors work.
+    """
+    [shutil.copy(kmod_input, tmp_path) for kmod_input in _kmod_inputs_path.glob("*L4B2*")]
+    analyse_kmod(
+        betastar_and_waist=[200.0, -100.0],
+        working_directory=tmp_path,
+        beam=2,
+        simulation=False,
+        no_sig_digits=True,
+        no_plots=False,
+        circuits=["RQ7.L4B2", "RQ6.L4B2"],
+    )
+
+
 @pytest.fixture()
 def _kmod_inputs_path() -> Path:
     return Path(__file__).parent.parent / "inputs" / "kmod"

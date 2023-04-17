@@ -53,8 +53,8 @@ def calc_betastar(kmod_input_params, results_df, l_star):
     sign = return_sign_for_err(2)      
 
     for plane in PLANES:
-        betastar = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].values + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values),
-                                           (results_df.loc[:, f"{WAIST}{plane}"].values + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
+        betastar = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].to_numpy() + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].to_numpy()),
+                                           (results_df.loc[:, f"{WAIST}{plane}"].to_numpy() + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].to_numpy()))
         betastar_err = get_err(betastar[1::2]-betastar[0])
 
         if kmod_input_params.no_sig_digits:
@@ -71,8 +71,8 @@ def calc_betastar(kmod_input_params, results_df, l_star):
     for plane in PLANES:
         results_df[f"{PHASEADV}{plane}"], results_df[f"{ERR}{PHASEADV}{plane}"] = phase_adv_from_kmod(
             l_star, betastar[0], betastar_err,
-            results_df.loc[:, f"{WAIST}{plane}"].values,
-            results_df.loc[:, f"{ERR}{WAIST}{plane}"].values)
+            results_df.loc[:, f"{WAIST}{plane}"].to_numpy(),
+            results_df.loc[:, f"{ERR}{WAIST}{plane}"].to_numpy())
 
     return results_df
 
@@ -99,14 +99,14 @@ def calc_beta_inst(name, position, results_df, magnet1_df, magnet2_df, kmod_inpu
     betas = np.zeros((2, 2))
     sign = np.array([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]])
     for i, plane in enumerate(PLANES):
-        waist = results_df.loc[:, f"{WAIST}{plane}"].values
+        waist = results_df.loc[:, f"{WAIST}{plane}"].to_numpy()
         if magnet1_df.headers['POLARITY'] == 1 and magnet2_df.headers['POLARITY'] == -1:
             waist = -waist
         if plane == 'Y':
             waist = -waist
 
-        beta = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].values + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].values),
-                                       ((waist - position) + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].values))
+        beta = propagate_beta_in_drift((results_df.loc[:, f"{BETA}{WAIST}{plane}"].to_numpy() + sign[:, 0] * results_df.loc[:, f"{ERR}{BETA}{WAIST}{plane}"].to_numpy()),
+                                       ((waist - position) + sign[:, 1] * results_df.loc[:, f"{ERR}{WAIST}{plane}"].to_numpy()))
         beta_err = get_err(beta[1::2]-beta[0])
         if kmod_input_params.no_sig_digits:
             betas[i, 0], betas[i, 1] = beta[0], beta_err

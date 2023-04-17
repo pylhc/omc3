@@ -181,8 +181,12 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
     # create normalized dispersion and dividing BET by nominal model
     NDX_arr = np.divide(resp[columns.index(f"{DISP}X")], np.sqrt(resp[columns.index(f"{BETA}X")]))
     NDY_arr = np.divide(resp[columns.index(f"{DISP}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")]))
-    resp[columns.index(f"{BETA}X")] = np.divide(resp[columns.index(f"{BETA}X")], resp[columns.index(f"{BETA}X"), : , model_index][:, np.newaxis])
-    resp[columns.index(f"{BETA}Y")] = np.divide(resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), : , model_index][:, np.newaxis])
+    resp[columns.index(f"{BETA}X")] = np.divide(
+        resp[columns.index(f"{BETA}X")], resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis]
+    )
+    resp[columns.index(f"{BETA}Y")] = np.divide(
+        resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
+    )
 
     # subtracting nominal model from data
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])

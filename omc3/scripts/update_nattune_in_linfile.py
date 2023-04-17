@@ -50,6 +50,7 @@ from generic_parser.entrypoint_parser import save_options_to_config
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_NAME, FILE_LIN_EXT
+from omc3.harpy.handler import _compute_headers
 from omc3.plotting.spectrum.utils import (load_spectrum_data, get_bpms,
                                           LIN, AMPS, FREQS
                                           )
@@ -119,6 +120,8 @@ def main(opt):
                                    opt.planes, opt.interval, opt.not_found_action,
                                    file_path.name)
 
+        data = _update_lin_header(data, opt.planes, file_path.name)
+
         _save_linfiles(data[LIN], file_path, opt.planes, opt.rename_suffix)
         gathered[idx_file] = data[LIN]
     return gathered
@@ -164,6 +167,13 @@ def _get_peak_in_interval(freqs, amps, interval):
         return None
     else:
         return f_peak, data_series.loc[f_peak]
+
+
+def _update_lin_header(data, planes, filename):
+    for plane in planes:
+        LOG.debug(f"Updating headers for {filename}, plane {plane}")
+        data[LIN][plane].headers.update(_compute_headers(data[LIN][plane]))
+    return data
 
 
 # Output -----------------------------------------------------------------------

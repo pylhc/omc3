@@ -16,11 +16,29 @@ Write out madx scripts for the tracking macros.
 
     Path to twissfile with observationspoint in the NAME column.
 """
-import os
+
 import tfs
-from omc3.model.constants import MACROS_DIR, OBS_POINTS
+from pathlib import Path
+from omc3.model.constants import OBS_POINTS
 from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
 
+def get_params():
+    params = EntryPointParameters()
+    params.add_parameter(
+        name="twissfile",
+        required=True,
+        help="Path to twissfile with observationspoint in the NAME column."
+        )
+    params.add_parameter(
+        name="outputdir",
+        required=True,
+        help=f"Directory where the {OBS_POINTS} will be put."
+        )
+    return params
+
+@entrypoint(get_params(), strict=True)
+def read_twiss_and_return_obs(opt):
+    tracking_macros(tfs.read(opt['twissfile'], index='NAME').index.tolist(), Path(opt['outputdir']))
 
 def _call(path_to_call):
     return f"call, file = '{path_to_call}';\n"
@@ -36,7 +54,7 @@ def define_observation_points_macros(list_of_bpms):
 
 
 def tracking_macros(list_of_bpms, outdir):
-    obs_macro_file = os.path.join(outdir, MACROS_DIR, OBS_POINTS)
+    obs_macro_file = outdir / OBS_POINTS
     with open(obs_macro_file, 'w') as obs_script:
         obs_script.write(define_observation_points_macros(list_of_bpms))
     track_macros = _call(obs_macro_file)
@@ -79,15 +97,5 @@ def tracking_macros(list_of_bpms, outdir):
     return track_macros
 
 
-def _get_params():
-    params = EntryPointParameters()
-    params.add_parameter(name="twissfile", required=True,
-                         help="Path to twissfile with observationspoint in the NAME column.")
-    params.add_parameter(name="outputdir", required=True,
-                         help=f"Directory where the {OBS_POINTS} will be put.")
-    return params
-
-
-@entrypoint(_get_params(), strict=True)
-def read_twiss_and_return_obs(opt):
-    tracking_macros(tfs.read(opt.twissfile, index='NAME').index.tolist(), opt.outputdir)
+if __name__ == "__main__":
+    read_twiss_and_return_obs()

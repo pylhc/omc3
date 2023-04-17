@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt, colors
 
 from omc3.plotting.spectrum.utils import (plot_lines, PLANES, LABEL_Y_WATERFALL,
                                           LABEL_X, AMPS, FREQS, output_plot)
+from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
@@ -89,7 +90,7 @@ def _format_axes(fig_cont, limits, ncol):
             ax.set_yticklabels([])
             ax.set_yticks([])
         else:
-            ax.set_yticklabels(ylabels, fontdict={'fontsize': matplotlib.rcParams[u'axes.labelsize'] * .5})
+            ax.set_yticklabels(ylabels, fontdict={'fontsize': get_fontsize_as_float(matplotlib.rcParams[u'axes.labelsize']) * .5})
             ax.set_yticks(range(len(ylabels)))
         ax.set_xlabel(LABEL_X)
         ax.set_ylabel(LABEL_Y_WATERFALL.format(plane=plane.upper()))

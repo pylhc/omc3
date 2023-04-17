@@ -1,0 +1,4 @@
+figure.figsize: 18, 9
+lines.markersize: 3
+markers.fillstyle: none
+figure.subplot.hspace: 0.3  # space between subplots

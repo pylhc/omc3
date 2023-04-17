@@ -24,7 +24,7 @@ from omc3.correction.constants import (BETA, DELTA, DIFF, DISP, ERROR, F1001,
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT,
+from omc3.optics_measurements.constants import (DISPERSION_NAME, EXT, REAL, IMAG,
                                                 NORM_DISP_NAME, PHASE_NAME, NAME)
 from omc3.utils import logging_tools
 
@@ -63,7 +63,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
     resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
-    delta = tfs.TfsDataFrame(0, index=vars_list, columns=[DELTA])
+    delta = tfs.TfsDataFrame(0., index=vars_list, columns=[DELTA])
 
     # ######### Iteration Phase ######### #
     for iteration in range(opt.max_iter + 1):
@@ -122,6 +122,11 @@ def get_measurement_data(
     filtered_keys = keys
     if w_dict is not None:
         filtered_keys = [key for key in keys if w_dict[key] != 0]
+        if not len(filtered_keys):
+            raise ValueError(
+                "All given Parameters have been discarded due to all-zero weights. "
+                "Check given weights and weight default values."
+            )
 
     for key in filtered_keys:
         if key.startswith(f"{PHASE}"):
@@ -133,8 +138,8 @@ def get_measurement_data(
         elif key == f"{NORM_DISP}X":
             measurement[key] = read_measurement_file(meas_dir, f"{NORM_DISP_NAME}{key[-1].lower()}{EXT}")
 
-        elif key in (f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"):
-            measurement[key] = read_measurement_file(meas_dir, f"{key[:-1].lower()}{EXT}").filter(regex=key)
+        elif key[:5] in (F1010, F1001):
+            measurement[key] = read_measurement_file(meas_dir, f"{key[:5].lower()}{EXT}")
 
         elif key == f"{TUNE}":
             measurement[key] = pd.DataFrame(

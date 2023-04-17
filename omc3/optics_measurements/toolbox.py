@@ -10,27 +10,27 @@ import numpy as np
 
 def df_diff(df, a_col, b_col):
     """ Returns a column containing the difference between a_col and b_col """
-    return df.loc[:, a_col].values - df.loc[:, b_col].values
+    return df.loc[:, a_col].to_numpy() - df.loc[:, b_col].to_numpy()
 
 
 def df_sum(df, a_col, b_col):
     """ Returns a column containing the sum of a_col and b_col """
-    return df.loc[:, a_col].values + df.loc[:, b_col].values
+    return df.loc[:, a_col].to_numpy() + df.loc[:, b_col].to_numpy()
 
 
 def df_ratio(df, a_col, b_col):
     """ Returns a column containing the ratio between a_col and b_col """
-    return df.loc[:, a_col].values / df.loc[:, b_col].values
+    return df.loc[:, a_col].to_numpy() / df.loc[:, b_col].to_numpy()
 
 
 def df_prod(df, a_col, b_col):
     """ Returns a column containing the product of a_col and b_col """
-    return df.loc[:, a_col].values * df.loc[:, b_col].values
+    return df.loc[:, a_col].to_numpy() * df.loc[:, b_col].to_numpy()
 
 
 def df_rel_diff(df, a_col, b_col):
     """ Returns a column containing the difference between a_col and b_col relative to b_col """
-    return (df.loc[:, a_col].values / df.loc[:, b_col].values) - 1
+    return df_ratio(df, a_col, b_col) - 1
 
 
 # with Errors ---
@@ -38,7 +38,7 @@ def df_rel_diff(df, a_col, b_col):
 
 def df_err_sum(df, a_err_col, b_err_col):
     """ Returns a column containing the root of the sum-of-squares of a_err_col and b_err_col """
-    return np.sqrt(np.square(df.loc[:, a_err_col].values) + np.square(df.loc[:, b_err_col].values))
+    return np.sqrt(np.square(df.loc[:, a_err_col].to_numpy()) + np.square(df.loc[:, b_err_col].to_numpy()))
 
 
 def df_rel_err_sum(df, a_col, b_col, a_err_col, b_err_col):
@@ -79,7 +79,7 @@ def df_prod_with_err(df, a_col, b_col, a_err_col, b_err_col):
 
 def df_ang_diff(df, a_col, b_col):
     """ Returns a column containing the angular difference between angles a and b in [-0.5 , 0.5] """
-    return ang_diff(df.loc[:, a_col].values, df.loc[:, b_col].values)
+    return ang_diff(df.loc[:, a_col].to_numpy(), df.loc[:, b_col].to_numpy())
 
 
 def ang_diff(a, b):

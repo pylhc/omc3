@@ -29,7 +29,7 @@ def clean_data(magnet_df, no_autoclean):
         LOG.debug('Automatic Tune cleaning')
         for plane in PLANES:
             magnet_df[f"{CLEANED}{plane}"] = outliers.get_filter_mask(
-                magnet_df[f"{TUNE}{plane}"].values, x_data=magnet_df[K].values, limit=1e-5)
+                magnet_df[f"{TUNE}{plane}"].to_numpy(), x_data=magnet_df[K].to_numpy(), limit=1e-5)
     return magnet_df
 
 
@@ -99,7 +99,7 @@ def bin_tunes_and_k(tune_dfs, k_df, magnet):
     # create bins, centered around each time step in k with width eq half distance to the next timestep
     bins = np.append((k_df['TIME']-k_df.diff()['TIME']/2.).fillna(value=0).values, k_df['TIME'].iloc[-1])
     magnet_df = k_df.loc[:, ['K']]
-    magnet_df['K'] = np.abs(magnet_df['K'].values)
+    magnet_df['K'] = np.abs(magnet_df['K'].to_numpy())
     for plane in PLANES:
         magnet_df[f"{TUNE}{plane}"], magnet_df[f"{ERR}{TUNE}{plane}"] = return_mean_of_binned_data(bins, tune_dfs[plane])
     return tfs.TfsDataFrame(magnet_df, headers=headers_for_df(magnet, k_df))
@@ -156,7 +156,7 @@ def ax_plot(ax, magnet_df, plane):
 
 
 def ax_errorbar_plot(ax, magnet_df, plane, clean, plot_settings):
-    new_df = magnet_df.loc[magnet_df.loc[:, f"{CLEANED}{plane}"].values == clean, :]
+    new_df = magnet_df.loc[magnet_df.loc[:, f"{CLEANED}{plane}"].to_numpy() == clean, :]
     ax.errorbar((new_df.loc[:, K].dropna() - magnet_df.headers[K]) * 1E3,
                 new_df.loc[:, f"{TUNE}{plane}"].dropna(),
                 yerr=new_df.loc[:, f"{ERR}{TUNE}{plane}"].dropna(),

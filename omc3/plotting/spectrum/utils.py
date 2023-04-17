@@ -20,6 +20,7 @@ from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
+from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools
 
@@ -102,7 +103,7 @@ class FigureCollector:
 
 
 def plot_lines(fig_cont: FigureContainer, lines: DotDict) -> None:
-    label_size = matplotlib.rcParams['axes.labelsize'] * 0.7
+    label_size = get_fontsize_as_float(matplotlib.rcParams['axes.labelsize']) * 0.7
     bottom_qlabel = 1.01
 
     for idx_plane, plane in enumerate(PLANES):
@@ -388,10 +389,6 @@ def rescale_amp(amp_data: pd.Series) -> pd.Series:
 
 def output_plot(fig_cont: FigureContainer):
     fig = fig_cont.fig
-
-    fig.tight_layout()
-    fig.tight_layout()  # sometimes better to do twice
-
     if fig_cont.path is not None:
         LOG.info(f"Saving Plot '{fig_cont.path}'")
         fig.savefig(fig_cont.path)

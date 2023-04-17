@@ -8,6 +8,8 @@ import matplotlib
 import matplotlib.transforms as mtrans
 import numpy as np
 from matplotlib import transforms
+from matplotlib.markers import MarkerStyle
+from matplotlib.patches import PathPatch
 
 VERTICAL_LINES_TEXT_LOCATIONS = {
     'bottom': dict(y=-0.01, va='top', ha='center'),
@@ -40,6 +42,31 @@ class MarkerList(object):
         marker = self.get_marker(self.idx)
         self.idx += 1
         return marker
+
+
+def text_to_marker(text: str, center: bool = True) -> np.ndarray:
+    """
+    Convert the given `text` to path
+    which can be used as a marker in matplotlib plots,
+    including the options of setting `markerfacecolor` and `markeredgecolor`.
+
+    Args:
+        text (str): Text to use as a marker.
+        center (bool): Center the path around the origin (otherwise bottom left is anchor).
+
+    Returns:
+        Array of the path vertices.
+    """
+    path = MarkerStyle(fr'$\mathrm{{{text}}}$').get_path()
+
+    if center:
+        # center path: remove any offsets (extend.min) and move to center (-size[0]/2)
+        extend = path.get_extents()
+        t = mtrans.Affine2D().translate(-extend.min[0] - extend.size[0] / 2, -extend.min[1] - extend.size[1] / 2)
+        path = path.transformed(t)
+
+    pp = PathPatch(path, transform=mtrans.IdentityTransform())
+    return pp.get_path()
 
 
 def plot_vertical_lines_fast(ax, x, y=(0, 1), **kwargs):

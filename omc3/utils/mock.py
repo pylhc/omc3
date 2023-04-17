@@ -20,6 +20,7 @@ class CERNNetworkMockPackage:
     actually installed. Designed for packages installable only from inside the CERN network,
     that are declared as ``cern`` extra. See module documentation.
     """
+
     def __init__(self, name: str):
         self.name = name
 

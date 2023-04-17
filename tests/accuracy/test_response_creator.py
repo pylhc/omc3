@@ -65,7 +65,7 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
 
 
 @pytest.mark.basic
-@pytest.mark.timeout(180)  # my get stuck in a loop if madx-code is wrong
+@pytest.mark.timeout(180)  # might get stuck in a loop if madx-code is wrong
 def test_varmap_creation(model_inj_beams):
     """ Tests the creation of varmap files and compares them with earlier created ones.
     Hint: the `model_inj_beam` fixture is defined in `conftest.py`."""

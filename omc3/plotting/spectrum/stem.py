@@ -12,6 +12,7 @@ from omc3.plotting.spectrum.utils import (plot_lines, FigureContainer, get_cycle
                                           get_approx_size_in_axes_coordinates,
                                           PLANES, STEM_LINES_ALPHA, LABEL_Y_SPECTRUM,
                                           LABEL_X, AMPS, FREQS, output_plot)
+from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
 
 LOG = logging_tools.getLogger(__name__)
@@ -91,5 +92,6 @@ def _create_legend(ax, labels, lines, ncol):
 
     # move above line-labels
     nlines = sum([line is not None for line in lines.values()]) + 0.05
-    y_shift = get_approx_size_in_axes_coordinates(leg.axes, label_size=matplotlib.rcParams['axes.labelsize']) * nlines
+    label_size = get_fontsize_as_float(matplotlib.rcParams['axes.labelsize'])
+    y_shift = get_approx_size_in_axes_coordinates(leg.axes, label_size=label_size) * nlines
     leg.axes.legend(handles=handles, bbox_to_anchor=(1. + x_shift, 1. + y_shift), **legend_params)

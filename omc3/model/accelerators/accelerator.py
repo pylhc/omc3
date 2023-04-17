@@ -26,6 +26,7 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_DAT,
 )
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -64,7 +65,7 @@ class Accelerator:
         params = EntryPointParameters()
         params.add_parameter(
             name="model_dir",
-            type=Path,
+            type=PathOrStr,
             help="Path to model directory; loads tunes and excitation from model!",
         )
         params.add_parameter(
@@ -131,7 +132,7 @@ class Accelerator:
                     "Arguments 'nat_tunes' and 'driven_tunes' are "
                     "not allowed when loading from model directory."
                 )
-            self.init_from_model_dir(opt.model_dir)
+            self.init_from_model_dir(Path(opt.model_dir))
 
         else:
             self.init_from_options(opt)
@@ -157,8 +158,7 @@ class Accelerator:
 
     def init_from_model_dir(self, model_dir: Path) -> None:
         LOG.debug("Creating accelerator instance from model dir")
-        self.model_dir = Path(model_dir)
-
+        self.model_dir = model_dir
         # Elements #####################################
         elements_path = model_dir / TWISS_ELEMENTS_DAT
         if not elements_path.is_file():
