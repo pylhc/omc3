@@ -5,6 +5,8 @@ import tfs
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import (
+    NAME,
+    S,
     AMPLITUDE,
     AMP_BETA_NAME,
     BETA_NAME,
@@ -196,8 +198,8 @@ def _assert_correct_normalized_dispersion_columns(outputdir: Path, plane: str) -
 def _assert_correct_coupling_columns(outputdir: Path, rdt: str) -> None:
     """Checks the expected columns are present in the normalized dispersion file in outputdir"""
     dframe = tfs.read(outputdir / f"f{rdt}.tfs")
-    expected_converted_columns = [AMPLITUDE, f"{ERR}AMP", PHASE, f"{ERR}{PHASE}", f"{REAL}",
-                                  f"{IMAG}", f"{REAL}{MDL}", f"{IMAG}{MDL}"]    # replace renamed
+    expected_converted_columns = [NAME, S, AMPLITUDE, f"{ERR}{AMPLITUDE}", PHASE, f"{ERR}{PHASE}", f"{REAL}", 
+                                  f"{ERR}{REAL}", f"{IMAG}", f"{ERR}{IMAG}", f"{REAL}{MDL}", f"{IMAG}{MDL}"]
     expected_renamed_columns = [f"F{rdt}W", f"Q{rdt}", f"Q{rdt}STD", f"F{rdt}R", f"F{rdt}I"]  # disappeared
 
     for col in expected_converted_columns:
