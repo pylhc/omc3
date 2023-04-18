@@ -10,13 +10,15 @@ from tests.conftest import cli_args
 
 INPUT = Path(__file__).parent.parent / "inputs"
 
+
+# noinspection PyTypeChecker
 class TestMain:
     text = "Here is some text"
     files = (INPUT / "spec_test.sdds.linx", INPUT / "spec_test.sdds.liny")
     filenames = ("testfile1.linx", "testfile2.liny")
     tags=["Beam_1_Analysis", "Shift_Summary"]
 
-    # noinspection PyTypeChecker
+    @pytest.mark.basic
     def test_run_all_vars(self, patch_rbac, patch_pylogbook):
         event: MockPylogbook = create_logbook_entry.main(
             logbook = create_logbook_entry.OMC_LOGBOOK,
@@ -31,7 +33,7 @@ class TestMain:
         for t in self.tags:
             assert t in event.tags
 
-    # noinspection PyTypeChecker
+    @pytest.mark.basic
     def test_run_no_filenames(self, patch_rbac, patch_pylogbook):
         event: MockPylogbook = create_logbook_entry.main(
             logbook = create_logbook_entry.OMC_LOGBOOK,
@@ -43,7 +45,7 @@ class TestMain:
             assert f.name in event.attachments
         assert not event.tags
 
-    # noinspection PyTypeChecker
+    @pytest.mark.basic
     def test_run_no_attachments(self, patch_rbac, patch_pylogbook):
         event: MockPylogbook = create_logbook_entry.main(
             logbook = create_logbook_entry.OMC_LOGBOOK,
@@ -53,14 +55,14 @@ class TestMain:
         assert not event.tags
         assert not event.attachments
 
-    # noinspection PyTypeChecker
+    @pytest.mark.basic
     def test_run_no_arguments(self, patch_rbac, patch_pylogbook):
         event: MockPylogbook = create_logbook_entry.main({})
         assert not event.text
         assert not event.tags
         assert not event.attachments
 
-    # noinspection PyTypeChecker
+    @pytest.mark.basic
     def test_different_logbook(self, patch_rbac, monkeypatch):
         logbook_name = "LHC_OP"
         monkeypatch.setattr(create_logbook_entry, "pylogbook", MockPylogbook(logbook_name))
@@ -72,7 +74,7 @@ class TestMain:
         assert not event.tags
         assert not event.attachments
 
-    # noinspection PyTypeChecker
+    @pytest.mark.basic
     def test_run_cli_no_arguments(self, patch_rbac, patch_pylogbook):
         with cli_args():
             event: MockPylogbook = create_logbook_entry.main()
@@ -80,7 +82,7 @@ class TestMain:
         assert not event.tags
         assert not event.attachments
 
-    # noinspection PyTypeChecker
+    @pytest.mark.basic
     def test_run_all_cli_vars(self, patch_rbac, patch_pylogbook):
         with cli_args(
             "--logbook", create_logbook_entry.OMC_LOGBOOK,
