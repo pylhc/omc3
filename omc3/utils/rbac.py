@@ -142,6 +142,7 @@ class RBAC:
     def _get_token(self, response: requests.Response) -> str:
         """ Check response and return RBAC token. """
         response.raise_for_status()
+        # Possibly response.text() does the encoding automatically
         self.token = response.content.decode("utf-8")
         return response.content.decode("utf-8")
 
