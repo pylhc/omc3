@@ -79,6 +79,7 @@ class TestRBACClass:
 class TestGetOSUsername:
     username_variables = [RBAC_USERNAME, "LOGNAME", "USERNAME", "USER"]
 
+    @pytest.mark.basic
     def test_variables(self, monkeypatch):
         for var in self.username_variables:
             self._delete_all_uservars(monkeypatch)
@@ -86,12 +87,14 @@ class TestGetOSUsername:
             monkeypatch.setenv(var, name)
             assert name == get_os_username()
 
+    @pytest.mark.basic
     def test_login(self, monkeypatch):
         name = random_string(10)
         self._delete_all_uservars(monkeypatch)
         monkeypatch.setattr(rbac.os, "getlogin", lambda: name)
         assert name == get_os_username()
 
+    @pytest.mark.basic
     def test_all_fail(self, monkeypatch):
         def raise_os():
             raise OSError("Error")
@@ -234,7 +237,3 @@ class MockKerberos:
         assert self.step
         assert self.response
         assert self.clean
-
-
-
-
