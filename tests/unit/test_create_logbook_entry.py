@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
-from pylogbook.models import Tag
 from requests import HTTPError
 
 from omc3.scripts import create_logbook_entry
@@ -158,7 +157,7 @@ class MockPylogbook:
         """ Mocks the pylogbook Client/ActivitiesClient-Class. """
         assert isinstance(text, str)
         for tag in tags:
-            assert isinstance(tag, (str, Tag))
+            assert isinstance(tag, str)  # could also be Tag, but not in the tests
         if activities:
             assert activities == self
         self.text = text
