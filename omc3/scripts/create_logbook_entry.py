@@ -50,7 +50,6 @@ import mimetypes
 from pathlib import Path
 from typing import Iterable, Union, List
 
-import pylogbook
 import urllib3
 from requests.exceptions import HTTPError, ConnectionError, ConnectTimeout
 
