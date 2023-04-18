@@ -227,6 +227,10 @@ def _add_mimetypes(files: Iterable[Union[str, Path]]):
     purposes.
     TODO: if it's a binary sdds file, it should be 'application/octet-stream'
           see https://stackoverflow.com/a/6783972/5609590
+
+    This is done, because the attachment builder uses the mimetypes package
+    to guess the mimetype and if it doesn't find it (e.g. `.tfs` or `.dat`)
+    raises an error.
     """
     if files is None:
         return
@@ -252,11 +256,11 @@ def _convert_pdf_to_png(filepath: Path):
         LOGGER.warning(f"Big PDF-File with {len(doc)} pages found. "
                        "Conversion only implemented for single-page files. "
                        "Skipping conversion.")
+        return None
 
-    page = doc[0]  # assume single page pdf
-    pix = page.get_pixmap(dpi=PNG_DPI)  # render page to an image
+    pixmap = doc[0].get_pixmap(dpi=PNG_DPI)  # only first page
     attachment = AttachmentBuilder.from_bytes(
-        contents=pix.tobytes("png"),
+        contents=pixmap.tobytes("png"),
         mime_type="image/png",
         name=filepath.with_suffix(".png").name
     )
