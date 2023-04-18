@@ -46,6 +46,7 @@ from commandline.
     Tags to be added to the event.
 
 """
+import mimetypes
 from pathlib import Path
 from typing import Iterable, Union, List
 
@@ -62,10 +63,11 @@ pylogbook = cern_network_import("pylogbook")  # raises ImportError if used
 
 # for typing:
 try:
-    from pylogbook._attachment_builder import AttachmentBuilderType
+    from pylogbook._attachment_builder import AttachmentBuilder, AttachmentBuilderType
     from pylogbook.models import Event
 except ImportError:
     AttachmentBuilderType, Event = type(None), type(None)
+    AttachmentBuilder = None
 
 # disables unverified HTTPS warning for cern-host
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -183,6 +185,8 @@ def _get_attachments(files: Iterable[Union[str, Path]],
                      filenames: Iterable[str] = None,
                      pdf2png: bool = False) -> List[AttachmentBuilderType]:
     """ Read the file-attachments and assign their names. """
+    if files is None:
+        return []
 
     if filenames and len(filenames) != len(files):
         raise ValueError(
@@ -191,6 +195,7 @@ def _get_attachments(files: Iterable[Union[str, Path]],
             f"need to be of equal length."
         )
 
+    _add_mimetypes(files)
     if filenames is None:
         filenames = [None] * len(files)
 
@@ -198,7 +203,7 @@ def _get_attachments(files: Iterable[Union[str, Path]],
     attachments = []
     for filepath, filename in zip(files, filenames):
         filepath = Path(filepath)
-        attachment = pylogbook._attachment_builder.AttachmentBuilder.from_file(filepath)
+        attachment = AttachmentBuilder.from_file(filepath)
         attachments.append(attachment)
 
         # Convert pdf to png if desired
@@ -218,6 +223,22 @@ def _get_attachments(files: Iterable[Union[str, Path]],
     return attachments
 
 
+def _add_mimetypes(files: Iterable[Union[str, Path]]):
+    """ Adds all unknown suffixes as plain/text, which should suffice for our
+    purposes.
+    TODO: if it's a binary sdds file, it should be 'application/octet-stream'
+          see https://stackoverflow.com/a/6783972/5609590
+    """
+    if files is None:
+        return
+
+    for f in files:
+        f_path = Path(f)
+        mime, _ = mimetypes.guess_type(f_path.name)
+        if mime is None:
+            mimetypes.add_type("text/plain", f.suffix, strict=True)
+
+
 def _convert_pdf_to_png(filepath: Path):
     """ Convert the first page of a pdf file into a png image. """
     try:
@@ -235,7 +256,7 @@ def _convert_pdf_to_png(filepath: Path):
 
     page = doc[0]  # assume single page pdf
     pix = page.get_pixmap(dpi=PNG_DPI)  # render page to an image
-    attachment = pylogbook._attachment_builder.AttachmentBuilder.from_bytes(
+    attachment = AttachmentBuilder.from_bytes(
         contents=pix.tobytes("png"),
         mime_type="image/png",
         name=filepath.with_suffix(".png").name
