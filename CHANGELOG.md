@@ -1,5 +1,11 @@
 # OMC3 Changelog
 
+#### Not Released Yet
+
+- Added: 
+  - RBAC token provider in omc3.utils.rbac
+  - pylogbook wrapper in omc3.scripts.create_logbook_entry
+
 #### 2023-03-16 - v0.7.2 - _jdilly_
 
 - Fix: 
