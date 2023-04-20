@@ -17,10 +17,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04, macos-latest, windows-latest]
         # Make sure to escape 3.10 with quotes so it doesn't get interpreted as float 3.1 by GA's parser
-        python-version: [3.8, 3.9, "3.10", 3.x]  # crons should always run latest python hence 3.x
-        exclude:
-          - os: windows-latest
-            python-version: ["3.11"]  # jpype1/pytables might not build there, to be tested when officially supported
+        python-version: [3.8, 3.9, "3.10", "3.11", 3.x]  # crons should always run latest python hence 3.x
 
     steps:
       - uses: actions/checkout@v3
