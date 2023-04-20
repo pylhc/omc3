@@ -20,9 +20,7 @@ jobs:
         python-version: [3.8, 3.9, "3.10", 3.x]  # crons should always run latest python hence 3.x
         exclude:
           - os: windows-latest
-            python-version: ["3.10", "3.11"]  # jpype1 doesn't build there
-          # - os: macos-latest
-          #   python-version: 3.10  # jpype1 doesn't build there
+            python-version: ["3.11"]  # jpype1/pytables might not build there, to be tested when officially supported
 
     steps:
       - uses: actions/checkout@v3

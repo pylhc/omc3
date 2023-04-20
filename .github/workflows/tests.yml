@@ -20,11 +20,6 @@ jobs:
         os: [ubuntu-20.04, ubuntu-22.04, macos-latest, windows-latest]
         # Make sure to escape 3.10 with quotes so it doesn't get interpreted as float 3.1 by GA's parser
         python-version: [3.8, 3.9, "3.10"]
-#        exclude:
-#          - os: windows-latest
-#            python-version: 3.10  # jpype1 doesn't build there
-          # - os: macos-latest
-          #   python-version: 3.10  # jpype1 doesn't build there
 
     steps:
       - uses: actions/checkout@v2
@@ -72,11 +67,6 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04, macos-latest, windows-latest]
         python-version: [3.8, 3.9, "3.10"]
-#        exclude:
-#          - os: windows-latest
-#            python-version: 3.9  # pyTables can't build on that
-#          - os: macos-latest
-#            python-version: 3.9  # pyTables can't build on that
 
     steps:
       - uses: actions/checkout@v3
