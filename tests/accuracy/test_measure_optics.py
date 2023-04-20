@@ -3,6 +3,8 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+
+import omc3.optics_measurements.data_models
 import tfs
 
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
@@ -71,7 +73,7 @@ def test_measure_optics(
         second_order_disp=second_order_disp,
         chromatic_beating=lin_slice == slice(None, 7),
     )
-    inputs = measure_optics.InputFiles(lins[lin_slice], optics_opt)
+    inputs = omc3.optics_measurements.data_models.InputFiles(lins[lin_slice], optics_opt)
     with timeit(lambda spanned: LOG.debug(f"\nTotal time for optics measurements: {spanned}")):
         measure_optics.measure_optics(inputs, optics_opt)
     evaluate_accuracy(optics_opt.outputdir, LIMITS)
