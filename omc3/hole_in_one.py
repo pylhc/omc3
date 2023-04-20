@@ -35,16 +35,16 @@ from copy import deepcopy
 from datetime import datetime
 from os.path import abspath, basename, dirname, join
 
-import omc3.optics_measurements.data_models
+import turn_by_turn as tbt
+
 from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters,
                                               add_to_arguments, entrypoint,
                                               save_options_to_config)
-
-import turn_by_turn as tbt
 from omc3.definitions import formats
 from omc3.harpy import handler
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
+from omc3.optics_measurements.measure_optics import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
 
@@ -398,7 +398,7 @@ def _multibunch(tbt_datas, options):
 def _measure_optics(lins, optics_opt):
     if len(lins) == 0:
         lins = optics_opt.files
-    inputs = omc3.optics_measurements.data_models.InputFiles(lins, optics_opt)
+    inputs = InputFiles(lins, optics_opt)
     iotools.create_dirs(optics_opt.outputdir)
     calibrations = measure_optics.copy_calibration_files(optics_opt.outputdir,
                                                          optics_opt.calibrationdir)
