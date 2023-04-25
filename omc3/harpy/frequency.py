@@ -85,36 +85,38 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        A tuple of DataFrame, Spectra, and Bad BPMs summary.
+        A tuple of DataFrame (containing the main lines), Spectra, and Bad BPMs summary.
     """
-    panda = pd.DataFrame(index=bpm_matrix.index, columns=OrderedDict())
+    df = pd.DataFrame(index=bpm_matrix.index)
     frequencies, coefficients = windowed_padded_rfft(harpy_input, bpm_matrix, tunes, usv)
-    panda, not_tune_bpms = _get_main_resonances(tunes, dict(FREQS=frequencies, COEFFS=coefficients),
-                                                plane, harpy_input.tolerance, panda)
-    cleaned_by_tune_bpms = clean_by_tune(panda.loc[:, f"{COL_TUNE}{plane}"], harpy_input.tune_clean_limit)
-    panda = panda.loc[panda.index.difference(cleaned_by_tune_bpms)]
+    df, not_tune_bpms = _get_main_resonances(tunes, dict(FREQS=frequencies, COEFFS=coefficients),
+                                                plane, harpy_input.tolerance, df)
+    cleaned_by_tune_bpms = clean_by_tune(df.loc[:, f"{COL_TUNE}{plane}"], harpy_input.tune_clean_limit)
+    df = df.loc[df.index.difference(cleaned_by_tune_bpms)]
 
-    panda[f"{COL_MU}{plane}"] = _realign_phases(panda.loc[:, f"{COL_MU}{plane}"].to_numpy(),
-                                          panda.loc[:, f"{COL_TUNE}{plane}"].to_numpy(), bpm_matrix.shape[1])
+    df[f"{COL_MU}{plane}"] = _realign_phases(df.loc[:, f"{COL_MU}{plane}"].to_numpy(),
+                                          df.loc[:, f"{COL_TUNE}{plane}"].to_numpy(), bpm_matrix.shape[1])
 
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
-    bpm_matrix = bpm_matrix.loc[panda.index]
-    spectra = dict(FREQS=frequencies.loc[panda.index], COEFFS=coefficients.loc[panda.index])
+    bpm_matrix = bpm_matrix.loc[df.index]
+    spectra = dict(FREQS=frequencies.loc[df.index], COEFFS=coefficients.loc[df.index])
 
     if _get_natural_tunes(harpy_input, tunes) is not None:
-        panda = panda.join(_calculate_natural_tunes(spectra, _get_natural_tunes(harpy_input, tunes),
-                                                    harpy_input.tolerance, plane))
+        df_nattunes = _calculate_natural_tunes(
+            spectra, _get_natural_tunes(harpy_input, tunes), harpy_input.tolerance, plane
+        )
+        df = pd.concat([df, df_nattunes], axis=1, sort=False)
 
-        panda[f"{COL_NATMU}{plane}"] = _realign_phases(panda.loc[:, f"{COL_NATMU}{plane}"].to_numpy(),
-                                                 panda.loc[:, f"{COL_NATTUNE}{plane}"].to_numpy(),
+        df[f"{COL_NATMU}{plane}"] = _realign_phases(df.loc[:, f"{COL_NATMU}{plane}"].to_numpy(),
+                                                 df.loc[:, f"{COL_NATTUNE}{plane}"].to_numpy(),
 
                                                  bpm_matrix.shape[1])
     if tunes[2] > 0:
-        panda, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, panda)
-        panda[f"MUZ"] = _realign_phases(panda.loc[:, f"MUZ"].to_numpy(),
-                                              panda.loc[:, f"TUNEZ"].to_numpy(),
+        df, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, df)
+        df[f"MUZ"] = _realign_phases(df.loc[:, f"MUZ"].to_numpy(),
+                                              df.loc[:, f"TUNEZ"].to_numpy(),
                                               bpm_matrix.shape[1])
-    return panda, spectra, bad_bpms_summaries
+    return df, spectra, bad_bpms_summaries
 
 
 def find_resonances(tunes, nturns, plane, spectra, order_resonances):

@@ -17,10 +17,10 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "matplotlib>=3.2.0,<3.4.3",  # temporary limitations, try run test!
+    "matplotlib>=3.7.0",  # to be able to run with pandas 2.0
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
     "numpy>=1.19.0",
-    "pandas>=1.0, <1.4",  # with 1.4.0 the interpolation in bbq_tools fails, pinning for now
+    "pandas>=2.0",
     "scipy>=1.5.0",
     "scikit-learn>=0.23.0",
     "tfs-pandas>=3.1",

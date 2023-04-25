@@ -2,9 +2,15 @@
 
 #### Not Released Yet
 
-- Added: 
+- Added:
   - RBAC token provider in omc3.utils.rbac
   - pylogbook wrapper in omc3.scripts.create_logbook_entry
+
+#### 2023-04-20 - v0.8.0 - _jdilly_
+
+- Fix:
+  - Changed all `pandas`/`tfs-pandas` `append()` and `join()` to `concat()`
+  - Moved `InputFiles` into separate module
 
 #### 2023-03-16 - v0.7.2 - _jdilly_
 
