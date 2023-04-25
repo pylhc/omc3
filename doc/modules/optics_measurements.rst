@@ -25,6 +25,10 @@ Optics Measurements
     :members:
 
 
+.. automodule:: omc3.optics_measurements.data_models
+    :members:
+
+
 .. automodule:: omc3.optics_measurements.dispersion
     :members:
 
