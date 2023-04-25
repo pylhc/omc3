@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optics Measurements &mdash; omc3 0.7.2 documentation</title>
+  <title>Optics Measurements &mdash; omc3 0.8.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -13,9 +13,6 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -38,7 +35,7 @@
               <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.7
+                0.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -253,7 +250,6 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#measure-optics">Measure Optics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#omc3.optics_measurements.measure_optics.InputFiles"><code class="docutils literal notranslate"><span class="pre">InputFiles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.optics_measurements.measure_optics.chromatic_beating"><code class="docutils literal notranslate"><span class="pre">chromatic_beating()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.optics_measurements.measure_optics.measure_optics"><code class="docutils literal notranslate"><span class="pre">measure_optics()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -266,6 +262,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#chromatic">Chromatic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.optics_measurements.data_models.InputFiles"><code class="docutils literal notranslate"><span class="pre">InputFiles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dispersion">Dispersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.optics_measurements.dispersion.calculate_dispersion"><code class="docutils literal notranslate"><span class="pre">calculate_dispersion()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.optics_measurements.dispersion.calculate_normalised_dispersion"><code class="docutils literal notranslate"><span class="pre">calculate_normalised_dispersion()</span></code></a></li>
@@ -472,101 +470,6 @@
 <p>This module contains high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute various lattice optics parameters from frequency spectra.</p>
 </section>
-<dl class="py class">
-<dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">InputFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files_to_analyse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics_opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles" title="Permalink to this definition"></a></dt>
-<dd><p>Stores the input files, provides methods to gather quantity specific data</p>
-<dl class="simple">
-<dt>Public methods:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">get_dpps</span></code> (plane)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_joined_frame</span></code> (plane, columns, zero_dpp=False, how=’inner’)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_columns</span></code> (frame, column)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_data</span></code> (frame, column)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.calibrate">
-<span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calibs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.calibrate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.calibrate" title="Permalink to this definition"></a></dt>
-<dd><p>Use calibration data to rescale amplitude and amplitude error.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>calibs</strong> (<em>Dict</em>) -- Plane-Dictionary with DataFrames of calibration data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.dpps">
-<span class="sig-name descname"><span class="pre">dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.dpps" title="Permalink to this definition"></a></dt>
-<dd><p>Gathers measured DPPs from input files corresponding to given plane</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <cite>np.ndarray</cite> of DPPs.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.get_columns">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.get_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.get_columns" title="Permalink to this definition"></a></dt>
-<dd><p>Returns list of columns of frame corresponding to column in original files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>frame</strong> -- joined frame.</p></li>
-<li><p><strong>column</strong> -- name of column in original files.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of columns.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.get_data">
-<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.get_data" title="Permalink to this definition"></a></dt>
-<dd><p>Returns data in columns of frame corresponding to column in original files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>frame</strong> -- joined frame.</p></li>
-<li><p><strong>column</strong> -- name of column in original files.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <cite>np.narray</cite> corresponding to column in original files.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.InputFiles.joined_frame">
-<span class="sig-name descname"><span class="pre">joined_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_amp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">how</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inner'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#InputFiles.joined_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.InputFiles.joined_frame" title="Permalink to this definition"></a></dt>
-<dd><p>Constructs merged DataFrame from InputFiles.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>columns</strong> -- list of columns from input files.</p></li>
-<li><p><strong>dpp_value</strong> -- merges only files with given <code class="docutils literal notranslate"><span class="pre">dpp_value</span></code>.</p></li>
-<li><p><strong>dpp_amp</strong> -- merges only files with non-zero dpp amplitude (i.e. 3Dkicks).</p></li>
-<li><p><strong>how</strong> -- whi way to use for merging: <code class="docutils literal notranslate"><span class="pre">inner</span></code> (intersection) or <code class="docutils literal notranslate"><span class="pre">outer</span></code> (union),
-default is <code class="docutils literal notranslate"><span class="pre">inner</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A merged <cite>DataFrame</cite> from <cite>InputFiles</cite>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.chromatic_beating">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">chromatic_beating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#chromatic_beating"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.chromatic_beating" title="Permalink to this definition"></a></dt>
@@ -585,7 +488,7 @@ default is <code class="docutils literal notranslate"><span class="pre">inner</s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.measure_optics.measure_optics">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">measure_optics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#measure_optics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.measure_optics" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">measure_optics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.optics_measurements.data_models.InputFiles" title="omc3.optics_measurements.data_models.InputFiles"><span class="pre">InputFiles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#measure_optics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.measure_optics.measure_optics" title="Permalink to this definition"></a></dt>
 <dd><p>Main function to compute various lattice optics parameters from frequency spectra.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -811,6 +714,105 @@ It provides functions to compute various chromatic beam properties.</p>
 It provides functions to compute combined resonance driving terms following the derivations in
 <a class="reference external" href="https://arxiv.org/pdf/1402.1461.pdf">https://arxiv.org/pdf/1402.1461.pdf</a>.</p>
 </section>
+<span class="target" id="module-omc3.optics_measurements.data_models"></span><section id="data-models">
+<h2>Data Models<a class="headerlink" href="#data-models" title="Permalink to this heading"></a></h2>
+<p>Models used in optics measurements to store and pass around data.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.optics_measurements.data_models.InputFiles">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.data_models.</span></span><span class="sig-name descname"><span class="pre">InputFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files_to_analyse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics_opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#InputFiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.data_models.InputFiles" title="Permalink to this definition"></a></dt>
+<dd><p>Stores the input files, provides methods to gather quantity specific data</p>
+<dl class="simple">
+<dt>Public methods:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_dpps</span></code> (plane)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_joined_frame</span></code> (plane, columns, zero_dpp=False, how=’inner’)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_columns</span></code> (frame, column)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_data</span></code> (frame, column)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.optics_measurements.data_models.InputFiles.calibrate">
+<span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calibs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#InputFiles.calibrate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.data_models.InputFiles.calibrate" title="Permalink to this definition"></a></dt>
+<dd><p>Use calibration data to rescale amplitude and amplitude error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>calibs</strong> (<em>Dict</em>) -- Plane-Dictionary with DataFrames of calibration data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.optics_measurements.data_models.InputFiles.dpps">
+<span class="sig-name descname"><span class="pre">dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#InputFiles.dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.data_models.InputFiles.dpps" title="Permalink to this definition"></a></dt>
+<dd><p>Gathers measured DPPs from input files corresponding to given plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>np.ndarray</cite> of DPPs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.optics_measurements.data_models.InputFiles.get_columns">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#InputFiles.get_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.data_models.InputFiles.get_columns" title="Permalink to this definition"></a></dt>
+<dd><p>Returns list of columns of frame corresponding to column in original files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> -- joined frame.</p></li>
+<li><p><strong>column</strong> -- name of column in original files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.optics_measurements.data_models.InputFiles.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#InputFiles.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.data_models.InputFiles.get_data" title="Permalink to this definition"></a></dt>
+<dd><p>Returns data in columns of frame corresponding to column in original files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame</strong> -- joined frame.</p></li>
+<li><p><strong>column</strong> -- name of column in original files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>np.narray</cite> corresponding to column in original files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.optics_measurements.data_models.InputFiles.joined_frame">
+<span class="sig-name descname"><span class="pre">joined_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_amp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">how</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inner'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#InputFiles.joined_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.data_models.InputFiles.joined_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs merged DataFrame from InputFiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>columns</strong> -- list of columns from input files.</p></li>
+<li><p><strong>dpp_value</strong> -- merges only files with given <code class="docutils literal notranslate"><span class="pre">dpp_value</span></code>.</p></li>
+<li><p><strong>dpp_amp</strong> -- merges only files with non-zero dpp amplitude (i.e. 3Dkicks).</p></li>
+<li><p><strong>how</strong> -- whi way to use for merging: <code class="docutils literal notranslate"><span class="pre">inner</span></code> (intersection) or <code class="docutils literal notranslate"><span class="pre">outer</span></code> (union),
+default is <code class="docutils literal notranslate"><span class="pre">inner</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A merged <cite>DataFrame</cite> from <cite>InputFiles</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <span class="target" id="module-omc3.optics_measurements.dispersion"></span><section id="dispersion">
 <h2>Dispersion<a class="headerlink" href="#dispersion" title="Permalink to this heading"></a></h2>
 <p>This module contains dispersion calculations related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tune_analysis.bbq_tools &mdash; omc3 0.8.0 documentation</title>
+  <title>omc3.optics_measurements.data_models &mdash; omc3 0.8.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -450,7 +450,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">omc3.tune_analysis.bbq_tools</li>
+      <li class="breadcrumb-item active">omc3.optics_measurements.data_models</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -459,182 +459,192 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for omc3.tune_analysis.bbq_tools</h1><div class="highlight"><pre>
+  <h1>Source code for omc3.optics_measurements.data_models</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">BBQ Tools</span>
-<span class="sd">---------</span>
+<span class="sd">Data Models</span>
+<span class="sd">-----------</span>
 
-<span class="sd">Tools to handle BBQ data.</span>
+<span class="sd">Models used in optics measurements to store and pass around data.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">NDArray</span>
 
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="n">dpp</span><span class="p">,</span> <span class="n">iforest</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">BPM_RESOLUTION</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">CALIBRATION</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">ERR_CALIBRATION</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.outliers</span> <span class="kn">import</span> <span class="n">get_filter_mask</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="OutlierFilterOpt"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.OutlierFilterOpt">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OutlierFilterOpt</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for moving average with outlier filter.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        window: length of the averaging window.</span>
-<span class="sd">        limit: cleaning limit, i.e. points with deviating less than this limit from the average will not be cleaned</span>
-<span class="sd">     &quot;&quot;&quot;</span>
-    <span class="n">window</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.</span></div>
-
-
-<div class="viewcode-block" id="MinMaxFilterOpt"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.MinMaxFilterOpt">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">MinMaxFilterOpt</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for moving average with min/max filter.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        window: length of the averaging window.</span>
-<span class="sd">        min: minimum value (for filtering).</span>
-<span class="sd">        max: maximum value (for filtering).</span>
-<span class="sd">        fine_window: length of the averaging window for fine cleaning.</span>
-<span class="sd">        fine_cut: allowed deviation for fine cleaning.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">window</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="nb">min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="nb">max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">fine_window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">fine_cut</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span></div>
-
-
-<span class="n">FilterOpts</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">MinMaxFilterOpt</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span><span class="p">]]</span>
-
-
-<div class="viewcode-block" id="get_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average">[docs]</a><span class="k">def</span> <span class="nf">get_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">MinMaxFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">]:</span>
+<div class="viewcode-block" id="InputFiles"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles">[docs]</a><span class="k">class</span> <span class="nc">InputFiles</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered</span>
-<span class="sd">    beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)</span>
-<span class="sd">    values previous and floor((length-1)/2) following values into account.</span>
+<span class="sd">    Stores the input files, provides methods to gather quantity specific data</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        data_series: `Series` of data.</span>
-<span class="sd">        filter_opt: Options for the filtering, see `:class:`omc3.tune_analysis.bbq_tools.MinMaxFilterOpt`.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A filtered and averaged `Series`, another `Series` with the error and the mask used for filtering data.</span>
+<span class="sd">    Public methods:</span>
+<span class="sd">        - ``get_dpps`` (plane)</span>
+<span class="sd">        - ``get_joined_frame`` (plane, columns, zero_dpp=False, how=&#39;inner&#39;)</span>
+<span class="sd">        - ``get_columns`` (frame, column)</span>
+<span class="sd">        - ``get_data`` (frame, column)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cutting data and calculating moving average of length </span><span class="si">{</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files_to_analyse</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InputFiles</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">PLANES</span><span class="p">,</span> <span class="p">([],</span> <span class="p">[])))</span>
+        <span class="n">read_files</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">files_to_analyse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">file_in</span> <span class="ow">in</span> <span class="n">files_to_analyse</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+                <span class="n">df_to_load</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_in</span><span class="si">}</span><span class="s2">.lin</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                              <span class="k">if</span> <span class="n">read_files</span> <span class="k">else</span> <span class="n">file_in</span><span class="p">[</span><span class="n">plane</span><span class="p">])</span>
+                <span class="n">df_to_load</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_repair_backwards_compatible_frame</span><span class="p">(</span><span class="n">df_to_load</span><span class="p">,</span> <span class="n">plane</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;To activate fine cleaning, both &quot;</span>
-                                  <span class="s2">&quot;&#39;fine_window&#39; and &#39;fine_cut&#39; are needed.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;No valid input files&quot;</span><span class="p">)</span>
+        <span class="n">dpp_values</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">calculate_dpoverp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPPS: </span><span class="si">{</span><span class="n">dpp_values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">amp_dpp_values</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">calculate_amp_dpoverp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPP_AMPS: </span><span class="si">{</span><span class="n">amp_dpp_values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">isolation_forest</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">iforest</span><span class="o">.</span><span class="n">clean_with_isolation_forest</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">optics_opt</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">append_dpp</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">dpp</span><span class="o">.</span><span class="n">arrange_dpps</span><span class="p">(</span><span class="n">dpp_values</span><span class="p">))</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">append_amp_dpp</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">amp_dpp_values</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">min_mask</span> <span class="o">=</span> <span class="n">data_series</span> <span class="o">&lt;=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">min</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">min_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">data_series</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="nd">@staticmethod</span>  <span class="c1"># TODO later remove</span>
+    <span class="k">def</span> <span class="nf">_repair_backwards_compatible_frame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones.</span>
+<span class="sd">        This is for backwards compatibility with Drive,</span>
+<span class="sd">        i.e. harpy has this</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;NATAMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;NATAMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;NATAMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">df</span>
 
-    <span class="k">if</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">max_mask</span> <span class="o">=</span> <span class="n">data_series</span> <span class="o">&gt;=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">max</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">max_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">data_series</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<div class="viewcode-block" id="InputFiles.dpps"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.dpps">[docs]</a>    <span class="k">def</span> <span class="nf">dpps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gathers measured DPPs from input files corresponding to given plane</span>
 
-    <span class="n">cut_mask</span> <span class="o">=</span> <span class="n">min_mask</span> <span class="o">|</span> <span class="n">max_mask</span> <span class="o">|</span> <span class="n">data_series</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
-    <span class="n">_is_almost_empty_mask</span><span class="p">(</span><span class="o">~</span><span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
-    <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
 
-    <span class="k">if</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">min_mask</span> <span class="o">=</span> <span class="n">data_series</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">data_mav</span> <span class="o">-</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">)</span>
-        <span class="n">max_mask</span> <span class="o">=</span> <span class="n">data_series</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">data_mav</span> <span class="o">+</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">)</span>
-        <span class="n">cut_mask</span> <span class="o">=</span> <span class="n">min_mask</span> <span class="o">|</span> <span class="n">max_mask</span> <span class="o">|</span> <span class="n">data_series</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
-        <span class="n">_is_almost_empty_mask</span><span class="p">(</span><span class="o">~</span><span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">)</span>
-        <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="n">cut_mask</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">)</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A `np.ndarray` of DPPs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df</span><span class="o">.</span><span class="n">DPP</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]])</span></div>
 
-    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span><span class="p">,</span> <span class="o">~</span><span class="n">cut_mask</span></div>
+    <span class="k">def</span> <span class="nf">dpp_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">):</span>
+        <span class="n">dpp_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="o">-</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">dpp_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dpp_dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found for dp/p </span><span class="si">{</span><span class="n">dpp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpp_dfs</span>
 
+    <span class="k">def</span> <span class="nf">_all_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
 
-<div class="viewcode-block" id="clean_outliers_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average">[docs]</a><span class="k">def</span> <span class="nf">clean_outliers_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries, by means of</span>
-<span class="sd">    :func:`outlier filter &lt;omc3.utils.outliers.get_filter_mask&gt;`.</span>
-<span class="sd">    The values are shifted, so that the averaged value takes ceil((length-1)/2) values previous</span>
-<span class="sd">    and floor((length-1)/2) following values into account.</span>
+<div class="viewcode-block" id="InputFiles.joined_frame"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.joined_frame">[docs]</a>    <span class="k">def</span> <span class="nf">joined_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpp_amp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs merged DataFrame from InputFiles.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        data_series: `Series` of data.</span>
-<span class="sd">        filter_opt: Options for the filtering, see :class:`omc3.tune_analysis.bbq_tools.OutlierFilterOpt`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filtering and calculating moving average of length </span><span class="si">{</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-    <span class="n">window</span><span class="p">,</span> <span class="n">limit</span> <span class="o">=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">limit</span>
-    <span class="n">init_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_series</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">init_mask</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_series</span><span class="p">)</span><span class="o">-</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">):</span>
-        <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">window</span><span class="p">]</span> <span class="o">&amp;=</span> <span class="n">get_filter_mask</span><span class="p">(</span><span class="n">data_series</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">window</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">init_mask</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">window</span><span class="p">])</span>
+<span class="sd">        Args:</span>
+<span class="sd">            plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
+<span class="sd">            columns: list of columns from input files.</span>
+<span class="sd">            dpp_value: merges only files with given ``dpp_value``.</span>
+<span class="sd">            dpp_amp: merges only files with non-zero dpp amplitude (i.e. 3Dkicks).</span>
+<span class="sd">            how: whi way to use for merging: ``inner`` (intersection) or ``outer`` (union),</span>
+<span class="sd">                default is ``inner``.</span>
 
-    <span class="n">_is_almost_empty_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
-    <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span> <span class="o">=</span> <span class="n">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span><span class="p">,</span> <span class="n">mask</span></div>
+<span class="sd">        Returns:</span>
+<span class="sd">            A merged `DataFrame` from `InputFiles`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">how</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="s1">&#39;outer&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeWarning</span><span class="p">(</span><span class="s2">&quot;&#39;how&#39; should be either &#39;inner&#39; or &#39;outer&#39;, &#39;inner&#39; will be used.&quot;</span><span class="p">)</span>
+        <span class="n">frames_to_join</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpp_amp</span><span class="p">:</span>
+            <span class="n">frames_to_join</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">frames_to_join</span> <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">DPPAMP</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found for non-zero |dp/p|&quot;</span><span class="p">)</span>
+        <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+                <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">joined_frame</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+                                        <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;__&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+            <span class="n">joined_frame</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">column</span><span class="p">:</span> <span class="n">column</span> <span class="o">+</span> <span class="s1">&#39;__0&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">joined_frame</span></div>
 
+    <span class="k">def</span> <span class="nf">bpms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">plane</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpms</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpms</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">))</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="c1"># Private methods ############################################################</span>
+<div class="viewcode-block" id="InputFiles.calibrate"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.calibrate">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calibs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use calibration data to rescale amplitude and amplitude error.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            calibs (Dict): Plane-Dictionary with DataFrames of calibration data.</span>
 
-<span class="k">def</span> <span class="nf">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">clean_mask</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">],</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the moving average of data series with a window of length and interpolated ``NaNs``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">is_datetime_index</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">datetime</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">calibs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
 
-    <span class="k">if</span> <span class="n">is_datetime_index</span><span class="p">:</span>
-        <span class="c1"># in case data_series has datetime or similar as index</span>
-        <span class="c1"># interpolation works in some pandas/numpy combinations, in some not</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># if clean_mask is a Series, bring into the right order and make array ...</span>
-            <span class="n">clean_mask</span> <span class="o">=</span> <span class="n">clean_mask</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="n">bpm_resolution</span> <span class="o">=</span> <span class="n">calibs</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">BPM_RESOLUTION</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">)</span>  <span class="c1"># TODO: Default of 0.1 mm is LHC specific</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">])):</span>
+                <span class="c1"># Merge all measurement BPMs into calibration data (only few BPMs),</span>
+                <span class="c1"># fill missing values with a scaling of 1 and estimated error of 0.1mm (emaclean estimate)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]],</span> <span class="n">calibs</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span>
+                                <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
+                    <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="n">CALIBRATION</span><span class="p">:</span> <span class="mf">1.</span><span class="p">})</span>  <span class="c1"># ERR_CALIBRATION is relative, NaN filled with absolute value below</span>
 
-        <span class="c1"># ... as we change the index of data now</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+                <span class="c1"># Scale amplitude with the calibration</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">CALIBRATION</span><span class="p">]</span>
 
-    <span class="n">data</span><span class="p">[</span><span class="n">clean_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+                <span class="c1"># Sum Amplitude Error (absolute) and Calibration Error (relative)</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                    <span class="p">((</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">ERR_CALIBRATION</span><span class="p">])</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">bpm_resolution</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+                <span class="p">)</span></div>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># &#39;interpolate&#39; fills nan based on index/values of neighbours</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bfill&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;ffill&quot;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Interpolation failed. &quot;</span>
-                        <span class="s2">&quot;Usually due to a dtype format that is not properly recognized.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+<div class="viewcode-block" id="InputFiles.get_columns"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.get_columns">[docs]</a>    <span class="o">@</span> <span class="nb">staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of columns of frame corresponding to column in original files.</span>
 
-    <span class="n">shift</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">((</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Shift average to middle value</span>
+<span class="sd">        Args:</span>
+<span class="sd">            frame:  joined frame.</span>
+<span class="sd">            column: name of column in original files.</span>
 
-    <span class="c1"># calculate mean and fill NaNs at the ends</span>
-    <span class="n">data_mav</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
-        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bfill&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;ffill&quot;</span><span class="p">)</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">str_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">column</span> <span class="o">+</span> <span class="s1">&#39;__&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+        <span class="n">new_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">):],</span> <span class="n">str_list</span><span class="p">))</span>
+        <span class="n">new_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">new_list</span><span class="p">]</span></div>
 
-    <span class="c1"># calculate deviation to the moving average and fill NaNs at the ends</span>
-    <span class="n">std_mav</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">data</span><span class="o">-</span><span class="n">data_mav</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
-        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bfill&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;ffill&quot;</span><span class="p">))</span>
-    <span class="n">err_mav</span> <span class="o">=</span> <span class="n">std_mav</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+<div class="viewcode-block" id="InputFiles.get_data"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns data in columns of frame corresponding to column in original files.</span>
 
-    <span class="k">if</span> <span class="n">is_datetime_index</span><span class="p">:</span>
-        <span class="c1"># restore index from input series</span>
-        <span class="n">data_mav</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">index</span>
-        <span class="n">std_mav</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">index</span>
-        <span class="n">err_mav</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">index</span>
+<span class="sd">        Args:</span>
+<span class="sd">            frame:  joined frame.</span>
+<span class="sd">            column: name of column in original files.</span>
 
-    <span class="k">return</span> <span class="n">data_mav</span><span class="p">,</span> <span class="n">err_mav</span>
-
-
-<span class="k">def</span> <span class="nf">_is_almost_empty_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">av_length</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if masked data could be used to calculate moving average.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">av_length</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many points have been filtered. Maybe wrong filtering parameters?&quot;</span><span class="p">)</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A `np.narray` corresponding to column in original files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>
