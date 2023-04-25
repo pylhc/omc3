@@ -741,7 +741,7 @@ class TwissResponse:
 
         def tune_caller(func, _unused):
             tune = func()
-            res = tune["X"].append(tune["Y"])
+            res = pd.concat([tune["X"], tune["Y"]], axis="index", ignore_index=True)
             res.index = [f"{TUNE}1", f"{TUNE}2"]
             return res
 

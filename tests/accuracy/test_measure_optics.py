@@ -3,16 +3,17 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import tfs
 
+import tfs
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
+from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import logging_tools
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
 from tests.accuracy.twiss_to_lin import optics_measurement_test_files
-from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__')  # debugging
@@ -71,7 +72,7 @@ def test_measure_optics(
         second_order_disp=second_order_disp,
         chromatic_beating=lin_slice == slice(None, 7),
     )
-    inputs = measure_optics.InputFiles(lins[lin_slice], optics_opt)
+    inputs = InputFiles(lins[lin_slice], optics_opt)
     with timeit(lambda spanned: LOG.debug(f"\nTotal time for optics measurements: {spanned}")):
         measure_optics.measure_optics(inputs, optics_opt)
     evaluate_accuracy(optics_opt.outputdir, LIMITS)

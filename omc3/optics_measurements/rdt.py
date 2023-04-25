@@ -132,17 +132,18 @@ def _rdt_to_order_and_type(rdt):
 
 def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
     filtered = phases[plane]["uncompensated"]["MEAS"].loc[bpm_names, bpm_names]
-    phase_meas = pd.concat(
-        (filtered % 1, (filtered.iloc[:, :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1), axis=1)
-    second_bmps = np.abs(phase_meas * _get_n_upper_diagonals(NBPMS_FOR_90, phase_meas.shape)
-                         - 0.25).idxmin(axis=1)
-    filtered.iloc[-NBPMS_FOR_90:, :NBPMS_FOR_90] = (filtered.iloc[-NBPMS_FOR_90:,
-                                                    :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1
-    filtered["NAME2"], filtered["MEAS"], filtered["ERRMEAS"] = second_bmps, filtered.lookup(
-        bpm_names, second_bmps), phases[plane]["uncompensated"]["ERRMEAS"].lookup(bpm_names, second_bmps)
-    for_rdts = pd.merge(filtered.loc[:, ["NAME2", "MEAS", "ERRMEAS"]],
-                        meas_input.accelerator.model.loc[:, ["S"]], how="inner",
-                        left_index=True, right_index=True)
+    phase_meas = pd.concat((filtered % 1, (filtered.iloc[:, :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1), axis=1)
+    second_bmps = np.abs(phase_meas * _get_n_upper_diagonals(NBPMS_FOR_90, phase_meas.shape) - 0.25).idxmin(axis=1)
+    filtered.iloc[-NBPMS_FOR_90:,:NBPMS_FOR_90] = (filtered.iloc[-NBPMS_FOR_90:,:NBPMS_FOR_90] + tunes[plane]["Q"]) % 1
+
+    # get the pairs zip(bpm_names, second_bpms)
+    filtered["NAME2"] = second_bmps
+    filtered["MEAS"] = np.diag(filtered.loc[bpm_names, second_bmps])
+    filtered["ERRMEAS"] = np.diag(phases[plane]["uncompensated"]["ERRMEAS"].loc[bpm_names, second_bmps])
+
+    # Merge final dataframe
+    for_rdts = pd.merge(filtered.loc[:, ["NAME2", "MEAS", "ERRMEAS"]], meas_input.accelerator.model.loc[:, ["S"]],
+                        how="inner", left_index=True, right_index=True)
     return for_rdts
 
 
