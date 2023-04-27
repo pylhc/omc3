@@ -197,4 +197,4 @@ class MockAttachmentBuilder:
 def patch_pylogbook(monkeypatch):
     monkeypatch.setattr(create_logbook_entry, "pylogbook", MockPylogbook())
     if create_logbook_entry.AttachmentBuilder is None:  # if package is not installed
-        monkeypatch.setattr(create_logbook_entry, "AttachmentBuilder", MockAttachmentBuilder())
+        monkeypatch.setattr(create_logbook_entry, "AttachmentBuilder", MockAttachmentBuilder)
