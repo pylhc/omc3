@@ -5,8 +5,7 @@ RBAC
 Provider for RBAC tokens.
 Does not use pyRBAC, because there is no KERBEROS login, instead this follows
 the poor man's (aka Michi) pure python RBAC
-https://gitlab.cern.ch/mihostet/lhc-access-screenshot/-/blob/master/lhc_access_screenshot/minirbac.py
-
+https://gitlab.cern.ch/mihostet/lhc-access-screenshot/-/blob/5de481ff9903f64c531feffbd8ea93be474dd11c/lhc_access_screenshot/minirbac.py
 """
 import os
 import pathlib
