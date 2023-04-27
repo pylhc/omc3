@@ -1,5 +1,7 @@
+import mimetypes
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Union
 
 import pytest
 from requests import HTTPError
@@ -126,6 +128,7 @@ class MockRBAC:
 def patch_rbac(monkeypatch):
     monkeypatch.setattr(create_logbook_entry, "RBAC", MockRBAC())
 
+
 class MockPylogbook:
     """ Mocks some of the functionality of pylogbook.
     This is all done on the same object, so it returns itself.
@@ -173,6 +176,25 @@ class MockPylogbook:
         self.attachments.append(name)
 
 
+@dataclass
+class MockAttachmentBuilder:
+    """ Basically copied from pylogbook. """
+    contents: Union[str, bytes]
+    short_name: str
+    mime_type: str
+
+    @classmethod
+    def from_file(cls, filename: Union[Path, str]):
+        with open(filename, "rb") as f:
+            contents = f.read()
+        short_name = Path(filename).name
+        mime_type = mimetypes.guess_type(short_name)[0]
+        if mime_type is None:
+            raise ValueError(f"Unable to determine the mime type of {filename}")
+        return cls(contents, short_name, mime_type)
+
 @pytest.fixture()
 def patch_pylogbook(monkeypatch):
     monkeypatch.setattr(create_logbook_entry, "pylogbook", MockPylogbook())
+    if create_logbook_entry.AttachmentBuilder is None:  # if package is not installed
+        monkeypatch.setattr(create_logbook_entry, "AttachmentBuilder", MockAttachmentBuilder())
