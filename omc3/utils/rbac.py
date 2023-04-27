@@ -10,7 +10,6 @@ https://gitlab.cern.ch/mihostet/lhc-access-screenshot/-/blob/master/lhc_access_s
 """
 import os
 import pathlib
-import sys
 from typing import Optional
 
 import requests
@@ -29,12 +28,14 @@ class RBAC:
     _BASE = "https://rbac-pro1.cern.ch:8443/rba/api/v1"
     _KRB5_SERVICE = "RBAC@rbac-pro-lb.cern.ch"
 
-    def __init__(self, base: str = None, krb5_service: str = None, lifetime_minutes: int = 8 * 60):
+    def __init__(self, base: str = None, krb5_service: str = None,
+                 application: str = "omc3", lifetime_minutes: int = 8 * 60):
         """
         Create this RBAC-Communicator instance.
         Args:
-            base (str): base-URL of the RBAC REST API
-            krb5_service (str): Name of the RBAC-kerberos service to use
+            base (str): base-URL of the RBAC REST API.
+            krb5_service (str): Name of the RBAC-kerberos service to use.
+            application (str): Name of the application the token is for.
             lifetime_minutes (int): lifetime in minutes of the validity of the RBAC token.
                                     Default lifetime is 8h
         """
@@ -43,7 +44,7 @@ class RBAC:
         self.krb5_service = krb5_service or self._KRB5_SERVICE
 
         # RBAC Variables
-        self.application = sys.argv[0]
+        self.application = application
         self.lifetime = lifetime_minutes
 
         # RBAC Output

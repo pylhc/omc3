@@ -142,7 +142,7 @@ def main(opt) -> Event:
 
 def _get_rbac_token() -> str:
     """ Get an RBAC token, either by location or by Kerberos. """
-    rbac = RBAC()
+    rbac = RBAC(application=f"omc3.{Path(__file__).stem}")
     try:
         rbac.authenticate_location()
     except CONNECTION_ERRORS as e:
