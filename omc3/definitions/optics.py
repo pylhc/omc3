@@ -21,7 +21,7 @@ class OpticsMeasurement(TfsCollection):
         directory: The path to the measurement directory, usually the
                    `optics_measurements` output directory.
     """
-    NAME = NAME
+    INDEX = NAME
 
     beta_phase = Tfs(BETA_NAME)
     beta_amplitude = Tfs(AMP_BETA_NAME)
