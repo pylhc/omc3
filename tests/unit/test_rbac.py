@@ -30,7 +30,7 @@ class TestRBACClass:
 
     @pytest.mark.basic
     def test_authenticate_location_fail(self, monkeypatch, mock_post):
-        rbac = RBAC()
+        rbac = RBAC(application=APPLICATION)
         username = "TestingUser"
         with pytest.raises(HTTPError) as e:
             token = rbac.authenticate_location(username)
@@ -38,14 +38,14 @@ class TestRBACClass:
 
     @pytest.mark.basic
     def test_authenticate_explicit_success(self, mock_post):
-        rbac = RBAC()
+        rbac = RBAC(application=APPLICATION)
         user = valid_users["adam"]
         token = rbac.authenticate_explicit(user.name, user.password)
         assert_valid_token(token, account="adam")
 
     @pytest.mark.basic
     def test_authenticate_explicit_fail(self, mock_post):
-        rbac = RBAC()
+        rbac = RBAC(application=APPLICATION)
         user = valid_users["adam"]
         with pytest.raises(HTTPError) as e:
             token = rbac.authenticate_explicit(user.name, "wrongpassword")
@@ -53,7 +53,7 @@ class TestRBACClass:
 
     @pytest.mark.basic
     def test_authenticate_kerberos_success(self, monkeypatch, mock_post):
-        rbac = RBAC()
+        rbac = RBAC(application=APPLICATION)
         user = valid_users["bertha"]
         kerberos = MockKerberos(user)
         monkeypatch.setenv(RBAC_USERNAME, user.name)
@@ -64,7 +64,7 @@ class TestRBACClass:
 
     @pytest.mark.basic
     def test_authenticate_explicit_fail(self, monkeypatch, mock_post):
-        rbac = RBAC()
+        rbac = RBAC(application=APPLICATION)
         user = valid_users["bertha"]
         kerberos = MockKerberos(user)
         monkeypatch.setenv(RBAC_USERNAME, "adam")
