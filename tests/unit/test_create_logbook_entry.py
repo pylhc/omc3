@@ -109,7 +109,8 @@ class MockRBAC:
     user: str = "MockedUser"
     application: str = "omc3"
 
-    def __call__(self):
+    def __call__(self, **kwargs):
+        self.application = kwargs.pop("application", self.application)
         return self
 
     def authenticate_location(self):
