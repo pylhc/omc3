@@ -15,14 +15,14 @@ class TestRBACClass:
 
     @pytest.mark.basic
     def test_authenticate_location_success_give_user(self, monkeypatch, mock_post):
-        rbac = RBAC()
+        rbac = RBAC(application=APPLICATION)
         user = valid_users["adam"]
         token = rbac.authenticate_location(user.name)
         assert_valid_token(token, account=user.name, application=APPLICATION)
 
     @pytest.mark.basic
     def test_authenticate_location_success_assume_user(self, monkeypatch, mock_post):
-        rbac = RBAC()
+        rbac = RBAC(application=APPLICATION)
         user = valid_users["bertha"]
         monkeypatch.setenv(RBAC_USERNAME, user.name)
         token = rbac.authenticate_location()
