@@ -107,6 +107,7 @@ class MockRBAC:
     raises: str = ""
     token: str = "someToken"
     user: str = "MockedUser"
+    application: str = "omc3"
 
     def __call__(self):
         return self

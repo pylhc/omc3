@@ -14,14 +14,14 @@ from tests.conftest import mock_module_import, random_string
 class TestRBACClass:
 
     @pytest.mark.basic
-    def test_authenticate_location_success_give_user(self, monkeypatch, mock_post, mock_sys_argv):
+    def test_authenticate_location_success_give_user(self, monkeypatch, mock_post):
         rbac = RBAC()
         user = valid_users["adam"]
         token = rbac.authenticate_location(user.name)
         assert_valid_token(token, account=user.name, application=APPLICATION)
 
     @pytest.mark.basic
-    def test_authenticate_location_success_assume_user(self, monkeypatch, mock_post, mock_sys_argv):
+    def test_authenticate_location_success_assume_user(self, monkeypatch, mock_post):
         rbac = RBAC()
         user = valid_users["bertha"]
         monkeypatch.setenv(RBAC_USERNAME, user.name)
@@ -29,7 +29,7 @@ class TestRBACClass:
         assert_valid_token(token, account=user.name, application=APPLICATION)
 
     @pytest.mark.basic
-    def test_authenticate_location_fail(self, monkeypatch, mock_post, mock_sys_argv):
+    def test_authenticate_location_fail(self, monkeypatch, mock_post):
         rbac = RBAC()
         username = "TestingUser"
         with pytest.raises(HTTPError) as e:
@@ -37,14 +37,14 @@ class TestRBACClass:
         assert REASONS["user"] in str(e)
 
     @pytest.mark.basic
-    def test_authenticate_explicit_success(self, mock_post, mock_sys_argv):
+    def test_authenticate_explicit_success(self, mock_post):
         rbac = RBAC()
         user = valid_users["adam"]
         token = rbac.authenticate_explicit(user.name, user.password)
         assert_valid_token(token, account="adam")
 
     @pytest.mark.basic
-    def test_authenticate_explicit_fail(self, mock_post, mock_sys_argv):
+    def test_authenticate_explicit_fail(self, mock_post):
         rbac = RBAC()
         user = valid_users["adam"]
         with pytest.raises(HTTPError) as e:
@@ -52,7 +52,7 @@ class TestRBACClass:
         assert REASONS["pw"] in str(e)
 
     @pytest.mark.basic
-    def test_authenticate_kerberos_success(self, monkeypatch, mock_post, mock_sys_argv):
+    def test_authenticate_kerberos_success(self, monkeypatch, mock_post):
         rbac = RBAC()
         user = valid_users["bertha"]
         kerberos = MockKerberos(user)
@@ -63,7 +63,7 @@ class TestRBACClass:
         kerberos.validate()
 
     @pytest.mark.basic
-    def test_authenticate_explicit_fail(self, monkeypatch, mock_post, mock_sys_argv):
+    def test_authenticate_explicit_fail(self, monkeypatch, mock_post):
         rbac = RBAC()
         user = valid_users["bertha"]
         kerberos = MockKerberos(user)
@@ -130,13 +130,8 @@ REASONS = {
 
 @pytest.fixture()
 def mock_post(monkeypatch):
-    """Replace requests.."""
+    """Replace requests."""
     monkeypatch.setattr(requests, "post", mock_post_fun)
-
-
-@pytest.fixture()
-def mock_sys_argv(monkeypatch):
-    monkeypatch.setattr(sys, 'argv', [APPLICATION])
 
 
 @dataclass
