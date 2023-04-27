@@ -81,6 +81,7 @@ class TestGetOSUsername:
 
     @pytest.mark.basic
     def test_variables(self, monkeypatch):
+        self._disable_getlogin(monkeypatch)
         for var in self.username_variables:
             self._delete_all_uservars(monkeypatch)
             name = random_string(10)
@@ -96,9 +97,7 @@ class TestGetOSUsername:
 
     @pytest.mark.basic
     def test_all_fail(self, monkeypatch):
-        def raise_os():
-            raise OSError("Error")
-        monkeypatch.setattr(rbac.os, "getlogin", raise_os)
+        self._disable_getlogin(monkeypatch)
         self._delete_all_uservars(monkeypatch)
 
         with pytest.raises(OSError) as e:
@@ -109,6 +108,12 @@ class TestGetOSUsername:
     def _delete_all_uservars(self, monkeypatch):
         for delvar in self.username_variables:
             monkeypatch.delenv(delvar, raising=False)
+
+    @staticmethod
+    def _disable_getlogin(monkeypatch):
+        def raise_os():
+            raise OSError("Error")
+        monkeypatch.setattr(rbac.os, "getlogin", raise_os)
 
 
 # Mock -------------------------------------------------------------------------
