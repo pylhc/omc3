@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### Not Released Yet
+#### 2023-04-27 - v0.9.0 - _jdilly_
 
 - Added:
   - RBAC token provider in omc3.utils.rbac
