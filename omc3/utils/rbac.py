@@ -107,11 +107,8 @@ class RBAC:
             The RBAC token as a string.
         """
         LOGGER.debug("Trying to authenticate RBAC from Kerberos.")
-        try:
-            import winkerberos as kerberos  # NOT in the requirements! (not sure how to handle this...)
-        except ImportError:
-            os.environ['KRB5_CONFIG'] = str(pathlib.Path(__file__).parent / CONFIG_FILE)
-            import kerberos  # in the CERN requirements, but cern-mock-import does not make sense
+        os.environ['KRB5_CONFIG'] = str(pathlib.Path(__file__).parent / CONFIG_FILE)
+        import kerberos  # in the CERN requirements, but cern-mock-import does not make sense
 
         LOGGER.debug("Starting Kerberos authentication.")
         res, ctx = kerberos.authGSSClientInit(self.krb5_service)
