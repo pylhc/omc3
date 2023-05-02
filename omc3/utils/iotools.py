@@ -93,6 +93,15 @@ class UnionPathStrInt(metaclass=get_instance_faker_meta(Path, str, int)):
         return value
 
 
+class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
+    """A class that allows `str` or `None`.
+    Can be used in string-lists when individual entries can be `None`."""
+    def __new__(cls, value):
+        if isinstance(value, str):
+            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+        return value
+
+
 def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
     """Converts all Paths in the dict to strings, including those in iterables."""
     dict_ = dict_.copy()
