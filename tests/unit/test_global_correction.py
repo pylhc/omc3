@@ -1,11 +1,12 @@
-import numpy as np
 import pytest
 from pandas.testing import assert_frame_equal
 
-from omc3.correction.constants import (BETA, DISPERSION, NORM_DISPERSION, F1001, F1010, TUNE, PHASE, VALUE)
-from omc3.correction.handler import get_measurement_data, _rms
+from omc3.correction.constants import VALUE
+from omc3.correction.handler import get_measurement_data
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
-from omc3.optics_measurements.constants import (DISPERSION_NAME, BETA_NAME, PHASE_NAME, NORM_DISP_NAME, F1010_NAME,
+from omc3.optics_measurements.constants import (BETA, DISPERSION, NORM_DISPERSION, F1001, F1010,
+                                                DISPERSION_NAME, BETA_NAME, PHASE_NAME,
+                                                NORM_DISP_NAME, F1010_NAME, TUNE, PHASE,
                                                 F1001_NAME)
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
@@ -57,11 +58,3 @@ def test_read_measurement_data(tmp_path, model_inj_beams, orientation):
             res_df = meas_fake[FILENAME_MAP[key]]
             assert len(df.columns)
             assert_frame_equal(df, res_df.loc[:, df.columns])
-
-
-@pytest.mark.basic
-def test_rms():
-    """ Tests the rms-function."""
-    for _ in range(5):
-        vec = np.random.rand(100)
-        assert np.sqrt(np.mean(np.square(vec))) == _rms(vec)

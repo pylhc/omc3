@@ -2,13 +2,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import tfs
 from scipy import stats
 
-from omc3.correction.constants import (
-    F1010,
-    F1001,
-)
+import tfs
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.optics_measurements.constants import (
     NAME,
@@ -32,6 +28,8 @@ from omc3.optics_measurements.constants import (
     PHASE,
     TUNE,
     PHASE_ADV,
+    F1010,
+    F1001,
 )
 from omc3.scripts.fake_measurement_from_model import (
     _get_data,
