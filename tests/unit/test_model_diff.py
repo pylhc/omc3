@@ -4,12 +4,13 @@ import numpy as np
 import tfs
 import pytest
 
-from omc3.correction.constants import DELTA, BETA, TUNE, NORM_DISPERSION, DISPERSION, PHASE_ADV, PHASE
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.optics_measurements.toolbox import ang_diff, ang_sum
-from omc3.optics_measurements.constants import NAME
+from omc3.optics_measurements.constants import (
+    NAME, DELTA, BETA, TUNE, NORM_DISPERSION, DISPERSION, PHASE_ADV, PHASE
+)
 
 INPUTS = Path(__file__).parent.parent / 'inputs'
 
