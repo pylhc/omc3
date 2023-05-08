@@ -1,15 +1,15 @@
 import numpy as np
 import pytest
 
-from omc3.correction.constants import (DISPERSION, PHASE, PHASE_ADV)
-from omc3.correction.handler import _rms
 from omc3.correction.response_io import read_fullresponse, read_varmap
 from omc3.correction.sequence_evaluation import evaluate_for_variables
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
+from omc3.model.manager import get_accelerator
+from omc3.optics_measurements.constants import (DISPERSION, PHASE, PHASE_ADV)
 from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.utils import logging_tools
+from omc3.utils.stats import rms
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
-from omc3.model.manager import get_accelerator
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -59,7 +59,7 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
             check = np.allclose(original, new, rtol=MADX_RTOL, atol=MADX_ATOL)
         else:
             # check for approximate values
-            check = (_rms(original - new)/_rms(original)).mean() < TWISS_RMS_TOL
+            check = (rms(original - new)/rms(original)).mean() < TWISS_RMS_TOL
 
         assert check, f"Fullresponse via {creator} does not match for {key}"
 
