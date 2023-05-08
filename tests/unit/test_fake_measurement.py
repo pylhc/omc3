@@ -6,14 +6,8 @@ import tfs
 from scipy import stats
 
 from omc3.correction.constants import (
-    NORM_DISPERSION,
-    DISPERSION,
-    BETA,
     F1010,
     F1001,
-    PHASE,
-    TUNE,
-    PHASE_ADV,
 )
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.optics_measurements.constants import (
@@ -32,6 +26,12 @@ from omc3.optics_measurements.constants import (
     REAL,
     IMAG,
     AMPLITUDE, F1010_NAME, F1001_NAME,
+    NORM_DISPERSION,
+    DISPERSION,
+    BETA,
+    PHASE,
+    TUNE,
+    PHASE_ADV,
 )
 from omc3.scripts.fake_measurement_from_model import (
     _get_data,
