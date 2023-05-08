@@ -107,7 +107,7 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 import matplotlib
 from matplotlib.axes import Axes
@@ -534,7 +534,7 @@ def _create_plots(fig_collection, opt):
         plt.show()
 
 
-def _plot_data(ax: Axes, data: dict[str, DataSet], change_marker: bool, ebar_alpha: float):
+def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
     for idx, (label, values) in enumerate(data.items()):
         ebar = ax.errorbar(values.x, values.y, yerr=values.err,
                            ls=rcParams[u"lines.linestyle"],
