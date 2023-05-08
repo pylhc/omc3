@@ -1,8 +1,12 @@
 # OMC3 Changelog
 
+#### 2023-04-27 - v0.9.0 - _jdilly_
+
+- Added:
+  - RBAC token provider in omc3.utils.rbac
+  - pylogbook wrapper in omc3.scripts.create_logbook_entry
+
 #### 2023-04-20 - v0.8.0 - _jdilly_
-
-
 
 - Fix:
   - Changed all `pandas`/`tfs-pandas` `append()` and `join()` to `concat()`
