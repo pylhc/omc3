@@ -19,8 +19,10 @@ from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.response_twiss import PLANES
 from omc3.correction.utils_check import get_plotting_style_parameters
-from omc3.definitions.optics import OpticsMeasurement, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, \
-    TUNE_COLUMN
+from omc3.definitions.optics import (
+    OpticsMeasurement, ColumnsAndLabels,
+    FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING, TUNE_COLUMN
+)
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
@@ -28,7 +30,7 @@ from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA
 from omc3.optics_measurements.toolbox import ang_diff
 from omc3.plotting.plot_checked_corrections import plot_checked_corrections
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, save_config, glob_regex
+from omc3.utils.iotools import PathOrStr, glob_regex
 from omc3.utils.stats import rms, circular_rms
 from tfs import TfsDataFrame
 
@@ -341,15 +343,15 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
 
     df[colmap_meas.diff_correction_column] = diff
     if colmap_meas.column == PHASE:
-        df[colmap_meas.expected_column] = ang_diff(df[colmap_meas.delta_column], diff)  # assumes period 1
-        df.headers[colmap_meas.delta_rms_header] = circular_rms(df[colmap_meas.delta_column], period=1)
+        df[colmap_meas.expected_column] = pd.to_numeric(ang_diff(df[colmap_meas.delta_column], diff))  # assumes period 1
+        df.headers[colmap_meas.delta_rms_header] =  circular_rms(df[colmap_meas.delta_column], period=1)
         df.headers[colmap_meas.expected_rms_header] = circular_rms(df[colmap_meas.expected_column], period=1)
         if rms_mask:
             df.headers[colmap_meas.delta_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.delta_column], period=1)
             df.headers[colmap_meas.expected_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.expected_column], period=1)
 
     else:
-        df[colmap_meas.expected_column] = df[colmap_meas.delta_column] - diff
+        df[colmap_meas.expected_column] = pd.to_numeric(df[colmap_meas.delta_column] - diff)
         df.headers[colmap_meas.delta_rms_header] = rms(df[colmap_meas.delta_column])
         df.headers[colmap_meas.expected_rms_header] = rms(df[colmap_meas.expected_column])
         if rms_mask:

@@ -4,8 +4,9 @@ import tfs
 from omc3.correction.constants import EXPECTED, DIFF
 from omc3.optics_measurements.constants import (
     BETA_NAME, AMP_BETA_NAME, ORBIT_NAME, DISPERSION_NAME, NORM_DISP_NAME,
-    PHASE_NAME, TOTAL_PHASE_NAME, AMPLITUDE, REAL, IMAG, DISPERSION, NORM_DISPERSION, PHASE_ADV, MDL, S, KMOD_BETA_NAME,
-    F1001, F1010, EXT, NAME, DELTA, ERR, DRIVEN_TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, IP_NAME,
+    PHASE_NAME, TOTAL_PHASE_NAME, AMPLITUDE, REAL, IMAG, DISPERSION, NORM_DISPERSION,
+    PHASE_ADV, MDL, S, KMOD_BETA_NAME,
+    EXT, NAME, DELTA, ERR, DRIVEN_TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, IP_NAME,
     KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME, TUNE, RMS, MASKED)
 from omc3.plotting.utils.annotations import ylabels
 from tfs import TfsDataFrame
@@ -47,11 +48,11 @@ class OpticsMeasurement(TfsCollection):
 
     def read_tfs(self, filename: str) -> TfsDataFrame:
         """ Override for NAME convenience. """
-        return tfs.read(self.directory / filename, index=self.NAME)
+        return tfs.read(self.directory / filename, index=self.INDEX)
 
     def write_tfs(self, filename: str, data_frame: TfsDataFrame):
         """ Override for NAME convenience. """
-        tfs.write(self.directory / filename, data_frame, save_index=self.NAME)
+        tfs.write(self.directory / filename, data_frame, save_index=self.INDEX)
 
 
 # Columns ----------------------------------------------------------------------

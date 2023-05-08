@@ -12,14 +12,14 @@ from omc3.scripts.fake_measurement_from_model import generate as fake_measuremen
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, _create_fake_measurement
 
 
-# @pytest.mark.basic
-# @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-# def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
-#     """ Checks that correction_test_entrypoint runs and that all the output
-#     data is there. Very simple test. """
-@pytest.mark.parametrize('orientation', ('skew',))
-def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
-    model_inj_beams = model_inj_beam1
+@pytest.mark.basic
+@pytest.mark.parametrize('orientation', ('skew', 'normal'))
+def test_lhc_corrections(tmp_path, model_inj_beams, orientation):
+    """ Checks that correction_test_entrypoint runs and that all the output
+    data is there. Very simple test. """
+# @pytest.mark.parametrize('orientation', ('skew',))
+# def test_lhc_corrections(tmp_path, model_inj_beam1, orientation):
+#     model_inj_beams = model_inj_beam1
     beam = model_inj_beams.beam
     correction_params = get_skew_params(beam) if orientation == 'skew' else get_normal_params(beam)
     _create_fake_measurement(tmp_path, model_inj_beams.model_dir, correction_params.twiss)
