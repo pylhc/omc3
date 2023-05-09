@@ -359,7 +359,7 @@ def _get_rdt_columns():
     for idx, col_map in enumerate(RDT_COLUMN_MAPPING.values()):
         result['y_columns'][idx] = col_map.column
         result['error_columns'][idx] = col_map.error_column  # should now all be there in the files
-        result['y_labels'][idx] = col_map.ylabel
+        result['y_labels'][idx] = col_map.label
     return result
 
 
