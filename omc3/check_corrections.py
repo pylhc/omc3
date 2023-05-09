@@ -3,6 +3,190 @@ Correction Test
 ---------------
 
 Run a test, i.e. a MAD-X simulation to check how well the correction settings work.
+
+**Arguments:**
+
+*--Required--*
+
+- **corrections** *(PathOrStr)*:
+
+    Paths to the correction files/directories to use. If files are given,
+    these will all be applied as corrections at the same time. If folders
+    are given, these are assumed to individually containing the correction
+    files. See then also ``file_pattern``.
+
+
+- **meas_dir** *(PathOrStr)*:
+
+    Path to the directory containing the measurement files.
+
+
+- **output_dir** *(PathOrStr)*:
+
+    ('Path to the directory where to write the output files. If the input
+    ``corrections`` input consists of multiple folders, their name will be
+    used to sort the output data into subfolders.',)
+
+
+*--Optional--*
+
+- **beta_filename**:
+
+    Prefix of the beta file to use. E.g.: ``beta_phase_``
+
+    default: ``beta_phase_``
+
+
+- **change_marker**:
+
+    Changes marker for each line in the plot.
+
+    action: ``store_true``
+
+
+- **combine_by**:
+
+    Combine plots into one. Either files, planes (not separated into two
+    axes) or both.
+
+    choices: ``['files', 'planes']``
+
+
+- **errorbar_alpha** *(float)*:
+
+    Alpha value for error bars
+
+    default: ``0.6``
+
+
+- **errorcut** *(float)*:
+
+    Reject BPMs whose error bar is higher than the corresponding input.
+    Input in order of optics_params.
+
+
+- **file_pattern** *(str)*:
+
+    Filepattern to use to find correction files in folders (as regex).
+
+    default: ``^changeparameters*?\.madx$``
+
+
+- **individual_to_input**:
+
+    Save plots for the individual corrections into the corrections input
+    folders. Otherwise they go with suffix into the output_folders.
+
+    action: ``store_true``
+
+
+- **ip_positions**:
+
+    Input to plot IP-Positions into the plots. Either 'LHCB1' or 'LHCB2'
+    for LHC defaults, a dictionary of labels and positions or path to TFS
+    file of a model.
+
+
+- **ip_search_pattern**:
+
+    In case your IPs have a weird name. Specify regex pattern.
+
+    default: ``IP\d$``
+
+
+- **lines_manual** *(DictAsString)*:
+
+    List of manual lines to plot. Need to contain arguments for axvline,
+    and may contain the additional keys "text" and "loc" which is one of
+    ['bottom', 'top', 'line bottom', 'line top'] and places the text at
+    the given location.
+
+    default: ``[]``
+
+
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **modelcut** *(float)*:
+
+    Reject BPMs whose deviation to the model is higher than the
+    corresponding input. Input in order of optics_params.
+
+
+- **ncol_legend** *(int)*:
+
+    Number of bpm legend-columns. If < 1 no legend is shown.
+
+    default: ``3``
+
+
+- **optics_params** *(str)*:
+
+    List of parameters for which the cuts should be applied (e.g. BETX
+    BETY)
+
+    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'NDX', 'Q', 'DX', 'DY', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
+
+
+- **plot**:
+
+    Activate plotting.
+
+    action: ``store_true``
+
+
+- **plot_styles** *(str)*:
+
+    Which plotting styles to use, either from plotting.styles.*.mplstyles
+    or default mpl.
+
+    default: ``['standard', 'correction_test']``
+
+
+- **share_xaxis**:
+
+    In case of multiple axes per figure, share x-axis.
+
+    action: ``store_true``
+
+
+- **show**:
+
+    Shows plots.
+
+    action: ``store_true``
+
+
+- **suppress_column_legend**:
+
+    Does not show column name in legend e.g. when combining by files (see
+    also `ncol_legend`).
+
+    action: ``store_true``
+
+
+- **x_axis**:
+
+    Which parameter to use for the x axis.
+
+    choices: ``['location', 'phase-advance']``
+
+    default: ``location``
+
+
+- **x_lim** *(MultiClass)*:
+
+    Limits on the x axis (Tupel)
+
+
+- **y_lim** *(MultiClass)*:
+
+    Limits on the y axis (Tupel)
+
 """
 from pathlib import Path
 from typing import Dict, Sequence, Any, List
@@ -37,7 +221,7 @@ from tfs import TfsDataFrame
 LOG = logging_tools.get_logger(__name__)
 
 
-def get_correction_test_params():
+def get_params():
     params = EntryPointParameters()
     # IO ---
     params.add_parameter(name="meas_dir",
@@ -91,7 +275,7 @@ def get_correction_test_params():
     return params
 
 
-@entrypoint(get_correction_test_params())
+@entrypoint(get_params())
 def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
     """ Test the given corrections.
     TODO: Instead of writing everything out, it could return

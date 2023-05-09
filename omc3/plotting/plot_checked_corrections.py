@@ -3,6 +3,154 @@ Plot Correction Test
 --------------------
 
 Create plots for the correction tests performed with `omc3.scripts.correction_test`.
+
+**Arguments:**
+
+*--Required--*
+
+- **input_dir** *(PathOrStr)*:
+
+    Path to the `output_dir` from `omc3.correction_test`.
+
+
+*--Optional--*
+
+- **change_marker**:
+
+    Changes marker for each line in the plot.
+
+    action: ``store_true``
+
+
+- **combine_by**:
+
+    Combine plots into one. Either files, planes (not separated into two
+    axes) or both.
+
+    choices: ``['files', 'planes']``
+
+
+- **corrections** *(str)*:
+
+    Corrections to plot (assumed to be subfolders in `input_dir`).
+
+    default: ``['']``
+
+
+- **errorbar_alpha** *(float)*:
+
+    Alpha value for error bars
+
+    default: ``0.6``
+
+
+- **individual_to_input**:
+
+    Save plots for the individual corrections into the corrections input
+    folders. Otherwise they go with suffix into the output_folders.
+
+    action: ``store_true``
+
+
+- **ip_positions**:
+
+    Input to plot IP-Positions into the plots. Either 'LHCB1' or 'LHCB2'
+    for LHC defaults, a dictionary of labels and positions or path to TFS
+    file of a model.
+
+
+- **ip_search_pattern**:
+
+    In case your IPs have a weird name. Specify regex pattern.
+
+    default: ``IP\d$``
+
+
+- **lines_manual** *(DictAsString)*:
+
+    List of manual lines to plot. Need to contain arguments for axvline,
+    and may contain the additional keys "text" and "loc" which is one of
+    ['bottom', 'top', 'line bottom', 'line top'] and places the text at
+    the given location.
+
+    default: ``[]``
+
+
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **meas_dir** *(PathOrStr)*:
+
+    Path to the directory containing the measurement filesto plot the
+    measurement as comparison.If not given, the data from the first
+    corrections directory will be used.
+
+
+- **ncol_legend** *(int)*:
+
+    Number of bpm legend-columns. If < 1 no legend is shown.
+
+    default: ``3``
+
+
+- **output_dir** *(PathOrStr)*:
+
+    Path to save the plots into. If not given, no plots will be saved.
+
+
+- **plot_styles** *(str)*:
+
+    Which plotting styles to use, either from plotting.styles.*.mplstyles
+    or default mpl.
+
+    default: ``['standard', 'correction_test']``
+
+
+- **share_xaxis**:
+
+    In case of multiple axes per figure, share x-axis.
+
+    action: ``store_true``
+
+
+- **show**:
+
+    Shows plots.
+
+    action: ``store_true``
+
+
+- **suppress_column_legend**:
+
+    Does not show column name in legend e.g. when combining by files (see
+    also `ncol_legend`).
+
+    action: ``store_true``
+
+
+- **x_axis**:
+
+    Which parameter to use for the x axis.
+
+    choices: ``['location', 'phase-advance']``
+
+    default: ``location``
+
+
+- **x_lim** *(MultiClass)*:
+
+    Limits on the x axis (Tupel)
+
+
+- **y_lim** *(MultiClass)*:
+
+    Limits on the y axis (Tupel)
+
+
 """
 from pathlib import Path
 from typing import Dict, Iterable, Set

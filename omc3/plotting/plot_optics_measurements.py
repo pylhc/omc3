@@ -358,7 +358,11 @@ def _get_rdt_columns():
     result = {key: [None] * len(RDT_COLUMN_MAPPING) for key in ['y_columns', 'y_labels', 'error_columns']}
     for idx, col_map in enumerate(RDT_COLUMN_MAPPING.values()):
         result['y_columns'][idx] = col_map.column
-        result['error_columns'][idx] = col_map.error_column  # should now all be there in the files
+        if col_map.column in [REAL, IMAG]:
+            # TODO: ADD ERRIMAG and ERRREAL to RDT tfs?
+            result['error_columns'][idx] = RDT_COLUMN_MAPPING[AMPLITUDE].error_column  # Uses ERRAMP for ERRIMAG/ERRREAL
+        else:
+            result['error_columns'][idx] = col_map.error_column  # should now all be there in the files
         result['y_labels'][idx] = col_map.label
     return result
 
