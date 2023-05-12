@@ -130,6 +130,8 @@ def get_filename_from_parameter(parameter: str, beta_filename: str) -> str:
         return f"{PHASE_NAME}x{EXT}"
 
     elif parameter.startswith(f"{BETA}"):
+        if not beta_filename.endswith("_"):
+            beta_filename = f"{beta_filename}_"
         return f"{beta_filename}{parameter[-1].lower()}{EXT}"
 
 

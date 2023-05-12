@@ -72,7 +72,7 @@ def get_normal_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat",
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_quadrupole.madx",
-        optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISPERSION}X", f"{TUNE}"],
+        optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISPERSION}X", TUNE],
         weights=[1., 1., 1., 1., 1., 1.],
         variables=["MQY"],
         fullresponse="fullresponse_MQY.h5",

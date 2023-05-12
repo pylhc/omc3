@@ -210,7 +210,7 @@ from omc3.definitions.optics import (
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE
+from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, TUNE
 from omc3.optics_measurements.toolbox import ang_diff
 from omc3.plotting.plot_checked_corrections import plot_checked_corrections
 from omc3.utils import logging_tools
@@ -386,6 +386,10 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> Dict[s
         LOG.debug("No filters selected, returning empty dict.")
         return {}
 
+    if TUNE in opt.optics_params:
+        LOG.warning("Filtering RMS on tune does not make sense. Ignoring.")
+        opt.optics_params.remove(TUNE)
+
     optics_params, meas_dict = global_correction.get_measurement_data(
         opt.optics_params,
         opt.meas_dir,
@@ -435,8 +439,8 @@ def _create_model_and_write_diff_to_measurements(
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
 
     for attribute, filename in measurement.filenames(exist=True).items():
+        rms_mask = rms_masks.get(filename, None)  # keys in rms_masks still with extension
         filename = filename.replace(EXT, "")
-        rms_mask = rms_masks.get(filename, None)
 
         try:
             colmap = FILE_COLUMN_MAPPING[filename[:-1]]
@@ -530,7 +534,7 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         df[colmap_meas.expected_column] = pd.to_numeric(ang_diff(df[colmap_meas.delta_column], diff))  # assumes period 1
         df.headers[colmap_meas.delta_rms_header] =  circular_rms(df[colmap_meas.delta_column], period=1)
         df.headers[colmap_meas.expected_rms_header] = circular_rms(df[colmap_meas.expected_column], period=1)
-        if rms_mask:
+        if rms_mask is not None:
             df.headers[colmap_meas.delta_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.delta_column], period=1)
             df.headers[colmap_meas.expected_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.expected_column], period=1)
 
@@ -538,9 +542,9 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         df[colmap_meas.expected_column] = pd.to_numeric(df[colmap_meas.delta_column] - diff)
         df.headers[colmap_meas.delta_rms_header] = rms(df[colmap_meas.delta_column])
         df.headers[colmap_meas.expected_rms_header] = rms(df[colmap_meas.expected_column])
-        if rms_mask:
-            df.headers[colmap_meas.delta_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.delta_column], period=1)
-            df.headers[colmap_meas.expected_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.expected_column], period=1)
+        if rms_mask is not None:
+            df.headers[colmap_meas.delta_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.delta_column])
+            df.headers[colmap_meas.expected_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.expected_column])
 
     LOG.info(
         f"\nRMS {attribute} ({colmap_meas.column}):\n"
@@ -548,7 +552,7 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         f"    expected {df.headers[colmap_meas.expected_rms_header]:.2e}"
     )
 
-    if rms_mask:
+    if rms_mask is not None:
         LOG.info(
             f"\nRMS {attribute} ({colmap_meas.column}) after filtering:\n"
             f"    measured {df.headers[colmap_meas.delta_masked_rms_header]:.2e}\n"
