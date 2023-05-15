@@ -159,12 +159,12 @@ from matplotlib import pyplot as plt
 
 import tfs
 from generic_parser import DotDict, EntryPointParameters, entrypoint
-from omc3.correction.constants import CORRECTED_LABEL, UNCORRECTED_LABEL, CORRECTION_LABEL, EXPECTED_LABEL, \
-    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX
-from omc3.correction.utils_check import get_plotting_style_parameters
+from omc3.correction.constants import (CORRECTED_LABEL, UNCORRECTED_LABEL, CORRECTION_LABEL, EXPECTED_LABEL,
+                                       COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX)
 from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
-from omc3.optics_measurements.constants import EXT, F1001_NAME, F1010_NAME
-from omc3.plotting.plot_optics_measurements import (_get_x_axis_column_and_label, _get_ip_positions)
+from omc3.optics_measurements.constants import EXT
+from omc3.plotting.plot_optics_measurements import (_get_x_axis_column_and_label, _get_ip_positions,
+                                                    get_optics_style_params, get_plottfs_style_params)
 from omc3.plotting.plot_tfs import plot as plot_tfs, get_full_output_path
 from omc3.plotting.utils import (annotations as pannot)
 from omc3.utils import logging_tools
@@ -198,6 +198,21 @@ def get_plotting_params() -> EntryPointParameters:
                          help="Path to save the plots into. If not given, no plots will be saved.",
                          )
     params.update(get_plotting_style_parameters())
+    return params
+
+
+def get_plotting_style_parameters():
+    """ Parameters related to the style of the plots. """
+    params = EntryPointParameters()
+    params.add_parameter(name="individual_to_input",
+                         action="store_true",
+                         help="Save plots for the individual corrections "
+                              "into the corrections input folders. "
+                              "Otherwise they go with suffix into the output_folders."
+                         )
+    params.update(get_optics_style_params())
+    params.update(get_plottfs_style_params())
+    params["plot_styles"]["default"] = params["plot_styles"]["default"] + ["correction_test"]
     return params
 
 

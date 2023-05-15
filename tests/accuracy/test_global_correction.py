@@ -86,7 +86,7 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
-    In principle one could check one further model, build from the final
+    In principle one could also check the last model, build from the final
     correction (as this correction is not plugged in to MAD-X again),
     but this is kind-of done with the correction test.
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""

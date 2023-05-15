@@ -1,5 +1,17 @@
 # OMC3 Changelog
 
+#### 2023-05-15 - v0.10.0 - _jdilly_
+- Added:
+  - `omc3.check_corrections`: A new feature to check the validity of corrections.
+  - `omc3.plotting.plot_checked_corrections`: Function to plot the checked corrections.
+  - Unified optics-columns naming in `omc3.definitions.optics`
+    (but not yet propagated through the code)
+  - Function to calculate RMS in `omc3.utils.stats.rms`.
+
+- Fixed:
+  - Some minor bugs with fake datatypes
+  - Doc of `ArrayType` typehints
+
 #### 2023-04-27 - v0.9.0 - _jdilly_
 
 - Added:

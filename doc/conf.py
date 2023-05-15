@@ -93,7 +93,7 @@ release = ABOUT_OMC3["__version__"]
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -230,3 +230,10 @@ texinfo_documents = [
 autodoc_mock_imports = ['PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets',
                         "matplotlib.backends.backend_qt5agg",
                         ]
+
+# -- Type Aliases --------------------------------------------------------------
+
+# This is to tell Sphinx how to print some specific type annotations
+# See: https://stackoverflow.com/a/67483317
+# See: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_type_aliases
+autodoc_type_aliases = {"ArrayLike": "ArrayLike"}

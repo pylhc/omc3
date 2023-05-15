@@ -202,7 +202,6 @@ from omc3.correction.constants import MODEL_MATCHED_FILENAME, COUPLING_NAME_TO_M
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.response_twiss import PLANES
-from omc3.correction.utils_check import get_plotting_style_parameters
 from omc3.definitions.optics import (
     OpticsMeasurement, ColumnsAndLabels,
     FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING, TUNE_COLUMN
@@ -212,7 +211,7 @@ from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, TUNE
 from omc3.optics_measurements.toolbox import ang_diff
-from omc3.plotting.plot_checked_corrections import plot_checked_corrections
+from omc3.plotting.plot_checked_corrections import plot_checked_corrections, get_plotting_style_parameters
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, glob_regex, save_config
 from omc3.utils.stats import rms, circular_rms
@@ -277,10 +276,11 @@ def get_params():
 
 @entrypoint(get_params())
 def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
-    """ Test the given corrections.
-    TODO: Instead of writing everything out, it could return
-          dictionaries of the TFSDataFrames and Figures.
-          But I don't see a usecase at the moment (jdilly 2023)
+    """ Entrypoint function to test the given corrections.
+
+    .. todo:: Instead of writing everything out, it could return
+             dictionaries of the TFSDataFrames and Figures.
+             But I don't see a usecase at the moment (jdilly 2023)
     """
     LOG.info("Starting Correction Test.")
     save_config(Path(opt.output_dir), opt, __file__, unknown_opt=accel_opt)
