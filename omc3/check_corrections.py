@@ -214,7 +214,7 @@ from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA
 from omc3.optics_measurements.toolbox import ang_diff
 from omc3.plotting.plot_checked_corrections import plot_checked_corrections
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, glob_regex
+from omc3.utils.iotools import PathOrStr, glob_regex, save_config
 from omc3.utils.stats import rms, circular_rms
 from tfs import TfsDataFrame
 
@@ -283,7 +283,7 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
           But I don't see a usecase at the moment (jdilly 2023)
     """
     LOG.info("Starting Correction Test.")
-    # save_config(Path(opt.output_dir), opt, __file__, unknown_opt=accel_opt)
+    save_config(Path(opt.output_dir), opt, __file__, unknown_opt=accel_opt)
 
     opt = _check_opt_add_dicts(opt)
     opt.output_dir.mkdir(parents=True, exist_ok=True)
@@ -435,7 +435,7 @@ def _create_model_and_write_diff_to_measurements(
     diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
     LOG.debug(f"Differences to nominal model calculated.")
 
-     # Crate new "measurement" with additional columns
+     # Create new "measurement" with additional columns
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
 
     for attribute, filename in measurement.filenames(exist=True).items():
@@ -478,9 +478,6 @@ def _create_model_and_write_diff_to_measurements(
                 attribute=attribute,
                 rms_mask=rms_mask,
             )
-
-    # df_rms_mask = rms_masks.get(filename, df.index)
-
     return output_measurement
 
 

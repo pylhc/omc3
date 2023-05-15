@@ -77,7 +77,11 @@ def glob_regex(path: Path, pattern: str) -> "filter object":
 class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
     """A class that behaves like a Path when possible, otherwise like a string."""
     def __new__(cls, value):
-        return Path(strip_quotes(value))
+        value = strip_quotes(value)
+        try:
+            return Path(value)
+        except TypeError:
+            return value
 
 
 class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path, str)):
@@ -87,13 +91,18 @@ class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path,
         try:
             return Path(value)
         except TypeError:
-            TfsDataFrame(value)
+            pass
+
+        try:
+            return TfsDataFrame(value)
+        except TypeError:
+            return value
 
 
 class UnionPathStr(metaclass=get_instance_faker_meta(Path, str)):
-    """A class that can be used as Path and string parser input, but does not convert."""
+    """A class that can be used as Path and string parser input, but does not convert to path."""
     def __new__(cls, value):
-        return
+        return strip_quotes(value)
 
 
 class UnionPathStrInt(metaclass=get_instance_faker_meta(Path, str, int)):
@@ -177,8 +186,10 @@ def remove_none_dict_entries(dict_: dict) -> dict:
 
 def maybe_add_command(opt: dict, script: str) -> dict:
     """ Add a comment ';command' to the opt-dict,
-    which is gotten from sys.argv but only if the executed file
-    equals the given script.
+    which is the command used to run the script gotten from sys.argv,
+    but only if the executed file (the file that run with the `python` command)
+    equals ``script``, i.e. the script for which you are saving the parameters
+    is the main script being run. Otherwise the command is probably unrelated.
 
     Args:
         opt (dict): Options datastructure
