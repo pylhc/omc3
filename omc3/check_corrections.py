@@ -228,6 +228,7 @@ well as a plot for all corrections (only EXPected) will be saved into the output
     Limits on the y axis (Tupel)
 
 """
+import copy
 from pathlib import Path
 from typing import Dict, Sequence, Any, List
 
@@ -359,8 +360,9 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
 
 # Input Parameters -------------------------------------------------------------
 
-def _check_opt_add_dicts(opt: DotDict) -> DotDict:  # acts inplace...
+def _check_opt_add_dicts(opt: DotDict) -> DotDict:
     """ Check on options and put in missing values. """
+    opt = copy.deepcopy(opt)  # not sure if I trust this (jdilly)
     def_dict = _get_default_values()
 
     # Check cuts and fill defaults
