@@ -457,9 +457,10 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> Dict[s
 def _create_model_and_write_diff_to_measurements(
         output_dir: Path, measurement: OpticsMeasurement, correction_name: str, correction_files: Sequence[Path],
         accel_inst: Accelerator, rms_masks: Dict) -> OpticsMeasurement:
-    """ Create a new model with the corrections (well, the "matchings") inserted and calculate
-    the difference to the measurements. This will be written out then into individual tfs-files in the output
-    folder(s). """
+    """ Create a new model with the corrections (well, the "matchings") applied and calculate
+    the difference to the nominal model, i.e. the expected improvement of the measurements
+    (for detail see main docstring in this file).
+    This will be written out then into individual tfs-files in the output folder(s). """
     if correction_name:
         output_dir = output_dir / correction_name
     LOG.info(f"Checking correction for {output_dir.name}")
@@ -468,7 +469,7 @@ def _create_model_and_write_diff_to_measurements(
     corr_model_path = output_dir / MODEL_MATCHED_FILENAME
     corr_model_elements = global_correction._create_corrected_model(corr_model_path, correction_files, accel_inst)  # writes out twiss file!
     corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, measurement)
-    LOG.debug(f"Matched model created in {str(corr_model_path)}.")
+    LOG.debug(f"Matched model created in {str(corr_model_path.absolute())}.")
 
     # Get diff to nominal model
     diff_columns = (
@@ -527,9 +528,8 @@ def _create_model_and_write_diff_to_measurements(
 
 def _create_check_columns(measurement: OpticsMeasurement, output_measurement: OpticsMeasurement, diff_models: TfsDataFrame,
                           colmap_meas: ColumnsAndLabels, colmap_model: ColumnsAndLabels, attribute: str,
-                          rms_mask: Dict = None):
-    """
-    Creates the columns in the measurements, that allow for checking the corrections.
+                          rms_mask: Dict = None) -> None:
+    """Creates the columns in the measurements, that allow for checking the corrections.
     These are:
         diff_correction_column: Difference between the corrected and uncorrected model,
                                 i.e. the expected correction influence (with inverted sign).
