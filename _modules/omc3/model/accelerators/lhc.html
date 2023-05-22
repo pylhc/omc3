@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.lhc &mdash; omc3 0.9.0 documentation</title>
+  <title>omc3.model.accelerators.lhc &mdash; omc3 0.10.0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -32,7 +32,7 @@
               <img src="../../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.9
+                0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -62,6 +62,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/other.html">Other</a><ul>
@@ -87,6 +89,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/plotting.html">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
@@ -94,6 +97,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
@@ -380,8 +388,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#logging-tools">Logging Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
@@ -409,7 +420,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
@@ -543,7 +556,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span>
 
 <span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPoint</span>
@@ -663,21 +676,39 @@
     <span class="k">def</span> <span class="nf">get_lhc_error_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">LHC_DIR</span> <span class="o">/</span> <span class="s2">&quot;systematic_errors&quot;</span>
 
-<div class="viewcode-block" id="Lhc.get_variables"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Lhc.get_variables"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">correctors_dir</span> <span class="o">=</span> <span class="n">LHC_DIR</span> <span class="o">/</span> <span class="s2">&quot;2012&quot;</span> <span class="o">/</span> <span class="s2">&quot;correctors&quot;</span>
-        <span class="n">all_corrs</span> <span class="o">=</span> <span class="n">_merge_jsons</span><span class="p">(</span>
+        <span class="n">all_vars_by_class</span> <span class="o">=</span> <span class="n">_merge_jsons</span><span class="p">(</span>
             <span class="n">correctors_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;correctors_b</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="s2">&quot;beta_correctors.json&quot;</span><span class="p">,</span>
             <span class="n">correctors_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;correctors_b</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="s2">&quot;coupling_correctors.json&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_triplet_correctors_file</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="n">my_classes</span> <span class="o">=</span> <span class="n">classes</span>
-        <span class="k">if</span> <span class="n">my_classes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">my_classes</span> <span class="o">=</span> <span class="n">all_corrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="n">vars_by_class</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-            <span class="n">_flatten_list</span><span class="p">([</span><span class="n">all_corrs</span><span class="p">[</span><span class="n">corr_cls</span><span class="p">]</span> <span class="k">for</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">my_classes</span> <span class="k">if</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">all_corrs</span><span class="p">])</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">frm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">to</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">vars_by_class</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">classes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">classes</span> <span class="o">=</span> <span class="n">all_vars_by_class</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="n">known_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_vars_by_class</span><span class="p">]</span>
+        <span class="n">unknown_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span>  <span class="ow">in</span> <span class="n">classes</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_vars_by_class</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">unknown_classes</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;The following classes are not found as corrector/variable classes and &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;are assumed to be the variable names directly instead:</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">unknown_classes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span><span class="n">all_vars_by_class</span><span class="p">[</span><span class="n">corr_cls</span><span class="p">]</span> <span class="k">for</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">known_classes</span><span class="p">)))</span>
+        <span class="nb">vars</span> <span class="o">=</span> <span class="nb">vars</span> <span class="o">+</span> <span class="n">unknown_classes</span>
+
+        <span class="c1"># Sort variables by S (nice for comparing different files)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_variables_by_location</span><span class="p">(</span><span class="nb">vars</span><span class="p">,</span> <span class="n">frm</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Lhc.sort_variables_by_location"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.sort_variables_by_location">[docs]</a>    <span class="k">def</span> <span class="nf">sort_variables_by_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">frm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Sorts the variables by location and filters them between `frm` and `to`.</span>
+<span class="sd">        If `frm` is larger than `to` it loops back around to the start the accelerator.</span>
+<span class="sd">        This is a useful function for the LHC that&#39;s why it is &quot;public&quot;</span>
+<span class="sd">        but it is not part of the Accelerator-Class Interface.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            variables (Iterable): Names of variables to sort</span>
+<span class="sd">            frm (float): S-position to filter from</span>
+<span class="sd">            to (float): S-position to filter to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elems_matrix</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_corrector_elems</span><span class="p">())</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">frm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">frm</span> <span class="o">&gt;</span> <span class="n">to</span><span class="p">:</span>
@@ -689,10 +720,18 @@
         <span class="k">elif</span> <span class="n">to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">elems_matrix</span> <span class="o">=</span> <span class="n">elems_matrix</span><span class="p">[</span><span class="n">elems_matrix</span><span class="o">.</span><span class="n">S</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">]</span>
 
+        <span class="c1"># create single list (some entries might contain multiple variable names, comma separated, e.g. &quot;kqx.l2,ktqx2.l2&quot;)</span>
         <span class="n">vars_by_position</span> <span class="o">=</span> <span class="n">_remove_dups_keep_order</span><span class="p">(</span>
             <span class="n">_flatten_list</span><span class="p">([</span><span class="n">raw_vars</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_vars</span> <span class="ow">in</span> <span class="n">elems_matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;VARS&quot;</span><span class="p">]])</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">_list_intersect_keep_order</span><span class="p">(</span><span class="n">vars_by_position</span><span class="p">,</span> <span class="n">vars_by_class</span><span class="p">)</span></div>
+        <span class="n">sorted_vars</span> <span class="o">=</span> <span class="n">_list_intersect_keep_order</span><span class="p">(</span><span class="n">vars_by_position</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+
+        <span class="c1"># Check if no filtering but only sorting was required</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">frm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">to</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_vars</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)):</span>
+            <span class="n">unknown_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span> <span class="k">if</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sorted_vars</span><span class="p">))</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following variables do not have a location: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">unknown_vars</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">sorted_vars</span> <span class="o">=</span> <span class="n">sorted_vars</span> <span class="o">+</span> <span class="n">unknown_vars</span>
+        <span class="k">return</span> <span class="n">sorted_vars</span></div>
 
 <div class="viewcode-block" id="Lhc.get_ips"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_ips">[docs]</a>    <span class="k">def</span> <span class="nf">get_ips</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -868,12 +907,11 @@
 
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
-<div class="viewcode-block" id="Lhc.get_update_correction_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_update_correction_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_correction_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outpath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">corr_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Lhc.get_update_correction_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_update_correction_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_update_correction_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outpath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">corr_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">corr_file</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">corr_file</span> <span class="ow">in</span> <span class="n">corr_files</span><span class="p">:</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">corr_file</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
     <span class="k">def</span> <span class="nf">_uses_ats_knobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -921,7 +959,7 @@
     <span class="k">return</span> <span class="n">full_dict</span>
 
 
-<span class="k">def</span> <span class="nf">_flatten_list</span><span class="p">(</span><span class="n">my_list</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_flatten_list</span><span class="p">(</span><span class="n">my_list</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">my_list</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
 
 
@@ -929,7 +967,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">my_list</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_list_intersect_keep_order</span><span class="p">(</span><span class="n">primary_list</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">secondary_list</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_list_intersect_keep_order</span><span class="p">(</span><span class="n">primary_list</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">secondary_list</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">primary_list</span> <span class="k">if</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">secondary_list</span><span class="p">]</span>
 
 

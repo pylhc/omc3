@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.global_correction &mdash; omc3 0.9.0 documentation</title>
+  <title>omc3.global_correction &mdash; omc3 0.10.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
@@ -32,7 +32,7 @@
               <img src="../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.9
+                0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -62,6 +62,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../entrypoints/other.html">Other</a><ul>
@@ -87,6 +89,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../entrypoints/plotting.html">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
@@ -94,6 +97,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
@@ -380,8 +388,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#logging-tools">Logging Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
@@ -409,7 +420,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
@@ -510,7 +523,7 @@
 
 <span class="sd">*--Optional--*</span>
 
-<span class="sd">- **beta_file_name**:</span>
+<span class="sd">- **beta_filename**:</span>
 
 <span class="sd">    Prefix of the beta file to use. E.g.: getkmodbeta</span>
 
@@ -556,7 +569,7 @@
 <span class="sd">- **modelcut** *(float)*:</span>
 
 <span class="sd">    Reject BPMs whose deviation to the model is higher than the</span>
-<span class="sd">    correspoding input. Input in order of optics_params.</span>
+<span class="sd">    corresponding input. Input in order of optics_params.</span>
 
 
 <span class="sd">- **n_correctors** *(int)*:</span>
@@ -568,7 +581,7 @@
 
 <span class="sd">    List of parameters to correct upon (e.g. BETX BETY)</span>
 
-<span class="sd">    choices: ``(&#39;PHASEX&#39;, &#39;PHASEY&#39;, &#39;BBX&#39;, &#39;BBY&#39;, &#39;BETX&#39;, &#39;BETY&#39;, &#39;DX&#39;, &#39;DY&#39;, &#39;NDX&#39;, &#39;Q&#39;, &#39;F1001R&#39;, &#39;F1001I&#39;, &#39;F1010R&#39;, &#39;F1010I&#39;)``</span>
+<span class="sd">    choices: ``(&#39;PHASEX&#39;, &#39;PHASEY&#39;, &#39;BETX&#39;, &#39;BETY&#39;, &#39;DX&#39;, &#39;DY&#39;, &#39;NDX&#39;, &#39;Q&#39;, &#39;F1001R&#39;, &#39;F1001I&#39;, &#39;F1010R&#39;, &#39;F1010I&#39;)``</span>
 
 <span class="sd">    default: ``[&#39;PHASEX&#39;, &#39;PHASEY&#39;, &#39;BETX&#39;, &#39;BETY&#39;, &#39;NDX&#39;, &#39;Q&#39;]``</span>
 
@@ -632,21 +645,20 @@
 
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
 <span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
-
 <span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">handler</span>
-<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">BETABEAT</span><span class="p">,</span> <span class="n">DISP</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span>
-                                       <span class="n">NORM_DISP</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span>
+                                                <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.model</span> <span class="kn">import</span> <span class="n">manager</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">OPTICS_PARAMS_CHOICES</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
                          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
-                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span>
+                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span>
                          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
+                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
                          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">)</span>
 
 <span class="n">CORRECTION_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
@@ -655,9 +667,9 @@
     <span class="s2">&quot;svd_cut&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
     <span class="s2">&quot;optics_params&quot;</span><span class="p">:</span> <span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span>
     <span class="s2">&quot;variable_categories&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;MQM&quot;</span><span class="p">,</span> <span class="s2">&quot;MQT&quot;</span><span class="p">,</span> <span class="s2">&quot;MQTL&quot;</span><span class="p">,</span> <span class="s2">&quot;MQY&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;beta_file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;beta_phase_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;beta_filename&quot;</span><span class="p">:</span> <span class="s2">&quot;beta_phase_&quot;</span><span class="p">,</span>
     <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;pinv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;iterations&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -692,7 +704,7 @@
                          <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Reject BPMs whose deviation to the model is higher &quot;</span>
-                              <span class="s2">&quot;than the correspoding input. Input in order of optics_params.&quot;</span><span class="p">,)</span>
+                              <span class="s2">&quot;than the corresponding input. Input in order of optics_params.&quot;</span><span class="p">,)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;errorcut&quot;</span><span class="p">,</span>
                          <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
@@ -706,9 +718,9 @@
                          <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
                          <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">],</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of names of the variables classes to use.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta_file_name&quot;</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;beta_file_name&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Prefix of the beta file to use. E.g.: getkmodbeta&quot;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta_filename&quot;</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;beta_filename&quot;</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Prefix of the beta file to use. E.g.: beta_phase_&quot;</span><span class="p">,</span> <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;method&quot;</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                          <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;pinv&quot;</span><span class="p">,</span> <span class="s2">&quot;omp&quot;</span><span class="p">),</span>
@@ -723,14 +735,16 @@
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;n_correctors&quot;</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of correctors to use. (Method: &#39;omp&#39;)&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_iter&quot;</span><span class="p">,</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iterations&quot;</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;max_iter&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of correction re-iterations to perform. &quot;</span>
-                              <span class="s2">&quot;A value of `0` means the correction is calculated once.&quot;</span><span class="p">,</span> <span class="p">)</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;iterations&quot;</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of correction iterations to perform. &quot;</span>
+                              <span class="s2">&quot;A value of `1` means the correction is calculated once.&quot;</span>
+                              <span class="s2">&quot;In this case, the accelerator instance does not need to be able&quot;</span>
+                              <span class="s2">&quot;to produce a new model.&quot;</span><span class="p">,</span> <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;use_errorbars&quot;</span><span class="p">,</span>
                          <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Take into account the measured errorbars in the correction.&quot;</span><span class="p">,</span> <span class="p">)</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Take into account the measured errorbars as weights.&quot;</span><span class="p">,</span> <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;update_response&quot;</span><span class="p">,</span>
                          <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Update the (analytical) response per iteration.&quot;</span><span class="p">,</span> <span class="p">)</span>
@@ -741,6 +755,8 @@
 <span class="k">def</span> <span class="nf">global_correction_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Do the global correction. Iteratively.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting Iterative Global Correction.&quot;</span><span class="p">)</span>
+    <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">),</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">,</span> <span class="n">unknown_opt</span><span class="o">=</span><span class="n">accel_opt</span><span class="p">)</span>
+
     <span class="n">opt</span> <span class="o">=</span> <span class="n">_check_opt_add_dicts</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
     <span class="n">opt</span> <span class="o">=</span> <span class="n">_add_hardcoded_paths</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
     <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -751,13 +767,16 @@
 <span class="k">def</span> <span class="nf">_check_opt_add_dicts</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># acts inplace...</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Check on options and put in missing values &quot;&quot;&quot;</span>
     <span class="n">def_dict</span> <span class="o">=</span> <span class="n">_get_default_values</span><span class="p">()</span>
-    <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETABEAT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">]</span>
+
+    <span class="c1"># Check cuts and fill defaults</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;modelcut&quot;</span><span class="p">,</span> <span class="s2">&quot;errorcut&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">def_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Length of </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not the same as of the optical parameters!&quot;</span><span class="p">)</span>
         <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">,</span> <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+
+    <span class="c1"># Convert Strings to Paths</span>
     <span class="n">opt</span><span class="o">.</span><span class="n">meas_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">meas_dir</span><span class="p">)</span>
     <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">fullresponse_path</span><span class="p">:</span>
@@ -780,9 +799,9 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
@@ -794,9 +813,9 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.035</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.027</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
@@ -808,9 +827,9 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISP</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISP</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>

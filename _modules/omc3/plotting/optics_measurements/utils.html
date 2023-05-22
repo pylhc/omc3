@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.optics_measurements.utils &mdash; omc3 0.9.0 documentation</title>
+  <title>omc3.plotting.optics_measurements.utils &mdash; omc3 0.10.0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
@@ -32,7 +32,7 @@
               <img src="../../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.9
+                0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -62,6 +62,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/other.html">Other</a><ul>
@@ -87,6 +89,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/plotting.html">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
@@ -94,6 +97,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
@@ -380,8 +388,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#logging-tools">Logging Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
@@ -409,7 +420,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
@@ -468,10 +481,29 @@
 <span class="sd">This module contains utilities for the ``plotting`` module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
+
+
+<div class="viewcode-block" id="IDMap"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.IDMap">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">IDMap</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Container to store current figure and axes (id)-information.&quot;&quot;&quot;</span>
+    <span class="n">figure_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">axes_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">legend_label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">ylabel</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="DataSet"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.DataSet">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataSet</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Container to store the data to plot.&quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">ArrayLike</span>
+    <span class="n">err</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="FigureContainer"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.FigureContainer">[docs]</a><span class="k">class</span> <span class="nc">FigureContainer</span><span class="p">:</span>
@@ -500,7 +532,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fig_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>   <span class="c1"># dictionary of matplotlib figures, for output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">figs</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>       <span class="c1"># dictionary of FigureContainers, used internally</span>
 
-<div class="viewcode-block" id="FigureCollector.add_data_for_id"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.FigureCollector.add_data_for_id">[docs]</a>    <span class="k">def</span> <span class="nf">add_data_for_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<div class="viewcode-block" id="FigureCollector.add_data_for_id"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.FigureCollector.add_data_for_id">[docs]</a>    <span class="k">def</span> <span class="nf">add_data_for_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span>
                         <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                         <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                         <span class="n">axes_ids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,))</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -516,6 +548,28 @@
         <span class="n">figure_cont</span><span class="o">.</span><span class="n">ylabels</span><span class="p">[</span><span class="n">axes_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_label</span>
         <span class="n">figure_cont</span><span class="o">.</span><span class="n">xlabels</span><span class="p">[</span><span class="n">axes_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_label</span>
         <span class="n">figure_cont</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">axes_id</span><span class="p">][</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span></div></div>
+
+
+<div class="viewcode-block" id="safe_format"><a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.safe_format">[docs]</a><span class="k">def</span> <span class="nf">safe_format</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">insert</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formats label. Usually just ``.format()`` works fine, even if there is no {}-placeholder in</span>
+<span class="sd">    the label, but it might cause errors if latex is used in the label or ``None``. Hence the</span>
+<span class="sd">    try-excepts.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        label (str): label to be formatted</span>
+<span class="sd">        insert (str): string to be inserted into label</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        String, if everything went alright. None otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">insert</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>  <span class="c1"># can happen for latex strings</span>
+        <span class="k">return</span> <span class="n">label</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># label is None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
 </pre></div>
 
            </div>

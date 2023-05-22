@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; omc3 0.9.0 documentation</title>
+  <title>Index &mdash; omc3 0.10.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -32,7 +32,7 @@
               <img src="_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.9
+                0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,6 +62,8 @@
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="entrypoints/other.html">Other</a><ul>
@@ -87,6 +89,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="entrypoints/plotting.html">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
@@ -94,6 +97,11 @@
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
@@ -380,8 +388,11 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#logging-tools">Logging Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
@@ -409,7 +420,9 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
@@ -612,6 +625,8 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.stats.circular_nanmean">circular_nanmean() (in module omc3.utils.stats)</a>
 </li>
+      <li><a href="modules/utils.html#omc3.utils.stats.circular_rms">circular_rms() (in module omc3.utils.stats)</a>
+</li>
       <li><a href="modules/harpy.html#omc3.harpy.clean.clean">clean() (in module omc3.harpy.clean)</a>
 </li>
       <li><a href="modules/harpy.html#omc3.harpy.frequency.clean_by_tune">clean_by_tune() (in module omc3.harpy.frequency)</a>
@@ -662,6 +677,8 @@
 </li>
       <li><a href="modules/correction.html#omc3.correction.handler.correct">correct() (in module omc3.correction.handler)</a>
 </li>
+      <li><a href="entrypoints/correction.html#omc3.check_corrections.correction_test_entrypoint">correction_test_entrypoint() (in module omc3.check_corrections)</a>
+</li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_beta">create_beta() (in module omc3.scripts.fake_measurement_from_model)</a>
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.create_coupling">create_coupling() (in module omc3.scripts.fake_measurement_from_model)</a>
@@ -698,6 +715,8 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/plotting.html#omc3.plotting.optics_measurements.utils.DataSet">DataSet (class in omc3.plotting.optics_measurements.utils)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.datetime">datetime (omc3.utils.time_tools.AccDatetime property)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.DebugMode">DebugMode (class in omc3.utils.logging_tools)</a>
@@ -942,10 +961,10 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.get_logger">get_logger() (in module omc3.utils.logging_tools)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="entrypoints/scripts.html#omc3.scripts.merge_kmod_results.get_lumi_imbalance">get_lumi_imbalance() (in module omc3.scripts.merge_kmod_results)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.get_madx_script">get_madx_script() (omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator class method)</a>
 
       <ul>
@@ -1012,6 +1031,10 @@
 </li>
       <li><a href="modules/kmod.html#omc3.kmod.analysis.get_phase_from_model">get_phase_from_model() (in module omc3.kmod.analysis)</a>
 </li>
+      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params">get_plottfs_style_params() (in module omc3.plotting.plot_optics_measurements)</a>
+</li>
+      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters">get_plotting_style_parameters() (in module omc3.plotting.plot_checked_corrections)</a>
+</li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.get_poly_fun">get_poly_fun() (in module omc3.tune_analysis.fitting_tools)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.get_readable_time_format">get_readable_time_format() (in module omc3.utils.time_tools)</a>
@@ -1058,6 +1081,8 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.getLogger">getLogger() (in module omc3.utils.logging_tools)</a>
 </li>
+      <li><a href="modules/utils.html#omc3.utils.iotools.glob_regex">glob_regex() (in module omc3.utils.iotools)</a>
+</li>
       <li><a href="entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint">global_correction_entrypoint() (in module omc3.global_correction)</a>
 </li>
   </ul></td>
@@ -1082,10 +1107,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/plotting.html#omc3.plotting.spectrum.utils.IdData">IdData (class in omc3.plotting.spectrum.utils)</a>
 </li>
-      <li><a href="modules/plotting.html#omc3.plotting.spectrum.utils.index_filter">index_filter() (in module omc3.plotting.spectrum.utils)</a>
+      <li><a href="modules/plotting.html#omc3.plotting.optics_measurements.utils.IDMap">IDMap (class in omc3.plotting.optics_measurements.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/plotting.html#omc3.plotting.spectrum.utils.index_filter">index_filter() (in module omc3.plotting.spectrum.utils)</a>
+</li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles">InputFiles (class in omc3.optics_measurements.data_models)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.iota.Iota">Iota (class in omc3.model.accelerators.iota)</a>
@@ -1164,6 +1191,8 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.MaxFilter">MaxFilter (class in omc3.utils.logging_tools)</a>
 </li>
+      <li><a href="modules/utils.html#omc3.utils.iotools.maybe_add_command">maybe_add_command() (in module omc3.utils.iotools)</a>
+</li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.measure_optics.measure_optics">measure_optics() (in module omc3.optics_measurements.measure_optics)</a>
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.merge_kmod_results.merge_kmod_results">merge_kmod_results() (in module omc3.scripts.merge_kmod_results)</a>
@@ -1177,6 +1206,8 @@
 
       <ul>
         <li><a href="entrypoints/analysis.html#module-omc3.amplitude_detuning_analysis">omc3.amplitude_detuning_analysis</a>
+</li>
+        <li><a href="entrypoints/correction.html#module-omc3.check_corrections">omc3.check_corrections</a>
 </li>
         <li><a href="modules/correction.html#module-omc3.correction.constants">omc3.correction.constants</a>
 </li>
@@ -1294,6 +1325,8 @@
 </li>
         <li><a href="entrypoints/plotting.html#module-omc3.plotting.plot_bbq">omc3.plotting.plot_bbq</a>
 </li>
+        <li><a href="entrypoints/plotting.html#module-omc3.plotting.plot_checked_corrections">omc3.plotting.plot_checked_corrections</a>
+</li>
         <li><a href="entrypoints/plotting.html#module-omc3.plotting.plot_optics_measurements">omc3.plotting.plot_optics_measurements</a>
 </li>
         <li><a href="entrypoints/plotting.html#module-omc3.plotting.plot_spectrum">omc3.plotting.plot_spectrum</a>
@@ -1388,6 +1421,13 @@
 
       <ul>
         <li><a href="entrypoints/analysis.html#module-omc3.amplitude_detuning_analysis">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.check_corrections
+
+      <ul>
+        <li><a href="entrypoints/correction.html#module-omc3.check_corrections">module</a>
 </li>
       </ul></li>
       <li>
@@ -1799,6 +1839,13 @@
 </li>
       </ul></li>
       <li>
+    omc3.plotting.plot_checked_corrections
+
+      <ul>
+        <li><a href="entrypoints/plotting.html#module-omc3.plotting.plot_checked_corrections">module</a>
+</li>
+      </ul></li>
+      <li>
     omc3.plotting.plot_optics_measurements
 
       <ul>
@@ -2045,12 +2092,14 @@
         <li><a href="entrypoints/plotting.html#omc3.plotting.plot_tfs.plot">(in module omc3.plotting.plot_tfs)</a>
 </li>
       </ul></li>
-      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube">plot_cube() (in module omc3.plotting.plot_amplitude_detuning)</a>
+      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections">plot_checked_corrections() (in module omc3.plotting.plot_checked_corrections)</a>
 </li>
-      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr">plot_odr() (in module omc3.plotting.plot_amplitude_detuning)</a>
+      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube">plot_cube() (in module omc3.plotting.plot_amplitude_detuning)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr">plot_odr() (in module omc3.plotting.plot_amplitude_detuning)</a>
+</li>
       <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr_3d">plot_odr_3d() (in module omc3.plotting.plot_amplitude_detuning)</a>
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.lines.plot_vertical_line">plot_vertical_line() (in module omc3.plotting.utils.lines)</a>
@@ -2095,6 +2144,8 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.colors.rgb_plotly_to_mpl">rgb_plotly_to_mpl() (in module omc3.plotting.utils.colors)</a>
 </li>
+      <li><a href="modules/utils.html#omc3.utils.stats.rms">rms() (in module omc3.utils.stats)</a>
+</li>
       <li><a href="entrypoints/other.html#omc3.madx_wrapper.run_file">run_file() (in module omc3.madx_wrapper)</a>
 </li>
       <li><a href="modules/harpy.html#omc3.harpy.handler.run_per_bunch">run_per_bunch() (in module omc3.harpy.handler)</a>
@@ -2107,7 +2158,11 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/plotting.html#omc3.plotting.optics_measurements.utils.safe_format">safe_format() (in module omc3.plotting.optics_measurements.utils)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.iotools.save_config">save_config() (in module omc3.utils.iotools)</a>
+</li>
+      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots">save_plots() (in module omc3.plotting.plot_checked_corrections)</a>
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.set_annotation">set_annotation() (in module omc3.plotting.utils.annotations)</a>
 </li>
@@ -2123,6 +2178,8 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.show_ir">show_ir() (in module omc3.plotting.utils.annotations)</a>
 </li>
+      <li><a href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots">show_plots() (in module omc3.plotting.plot_checked_corrections)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/utils.html#omc3.utils.contexts.silence">silence() (in module omc3.utils.contexts)</a>
@@ -2135,7 +2192,11 @@
 </li>
       <li><a href="entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data">sort_data() (in module omc3.plotting.plot_tfs)</a>
 </li>
+      <li><a href="modules/model.html#omc3.model.accelerators.lhc.Lhc.sort_variables_by_location">sort_variables_by_location() (omc3.model.accelerators.lhc.Lhc method)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.stream_handler">stream_handler() (in module omc3.utils.logging_tools)</a>
+</li>
+      <li><a href="modules/utils.html#omc3.utils.iotools.strip_quotes">strip_quotes() (in module omc3.utils.iotools)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.sub">sub() (omc3.utils.time_tools.AccDatetime method)</a>
 </li>

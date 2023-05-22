@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utils &mdash; omc3 0.9.0 documentation</title>
+  <title>Utils &mdash; omc3 0.10.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -35,7 +35,7 @@
               <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.9
+                0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -65,6 +65,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
@@ -90,6 +92,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/plotting.html">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
@@ -97,6 +100,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
@@ -383,8 +391,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logging-tools">Logging Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
@@ -412,7 +423,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
@@ -520,7 +533,7 @@ Can be used in string-lists when individual entries can be <cite>None</cite>.</p
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.utils.iotools.UnionPathStr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">UnionPathStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#UnionPathStr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.UnionPathStr" title="Permalink to this definition"></a></dt>
-<dd><p>A class that can be used as Path and string parser input, but does not convert.</p>
+<dd><p>A class that can be used as Path and string parser input, but does not convert to path.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -556,6 +569,43 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="omc3.utils.iotools.glob_regex">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">glob_regex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">filter</span> <span class="pre">object</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#glob_regex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.glob_regex" title="Permalink to this definition"></a></dt>
+<dd><p>Do a glob on the given <cite>path</cite> based on the regular expression <cite>pattern</cite>.
+Returns only the matching filenames (as strings).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Path</em>) -- Folder path to look in.</p></li>
+<li><p><strong>pattern</strong> (<em>str</em>) -- Pattern to match.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.utils.iotools.maybe_add_command">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">maybe_add_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#maybe_add_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.maybe_add_command" title="Permalink to this definition"></a></dt>
+<dd><p>Add a comment ‘;command’ to the opt-dict,
+which is the command used to run the script gotten from sys.argv,
+but only if the executed file (the file that run with the <cite>python</cite> command)
+equals <code class="docutils literal notranslate"><span class="pre">script</span></code>, i.e. the script for which you are saving the parameters
+is the main script being run. Otherwise the command is probably unrelated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>opt</strong> (<em>dict</em>) -- Options datastructure</p></li>
+<li><p><strong>script</strong> (<em>str</em>) -- Name of the script that called save_config.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated dict with ;command entry, or
+if the script names were different, just the original opt.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.iotools.remove_none_dict_entries">
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">remove_none_dict_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#remove_none_dict_entries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.remove_none_dict_entries" title="Permalink to this definition"></a></dt>
 <dd><p>Removes <code class="docutils literal notranslate"><span class="pre">None</span></code> entries from dict. This can be used as a workaround to
@@ -564,7 +614,7 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.iotools.save_config">
-<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#save_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.save_config" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unknown_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#save_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.save_config" title="Permalink to this definition"></a></dt>
 <dd><p>Quick wrapper for <code class="docutils literal notranslate"><span class="pre">save_options_to_config</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -573,7 +623,28 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 <li><p><strong>opt</strong> (<em>dict</em>) -- opt-structure to be saved.</p></li>
 <li><p><strong>script</strong> (<em>str</em>) -- path/name of the invoking script (becomes name of the .ini) usually
 <code class="docutils literal notranslate"><span class="pre">__file__</span></code>.</p></li>
+<li><p><strong>unknown_opt</strong> (<em>dict</em><em>|</em><em>list</em>) -- un-parsed opt-structure to be saved.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.utils.iotools.strip_quotes">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">strip_quotes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#strip_quotes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.iotools.strip_quotes" title="Permalink to this definition"></a></dt>
+<dd><p>Strip quotes around string-objects. If not a string, nothing
+is changed. This is because the input from commandline or json files
+could be surrounded by quotes (if they are strings).
+The dict-parser removes them automatically as well.
+This behaviour is important for basically every string-faker!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>Any</em>) -- The input value that goes into the function.
+Can be of any type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If the input was a string, then it will be the string with stripped
+quotes (if there were any). Otherwise just the value.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -898,6 +969,27 @@ Axis or axes along which to average data</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="omc3.utils.stats.circular_rms">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">circular_rms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#circular_rms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.circular_rms" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the circular root mean square along the specified axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> -- array-like
+Contains the data to be averaged</p></li>
+<li><p><strong>period</strong> -- scalar, optional
+Periodicity period of data, default is (2 * np.pi)</p></li>
+<li><p><strong>axis</strong> -- int or tuple of ints, optional
+Axis or axes along which to average data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the circular root mean square along the specified axis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="omc3.utils.stats.effective_sample_size">
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">effective_sample_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#effective_sample_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.effective_sample_size" title="Permalink to this definition"></a></dt>
 <dd><p>Computes effective sample size of weighted data along specified axis,
@@ -925,6 +1017,25 @@ Axis or axes along which the effective sample size is computed</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns the error of weighted circular average along the specified axis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.utils.stats.rms">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.stats.</span></span><span class="sig-name descname"><span class="pre">rms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/stats.html#rms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.stats.rms" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the root mean square along the specified axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> -- array-like
+Contains the data to be averaged</p></li>
+<li><p><strong>axis</strong> -- int or tuple of ints, optional
+Axis or axes along which to average data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the root mean square along the specified axis.</p>
 </dd>
 </dl>
 </dd></dl>

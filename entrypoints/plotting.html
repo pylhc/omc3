@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plotting &mdash; omc3 0.9.0 documentation</title>
+  <title>Plotting &mdash; omc3 0.10.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -35,7 +35,7 @@
               <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.9
+                0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -65,6 +65,8 @@
 <li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other.html">Other</a><ul>
@@ -90,6 +92,7 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-tfs">Plot TFS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
@@ -97,6 +100,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
@@ -383,8 +391,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
@@ -412,7 +423,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
@@ -549,6 +562,12 @@ Default: <code class="docutils literal notranslate"><span class="pre">location</
 <li><p><strong>y_lim</strong> <em>(float, int, None)</em>: Limits on the y axis (Tupel)</p></li>
 </ul>
 </section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.plotting.plot_optics_measurements.get_plottfs_style_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_optics_measurements.</span></span><span class="sig-name descname"><span class="pre">get_plottfs_style_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EntryPointParameters</span></span></span><a class="reference internal" href="../_modules/omc3/plotting/plot_optics_measurements.html#get_plottfs_style_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_optics_measurements.get_plottfs_style_params" title="Permalink to this definition"></a></dt>
+<dd><p>Parameters, that are only passed on.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_optics_measurements.plot">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_optics_measurements.</span></span><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_optics_measurements.html#plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_optics_measurements.plot" title="Permalink to this definition"></a></dt>
@@ -827,8 +846,169 @@ until the next one.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.plot_spectrum.get_reshuffled_tab20c">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_spectrum.</span></span><span class="sig-name descname"><span class="pre">get_reshuffled_tab20c</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_spectrum.html#get_reshuffled_tab20c"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_spectrum.get_reshuffled_tab20c" title="Permalink to this definition"></a></dt>
-<dd><p>Reshuffel tab20c so that the colors change between next lines.
+<dd><p>Reshuffle tab20c so that the colors change between next lines.
 Needs to be up here as it is used in <code class="docutils literal notranslate"><span class="pre">DEFAULTS</span></code> which is loaded early.</p>
+</dd></dl>
+
+<span class="target" id="module-omc3.plotting.plot_checked_corrections"></span><section id="plot-correction-test">
+<h2>Plot Correction Test<a class="headerlink" href="#plot-correction-test" title="Permalink to this heading"></a></h2>
+<p>Create plots for the correction tests performed with <cite>omc3.scripts.correction_test</cite>.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>input_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the <cite>output_dir</cite> from <cite>omc3.correction_test</cite>.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>change_marker</strong>:</p>
+<blockquote>
+<div><p>Changes marker for each line in the plot.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>combine_by</strong>:</p>
+<blockquote>
+<div><p>Combine plots into one. Either files, planes (not separated into two
+axes) or both.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['files',</span> <span class="pre">'planes']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>corrections</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Corrections to plot (assumed to be subfolders in <cite>input_dir</cite>).</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>errorbar_alpha</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Alpha value for error bars</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.6</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>individual_to_input</strong>:</p>
+<blockquote>
+<div><p>Save plots for the individual corrections into the corrections input
+folders. Otherwise they go with suffix into the output_folders.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>ip_positions</strong>:</p>
+<blockquote>
+<div><p>Input to plot IP-Positions into the plots. Either ‘LHCB1’ or ‘LHCB2’
+for LHC defaults, a dictionary of labels and positions or path to TFS
+file of a model.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ip_search_pattern</strong>:</p>
+<blockquote>
+<div><p>In case your IPs have a weird name. Specify regex pattern.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">IP\d$</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>lines_manual</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>List of manual lines to plot. Need to contain arguments for axvline,
+and may contain the additional keys “text” and “loc” which is one of
+[‘bottom’, ‘top’, ‘line bottom’, ‘line top’] and places the text at
+the given location.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>Additional style rcParameters which update the set of predefined ones.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>meas_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the directory containing the measurement filesto plot the
+measurement as comparison.If not given, the data from the first
+corrections directory will be used.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ncol_legend</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Number of bpm legend-columns. If &lt; 1 no legend is shown.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to save the plots into. If not given, no plots will be saved.</p>
+</div></blockquote>
+</li>
+<li><p><strong>plot_styles</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Which plotting styles to use, either from plotting.styles.*.mplstyles
+or default mpl.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['standard',</span> <span class="pre">'correction_test']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>share_xaxis</strong>:</p>
+<blockquote>
+<div><p>In case of multiple axes per figure, share x-axis.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>show</strong>:</p>
+<blockquote>
+<div><p>Shows plots.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>suppress_column_legend</strong>:</p>
+<blockquote>
+<div><p>Does not show column name in legend e.g. when combining by files (see
+also <cite>ncol_legend</cite>).</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_axis</strong>:</p>
+<blockquote>
+<div><p>Which parameter to use for the x axis.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['location',</span> <span class="pre">'phase-advance']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">location</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_lim</strong> <em>(MultiClass)</em>:</p>
+<blockquote>
+<div><p>Limits on the x axis (Tupel)</p>
+</div></blockquote>
+</li>
+<li><p><strong>y_lim</strong> <em>(MultiClass)</em>:</p>
+<blockquote>
+<div><p>Limits on the y axis (Tupel)</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.plotting.plot_checked_corrections.get_plotting_style_parameters">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_checked_corrections.</span></span><span class="sig-name descname"><span class="pre">get_plotting_style_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_checked_corrections.html#get_plotting_style_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Parameters related to the style of the plots.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.plotting.plot_checked_corrections.plot_checked_corrections">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_checked_corrections.</span></span><span class="sig-name descname"><span class="pre">plot_checked_corrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_checked_corrections.html#plot_checked_corrections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_checked_corrections.plot_checked_corrections" title="Permalink to this definition"></a></dt>
+<dd><p>Entrypoint for the plotting function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.plotting.plot_checked_corrections.save_plots">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_checked_corrections.</span></span><span class="sig-name descname"><span class="pre">save_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_checked_corrections.html#save_plots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_checked_corrections.save_plots" title="Permalink to this definition"></a></dt>
+<dd><p>Save the plots.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.plotting.plot_checked_corrections.show_plots">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_checked_corrections.</span></span><span class="sig-name descname"><span class="pre">show_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_checked_corrections.html#show_plots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.plot_checked_corrections.show_plots" title="Permalink to this definition"></a></dt>
+<dd><p>Show plots if so desired.</p>
 </dd></dl>
 
 <span class="target" id="module-omc3.plotting.plot_amplitude_detuning"></span><section id="plot-amplitude-detuning-results">

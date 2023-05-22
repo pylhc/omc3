@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.9.0 documentation</title>
+  <title>Correction &mdash; omc3 0.10.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -36,7 +36,7 @@
               <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.9
+                0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -66,6 +66,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other.html">Other</a><ul>
@@ -91,6 +93,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-tfs">Plot TFS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
@@ -98,6 +101,11 @@
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
@@ -384,8 +392,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
@@ -413,7 +424,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
@@ -505,7 +518,7 @@ to use. Check <a class="reference internal" href="../modules/model.html#module-o
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>beta_file_name</strong>:</p>
+<li><p><strong>beta_filename</strong>:</p>
 <blockquote>
 <div><p>Prefix of the beta file to use. E.g.: getkmodbeta</p>
 <p>default: <code class="docutils literal notranslate"><span class="pre">beta_phase_</span></code></p>
@@ -546,7 +559,7 @@ means the correction is calculated once.</p>
 <li><p><strong>modelcut</strong> <em>(float)</em>:</p>
 <blockquote>
 <div><p>Reject BPMs whose deviation to the model is higher than the
-correspoding input. Input in order of optics_params.</p>
+corresponding input. Input in order of optics_params.</p>
 </div></blockquote>
 </li>
 <li><p><strong>n_correctors</strong> <em>(int)</em>:</p>
@@ -557,7 +570,7 @@ correspoding input. Input in order of optics_params.</p>
 <li><p><strong>optics_params</strong> <em>(str)</em>:</p>
 <blockquote>
 <div><p>List of parameters to correct upon (e.g. BETX BETY)</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BBX',</span> <span class="pre">'BBY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'Q',</span> <span class="pre">'F1001R',</span> <span class="pre">'F1001I',</span> <span class="pre">'F1010R',</span> <span class="pre">'F1010I')</span></code></p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'Q',</span> <span class="pre">'F1001R',</span> <span class="pre">'F1001I',</span> <span class="pre">'F1010R',</span> <span class="pre">'F1010I')</span></code></p>
 <p>default: <code class="docutils literal notranslate"><span class="pre">['PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'NDX',</span> <span class="pre">'Q']</span></code></p>
 </div></blockquote>
 </li>
@@ -672,6 +685,227 @@ to use. Check <a class="reference internal" href="../modules/model.html#module-o
 <span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.create_response_entrypoint" title="Permalink to this definition"></a></dt>
 <dd><p>Entry point for creating pandas-based response matrices.</p>
 <p>The response matrices can be either created by response_madx or TwissResponse.</p>
+</dd></dl>
+
+<span class="target" id="module-omc3.check_corrections"></span><section id="correction-test">
+<h2>Correction Test<a class="headerlink" href="#correction-test" title="Permalink to this heading"></a></h2>
+<p>In a MAD-X simulation (pre-calculated) corrections are applied to the (nominal)
+model and the difference between this new matched model and the nominal model
+are evaluated. These are the changes in the optics parameters as
+expected from the corrections and are later subtracted from the original
+model-measurement DELTA (see below).
+In new folders, either the given output folder or sub-folders,
+based on the name of the correction applied, the measurement data will be
+written out into the standard optics tfs-files with three additional columns:</p>
+<dl class="simple">
+<dt>DIFF-column:</dt><dd><p>Difference between the corrected and uncorrected model,
+i.e. the expected correction influence (with inverted sign).
+The beta-diff is beta-beating.
+The difference normalized-dispersion is also properly calculated.</p>
+</dd>
+<dt>EXP-column :</dt><dd><p>This column is calculated by subtracting the DIFF-column
+from the original DELTA-column (i.e. the difference between
+measurement and model) and is therefore the
+expected difference of model and measurement (i.e.
+DELTA-Measurement) after correction.
+For beta-beating this might be only approximate
+as it assumes, that the model used to calculate
+the DELTA-columns in the measurement and the
+nominal model used for the corrections are identical
+(if e.g. best-knowledge model is used, the
+expectation is only approximate).</p>
+</dd>
+<dt>ERREXP-column:</dt><dd><p>This is the error on the EXP-column.
+This is the measurement error in most cases,
+apart from in beta and normalized dispersion,
+where we account for beating and normalization.</p>
+</dd>
+</dl>
+<p>There will also be the RMS values of the DIFF and EXP columns
+in the headers of the files.
+If error- and/or measurement cuts were given, additional RMS headers
+will be present, taking these cuts into account.
+This is the only use for the given cuts and optics parameters.</p>
+<p>If plotting is activated, also plots for each correction (DIFFerence and EXPected) as
+well as a plot for all corrections (only EXPected) will be saved into the output folder(s).</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>corrections</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Paths to the correction files/directories to use. If files are given,
+these will all be applied as corrections at the same time. If folders
+are given, these are assumed to individually containing the correction
+files. See then also <code class="docutils literal notranslate"><span class="pre">file_pattern</span></code>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>meas_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the directory containing the measurement files.</p>
+</div></blockquote>
+</li>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the directory where to write the output files. If the
+<code class="docutils literal notranslate"><span class="pre">corrections</span></code> input consists of multiple folders, their name will be
+used to sort the output data into subfolders.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>beta_filename</strong>:</p>
+<blockquote>
+<div><p>Prefix of the beta file to use. E.g.: <code class="docutils literal notranslate"><span class="pre">beta_phase_</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">beta_phase_</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>change_marker</strong>:</p>
+<blockquote>
+<div><p>Changes marker for each line in the plot.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>combine_by</strong>:</p>
+<blockquote>
+<div><p>Combine plots into one. Either files, planes (not separated into two
+axes) or both.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['files',</span> <span class="pre">'planes']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>errorbar_alpha</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Alpha value for error bars</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.6</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>errorcut</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Reject BPMs whose error bar is higher than the corresponding input.
+Input in order of optics_params.</p>
+</div></blockquote>
+</li>
+<li><p><strong>file_pattern</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Filepattern to use to find correction files in folders (as regex).</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">^changeparameters*?\.madx$</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>individual_to_input</strong>:</p>
+<blockquote>
+<div><p>Save plots for the individual corrections into the corrections input
+folders. Otherwise they go with suffix into the output_folders.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>ip_positions</strong>:</p>
+<blockquote>
+<div><p>Input to plot IP-Positions into the plots. Either ‘LHCB1’ or ‘LHCB2’
+for LHC defaults, a dictionary of labels and positions or path to TFS
+file of a model.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ip_search_pattern</strong>:</p>
+<blockquote>
+<div><p>In case your IPs have a weird name. Specify regex pattern.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">IP\d$</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>lines_manual</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>List of manual lines to plot. Need to contain arguments for axvline,
+and may contain the additional keys “text” and “loc” which is one of
+[‘bottom’, ‘top’, ‘line bottom’, ‘line top’] and places the text at
+the given location.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>Additional style rcParameters which update the set of predefined ones.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>modelcut</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Reject BPMs whose deviation to the model is higher than the
+corresponding input. Input in order of optics_params.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ncol_legend</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Number of bpm legend-columns. If &lt; 1 no legend is shown.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>optics_params</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>List of parameters for which the cuts should be applied (e.g. BETX
+BETY)</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'NDX',</span> <span class="pre">'Q',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'F1001R',</span> <span class="pre">'F1001I',</span> <span class="pre">'F1010R',</span> <span class="pre">'F1010I')</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>plot</strong>:</p>
+<blockquote>
+<div><p>Activate plotting.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>plot_styles</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Which plotting styles to use, either from plotting.styles.*.mplstyles
+or default mpl.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['standard',</span> <span class="pre">'correction_test']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>share_xaxis</strong>:</p>
+<blockquote>
+<div><p>In case of multiple axes per figure, share x-axis.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>show</strong>:</p>
+<blockquote>
+<div><p>Shows plots.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>suppress_column_legend</strong>:</p>
+<blockquote>
+<div><p>Does not show column name in legend e.g. when combining by files (see
+also <cite>ncol_legend</cite>).</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_axis</strong>:</p>
+<blockquote>
+<div><p>Which parameter to use for the x axis.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['location',</span> <span class="pre">'phase-advance']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">location</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_lim</strong> <em>(MultiClass)</em>:</p>
+<blockquote>
+<div><p>Limits on the x axis (Tupel)</p>
+</div></blockquote>
+</li>
+<li><p><strong>y_lim</strong> <em>(MultiClass)</em>:</p>
+<blockquote>
+<div><p>Limits on the y axis (Tupel)</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.check_corrections.correction_test_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.check_corrections.</span></span><span class="sig-name descname"><span class="pre">correction_test_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/check_corrections.html#correction_test_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.check_corrections.correction_test_entrypoint" title="Permalink to this definition"></a></dt>
+<dd><p>Entrypoint function to test the given corrections.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Instead of writing everything out, it could return
+dictionaries of the TFSDataFrames and Figures.
+But I don’t see a usecase at the moment (jdilly 2023)</p>
+</div>
 </dd></dl>
 
 </section>
