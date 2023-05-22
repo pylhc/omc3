@@ -2,7 +2,47 @@
 Correction Test
 ---------------
 
-Run a test, i.e. a MAD-X simulation to check how well the correction settings work.
+In a MAD-X simulation (pre-calculated) corrections are applied to the (nominal)
+model and the difference between this new matched model and the nominal model
+are evaluated. These are the changes in the optics parameters as
+expected from the corrections and are later subtracted from the original
+model-measurement DELTA (see below).
+In new folders, either the given output folder or sub-folders,
+based on the name of the correction applied, the measurement data will be
+written out into the standard optics tfs-files with three additional columns:
+
+DIFF-column:
+               Difference between the corrected and uncorrected model,
+               i.e. the expected correction influence (with inverted sign).
+               The beta-diff is beta-beating.
+               The difference normalized-dispersion is also properly calculated.
+EXP-column :
+               This column is calculated by subtracting the DIFF-column
+               from the original DELTA-column (i.e. the difference between
+               measurement and model) and is therefore the
+               expected difference of model and measurement (i.e.
+               DELTA-Measurement) after correction.
+               For beta-beating this might be only approximate
+               as it assumes, that the model used to calculate
+               the DELTA-columns in the measurement and the
+               nominal model used for the corrections are identical
+               (if e.g. best-knowledge model is used, the
+               expectation is only approximate).
+ERREXP-column:
+               This is the error on the EXP-column.
+               This is the measurement error in most cases,
+               apart from in beta and normalized dispersion,
+               where we account for beating and normalization.
+
+There will also be the RMS values of the DIFF and EXP columns
+in the headers of the files.
+If error- and/or measurement cuts were given, additional RMS headers
+will be present, taking these cuts into account.
+This is the only use for the given cuts and optics parameters.
+
+If plotting is activated, also plots for each correction (DIFFerence and EXPected) as
+well as a plot for all corrections (only EXPected) will be saved into the output folder(s).
+
 
 **Arguments:**
 
@@ -23,9 +63,9 @@ Run a test, i.e. a MAD-X simulation to check how well the correction settings wo
 
 - **output_dir** *(PathOrStr)*:
 
-    ('Path to the directory where to write the output files. If the input
+    Path to the directory where to write the output files. If the
     ``corrections`` input consists of multiple folders, their name will be
-    used to sort the output data into subfolders.',)
+    used to sort the output data into subfolders.
 
 
 *--Optional--*
@@ -230,9 +270,9 @@ def get_params():
     params.add_parameter(name="output_dir",
                          required=True,
                          type=PathOrStr,
-                         help=("Path to the directory where to write the output files. "
-                              "If the input ``corrections`` input consists of multiple folders, their name will "
-                               "be used to sort the output data into subfolders.", ))
+                         help="Path to the directory where to write the output files. "
+                              "If the ``corrections`` input consists of multiple folders, their name will "
+                               "be used to sort the output data into subfolders.",)
     params.add_parameter(name="corrections",
                          required=True,
                          nargs="+",
