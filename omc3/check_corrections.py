@@ -422,8 +422,10 @@ def _glob_regex_paths(path: Path, pattern: str) -> List[Path]:
 # Main and Output --------------------------------------------------------------
 
 def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> Dict[str, pd.Index]:
-    """ Writes the filtered original data out, so that it can be easily plotted against
-    the corrections later. We now have the same BPMs and Column-Names. """
+    """ Get the filtered measurement based on the cuts as done in the correction calculation.
+    As we need this only for RMS calculations later on, we only care about the
+    BPM-names. So the returned dict contains the index to be used for this
+    calculation per optics measurement file."""
     if not opt.optics_params:
         LOG.debug("No filters selected, returning empty dict.")
         return {}
