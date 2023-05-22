@@ -5,10 +5,29 @@ Utils
 This module contains utilities for the ``plotting`` module.
 """
 from collections import OrderedDict
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
 
 from matplotlib import pyplot as plt
+from numpy.typing import ArrayLike
+
+
+@dataclass
+class IDMap:
+    """Container to store current figure and axes (id)-information."""
+    figure_id: str
+    axes_id: str
+    legend_label: str
+    ylabel: str
+
+
+@dataclass
+class DataSet:
+    """Container to store the data to plot."""
+    x: ArrayLike
+    y: ArrayLike
+    err: Optional[ArrayLike] = None
 
 
 class FigureContainer:
@@ -37,7 +56,7 @@ class FigureCollector:
         self.fig_dict = OrderedDict()   # dictionary of matplotlib figures, for output
         self.figs = OrderedDict()       # dictionary of FigureContainers, used internally
 
-    def add_data_for_id(self, figure_id: str, label: str, data: dict,
+    def add_data_for_id(self, figure_id: str, label: str, data: DataSet,
                         x_label: str, y_label: str,
                         path: Path = None, axes_id: str = '',
                         axes_ids: Iterable[str] = ('',)) -> None:
@@ -53,3 +72,25 @@ class FigureCollector:
         figure_cont.ylabels[axes_id] = y_label
         figure_cont.xlabels[axes_id] = x_label
         figure_cont.data[axes_id][label] = data
+
+
+def safe_format(label: str, insert: str) -> Optional[str]:
+    """
+    Formats label. Usually just ``.format()`` works fine, even if there is no {}-placeholder in
+    the label, but it might cause errors if latex is used in the label or ``None``. Hence the
+    try-excepts.
+
+    Args:
+        label (str): label to be formatted
+        insert (str): string to be inserted into label
+
+    Returns:
+        String, if everything went alright. None otherwise.
+    """
+    try:
+        return label.format(insert)
+    except KeyError:  # can happen for latex strings
+        return label
+    except AttributeError:  # label is None
+        return None
+

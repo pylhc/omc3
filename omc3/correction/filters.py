@@ -21,7 +21,8 @@ import pandas as pd
 import tfs
 from generic_parser import DotDict
 
-from omc3.correction.constants import DELTA, ERR, ERROR, NAME2, PHASE, PHASE_ADV, TUNE, VALUE, WEIGHT
+from omc3.correction.constants import ERROR, VALUE, WEIGHT
+from omc3.optics_measurements.constants import DELTA, ERR, NAME2, PHASE, PHASE_ADV, TUNE
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import AMPLITUDE, F1001, F1010, IMAG, REAL
 from omc3.utils import logging_tools, stats
@@ -90,17 +91,25 @@ def _get_filtered_generic(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt
     )
 
     # Applying filtering cuts
-    error_filter = meas.loc[:, f"{ERR}{DELTA}{col}"].to_numpy() < opt.errorcut[col]
-    model_filter = np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()) < opt.modelcut[col]
+    if opt.errorcut.get(col) is not None:
+        error_mask = meas.loc[:, f"{ERR}{DELTA}{col}"].to_numpy() < opt.errorcut[col]
+    else:
+        error_mask = np.ones(len(meas), dtype=bool)
+
+    if opt.modelcut.get(col) is not None:
+        model_mask = np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()) < opt.modelcut[col]
+    else:
+        model_mask = np.ones(len(meas), dtype=bool)
+
     # if opt.automatic_model_cut:  # TODO automated model cut
     #     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()), portion=0.95)
     if f"{PHASE}" in col:
         new[NAME2] = meas.loc[:, NAME2].to_numpy()
-        second_bpm_in = np.in1d(new.loc[:, NAME2].to_numpy(), new.index.to_numpy())
-        good_bpms = error_filter & model_filter & second_bpm_in
-        good_bpms[-1] = False
+        second_bpm_exists = np.in1d(new.loc[:, NAME2].to_numpy(), new.index.to_numpy())
+        good_bpms = error_mask & model_mask & second_bpm_exists
+        good_bpms[-1] = False  # TODO not sure why, ask Lukas? (jdilly)
     else:
-        good_bpms = error_filter & model_filter
+        good_bpms = error_mask & model_mask
     LOG.debug(f"Number of BPMs kept for column '{col}' after filtering: {np.sum(good_bpms)}")
     return new.loc[good_bpms, :]
 

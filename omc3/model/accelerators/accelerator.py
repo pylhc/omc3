@@ -7,7 +7,7 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 import re
 from pathlib import Path
-from typing import List
+from typing import List, Union, Sequence
 
 import numpy
 import pandas as pd
@@ -298,7 +298,7 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, tiwss_out_path, corrections_file_path):
+    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
         """
         Returns job (string) to create an updated model from changeparameters input (used in
         iterative correction).

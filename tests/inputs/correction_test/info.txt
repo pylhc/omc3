@@ -1,0 +1,1 @@
+These corrections were created by the test_global_correction.py based on the models from inputs/correction/..

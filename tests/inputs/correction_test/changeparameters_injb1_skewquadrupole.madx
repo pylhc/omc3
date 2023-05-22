@@ -1,0 +1,4 @@
+! Values to match model to measurement. 
+kqs.l6b1 = kqs.l6b1 -2.310114e-04;
+kqs.l8b1 = kqs.l8b1 -3.988628e-06;
+kqs.l2b1 = kqs.l2b1 +1.001557e-04;

@@ -189,12 +189,12 @@ import os
 from collections import OrderedDict
 from typing import Tuple
 
+import matplotlib
 from cycler import cycler
+
 from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
                                               save_options_to_config, DotDict)
-from matplotlib import cm
-
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
 from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
@@ -214,10 +214,10 @@ LOG = logging_tools.getLogger(__name__)
 
 def get_reshuffled_tab20c():
     """
-    Reshuffel tab20c so that the colors change between next lines.
+    Reshuffle tab20c so that the colors change between next lines.
     Needs to be up here as it is used in ``DEFAULTS`` which is loaded early.
     """
-    tab20c = cm.get_cmap('tab20c').colors
+    tab20c = matplotlib.colormaps['tab20c'].colors
     out = [None] * 20
     step, chunk = 4, 5
     for idx in range(step):
