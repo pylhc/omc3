@@ -626,7 +626,7 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
 
 def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, measurement: OpticsMeasurement) -> tfs.TfsDataFrame:
     """ Add coupling to the model, if terms corresponding to coupling RDTs are
-    found in the provided keys.
+    found in the provided measurements.
 
     Args:
         model (tfs.TfsDataFrame): Twiss dataframe.
