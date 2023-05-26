@@ -258,7 +258,7 @@ class Accelerator:
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    def get_exciter_bpm(self, plane: str, commonbpms: List[str]) -> tuple[tuple[int, str], str]:
+    def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         """
         Returns the BPM next to the exciter.
         The `Accelerator` instance knows already which excitation method is used.
