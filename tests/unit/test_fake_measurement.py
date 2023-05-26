@@ -2,19 +2,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import tfs
 from scipy import stats
 
-from omc3.correction.constants import (
-    NORM_DISP,
-    DISP,
-    BETA,
-    F1010,
-    F1001,
-    PHASE,
-    TUNE,
-    PHASE_ADV,
-)
+import tfs
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.optics_measurements.constants import (
     NAME,
@@ -31,7 +21,15 @@ from omc3.optics_measurements.constants import (
     DISPERSION_NAME,
     REAL,
     IMAG,
-    AMPLITUDE,
+    AMPLITUDE, F1010_NAME, F1001_NAME,
+    NORM_DISPERSION,
+    DISPERSION,
+    BETA,
+    PHASE,
+    TUNE,
+    PHASE_ADV,
+    F1010,
+    F1001,
 )
 from omc3.scripts.fake_measurement_from_model import (
     _get_data,
@@ -249,8 +247,8 @@ def test_parameter(beam, parameter):
         AMP_BETA_NAME: _test_beta,
         DISPERSION_NAME: _test_disp,
         NORM_DISP_NAME: _test_norm_disp,
-        F1010[:-1].lower(): _test_coupling,
-        F1001[:-1].lower(): _test_coupling,
+        F1010_NAME[:-1]: _test_coupling,
+        F1001_NAME[:-1]: _test_coupling,
     }
 
     for name, df in results.items():
@@ -310,36 +308,36 @@ def _test_total_phase(df, plane, relative_error):
 
 
 def _test_disp(df, plane, relative_error):
-    assert _all_columns_present(df, DISP, plane)
+    assert _all_columns_present(df, DISPERSION, plane)
 
-    assert all(df[f"{ERR}{DISP}{plane}"] <= 5 * relative_error * np.abs(df[f"{DISP}{plane}{MDL}"]))  # rough estimate
-    assert all(np.abs((df[f"{DELTA}{DISP}{plane}"] - df[f"{DISP}{plane}"] + df[f"{DISP}{plane}{MDL}"])) < EPS)
-    assert all(np.abs(df[f"{ERR}{DELTA}{DISP}{plane}"] - df[f"{ERR}{DISP}{plane}"]) < EPS)
-    if any(df[f"{DISP}{plane}{MDL}"]):
+    assert all(df[f"{ERR}{DISPERSION}{plane}"] <= 5 * relative_error * np.abs(df[f"{DISPERSION}{plane}{MDL}"]))  # rough estimate
+    assert all(np.abs((df[f"{DELTA}{DISPERSION}{plane}"] - df[f"{DISPERSION}{plane}"] + df[f"{DISPERSION}{plane}{MDL}"])) < EPS)
+    assert all(np.abs(df[f"{ERR}{DELTA}{DISPERSION}{plane}"] - df[f"{ERR}{DISPERSION}{plane}"]) < EPS)
+    if any(df[f"{DISPERSION}{plane}{MDL}"]):
         assert _gaussian_distribution_test(
-            df[f"{DISP}{plane}"],
-            df[f"{DISP}{plane}{MDL}"],
-            df[f"{ERR}{DISP}{plane}"]
+            df[f"{DISPERSION}{plane}"],
+            df[f"{DISPERSION}{plane}{MDL}"],
+            df[f"{ERR}{DISPERSION}{plane}"]
         )
 
 
 def _test_norm_disp(df, plane, relative_error):
-    assert _all_columns_present(df, NORM_DISP, plane)
+    assert _all_columns_present(df, NORM_DISPERSION, plane)
 
-    assert all(df[f"{ERR}{NORM_DISP}{plane}"] <= 5 * relative_error * np.abs(df[f"{NORM_DISP}{plane}{MDL}"]))  # rough estimate
-    assert all(np.abs((df[f"{DELTA}{NORM_DISP}{plane}"] - df[f"{NORM_DISP}{plane}"] + df[f"{NORM_DISP}{plane}{MDL}"])) < EPS)
-    assert all(np.abs(df[f"{ERR}{DELTA}{NORM_DISP}{plane}"] - df[f"{ERR}{NORM_DISP}{plane}"]) < EPS)
-    if any(df[f"{NORM_DISP}{plane}{MDL}"]):
+    assert all(df[f"{ERR}{NORM_DISPERSION}{plane}"] <= 5 * relative_error * np.abs(df[f"{NORM_DISPERSION}{plane}{MDL}"]))  # rough estimate
+    assert all(np.abs((df[f"{DELTA}{NORM_DISPERSION}{plane}"] - df[f"{NORM_DISPERSION}{plane}"] + df[f"{NORM_DISPERSION}{plane}{MDL}"])) < EPS)
+    assert all(np.abs(df[f"{ERR}{DELTA}{NORM_DISPERSION}{plane}"] - df[f"{ERR}{NORM_DISPERSION}{plane}"]) < EPS)
+    if any(df[f"{NORM_DISPERSION}{plane}{MDL}"]):
         assert _gaussian_distribution_test(
-            df[f"{NORM_DISP}{plane}"],
-            df[f"{NORM_DISP}{plane}{MDL}"],
-            df[f"{ERR}{NORM_DISP}{plane}"],
+            df[f"{NORM_DISPERSION}{plane}"],
+            df[f"{NORM_DISPERSION}{plane}{MDL}"],
+            df[f"{ERR}{NORM_DISPERSION}{plane}"],
         )
 
 
 def _test_coupling(df, plane, relative_error):
     param = ""  # independent of rdt
-    for plane in ("REAL", "IMAG"):
+    for plane in (REAL, IMAG, AMPLITUDE, PHASE):
         assert _all_columns_present(df, param, plane)
 
         assert all(df[f"{ERR}{param}{plane}"] <= 5 * relative_error * np.abs(df[f"{param}{plane}{MDL}"]))  # rough estimate
@@ -421,5 +419,5 @@ def _delta_columns(df):
 def _full_model(path: Path):
     model = tfs.read(path, index=NAME)
     model = add_coupling_to_model(model)
-    model[f"{NORM_DISP}X"] = model[f"{DISP}X"] / np.sqrt(model[f"{BETA}X"])
+    model[f"{NORM_DISPERSION}X"] = model[f"{DISPERSION}X"] / np.sqrt(model[f"{BETA}X"])
     return model

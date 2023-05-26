@@ -95,14 +95,12 @@ from pathlib import Path
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
-
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import ERR, DELTA, AMPLITUDE, PHASE, EXT
+from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
+from omc3.optics_measurements.constants import EXT, AMPLITUDE, PHASE, REAL, IMAG
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
-from omc3.plotting.optics_measurements.constants import (DEFAULTS,
-                                                         XAXIS, YAXIS,
-                                                         IP_POS_DEFAULT)
-from omc3.plotting.plot_tfs import plot as plot_tfs, float_or_none
+from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT)
+from omc3.plotting.plot_tfs import plot as plot_tfs, OptionalFloat
 from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.iotools import PathOrStr, save_config
@@ -111,8 +109,9 @@ from omc3.utils.logging_tools import get_logger, list2str
 LOG = get_logger(__name__)
 
 
-def get_params():
+def get_params() -> EntryPointParameters:
     params = EntryPointParameters()
+    # Specific Optics-Measurements parameters
     params.add_parameter(
         name="folders",
         help="Optics Measurements folders containing the analysed data.",
@@ -133,6 +132,20 @@ def get_params():
         help="Plot the difference to model instead of the parameter.",
         action="store_true"
     )
+    # style parameters:
+    params.update(get_optics_style_params())
+
+    # passed on to plot-tfs parameters:
+    params.add_parameter(
+        name="output",
+        help="Folder to output the results to.",
+        type=PathOrStr,
+    )
+    params.update(get_plottfs_style_params())
+    return params
+
+def get_optics_style_params() -> EntryPointParameters:
+    params = EntryPointParameters()
     params.add_parameter(
         name="ip_positions",
         help=("Input to plot IP-Positions into the plots. "
@@ -156,20 +169,19 @@ def get_params():
     params.add_parameter(
         name="x_axis",
         help="Which parameter to use for the x axis.",
-        choices=list(XAXIS.keys()),
+        choices=list(POSITION_COLUMN_MAPPING.keys()),
         default='location',
     )
-    # Parameters that are only passed on ---
+    return params
+
+def get_plottfs_style_params() -> EntryPointParameters:
+    """ Parameters, that are only passed on."""
+    params = EntryPointParameters()
     params.add_parameter(
         name="combine_by",
         help="Combine plots into one. Either files, planes (not separated into two axes) or both.",
         nargs="+",
         choices=['files', 'planes'],  # combine by columns does not really make sense
-    )
-    params.add_parameter(
-        name="output",
-        help="Folder to output the results to.",
-        type=PathOrStr,
     )
     params.add_parameter(
         name="show",
@@ -215,13 +227,13 @@ def get_params():
     params.add_parameter(
         name="x_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the x axis (Tupel)'
     )
     params.add_parameter(
         name="y_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the y axis (Tupel)'
     )
     params.add_parameter(
@@ -244,7 +256,7 @@ def plot(opt):
     opt = _check_opt(opt)
 
     ip_positions = _get_ip_positions(opt.ip_positions, opt.x_axis, opt.ip_search_pattern)
-    x_column, x_label = _get_x_options(opt.x_axis)
+    x_axis = _get_x_axis_column_and_label(opt.x_axis)
 
     fig_dict = {}
     for optics_parameter in opt.optics_parameters:
@@ -255,7 +267,7 @@ def plot(opt):
 
         if is_rdt:
             fig_dict.update(_plot_rdt(
-                optics_parameter, files, file_labels, x_column, x_label,
+                optics_parameter, files, file_labels, x_axis.column, x_axis.label,
                 ip_positions, opt,)
             )
         else:
@@ -263,7 +275,7 @@ def plot(opt):
                 optics_parameter += "_"
 
             fig_dict.update(_plot_param(
-                optics_parameter, files, file_labels, x_column, x_label,
+                optics_parameter, files, file_labels, x_axis.column, x_axis.label,
                 ip_positions, opt,)
             )
     return fig_dict
@@ -343,14 +355,15 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
 
 
 def _get_rdt_columns():
-    rdt_measures = ['rdt_amp', 'rdt_phase', 'rdt_real', 'rdt_imag']
-    result = {key: [None] * len(rdt_measures) for key in ['y_columns', 'y_labels', 'error_columns']}
-    for idx, meas in enumerate(rdt_measures):
-        column, _, label = YAXIS[meas]
-        result['y_columns'][idx] = column
-        result['error_columns'][idx] = f"{ERR}{AMPLITUDE}"  # replaced for phase below
-        result['y_labels'][idx] = label
-    result['error_columns'][rdt_measures.index('rdt_phase')] = f"{ERR}{PHASE}"
+    result = {key: [None] * len(RDT_COLUMN_MAPPING) for key in ['y_columns', 'y_labels', 'error_columns']}
+    for idx, col_map in enumerate(RDT_COLUMN_MAPPING.values()):
+        result['y_columns'][idx] = col_map.column
+        if col_map.column in [REAL, IMAG]:
+            # TODO: ADD ERRIMAG and ERRREAL to RDT tfs?
+            result['error_columns'][idx] = RDT_COLUMN_MAPPING[AMPLITUDE].error_column  # Uses ERRAMP for ERRIMAG/ERRREAL
+        else:
+            result['error_columns'][idx] = col_map.error_column  # should now all be there in the files
+        result['y_labels'][idx] = col_map.label
     return result
 
 
@@ -384,10 +397,10 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
     return plot_tfs(
         files=[f.absolute()/f'{optics_parameter}{{0}}{EXT}' for f in files],
         file_labels=list(file_labels),
-        y_columns=[f'{y_column}{{0}}'],
+        y_columns=[y_column],
         y_labels=[[y_label]],
         column_labels=column_labels,
-        error_columns=[f'{error_column}{{0}}'],
+        error_columns=[error_column],
         x_columns=[x_column],
         x_labels=[x_label],
         planes=list(PLANES),
@@ -405,18 +418,10 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
 
 
 def _get_columns_and_label(parameter, delta):
-    column_and_label = YAXIS[parameter]
-    column = column_and_label[0]
-    column_label = column_and_label[1]
-    y_label = column_and_label[2]
+    cal: ColumnsAndLabels = FILE_COLUMN_MAPPING[parameter]
     if delta:
-        column = f"{DELTA}{column}"
-        try:
-            y_label = column_and_label[3]
-        except IndexError:
-            y_label = fr'$\Delta {y_label[1:]}'
-
-    return column, f"{ERR}{column}", column_label, y_label
+        return cal.delta_column, cal.error_column, cal.text_label, cal.delta_label
+    return cal.column, cal.error_column, cal.text_label, cal.label
 
 
 # IP-Positions -----------------------------------------------------------------
@@ -443,8 +448,7 @@ def _get_ip_positions(ip_positions, xaxis, ip_pattern):
 def _get_ip_positions_from_file(path, axis, pattern):
     model = tfs.read(path, index="NAME")
     ip_mask = model.index.str.match(pattern)
-    column = XAXIS[axis][0]
-    return _create_ip_list(model.loc[ip_mask, column])
+    return _create_ip_list(model.loc[ip_mask, POSITION_COLUMN_MAPPING[axis].column])
 
 
 def _create_ip_list(ip_dict):
@@ -456,8 +460,8 @@ def _create_ip_list(ip_dict):
 # Other ------------------------------------------------------------------------
 
 
-def _get_x_options(x_axis):
-    return XAXIS[x_axis]
+def _get_x_axis_column_and_label(x_axis):
+    return POSITION_COLUMN_MAPPING[x_axis]
 
 
 # Script Mode ------------------------------------------------------------------

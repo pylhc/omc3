@@ -4,30 +4,39 @@ Constants
 
 Specific constants to be used in correction, to help with consistency.
 """
-# Column Names -----------------------------------------------------------------
-# Pre- and Suffixe
-ERR = "ERR"  # Error of the measurement
-RMS = "RMS"  # Root-Mean-Square
-RES = "RES"  # Rescaled measurement
-DELTA = "DELTA"  # Delta between measurement and model (sometimes beating)
-MDL = "MDL"  # Model
-VALUE = "VALUE"
-WEIGHT = "WEIGHT"
-ERROR = "ERROR"
-MODEL = "MODEL"
-DIFF = "DIFF"
+# Trying to decouple input from output columns, but maybe not?
+# Same as in optics-measurements:
+from omc3.optics_measurements.constants import (
+    F1001_NAME,
+    F1010_NAME,
+    F1001,
+    F1010,
+)
 
-# Names
-NAME = "NAME"
-NAME2 = "NAME2"
-S = "S"
-BETA = "BET"
-BETABEAT = "BB"
-DISP = "D"
-F1001 = "F1001"
-F1010 = "F1010"
-INCR = "incr"
-NORM_DISP = "ND"
-PHASE = "PHASE"
-PHASE_ADV = "MU"
-TUNE = "Q"
+# Column Names -----------------------------------------------------------------
+VALUE: str = "VALUE"
+WEIGHT: str = "WEIGHT"
+ERROR: str = "ERROR"
+MODEL: str = "MODEL"
+DIFF: str = "DIFF"
+EXPECTED: str = "EXP"
+
+COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX = {  # I know, I know ... (jdilly, 2023)
+    F1001_NAME: F1001,
+    F1010_NAME: F1010,
+}
+
+# For FullResponse
+INCR: str = "incr"
+
+# Correction Test Constants ----------------------------------------------------
+MODEL_NOMINAL_FILENAME: str = "twiss_nominal.tfs"  # using twiss from model for now
+MODEL_MATCHED_FILENAME: str = "twiss_matched.tfs"
+
+# Plotting Labels
+UNCORRECTED_LABEL: str = "Measurement"
+CORRECTED_LABEL: str = "Corrected"  # default label if none given
+EXPECTED_LABEL: str = "Expected"
+CORRECTION_LABEL: str = "Correction"
+
+
