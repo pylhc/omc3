@@ -1,0 +1,226 @@
+/*
+* General macros for beta beating
+* select_monitors()
+* select_elements()
+* do_twiss_monitors(use_sequence, output_file, dpp)
+* do_twiss_monitors_and_ips(use_sequence, output_file, dpp)
+* do_twiss_elements(use_sequence, output_file, dpp)
+* get_f_terms_for(table_name, elem_name)
+* extract_segment_sequence(base_seq, front_seq, back_seq, start_from, end_at)
+* save_initial_and_final_values(accel, startfrom, endat, values_file, bininame, bendname)
+* twiss_segment(used_sequence, filename, init_vals)
+*/
+
+/*
+* Selects only monitors for the next twiss command.
+*/
+select_monitors(): macro = {
+    select, flag=twiss, clear;
+    select, flag=twiss, pattern="^BPM.*B[12]$", column=name, s, betx, alfx, bety, alfy, 
+                                              mux, muy, dx, dy, dpx, dpy, x, y, ddx, ddy,
+                                              k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
+                                              phiy, dmux, dmuy, keyword, dbx, dby,
+                                              r11, r12, r21, r22;
+}
+
+
+/*
+* Selects relevant elements for the next twiss command.
+*/
+select_elements(): macro = {
+    select, flag=twiss, clear;
+    select, flag=twiss, class=monitor, column=name, s, betx, alfx, bety, alfy, 
+                                              mux, muy, dx, dy, dpx, dpy, x, y, ddx, ddy,
+                                              k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
+                                              phiy, dmux, dmuy, keyword, dbx, dby,
+                                              r11, r12, r21, r22;
+    select, flag=twiss, class=monitor;
+    select, flag=twiss, class=instrument;
+    select, flag=twiss, class=marker;
+    select, flag=twiss, class=quadrupole;
+    select, flag=twiss, class=skewquadrupole;
+    select, flag=twiss, class=sextupole;
+    select, flag=twiss, class=octupole;
+    select, flag=twiss, class=multipole;
+    select, flag=twiss, class=tkicker;
+    select, flag=twiss, class=rcollimator;
+    select, flag=twiss, class=collimator;
+    select, flag=twiss, class=rbend;
+    select, flag=twiss, class=drift;
+}
+
+
+/*
+* Simple twiss file output with only monitors.
+* @param sequence: name of the sequence to use.
+* @param output_file: path to the file to write, it has to be input in "" to
+* preserve upper case characters.
+* @param dpp: delta p / p to use in the twiss command.
+*/
+do_twiss_monitors(use_sequence, output_file, dpp): macro = {
+    exec, select_monitors();
+    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+};
+
+
+/*
+* Simple twiss file output with only monitors and IPs.
+* @param sequence: name of the sequence to use.
+* @param output_file: path to the file to write, it has to be input in "" to
+* preserve upper case characters.
+* @param dpp: delta p / p to use in the twiss command.
+*/
+do_twiss_monitors_and_ips(use_sequence, output_file, dpp): macro = {
+    exec, select_monitors();
+    select, flag=twiss, pattern='^IP[1-8]$', column=name, s, betx, alfx, bety, alfy,
+                                              mux, muy, dx, dy, dpx, dpy, x, y, ddx, ddy,
+                                              k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
+                                              phiy, dmux, dmuy, keyword, dbx, dby,
+                                              r11, r12, r21, r22;
+    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+};
+
+
+/*
+* Simple twiss file output with relevant elements.
+* @param sequence: name of the sequence to use.
+* @param output_file: path to the file to write, it has to be input in "" to
+* preserve upper case characters.
+* @param dpp: delta p / p to use in the twiss command.
+*/
+do_twiss_elements(use_sequence, output_file, dpp): macro = {
+    exec, select_elements();
+    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+};
+
+
+
+/*
+* Transform the coupling given in R-matrix in MAD-X to f terms.
+* It will return the f terms in the variables:
+* elem_name_f1001r
+* elem_name_f1001r
+* elem_name_f1001r
+* elem_name_f1001r
+* @param table_name: The table where to get the R-matrix.
+* @param elem_name: The element name of which to compute the f terms.
+*/
+get_f_terms_for(table_name, elem_name): macro = {
+    NORMR = sqrt(1 + table(table_name, elem_name, R11) * table(table_name, elem_name, R22)
+                    - table(table_name, elem_name, R12) * table(table_name, elem_name, R21));
+    
+    !--- Gb is actually inv(Gb)
+    Ga11 = 1 / sqrt(table(table_name, elem_name, BETX));
+    Ga22 = sqrt(table(table_name, elem_name, BETX));
+    Ga21 = table(table_name, elem_name, ALFX) / sqrt(table(table_name, elem_name, BETX));
+    Ga12 = 0;
+    Gb21 = -table(table_name, elem_name, ALFY) / sqrt(table(table_name, elem_name, BETY));
+    Gb12 = 0;
+    Gb11 = sqrt(table(table_name, elem_name, BETY));
+    Gb22 = 1 / sqrt(table(table_name, elem_name, BETY));
+    
+    R11 = table(table_name, elem_name, R11) / NORMR;
+    R12 = table(table_name, elem_name, R12) / NORMR; 
+    R21 = table(table_name, elem_name, R21) / NORMR;
+    R22 = table(table_name, elem_name, R22) / NORMR; 
+    
+    CP11 =  R22 * Gb11 - R12 * Gb21; CP12 :=  R22 * Gb12 - R12 * Gb22;
+    CP21 =  - R21 * Gb11 + R11 * Gb21; CP22 :=  - R21 * Gb12 + R11 * Gb22;
+    
+    C11 = Ga11 * CP11 + Ga12 * CP21;
+    C12 = Ga11 * CP12 + Ga12 * CP22;
+    C21 = Ga21 * CP11 + Ga22 * CP21;
+    C22 = Ga21 * CP12 + Ga22 * CP22;
+    
+    GAMMA = sqrt(1 - (C11 * C22 - C12 * C21));
+    
+    elem_name_f1001r = ( C12 - C21)/4/GAMMA; !--- F1001R
+    elem_name_f1001i = ( C11 + C22)/4/GAMMA; !--- F1001I
+    elem_name_f1010r = (-C12 - C21)/4/GAMMA; !--- F1010R
+    elem_name_f1010i = ( C11 - C22)/4/GAMMA; !--- F1010I
+};
+
+! SEGMENT STUFF BEGINS HERE
+/*
+* Extracts the front and back propagation sequences from "base_sequences". The new
+* sequences will have the prefix "front_" and "back_".
+* The macro beam_"base_sequence"() has to be defined.
+* @param base_seq: Sequence from which the subsequence should be extracted.
+* @param startfrom: Initial element in the subsequence.
+* @param endat: Final element in the subsequence.
+* @param extracted_name: Extracted sequence name.
+*/
+extract_segment_sequence(base_seq, front_seq, back_seq, start_from, end_at): macro = {
+
+    ! There are some BPMs that have a non-zero size, these are not good as segment
+    ! start or end. These two if's replace them with zero sized BPMs.
+    if (start_from->l > 0){
+        start_from: MONITOR, l=0;
+        SEQEDIT, SEQUENCE=base_seq;
+        REPLACE, ELEMENT=start_from, by=start_from;
+        ENDEDIT;
+    }
+
+    if (end_at->l > 0){
+        end_at: MONITOR, l=0;
+        SEQEDIT, SEQUENCE=base_seq;
+        REPLACE, ELEMENT=end_at, by=end_at;
+        ENDEDIT;
+    }
+
+    SEQEDIT, SEQUENCE=base_seq;
+    FLATTEN;
+    CYCLE, START=start_from;
+    ENDEDIT;
+
+    EXTRACT, SEQUENCE=base_seq, FROM=start_from, TO=end_at, NEWNAME=front_seq;
+    SEQEDIT, SEQUENCE=front_seq;
+    FLATTEN;
+    ENDEDIT;
+
+    EXTRACT, SEQUENCE=base_seq, FROM=start_from, TO=end_at, NEWNAME=back_seq;
+    SEQEDIT, SEQUENCE=back_seq;
+    FLATTEN;
+    REFLECT; ! reverse command
+    ENDEDIT;
+};
+
+
+/*
+* Read the file given in "values_file" and writes the initial and final conditions
+* in the segment delimited from the element "startfrom" to "endat" into "bininame"
+* and "bendname" respectively.
+*/
+save_initial_and_final_values(accel, startfrom, endat, values_file, bininame, bendname): macro = {
+    call, file = values_file;
+
+    use, sequence=accel, range=startfrom/startfrom;
+    savebeta,label=bininame, place=startfrom;
+    twiss, chrom, betx=betx_ini, alfx=alfx_ini, bety=bety_ini, alfy=alfy_ini,
+                  dx=dx_ini, dy=dy_ini, dpx=dpx_ini, dpy=dpy_ini,
+                  wx=wx_ini, phix=phix_ini, wy=wy_ini, phiy=phiy_ini,
+                  r11=ini_r11 ,r12=ini_r12, r21=ini_r21, r22=ini_r22;
+
+    use, sequence=accel, range=endat/endat;
+    savebeta, label=bendname, place=endat;
+    twiss, chrom, betx=betx_end, alfx=alfx_end, bety=bety_end, alfy=alfy_end,
+                  dx=dx_end, dy=dy_end, dpx=dpx_end, dpy=dpy_end,
+                  wx=wx_end, phix=phix_end, wy=wy_end, phiy=phiy_end,
+                  r11=end_r11 ,r12=end_r12, r21=end_r21, r22=end_r22;
+}
+
+
+/*
+* Performs the twiss command over the front and back sequences, using the given
+* initial conditions.
+* @param accel: Sequence to use.
+* @param front_filename: File were to store the front propagation twiss result.
+* @param back_filename: File were to store the back propagation twiss result.
+* @param bininame: Name of the initial conditions variable for front propagation.
+* @param bendname: Name of the initial conditions variable for back propagation.
+*/
+twiss_segment(used_sequence, filename, init_vals): macro = {
+    use, sequence = used_sequence;
+    exec, select_elements();
+    twiss, beta0 = init_vals, chrom, file = filename;
+};

@@ -292,7 +292,7 @@ class Lhc(Accelerator):
     def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         beam = self.beam
         adt = "H.C" if plane == "X" else "V.B"
-        l_r = "L" if (beam == 1 != plane == "Y") else "R"
+        l_r = "L" if ((beam == 1) != (plane == "Y")) else "R"
         a_b = "B" if beam == 1 else "A"
         if self.excitation == AccExcitationMode.ACD:
             try:
