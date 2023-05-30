@@ -17,19 +17,19 @@ MODEL_INJ_BEAM2 = INPUTS / "models" / "2022_inj_b2_adt"
 def test_lhc_adt_b1():
     accel = Lhc(model_dir=MODEL_INJ_BEAM1, beam=1, year="2022")
 
-    for_bpm_in_plane(accel, "X", "BPMWA.B5L4.B1", "BPMWA.A5L4.B1")
-    for_bpm_in_plane(accel, "Y", "BPMWA.B5R4.B1", "BPMWA.A5R4.B1")
+    _check_exciter_bpm_detection(accel, "X", "BPMWA.B5L4.B1", "BPMWA.A5L4.B1")
+    _check_exciter_bpm_detection(accel, "Y", "BPMWA.B5R4.B1", "BPMWA.A5R4.B1")
 
 @pytest.mark.basic
 def test_lhc_adt_b2():
     accel = Lhc(model_dir=MODEL_INJ_BEAM2, beam=2, year="2022")
 
-    for_bpm_in_plane(accel, "X", "BPMWA.B5R4.B2", "BPMWA.A5R4.B2")
-    for_bpm_in_plane(accel, "Y", "BPMWA.B5L4.B2", "BPMWA.A5L4.B2")
+    _check_exciter_bpm_detection(accel, "X", "BPMWA.B5R4.B2", "BPMWA.A5R4.B2")
+    _check_exciter_bpm_detection(accel, "Y", "BPMWA.B5L4.B2", "BPMWA.A5L4.B2")
 
 # ---- Helper function -----------------------------------------------------------------------------
 
-def for_bpm_in_plane(accel: Accelerator, plane: str, nearest_bpm: str, second_bpm: str):
+def _check_exciter_bpm_detection(accel: Accelerator, plane: str, nearest_bpm: str, second_bpm: str):
     model: TfsDataFrame = accel.model
 
     ((_, bpm_name), _) = accel.get_exciter_bpm(plane, model.index.to_list())
