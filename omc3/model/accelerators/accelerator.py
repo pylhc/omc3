@@ -258,14 +258,17 @@ class Accelerator:
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    def get_exciter_bpm(self, plane, distance):
+    def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         """
         Returns the BPM next to the exciter.
         The `Accelerator` instance knows already which excitation method is used.
 
         Args:
             plane: **X** or **Y**.
-            distance: 1=nearest bpm 2=next to nearest bpm.
+            commonbpms: list of common BPMs (e.g. intersection of input BPMs.
+
+        Returns:
+            `((index, bpm_name), exciter_name): tuple(int, str), str)`
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
