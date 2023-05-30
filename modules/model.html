@@ -12,6 +12,8 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
@@ -556,15 +558,21 @@ Needs to handle: <cite>bpm</cite>, <cite>magnet</cite>, <cite>arc_bpm</cite> (se
 
 <dl class="py method">
 <dt class="sig sig-object py" id="omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm">
-<span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commonbpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#Accelerator.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the BPM next to the exciter.
 The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+<li><p><strong>commonbpms</strong> -- list of common BPMs (e.g. intersection of input BPMs.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple(int, str), str)`</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id1"><span class="problematic" id="id2">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -770,8 +778,14 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+<li><p><strong>commonbpms</strong> -- list of common BPMs (e.g. intersection of input BPMs.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple(int, str), str)`</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id3"><span class="problematic" id="id4">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -909,8 +923,14 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+<li><p><strong>commonbpms</strong> -- list of common BPMs (e.g. intersection of input BPMs.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple(int, str), str)`</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id5"><span class="problematic" id="id6">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1007,8 +1027,14 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+<li><p><strong>commonbpms</strong> -- list of common BPMs (e.g. intersection of input BPMs.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple(int, str), str)`</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id7"><span class="problematic" id="id8">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1182,8 +1208,14 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>distance</strong> -- 1=nearest bpm 2=next to nearest bpm.</p></li>
+<li><p><strong>commonbpms</strong> -- list of common BPMs (e.g. intersection of input BPMs.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple(int, str), str)`</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a href="#id9"><span class="problematic" id="id10">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>

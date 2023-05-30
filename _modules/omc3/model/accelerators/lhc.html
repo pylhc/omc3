@@ -11,6 +11,8 @@
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/doctools.js"></script>
         <script src="../../../../_static/sphinx_highlight.js"></script>
@@ -794,7 +796,7 @@
 <div class="viewcode-block" id="Lhc.get_exciter_bpm"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_exciter_bpm">[docs]</a>    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">commonbpms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="n">beam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span>
         <span class="n">adt</span> <span class="o">=</span> <span class="s2">&quot;H.C&quot;</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="s2">&quot;V.B&quot;</span>
-        <span class="n">l_r</span> <span class="o">=</span> <span class="s2">&quot;L&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">!=</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;Y&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;R&quot;</span>
+        <span class="n">l_r</span> <span class="o">=</span> <span class="s2">&quot;L&quot;</span> <span class="k">if</span> <span class="p">((</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;Y&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="s2">&quot;R&quot;</span>
         <span class="n">a_b</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span> <span class="k">if</span> <span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;A&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
