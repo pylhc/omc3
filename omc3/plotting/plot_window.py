@@ -11,11 +11,23 @@ from typing import List, Tuple, Dict
 import matplotlib
 from matplotlib.figure import Figure
 
+from omc3.utils import logging_tools
+
+
 matplotlib.use('qt5agg')
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QVBoxLayout
+
+LOG = logging_tools.get_logger(__name__)
+
+try:
+    # Beware: this also raises an import error, if the LD_LIBRARY_PATH variable is not set correctly
+    # LD_LIBRARY_PATH=YOUR_PYTHON_ENV/lib/python3.XX/site-packages/PySide2/Qt/lib/
+    from PySide2.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QVBoxLayout
+except ImportError as e:
+    LOG.debug(f"Could not import PySide2: {str(e)}")
+    QMainWindow, QApplication, QVBoxLayout, QWidget, QTabWidget = None, None, None, object, object
 
 
 class PlotWidget(QWidget):
@@ -116,4 +128,3 @@ class VerticalTabWindow(SimpleTabWindow):
 
     def show(self):
         self.app.exec_()
-

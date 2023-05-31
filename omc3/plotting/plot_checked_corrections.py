@@ -163,8 +163,8 @@ import tfs
 from generic_parser import DotDict, EntryPointParameters, entrypoint
 from omc3.correction.constants import (CORRECTED_LABEL, UNCORRECTED_LABEL, CORRECTION_LABEL, EXPECTED_LABEL,
                                        COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX)
-from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, RDT_PHASE_COLUMN, \
-    RDT_IMAG_COLUMN, RDT_REAL_COLUMN, RDT_AMPLITUDE_COLUMN
+from omc3.definitions.optics import (FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, RDT_PHASE_COLUMN, 
+    RDT_IMAG_COLUMN, RDT_REAL_COLUMN, RDT_AMPLITUDE_COLUMN)
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.plot_optics_measurements import (_get_x_axis_column_and_label, _get_ip_positions,
                                                     get_optics_style_params, get_plottfs_style_params)
@@ -178,6 +178,7 @@ LOG = logging_tools.get_logger(__name__)
 
 SPLIT_ID = "#_#"  # will appear in the figure ID, but should be fine to read
 PREFIX = "plot_corrections"
+
 
 def get_plotting_params() -> EntryPointParameters:
     params = EntryPointParameters()
@@ -292,6 +293,7 @@ def plot_checked_corrections(opt: DotDict):
         show_plots(fig_dict)
     return fig_dict
 
+
 def _create_correction_plots_per_filename(filename, measurements, correction_dirs, x_colmap, y_colmap, ip_positions, opt):
     """ Plot measurements and all different correction scenarios into a single plot. """
     full_filename = f"{filename}{EXT}"
@@ -404,10 +406,25 @@ def save_plots(output_dir, figure_dict, input_dir=None):
 
 
 def show_plots(figure_dict: Dict[str, Figure]) -> VerticalTabWindow:
-    """ Shows all plots in a single window.
+    """ Shows plots.
+    If PySide is installed, they are shown in a single window.
     The individual corrections are sorted in to vertical tabs,
-    the optics parameter into horizontal tabs. """
+    the optics parameter into horizontal tabs. 
+    If PySide is not installed, they are simply shown as individual figures.
+    This is not recommended
+    """
     window = VerticalTabWindow("Correction Check")
+    # try:
+    #     window = VerticalTabWindow("Correction Check")
+    # except TypeError:
+    #     LOG.warning(
+    #         "PySide2 is not installed. "
+    #         "Plots will be shown in individual windows. "
+    #         "Install PySide2 for a more organized representation. "
+    #     )
+    #     plt.show()
+    #     return
+
     rdt_pattern = re.compile(r"f\d{4}")
     rdt_complement = {
         RDT_REAL_COLUMN.text_label: RDT_IMAG_COLUMN,
