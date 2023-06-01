@@ -161,16 +161,25 @@ from matplotlib.figure import Figure
 
 import tfs
 from generic_parser import DotDict, EntryPointParameters, entrypoint
-from omc3.correction.constants import (CORRECTED_LABEL, UNCORRECTED_LABEL, CORRECTION_LABEL, EXPECTED_LABEL,
-                                       COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX)
-from omc3.definitions.optics import (FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, RDT_PHASE_COLUMN, 
-    RDT_IMAG_COLUMN, RDT_REAL_COLUMN, RDT_AMPLITUDE_COLUMN)
+from omc3.correction.constants import (
+    CORRECTED_LABEL, UNCORRECTED_LABEL, CORRECTION_LABEL, EXPECTED_LABEL,
+    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX
+)
+from omc3.definitions.optics import (
+    FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, RDT_PHASE_COLUMN, 
+    RDT_IMAG_COLUMN, RDT_REAL_COLUMN, RDT_AMPLITUDE_COLUMN
+)
 from omc3.optics_measurements.constants import EXT
-from omc3.plotting.plot_optics_measurements import (_get_x_axis_column_and_label, _get_ip_positions,
-                                                    get_optics_style_params, get_plottfs_style_params)
+from omc3.plotting.plot_optics_measurements import (
+    _get_x_axis_column_and_label, _get_ip_positions,
+    get_optics_style_params, get_plottfs_style_params
+)
 from omc3.plotting.plot_tfs import plot as plot_tfs, get_full_output_path
-from omc3.plotting.plot_window import PlotWidget, TabWidget, VerticalTabWindow
-from omc3.plotting.utils import (annotations as pannot)
+from omc3.plotting.plot_window import (
+    PlotWidget, TabWidget, VerticalTabWindow, 
+    log_no_qtpy_many_windows, create_pyplot_window_from_fig
+)
+from omc3.plotting.utils import annotations as pannot
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 
@@ -286,7 +295,6 @@ def plot_checked_corrections(opt: DotDict):
             )
 
         fig_dict.update(new_figs)
-
     # Output -------------------------------------------------------------------
     # save_plots(opt.output_dir, figure_dict=fig_dict, input_dir=opt.input_dir if opt.individual_to_input else None)
     if opt.show:
@@ -413,17 +421,15 @@ def show_plots(figure_dict: Dict[str, Figure]) -> VerticalTabWindow:
     If PySide is not installed, they are simply shown as individual figures.
     This is not recommended
     """
-    window = VerticalTabWindow("Correction Check")
-    # try:
-    #     window = VerticalTabWindow("Correction Check")
-    # except TypeError:
-    #     LOG.warning(
-    #         "PySide2 is not installed. "
-    #         "Plots will be shown in individual windows. "
-    #         "Install PySide2 for a more organized representation. "
-    #     )
-    #     plt.show()
-    #     return
+    try:
+        window = VerticalTabWindow("Correction Check")
+    except TypeError:
+        log_no_qtpy_many_windows()
+        for name, fig in figure_dict.items():
+            create_pyplot_window_from_fig(fig)
+            fig.canvas.manager.set_window_title(name.replace(SPLIT_ID, " "))
+        plt.show()
+        return
 
     rdt_pattern = re.compile(r"f\d{4}")
     rdt_complement = {

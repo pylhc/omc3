@@ -105,26 +105,31 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 - **y_lim** *(float, int None)*: Limits on the y axis (Tupel)
 """
 from collections import OrderedDict
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Dict
+from typing import Dict
 
 import matplotlib
+from matplotlib import pyplot as plt, rcParams
 from matplotlib.axes import Axes
-from numpy.typing import ArrayLike
 
 import tfs
-from generic_parser import EntryPointParameters, entrypoint, DotDict
-from generic_parser.entry_datatypes import DictAsString, get_multi_class
-from matplotlib import pyplot as plt, rcParams
+from generic_parser import EntryPointParameters, entrypoint
+from generic_parser.entry_datatypes import DictAsString
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import FigureCollector, DataSet, IDMap, safe_format
+from omc3.plotting.plot_window import (
+    PlotWidget, SimpleTabWindow, log_no_qtpy_many_windows, create_pyplot_window_from_fig
+)
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
-from omc3.plotting.utils import (annotations as pannot, lines as plines,
-                                 style as pstyle, colors as pcolors)
+from omc3.plotting.utils import (
+    annotations as pannot, 
+    lines as plines,
+    style as pstyle, 
+    colors as pcolors,
+)
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.iotools import PathOrStr, save_config, OptionalStr, OptionalFloat
 from omc3.utils.logging_tools import get_logger, list2str
@@ -531,8 +536,21 @@ def _create_plots(fig_collection, opt):
         output_plot(fig_container)
 
     if opt.show:
-        plt.show()
+        try:
+            window = SimpleTabWindow("Tfs Plots")
+        except TypeError:
+            log_no_qtpy_many_windows()
+            for fig_container in fig_collection.figs.values():
+                create_pyplot_window_from_fig(fig_container.fig)
+                fig_container.fig.canvas.manager.set_window_title(fig_container.figure_id)
+            plt.show()
+            return
 
+        for fig_container in fig_collection.figs.values():
+            tab = PlotWidget(fig_container.fig, title=fig_container.figure_id)
+            window.add_tab(tab)
+        window.show()
+            
 
 def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
     for idx, (label, values) in enumerate(data.items()):

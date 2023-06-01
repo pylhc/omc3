@@ -2,32 +2,56 @@
 Plot Window
 ------------
 
-Create QT-based windows that can store plots and allow switching between them
-via tabs.
+In this module different classes are defined, allowing to put plots 
+manually into windows.
+These windows are QT-based, created with ``qtpy'' which allows to use 
+either PySide(2 or 6) or PyQt(5 or 6), depending on which it installed on the system.
+As the ``qtpy`` library is optional, there are some checks to make sure 
+the imports do not fail, but then the classes cannot be used.
+To check if QtPy is installed, either run :meth:`omc3.plotting.plot_window.is_qtpy_installed`
+or try to initialize one of the windows, which will fail with a TypeError, 
+as they want to call QApplication which is set to `None`.
 
+An exception to all of this is  :meth:`omc3.plotting.plot_window.create_pyplot_window_from_fig`,
+which allows to create a `pyplot` handled window from an already existing figure.
+This way, figures can be created without manager (which makes them resource friendlier)
+and can either be added to a QT-Window or, if not installed, opened by `pyplot`.
 """
-from typing import List, Tuple, Dict
+import sys
+from typing import Dict, List, Tuple
 
 import matplotlib
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 from omc3.utils import logging_tools
 
-
-matplotlib.use('qt5agg')
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
 LOG = logging_tools.get_logger(__name__)
 
 try:
-    # Beware: this also raises an import error, if the LD_LIBRARY_PATH variable is not set correctly
-    # LD_LIBRARY_PATH=YOUR_PYTHON_ENV/lib/python3.XX/site-packages/PySide2/Qt/lib/
-    from PySide2.QtWidgets import QMainWindow, QApplication, QWidget, QTabWidget, QVBoxLayout
+    from qtpy.QtWidgets import (QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget)
 except ImportError as e:
-    LOG.debug(f"Could not import PySide2: {str(e)}")
+    LOG.debug(f"Could not import QtPy: {str(e)}")
     QMainWindow, QApplication, QVBoxLayout, QWidget, QTabWidget = None, None, None, object, object
+else:
+    matplotlib.use('Qt5agg')
+
+
+def is_qtpy_installed():
+    """Returns True if QtPy is installed."""
+    return QMainWindow is not None
+
+
+def log_no_qtpy_many_windows():
+    """Logs a warning that QtPy is not installed and many windows will be opened."""
+
+    LOG.warning(
+        "QtPy is not installed. "
+        "Plots will be shown in individual windows. "
+        "Install QtPy for a more organized representation. "
+    )
 
 
 class PlotWidget(QWidget):
@@ -83,7 +107,7 @@ class SimpleTabWindow:
             title (str): Title of the created Window
             size (Tuple[int, int]): Size of the created window.
         """
-        self.app = QApplication([])
+        self.app = QApplication(sys.argv)
         self.main_window = QMainWindow()
         self.main_window.__init__()
         self.main_window.setWindowTitle(title)
@@ -128,3 +152,23 @@ class VerticalTabWindow(SimpleTabWindow):
 
     def show(self):
         self.app.exec_()
+
+
+def create_pyplot_window_from_fig(fig: Figure):
+    """Creates a window from the given figure, which is managed by pyplot. 
+    This is similar to how figures behave when created with `pyplot.figure()`,
+    but you can crate the figure instance first and the manager later.
+
+    Caveat: Uses private functions of pyplot.
+
+
+    Args:
+        fig (Figure): figure to be managed by pyplot. 
+    """
+    if fig.canvas.manager is not None:
+        raise AttributeError('Figure already has a manager, cannot create a new one')
+
+    allnums = plt.get_fignums()
+    next_num = max(allnums) + 1 if allnums else 1
+    manager = plt._get_backend_mod().new_figure_manager_given_figure(next_num, fig)
+    plt._pylab_helpers.Gcf._set_new_active_manager(manager)
