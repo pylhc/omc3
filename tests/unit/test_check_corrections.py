@@ -220,6 +220,8 @@ class TestMeasurementFilter:
 
 
 class TestPlotting:
+    
+    @pytest.mark.basic
     def test_normal_params(self, monkeypatch):
         figure_dict = {
             f"correction1{SPLIT_ID}param1_x": Figure(),
@@ -261,6 +263,7 @@ class TestPlotting:
                     assert plottab.title == "param 2"
 
 
+    @pytest.mark.basic
     def test_rdt_params(self, monkeypatch):
         figure_dict = {
             f"correction1{SPLIT_ID}f1001_amplitude": Figure(),
@@ -304,6 +307,7 @@ class TestPlotting:
                     assert plottab.title.lower() == ("f1010 ri" if idx else "f1001 ap")
 
 
+    @pytest.mark.basic
     def test_pyplot(self, monkeypatch):
         figure_dict = {
             "param1_x_PARAM1X": Figure(),

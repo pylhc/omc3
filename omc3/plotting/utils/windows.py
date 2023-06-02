@@ -21,7 +21,7 @@ import sys
 from typing import Dict, List, Tuple
 
 import matplotlib
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, rcParams
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
@@ -70,17 +70,18 @@ def log_no_qtpy_many_windows():
 
 
 class PlotWidget(QWidget):
-    """ A derived QWidget that contains Matplotlib-Figures,
-     stacked vertically, each with its own toolbar."""
 
     def __init__(self, *figures: Figure, title: str):
-        """Creates Widget.
+        """A derived QWidget that contains Matplotlib-Figures,
+        stacked vertically, each with its own toolbar.
 
         Args:
             *figures (Figure): Figures to be contained in the widget
             title (str): Name of the widget
+            skip_super (bool): If True the superclass __init__ will be skipped (ONLY FOR TESTS)
         """
-        super().__init__()
+        QWidget.__init__(self)   # no super(), because will not work with tests
+
         self.title: str = title
         self.figures: Tuple[Figure] = figures
         self._canvas_toolbar_handles: List[Tuple[FigureCanvas, NavigationToolbar]] = []
@@ -98,12 +99,18 @@ class PlotWidget(QWidget):
 
 
 class TabWidget(QTabWidget):
-    """A simple tab widget, that in addition
-    to QTabWidget keeps track of the tabs via dictionary
-    and can have a title."""
 
     def __init__(self, title: str = None):
-        super().__init__()
+        """A simple tab widget, that in addition
+        to QTabWidget keeps track of the tabs via dictionary
+        and can have a title.
+        
+        Args:
+            title (str): Title of the created Window
+            skip_super (bool): If True the superclass __init__ will be skipped (ONLY FOR TESTS)
+        """
+        QTabWidget.__init__(self)  # no super(), because will not work with tests
+
         self.title: str = title
         self.tabs: Dict[str, QWidget] = {}
 
@@ -113,14 +120,14 @@ class TabWidget(QTabWidget):
 
 
 class SimpleTabWindow:
-    """ A simple window that contains a single Tab-Widget,
-    allowing the user to add tabs to it. """
-    def __init__(self, title: str = "Simple Tab Window", size=(1280, 900)):
-        """
+
+    def __init__(self, title: str = "Simple Tab Window", size: Tuple[int, int] = None):
+        """A simple window that contains a single Tab-Widget,
+        allowing the user to add tabs to it.
 
         Args:
             title (str): Title of the created Window
-            size (Tuple[int, int]): Size of the created window.
+            size (Tuple[int, int]): Size of the created window in pixels.
         """
         self.app = QApplication(sys.argv)
         self.main_window = QMainWindow()
@@ -129,7 +136,12 @@ class SimpleTabWindow:
         self.current_window = -1
         self.tabs_widget = TabWidget()
         self.main_window.setCentralWidget(self.tabs_widget)
+        
+        if size is None:
+            size_in_inch = rcParams["figure.figsize"]
+            size = (int(size_in_inch[0] * 100), int(size_in_inch[1] * 100))  # Approximate
         self.main_window.resize(*size)
+
         self.main_window.show()
 
     def add_tab(self, widget: QWidget):
@@ -145,13 +157,18 @@ class SimpleTabWindow:
 
 
 class VerticalTabWindow(SimpleTabWindow):
-    """ A Window in which the tabs are aligned vertically on the left-hand side.
-    This window assumes that you may want to have tabs within tabs,
-    so the convenience function `add_to_tab` is implemented, which allows
-    you to add widgets directly to an already existing tab. """
 
-    def __init__(self, name: str = "Vertical Tab Window", size=(1280, 900)):
-        super().__init__(name, size)
+    def __init__(self, title: str = "Vertical Tab Window", size: Tuple[int, int] = None):
+        """A Window in which the tabs are aligned vertically on the left-hand side.
+        This window assumes that you may want to have tabs within tabs,
+        so the convenience function `add_to_tab` is implemented, which allows
+        you to add widgets directly to an already existing tab.
+
+        Args:
+            title (str): Title of the created Window.
+            size (Tuple[int, int]): Size of the created window in pixels.
+        """        
+        super().__init__(title, size)
         self.tabs_widget.setTabPosition(QTabWidget.West)
 
     def add_to_tab(self, widget: QWidget, tab: str):
@@ -175,7 +192,6 @@ def create_pyplot_window_from_fig(fig: Figure, title: str = None):
     but you can crate the figure instance first and the manager later.
 
     Caveat: Uses private functions of pyplot.
-
 
     Args:
         fig (Figure): figure to be managed by pyplot. 
