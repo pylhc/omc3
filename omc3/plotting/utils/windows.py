@@ -154,7 +154,7 @@ class VerticalTabWindow(SimpleTabWindow):
         self.app.exec_()
 
 
-def create_pyplot_window_from_fig(fig: Figure):
+def create_pyplot_window_from_fig(fig: Figure, title: str = None):
     """Creates a window from the given figure, which is managed by pyplot. 
     This is similar to how figures behave when created with `pyplot.figure()`,
     but you can crate the figure instance first and the manager later.
@@ -164,6 +164,7 @@ def create_pyplot_window_from_fig(fig: Figure):
 
     Args:
         fig (Figure): figure to be managed by pyplot. 
+        title (str): Title of the window.
     """
     if fig.canvas.manager is not None:
         raise AttributeError('Figure already has a manager, cannot create a new one')
@@ -172,3 +173,5 @@ def create_pyplot_window_from_fig(fig: Figure):
     next_num = max(allnums) + 1 if allnums else 1
     manager = plt._get_backend_mod().new_figure_manager_given_figure(next_num, fig)
     plt._pylab_helpers.Gcf._set_new_active_manager(manager)
+    if title is not None:
+        manager.set_window_title(title)

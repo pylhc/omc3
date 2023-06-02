@@ -175,7 +175,7 @@ from omc3.plotting.plot_optics_measurements import (
     get_optics_style_params, get_plottfs_style_params
 )
 from omc3.plotting.plot_tfs import plot as plot_tfs, get_full_output_path
-from omc3.plotting.plot_window import (
+from omc3.plotting.utils.windows import (
     PlotWidget, TabWidget, VerticalTabWindow, 
     log_no_qtpy_many_windows, create_pyplot_window_from_fig
 )
@@ -426,8 +426,7 @@ def show_plots(figure_dict: Dict[str, Figure]) -> VerticalTabWindow:
     except TypeError:
         log_no_qtpy_many_windows()
         for name, fig in figure_dict.items():
-            create_pyplot_window_from_fig(fig)
-            fig.canvas.manager.set_window_title(name.replace(SPLIT_ID, " "))
+            create_pyplot_window_from_fig(fig, title=name.replace(SPLIT_ID, " "))
         plt.show()
         return
 

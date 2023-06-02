@@ -120,8 +120,8 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import FigureCollector, DataSet, IDMap, safe_format
-from omc3.plotting.plot_window import (
-    PlotWidget, SimpleTabWindow, log_no_qtpy_many_windows, create_pyplot_window_from_fig
+from omc3.plotting.utils.windows import (
+    PlotWidget, SimpleTabWindow, is_qtpy_installed, log_no_qtpy_many_windows, create_pyplot_window_from_fig
 )
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
 from omc3.plotting.utils import (
@@ -536,20 +536,21 @@ def _create_plots(fig_collection, opt):
         output_plot(fig_container)
 
     if opt.show:
-        try:
+        if len(fig_collection) > 1 and is_qtpy_installed():
             window = SimpleTabWindow("Tfs Plots")
-        except TypeError:
-            log_no_qtpy_many_windows()
             for fig_container in fig_collection.figs.values():
-                create_pyplot_window_from_fig(fig_container.fig)
-                fig_container.fig.canvas.manager.set_window_title(fig_container.figure_id)
-            plt.show()
+                tab = PlotWidget(fig_container.fig, title=fig_container.title)
+                window.add_tab(tab)
+            window.show()
             return
+        
+        if len(fig_collection) > rcParams['figure.max_open_warning']:
+            log_no_qtpy_many_windows()
 
         for fig_container in fig_collection.figs.values():
-            tab = PlotWidget(fig_container.fig, title=fig_container.figure_id)
-            window.add_tab(tab)
-        window.show()
+            create_pyplot_window_from_fig(fig_container.fig, title=fig_container.title)
+        plt.show()
+
             
 
 def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
