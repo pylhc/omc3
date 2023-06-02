@@ -22,8 +22,6 @@ from typing import Dict, List, Tuple
 
 import matplotlib
 from matplotlib import pyplot as plt, rcParams
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 from omc3.utils import logging_tools
@@ -41,6 +39,8 @@ except ImportError as e:
     QMainWindow, QApplication, QVBoxLayout  = None, None, None
     QWidget, QTabWidget = object, object
 else:
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
     try:
         matplotlib.use('Qt5agg')
     except ImportError as e:
