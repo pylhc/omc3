@@ -264,7 +264,7 @@ def plot_checked_corrections(opt: DotDict):
             # get F1### column map without the I, R, A, P part based on the rdt-filename:
             LOG.debug(f"Plotting coupling correction for {filename}")
             new_figs = {}
-            for idx, y_colmap in enumerate(RDT_COLUMN_MAPPING.values()):  # AMP, PHASE, REAL or IMAG as column-map
+            for y_colmap in RDT_COLUMN_MAPPING.values():  # AMP, PHASE, REAL or IMAG as column-map
                 y_colmap = ColumnsAndLabels(
                     _column=y_colmap.column,
                     _label=y_colmap.label.format(filename),  # this one needs additional info
@@ -295,8 +295,14 @@ def plot_checked_corrections(opt: DotDict):
             )
 
         fig_dict.update(new_figs)
+
     # Output -------------------------------------------------------------------
-    # save_plots(opt.output_dir, figure_dict=fig_dict, input_dir=opt.input_dir if opt.individual_to_input else None)
+    save_plots(
+        opt.output_dir, 
+        figure_dict=fig_dict, 
+        input_dir=opt.input_dir if opt.individual_to_input else None
+    )
+
     if opt.show:
         show_plots(fig_dict)
     return fig_dict
@@ -423,10 +429,10 @@ def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path
 
 def show_plots(figure_dict: Dict[str, Figure]):
     """ Shows plots.
-    If PySide is installed, they are shown in a single window.
+    If qtpy is installed, they are shown in a single window.
     The individual corrections are sorted in to vertical tabs,
     the optics parameter into horizontal tabs. 
-    If PySide is not installed, they are simply shown as individual figures.
+    If qtpy is not installed, they are simply shown as individual figures.
     This is not recommended
     """
     try:

@@ -1,23 +1,25 @@
-from ast import List
 from dataclasses import dataclass, field
-from typing import Any
-import matplotlib
-from matplotlib.figure import Figure
-import numpy as np
-import pytest
-from generic_parser import DotDict
 
+import matplotlib
+import pytest
 import tfs
+from generic_parser import DotDict
+from matplotlib.figure import Figure
+
+from omc3.check_corrections import (_get_measurement_filter,
+                                    correction_test_entrypoint)
 from omc3.correction.constants import MODEL_MATCHED_FILENAME
 from omc3.correction.handler import get_filename_from_parameter
 from omc3.correction.model_appenders import add_coupling_to_model
-from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, TUNE_COLUMN
+from omc3.definitions.optics import (FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING,
+                                     TUNE_COLUMN, ColumnsAndLabels)
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import EXT, NAME, S, MDL, PHASE_ADV, PHASE_NAME, PHASE, NAME2, TUNE
-from omc3.check_corrections import correction_test_entrypoint, _get_measurement_filter
+from omc3.optics_measurements.constants import (EXT, MDL, NAME, NAME2, PHASE,
+                                                PHASE_ADV, TUNE, S)
 from omc3.plotting.plot_checked_corrections import SPLIT_ID, show_plots
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
-from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
+from tests.accuracy.test_global_correction import (get_normal_params, get_skew_params)
+
 
 class TestFullRun:
     @pytest.mark.basic
