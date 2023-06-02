@@ -1,4 +1,8 @@
+from ast import List
+from dataclasses import dataclass, field
+from typing import Any
 import matplotlib
+from matplotlib.figure import Figure
 import numpy as np
 import pytest
 from generic_parser import DotDict
@@ -11,6 +15,7 @@ from omc3.definitions.optics import FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_C
 from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import EXT, NAME, S, MDL, PHASE_ADV, PHASE_NAME, PHASE, NAME2, TUNE
 from omc3.check_corrections import correction_test_entrypoint, _get_measurement_filter
+from omc3.plotting.plot_checked_corrections import SPLIT_ID, show_plots
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
 
@@ -212,7 +217,139 @@ class TestMeasurementFilter:
                 assert "B" in mask
 
 
+class TestPlotting:
+    def test_normal_params(self, monkeypatch):
+        figure_dict = {
+            f"correction1{SPLIT_ID}param1_x": Figure(),
+            f"correction1{SPLIT_ID}param1_y": Figure(),
+            f"correction1{SPLIT_ID}param_2_x": Figure(),
+            f"correction1{SPLIT_ID}param_2_y": Figure(),
+            f"correction2{SPLIT_ID}param1_x": Figure(),
+            f"correction2{SPLIT_ID}param1_y": Figure(),
+            f"correction2{SPLIT_ID}param_2_x": Figure(),
+            f"correction2{SPLIT_ID}param_2_y": Figure(),
+            "param1_x_PARAM1X": Figure(),
+            "param1_y_PARAM1Y": Figure(),
+            "param_2_x_PARAM2X": Figure(),
+            "param_2_y_PARAM2Y": Figure(),
+        }
+
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.TabWidget", MockTabAndWindow)
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.PlotWidget", MockPlotWidget)
+        window = MockTabAndWindow("")
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.VerticalTabWindow", window)
+
+        show_plots(figure_dict)
+
+        assert window.title != ""  # set to something else
+        assert window.shown
+
+        assert len(window.tabs) == 3  # 1 for all, 2 for correction[12]
+        for idx_tab, tab in enumerate(window.tabs):
+            if idx_tab:
+                assert tab.title == f"correction{idx_tab}"
+
+            assert len(tab.tabs) == 2  # two params
+
+            for idx, plottab in enumerate(tab.tabs):
+                assert isinstance(plottab, MockPlotWidget)
+                if idx == 0:
+                    assert plottab.title == "param1"
+                else:
+                    assert plottab.title == "param 2"
+
+
+    def test_rdt_params(self, monkeypatch):
+        figure_dict = {
+            f"correction1{SPLIT_ID}f1001_amplitude": Figure(),
+            f"correction1{SPLIT_ID}f1001_phase": Figure(),
+            f"correction1{SPLIT_ID}f1001_real": Figure(),
+            f"correction1{SPLIT_ID}f1001_imaginary": Figure(),
+            f"correction2{SPLIT_ID}f1010_imaginary": Figure(),
+            f"correction2{SPLIT_ID}f1010_amplitude": Figure(),
+            f"correction2{SPLIT_ID}f1010_real": Figure(),
+            f"correction2{SPLIT_ID}f1010_phase": Figure(),
+            "f1010_real_EXPDELTAREAL": Figure(),
+            "f1010_imaginary_EXPDELTAIMAG": Figure(),
+            "f1001_phase_EXPDELTAPHASE": Figure(),
+            "f1001_amplitude_EXPDELTAAMP": Figure(),
+        }
+
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.TabWidget", MockTabAndWindow)
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.PlotWidget", MockPlotWidget)
+        window = MockTabAndWindow("")
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.VerticalTabWindow", window)
+
+        show_plots(figure_dict)
+
+        assert window.title != ""  # set to something else
+        assert window.shown
+
+        assert len(window.tabs) == 3  # 1 for all, 2 for correction[12]
+        for idx_tab, tab in enumerate(window.tabs):
+            assert len(tab.tabs) == 2  # either 1 rdt 2 columns or 2 rdts 1 column
+            if idx_tab:
+                assert tab.title == f"correction{idx_tab}"
+                
+                for idx, plottab in enumerate(tab.tabs):
+                    title_parts = plottab.title.split(" ")
+                    rdt = "f1001" if idx_tab == 1 else "f1010"
+                    assert len(title_parts) == 2
+                    assert title_parts[0] == rdt
+                    assert title_parts[1].lower() == ["ap", "ri"][idx]
+            else:
+                for idx, plottab in enumerate(tab.tabs):
+                    assert plottab.title.lower() == ("f1010 ri" if idx else "f1001 ap")
+
+
+    def test_pyplot(self, monkeypatch):
+        figure_dict = {
+            "param1_x_PARAM1X": Figure(),
+            f"param1{SPLIT_ID}PARAM1Y": Figure(),
+        }
+
+        result_dict = {}
+        def mock_fun(fig, title):
+            result_dict[title] = fig
+
+        fake_plt = MockTabAndWindow("")
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.VerticalTabWindow", None)
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.plt", fake_plt)
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.create_pyplot_window_from_fig", mock_fun)
+
+        show_plots(figure_dict)
+
+        assert fake_plt.shown
+        for title in figure_dict:
+            new_title = title.replace(SPLIT_ID, " ")
+            assert result_dict[new_title] is figure_dict[title]
+
+
  # Helper ----------------------------------------------------------------------
+
+@dataclass
+class MockTabAndWindow:
+    title: str
+    tabs: list = field(default_factory=list, init=False)
+    shown: bool = False
+
+    def __call__(self, title: str):
+        self.title = title
+        return self
+
+    def add_tab(self, tab: "MockTabAndWindow"):
+        self.tabs.append(tab)
+
+    def show(self):
+        self.shown = True
+
+
+@dataclass
+class MockPlotWidget:
+    fig1: Figure
+    fig2: Figure
+    title: str
+
 
 def _create_fake_measurement(tmp_path, model_path, twiss_path):
     model_df = tfs.read(model_path / TWISS_DAT, index=NAME)

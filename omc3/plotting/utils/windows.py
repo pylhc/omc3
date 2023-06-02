@@ -30,13 +30,28 @@ from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
+# --- optional qtpy import block -----------------------------------------------
+
 try:
-    from qtpy.QtWidgets import (QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget)
+    from qtpy.QtWidgets import (
+        QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget
+    )
 except ImportError as e:
     LOG.debug(f"Could not import QtPy: {str(e)}")
-    QMainWindow, QApplication, QVBoxLayout, QWidget, QTabWidget = None, None, None, object, object
+    QMainWindow, QApplication, QVBoxLayout  = None, None, None
+    QWidget, QTabWidget = object, object
 else:
-    matplotlib.use('Qt5agg')
+    try:
+        matplotlib.use('Qt5agg')
+    except ImportError as e:
+        if not "headless" in str(e):
+            raise
+        LOG.debug(
+            "Could not change mpl to use QT, "
+            "due to headless mode (i.e. no display connected)."
+            )
+
+# ------------------------------------------------------------------------------
 
 
 def is_qtpy_installed():

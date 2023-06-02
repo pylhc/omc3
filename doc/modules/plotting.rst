@@ -42,3 +42,5 @@ Common Plot Functionality
 .. automodule:: omc3.plotting.utils.style
     :members:
 
+.. automodule:: omc3.plotting.utils.windows
+    :members:

@@ -154,7 +154,7 @@ Create plots for the correction tests performed with `omc3.scripts.correction_te
 """
 import re
 from pathlib import Path
-from typing import Dict, Iterable, Set
+from typing import Dict, Iterable, Set, Union
 
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
@@ -302,7 +302,15 @@ def plot_checked_corrections(opt: DotDict):
     return fig_dict
 
 
-def _create_correction_plots_per_filename(filename, measurements, correction_dirs, x_colmap, y_colmap, ip_positions, opt):
+def _create_correction_plots_per_filename(
+        filename: str, 
+        measurements: Path, 
+        correction_dirs: Dict[str, Path], 
+        x_colmap: ColumnsAndLabels, 
+        y_colmap: ColumnsAndLabels, 
+        ip_positions: Union[str, Dict[str, float], Path], 
+        opt: DotDict
+    ):
     """ Plot measurements and all different correction scenarios into a single plot. """
     full_filename = f"{filename}{EXT}"
     file_label = filename
@@ -383,7 +391,7 @@ def _create_correction_plots_per_filename(filename, measurements, correction_dir
     return figs
 
 
-def save_plots(output_dir, figure_dict, input_dir=None):
+def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path = None):
     """ Save the plots. """
     if not output_dir and not input_dir:
         return
@@ -413,7 +421,7 @@ def save_plots(output_dir, figure_dict, input_dir=None):
             fig.savefig(output_path)
 
 
-def show_plots(figure_dict: Dict[str, Figure]) -> VerticalTabWindow:
+def show_plots(figure_dict: Dict[str, Figure]):
     """ Shows plots.
     If PySide is installed, they are shown in a single window.
     The individual corrections are sorted in to vertical tabs,
@@ -477,7 +485,6 @@ def show_plots(figure_dict: Dict[str, Figure]) -> VerticalTabWindow:
             )
             current_tab.add_tab(new_tab)
     window.show()
-    return window
 
 
 def _get_corrected_measurement_names(correction_dirs: Iterable[Path]) -> Set[str]:
