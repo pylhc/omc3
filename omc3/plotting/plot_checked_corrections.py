@@ -450,7 +450,7 @@ def show_plots(figure_dict: Dict[str, Figure]):
         RDT_AMPLITUDE_COLUMN.text_label: RDT_PHASE_COLUMN,
     }
 
-    correction_names = set([n.split(SPLIT_ID)[0] for n in figure_dict.keys() if SPLIT_ID in n])
+    correction_names = sorted(set([n.split(SPLIT_ID)[0] for n in figure_dict.keys() if SPLIT_ID in n]))
     for correction_name in [None] + list(correction_names):
         if not correction_name:
             parameter_names = iter(sorted(n for n in figure_dict.keys() if SPLIT_ID not in n))
