@@ -129,7 +129,6 @@ class SimpleTabWindow:
         """
         self.app = QApplication(sys.argv)
         self.main_window = QMainWindow()
-        self.main_window.__init__()
         self.main_window.setWindowTitle(title)
         self.current_window = -1
         self.tabs_widget = TabWidget()
