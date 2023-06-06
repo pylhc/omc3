@@ -465,7 +465,7 @@ def show_plots(figure_dict: Dict[str, Figure]):
         window.add_tab(current_tab)
 
         for name_x in parameter_names:
-            # extract the filename (and column-name in case of per-correction-file)
+            # extract the filename (and column-name in case of multi-correction-file)
             tab_prename = name_x.split(SPLIT_ID)[-1] 
 
             if rdt_pattern.match(tab_prename):
