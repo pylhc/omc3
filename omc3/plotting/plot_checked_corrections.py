@@ -234,7 +234,8 @@ def get_plotting_style_parameters():
 def plot_checked_corrections(opt: DotDict):
     """ Entrypoint for the plotting function. """
     LOG.info("Plotting checked corrections.")
-    save_config(Path(opt.output_dir), opt, __file__)
+    if opt.output_dir:
+        save_config(Path(opt.output_dir), opt, __file__)
 
     # Preparations -------------------------------------------------------------
     correction_dirs: Dict[str, Path] = {}
