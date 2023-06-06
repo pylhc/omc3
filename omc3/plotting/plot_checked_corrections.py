@@ -430,7 +430,7 @@ def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path
 
 
 def show_plots(figure_dict: Dict[str, Figure]):
-    """ Shows plots.
+    """Displays the provided figures.
     If `qtpy` is installed, they are shown in a single window.
     The individual corrections are sorted into vertical tabs,
     the optics parameter into horizontal tabs. 
