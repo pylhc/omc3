@@ -485,7 +485,7 @@ def show_plots(figure_dict: Dict[str, Figure]):
                 else:
                     name_y = "_".join(name_x.split("_")[:-1] + [complement_column.text_label,])
 
-                tab_name = f"{rdt} {column[0].upper()}{complement_column.text_label[0].upper()}"
+                tab_name = f"{rdt} {column[0].upper()}/{complement_column.text_label[0].upper()}"
 
             else:
                 # Handle non-RDT columns: As they are sorted alphabetically, the current column
