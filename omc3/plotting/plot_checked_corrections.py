@@ -424,9 +424,14 @@ def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path
                 figname = "_".join([PREFIX] + figname_parts)
 
         output_path = get_full_output_path(outdir, figname)
-        if output_path is not None:
-            LOG.info(f"Saving Corrections Plot to '{output_path}'")
-            fig.savefig(output_path)
+        LOG.debug(f"Saving corrections plot to '{output_path}'")
+        fig.savefig(output_path)
+    
+    if input_dir:
+        LOG.info(f"Saved all correction plots in '{output_dir}'\n"
+                 f"and into the correction-scenario in '{input_dir}'.")
+    else:
+        LOG.info(f"Saved all correction plots in '{output_dir}'.")
 
 
 def show_plots(figure_dict: Dict[str, Figure]):

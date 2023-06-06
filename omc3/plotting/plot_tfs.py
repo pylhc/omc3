@@ -307,7 +307,7 @@ def get_params():
 @entrypoint(get_params(), strict=True)
 def plot(opt):
     """Main plotting function."""
-    LOG.info(f"Starting plotting of tfs files: {list2str(opt.files):s}")
+    LOG.debug(f"Starting plotting of tfs files: {list2str(opt.files):s}")
     if opt.output is not None:
         save_config(Path(opt.output), opt, __file__)
 
