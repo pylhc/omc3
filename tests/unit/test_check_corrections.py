@@ -301,10 +301,10 @@ class TestPlotting:
                     rdt = "f1001" if idx_tab == 1 else "f1010"
                     assert len(title_parts) == 2
                     assert title_parts[0] == rdt
-                    assert title_parts[1].lower() == ["ap", "ri"][idx]
+                    assert title_parts[1].lower() == ["a/p", "r/i"][idx]
             else:
                 for idx, plottab in enumerate(tab.tabs):
-                    assert plottab.title.lower() == ("f1010 ri" if idx else "f1001 ap")
+                    assert plottab.title.lower() == ("f1010 r/i" if idx else "f1001 a/p")
 
 
     @pytest.mark.basic
