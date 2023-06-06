@@ -234,8 +234,11 @@ def get_plotting_style_parameters():
 def plot_checked_corrections(opt: DotDict):
     """ Entrypoint for the plotting function. """
     LOG.info("Plotting checked corrections.")
+
+    opt.input_dir = Path(opt.input_dir)
     if opt.output_dir:
-        save_config(Path(opt.output_dir), opt, __file__)
+        opt.output_dir = Path(opt.output_dir)
+        save_config(opt.output_dir, opt, __file__)
 
     # Preparations -------------------------------------------------------------
     correction_dirs: Dict[str, Path] = {}
@@ -298,11 +301,12 @@ def plot_checked_corrections(opt: DotDict):
         fig_dict.update(new_figs)
 
     # Output -------------------------------------------------------------------
-    save_plots(
-        opt.output_dir, 
-        figure_dict=fig_dict, 
-        input_dir=opt.input_dir if opt.individual_to_input else None
-    )
+    if opt.output_dir:
+        save_plots(
+            opt.output_dir, 
+            figure_dict=fig_dict, 
+            input_dir=opt.input_dir if opt.individual_to_input else None
+        )
 
     if opt.show:
         show_plots(fig_dict)
@@ -400,9 +404,6 @@ def _create_correction_plots_per_filename(
 
 def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path = None):
     """ Save the plots. """
-    if not output_dir and not input_dir:
-        return
-
     for figname, fig in figure_dict.items():
         outdir = output_dir
         figname_parts = figname.split(SPLIT_ID)
