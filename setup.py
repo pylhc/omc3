@@ -45,7 +45,6 @@ EXTRA_DEPENDENCIES = {
     "optional": [
         "pymupdf>=1.22.0",  # logbook for conversion from pdf to png
         "qtpy>=2.3.1",  # putting plots in windows
-        "pyside6",  # putting plots in windows
     ],
     "test": [
         "pytest>=5.2",
