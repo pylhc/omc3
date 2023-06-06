@@ -56,7 +56,6 @@ EXTRA_DEPENDENCIES = {
     ],
     "doc": [
         "sphinx",
-        "travis-sphinx",
         "sphinx_rtd_theme",
     ],
 }
