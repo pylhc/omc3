@@ -413,7 +413,7 @@ def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path
             # In case of multiple columns per file, this could be brought back
             figname = "_".join([PREFIX] + figname.split("_")[:-1])
         else:
-            # this is then the individual plots
+            # these are then the individual plots
             if input_dir:
                 # files go directly into the correction-scenario folders
                 outdir = input_dir / figname_parts[0]
