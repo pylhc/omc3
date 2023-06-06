@@ -413,7 +413,7 @@ def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path
             # In case of multiple columns per file, this could be brought back
             figname = "_".join([PREFIX] + figname.split("_")[:-1])
         else:
-            # these are then the individual plots
+            # this is then the individual plots
             if input_dir:
                 # files go directly into the correction-scenario folders
                 outdir = input_dir / figname_parts[0]
@@ -431,10 +431,10 @@ def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path
 
 def show_plots(figure_dict: Dict[str, Figure]):
     """ Shows plots.
-    If qtpy is installed, they are shown in a single window.
-    The individual corrections are sorted in to vertical tabs,
+    If `qtpy` is installed, they are shown in a single window.
+    The individual corrections are sorted into vertical tabs,
     the optics parameter into horizontal tabs. 
-    If qtpy is not installed, they are simply shown as individual figures.
+    If `qtpy` is not installed, they are simply shown as individual figures.
     This is not recommended
     """
     try:
@@ -452,27 +452,32 @@ def show_plots(figure_dict: Dict[str, Figure]):
         RDT_AMPLITUDE_COLUMN.text_label: RDT_PHASE_COLUMN,
     }
 
-    correction_names = sorted(set([n.split(SPLIT_ID)[0] for n in figure_dict.keys() if SPLIT_ID in n]))
+    correction_names = sorted(set([k.split(SPLIT_ID)[0] for k in figure_dict.keys() if SPLIT_ID in k]))
     for correction_name in [None] + list(correction_names):
         if not correction_name:
-            parameter_names = iter(sorted(n for n in figure_dict.keys() if SPLIT_ID not in n))
+            parameter_names = iter(sorted(k for k in figure_dict.keys() if SPLIT_ID not in k))
             correction_tab_name = "All Corrections"
         else:
-            parameter_names = iter(sorted(n for n in figure_dict.keys() if correction_name in n))
+            parameter_names = iter(sorted(k for k in figure_dict.keys() if correction_name in k))
             correction_tab_name = correction_name
 
         current_tab = TabWidget(title=correction_tab_name)
         window.add_tab(current_tab)
 
         for name_x in parameter_names:
-            tab_prename = name_x.split(SPLIT_ID)[-1]
+            # extract the filename (and column-name in case of per-correction-file)
+            tab_prename = name_x.split(SPLIT_ID)[-1] 
 
             if rdt_pattern.match(tab_prename):
+                # Handle RDTs: Get the rdt column and if it's amplitude or real, 
+                # we look for the respective complement column (phase, imag).
+                # Both, column and complement column are then added to the tab,
+                # which is named after the rdt followed by either AP (amp/phase) or RI (real/imag)).
                 rdt, column = tab_prename.split("_")[:2]
                 try:
                     complement_column: ColumnsAndLabels = rdt_complement[column]
                 except KeyError:
-                    # skip phase and imag as they are name_y for amp and real.
+                    # skip phase and imag as they will become name_y for amp and real.
                     continue
 
                 if not correction_name:
@@ -483,7 +488,10 @@ def show_plots(figure_dict: Dict[str, Figure]):
                 tab_name = f"{rdt} {column[0].upper()}{complement_column.text_label[0].upper()}"
 
             else:
-                tab_name = " ".join(tab_prename.split("_")[:-1 if correction_name else -2])
+                # Handle non-RDT columns: As they are sorted alphabetically, the current column
+                # is x and the following column is y. They are added to the tab, which 
+                # is named by the optics parameter without plane.
+                tab_name = " ".join(tab_prename.split("_")[:-1 if correction_name else -2])  # remove plane (and column-name)
                 name_y = next(parameter_names)
 
             new_tab = PlotWidget(
