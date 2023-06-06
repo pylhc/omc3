@@ -539,7 +539,7 @@ def _create_plots(fig_collection, opt):
         if len(fig_collection) > 1 and is_qtpy_installed():
             window = SimpleTabWindow("Tfs Plots")
             for fig_container in fig_collection.figs.values():
-                tab = PlotWidget(fig_container.fig, title=fig_container.title)
+                tab = PlotWidget(fig_container.fig, title=fig_container.id)
                 window.add_tab(tab)
             window.show()
             return
@@ -548,7 +548,7 @@ def _create_plots(fig_collection, opt):
             log_no_qtpy_many_windows()
 
         for fig_container in fig_collection.figs.values():
-            create_pyplot_window_from_fig(fig_container.fig, title=fig_container.title)
+            create_pyplot_window_from_fig(fig_container.fig, title=fig_container.id)
         plt.show()
 
             

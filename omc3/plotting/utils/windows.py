@@ -2,11 +2,11 @@
 Plot Window
 ------------
 
-In this module different classes are defined, allowing to put plots 
-manually into windows.
-These windows are QT-based, created with ``qtpy'' which allows to use 
+In this module different classes are defined, allowing to put `matplotlib` figures 
+manually into GUI windows.
+These windows are QT-based, created with `qtpy` which allows to use 
 either PySide(2 or 6) or PyQt(5 or 6), depending on which it installed on the system.
-As the ``qtpy`` library is optional, there are some checks to make sure 
+As the `qtpy` library is optional, there are some checks to make sure 
 the imports do not fail, but then the classes cannot be used.
 To check if QtPy is installed, either run :meth:`omc3.plotting.plot_window.is_qtpy_installed`
 or try to initialize one of the windows, which will fail with a TypeError, 
@@ -39,10 +39,10 @@ except ImportError as e:
     QMainWindow, QApplication, QVBoxLayout  = None, None, None
     QWidget, QTabWidget = object, object
 else:
-    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-    from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+    from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+    from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
     try:
-        matplotlib.use('Qt5agg')
+        matplotlib.use('qtagg')
     except ImportError as e:
         if not "headless" in str(e):
             raise
@@ -78,18 +78,17 @@ class PlotWidget(QWidget):
         Args:
             *figures (Figure): Figures to be contained in the widget
             title (str): Name of the widget
-            skip_super (bool): If True the superclass __init__ will be skipped (ONLY FOR TESTS)
         """
         QWidget.__init__(self)   # no super(), because will not work with tests
 
         self.title: str = title
-        self.figures: Tuple[Figure] = figures
+        self.figures: Tuple[Figure, ...] = figures
         self._canvas_toolbar_handles: List[Tuple[FigureCanvas, NavigationToolbar]] = []
 
         self._layout = QVBoxLayout()
         self.setLayout(self._layout)
 
-        for figure in figures:
+        for figure in self.figures:
             canvas = FigureCanvas(figure)
             toolbar = NavigationToolbar(canvas, self)
 
@@ -107,7 +106,6 @@ class TabWidget(QTabWidget):
         
         Args:
             title (str): Title of the created Window
-            skip_super (bool): If True the superclass __init__ will be skipped (ONLY FOR TESTS)
         """
         QTabWidget.__init__(self)  # no super(), because will not work with tests
 
@@ -122,8 +120,8 @@ class TabWidget(QTabWidget):
 class SimpleTabWindow:
 
     def __init__(self, title: str = "Simple Tab Window", size: Tuple[int, int] = None):
-        """A simple window that contains a single Tab-Widget,
-        allowing the user to add tabs to it.
+        """A simple GUI window, i.e. a standalone graphical application, 
+        which contains a single Tab-Widget, allowing the user to add tabs to it.
 
         Args:
             title (str): Title of the created Window
@@ -153,7 +151,7 @@ class SimpleTabWindow:
         self.tabs_widget.add_tab(widget)
 
     def show(self):
-        self.app.exec_()
+        self.app.exec()
 
 
 class VerticalTabWindow(SimpleTabWindow):
@@ -178,16 +176,15 @@ class VerticalTabWindow(SimpleTabWindow):
         Args:
             widget (QWidget): Widget to add.
             tab (str): Title/Name of the tab .
-
         """
         self.tabs_widget.tabs[tab].add_tab(widget)
 
     def show(self):
-        self.app.exec_()
+        self.app.exec()
 
 
 def create_pyplot_window_from_fig(fig: Figure, title: str = None):
-    """Creates a window from the given figure, which is managed by pyplot. 
+    """Create a window from the given figure, which is managed by pyplot. 
     This is similar to how figures behave when created with `pyplot.figure()`,
     but you can crate the figure instance first and the manager later.
 

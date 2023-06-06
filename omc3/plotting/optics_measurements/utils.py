@@ -36,7 +36,7 @@ class FigureContainer:
     def __init__(self, id_: str, path: Path, axes_ids: Iterable[str]) -> None:
         self.fig = Figure()
         axs = self.fig.subplots(nrows=len(axes_ids))
-        self.title = id_
+        self.id = id_
 
         if len(axes_ids) == 1:
             axs = [axs]
