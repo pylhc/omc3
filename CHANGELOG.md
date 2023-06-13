@@ -1,6 +1,13 @@
 # OMC3 Changelog
 
+#### 2023-06-05 - v0.11.0 - _jdilly_
+
+- Added:
+ - `omc3.plotting.utils.windows`: Qt-based windows and widgets for matplotlib-figure organization.
+ - Using the new windows in `omc3.plotting.plot_checked_corrections` and `omc3.plotting.plot_tfs`
+
 #### 2023-05-15 - v0.10.0 - _jdilly_
+
 - Added:
   - `omc3.check_corrections`: A new feature to check the validity of corrections.
   - `omc3.plotting.plot_checked_corrections`: Function to plot the checked corrections.

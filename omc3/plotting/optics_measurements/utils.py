@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
 from numpy.typing import ArrayLike
 
 
@@ -33,8 +34,9 @@ class DataSet:
 class FigureContainer:
     """Container for attaching additional information to one figure."""
     def __init__(self, id_: str, path: Path, axes_ids: Iterable[str]) -> None:
-        self.fig, axs = plt.subplots(nrows=len(axes_ids))
-        self.fig.canvas.manager.set_window_title(id_)
+        self.fig = Figure()
+        axs = self.fig.subplots(nrows=len(axes_ids))
+        self.id = id_
 
         if len(axes_ids) == 1:
             axs = [axs]
@@ -55,6 +57,9 @@ class FigureCollector:
     def __init__(self) -> None:
         self.fig_dict = OrderedDict()   # dictionary of matplotlib figures, for output
         self.figs = OrderedDict()       # dictionary of FigureContainers, used internally
+    
+    def __len__(self) -> int:
+        return len(self.figs)
 
     def add_data_for_id(self, figure_id: str, label: str, data: DataSet,
                         x_label: str, y_label: str,
@@ -93,4 +98,3 @@ def safe_format(label: str, insert: str) -> Optional[str]:
         return label
     except AttributeError:  # label is None
         return None
-
