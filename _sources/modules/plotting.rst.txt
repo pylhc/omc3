@@ -54,3 +54,6 @@ Common Plot Functionality
     :members:
     :noindex:
 
+.. automodule:: omc3.plotting.utils.windows
+    :members:
+    :noindex:

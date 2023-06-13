@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.plot_checked_corrections &mdash; omc3 0.10.0 documentation</title>
+  <title>omc3.plotting.plot_checked_corrections &mdash; omc3 0.11.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -358,28 +358,42 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
 
 <span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
-<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CORRECTED_LABEL</span><span class="p">,</span> <span class="n">UNCORRECTED_LABEL</span><span class="p">,</span> <span class="n">CORRECTION_LABEL</span><span class="p">,</span> <span class="n">EXPECTED_LABEL</span><span class="p">,</span>
-                                       <span class="n">COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.definitions.optics</span> <span class="kn">import</span> <span class="n">FILE_COLUMN_MAPPING</span><span class="p">,</span> <span class="n">ColumnsAndLabels</span><span class="p">,</span> <span class="n">RDT_COLUMN_MAPPING</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CORRECTED_LABEL</span><span class="p">,</span> <span class="n">UNCORRECTED_LABEL</span><span class="p">,</span> <span class="n">CORRECTION_LABEL</span><span class="p">,</span> <span class="n">EXPECTED_LABEL</span><span class="p">,</span>
+    <span class="n">COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.optics</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FILE_COLUMN_MAPPING</span><span class="p">,</span> <span class="n">ColumnsAndLabels</span><span class="p">,</span> <span class="n">RDT_COLUMN_MAPPING</span><span class="p">,</span> <span class="n">RDT_PHASE_COLUMN</span><span class="p">,</span> 
+    <span class="n">RDT_IMAG_COLUMN</span><span class="p">,</span> <span class="n">RDT_REAL_COLUMN</span><span class="p">,</span> <span class="n">RDT_AMPLITUDE_COLUMN</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">EXT</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.plot_optics_measurements</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_x_axis_column_and_label</span><span class="p">,</span> <span class="n">_get_ip_positions</span><span class="p">,</span>
-                                                    <span class="n">get_optics_style_params</span><span class="p">,</span> <span class="n">get_plottfs_style_params</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.plot_optics_measurements</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_x_axis_column_and_label</span><span class="p">,</span> <span class="n">_get_ip_positions</span><span class="p">,</span>
+    <span class="n">get_optics_style_params</span><span class="p">,</span> <span class="n">get_plottfs_style_params</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.plotting.plot_tfs</span> <span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">plot_tfs</span><span class="p">,</span> <span class="n">get_full_output_path</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.utils.windows</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PlotWidget</span><span class="p">,</span> <span class="n">TabWidget</span><span class="p">,</span> <span class="n">VerticalTabWindow</span><span class="p">,</span> 
+    <span class="n">log_no_qtpy_many_windows</span><span class="p">,</span> <span class="n">create_pyplot_window_from_fig</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">SPLIT_ID</span> <span class="o">=</span> <span class="s2">&quot;#_#&quot;</span>  <span class="c1"># will appear in the figure ID, but should be fine to read</span>
 <span class="n">PREFIX</span> <span class="o">=</span> <span class="s2">&quot;plot_corrections&quot;</span>
+
 
 <span class="k">def</span> <span class="nf">get_plotting_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
@@ -426,6 +440,12 @@
 <span class="k">def</span> <span class="nf">plot_checked_corrections</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Entrypoint for the plotting function. &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting checked corrections.&quot;</span><span class="p">)</span>
+
+    <span class="n">opt</span><span class="o">.</span><span class="n">input_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">input_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="n">save_config</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
+
     <span class="c1"># Preparations -------------------------------------------------------------</span>
     <span class="n">correction_dirs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">corrections</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opt</span><span class="o">.</span><span class="n">corrections</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
@@ -454,7 +474,7 @@
             <span class="c1"># get F1### column map without the I, R, A, P part based on the rdt-filename:</span>
             <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plotting coupling correction for </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">new_figs</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">y_colmap</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">RDT_COLUMN_MAPPING</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>  <span class="c1"># AMP, PHASE, REAL or IMAG as column-map</span>
+            <span class="k">for</span> <span class="n">y_colmap</span> <span class="ow">in</span> <span class="n">RDT_COLUMN_MAPPING</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>  <span class="c1"># AMP, PHASE, REAL or IMAG as column-map</span>
                 <span class="n">y_colmap</span> <span class="o">=</span> <span class="n">ColumnsAndLabels</span><span class="p">(</span>
                     <span class="n">_column</span><span class="o">=</span><span class="n">y_colmap</span><span class="o">.</span><span class="n">column</span><span class="p">,</span>
                     <span class="n">_label</span><span class="o">=</span><span class="n">y_colmap</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span>  <span class="c1"># this one needs additional info</span>
@@ -487,11 +507,27 @@
         <span class="n">fig_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_figs</span><span class="p">)</span>
 
     <span class="c1"># Output -------------------------------------------------------------------</span>
-    <span class="n">save_plots</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">figure_dict</span><span class="o">=</span><span class="n">fig_dict</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">input_dir</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">individual_to_input</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">show_plots</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">save_plots</span><span class="p">(</span>
+            <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> 
+            <span class="n">figure_dict</span><span class="o">=</span><span class="n">fig_dict</span><span class="p">,</span> 
+            <span class="n">input_dir</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">input_dir</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">individual_to_input</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
+        <span class="n">show_plots</span><span class="p">(</span><span class="n">fig_dict</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">fig_dict</span></div>
 
-<span class="k">def</span> <span class="nf">_create_correction_plots_per_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">measurements</span><span class="p">,</span> <span class="n">correction_dirs</span><span class="p">,</span> <span class="n">x_colmap</span><span class="p">,</span> <span class="n">y_colmap</span><span class="p">,</span> <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_create_correction_plots_per_filename</span><span class="p">(</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">measurements</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> 
+        <span class="n">correction_dirs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> 
+        <span class="n">x_colmap</span><span class="p">:</span> <span class="n">ColumnsAndLabels</span><span class="p">,</span> 
+        <span class="n">y_colmap</span><span class="p">:</span> <span class="n">ColumnsAndLabels</span><span class="p">,</span> 
+        <span class="n">ip_positions</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Path</span><span class="p">],</span> 
+        <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span>
+    <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Plot measurements and all different correction scenarios into a single plot. &quot;&quot;&quot;</span>
     <span class="n">full_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">file_label</span> <span class="o">=</span> <span class="n">filename</span>
@@ -511,7 +547,7 @@
         <span class="n">x_labels</span><span class="o">=</span><span class="p">[</span><span class="n">x_colmap</span><span class="o">.</span><span class="n">label</span><span class="p">],</span>
         <span class="n">vertical_lines</span><span class="o">=</span><span class="n">ip_positions</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">lines_manual</span><span class="p">,</span>
         <span class="n">same_axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">],</span>
-        <span class="n">output_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">file_label</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">,</span>  <span class="c1"># used in the id, which is the fig_dict key</span>
+        <span class="n">output_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_label</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">,</span>  <span class="c1"># used in the id, which is the fig_dict key</span>
         <span class="o">**</span><span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span>
             <span class="s1">&#39;plot_styles&#39;</span><span class="p">,</span> <span class="s1">&#39;manual_style&#39;</span><span class="p">,</span>
             <span class="s1">&#39;change_marker&#39;</span><span class="p">,</span> <span class="s1">&#39;errorbar_alpha&#39;</span><span class="p">,</span>
@@ -572,18 +608,8 @@
     <span class="k">return</span> <span class="n">figs</span>
 
 
-<div class="viewcode-block" id="show_plots"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots">[docs]</a><span class="k">def</span> <span class="nf">show_plots</span><span class="p">(</span><span class="n">show</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Show plots if so desired. &quot;&quot;&quot;</span>
-    <span class="c1"># plt.show()</span>
-    <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="save_plots"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots">[docs]</a><span class="k">def</span> <span class="nf">save_plots</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">figure_dict</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="save_plots"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots">[docs]</a><span class="k">def</span> <span class="nf">save_plots</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">figure_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">],</span> <span class="n">input_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Save the plots. &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">output_dir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">input_dir</span><span class="p">:</span>
-        <span class="k">return</span>
-
     <span class="k">for</span> <span class="n">figname</span><span class="p">,</span> <span class="n">fig</span> <span class="ow">in</span> <span class="n">figure_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">outdir</span> <span class="o">=</span> <span class="n">output_dir</span>
         <span class="n">figname_parts</span> <span class="o">=</span> <span class="n">figname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SPLIT_ID</span><span class="p">)</span>
@@ -591,8 +617,7 @@
             <span class="c1"># these are the combined plots. They have the column name at the end,</span>
             <span class="c1"># which we do not care for here at the moment.</span>
             <span class="c1"># In case of multiple columns per file, this could be brought back</span>
-            <span class="c1"># (then we would also not need the RDT check).</span>
-            <span class="n">figname</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">figname</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">PREFIX</span><span class="p">]</span> <span class="o">+</span> <span class="n">figname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># this is then the individual plots</span>
             <span class="k">if</span> <span class="n">input_dir</span><span class="p">:</span>
@@ -600,13 +625,93 @@
                 <span class="n">outdir</span> <span class="o">=</span> <span class="n">input_dir</span> <span class="o">/</span> <span class="n">figname_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">figname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">figname_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># everything goes into the output-dir (if given), but needs prefix</span>
+                <span class="c1"># everything goes into the output-dir (if given),</span>
+                <span class="c1"># but with correction-name as additional prefix</span>
                 <span class="n">figname</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">PREFIX</span><span class="p">]</span> <span class="o">+</span> <span class="n">figname_parts</span><span class="p">)</span>
 
         <span class="n">output_path</span> <span class="o">=</span> <span class="n">get_full_output_path</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">figname</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving Corrections Plot to &#39;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span></div>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving corrections plot to &#39;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">input_dir</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved all correction plots in &#39;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="sa">f</span><span class="s2">&quot;and into the correction-scenario in &#39;</span><span class="si">{</span><span class="n">input_dir</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved all correction plots in &#39;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="show_plots"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots">[docs]</a><span class="k">def</span> <span class="nf">show_plots</span><span class="p">(</span><span class="n">figure_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays the provided figures.</span>
+<span class="sd">    If `qtpy` is installed, they are shown in a single window.</span>
+<span class="sd">    The individual corrections are sorted into vertical tabs,</span>
+<span class="sd">    the optics parameter into horizontal tabs. </span>
+<span class="sd">    If `qtpy` is not installed, they are simply shown as individual figures.</span>
+<span class="sd">    This is not recommended</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">VerticalTabWindow</span><span class="p">(</span><span class="s2">&quot;Correction Check&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">log_no_qtpy_many_windows</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">fig</span> <span class="ow">in</span> <span class="n">figure_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">create_pyplot_window_from_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">SPLIT_ID</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span>
+
+    <span class="n">rdt_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;f\d</span><span class="si">{4}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">rdt_complement</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">RDT_REAL_COLUMN</span><span class="o">.</span><span class="n">text_label</span><span class="p">:</span> <span class="n">RDT_IMAG_COLUMN</span><span class="p">,</span>
+        <span class="n">RDT_AMPLITUDE_COLUMN</span><span class="o">.</span><span class="n">text_label</span><span class="p">:</span> <span class="n">RDT_PHASE_COLUMN</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">correction_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SPLIT_ID</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">figure_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">SPLIT_ID</span> <span class="ow">in</span> <span class="n">k</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">correction_name</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">correction_names</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">correction_name</span><span class="p">:</span>
+            <span class="n">parameter_names</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">figure_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">SPLIT_ID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">))</span>
+            <span class="n">correction_tab_name</span> <span class="o">=</span> <span class="s2">&quot;All Corrections&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parameter_names</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">figure_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">correction_name</span> <span class="ow">in</span> <span class="n">k</span><span class="p">))</span>
+            <span class="n">correction_tab_name</span> <span class="o">=</span> <span class="n">correction_name</span>
+
+        <span class="n">current_tab</span> <span class="o">=</span> <span class="n">TabWidget</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">correction_tab_name</span><span class="p">)</span>
+        <span class="n">window</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="n">current_tab</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name_x</span> <span class="ow">in</span> <span class="n">parameter_names</span><span class="p">:</span>
+            <span class="c1"># extract the filename (and column-name in case of multi-correction-file)</span>
+            <span class="n">tab_prename</span> <span class="o">=</span> <span class="n">name_x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">SPLIT_ID</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> 
+
+            <span class="k">if</span> <span class="n">rdt_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">tab_prename</span><span class="p">):</span>
+                <span class="c1"># Handle RDTs: Get the rdt column and if it&#39;s amplitude or real, </span>
+                <span class="c1"># we look for the respective complement column (phase, imag).</span>
+                <span class="c1"># Both, column and complement column are then added to the tab,</span>
+                <span class="c1"># which is named after the rdt followed by either AP (amp/phase) or RI (real/imag)).</span>
+                <span class="n">rdt</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">tab_prename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">complement_column</span><span class="p">:</span> <span class="n">ColumnsAndLabels</span> <span class="o">=</span> <span class="n">rdt_complement</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="c1"># skip phase and imag as they will become name_y for amp and real.</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">correction_name</span><span class="p">:</span>
+                    <span class="n">name_y</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">rdt</span><span class="p">,</span> <span class="n">complement_column</span><span class="o">.</span><span class="n">text_label</span><span class="p">,</span> <span class="n">complement_column</span><span class="o">.</span><span class="n">expected_column</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">name_y</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">complement_column</span><span class="o">.</span><span class="n">text_label</span><span class="p">,])</span>
+
+                <span class="n">tab_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rdt</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">column</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">complement_column</span><span class="o">.</span><span class="n">text_label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Handle non-RDT columns: As they are sorted alphabetically, the current column</span>
+                <span class="c1"># is x and the following column is y. They are added to the tab, which </span>
+                <span class="c1"># is named by the optics parameter without plane.</span>
+                <span class="n">tab_name</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tab_prename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">correction_name</span> <span class="k">else</span> <span class="o">-</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># remove plane (and column-name)</span>
+                <span class="n">name_y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">parameter_names</span><span class="p">)</span>
+
+            <span class="n">new_tab</span> <span class="o">=</span> <span class="n">PlotWidget</span><span class="p">(</span>
+                <span class="n">figure_dict</span><span class="p">[</span><span class="n">name_x</span><span class="p">],</span>
+                <span class="n">figure_dict</span><span class="p">[</span><span class="n">name_y</span><span class="p">],</span>
+                <span class="n">title</span><span class="o">=</span><span class="n">tab_name</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">current_tab</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="n">new_tab</span><span class="p">)</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
 <span class="k">def</span> <span class="nf">_get_corrected_measurement_names</span><span class="p">(</span><span class="n">correction_dirs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -621,6 +726,10 @@
         <span class="n">tfs_files</span> <span class="o">&amp;=</span> <span class="n">new_files</span>
     <span class="c1"># tfs_files -= {Path(MODEL_MATCHED_FILENAME).stem, Path(MODEL_NOMINAL_FILENAME).stem}  # no need, filtered later anyway</span>
     <span class="k">return</span> <span class="n">tfs_files</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">plot_checked_corrections</span><span class="p">()</span>
 </pre></div>
 
            </div>

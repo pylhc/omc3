@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plot-Subfunctions &mdash; omc3 0.10.0 documentation</title>
+  <title>Plot-Subfunctions &mdash; omc3 0.11.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -707,6 +707,51 @@ from given styles, i.e. falls back to mpl default.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<section id="plot-window">
+<h3>Plot Window<a class="headerlink" href="#plot-window" title="Permalink to this heading"></a></h3>
+<p>In this module different classes are defined, allowing to put <cite>matplotlib</cite> figures
+manually into GUI windows.
+These windows are QT-based, created with <cite>qtpy</cite> which allows to use
+either PySide(2 or 6) or PyQt(5 or 6), depending on which it installed on the system.
+As the <cite>qtpy</cite> library is optional, there are some checks to make sure
+the imports do not fail, but then the classes cannot be used.
+To check if QtPy is installed, either run <code class="xref py py-meth docutils literal notranslate"><span class="pre">omc3.plotting.plot_window.is_qtpy_installed()</span></code>
+or try to initialize one of the windows, which will fail with a TypeError,
+as they want to call QApplication which is set to <cite>None</cite>.</p>
+<p>An exception to all of this is  <code class="xref py py-meth docutils literal notranslate"><span class="pre">omc3.plotting.plot_window.create_pyplot_window_from_fig()</span></code>,
+which allows to create a <cite>pyplot</cite> handled window from an already existing figure.
+This way, figures can be created without manager (which makes them resource friendlier)
+and can either be added to a QT-Window or, if not installed, opened by <cite>pyplot</cite>.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.windows.</span></span><span class="sig-name descname"><span class="pre">create_pyplot_window_from_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/windows.html#create_pyplot_window_from_fig"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a window from the given figure, which is managed by pyplot.
+This is similar to how figures behave when created with <cite>pyplot.figure()</cite>,
+but you can crate the figure instance first and the manager later.</p>
+<p>Caveat: Uses private functions of pyplot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> (<em>Figure</em>) -- figure to be managed by pyplot.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) -- Title of the window.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.windows.</span></span><span class="sig-name descname"><span class="pre">is_qtpy_installed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/windows.html#is_qtpy_installed"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns True if QtPy is installed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.windows.</span></span><span class="sig-name descname"><span class="pre">log_no_qtpy_many_windows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/windows.html#log_no_qtpy_many_windows"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Logs a warning that QtPy is not installed and many windows will be opened.</p>
 </dd></dl>
 
 </section>
