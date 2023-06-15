@@ -17,7 +17,9 @@ def test_plot_widget(monkeypatch):
     monkeypatch.setattr("omc3.plotting.utils.windows.QWidget", MockQWidget)
     monkeypatch.setattr("omc3.plotting.utils.windows.FigureCanvas", MockFigureCanvas)
     monkeypatch.setattr("omc3.plotting.utils.windows.NavigationToolbar", MockNavigationToolbar)
-    monkeypatch.setattr("omc3.plotting.utils.windows.PlotWidget.setLayout", MockQWidget.setLayout)
+
+    PlotWidget.setLayout = MockQWidget.setLayout
+    monkeypatch.setattr("omc3.plotting.utils.windows.PlotWidget", PlotWidget)
 
     figures = (Figure(), Figure(), Figure())
     my_title = "Hello OMC!"
@@ -41,7 +43,9 @@ def test_plot_widget(monkeypatch):
 def test_tab_widget(monkeypatch):
     # Preparation ---
     monkeypatch.setattr("omc3.plotting.utils.windows.QTabWidget", MockQTabWidget)
-    monkeypatch.setattr("omc3.plotting.utils.windows.TabWidget.addTab", MockQTabWidget.addTab)
+
+    TabWidget.addTab = MockQTabWidget.addTab
+    monkeypatch.setattr("omc3.plotting.utils.windows.TabWidget", TabWidget)
 
     tabs = [MockQWidget("tab1"), MockQWidget("tab2"), MockQWidget("tab3")]
     my_title = "Hello OMC!"
@@ -67,7 +71,9 @@ def test_tab_window(monkeypatch, WindowClass):
     monkeypatch.setattr("omc3.plotting.utils.windows.QApplication", MockQApplication)
     monkeypatch.setattr("omc3.plotting.utils.windows.QMainWindow", MockQMainWindow)
     monkeypatch.setattr("omc3.plotting.utils.windows.QTabWidget", MockQTabWidget)
-    monkeypatch.setattr("omc3.plotting.utils.windows.TabWidget.addTab", MockQTabWidget.addTab)
+
+    TabWidget.addTab = MockQTabWidget.addTab
+    monkeypatch.setattr("omc3.plotting.utils.windows.TabWidget", TabWidget)
 
     tabs = [MockQWidget("tab1"), MockQWidget("tab2"), MockQWidget("tab3")]
     my_title = "Hello OMC!"
@@ -152,7 +158,7 @@ class MockQApplication:
     def __init__(self, *args, **kwargs):
         self.executed = False
 
-    def exec_(self):
+    def exec(self):
         self.executed = True
 
 
