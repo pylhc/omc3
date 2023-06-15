@@ -420,7 +420,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
 def _get_columns_and_label(parameter, delta):
     cal: ColumnsAndLabels = FILE_COLUMN_MAPPING[parameter]
     if delta:
-        return cal.delta_column, cal.error_column, cal.text_label, cal.delta_label
+        return cal.delta_column, cal.error_delta_column, cal.text_label, cal.delta_label
     return cal.column, cal.error_column, cal.text_label, cal.label
 
 
