@@ -81,7 +81,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
         `TfsDataFrame` containing betas and alfas from phase.
     """
     n_bpms = meas_input.range_of_bpms
-    n_bpms_phases = phase["MEAS"].count()  # counts non-NaN entries
+    n_bpms_phases = len(phase["MEAS"].index)
     if n_bpms_phases < n_bpms:
         LOGGER.warning(f"Found {n_bpms_phases} BPMs, but {n_bpms} "
                         "were requested in N-BPM method. Using all available BPMs instead,"
@@ -413,7 +413,7 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     Returns:
         `TfsDataFrame` containing betas and alfas from phase.
     """
-    if phase["MEAS"].count() < 3:
+    if len(phase["MEAS"].index) < 3:
         raise ValueError("At least 3 BPMs are required for 3-BPM method!"
                         f"Instead only {len(phase['MEAS'])} were found in input.")
 

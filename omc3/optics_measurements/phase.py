@@ -70,7 +70,7 @@ def calculate(
         dfs = free_dfs + drv_dfs
 
 
-    if phase_advances["MEAS"].count() < 3:
+    if len(phase_advances["MEAS"].index) < 3:
         LOGGER.warning("Less than 3 non-NaN phase-advances found. "
                        "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
                        "Common issues to check:\n\n"
