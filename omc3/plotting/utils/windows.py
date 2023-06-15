@@ -37,6 +37,7 @@ try:
 except ImportError as e:
     LOG.debug(f"Could not import QtPy: {str(e)}")
     QMainWindow, QApplication, QVBoxLayout  = None, None, None
+    FigureCanvas, NavigationToolbar = None, None  # for mock in pytest
     QWidget, QTabWidget = object, object
 else:
     from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
@@ -79,7 +80,7 @@ class PlotWidget(QWidget):
             *figures (Figure): Figures to be contained in the widget
             title (str): Name of the widget
         """
-        QWidget.__init__(self)   # no super(), because will not work with tests
+        super().__init__()
 
         self.title: str = title
         self.figures: Tuple[Figure, ...] = figures
@@ -107,7 +108,7 @@ class TabWidget(QTabWidget):
         Args:
             title (str): Title of the created Window
         """
-        QTabWidget.__init__(self)  # no super(), because will not work with tests
+        super().__init__()
 
         self.title: str = title
         self.tabs: Dict[str, QWidget] = {}

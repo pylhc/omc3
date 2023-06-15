@@ -1,31 +1,24 @@
-""" 
-TODO: 
-   - Find a way to run the tests with using super() in the inits()
-   - Also test the VerticalTabWindow class. Does not work also beacause of inheritance.
-   Hint: spend a lot of time trying to fix this to no avail. Sorry. (jdilly)
-"""
 import pytest
 from matplotlib.figure import Figure
 
-from omc3.plotting.utils.windows import PlotWidget, SimpleTabWindow, TabWidget
+from omc3.plotting.utils.windows import PlotWidget, TabWidget, SimpleTabWindow, VerticalTabWindow
 
 
 @pytest.mark.basic
 def test_plot_widget(monkeypatch):
     # Preparation ---
     monkeypatch.setattr("omc3.plotting.utils.windows.QVBoxLayout", MockLayout)
-    monkeypatch.setattr("omc3.plotting.utils.windows.QWidget", MockQWidget)
     monkeypatch.setattr("omc3.plotting.utils.windows.FigureCanvas", MockFigureCanvas)
     monkeypatch.setattr("omc3.plotting.utils.windows.NavigationToolbar", MockNavigationToolbar)
 
-    PlotWidget.setLayout = MockQWidget.setLayout
-    monkeypatch.setattr("omc3.plotting.utils.windows.PlotWidget", PlotWidget)
+    class MockPlotWidget(PlotWidget, MockQWidget):
+        pass
 
     figures = (Figure(), Figure(), Figure())
     my_title = "Hello OMC!"
 
     # Execution ---
-    widget = PlotWidget(*figures, title=my_title)
+    widget = MockPlotWidget(*figures, title=my_title)
 
     # Assert ---
     assert widget.title == my_title
@@ -40,18 +33,16 @@ def test_plot_widget(monkeypatch):
 
 
 @pytest.mark.basic
-def test_tab_widget(monkeypatch):
+def test_tab_widget():
     # Preparation ---
-    monkeypatch.setattr("omc3.plotting.utils.windows.QTabWidget", MockQTabWidget)
-
-    TabWidget.addTab = MockQTabWidget.addTab
-    monkeypatch.setattr("omc3.plotting.utils.windows.TabWidget", TabWidget)
+    class MockTabWidget(TabWidget, MockQTabWidget):
+        pass
 
     tabs = [MockQWidget("tab1"), MockQWidget("tab2"), MockQWidget("tab3")]
     my_title = "Hello OMC!"
 
     # Execution ---
-    widget = TabWidget(title=my_title) 
+    widget = MockTabWidget(title=my_title) 
     for tab in tabs:
         widget.add_tab(tab)
 
@@ -65,15 +56,18 @@ def test_tab_widget(monkeypatch):
 
 
 @pytest.mark.basic
-@pytest.mark.parametrize('WindowClass', (SimpleTabWindow, ))  # add VerticalTabWindow
+@pytest.mark.parametrize('WindowClass', (SimpleTabWindow, VerticalTabWindow))
 def test_tab_window(monkeypatch, WindowClass):
     # Preparation ---
     monkeypatch.setattr("omc3.plotting.utils.windows.QApplication", MockQApplication)
     monkeypatch.setattr("omc3.plotting.utils.windows.QMainWindow", MockQMainWindow)
     monkeypatch.setattr("omc3.plotting.utils.windows.QTabWidget", MockQTabWidget)
 
-    TabWidget.addTab = MockQTabWidget.addTab
-    monkeypatch.setattr("omc3.plotting.utils.windows.TabWidget", TabWidget)
+    class MockTabWidget(TabWidget, MockQTabWidget):
+        pass
+
+    monkeypatch.setattr("omc3.plotting.utils.windows.TabWidget", MockTabWidget)
+
 
     tabs = [MockQWidget("tab1"), MockQWidget("tab2"), MockQWidget("tab3")]
     my_title = "Hello OMC!"
@@ -94,7 +88,7 @@ def test_tab_window(monkeypatch, WindowClass):
     assert len(window.tabs_widget.added_tabs) == len(tabs)
     for tab, tab_added in zip(tabs, window.tabs_widget.added_tabs.values()):
         assert tab == tab_added
-    assert window.tabs_widget.position == (0 if isinstance(window, SimpleTabWindow) else MockQTabWidget.West)
+    assert window.tabs_widget.position == (MockQTabWidget.West if (WindowClass == VerticalTabWindow) else 0)
     
     # Assert App ---
     assert not window.app.executed
