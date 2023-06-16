@@ -1,6 +1,40 @@
+:root {
+  --nav-side-width: 300px;  /* default is 300px */
+  /* for 100% width */
+  /*--nav-content-width: 100%;*/
+  /*--local-toc-width: 300px;*/
+  /*--nav-content-width-wide: calc(100% - var(--local-toc-width)); /* 100% here is fullscreen */
+  /*--local-toc-left: calc(100% - var(--local-toc-width)); /* 100% here is w/o sidebar */
+
+  /* for fixed widths */
+  --nav-content-width: 800px;  /* default is 800px */
+  --nav-content-width-wide: var(--nav-content-width);
+  --local-toc-width: calc(100% - var(--nav-content-width-wide));
+  --local-toc-left: calc(var(--nav-content-width-wide) + var(--nav-side-width));
+}
+
+/* main content width */
+.wy-nav-content {
+  max-width: var(--nav-content-width);
+}
+
+/* Sidebar width */
+.wy-nav-side {
+  width: var(--nav-side-width);
+}
+
 .wy-side-nav-search {
   background: rgb(243,244,247);
 }
+
+.wy-side-nav-search > a {
+  color: black;
+}
+
+.wy-side-nav-search> a img.logo {
+  width: 50%;
+}
+
 
 .wy-side-nav-search > div.version {
   color: black;
@@ -181,4 +215,61 @@ em.sig-param span.default_value {
 .rst-content table.docutils th,
 .rst-content table.field-list th {
   padding: 16px;
+}
+
+
+/* Create local table of contents
+   ------------------------------
+  inspired by https://github.com/readthedocs/sphinx_rtd_theme/pull/919
+  and https://github.com/readthedocs/sphinx_rtd_theme/issues/764
+  see also _templates/layout.html
+ */
+
+#local-table-of-contents {
+  padding-bottom: 20px;
+  /* display: none; */
+}
+
+/* Mask entry of main header (chapter) */
+#local-table-of-contents a[href="#"]{
+  /*display: none;*/
+}
+
+/* indent subsections */
+#local-table-of-contents ul > ul {
+  padding-left: 0px;
+  margin-left: 20px;
+  padding-right: 0;
+  padding-bottom: 5px;
+}
+
+
+#local-table-of-contents-title {
+  margin-bottom: 10px;
+}
+
+/* Show in Sidebar if window width is larger than nav-side + nav-content + toc-width */
+@media screen and (min-width: 1200px) {
+  .wy-nav-content {
+    max-width: var(--nav-content-width-wide);
+  }
+
+  #local-table-of-contents {
+    display: block;
+    position: fixed;
+    margin-left: 15px;
+    overflow-y: auto;
+    height: 95%;
+    top: 45px;
+    left: var(--local-toc-left);
+    width: var(--local-toc-width);
+  }
+
+  #local-table-of-contents-title {
+    display: block;
+    font-size: 16px;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 5px;
+  }
 }

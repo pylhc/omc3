@@ -1,0 +1,12 @@
+{% extends "!layout.html" %}
+{% block document %} 
+  {%- if toc|length > title|length + 75 %}
+  <nav id="local-table-of-contents" role="navigation" aria-labelledby="local-table-of-contents-title">
+    <h4 id="local-table-of-contents-title">On This Page</h4>
+    {{ toc }}
+  </nav>
+  {%- endif %}
+  
+  {{ super() }}
+{% endblock %}
+
