@@ -201,6 +201,8 @@
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.optics_measurements.phase</h1><div class="highlight"><pre>
@@ -274,6 +276,17 @@
                                                                              <span class="s1">&#39;none&#39;</span><span class="p">,</span>
                                                                              <span class="n">no_errors</span><span class="p">)</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="n">free_dfs</span> <span class="o">+</span> <span class="n">drv_dfs</span>
+
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase_advances</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Less than 3 non-NaN phase-advances found. &quot;</span>
+                       <span class="s2">&quot;This will most likely lead to errors later on in the N-BPM or 3-BPM methods.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                       <span class="s2">&quot;Common issues to check:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                       <span class="s2">&quot;- did you pass the correct tunes to harpy? Possibly also too small tolerance window?</span><span class="se">\n</span><span class="s2">&quot;</span>
+                       <span class="s2">&quot;- did excitation trigger in both planes? BPMs might be cleaned if only found in one plane.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                       <span class="s2">&quot;- are cleaning settings (peak-to-peak, singular-value-cut) too agressive?</span><span class="se">\n</span><span class="s2">&quot;</span>
+                       <span class="s2">&quot;- are you using a machine with less than 3 BPMs? Oh dear.&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;free&#39;</span><span class="p">:</span> <span class="n">phase_advances</span><span class="p">,</span> <span class="s1">&#39;uncompensated&#39;</span><span class="p">:</span> <span class="n">uncompensated_phase_advances</span><span class="p">},</span> <span class="n">dfs</span></div>
 
@@ -489,6 +502,7 @@
 
            </div>
           </div>
+
           <footer>
 
   <hr/>

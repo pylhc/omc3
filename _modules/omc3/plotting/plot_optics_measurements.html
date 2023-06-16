@@ -201,6 +201,8 @@
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.plotting.plot_optics_measurements</h1><div class="highlight"><pre>
@@ -626,7 +628,7 @@
 <span class="k">def</span> <span class="nf">_get_columns_and_label</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
     <span class="n">cal</span><span class="p">:</span> <span class="n">ColumnsAndLabels</span> <span class="o">=</span> <span class="n">FILE_COLUMN_MAPPING</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">delta</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">cal</span><span class="o">.</span><span class="n">delta_column</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">error_column</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">text_label</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">delta_label</span>
+        <span class="k">return</span> <span class="n">cal</span><span class="o">.</span><span class="n">delta_column</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">error_delta_column</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">text_label</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">delta_label</span>
     <span class="k">return</span> <span class="n">cal</span><span class="o">.</span><span class="n">column</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">error_column</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">text_label</span><span class="p">,</span> <span class="n">cal</span><span class="o">.</span><span class="n">label</span>
 
 
@@ -679,6 +681,7 @@
 
            </div>
           </div>
+
           <footer>
 
   <hr/>
