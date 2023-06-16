@@ -116,7 +116,10 @@ class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
     """A class that allows `str` or `None`.
     Can be used in string-lists when individual entries can be `None`."""
     def __new__(cls, value):
-        return strip_quotes(value)
+        value = strip_quotes(value)
+        if isinstance(value, str) and value.lower() == "none":
+            return None
+        return value
 
 
 """A class that allows `float`, 'int' or `None`.
@@ -143,15 +146,6 @@ def strip_quotes(value: Any) -> Any:
     if isinstance(value, str):
         value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
     return value
-
-
-class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
-    """A class that allows `str` or `None`.
-    Can be used in string-lists when individual entries can be `None`."""
-    def __new__(cls, value):
-        if isinstance(value, str):
-            value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
-        return value
 
 
 def convert_paths_in_dict_to_strings(dict_: dict) -> dict:

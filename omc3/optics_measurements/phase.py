@@ -69,6 +69,17 @@ def calculate(
                                                                              no_errors)
         dfs = free_dfs + drv_dfs
 
+
+    if len(phase_advances["MEAS"].index) < 3:
+        LOGGER.warning("Less than 3 non-NaN phase-advances found. "
+                       "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
+                       "Common issues to check:\n\n"
+                       "- did you pass the correct tunes to harpy? Possibly also too small tolerance window?\n"
+                       "- did excitation trigger in both planes? BPMs might be cleaned if only found in one plane.\n"
+                       "- are cleaning settings (peak-to-peak, singular-value-cut) too agressive?\n"
+                       "- are you using a machine with less than 3 BPMs? Oh dear."
+        )
+
     return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
 
 
