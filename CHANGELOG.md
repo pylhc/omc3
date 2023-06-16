@@ -1,5 +1,17 @@
 # OMC3 Changelog
 
+#### 2023-06-16 - v0.11.1 - _jdilly_
+
+- Fixed:
+ - OptionalString: 'None' as input is converted to None.
+ - Missing Kerberos config added to MANIFEST for packaging.
+ - Plot Optics plots now correct error-column, e.g. for beta-beating.
+ - Added warnings/errors for too few bpms in N-BPM/3-BPM methods. 
+ - Added navbar to sphinx documentation.
+
+- Tests:
+ - Added test for the classes in omc3.plotting.utils.windows
+
 #### 2023-06-05 - v0.11.0 - _jdilly_
 
 - Added:
