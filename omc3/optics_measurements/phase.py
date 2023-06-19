@@ -6,18 +6,42 @@ This module contains phase calculation functionality of ``optics_measurements``.
 It provides functions to compute betatron phase advances and structures to store them.
 """
 from os.path import join
+from pathlib import Path
+from typing import Dict, Tuple
+
 import numpy as np
 import pandas as pd
 import tfs
+from numpy.typing import ArrayLike
 
-from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL,
-                                                PHASE_NAME, TOTAL_PHASE_NAME, SPECIAL_PHASE_NAME)
+from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
+                                                TOTAL_PHASE_NAME)
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
 LOGGER = logging_tools.get_logger(__name__)
 
-def calculate(meas_input, input_files, tunes, plane, no_errors=False):
+
+def calculate(
+    meas_input: dict, input_files: dict, tunes, plane, no_errors=False
+) -> Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
+    """
+    Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
+    dictionary combining the results for each transverse plane.
+
+    Args:
+        meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
+        input_files (dict): `InputFiles` object containing frequency spectra files (linx/y).
+        tunes:
+        plane:
+        no_errors:
+
+    Returns:
+        A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry
+        is a dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
+        the location of the output ``TfsDataFrames`` for the phases.
+    """
     if meas_input.compensation == "none":
         phase_advances, dfs = _calculate_with_compensation(meas_input,
                                                            input_files,
@@ -35,7 +59,7 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
                                                                 meas_input.accelerator.model,
                                                                 meas_input.compensation,
                                                                 no_errors)
-        LOGGER.info("-- run uncompensated")
+        LOGGER.info("-- Run uncompensated")
         uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(meas_input,
                                                                              input_files,
                                                                              tunes,
@@ -44,6 +68,17 @@ def calculate(meas_input, input_files, tunes, plane, no_errors=False):
                                                                              'none',
                                                                              no_errors)
         dfs = free_dfs + drv_dfs
+
+
+    if len(phase_advances["MEAS"].index) < 3:
+        LOGGER.warning("Less than 3 non-NaN phase-advances found. "
+                       "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
+                       "Common issues to check:\n\n"
+                       "- did you pass the correct tunes to harpy? Possibly also too small tolerance window?\n"
+                       "- did excitation trigger in both planes? BPMs might be cleaned if only found in one plane.\n"
+                       "- are cleaning settings (peak-to-peak, singular-value-cut) too agressive?\n"
+                       "- are you using a machine with less than 3 BPMs? Oh dear."
+        )
 
     return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
 
@@ -93,10 +128,10 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
     df[input_files.get_columns(df, f"MU{plane}")] = (input_files.get_data(df, f"MU{plane}")
-                                                     * meas_input.accelerator.beam_direction)
+                                                     * meas_input.accelerator.beam_direction
+                                                     )
     phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
-    phase_advances = {"MODEL": _get_square_data_frame(
-        (phases_mdl[np.newaxis, :] - phases_mdl[:, np.newaxis]) % 1.0, df.index)}
+    phase_advances = {"MODEL": _get_square_data_frame(_get_all_phase_diff(phases_mdl), df.index)}
     if compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
     phases_meas = input_files.get_data(df, f"MU{plane}")
@@ -105,8 +140,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
 
     phases_errors = input_files.get_data(df, f"{ERR}MU{plane}")
     if phases_meas.ndim < 2:
-        phase_advances["MEAS"] = _get_square_data_frame(
-                (phases_meas[np.newaxis, :] - phases_meas[:, np.newaxis]) % 1.0, df.index)
+        phase_advances["MEAS"] = _get_square_data_frame(_get_all_phase_diff(phases_meas), df.index)
         phase_advances["ERRMEAS"] = _get_square_data_frame(
                 np.zeros((len(phases_meas), len(phases_meas))), df.index)
         return phase_advances
@@ -130,7 +164,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                             _create_output_df(phase_advances, df, plane, tot=True)]
 
 
-def _compensate_by_equation(phases_meas, plane, tunes):
+def _compensate_by_equation(phases_meas: ArrayLike, plane, tunes):
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
@@ -153,9 +187,9 @@ def _compensate_by_model(input_files, meas_input, df, plane):
 
 
 def write(dfs, headers, output, plane):
-    LOGGER.info(f"writing phases: {len(dfs)}")
+    LOGGER.info(f"Writing phases: {len(dfs)}")
     for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME, PHASE_NAME+"driven_", TOTAL_PHASE_NAME+"driven_")):
-        tfs.write(join(output, f"{name}{plane.lower()}{EXT}"), df, head)
+        tfs.write(Path(output) / f"{name}{plane.lower()}{EXT}", df, head)
         LOGGER.info(f"Phase advance beating in {name}{plane.lower()}{EXT} = "
                     f"{stats.weighted_rms(df.loc[:, f'{DELTA}PHASE{plane}'])}")
 
@@ -182,6 +216,12 @@ def _create_output_df(phase_advances, model, plane, tot=False):
     output_data[f"{DELTA}PHASE{plane}"] = df_ang_diff(output_data, f"PHASE{plane}", f"PHASE{plane}{MDL}")
     output_data[f"{ERR}{DELTA}PHASE{plane}"] = output_data.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
     return output_data
+
+
+def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike = None):
+    if phases_b is None:
+        phases_b = phases_a
+    return (phases_a[np.newaxis, :] - phases_b[:, np.newaxis]) % 1.0
 
 
 def _get_square_data_frame(data, index):
@@ -222,22 +262,27 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
         ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
         model_value = (model_value * bd) % 1
-        special_phase_df=special_phase_df.append(dict(zip(special_phase_columns,[
-                                                            elem1,
-                                                            elem2,
-                                                            ph_result % 1,
-                                                            bpm_err,
-                                                            _to_deg(ph_result),
-                                                            bpm_err * 360,
-                                                            model_value,
-                                                            _to_deg(model_value),
-                                                            minmu1,
-                                                            minmu2,
-                                                            bpm_phase_advance,
-                                                            elems_to_bpms,
-        ])), ignore_index=True)
+        new_row = pd.DataFrame(
+            dict(zip(special_phase_columns, [
+                elem1,
+                elem2,
+                ph_result % 1,
+                bpm_err,
+                _to_deg(ph_result),
+                bpm_err * 360,
+                model_value,
+                _to_deg(model_value),
+                minmu1,
+                minmu2,
+                bpm_phase_advance,
+                elems_to_bpms,
+            ])),
+            index=[0]
+        )
 
-    tfs.write(join(meas_input.outputdir, f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}"), special_phase_df)
+        special_phase_df = pd.concat([special_phase_df, new_row], axis="index", ignore_index=True)
+
+    tfs.write(Path(meas_input.outputdir) / f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}", special_phase_df)
 
 
 def _to_deg(phase):  # -90 to 90 degrees

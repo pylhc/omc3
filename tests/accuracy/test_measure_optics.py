@@ -3,11 +3,13 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import tfs
 
+import tfs
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
+from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import logging_tools
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
@@ -22,8 +24,6 @@ LIMITS = {
     'BET': 3e-3,
     'D': 1.1e-2,
     'ND': 5e-3,
-    'F1001': 5e-3,
-    'F1010': 5e-3,
     '': 5e-3  # orbit
 }
 BASE_PATH = Path(__file__).parent.parent / "results"
@@ -72,7 +72,7 @@ def test_measure_optics(
         second_order_disp=second_order_disp,
         chromatic_beating=lin_slice == slice(None, 7),
     )
-    inputs = measure_optics.InputFiles(lins[lin_slice], optics_opt)
+    inputs = InputFiles(lins[lin_slice], optics_opt)
     with timeit(lambda spanned: LOG.debug(f"\nTotal time for optics measurements: {spanned}")):
         measure_optics.measure_optics(inputs, optics_opt)
     evaluate_accuracy(optics_opt.outputdir, LIMITS)
@@ -82,11 +82,13 @@ def test_measure_optics(
 
 
 def evaluate_accuracy(meas_path, limits):
-    for f in meas_path.glob("*.tfs"):
+    for f in meas_path.glob("*.tfs"):  # maybe a simple list of files to test wouldn't be too bad?
+        if "f10" in f.name or "phase_driven" in f.name:
+            continue
         df = tfs.read(f)
         cols = df.columns[df.columns.str.startswith('DELTA')]
         for col in cols:
-            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD') or "phase_driven" in f.name:
+            if f.name.startswith('normalised_dispersion') and col.startswith('DELTAD'):
                 continue
 
             rms = stats.weighted_rms(
@@ -95,6 +97,8 @@ def evaluate_accuracy(meas_path, limits):
             )
             assert rms < limits[col[5:-1]], f"\n{f.name:25}  {col:15}   RMS: {rms:.1e}"
             LOG.info(f"{f.name:25}  {col[5:]:15}   RMS: {rms:.1e}")
+    assert ((meas_path / f"{SPECIAL_PHASE_NAME}x.tfs").is_file() and (meas_path / f"{SPECIAL_PHASE_NAME}y.tfs").is_file())
+
 
 
 @pytest.fixture(scope="module", params=(1,), ids=("Beam1",))

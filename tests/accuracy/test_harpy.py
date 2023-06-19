@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 import tfs
 
-from omc3 import tbt
+import turn_by_turn as tbt
 from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import hole_in_one_entrypoint
 
@@ -24,7 +24,7 @@ AMPZ, MUZ, TUNEZ = 0.01, 0.3, 0.008
 HARPY_SETTINGS = dict(
     clean=[True, False],
     keep_exact_zeros=[False, True],
-    singval=[12],
+    sing_val=[12],
     peak_to_peak=[1e-8],
     window=['hann', 'rectangle', 'welch', 'triangle', 'hamming', 'nuttal3', 'nuttal4'],
     max_peak=[0.02],
@@ -41,7 +41,7 @@ HARPY_INPUT = list(itertools.product(*HARPY_SETTINGS.values()))
 @pytest.mark.basic
 def test_harpy(_test_file, _model_file):
 
-    [clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak, svd_dominance_limit,
+    [clean, keep_exact_zeros, sing_val, peak_to_peak, window, max_peak, svd_dominance_limit,
      num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits ] = HARPY_INPUT[0]
 
     model = _get_model_dataframe()
@@ -50,7 +50,7 @@ def test_harpy(_test_file, _model_file):
     hole_in_one_entrypoint(harpy=True,
                            clean=clean,
                            keep_exact_zeros=keep_exact_zeros,
-                           singval=singval,
+                           sing_val=sing_val,
                            peak_to_peak=peak_to_peak,
                            window=window,
                            max_peak=max_peak,
@@ -88,10 +88,10 @@ def test_harpy_without_model(_test_file, _model_file):
     _assert_spectra(lin, model)
 
 @pytest.mark.extended
-@pytest.mark.parametrize("clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak,"
+@pytest.mark.parametrize("clean, keep_exact_zeros, sing_val, peak_to_peak, window, max_peak,"
                          "svd_dominance_limit, num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits",
                           HARPY_INPUT)
-def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, singval, peak_to_peak, window, max_peak,
+def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, sing_val, peak_to_peak, window, max_peak,
                          svd_dominance_limit, num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
@@ -99,7 +99,7 @@ def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, singval, pe
     hole_in_one_entrypoint(harpy=True,
                            clean=clean,
                            keep_exact_zeros=keep_exact_zeros,
-                           singval=singval,
+                           sing_val=sing_val,
                            peak_to_peak=peak_to_peak,
                            window=window,
                            max_peak=max_peak,
@@ -146,6 +146,7 @@ def test_freekick_harpy(_test_file, _model_file):
         # main and secondary phases
         assert _rms(_angle_diff(lin[plane].loc[:, f"MU{plane}"].to_numpy(),
                                 model.loc[:, f"MU{plane}"].to_numpy())) < LIMITS["P1"]
+
 
 @pytest.mark.extended
 def test_harpy_3d(_test_file, _model_file):
@@ -206,20 +207,15 @@ def _get_model_dataframe():
 
 def _write_tbt_file(model, dir_path):
     ints = np.arange(NTURNS) - NTURNS / 2
-    data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(
-        2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] +
-                     model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
-    data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(
-        2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] +
-                     model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
-    data_z = AMPZ * BASEAMP * np.ones((NBPMS, 1)) * np.cos(
-        2 * np.pi * (MUZ * np.ones((NBPMS, 1)) +
-                     TUNEZ * np.ones((NBPMS, 1)) * ints[None, :]))
-    mats = dict(X=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_x
-                               + COUPLING * data_y + data_z, index=model.index),
-                Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y
-                               + COUPLING * data_x, index=model.index))
-    tbt.write(os.path.join(dir_path, "test_file"), tbt.TbtData([mats], None, [0], NTURNS))
+    data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] + model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
+    data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] + model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
+    data_z = AMPZ * BASEAMP * np.ones((NBPMS, 1)) * np.cos(2 * np.pi * (MUZ * np.ones((NBPMS, 1)) + TUNEZ * np.ones((NBPMS, 1)) * ints[None, :]))
+    matrices = [tbt.TransverseData(
+        X=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_x + COUPLING * data_y + data_z, index=model.index),
+        Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y + COUPLING * data_x, index=model.index))
+    ]
+    tbt_data = tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=NTURNS)  # let date default
+    tbt.write(os.path.join(dir_path, "test_file"), tbt_data)
 
 
 def _other(plane):

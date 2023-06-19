@@ -17,8 +17,8 @@ shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
 
 for creator in ('twiss', 'madx'):
     for is_skew in (True, False):
-        _, optics_params, variables, fullresponse, _ = get_skew_params(beam) if is_skew else get_normal_params(beam)
-        optics_params = _adapt_optics_params(optics_params, creator, is_skew)
+        correction_params = get_skew_params(beam) if is_skew else get_normal_params(beam)
+        optics_params = _adapt_optics_params(correction_params.optics_params, creator, is_skew)
 
         # response creation
         new_response = create_response_entrypoint(
@@ -30,8 +30,8 @@ for creator in ('twiss', 'madx'):
             energy=0.45,
             creator=creator,
             delta_k=DELTA_K,
-            variable_categories=variables,
-            outfile_path=Path(f"fullresponse_{'_'.join(sorted(variables))}.h5")
+            variable_categories=correction_params.variables,
+            outfile_path=Path(f"fullresponse_{'_'.join(sorted(correction_params.variables))}.h5")
         )
 
 os.system(f'rm -r "{macros_path}"')

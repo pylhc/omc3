@@ -34,70 +34,156 @@ one figure is used.
 
 *--Required--*
 
-- **files**: List of paths to the spectrum files. The files need to be given
-  without their '.lin'/'.amps[xy]','.freqs[xy]' endings. (So usually the path
-  of the TbT-Data file.)
+- **files**:
+
+    List of paths to the spectrum files. The files need to be given
+    without their '.lin'/'.amps[xy]','.freqs[xy]' endings.  (So usually
+    the path of the TbT-Data file.)
 
 
 *--Optional--*
 
-- **amp_limit** *(float)*: All amplitudes <= limit are filtered.
-  This value needs to be at least 0 to filter non-found frequencies.
+- **amp_limit** *(float)*:
 
-  Default: ``0.0``
-- **bpms**: List of BPMs for which spectra will be plotted. If not given all BPMs are used.
+    All amplitudes <= limit are filtered. This value needs to be at least
+    0 to filter non-found frequencies.
 
-- **combine_by**: Choose how to combine the data into figures.
+    default: ``0.0``
 
-  Choices: ``['bpms', 'files']``
-  Default: ``[]``
-- **filetype** *(str)*: Filetype to save plots as (i.e. extension without ".")
 
-  Default: ``pdf``
-- **lines_manual** *(DictAsString)*: List of manual lines to plot. Need to contain arguments for axvline,
-  and may contain the additional key "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
-  and places the label as text at the given location.
+- **bpms**:
 
-  Default: ``[]``
-- **lines_nattunes** *(tuple)*: List of natural tune lines to plot
+    List of BPMs for which spectra will be plotted. If not given all BPMs
+    are used.
 
-  Default: ``[(1, 0), (0, 1)]``
-- **lines_tunes** *(tuple)*: list of tune lines to plot
 
-  Default: ``[(1, 0), (0, 1)]``
-- **manual_style** *(DictAsString)*: Additional Style parameters which update the set of predefined ones.
+- **combine_by**:
 
-  Default: ``{}``
-- **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
+    Choose how to combine the data into figures.
 
-  Default: ``5``
-- **output_dir** *(str)*: Directory to write results to. If no option is given, plots will not be saved.
+    choices: ``['bpms', 'files']``
 
-- **plot_type**: Choose plot type (Multiple choices possible).
+    default: ``[]``
 
-  Choices: ``['stem', 'waterfall']``
-  Default: ``['stem']``
-- **rescale**: Flag to rescale plots amplitude to max-line = 1
 
-  Action: ``store_true``
-- **show_plots**: Flag to show plots
+- **filetype** *(str)*:
 
-  Action: ``store_true``
-- **waterfall_cmap** *(str)*: Colormap to use for waterfall plot.
+    Filetype to save plots as (i.e. extension without ".")
 
-  Default: ``inferno``
-- **waterfall_common_plane_colors**: Same colorbar scale for both planes in waterfall plots.
+    default: ``pdf``
 
-  Action: ``store_true``
-- **waterfall_line_width**: Line width of the waterfall frequency lines. "auto" fills them up until the next one.
 
-  Default: ``2``
-- **xlim** *(float)*: Limits on the x axis (Tupel)
+- **lines_manual** *(DictAsString)*:
 
-  Default: ``[0, 0.5]``
-- **ylim** *(float)*: Limits on the y axis (Tupel)
+    List of manual lines to plot. Need to contain arguments for axvline,
+    and may contain the additional keys "text" and "loc" which is one of
+    ['bottom', 'top', 'line bottom', 'line top'] and places the text at
+    the given location.
 
-  Default: ``[1e-09, 1.0]``
+    default: ``[]``
+
+
+- **lines_nattunes** *(tuple)*:
+
+    List of natural tune lines to plot
+
+    default: ``[(1, 0), (0, 1)]``
+
+
+- **lines_tunes** *(tuple)*:
+
+    list of tune lines to plot
+
+    default: ``[(1, 0), (0, 1)]``
+
+
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **ncol_legend** *(int)*:
+
+    Number of bpm legend-columns. If < 1 no legend is shown.
+
+    default: ``5``
+
+
+- **output_dir** *(str)*:
+
+    Directory to write results to. If no option is given, plots will not
+    be saved.
+
+
+- **plot_styles** *(UnionPathStr)*:
+
+    Which plotting styles to use, either from plotting.styles.*.mplstyles
+    or default mpl.
+
+    default: ``['standard', 'spectrum']``
+
+
+- **plot_type**:
+
+    Choose plot type (Multiple choices possible).
+
+    choices: ``['stem', 'waterfall']``
+
+    default: ``['stem']``
+
+
+- **rescale**:
+
+    Flag to rescale plots amplitude to max-line = 1
+
+    action: ``store_true``
+
+
+- **show_plots**:
+
+    Flag to show plots
+
+    action: ``store_true``
+
+
+- **waterfall_cmap** *(str)*:
+
+    Colormap to use for waterfall plot.
+
+    default: ``inferno``
+
+
+- **waterfall_common_plane_colors**:
+
+    Same colorbar scale for both planes in waterfall plots.
+
+    action: ``store_true``
+
+
+- **waterfall_line_width**:
+
+    Line width of the waterfall frequency lines. "auto" fills them up
+    until the next one.
+
+    default: ``2``
+
+
+- **xlim** *(float)*:
+
+    Limits on the x axis (Tupel)
+
+    default: ``[0, 0.5]``
+
+
+- **ylim** *(float)*:
+
+    Limits on the y axis (Tupel)
+
+    default: ``[1e-09, 1.0]``
+
+
 """
 import os
 from collections import OrderedDict
@@ -105,11 +191,10 @@ from typing import Tuple
 
 import matplotlib
 from cycler import cycler
+
 from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
                                               save_options_to_config, DotDict)
-from matplotlib import cm
-
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
 from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
@@ -118,19 +203,21 @@ from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
                                           filter_amps, get_bpms, get_stem_id,
                                           get_waterfall_id, get_data_for_bpm,
                                           load_spectrum_data)
-from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.plotting.spectrum.waterfall import create_waterfall_plots
+from omc3.plotting.utils import style as pstyle
+from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils import logging_tools
+from omc3.utils.iotools import UnionPathStr
 
 LOG = logging_tools.getLogger(__name__)
 
 
 def get_reshuffled_tab20c():
     """
-    Reshuffel tab20c so that the colors change between next lines.
+    Reshuffle tab20c so that the colors change between next lines.
     Needs to be up here as it is used in ``DEFAULTS`` which is loaded early.
     """
-    tab20c = cm.get_cmap('tab20c').colors
+    tab20c = matplotlib.colormaps['tab20c'].colors
     out = [None] * 20
     step, chunk = 4, 5
     for idx in range(step):
@@ -146,14 +233,7 @@ DEFAULTS = DotDict(
     filetype='pdf',
     waterfall_line_width=2,
     manual_style={
-        u'figure.figsize': [18, 9],
-        u'axes.labelsize': 15,
         u'axes.prop_cycle': get_reshuffled_tab20c(),
-        u'lines.linestyle': '-',
-        u'lines.marker': 'o',
-        u'lines.markersize': 3,
-        u'markers.fillstyle': u'none',
-        u'figure.subplot.hspace': 0.3,  # space between subplots
     }
 )
 
@@ -239,10 +319,18 @@ def get_params():
                          type=str,
                          default=DEFAULTS.filetype,
                          help='Filetype to save plots as (i.e. extension without ".")')
+    params.add_parameter(name="plot_styles",
+                         type=UnionPathStr,
+                         nargs="+",
+                         default=['standard', 'spectrum'],
+                         help='Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.'
+                         )
     params.add_parameter(name="manual_style",
                          type=DictAsString,
                          default={},
-                         help='Additional Style parameters which update the set of predefined ones.')
+                         help='Additional style rcParameters which update the set of predefined ones.'
+                         )
+ 
     return params
 
 
@@ -256,7 +344,7 @@ def main(opt):
         _save_options_to_config(opt)
 
     opt = _check_opt(opt)
-    matplotlib.rcParams.update(opt.manual_style)
+    pstyle.set_style(opt.plot_styles, opt.manual_style)
     stem_opt, waterfall_opt, sorting_opt = _sort_opt(opt)
     stem, waterfall = _sort_input_data(sorting_opt)
 
@@ -287,7 +375,7 @@ def _check_opt(opt):
         raise ValueError("The amplitude limit needs to be at least '0' "
                          "to filter for non-found frequencies.")
 
-    style_dict = DEFAULTS['manual_style']
+    style_dict = DEFAULTS.manual_style.copy()
     if opt.manual_style is not None:
         style_dict.update(opt.manual_style)
     opt.manual_style = style_dict

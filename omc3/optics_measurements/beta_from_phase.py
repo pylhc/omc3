@@ -80,6 +80,18 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     Returns:
         `TfsDataFrame` containing betas and alfas from phase.
     """
+    n_bpms = meas_input.range_of_bpms
+    n_bpms_phases = len(phase["MEAS"].index)
+    if n_bpms_phases < n_bpms:
+        LOGGER.warning(f"Found {n_bpms_phases} BPMs, but {n_bpms} "
+                        "were requested in N-BPM method. Using all available BPMs instead,"
+                        "the results will still be correct.")
+        n_bpms = n_bpms_phases
+    
+    if n_bpms < 3:
+        raise ValueError("At least 3 BPMs are required for N-BPM method!"
+                        f"Instead a range of {n_bpms} was requested.")
+
     elements, error_method = get_elements_with_errors(meas_input, plane)
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     bk_model = _get_filtered_model_df(meas_input, phase, plane, best=True)
@@ -87,7 +99,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     betas_alfas = np.zeros((len(phase["MEAS"].index), 4))
     nbpms = len(bk_model.index)
     n_comb = np.zeros(nbpms, dtype=int)
-    m = int(meas_input.range_of_bpms / 2)
+    m = int(n_bpms / 2)
     loc_range = np.arange(-m, m + 1)
     phases_meas = phase["MEAS"] * PI2
     phases_err = phase["ERRMEAS"] * PI2
@@ -114,9 +126,12 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
             outer_meas_err = phases_err.iloc[indx, indx + loc_range]
             outer_mdl_ph = bk_model.iloc[indx + loc_range][mu_column].to_numpy() * PI2
             outer_elmts = elements.iloc[indx_el_first:indx_el_last + 1]
-            outer_elmts_ph = elements.iloc[indx_el_first:indx_el_last + 1][mu_column] * PI2
-        bpms_inds_elements = [outer_elmts.index.get_loc(bpm_name) for bpm_name in outer_meas_phase_adv.index.to_numpy()]
-        sin_squared_elements = np.square(np.sin(outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :]))
+            outer_elmts_ph = elements.iloc[indx_el_first:indx_el_last + 1][mu_column].to_numpy() * PI2
+        # bpms_inds_elements was not used (jdilly)
+        # bpms_inds_elements = [outer_elmts.index.get_loc(bpm_name) for bpm_name in outer_meas_phase_adv.index.to_numpy()]
+        sin_squared_elements = np.square(np.sin(
+            outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :]
+        ))
         with np.errstate(divide='ignore'):
             cot_meas = 1.0 / np.tan(outer_meas_phase_adv.to_numpy())
             cot_model = 1.0 / np.tan((outer_mdl_ph - outer_mdl_ph[m]))
@@ -398,6 +413,10 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     Returns:
         `TfsDataFrame` containing betas and alfas from phase.
     """
+    if len(phase["MEAS"].index) < 3:
+        raise ValueError("At least 3 BPMs are required for 3-BPM method!"
+                        f"Instead only {len(phase['MEAS'])} were found in input.")
+
     tune, mdltune = meas_and_mdl_tunes
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     # tilt phase advances in order to have the phase advances in a neighbourhood

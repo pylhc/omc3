@@ -18,7 +18,7 @@ Model Creation Keyword Args:
 
         Year of the optics (or hllhc1.3).
 
-        choices: ``('2012', '2015', '2016', '2017', '2018', 'hllhc1.3')``
+        choices: ``('2012', '2015', '2016', '2017', '2018', '2022', 'hllhc1.3')``
 
 
     *--Optional--*
@@ -80,7 +80,7 @@ Model Creation Keyword Args:
 import json
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Iterator, List, Sequence, Tuple
+from typing import Dict, Iterator, List, Sequence, Tuple, Union, Iterable
 
 import tfs
 from generic_parser import EntryPoint
@@ -96,6 +96,7 @@ from omc3.model.constants import (
     B2_SETTINGS_MADX,
     GENERAL_MACROS,
     LHC_MACROS,
+    LHC_MACROS_RUN3,
     MACROS_DIR,
     MODIFIER_TAG,
 )
@@ -136,14 +137,14 @@ class Lhc(Accelerator):
             name="year",
             type=str,
             required=True,
-            choices=("2012", "2015", "2016", "2017", "2018", "hllhc1.3"),
-            help="Year of the optics (or hllhc1.3).",
+            choices=("2012", "2015", "2016", "2017", "2018", "2022", "hllhc1.3"),
+            help="Year of the optics (or hllhc1.x version).",
         )
         params.add_parameter(
             name="ats",
             action="store_true",
-            help="Marks ATS optics"
-        )
+            help="Force use of ATS macros and knobs for years which are not ATS by default.",
+            )
         return params
 
     def __init__(self, *args, **kwargs):
@@ -203,21 +204,39 @@ class Lhc(Accelerator):
     def get_lhc_error_dir() -> Path:
         return LHC_DIR / "systematic_errors"
 
-    def get_variables(self, frm=None, to=None, classes=None):
+    def get_variables(self, frm: float = None, to: float = None, classes: Iterable[str] = None):
         correctors_dir = LHC_DIR / "2012" / "correctors"
-        all_corrs = _merge_jsons(
+        all_vars_by_class = _merge_jsons(
             correctors_dir / f"correctors_b{self.beam}" / "beta_correctors.json",
             correctors_dir / f"correctors_b{self.beam}" / "coupling_correctors.json",
             self._get_triplet_correctors_file(),
         )
-        my_classes = classes
-        if my_classes is None:
-            my_classes = all_corrs.keys()
-        vars_by_class = set(
-            _flatten_list([all_corrs[corr_cls] for corr_cls in my_classes if corr_cls in all_corrs])
-        )
-        if frm is None and to is None:
-            return list(vars_by_class)
+        if classes is None:
+            classes = all_vars_by_class.keys()
+
+        known_classes = [c for c in classes if c in all_vars_by_class]
+        unknown_classes = [c for c  in classes if c not in all_vars_by_class]
+        if unknown_classes:
+            LOGGER.debug("The following classes are not found as corrector/variable classes and "
+                         f"are assumed to be the variable names directly instead:\n{str(unknown_classes)}")
+
+        vars = list(set(_flatten_list(all_vars_by_class[corr_cls] for corr_cls in known_classes)))
+        vars = vars + unknown_classes
+
+        # Sort variables by S (nice for comparing different files)
+        return self.sort_variables_by_location(vars, frm, to)
+
+    def sort_variables_by_location(self, variables: Iterable[str], frm: float = None, to: str = None) -> List[str]:
+        """ Sorts the variables by location and filters them between `frm` and `to`.
+        If `frm` is larger than `to` it loops back around to the start the accelerator.
+        This is a useful function for the LHC that's why it is "public"
+        but it is not part of the Accelerator-Class Interface.
+
+        Args:
+            variables (Iterable): Names of variables to sort
+            frm (float): S-position to filter from
+            to (float): S-position to filter to
+        """
         elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
@@ -229,10 +248,18 @@ class Lhc(Accelerator):
         elif to is not None:
             elems_matrix = elems_matrix[elems_matrix.S <= to]
 
+        # create single list (some entries might contain multiple variable names, comma separated, e.g. "kqx.l2,ktqx2.l2")
         vars_by_position = _remove_dups_keep_order(
             _flatten_list([raw_vars.split(",") for raw_vars in elems_matrix.loc[:, "VARS"]])
         )
-        return _list_intersect_keep_order(vars_by_position, vars_by_class)
+        sorted_vars = _list_intersect_keep_order(vars_by_position, variables)
+
+        # Check if no filtering but only sorting was required
+        if (frm is None) and (to is None) and (len(sorted_vars) != len(variables)):
+            unknown_vars = list(sorted(var for var in variables if var not in sorted_vars))
+            LOGGER.debug(f"The following variables do not have a location: {str(unknown_vars)}")
+            sorted_vars = sorted_vars + unknown_vars
+        return sorted_vars
 
     def get_ips(self) -> Iterator[Tuple[str]]:
         """
@@ -295,18 +322,24 @@ class Lhc(Accelerator):
     def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         beam = self.beam
         adt = "H.C" if plane == "X" else "V.B"
-        l_r = "L" if (beam == 1 != plane == "Y") else "R"
+        l_r = "L" if ((beam == 1) != (plane == "Y")) else "R"
         a_b = "B" if beam == 1 else "A"
         if self.excitation == AccExcitationMode.ACD:
-            return (
-                _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms),
-                f"MKQA.6L4.B{beam}",
-            )
+            try:
+                return (
+                    _is_one_of_in([f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms),
+                    f"MKQA.6L4.B{beam}",
+                )
+            except KeyError as e:
+                raise KeyError("AC-Dipole BPM not found in the common BPMs. Maybe cleaned?") from e
         if self.excitation == AccExcitationMode.ADT:
-            return (
-                _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"], commonbpms),
-                f"ADTK{adt}5{l_r}4.B{beam}",
-            )
+            try:
+                return (
+                    _is_one_of_in([f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"], commonbpms),
+                    f"ADTK{adt}5{l_r}4.B{beam}",
+                )
+            except KeyError as e:
+                raise KeyError("ADT BPM not found in the common BPMs. Maybe cleaned?") from e
         return None
 
     def important_phase_advances(self) -> List[List[str]]:
@@ -322,23 +355,51 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
+    def _get_madx_script_info_comments(self) -> str:
+        info_comments = (
+            f'title, "LHC Model created by omc3";\n'
+            f"! Model directory: {Path(self.model_dir).absolute()}\n"
+            f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
+            f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
+            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'OK':>10s}]\n"
+        )
+        if self.excitation == AccExcitationMode.FREE:
+            info_comments += f"! Excitation             [{'NO':>10s}]\n\n"
+            return info_comments
+        else:
+            info_comments += (
+                f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
+                f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
+                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n\n"
+            )
+        return info_comments
+
     def get_base_madx_script(self, best_knowledge: bool = False) -> str:
         ats_md = False
         high_beta = False
-        ats_suffix = "_ats" if self.ats else ""
         madx_script = (
-            # f"option, -echo;\n"
+            f"{self._get_madx_script_info_comments()}"
+            f"! ----- Calling Sequence and Optics -----\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
-            f'title, "LHC Model created by OMC3";\n'
+            )
+        if self._uses_run3_macros():
+            LOGGER.debug("According to the optics year, Run 3 versions of the macros will be used")
+            madx_script += (
+                f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
+            )
+
+        madx_script += (
             f"{self.load_main_seq_madx()}\n"
             f"exec, define_nominal_beams();\n"
         )
-        madx_script += "".join(
-            f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
-            for modifier in self.modifiers
-        )
+        if self.modifiers is not None:
+            madx_script += "".join(
+                f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
+                for modifier in self.modifiers
+            )
         madx_script += (
+            f"\n! ----- Defining Configuration Specifics -----\n"
             f"exec, cycle_sequences();\n"
             f"xing_angles = {'1' if self.xing else '0'};\n"
             f"if(xing_angles==1){{\n"
@@ -352,6 +413,7 @@ class Lhc(Accelerator):
         if best_knowledge:
             # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
             madx_script += (
+                f"\n! ----- For Best Knowledge Model -----\n"
                 f"readmytable, file = '{self.model_dir / B2_ERRORS_TFS}', table=errtab;\n"
                 f"seterr, table=errtab;\n"
                 f"call, file = '{self.model_dir / B2_SETTINGS_MADX}';\n"
@@ -359,25 +421,45 @@ class Lhc(Accelerator):
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
 
-        if self.year == "2018":  # to be checked for 2022 (jdilly, 2021)
+        madx_script += f"\n! ----- Matching Knobs and Output Files -----\n"
+        if self._uses_ats_knobs():
+            LOGGER.debug("According to the optics year or the --ats flag being provided, ATS macros and knobs will be used")
             madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            madx_script += f"exec, coupling_knob_ats({self.beam});\n"
         else:
-            madx_script += f"exec, match_tunes{ats_suffix}({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            madx_script += f"exec, match_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            madx_script += f"exec, coupling_knob({self.beam});\n"
 
         if ats_md:
             madx_script += "exec, full_response_ats();\n"
 
-        madx_script += f"exec, coupling_knob{ats_suffix}({self.beam});\n"
         return madx_script
 
-    def get_update_correction_script(self, outpath: Path, corr_file: Path) -> str:
+    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
         madx_script = self.get_base_madx_script()
-        madx_script += (
-            f"call, file = '{str(corr_file)}';\n"
-            f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
-        )
+        for corr_file in corr_files:
+            madx_script += f"call, file = '{str(corr_file)}';\n"
+        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
         return madx_script
 
+    def _uses_ats_knobs(self) -> bool:
+        """
+        Returns wether the ATS knobs and macros should be used, based on the instance's year.
+        If the **--ats** flag was explicitely provided then the returned value will be `True`.
+        """
+        try:
+            if self.ats:
+                return True
+            return 2018 <= int(self.year) <= 2021  # self.year is always a string
+        except ValueError:  # if a "hllhc1.x" version is given
+            return False
+
+    def _uses_run3_macros(self) -> bool:
+        """Returns wether the Run 3 macros should be called, based on the instance's year."""
+        try:
+            return int(self.year) >= 2022  # self.year is always a string
+        except ValueError:  # if a "hllhc1.x" year is given
+            return False
 
 # General functions ##########################################################
 
@@ -405,7 +487,7 @@ def _merge_jsons(*files) -> dict:
     return full_dict
 
 
-def _flatten_list(my_list: List) -> List:
+def _flatten_list(my_list: Iterable) -> List:
     return [item for sublist in my_list for item in sublist]
 
 
@@ -413,7 +495,7 @@ def _remove_dups_keep_order(my_list: List) -> List:
     return list(OrderedDict.fromkeys(my_list))
 
 
-def _list_intersect_keep_order(primary_list: List, secondary_list: List) -> List:
+def _list_intersect_keep_order(primary_list: Iterable, secondary_list: Iterable) -> List:
     return [elem for elem in primary_list if elem in secondary_list]
 
 

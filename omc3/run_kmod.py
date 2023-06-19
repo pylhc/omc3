@@ -285,7 +285,8 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
         exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
         lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
     if instruments_found:
-        lsa_results_df = lsa_results_df.append(instrument_beta_df, sort=False, ignore_index=True)
+        lsa_results_df = pd.concat([lsa_results_df, instrument_beta_df],
+                                   axis="index", sort=False, ignore_index=True)
 
     if not lsa_results_df.empty:
         tfs.write(output_dir / f'{LSA_FILE_NAME}{EXT}', lsa_results_df)
@@ -301,14 +302,14 @@ def convert_betastar_and_waist(bs):
 
 def check_default_error(options, error):
     if options[error] is None:
-        options[error] = DEFAULTS_IP[error] if options.ip is not None else DEFAULTS_CIRCUITS[error]
+        options[error] = DEFAULTS_IP[error] if options.interaction_point is not None else DEFAULTS_CIRCUITS[error]
     return options
 
 
 def find_magnet(beam, circuit):
     sequence = tfs.read(SEQUENCES_PATH / f"twiss_lhcb{beam:d}.dat")
     circuit = circuit.split('.')
-    magnetname = sequence[sequence['NAME'].str.contains(r'MQ\w+\.{:s}{:s}{:s}\.\w+'.format(circuit[0][-1], circuit[1][0], circuit[1][1]))]['NAME'].values[0]
+    magnetname = sequence[sequence['NAME'].str.contains(r'MQ\w+\.{:s}{:s}{:s}\.\w+'.format(circuit[0][-1], circuit[1][0], circuit[1][1]))]['NAME'].to_numpy()[0]
     return magnetname
 
 
@@ -344,8 +345,8 @@ def define_params(options, magnet1_df, magnet2_df):
     for instrument in options.instruments:
         if between_magnets_df.isin([instrument]).any().loc['KEYWORD']:
             instruments.append(instrument)
-            options[instrument] = dict(zip(between_magnets_df.loc[between_magnets_df['KEYWORD'] == instrument]['NAME'].values,
-                                           (between_magnets_df.loc[between_magnets_df['KEYWORD'] == instrument]['S'].values - ip_position)))
+            options[instrument] = dict(zip(between_magnets_df.loc[between_magnets_df['KEYWORD'] == instrument]['NAME'].to_numpy(),
+                                           (between_magnets_df.loc[between_magnets_df['KEYWORD'] == instrument]['S'].to_numpy() - ip_position)))
     options.instruments_found = instruments
     return options, magnet1_df, magnet2_df, beta_star_required
 

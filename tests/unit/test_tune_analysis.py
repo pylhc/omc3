@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from omc3.tune_analysis.bbq_tools import get_moving_average, clean_outliers_moving_average
+from omc3.tune_analysis.bbq_tools import get_moving_average, clean_outliers_moving_average, MinMaxFilterOpt, \
+    OutlierFilterOpt
 from omc3.tune_analysis.fitting_tools import get_poly_fun
 
 
@@ -10,14 +11,14 @@ from omc3.tune_analysis.fitting_tools import get_poly_fun
 def test_moving_average():
     np.random.seed(2020)
     sin_data, data = _get_noisy_sinus()
-    kwargs = dict(
-        min_val=-2,
-        max_val=2,
-        length=int(len(data)/10),
-        fine_length=int(len(data)/10),
+    opt = MinMaxFilterOpt(
+        min=-2,
+        max=2,
+        window=int(len(data)/10),
+        fine_window=int(len(data)/10),
         fine_cut=1,
     )
-    mav, std, mask = get_moving_average(data, **kwargs)
+    mav, std, mask = get_moving_average(data, opt)
     assert sum(np.abs(mav) > 1.2) == 0
     assert (sin_data - mav).std() < (sin_data - data).std()/5  # 5 is handwavingly choosen
     # _plot_helper(sin_data, data, mav)
@@ -25,7 +26,7 @@ def test_moving_average():
 
 @pytest.mark.basic
 def test_get_poly_fun():
-    x_arr = np.linspace(0, 100, 101)
+    x_arr = np.linspace(0, 100, 101, dtype=int)  # use int for exact compare (==) below
     p0 = get_poly_fun(0)
     assert all(p0([1.43], x_arr) == 1.43)
 
@@ -40,11 +41,11 @@ def test_get_poly_fun():
 def test_clean_outliers_moving_average():
     np.random.seed(2021)
     sin_data, data = _get_noisy_sinus()
-    kwargs = dict(
-        length=int(len(data)/10),
+    opt = OutlierFilterOpt(
+        window=int(len(data) / 10),
         limit=1,
     )
-    mav, std, mask = clean_outliers_moving_average(data, **kwargs)
+    mav, std, mask = clean_outliers_moving_average(data, opt)
     assert sum(np.abs(mav) > 1.2) == 0
     assert (sin_data - mav).std() < (sin_data - data).std()/5  # 5 is handwavingly choosen
     # _plot_helper(sin_data, data, mav)

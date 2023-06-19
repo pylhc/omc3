@@ -35,6 +35,7 @@ class TuneDict(dict):
     """
     Data structure to hold tunes.
     """
+    # TODO: detail each key
     def __init__(self):
         super(TuneDict, self).__init__(zip(PLANES, ({"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None},
                                                     {"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None})))

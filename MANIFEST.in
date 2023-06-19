@@ -1,4 +1,6 @@
 include omc3/bin/madx*
+include omc3/utils/rbac-krb5.conf
 graft omc3/model/accelerators 
 graft omc3/model/madx_macros 
+graft omc3/kmod/sequences 
 graft omc3/plotting/styles

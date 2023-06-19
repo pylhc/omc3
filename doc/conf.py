@@ -59,7 +59,7 @@ autosectionlabel_prefix_document = True
 autosectionlabel_maxdepth = 2
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates']
+templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -75,6 +75,10 @@ project = ABOUT_OMC3["__title__"]
 copyright_ = '2019-2020, pyLHC/OMC-TEAM'
 author = ABOUT_OMC3["__author__"]
 
+rst_prolog = f"""
+:github_url: {ABOUT_OMC3['__url__']}
+"""
+
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
@@ -89,7 +93,7 @@ release = ABOUT_OMC3["__version__"]
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -109,7 +113,9 @@ todo_include_todos = True
 #
 html_theme = 'sphinx_rtd_theme'
 
-
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
 html_theme_options = {
     'collapse_navigation': False,
     'display_version': True,
@@ -117,22 +123,40 @@ html_theme_options = {
     'navigation_depth': 2,
 }
 
+
+# Name of an image file (path relative to the configuration directory)
+# that is the logo of the docs, or URL that points an image file for the logo.
+# It is placed at the top of the sidebar;
+# its width should therefore not exceed 200 pixels.
 html_logo = '_static/img/omc_logo.svg'
-html_static_path = ['_static']
-html_context = {'css_files': ['_static/css/custom.css']}
-
-smartquotes_action = "qe"  # renders only quotes and ellipses (...) but not dashes (option: D)
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+#
+html_static_path = ['_static']
+
+# A dictionary of values to pass into the template engine’s context for all
+# pages. Single values can also be put in this dictionary using the
+# -A command-line option of sphinx-build.
+html_context = {
+    'display_github': True,
+    # the following are only needed if :github_url: is not set
+    'github_user': author,
+    'github_repo': project,
+    'github_version': 'master/doc/',
+}
+
+# A list of CSS files. The entry must be a filename string or a tuple
+# containing the filename string and the attributes dictionary.
+# The filename must be relative to the html_static_path, or a full URI with
+# scheme like https://example.org/style.css.
+# The attributes is used for attributes of <link> tag.
+# It defaults to an empty list.
+#
+html_css_files = ["css/custom.css"]
+
+smartquotes_action = "qe"  # renders only quotes and ellipses (...) but not dashes (option: D)
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -206,3 +230,10 @@ texinfo_documents = [
 autodoc_mock_imports = ['PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets',
                         "matplotlib.backends.backend_qt5agg",
                         ]
+
+# -- Type Aliases --------------------------------------------------------------
+
+# This is to tell Sphinx how to print some specific type annotations
+# See: https://stackoverflow.com/a/67483317
+# See: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_type_aliases
+autodoc_type_aliases = {"ArrayLike": "ArrayLike"}

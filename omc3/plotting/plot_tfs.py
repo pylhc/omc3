@@ -106,27 +106,35 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 """
 from collections import OrderedDict
 from pathlib import Path
+from typing import Dict
 
 import matplotlib
-import tfs
-from generic_parser import EntryPointParameters, entrypoint, DotDict
-from generic_parser.entry_datatypes import DictAsString, get_multi_class
 from matplotlib import pyplot as plt, rcParams
+from matplotlib.axes import Axes
+
+import tfs
+from generic_parser import EntryPointParameters, entrypoint
+from generic_parser.entry_datatypes import DictAsString
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
-from omc3.plotting.optics_measurements.utils import FigureCollector
+from omc3.plotting.optics_measurements.utils import FigureCollector, DataSet, IDMap, safe_format
+from omc3.plotting.utils.windows import (
+    PlotWidget, SimpleTabWindow, is_qtpy_installed, log_no_qtpy_many_windows, create_pyplot_window_from_fig
+)
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
-from omc3.plotting.utils import (annotations as pannot, lines as plines,
-                                 style as pstyle, colors as pcolors)
+from omc3.plotting.utils import (
+    annotations as pannot, 
+    lines as plines,
+    style as pstyle, 
+    colors as pcolors,
+)
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
-from omc3.utils.iotools import PathOrStr, save_config
+from omc3.utils.iotools import PathOrStr, save_config, OptionalStr, OptionalFloat
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
-
-float_or_none = get_multi_class(float, int, type(None))  # for the limits
 
 
 def get_params():
@@ -156,7 +164,7 @@ def get_params():
     params.add_parameter(
         name="error_columns",
         help="List of parameters to get error values from.",
-        type=str,
+        type=OptionalStr,
         nargs="+",
     )
     params.add_parameter(
@@ -235,13 +243,13 @@ def get_params():
     params.add_parameter(
         name="x_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the x axis (Tupel)'
     )
     params.add_parameter(
         name="y_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the y axis (Tupel)'
     )
     params.add_parameter(
@@ -299,7 +307,7 @@ def get_params():
 @entrypoint(get_params(), strict=True)
 def plot(opt):
     """Main plotting function."""
-    LOG.info(f"Starting plotting of tfs files: {list2str(opt.files):s}")
+    LOG.debug(f"Starting plotting of tfs files: {list2str(opt.files):s}")
     if opt.output is not None:
         save_config(Path(opt.output), opt, __file__)
 
@@ -326,7 +334,6 @@ def plot(opt):
 
 # Sorting ----------------------------------------------------------------------
 
-
 def sort_data(opt):
     """Load all data from files and sort into figures."""
     collector = FigureCollector()
@@ -346,16 +353,16 @@ def sort_data(opt):
             if opt.planes is None:
                 id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
                                 opt.same_figure, opt.output_prefix)
-                output_path = _get_full_output_path(opt.output, id_map['figure_id'])
+                output_path = get_full_output_path(opt.output, id_map.figure_id)
 
                 collector.add_data_for_id(
-                    figure_id=id_map['figure_id'],
-                    label=id_map['legend_label'],
+                    figure_id=id_map.figure_id,
+                    label=id_map.legend_label,
                     data=_read_data(file_path, x_col, y_col, err_col),
                     path=output_path,
                     x_label=x_label,
-                    y_label=id_map['ylabel'],
-                    axes_id=id_map['axes_id'],
+                    y_label=id_map.ylabel,
+                    axes_id=id_map.axes_id,
                     axes_ids=axes_ids,
                 )
 
@@ -363,21 +370,21 @@ def sort_data(opt):
                 for plane in opt.planes:
                     id_map = get_id(filename, y_col, file_label, column_label, same_axes_set,
                                     opt.same_figure, opt.output_prefix, plane, opt.planes)
-                    output_path = _get_full_output_path(opt.output, id_map['figure_id'])
+                    output_path = get_full_output_path(opt.output, id_map.figure_id)
 
-                    file_path_plane = file_path.with_name(f'{_safe_format(file_path.name, plane.lower())}')
-                    y_col_plane = _safe_format(y_col, plane.upper())
-                    err_col_plane = _safe_format(err_col, plane.upper())
-                    x_col_plane = _safe_format(x_col, plane.upper())
+                    file_path_plane = file_path.with_name(f'{safe_format(file_path.name, plane.lower())}')
+                    y_col_plane = safe_format(y_col, plane.upper())
+                    err_col_plane = safe_format(err_col, plane.upper())
+                    x_col_plane = safe_format(x_col, plane.upper())
 
                     collector.add_data_for_id(
-                        figure_id=id_map['figure_id'],
-                        label=id_map['legend_label'],
+                        figure_id=id_map.figure_id,
+                        label=id_map.legend_label,
                         data=_read_data(file_path_plane, x_col_plane, y_col_plane, err_col_plane),
                         path=output_path,
                         x_label=x_label,
-                        y_label=id_map['ylabel'],
-                        axes_id=id_map['axes_id'],
+                        y_label=id_map.ylabel,
+                        axes_id=id_map.axes_id,
                         axes_ids=axes_ids,
                     )
     if opt.y_labels:
@@ -400,18 +407,18 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
     file_last = filename_parts[-1].replace(EXT, "").strip("_")
     file_output = "_".join(filename_parts).replace(EXT, "").strip("_")
     if file_label is not None:
-        file_output = f'{file_label}_{file_last}'
+        file_output = file_label if file_last in file_label else f'{file_label}_{file_last}'
     else:
         file_label = file_output
-    file_output_planes = _safe_format(file_output, planes.lower())
-    file_output = _safe_format(file_output, plane)
+    file_output_planes = safe_format(file_output, planes.lower())
+    file_output = safe_format(file_output, plane)
 
-    column_planes = _safe_format(column, planes)
-    column = _safe_format(column, plane)
+    column_planes = safe_format(column, planes)
+    column = safe_format(column, plane)
     if column_label is None:
         column_label = column
     else:
-        column_label = _safe_format(column_label, plane.lower())
+        column_label = safe_format(column_label, plane.lower())
 
     axes_id = {'files': '_'.join(filename_parts),
                'columns': f'{column}',
@@ -420,64 +427,64 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
 
     key = same_axes if same_figure is None else same_axes.union({same_figure})
 
-    out_dict = {
-        frozenset(['files', 'columns', 'planes']): dict(
+    out_idmap = {
+        frozenset(['files', 'columns', 'planes']): IDMap(
             figure_id=f'{prefix}{planes}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
-            ylabel=f'',
+            ylabel='',
         ),
-        frozenset(['files', 'columns']): dict(
+        frozenset(['files', 'columns']): IDMap(
             figure_id=f'{prefix}{plane.lower()}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
-            ylabel=f'',
+            ylabel='',
         ),
-        frozenset(['planes', 'columns']): dict(
+        frozenset(['planes', 'columns']): IDMap(
             figure_id=f'{prefix}{file_output_planes}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
         ),
-        frozenset(['planes', 'files']): dict(
+        frozenset(['planes', 'files']): IDMap(
             figure_id=f'{prefix}{column_planes}',
             axes_id=axes_id,
             legend_label=f'{file_label} {column_label}',
             ylabel=column_label,
         ),
-        frozenset(['planes']): dict(
+        frozenset(['planes']): IDMap(
             figure_id=f'{prefix}{file_output_planes}_{column_planes}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=column_label,
         ),
-        frozenset(['files']): dict(
+        frozenset(['files']): IDMap(
             figure_id=f'{prefix}{column}',
             axes_id=axes_id,
             legend_label=f'{file_label}',
             ylabel=column_label,
         ),
-        frozenset(['columns']): dict(
+        frozenset(['columns']): IDMap(
             figure_id=f'{prefix}{file_output}',
             axes_id=axes_id,
             legend_label=column_label,
             ylabel=f'{file_label}',
         ),
-        frozenset([]): dict(
+        frozenset([]): IDMap(
             figure_id=f'{prefix}{file_output}_{column}',
             axes_id=axes_id,
-            legend_label=f'',
             ylabel=column_label,
+            legend_label='',
         ),
     }[key]
 
-    out_dict['figure_id'] = out_dict['figure_id'].strip("_")
-    return out_dict
+    out_idmap.figure_id = out_idmap.figure_id.strip("_")
+    return out_idmap
 
 
 def _read_data(file_path, x_col, y_col, err_col):
-    tfs_data = tfs.read(str(file_path))
-    return DotDict(
+    tfs_data = tfs.read(file_path)
+    return DataSet(
         x=tfs_data[x_col],
         y=tfs_data[y_col],
         err=tfs_data[err_col] if err_col is not None else None,
@@ -494,7 +501,7 @@ def _update_y_labels(fig_collection, y_labels):
             axes_labels = axes_labels * len(fig_container.ylabels)
 
         for idx_ax, (ax_id, _) in enumerate(fig_container.ylabels.items()):
-            fig_container.ylabels[ax_id] = _safe_format(axes_labels[idx_ax], ax_id)
+            fig_container.ylabels[ax_id] = safe_format(axes_labels[idx_ax], ax_id)
     return fig_collection
 
 
@@ -520,7 +527,7 @@ def _create_plots(fig_collection, opt):
             ax, data, xlabel, ylabel = fig_container[ax_id]
             _plot_vlines(ax, opt.vertical_lines)
             _plot_data(ax, data, opt.change_marker, opt.errorbar_alpha)
-            _set_axes_layout(ax, opt.x_lim, opt.y_lim, ylabel, xlabel)
+            _set_axes_layout(ax, x_lim=opt.x_lim, y_lim=opt.y_lim, xlabel=xlabel, ylabel=ylabel)
 
             # plt.show(block=False)  # for debugging
             if idx_ax == 0 or not opt.single_legend:
@@ -529,10 +536,24 @@ def _create_plots(fig_collection, opt):
         output_plot(fig_container)
 
     if opt.show:
+        if len(fig_collection) > 1 and is_qtpy_installed():
+            window = SimpleTabWindow("Tfs Plots")
+            for fig_container in fig_collection.figs.values():
+                tab = PlotWidget(fig_container.fig, title=fig_container.id)
+                window.add_tab(tab)
+            window.show()
+            return
+        
+        if len(fig_collection) > rcParams['figure.max_open_warning']:
+            log_no_qtpy_many_windows()
+
+        for fig_container in fig_collection.figs.values():
+            create_pyplot_window_from_fig(fig_container.fig, title=fig_container.id)
         plt.show()
 
+            
 
-def _plot_data(ax, data, change_marker, ebar_alpha):
+def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
     for idx, (label, values) in enumerate(data.items()):
         ebar = ax.errorbar(values.x, values.y, yerr=values.err,
                            ls=rcParams[u"lines.linestyle"],
@@ -554,17 +575,17 @@ def _plot_vlines(ax, lines):
         line['text'] = text
 
 
-def _set_axes_layout(ax, x_lim, y_lim, ylabel, xlabel):
-    ax.set_xlim(x_lim)
+def _set_axes_layout(ax, x_lim, y_lim,  xlabel, ylabel):
+    ax.set_xlim(x_lim, auto=not x_lim or any(x_lim))
     ax.set_xlabel(xlabel)
-    ax.set_ylim(y_lim)
+    ax.set_ylim(y_lim, auto=not y_lim or any(y_lim))
     ax.set_ylabel(ylabel)
 
 
 # Output ---
 
 
-def _get_full_output_path(folder, filename):
+def get_full_output_path(folder, filename):
     if folder is None or filename is None:
         return None
     return Path(folder) / f"{filename}.{matplotlib.rcParams['savefig.format']}"
@@ -616,7 +637,7 @@ def _get_axes_ids(opt):
     """
     Get's all id's first (to know how many axes to use). So the `get_id` is done later for
     actual plotting again.
-    The order matters, as this function detemines the order in which the data is distributed on
+    The order matters, as this function determines the order in which the data is distributed on
     the figure axes (if multiple), which is important if one gives the manual y-labels option.
     Couldn't find a quicker way... (jdilly)
     """
@@ -630,12 +651,12 @@ def _get_axes_ids(opt):
 
             if opt.planes is None:
                 id_ = get_id(filename, y_col, file_label, column_label, same_axes_set,
-                             opt.same_figure, opt.output_prefix)['axes_id']
+                             opt.same_figure, opt.output_prefix).axes_id
                 axes_ids.append(id_)
             else:
                 for plane in opt.planes:
                     id_ = get_id(filename, y_col, file_label, column_label, same_axes_set,
-                                 opt.same_figure, opt.output_prefix, plane, opt.planes)['axes_id']
+                                 opt.same_figure, opt.output_prefix, plane, opt.planes).axes_id
                     axes_ids.append(id_)
     return list(OrderedDict.fromkeys(axes_ids).keys())  # unique list with preserved order
 
@@ -646,20 +667,6 @@ def _get_marker(idx, change):
         return plines.MarkerList.get_marker(idx)
     else:
         return rcParams['lines.marker']
-
-
-def _safe_format(label, insert):
-    """
-    Formats label. Usually just ``.format()`` works fine, even if there is no {}-placeholder in
-    the label, but it might cause errors if latex is used in the label or ``None``. Hence the
-    try-excepts.
-    """
-    try:
-        return label.format(insert)
-    except KeyError:  # can happen for latex strings
-        return label
-    except AttributeError:  # label is None
-        return None
 
 
 # Script Mode ------------------------------------------------------------------

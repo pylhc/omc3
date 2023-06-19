@@ -47,7 +47,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 *--Optional--*
 
-- **beta_file_name**:
+- **beta_filename**:
 
     Prefix of the beta file to use. E.g.: getkmodbeta
 
@@ -93,7 +93,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 - **modelcut** *(float)*:
 
     Reject BPMs whose deviation to the model is higher than the
-    correspoding input. Input in order of optics_params.
+    corresponding input. Input in order of optics_params.
 
 
 - **n_correctors** *(int)*:
@@ -105,7 +105,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
     List of parameters to correct upon (e.g. BETX BETY)
 
-    choices: ``('PHASEX', 'PHASEY', 'BBX', 'BBY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
+    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``
 
     default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'NDX', 'Q']``
 
@@ -169,20 +169,20 @@ from typing import Dict
 
 from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-
 from omc3.correction import handler
-from omc3.correction.constants import (BETA, BETABEAT, DISP, F1001, F1010,
-                                       NORM_DISP, PHASE, TUNE)
+from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
+                                                NORM_DISPERSION, PHASE, TUNE)
 from omc3.model import manager
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr, save_config
 
 LOG = logging_tools.get_logger(__name__)
 
 OPTICS_PARAMS_CHOICES = (f"{PHASE}X", f"{PHASE}Y",
                          f"{BETA}X", f"{BETA}Y",
-                         f"{NORM_DISP}X",
+                         f"{NORM_DISPERSION}X",
                          f"{TUNE}",
-                         f"{DISP}X", f"{DISP}Y",
+                         f"{DISPERSION}X", f"{DISPERSION}Y",
                          f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I")
 
 CORRECTION_DEFAULTS = {
@@ -191,9 +191,9 @@ CORRECTION_DEFAULTS = {
     "svd_cut": 0.01,
     "optics_params": OPTICS_PARAMS_CHOICES[:6],
     "variable_categories": ["MQM", "MQT", "MQTL", "MQY"],
-    "beta_file_name": "beta_phase_",
+    "beta_filename": "beta_phase_",
     "method": "pinv",
-    "max_iter": 3,
+    "iterations": 4,
 }
 
 
@@ -201,11 +201,14 @@ def correction_params():
     params = EntryPointParameters()
     params.add_parameter(name="meas_dir",
                          required=True,
+                         type=PathOrStr,
                          help="Path to the directory containing the measurement files.",)
     params.add_parameter(name="output_dir",
                          required=True,
+                         type=PathOrStr,
                          help="Path to the directory where to write the output files.", )
     params.add_parameter(name="fullresponse_path",
+                         type=PathOrStr,
                          help="Path to the fullresponse binary file.If not given, "
                               "calculates the response analytically.",)
     params.add_parameter(name="optics_params",
@@ -225,7 +228,7 @@ def correction_params():
                          nargs="+",
                          type=float,
                          help="Reject BPMs whose deviation to the model is higher "
-                              "than the correspoding input. Input in order of optics_params.",)
+                              "than the corresponding input. Input in order of optics_params.",)
     params.add_parameter(name="errorcut",
                          nargs="+",
                          type=float,
@@ -239,9 +242,9 @@ def correction_params():
                          nargs="+",
                          default=CORRECTION_DEFAULTS["variable_categories"],
                          help="List of names of the variables classes to use.", )
-    params.add_parameter(name="beta_file_name",
-                         default=CORRECTION_DEFAULTS["beta_file_name"],
-                         help="Prefix of the beta file to use. E.g.: getkmodbeta", )
+    params.add_parameter(name="beta_filename",
+                         default=CORRECTION_DEFAULTS["beta_filename"],
+                         help="Prefix of the beta file to use. E.g.: beta_phase_", )
     params.add_parameter(name="method",
                          type=str,
                          choices=("pinv", "omp"),
@@ -256,14 +259,16 @@ def correction_params():
     params.add_parameter(name="n_correctors",
                          type=int,
                          help="Maximum number of correctors to use. (Method: 'omp')")
-    params.add_parameter(name="max_iter",
+    params.add_parameter(name="iterations",
                          type=int,
-                         default=CORRECTION_DEFAULTS["max_iter"],
-                         help="Maximum number of correction re-iterations to perform. "
-                              "A value of `0` means the correction is calculated once.", )
+                         default=CORRECTION_DEFAULTS["iterations"],
+                         help="Maximum number of correction iterations to perform. "
+                              "A value of `1` means the correction is calculated once."
+                              "In this case, the accelerator instance does not need to be able"
+                              "to produce a new model.", )
     params.add_parameter(name="use_errorbars",
                          action="store_true",
-                         help="Take into account the measured errorbars in the correction.", )
+                         help="Take into account the measured errorbars as weights.", )
     params.add_parameter(name="update_response",
                          action="store_true",
                          help="Update the (analytical) response per iteration.", )
@@ -274,6 +279,8 @@ def correction_params():
 def global_correction_entrypoint(opt: DotDict, accel_opt) -> None:
     """Do the global correction. Iteratively."""
     LOG.info("Starting Iterative Global Correction.")
+    save_config(Path(opt.output_dir), opt, __file__, unknown_opt=accel_opt)
+
     opt = _check_opt_add_dicts(opt)
     opt = _add_hardcoded_paths(opt)
     opt.output_dir.mkdir(parents=True, exist_ok=True)
@@ -284,15 +291,20 @@ def global_correction_entrypoint(opt: DotDict, accel_opt) -> None:
 def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
     """ Check on options and put in missing values """
     def_dict = _get_default_values()
-    opt.optics_params = [param.replace(f"{BETABEAT}", f"{BETA}") for param in opt.optics_params]
+
+    # Check cuts and fill defaults
     for key in ("modelcut", "errorcut", "weights"):
         if opt[key] is None:
             opt[key] = [def_dict[key][p] for p in opt.optics_params]
         elif len(opt[key]) != len(opt.optics_params):
             raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
         opt[key] = dict(zip(opt.optics_params, opt[key]))
+
+    # Convert Strings to Paths
     opt.meas_dir = Path(opt.meas_dir)
     opt.output_dir = Path(opt.output_dir)
+    if opt.fullresponse_path:
+        opt.fullresponse_path = Path(opt.fullresponse_path)
     return opt
 
 
@@ -311,9 +323,9 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{PHASE}Y": 0.05,
             f"{BETA}X": 0.2,
             f"{BETA}Y": 0.2,
-            f"{DISP}X": 0.2,
-            f"{DISP}Y": 0.2,
-            f"{NORM_DISP}X": 0.2,
+            f"{DISPERSION}X": 0.2,
+            f"{DISPERSION}Y": 0.2,
+            f"{NORM_DISPERSION}X": 0.2,
             f"{TUNE}": 0.1,
             f"{F1001}R": 0.2,
             f"{F1001}I": 0.2,
@@ -325,9 +337,9 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{PHASE}Y": 0.035,
             f"{BETA}X": 0.02,
             f"{BETA}Y": 0.02,
-            f"{DISP}X": 0.02,
-            f"{DISP}Y": 0.02,
-            f"{NORM_DISP}X": 0.02,
+            f"{DISPERSION}X": 0.02,
+            f"{DISPERSION}Y": 0.02,
+            f"{NORM_DISPERSION}X": 0.02,
             f"{TUNE}": 0.027,
             f"{F1001}R": 0.02,
             f"{F1001}I": 0.02,
@@ -339,9 +351,9 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
             f"{PHASE}Y": 1,
             f"{BETA}X": 0,
             f"{BETA}Y": 0,
-            f"{DISP}X": 0,
-            f"{DISP}Y": 0,
-            f"{NORM_DISP}X": 0,
+            f"{DISPERSION}X": 0,
+            f"{DISPERSION}Y": 0,
+            f"{NORM_DISPERSION}X": 0,
             f"{TUNE}": 10,
             f"{F1001}R": 0,
             f"{F1001}I": 0,
@@ -352,5 +364,4 @@ def _get_default_values() -> Dict[str, Dict[str, float]]:
 
 
 if __name__ == "__main__":
-    with logging_tools.DebugMode(active=False, log_file="iterative_correction.log"):
-        global_correction_entrypoint()
+    global_correction_entrypoint()

@@ -5,15 +5,16 @@ Fixtures defined in here are discovered by all tests automatically.
 
 See also https://stackoverflow.com/a/34520971 .
 """
-import re
+import random
 import shutil
+import string
 import sys
 from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
-from generic_parser import DotDict
 
+from generic_parser import DotDict
 from omc3 import model
 
 INPUTS = Path(__file__).parent / 'inputs'
@@ -37,6 +38,40 @@ def cli_args(*args, **kwargs):
     yield
     sys.argv = args_save
 
+
+@contextmanager
+def mock_module_import(module, replacement):
+    """  Temporarily mock a package with something else.
+    Needs to be used before the module is imported,
+    so it only works on dynamic imports (which we don't have a lot).
+    For already imported packages (e.g. module.package) you can use pytest's:
+    monkeypatch.setattr(module, "package", replacement)
+    """
+    orig = sys.modules.get(module)  # get the original module, if present
+    sys.modules[module] = replacement  # patch it
+    try:
+        yield
+    finally:
+        if orig is not None:  # if the module was installed, restore patch
+            sys.modules[module] = orig
+        else:  # if the module never existed, remove the key
+            del sys.modules[module]
+
+def random_string(length: int,
+                  lower: bool = True,
+                  upper: bool = True,
+                  digits: bool = True,
+                  punctuation: bool = False
+                  ) -> str:
+    """ Returns a random string. """
+    charset = ''
+    for chars, switch in ((string.ascii_lowercase, lower),
+                          (string.ascii_uppercase, upper),
+                          (string.digits, digits),
+                          (string.punctuation, punctuation)):
+        if switch:
+            charset = charset + chars
+    return ''.join(random.choice(charset) for _ in range(length))
 
 # Model fixtures from /inputs/models -------------------------------------------
 # Hint: Before adding 25cm models, update files (see inj model folders, jdilly 2021)

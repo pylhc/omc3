@@ -7,7 +7,7 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 import re
 from pathlib import Path
-from typing import List
+from typing import List, Union, Sequence
 
 import numpy
 import pandas as pd
@@ -26,6 +26,7 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_DAT,
 )
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -65,7 +66,7 @@ class Accelerator:
         params = EntryPointParameters()
         params.add_parameter(
             name="model_dir",
-            type=Path,
+            type=PathOrStr,
             help="Path to model directory; loads tunes and excitation from model!",
         )
         params.add_parameter(
@@ -132,7 +133,7 @@ class Accelerator:
                     "Arguments 'nat_tunes' and 'driven_tunes' are "
                     "not allowed when loading from model directory."
                 )
-            self.init_from_model_dir(opt.model_dir)
+            self.init_from_model_dir(Path(opt.model_dir))
 
         else:
             self.init_from_options(opt)
@@ -158,8 +159,7 @@ class Accelerator:
 
     def init_from_model_dir(self, model_dir: Path) -> None:
         LOG.debug("Creating accelerator instance from model dir")
-        self.model_dir = Path(model_dir)
-
+        self.model_dir = model_dir
         # Elements #####################################
         elements_path = model_dir / TWISS_ELEMENTS_DAT
         if not elements_path.is_file():
@@ -259,14 +259,17 @@ class Accelerator:
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
-    def get_exciter_bpm(self, plane, distance):
+    def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         """
         Returns the BPM next to the exciter.
         The `Accelerator` instance knows already which excitation method is used.
 
         Args:
             plane: **X** or **Y**.
-            distance: 1=nearest bpm 2=next to nearest bpm.
+            commonbpms: list of common BPMs (e.g. intersection of input BPMs.
+
+        Returns:
+            `((index, bpm_name), exciter_name): tuple(int, str), str)`
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -299,7 +302,7 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, tiwss_out_path, corrections_file_path):
+    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
         """
         Returns job (string) to create an updated model from changeparameters input (used in
         iterative correction).

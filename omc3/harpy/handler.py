@@ -71,7 +71,7 @@ def run_per_bunch(tbt_data, harpy_input):
 
     for plane in PLANES:
         lins[plane] = lins[plane].join(frequency.find_resonances(
-            measured_tunes, bpm_datas[plane].shape[1], plane, spectra[plane]))
+            measured_tunes, bpm_datas[plane].shape[1], plane, spectra[plane], harpy_input.resonances))
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
@@ -149,7 +149,7 @@ def _sync_phase(lin_frame, plane):
     return lin_frame
 
 
-def _compute_headers(panda, date):
+def _compute_headers(panda, date=None):
     headers = OrderedDict()
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
@@ -159,8 +159,9 @@ def _compute_headers(panda, date):
                 pass
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
-                headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
-    headers["TIME"] = date.strftime(formats.TIME)
+                headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)  # TODO: not really the RMS?
+    if date:
+        headers["TIME"] = date.strftime(formats.TIME)
     return headers
 
 

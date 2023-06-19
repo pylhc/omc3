@@ -23,7 +23,7 @@ from omc3.definitions.constants import PLANES
 
 MOTION = dict(free="_f", driven="_d")
 PLANE_TO_NUM = dict(X=1, Y=2)
-COUP = dict(X="01", Y="10")
+COUPLING_INDICES = dict(X="01", Y="10")
 OTHER = dict(X="Y", Y="X")
 NOISE = 1e-4
 NTURNS = 6600
@@ -72,17 +72,27 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0, beam_directio
                                          + dpp * model.loc[:, f"DMU{plane}{motion}"]
                                          + (noise_freq_domain / (2 * np.pi)) *np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
         lin[f"ERRMU{plane}"] = noise_freq_domain / (2 * np.pi)
+
+        lin[f"ERRAMP{plane}"] = noise_freq_domain * np.random.randn(nbpms)
+
         lin[f"AMP{plane}"] = np.sqrt(model.loc[:, f"BET{plane}{motion}"] * ACTION *
                                      (1 + dpp * np.sin(2 * np.pi * model.loc[:, f"PHI{plane}{motion}"])
-                                      * model.loc[:, f"W{plane}{motion}"])) + noise_freq_domain * np.random.randn(nbpms)
+                                      * model.loc[:, f"W{plane}{motion}"])) + lin[f"ERRAMP{plane}"]
+
+        lin[f"ERRAMP{plane}"] = np.abs(lin[f"ERRAMP{plane}"])  # * 2  divided by two removed?
 
         lin[f"NATMU{plane}"] = np.remainder(model.loc[:, f"MU{plane}{MOTION['free']}"]
                                             + (NAT_OVER_DRV * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
-        lin[f"NATAMP{plane}"] = NAT_OVER_DRV * np.sqrt(ACTION * model.loc[:, f"BET{plane}{MOTION['free']}"]) + noise_freq_domain * np.random.randn(nbpms)
 
-        lin[f"PHASE{COUP[plane]}"] = np.remainder(model.loc[:, f"MU{OTHER[plane]}{motion}"] + dpp * model.loc[:, f"DMU{OTHER[plane]}{motion}"]
+        lin[f"ERRNATAMP{plane}"] = noise_freq_domain * np.random.randn(nbpms)
+
+        lin[f"NATAMP{plane}"] = NAT_OVER_DRV * np.sqrt(ACTION * model.loc[:, f"BET{plane}{MOTION['free']}"]) + lin[f"ERRNATAMP{plane}"]
+
+        lin[f"ERRNATAMP{plane}"] = np.abs(lin[f"ERRNATAMP{plane}"])  # * 2  divided by two removed?
+
+        lin[f"PHASE{COUPLING_INDICES[plane]}"] = np.remainder(model.loc[:, f"MU{OTHER[plane]}{motion}"] + dpp * model.loc[:, f"DMU{OTHER[plane]}{motion}"]
                                                   + (COUPLING * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
-        lin[f"AMP{COUP[plane]}"] = COUPLING * np.sqrt(ACTION *model.loc[:, f"BET{OTHER[plane]}{motion}"]
+        lin[f"AMP{COUPLING_INDICES[plane]}"] = COUPLING * np.sqrt(ACTION *model.loc[:, f"BET{OTHER[plane]}{motion}"]
                                                   * (1 + dpp * np.sin(model.loc[:, f"PHI{OTHER[plane]}{motion}"]) * model.loc[:, f"W{OTHER[plane]}{motion}"])) + COUPLING * noise_freq_domain * np.random.randn(nbpms)
 
         # backwards compatibility with drive  TODO remove

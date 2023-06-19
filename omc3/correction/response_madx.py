@@ -23,8 +23,9 @@ import tfs
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction.constants import (BETA, DISP, F1001, F1010, INCR,
-                                       NORM_DISP, PHASE_ADV, TUNE, PHASE)
+from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
+                                       NORM_DISPERSION, PHASE_ADV, TUNE, PHASE)
+from omc3.correction.constants import INCR
 from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
@@ -166,7 +167,7 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
     var_to_twiss = _add_coupling(var_to_twiss)
     keys = list(var_to_twiss.keys())
 
-    columns = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETA}X", f"{BETA}Y", f"{DISP}X", f"{DISP}Y",
+    columns = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETA}X", f"{BETA}Y", f"{DISPERSION}X", f"{DISPERSION}Y",
                f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I", f"{TUNE}1", f"{TUNE}2", INCR]
 
     bpms = var_to_twiss["0"].index
@@ -179,10 +180,14 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
     model_index = list(keys).index("0")
 
     # create normalized dispersion and dividing BET by nominal model
-    NDX_arr = np.divide(resp[columns.index(f"{DISP}X")], np.sqrt(resp[columns.index(f"{BETA}X")]))
-    NDY_arr = np.divide(resp[columns.index(f"{DISP}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")]))
-    resp[columns.index(f"{BETA}X")] = np.divide(resp[columns.index(f"{BETA}X")], resp[columns.index(f"{BETA}X"), : , model_index][:, np.newaxis])
-    resp[columns.index(f"{BETA}Y")] = np.divide(resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), : , model_index][:, np.newaxis])
+    NDX_arr = np.divide(resp[columns.index(f"{DISPERSION}X")], np.sqrt(resp[columns.index(f"{BETA}X")]))
+    NDY_arr = np.divide(resp[columns.index(f"{DISPERSION}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")]))
+    resp[columns.index(f"{BETA}X")] = np.divide(
+        resp[columns.index(f"{BETA}X")], resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis]
+    )
+    resp[columns.index(f"{BETA}Y")] = np.divide(
+        resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
+    )
 
     # subtracting nominal model from data
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
@@ -206,10 +211,10 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
             f"{PHASE_ADV}Y": pd.DataFrame(data=resp[columns.index(f"{PHASE_ADV}Y")], index=bpms, columns=keys).astype(np.float64),
             f"{BETA}X": pd.DataFrame(data=resp[columns.index(f"{BETA}X")], index=bpms, columns=keys).astype(np.float64),
             f"{BETA}Y": pd.DataFrame(data=resp[columns.index(f"{BETA}Y")], index=bpms, columns=keys).astype(np.float64),
-            f"{DISP}X": pd.DataFrame(data=resp[columns.index(f"{DISP}X")], index=bpms, columns=keys).astype(np.float64),
-            f"{DISP}Y": pd.DataFrame(data=resp[columns.index(f"{DISP}Y")], index=bpms, columns=keys).astype(np.float64),
-            f"{NORM_DISP}X": pd.DataFrame(data=NDX_arr, index=bpms, columns=keys).astype(np.float64),
-            f"{NORM_DISP}Y": pd.DataFrame(data=NDY_arr, index=bpms, columns=keys).astype(np.float64),
+            f"{DISPERSION}X": pd.DataFrame(data=resp[columns.index(f"{DISPERSION}X")], index=bpms, columns=keys).astype(np.float64),
+            f"{DISPERSION}Y": pd.DataFrame(data=resp[columns.index(f"{DISPERSION}Y")], index=bpms, columns=keys).astype(np.float64),
+            f"{NORM_DISPERSION}X": pd.DataFrame(data=NDX_arr, index=bpms, columns=keys).astype(np.float64),
+            f"{NORM_DISPERSION}Y": pd.DataFrame(data=NDY_arr, index=bpms, columns=keys).astype(np.float64),
             f"{F1001}R": pd.DataFrame(data=resp[columns.index(f"{F1001}R")], index=bpms, columns=keys).astype(np.float64),
             f"{F1001}I": pd.DataFrame(data=resp[columns.index(f"{F1001}I")], index=bpms, columns=keys).astype(np.float64),
             f"{F1010}R": pd.DataFrame(data=resp[columns.index(f"{F1010}R")], index=bpms, columns=keys).astype(np.float64),

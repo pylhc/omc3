@@ -2,10 +2,11 @@
 Plotting Utilities: Annotations
 -------------------------------
 
-Helper functions to create annotations as well as style labels in plots.
+Helper functions to create annotations, legends as well as style labels in plots.
 """
+import itertools
 import re
-from distutils.version import LooseVersion
+from typing import Union
 
 import matplotlib
 import pandas as pd
@@ -142,7 +143,7 @@ def get_ip_positions(path):
     """
     df = tfs.read_tfs(path).set_index('NAME')
     ip_names = [f"IP{i:d}" for i in range(1, 9)]
-    ip_pos = df.loc[ip_names, 'S'].values
+    ip_pos = df.loc[ip_names, 'S'].to_numpy()
     return dict(zip(ip_names, ip_pos))
 
 
@@ -277,18 +278,37 @@ def get_legend_ncols(labels, max_length=78):
     return max([max_length/max([len(l) for l in labels]), 1])
 
 
-def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
+def transpose_legend_order(ncol, handles=None, labels=None, ax=None):
+    """ Reorder handles and labels, so that the legend order is transposed,
+    i.e. the entries are row-first instead of column-first."""
+    def reorder(items):
+        return list(itertools.chain(*[items[i::ncol] for i in range(ncol)]))
+
+    if handles is None or labels is None:
+        if ax is None:
+            ax = plt.gca()
+
+        ax_handles, ax_labels = ax.get_legend_handles_labels()
+        if handles is None:
+            handles = ax_handles
+
+        if labels is None:
+            labels = ax_labels
+
+    return reorder(handles), reorder(labels)
+
+
+def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02, transposed=False):
     """Create a legend on top of the plot."""
     if ncol < 1:
         return
 
+    if transposed:
+        handles, labels = transpose_legend_order(ncol, handles, labels, ax)
+
     leg = ax.legend(handles=handles, labels=labels, loc='lower right',
                     bbox_to_anchor=(1.0, 1.0+pad),
                     fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
-
-    if LooseVersion(matplotlib.__version__) <= LooseVersion("2.2.0"):
-        legend_height = leg.get_window_extent().inverse_transformed(leg.axes.transAxes).height
-        ax.figure.tight_layout(rect=[0, 0, 1, 1+pad-legend_height])
 
     leg.axes.figure.canvas.draw()
     legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
@@ -297,9 +317,6 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02):
         ax.legend(handles=handles, labels=labels, loc='lower right',
                   bbox_to_anchor=(1.0 + x_shift, 1.0+pad),
                   fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
-
-    if LooseVersion(matplotlib.__version__) >= LooseVersion("2.2.0"):
-        ax.figure.tight_layout()
 
     return leg
 
@@ -350,3 +367,21 @@ def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, ma
     ax.ticklabel_format(axis=axis, style="sci", scilimits=(order, order), useMathText=math_text)
 
     return ax
+
+
+def get_fontsize_as_float(font_size: Union[str, float]) -> float:
+    try:
+        scale = {
+            'xx-small': 0.579,
+            'x-small': 0.694,
+            'small': 0.833,
+            'medium': 1.0,
+            'large': 1.200,
+            'x-large': 1.440,
+            'xx-large': 1.728,
+            'larger': 1.2,
+            'smaller': 0.833,
+            None: 1.0}[font_size]
+    except KeyError:
+        return font_size
+    return scale * matplotlib.rcParams['font.size']

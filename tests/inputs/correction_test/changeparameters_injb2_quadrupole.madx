@@ -1,0 +1,16 @@
+! Values to match model to measurement. 
+kq4.l1b2 = kq4.l1b2 -2.633198e-05;
+kq4.r1b2 = kq4.r1b2 -8.052008e-06;
+kq5.l2b2 = kq5.l2b2 +2.655484e-05;
+kq4.l2b2 = kq4.l2b2 +1.332544e-05;
+kq4.r2b2 = kq4.r2b2 -7.543538e-05;
+kq6.l4b2 = kq6.l4b2 +7.920224e-06;
+kq5.l4b2 = kq5.l4b2 -1.025847e-04;
+kq5.r4b2 = kq5.r4b2 +4.585943e-06;
+kq6.r4b2 = kq6.r4b2 +2.642731e-06;
+kq4.l5b2 = kq4.l5b2 -1.483156e-05;
+kq4.r5b2 = kq4.r5b2 -8.864330e-06;
+kq5.l6b2 = kq5.l6b2 +1.555796e-06;
+kq5.r6b2 = kq5.r6b2 +4.304689e-06;
+kq4.l8b2 = kq4.l8b2 -1.285579e-04;
+kq4.r8b2 = kq4.r8b2 +2.051115e-05;

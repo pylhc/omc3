@@ -9,6 +9,7 @@ from datetime import datetime
 
 TIME = "%Y_%m_%d@%H_%M_%S_%f"  # CERN default
 CONFIG_FILENAME = "{script:s}_{time:s}.ini"
+BACKUP_FILENAME = "{basefile}_backup{counter}"
 
 
 def get_config_filename(script):
