@@ -75,6 +75,13 @@ def test_two_important_number(some_numbers):
            stats.circular_error(some_numbers[:2], errors=np.ones(2), t_value_corr=False)
 
 
+@pytest.mark.basic
+def test_rms():
+    """ Tests the rms-function."""
+    for _ in range(5):
+        vec = np.random.rand(100)
+        assert np.sqrt(np.mean(np.square(vec))) == stats.rms(vec)
+
 # Utilities ###################################################################
 
 @pytest.fixture

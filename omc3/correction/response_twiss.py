@@ -117,17 +117,17 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
     https://cds.cern.ch/record/2632945/
 
 """
-import copy
 from typing import Dict, List, Sequence
 
 import numpy as np
 import pandas as pd
-import tfs
 
-from omc3.correction.constants import BETA, DISP, F1001, F1010, NORM_DISP, PHASE_ADV, TUNE, S, PHASE
 from omc3.correction.response_io import read_varmap
 from omc3.correction.sequence_evaluation import check_varmap_file
 from omc3.model.accelerators.accelerator import Accelerator
+from omc3.optics_measurements.constants import (
+    BETA, DISPERSION, F1001, F1010, NORM_DISPERSION, PHASE_ADV, TUNE, S, PHASE
+)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
@@ -352,8 +352,8 @@ class TwissResponse:
                 "Y": {"K0SL": -1, "K1L": 1, "K1SL": 1},
             }
             col_disp_map = {
-                "X": {"K1L": f"{DISP}X", "K1SL": f"{DISP}Y"},
-                "Y": {"K1L": f"{DISP}Y", "K1SL": f"{DISP}X"},
+                "X": {"K1L": f"{DISPERSION}X", "K1SL": f"{DISPERSION}Y"},
+                "Y": {"K1L": f"{DISPERSION}Y", "K1SL": f"{DISPERSION}X"},
             }
             q_map = {"X": tw.Q1, "Y": tw.Q2}
             disp_resp = dict.fromkeys([f"{p}_{t}" for p in sign_map for t in sign_map[p]])
@@ -404,8 +404,8 @@ class TwissResponse:
                 "Y": {"K0SL": -1, "K1L": 1, "K1SL": 1},
             }
             col_disp_map = {
-                "X": {"K1L": f"{DISP}X", "K1SL": f"{DISP}Y"},
-                "Y": {"K1L": f"{DISP}Y", "K1SL": f"{DISP}X"},
+                "X": {"K1L": f"{DISPERSION}X", "K1SL": f"{DISPERSION}Y"},
+                "Y": {"K1L": f"{DISPERSION}Y", "K1SL": f"{DISPERSION}X"},
             }
             sign_correct_term = {
                 "X": {"K1L": 1},
@@ -741,7 +741,7 @@ class TwissResponse:
 
         def tune_caller(func, _unused):
             tune = func()
-            res = tune["X"].append(tune["Y"])
+            res = pd.concat([tune["X"], tune["Y"]], axis="index", ignore_index=True)
             res.index = [f"{TUNE}1", f"{TUNE}2"]
             return res
 
@@ -759,10 +759,10 @@ class TwissResponse:
             f"{BETA}Y": (caller, self.get_beta_beat, "Y"),
             f"{PHASE_ADV}X": (caller, self.get_phase, "X"),
             f"{PHASE_ADV}Y": (caller, self.get_phase, "Y"),
-            f"{DISP}X": (disp_caller, self.get_dispersion, "X"),
-            f"{DISP}Y": (disp_caller, self.get_dispersion, "Y"),
-            f"{NORM_DISP}X": (disp_caller, self.get_norm_dispersion, "X"),
-            f"{NORM_DISP}Y": (disp_caller, self.get_norm_dispersion, "Y"),
+            f"{DISPERSION}X": (disp_caller, self.get_dispersion, "X"),
+            f"{DISPERSION}Y": (disp_caller, self.get_dispersion, "Y"),
+            f"{NORM_DISPERSION}X": (disp_caller, self.get_norm_dispersion, "X"),
+            f"{NORM_DISPERSION}Y": (disp_caller, self.get_norm_dispersion, "Y"),
             f"{F1001}R": (couple_caller, self.get_coupling, "1001R"),
             f"{F1001}I": (couple_caller, self.get_coupling, "1001I"),
             f"{F1010}R": (couple_caller, self.get_coupling, "1010R"),

@@ -8,7 +8,7 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 import re
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Union, Sequence
 
 import numpy
 import pandas as pd
@@ -274,14 +274,17 @@ class Accelerator:
             if self.excitation != AccExcitationMode.FREE and self.drv_tunes is None:
                 raise AttributeError("Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)")
 
-    def get_exciter_bpm(self, plane, distance):
+    def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         """
         Returns the BPM next to the exciter.
         The `Accelerator` instance knows already which excitation method is used.
 
         Args:
             plane: **X** or **Y**.
-            distance: 1=nearest bpm 2=next to nearest bpm.
+            commonbpms: list of common BPMs (e.g. intersection of input BPMs.
+
+        Returns:
+            `((index, bpm_name), exciter_name): tuple(int, str), str)`
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -314,7 +317,7 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, tiwss_out_path, corrections_file_path):
+    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
         """
         Returns job (string) to create an updated model from changeparameters input (used in
         iterative correction).

@@ -1,5 +1,48 @@
 # OMC3 Changelog
 
+#### 2023-06-16 - v0.11.1 - _jdilly_
+
+- Fixed:
+ - OptionalString: 'None' as input is converted to None.
+ - Missing Kerberos config added to MANIFEST for packaging.
+ - Plot Optics plots now correct error-column, e.g. for beta-beating.
+ - Added warnings/errors for too few bpms in N-BPM/3-BPM methods. 
+ - Added navbar to sphinx documentation.
+
+- Tests:
+ - Added test for the classes in omc3.plotting.utils.windows
+
+#### 2023-06-05 - v0.11.0 - _jdilly_
+
+- Added:
+ - `omc3.plotting.utils.windows`: Qt-based windows and widgets for matplotlib-figure organization.
+ - Using the new windows in `omc3.plotting.plot_checked_corrections` and `omc3.plotting.plot_tfs`
+
+#### 2023-05-15 - v0.10.0 - _jdilly_
+
+- Added:
+  - `omc3.check_corrections`: A new feature to check the validity of corrections.
+  - `omc3.plotting.plot_checked_corrections`: Function to plot the checked corrections.
+  - Unified optics-columns naming in `omc3.definitions.optics`
+    (but not yet propagated through the code)
+  - Function to calculate RMS in `omc3.utils.stats.rms`.
+
+- Fixed:
+  - Some minor bugs with fake datatypes
+  - Doc of `ArrayType` typehints
+
+#### 2023-04-27 - v0.9.0 - _jdilly_
+
+- Added:
+  - RBAC token provider in omc3.utils.rbac
+  - pylogbook wrapper in omc3.scripts.create_logbook_entry
+
+#### 2023-04-20 - v0.8.0 - _jdilly_
+
+- Fix:
+  - Changed all `pandas`/`tfs-pandas` `append()` and `join()` to `concat()`
+  - Moved `InputFiles` into separate module
+
 #### 2023-03-16 - v0.7.2 - _jdilly_
 
 - Fix: 
