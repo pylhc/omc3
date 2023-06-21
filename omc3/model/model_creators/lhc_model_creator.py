@@ -164,7 +164,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         )
         return madx_script
 
-    def check_run_output(self) -> None:
+    def post_run(self) -> None:
         files_to_check = [TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
         self._check_files_exist(self.accel.model_dir, files_to_check)
 
@@ -192,7 +192,7 @@ class LhcCorrectionModelCreator(LhcModelCreator):
 
     def get_madx_script(self) -> str:
         accel = self.accel
-        madx_script = f"! Based on model '{self.accel.model_dir}'\n{self.get_base_madx_script()}" 
+        madx_script = f"! Based on model '{self.accel.model_dir}'\n{self.accel.get_base_madx_script()}" 
         for corr_file in self.change_params:
             madx_script += f"call, file = '{str(corr_file)}';\n"
         madx_script += f"exec, do_twiss_elements(LHCB{accel.beam}, '{str(self.twiss_out)}', {accel.dpp});\n"
@@ -207,7 +207,7 @@ class LhcCorrectionModelCreator(LhcModelCreator):
         if not macros_path.exists():
             raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path:s}.")
     
-    def check_run_output(self) -> None:
+    def post_run(self) -> None:
         files_to_check = [self.twiss_out, self.jobfile, self.logfile]
         self._check_files_exist(self.accel.model_dir, files_to_check)
 
