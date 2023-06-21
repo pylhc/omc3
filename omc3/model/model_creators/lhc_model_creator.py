@@ -245,8 +245,8 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
             f"    {self.segment.end},",
             f");",
             f"",
-            f"exec, beam_LHCB{accel.beam}(front_LHCB{accel.beam});",
-            f"exec, beam_LHCB{accel.beam}(back_LHCB{accel.beam});",
+            f"exec, beam_LHCB{accel.beam}(front_LHCB{accel.beam});",  # TODO: use engery in macro
+            f"exec, beam_LHCB{accel.beam}(back_LHCB{accel.beam});",  # TODO: use engery in macro
             f"exec, twiss_segment(front_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",
             f"exec, twiss_segment(back_LHCB{accel.beam}, \"{self.twiss_backward!s}\", bendLHCB{accel.beam});",
             "",

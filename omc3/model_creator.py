@@ -8,14 +8,12 @@ from pathlib import Path
 
 from generic_parser import EntryPointParameters, entrypoint
 
-from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
-    LhcCorrectionCreator,
+    LhcCorrectionModelCreator,
     LhcModelCreator,
-    LhcSegmentCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
@@ -28,7 +26,7 @@ LOG = logging_tools.get_logger(__name__)
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
             "best_knowledge": LhcBestKnowledgeCreator,
-            "correction": LhcCorrectionCreator},
+            "correction": LhcCorrectionModelCreator},
     "psbooster": {"nominal": PsboosterModelCreator},
     "ps": {"nominal": PsModelCreator},
 }

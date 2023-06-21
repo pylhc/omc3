@@ -57,6 +57,9 @@ class Propagable(ABC):
     def init_conditions_dict(self):
         """Return a dictionary containing the inital values at start and end
         of the segment.
+
+        For the naming, see `save_initial_and_final_values` macro in 
+        `omc3/model/madx_macros/geeral.macros.madx`.
         """
         if self._init_pattern is None:
             raise NotImplementedError(
