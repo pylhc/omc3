@@ -17,8 +17,7 @@ from pandas import Series
 
 from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import OpticsMeasurement
-from omc3.optics_measurements.constants import (NAME, S, ALPHA, BETA, ERR,  PHASE,
-                                                PHASE_ADV)
+from omc3.optics_measurements.constants import ALPHA, BETA, ERR, NAME, PHASE, PHASE_ADV, S
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.constants import BACKWARD, CORRECTED, FORWARD
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels

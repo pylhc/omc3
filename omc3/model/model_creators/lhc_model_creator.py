@@ -192,7 +192,7 @@ class LhcCorrectionModelCreator(LhcModelCreator):
 
     def get_madx_script(self) -> str:
         accel = self.accel
-        madx_script = f"! Based on model '{self.accel_inst.model_dir}'\n{self.get_base_madx_script()}" 
+        madx_script = f"! Based on model '{self.accel.model_dir}'\n{self.get_base_madx_script()}" 
         for corr_file in self.change_params:
             madx_script += f"call, file = '{str(corr_file)}';\n"
         madx_script += f"exec, do_twiss_elements(LHCB{accel.beam}, '{str(self.twiss_out)}', {accel.dpp});\n"

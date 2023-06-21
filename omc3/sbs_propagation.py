@@ -5,23 +5,20 @@ Segment-by-Segment Correction
 TODO
 
 """
-
-from collections import Iterable
 from pathlib import Path
 from typing import List, Tuple, Union
 
 from generic_parser import DotDict, EntryPointParameters, entrypoint
 from pandas import DataFrame
 
-from omc3.definitions.constants import PLANES
-from omc3.definitions.optics import OpticsMeasurement 
 from omc3 import model_creator
+from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
-from omc3.segment_by_segment.segments import (SbsDefinitionError, Segment,
-                                              SegmentDiffs, SegmentModels)
+from omc3.segment_by_segment.segments import (SbsDefinitionError, Segment, SegmentDiffs,
+                                              SegmentModels)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 

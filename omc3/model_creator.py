@@ -117,8 +117,8 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     accel_inst = manager.get_accelerator(accel_opt)
     accel_inst.model_dir = opt.outputdir
 
-    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.model_type}")
-    creator = CREATORS[accel_inst.NAME][opt.model_type](accel_inst, logfile=opt.logfile)
+    LOG.info(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
+    creator = CREATORS[accel_inst.NAME][opt.type](accel_inst, logfile=opt.logfile)
     creator.full_run()
     return accel_inst
 

@@ -7,7 +7,7 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 import re
 from pathlib import Path
-from typing import List, Union, Sequence
+from typing import List
 
 import numpy
 import pandas as pd
