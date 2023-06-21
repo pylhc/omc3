@@ -186,8 +186,10 @@ class LhcCorrectionModelCreator(LhcModelCreator):
         """
         super().__init__(accel, *args, **kwargs)
         self.twiss_out = Path(twiss_out)
-        self.jobfile = self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.madx",
-        self.logfile= self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.log",
+
+        # use absolute paths to force files into twiss_out directory instead of model-dir
+        self.jobfile = self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.madx"
+        self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.change_params = change_params
 
     def get_madx_script(self) -> str:
