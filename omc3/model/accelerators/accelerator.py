@@ -302,13 +302,6 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
-        """
-        Returns job (string) to create an updated model from changeparameters input (used in
-        iterative correction).
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
     def get_base_madx_script(self, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.

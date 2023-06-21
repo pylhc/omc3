@@ -1,36 +1,44 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 from tfs.collection import TfsCollection, Tfs
 
-from omc3.segment_by_segment.constants import twiss_forward, twiss_backward, twiss_forward_corrected, \
-    twiss_backward_corrected
+from omc3.segment_by_segment.constants import (twiss_forward, twiss_backward, twiss_forward_corrected, 
+    twiss_backward_corrected)
+from omc3.optics_measurements.constants import (
+    BETA_NAME, AMP_BETA_NAME, KMOD_BETA_NAME, PHASE_NAME, DISPERSION_NAME, NORM_DISP_NAME, EXT
+)
 
 
+@ dataclass
 class Segment:
-
-    def __init__(self, name, start, end):
-        self.name = name
-        self.start = start
-        self.end = end
-        self.element = None
-        self.ini_conds = None
+    name: str
+    start: str
+    end: str
+    element: str = None
+    init_conds: str = None
 
     @staticmethod
     def init_from_element(element_name):
-        fake_segment = Segment(element_name, element_name, element_name)
-        fake_segment.element = element_name
-        return fake_segment
+        segment = Segment(element_name, element_name, element_name)
+        segment.element = element_name
+        return segment
+    
+
+    def __str__(self):
+        return f"{self.name} ({self.start} - {self.end})"
 
 
-class SegmentModels(TfsCollection):  # write_to does not need to be implemented
+class SegmentModels(TfsCollection):
     """
     Class to hold and load the models of the segments created by MAD-X.
+    The filenames need to be the same as in 
+    :class:`omc3.model.model_creators.abstract_model_creator.SegmentCreator`.
 
     Arguments:
         directory: The path where to find the models.
         segment: A segment instance corresponding to the model to load.
     """
-
     forward = Tfs(twiss_forward, two_planes=False)
     backward = Tfs(twiss_backward, two_planes=False)
     forward_corrected = Tfs(twiss_forward_corrected, two_planes=False)
@@ -40,40 +48,39 @@ class SegmentModels(TfsCollection):  # write_to does not need to be implemented
         super(SegmentModels, self).__init__(directory)
         self.segment = segment
 
-    def get_filename(self, template: str):
+    def _get_filename(self, template: str):
         return template.format(self.segment.name)
 
 
-class SegmentBeatings(TfsCollection):  # write_to does not need to be implemented
+class SegmentDiffs(TfsCollection):
     """
     TfsCollection of segment-by-segment outputfiles for the differences
     between propagated model and measurements.
 
     Arguments:
         directory: The path where to write the files to/find the files.
-        seg_name: A segment corresponding to the model to load.
+        segment_name: Name of the segment corresponding to the model to load.
     """
+    PREFIX = "sbs_"
 
-    beta_phase = Tfs("sbsbetabeating{plane}_{name}.out")
-    beta_kmod = Tfs("sbskmodbetabeat{plane}_{name}.out")
-    beta_amp = Tfs("sbsampbetabeat{plane}_{name}.out")
-    phase = Tfs("sbsphase{plane}_{name}.out")
-    coupling = Tfs("sbscouple_{name}.out", two_planes=False)
-    disp = Tfs("sbsD{plane}_{name}.out")
-    norm_disp = Tfs("sbsNDx_{name}.out", two_planes=False)
+    beta_phase = Tfs(f"{PREFIX}{BETA_NAME}{{plane}}_{{name}}{EXT}")
+    beta_kmod = Tfs(f"{PREFIX}{KMOD_BETA_NAME}{{plane}}_{{name}}{EXT}")
+    beta_amp = Tfs(f"{PREFIX}{AMP_BETA_NAME}{{plane}}_{{name}}{EXT}")
+    phase = Tfs(f"{PREFIX}{PHASE_NAME}{{plane}}_{{name}}{EXT}")
+    dispersion = Tfs(f"{PREFIX}{DISPERSION_NAME}{{plane}}_{{name}}{EXT}")
+    norm_dispersion = Tfs(f"{PREFIX}{NORM_DISP_NAME}{{plane}}_{{name}}{EXT}")
+    # TODO: Add coupling!
 
-    def __init__(self, directory: Path, segment: Segment):
-        super(SegmentBeatings, self).__init__(directory)
-        self.segment = segment
+    def __init__(self, directory: Path, segment_name: str):
+        super(SegmentDiffs, self).__init__(directory)
+        self.segment_name = segment_name 
 
-    def get_filename(self, template: str, plane: str=None):
+    def _get_filename(self, template: str, plane: str=None):
         if plane is None:
-            return template.format(name=self.segment.name)
-        return template.format(plane=plane.lower(), name=self.segment.name)
+            return template.format(name=self.segment_name)
+        return template.format(plane=plane.lower(), name=self.segment_name)
 
 
 class SbsDefinitionError(Exception):
-    """
-    TODO
-    """
+    """ Exception to be raised when the sbs definition is invalid."""
     pass

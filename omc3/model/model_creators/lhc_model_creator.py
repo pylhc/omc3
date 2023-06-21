@@ -7,7 +7,7 @@ This module provides convenience functions for model creation of the ``LHC``.
 import logging
 import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -28,7 +28,6 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
-    JOB_MODEL_MADX,
     ACCELERATOR_MODEL_REPOSITORY
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, SegmentCreator
@@ -51,8 +50,8 @@ class LhcModelCreator(ModelCreator):
     def __init__(self, accel: Lhc, *args, **kwargs):
         super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
 
-    @classmethod
-    def get_madx_script(cls, accel: Lhc) -> str:  # nominal
+    def get_madx_script(self) -> str:  # nominal
+        accel = self.accel
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
         madx_script = accel.get_base_madx_script()
@@ -72,32 +71,17 @@ class LhcModelCreator(ModelCreator):
             )
         return madx_script
 
-    @classmethod
-    def get_correction_check_script(
-        cls, accel: Lhc, corr_file: str = "changeparameters_couple.madx", chrom: bool = False
-    ) -> str:
-        madx_script = accel.get_base_madx_script()
-        madx_script += (
-            f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / 'twiss_no.dat'!s}', 0.0);\n"
-            f"call, file = '{corr_file}';\n"
-            f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / 'twiss_cor.dat'!s}', 0.0);\n"
-        )
-        if chrom:
-            madx_script += (
-                f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / 'twiss_cor_dpm.dat'}', %DELTAPM);\n"
-                f"exec, do_twiss_monitors_and_ips(LHCB{accel.beam}, '{accel.model_dir / 'twiss_cor_dpp.dat'}', %DELTAPP);\n"
-            )
-        return madx_script
 
-    @classmethod
-    def prepare_run(cls, accel: Lhc) -> None:
+    def prepare_run(self) -> None:
+        accel = self.accel
+
         if accel.year in ["2018", "2022"]:  # these years should be handled by the fetcher
             symlink_dst = Path(accel.model_dir)/LHC_REPOSITORY_NAME
             if not symlink_dst.exists():
                 LOGGER.debug(f"Symlink destination: {symlink_dst}")
                 symlink_dst.absolute().symlink_to((ACCELERATOR_MODEL_REPOSITORY/f"{accel.year}"))
 
-        cls.check_accelerator_instance(accel)
+        self.check_accelerator_instance()
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
         iotools.create_dirs(macros_path)
@@ -131,8 +115,9 @@ class LhcModelCreator(ModelCreator):
                 save_index="NAME",
             )
 
-    @staticmethod
-    def check_accelerator_instance(accel: Lhc) -> None:
+    def check_accelerator_instance(self) -> None:
+        accel = self.accel
+
         accel.verify_object()  # should have been done anyway, but cannot hurt (jdilly)
 
         # Creator specific checks
@@ -159,15 +144,16 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
     CORRECTIONS_FILENAME: str = "corrections.madx"
 
-    @classmethod
-    def get_madx_script(cls, accel: Lhc) -> str:
+    def get_madx_script(self) -> str:
+        accel = self.accel
+
         if accel.excitation is not AccExcitationMode.FREE:
             raise AcceleratorDefinitionError("Don't set ACD or ADT for best knowledge model.")
         if accel.energy is None:
             raise AcceleratorDefinitionError("Best knowledge model requires energy.")
 
-        corrections_file = accel.model_dir / cls.CORRECTIONS_FILENAME  # existence is tested in madx
-        mqts_file = accel.model_dir / cls.EXTRACTED_MQTS_FILENAME  # existence is tested in madx
+        corrections_file = accel.model_dir / self.CORRECTIONS_FILENAME  # existence is tested in madx
+        mqts_file = accel.model_dir / self.EXTRACTED_MQTS_FILENAME  # existence is tested in madx
 
         madx_script = accel.get_base_madx_script(best_knowledge=True)
         madx_script += (
@@ -178,16 +164,52 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         )
         return madx_script
 
-    @classmethod
-    def check_run_output(cls, accel: Lhc) -> None:
+    def check_run_output(self) -> None:
         files_to_check = [TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
-        cls._check_files_exist(accel.model_dir, files_to_check)
+        self._check_files_exist(self.accel.model_dir, files_to_check)
 
 
-class LhcCouplingCreator(LhcModelCreator):
-    @classmethod
-    def get_madx_script(cls, accel: Lhc) -> str:
-        return cls.get_correction_check_script(accel)
+class LhcCorrectionModelCreator(LhcModelCreator):
+    """
+    Creates an updated model from multiple changeparameters inputs 
+    (used in iterative correction).
+    """
+    jobfile = None  # set in init
+
+    def __init__(self, accel: Lhc, twiss_out: Union[Path, str], change_params: Sequence[Path], *args, **kwargs):
+        """Model creator for the corrected/matched model of the LHC.
+
+        Args:
+            accel (Lhc): Accelerator Class Instance
+            twiss_out (Union[Path, str]): Path to the twiss(-elements) file to write
+            change_params (Sequence[Path]): Sequence of correction/matching files
+        """
+        super().__init__(accel, *args, **kwargs)
+        self.twiss_out = Path(twiss_out)
+        self.jobfile = self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.madx",
+        self.logfile= self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.log",
+        self.change_params = change_params
+
+    def get_madx_script(self) -> str:
+        accel = self.accel
+        madx_script = f"! Based on model '{self.accel_inst.model_dir}'\n{self.get_base_madx_script()}" 
+        for corr_file in self.change_params:
+            madx_script += f"call, file = '{str(corr_file)}';\n"
+        madx_script += f"exec, do_twiss_elements(LHCB{accel.beam}, '{str(self.twiss_out)}', {accel.dpp});\n"
+        return madx_script
+
+    def prepare_run(self) -> None:
+        # As the matched/corrected model is created in the same directory as the original model,
+        # we do not need to prepare as much.
+        self.check_accelerator_instance()
+        LOGGER.debug("Preparing model creation structure")
+        macros_path = self.accel.model_dir / MACROS_DIR
+        if not macros_path.exists():
+            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path:s}.")
+    
+    def check_run_output(self) -> None:
+        files_to_check = [self.twiss_out, self.jobfile, self.logfile]
+        self._check_files_exist(self.accel.model_dir, files_to_check)
 
 
 class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
@@ -197,6 +219,11 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
         madx_script = accel.get_base_madx_script()
 
         madx_script += "\n".join([
+            "",
+            f"! ====================================================",
+            f"! ========= Segment-by-Segment propagation ===========",
+            f"! ====================================================",
+            f"",
             f"use, period = LHCB{accel.beam};",
             f"option, echo;",
             f"",

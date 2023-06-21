@@ -4,19 +4,21 @@ Abstract Model Creator Class
 
 This module provides the template for all model creators.
 """
+import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Sequence, Union, Iterable
+from typing import Iterable, List, Sequence, Union
 
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
-from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
-from omc3.model.constants import JOB_MODEL_MADX
-import logging
-
-from omc3.optics_measurements.io_filehandler import OpticsMeasurement
-from omc3.segment_by_segment.constants import jobfile, twiss_forward_corrected, twiss_backward_corrected, \
-    twiss_backward, twiss_forward, corrections_madx, measurement_madx
+from omc3.model.constants import (JOB_MODEL_MADX, TWISS_AC_DAT, TWISS_ADT_DAT,
+                                  TWISS_DAT, TWISS_ELEMENTS_DAT)
+from omc3.segment_by_segment.constants import (corrections_madx, jobfile,
+                                               measurement_madx,
+                                               twiss_backward,
+                                               twiss_backward_corrected,
+                                               twiss_forward,
+                                               twiss_forward_corrected)
 from omc3.segment_by_segment.propagables import Propagable
 from omc3.segment_by_segment.segments import Segment
 
@@ -69,6 +71,7 @@ class ModelCreator(ABC):
         # Check output and return accelerator instance
         self.post_run()
 
+
     @abstractmethod
     def get_madx_script(self) -> str:
         """
@@ -76,7 +79,8 @@ class ModelCreator(ABC):
             The string of the ``MAD-X`` script used to used to create the model (directory).
         """
         pass
-
+    
+    
     @abstractmethod
     def prepare_run(self) -> None:
         """

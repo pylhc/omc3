@@ -1,3 +1,9 @@
+"""
+Segment by Segment: Constants
+-----------------------------
+
+This module provides constants to be used with segment by segment
+"""
 jobfile = "job.create_segment_{}.madx"
 measurement_madx = "measurement_{}.madx"
 corrections_madx = "corrections_{}.madx"
