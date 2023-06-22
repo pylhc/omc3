@@ -183,23 +183,9 @@ def get_differences(propagables: List[Propagable], segment_name: str = "", outpu
 
 def _get_accelerator_instance(accel_opt: dict, output_dir: Union[Path, str]) -> Accelerator:
     """Get accelerator instance from ``accel_opt`` and create a nominal model if not present."""
-    accel_inst = manager.get_accelerator(accel_opt)
-    if accel_inst.model_dir is None:
-        if output_dir is None:
-            raise SbsDefinitionError(
-                "Give either a valid ``model_dir`` with pre-created model or an ``output_dir``"
-            )
-        LOGGER.info(f"Creating Model in {output_dir}")
-        creator_cls = model_creator.CREATORS[accel_inst.NAME]['nominal']
-        accel_inst.model_dir = Path(output_dir)
-        creator = creator_cls(accel_inst)
-        creator.full_run()
-
-        # Initialize from this model dir, so that elements are loaded
-        new_accel_opt = _get_required_accelerator_parameters(accel_inst)
-        new_accel_opt['model_dir'] = accel_inst.model_dir
-        accel_inst = accel_inst.__class__(new_accel_opt)
-    return accel_inst
+    if accel_opt.get('model_dir') is not None:
+        return manager.get_accelerator(accel_opt)
+    return model_creator.create_instance_and_model(outputdir=output_dir, **accel_opt)
 
 
 def _check_segments_and_elements(segments: List[str], elements: List[str]) -> Tuple[List[Segment], List[Segment]]:
@@ -294,16 +280,6 @@ def _select_closest(name: str, all_names: pd.Index, eval_cond: Callable[[str], b
                 "Probably wrong model or bad measurement."
             )
     return new_name
-
-
-def _get_required_accelerator_parameters(accel_inst: Accelerator) -> DotDict:
-    """Return the required parameters with the values from  the accelerator instance."""
-    parameters_required = DotDict()
-    parameters_accel = accel_inst.__class__.get_parameters()
-    for name, param in parameters_accel.items():
-        if param.get("required", False):
-            parameters_required[name] = getattr(accel_inst, name)
-    return parameters_required
 
 
 def _bpm_is_in_meas(bpm_name: str, meas: OpticsMeasurement) -> bool:

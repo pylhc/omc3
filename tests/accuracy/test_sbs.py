@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 
 import pytest
 
@@ -27,7 +28,15 @@ class TestSbSLHC:
         A lot of this is actually done in the sbs_propagation as well, but 
         if things fail in the madx model creation, this is a good place to start looking.
         """
-        accel_opt = get_accel_opt(1)
+        accel_opt = dict(
+            accel="lhc",
+            year="2018",
+            beam=beam,
+            nat_tunes=[0.31, 0.32],
+            dpp=0.0,
+            energy=6.5,
+            modifiers=[get_model_path(beam) / "opticsfile.24_ctpps2"],
+        )
         iplabel = "IP1"
         _write_correction_file(tmp_path, iplabel)
 
@@ -68,11 +77,29 @@ class TestSbSLHC:
         for file_ in files_to_check:
             assert_file_exists_and_nonempty(tmp_path / file_)
 
-    @pytest.mark.parametrize("beam", [1, ])  # TODO: get Beam 2 measurements
-    def test_lhc_propagation_sbs(self, tmp_path, beam):
-        """Runs the segment creation as well as the parameter propagation."""
+    def test_lhc_propagation_sbs(self, tmp_path, model_inj_beams):
+        """Runs the segment creation as well as the parameter propagation.
+        TODO: make test with creating the model on the fly 
+        TODO: make test with loading model with and without output dir 
+        TODO: With and without correction
+        TODO: Find measurements for beam 2
+        (works only within cern network unless afs is mocked)
+        """
+        beam = model_inj_beams.beam
+        if beam == 2:
+            return # TODO find measurement
 
-        accel_opt = get_accel_opt(beam)
+        accel_opt = dict(
+            accel="lhc",
+            year="2018",
+            beam=beam,
+            # model_dir=model_inj_beams.model_dir, 
+            nat_tunes=[0.31, 0.32],
+            dpp=0.0,
+            energy=6.5,
+            modifiers=[get_model_path(beam) / "opticsfile.24_ctpps2"],
+        )
+
         segments = [
             Segment("IP1", f"BPM.12L1.B{beam:d}", f"BPM.12R1.B{beam:d}"),
             Segment("IP5", f"BPM.12L5.B{beam:d}", f"BPM.12R5.B{beam:d}"),
@@ -82,7 +109,7 @@ class TestSbSLHC:
         sbs_res = segment_by_segment(
             measurement_dir=SBS_DIR / "measurements",
             segments=[s.to_input_string() for s in segments],
-            output_dir=tmp_path,
+            output_dir=tmp_path, 
             **accel_opt,
         )
 
@@ -117,13 +144,5 @@ def assert_file_exists_and_nonempty(path: Path):
     assert path.stat().st_size
 
 
-def get_accel_opt(beam: int):
-    return dict(
-            accel="lhc",
-            year="2018",
-            beam=beam,
-            nat_tunes=[0.31, 0.32],
-            dpp=0.0,
-            energy=6.5,
-            modifiers=[SBS_DIR / "opticsfile.22"],
-        )
+def get_model_path(beam: int) -> Path:
+    return INPUTS / "models" / f"25cm_beam{beam}" 

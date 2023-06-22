@@ -14,7 +14,7 @@ from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
 from omc3.model.constants import (JOB_MODEL_MADX, TWISS_AC_DAT, TWISS_ADT_DAT,
                                   TWISS_DAT, TWISS_ELEMENTS_DAT)
 from omc3.segment_by_segment.constants import (corrections_madx, 
-                                               jobfile, logfile,
+                                               jobfile, 
                                                measurement_madx,
                                                twiss_backward,
                                                twiss_backward_corrected,
