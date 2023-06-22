@@ -1,14 +1,16 @@
-import itertools
 from pathlib import Path
 
-import numpy as np
 import pytest
-import tfs
 
-from omc3.utils.iotools import create_dirs
+from omc3.definitions.optics import OpticsMeasurement
+from omc3.model import manager
+from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
+from omc3.segment_by_segment.propagables import get_all_propagables
+from omc3.segment_by_segment.segments import Segment, SegmentDiffs
+from omc3.segment_by_segment.constants import corrections_madx, logfile
+
+from omc3.sbs_propagation import segment_by_segment
 from omc3.utils import logging_tools
-from omc3.utils import stats
-from omc3.model_creator import create_instance_and_model
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -17,44 +19,111 @@ SBS_DIR = INPUTS / "sbs"
 MAX_DIFF = 1e-10
 
 
-@pytest.mark.basic
-def test_lhc_creation_sbs(tmp_path):
-    accel_opt = dict(
-        accel="lhc",
-        year="2018",
-        beam=1,
-        nat_tunes=[0.31, 0.32],
-        dpp=0.0,
-        energy=6.5,
-        modifiers=[SBS_DIR / "opticsfile.22"],
-    )
-    iplabel = "IP1"
-    _write_correction_file(tmp_path, iplabel)
+class TestSbSLHC:
+    @pytest.mark.parametrize("beam", [1, ])  #TODO get measurements for Beam 2 
+    @pytest.mark.basic
+    def test_lhc_segment_creation(self, tmp_path, beam):
+        """ Tests only the creation of the Segment Models via LhcSegmentCreator. 
+        A lot of this is actually done in the sbs_propagation as well, but 
+        if things fail in the madx model creation, this is a good place to start looking.
+        """
+        accel_opt = get_accel_opt(1)
+        iplabel = "IP1"
+        _write_correction_file(tmp_path, iplabel)
 
-    create_instance_and_model(
-        outputdir=tmp_path,
-        type="segment",
-        label=iplabel,
-        start="BPM.12L1.B1",
-        end="BPM.12R1.B1",
-        measurement_dir=SBS_DIR / "measurements",
-        **accel_opt
-    )
-    sbs_x = tfs.read(tmp_path / "sbsphasex_IP1.out", index="NAME")
-    sbs_y = tfs.read(tmp_path / "sbsphasey_IP1.out", index="NAME")
+        segment = Segment(
+            name=iplabel,
+            start=f"BPM.12L1.B{beam:d}",
+            end=f"BPM.12R1.B{beam:d}",
+        )
+        measurement = OpticsMeasurement(SBS_DIR / "measurements")
 
-    ref_dir = SBS_DIR / 'ref_files'
-    sbs_x_ref = tfs.read(ref_dir / "sbsphasex_IP1.out", index="NAME")
-    sbs_y_ref = tfs.read(ref_dir / "sbsphasey_IP1.out", index="NAME")
+        propagables = [propg(segment, measurement) for propg in get_all_propagables()]
+        measureables = [measbl for measbl in propagables if measbl]     
+        
+        
+        accel_inst = manager.get_accelerator(accel_opt)
+        accel_inst.model_dir = tmp_path  # if in accel_opt, tries to load from model_dir
 
-    # First absolute value and then the largest difference
-    diff_max_x = (sbs_x - sbs_x_ref).abs().max().max()
-    diff_max_y = (sbs_y - sbs_y_ref).abs().max().max()
+        segment_creator = LhcSegmentCreator(
+            segment=segment, 
+            measurables=measureables,
+            logfile=tmp_path / logfile.format(segment.name),
+            accel=accel_inst,
+        )
+        
+        segment_creator.full_run()
 
-    assert diff_max_x < MAX_DIFF
-    assert diff_max_y < MAX_DIFF
+        assert len(list(tmp_path.glob("*.dat"))) == 4
+        
+        files_to_check = [
+            # created in preparation (madx would fail without)
+            segment_creator.measurement_madx,
+            # created in madx (should also have been checked in the post_run() method)
+            segment_creator.twiss_forward, 
+            segment_creator.twiss_forward_corrected,
+            segment_creator.twiss_backward,
+            segment_creator.twiss_backward_corrected, 
+        ]
+        for file_ in files_to_check:
+            assert_file_exists_and_nonempty(tmp_path / file_)
 
+    @pytest.mark.parametrize("beam", [1, ])  # TODO: get Beam 2 measurements
+    def test_lhc_propagation_sbs(self, tmp_path, beam):
+        """Runs the segment creation as well as the parameter propagation."""
+
+        accel_opt = get_accel_opt(beam)
+        segments = [
+            Segment("IP1", f"BPM.12L1.B{beam:d}", f"BPM.12R1.B{beam:d}"),
+            Segment("IP5", f"BPM.12L5.B{beam:d}", f"BPM.12R5.B{beam:d}"),
+        ]
+
+
+        sbs_res = segment_by_segment(
+            measurement_dir=SBS_DIR / "measurements",
+            segments=[s.to_input_string() for s in segments],
+            output_dir=tmp_path,
+            **accel_opt,
+        )
+
+        for segment in segments:
+            sbs_created: SegmentDiffs = sbs_res[segment.name]
+            assert sbs_created.get_path("phase_x").exists()
+            assert sbs_created.get_path("phase_y").exists()
+
+            sbs_x = sbs_created.phase_x
+            sbs_y = sbs_created.phase_y
+
+            # TODO: Get BBS reference values (columns need to be renamed)
+            # sbs_ref = SegmentDiffs(SBS_DIR / "ref_files", segment.name)
+
+            # sbs_x_ref = sbs_ref.phase_x
+            # sbs_y_ref = sbs_ref.phase_y
+
+            # # First absolute value and then the largest difference
+            # diff_max_x = (sbs_x - sbs_x_ref).abs().max().max()
+            # diff_max_y = (sbs_y - sbs_y_ref).abs().max().max()
+
+            # assert diff_max_x < MAX_DIFF
+            # assert diff_max_y < MAX_DIFF
 
 def _write_correction_file(path: Path, label: str):
-    corr_file = path / f"corrections_{label}.madx"
+    corr_file = path / corrections_madx.format(label)
     corr_file.write_text("ktqx2.r1 = ktqx2.r1 + 1e-5;")
+
+
+def assert_file_exists_and_nonempty(path: Path):
+    assert path.exists()
+    assert path.stat().st_size
+
+
+def get_accel_opt(beam: int):
+    return dict(
+            accel="lhc",
+            year="2018",
+            beam=beam,
+            nat_tunes=[0.31, 0.32],
+            dpp=0.0,
+            energy=6.5,
+            modifiers=[SBS_DIR / "opticsfile.22"],
+        )

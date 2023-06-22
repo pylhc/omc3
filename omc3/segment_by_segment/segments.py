@@ -17,14 +17,32 @@ class Segment:
     element: str = None
     init_conds: str = None
 
-    @staticmethod
-    def init_from_element(element_name):
-        segment = Segment(element_name, element_name, element_name)
+    @classmethod
+    def init_from_element_name(cls, element_name: str):
+        segment = cls(element_name, element_name, element_name)
         segment.element = element_name
         return segment
     
+    @classmethod
+    def init_from_segment_definition(cls, segment: str):
+        """ Initialize from the string representation for segemnts
+        as used in inputs."""
+        return cls(*segment.split(","))
+    
+    @classmethod
+    def init_from_input(cls, segment: str):
+        """ Initialize from the string representation as used in inputs."""
+        try:
+            return cls.init_from_segment_definition(segment)
+        except ValueError:
+            return cls.init_from_element_name(segment)
+
+    def to_input_string(self):
+        """ String representation of the segment as used in inputs."""
+        return f"{self.name},{self.start},{self.end}"
 
     def __str__(self):
+        """String representation of the segment."""
         return f"{self.name} ({self.start} - {self.end})"
 
 
@@ -70,8 +88,8 @@ class SegmentDiffs(TfsCollection):
     norm_dispersion = Tfs(f"{PREFIX}{NORM_DISP_NAME}{{plane}}_{{name}}{EXT}")
     # TODO: Add coupling!
 
-    def __init__(self, directory: Path, segment_name: str):
-        super(SegmentDiffs, self).__init__(directory)
+    def __init__(self, directory: Path, segment_name: str, *args, **kwargs):
+        super(SegmentDiffs, self).__init__(directory, *args, **kwargs)
         self.segment_name = segment_name 
 
     def _get_filename(self, template: str, plane: str=None):

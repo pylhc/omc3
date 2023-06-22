@@ -12,7 +12,6 @@ from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
-    LhcCorrectionModelCreator,
     LhcModelCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
@@ -25,8 +24,7 @@ LOG = logging_tools.get_logger(__name__)
 
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
-            "best_knowledge": LhcBestKnowledgeCreator,
-            "correction": LhcCorrectionModelCreator},
+            "best_knowledge": LhcBestKnowledgeCreator},
     "psbooster": {"nominal": PsboosterModelCreator},
     "ps": {"nominal": PsModelCreator},
 }
@@ -36,7 +34,7 @@ def _get_params():
     params = EntryPointParameters()
     params.add_parameter(
         name="type",
-        choices=("nominal", "best_knowledge", "coupling_correction", "segment"),
+        choices=("nominal", "best_knowledge"),
         help="Type of model to create.",
         default='nominal',
     )

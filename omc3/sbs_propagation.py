@@ -5,8 +5,10 @@ Segment-by-Segment Correction
 TODO
 
 """
+import functools
 from pathlib import Path
-from typing import List, Tuple, Union
+import pandas as pd
+from typing import Callable, List, Sequence, Tuple, Union, Dict
 
 from generic_parser import DotDict, EntryPointParameters, entrypoint
 from pandas import DataFrame
@@ -16,9 +18,11 @@ from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
+from omc3.optics_measurements.constants import NAME
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
 from omc3.segment_by_segment.segments import (SbsDefinitionError, Segment, SegmentDiffs,
                                               SegmentModels)
+from omc3.segment_by_segment.constants import logfile
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 
@@ -58,7 +62,7 @@ def get_parameters():
 
 
 @entrypoint(get_parameters(), strict=False)
-def segment_by_segment(opt, accel_opt):
+def segment_by_segment(opt, accel_opt) -> Dict[str, SegmentDiffs]:
     """
     TODO
     """
@@ -70,9 +74,13 @@ def segment_by_segment(opt, accel_opt):
 
     measurement = OpticsMeasurement(opt.measurement_dir)
     segments, elements = _check_segments_and_elements(opt.segments, opt.elements)
+
+    results: Dict[str, SegmentDiffs] = {}
     for segment in segments + elements:
         propagables = create_segment(accel_inst, segment, measurement, opt.output_dir)
-        get_differences(propagables, segment.name, opt.output_dir)
+        results[segment.name] = get_differences(propagables, segment.name, opt.output_dir)
+
+    return results
 
 
 def create_segment(accel: Accelerator, segment_in: Segment, measurement: OpticsMeasurement, output: Path
@@ -92,18 +100,22 @@ def create_segment(accel: Accelerator, segment_in: Segment, measurement: OpticsM
     Returns:
         List of propagables with access to the created segment models.
     """
-    segment = improve_segment(segment_in, accel.elements, measurement, eval_funct=_bpm_is_in_beta_meas)
+    segment = extend_segment(segment_in, accel.elements, measurement)
+    
+    LOGGER.info(
+        f"Evaluating segment {segment!s}.\n" + 
+        "" if segment == segment_in else
+        f"This has been input as {segment_in!s}."
+    )
+
     propagables = [propg(segment, measurement) for propg in get_all_propagables()]
     propagables = [measbl for measbl in propagables if measbl]
 
-    LOGGER.info(
-        f"Evaluating segment {segment:s}.\n"
-        f"This has been input as {segment_in:s}."
-    )
 
     # Create the segment via madx
     segment_creator = CREATORS[accel.NAME](
-        accel, segment, propagables, logfile=f"{segment.name}_madx.log"
+        accel, segment, propagables, 
+        logfile=output / logfile.format(segment.name),
     )
     segment_creator.full_run()
 
@@ -114,11 +126,11 @@ def create_segment(accel: Accelerator, segment_in: Segment, measurement: OpticsM
     return propagables
 
 
-def improve_segment(segment: Segment, model: DataFrame, measurement: OpticsMeasurement, eval_funct) -> Segment:
-    """Returns a new segment with elements that satisfies eval_funct.
+def extend_segment(segment: Segment, model: DataFrame, measurement: OpticsMeasurement) -> Segment:
+    """Returns a new segment with elements that are contained in the measurement.
 
     This function takes a segment with start and end that might not
-    satisfy 'eval_funct' and searches the next element that satisfies
+    be in the measurement and searches the next element that satisfies
     it, returning a new segment with the new start and end elements.
 
     Args:
@@ -126,28 +138,19 @@ def improve_segment(segment: Segment, model: DataFrame, measurement: OpticsMeasu
         model (DataFrame): The model where to take all the element names from. Both the
             start and end of the segment have to be present in this model
             NAME attribute.
-        measurement (OpticsMeasurement): An instance of the Measurement class
-             that will be passed to 'eval_funct' to check elements for validity.
-        eval_funct: An user-provided function that takes an element name as
-            first argument and an instance of the Measurement class as second,
-            and returns True only if the element is evaluated as good start or
-            end for the segment, usually checking for presence in the
-            measurement and not too large error.
 
     Returns:
         A new segment with generally different start and end but always the
         same name and element attributes.
     """
-    names = list(model.NAME)
     for name in (segment.start, segment.end):
-        if name not in names:
+        if name not in model.index:
             raise SbsDefinitionError(f"Element name {name} not in the input model.")
 
-    def eval_funct_meas(name):
-        return eval_funct(name, measurement)
+    eval_funct = functools.partial(_bpm_is_in_meas, meas=measurement)
 
-    new_start = _select_closest(segment.start, names, eval_funct_meas, back=True)
-    new_end = _select_closest(segment.end, names, eval_funct_meas, back=False)
+    new_start = _select_closest(segment.start, model.index, eval_funct, back=True)
+    new_end = _select_closest(segment.end, model.index, eval_funct, back=False)
     new_segment = Segment(segment.name, new_start, new_end)
     new_segment.element = segment.element
     return new_segment
@@ -175,6 +178,7 @@ def get_differences(propagables: List[Propagable], segment_name: str = "", outpu
             propagable.add_differences(segment_diffs)
         except NotImplementedError:
             pass
+    return segment_diffs 
 
 
 def _get_accelerator_instance(accel_opt: dict, output_dir: Union[Path, str]) -> Accelerator:
@@ -192,8 +196,9 @@ def _get_accelerator_instance(accel_opt: dict, output_dir: Union[Path, str]) -> 
         creator.full_run()
 
         # Initialize from this model dir, so that elements are loaded
-        accel_inst = accel_inst.__class__(DotDict(model_dir=output_dir))
-
+        new_accel_opt = _get_required_accelerator_parameters(accel_inst)
+        new_accel_opt['model_dir'] = accel_inst.model_dir
+        accel_inst = accel_inst.__class__(new_accel_opt)
     return accel_inst
 
 
@@ -211,48 +216,101 @@ def _check_segments_and_elements(segments: List[str], elements: List[str]) -> Tu
     return segments, elements
 
 
-def _parse_segments(segment_definitions) -> List[Segment]:
+def _parse_segments(segment_definitions: Sequence[str]) -> List[Segment]:
+    """Convert all segment definitions to Segments.     
+
+    Args:
+        segment_definitions (Sequence[str]): List of segment definitions. 
+
+    Raises:
+        SbsDefinitionError: When there are duplicated names or when the definition is not recognized.
+
+    Returns:
+        List[Segment]: List of parsed segments. 
+    """
     if segment_definitions is None:
         return []
 
     segments = {}
     for segment_def in segment_definitions:
         try:
-            name, start, end = segment_def.split(",")
+            segment = Segment.init_from_segment_definition(segment_def)
         except ValueError:
             raise SbsDefinitionError(f"Unable to parse segment string {segment_def}.")
 
-        if name in segments.keys():
-            raise SbsDefinitionError(f"Duplicated segment name '{name}'.")
-        segments[name] = Segment(name, start, end)
+        if segment.name in segments.keys():
+            raise SbsDefinitionError(f"Duplicated segment name '{segment.name}'.")
+        segments[segment.name] = segment
     return list(segments.values())
 
 
-def _parse_elements(elements) -> List[Segment]:
+def _parse_elements(elements: Sequence[str]) -> List[Segment]:
+    """Convert all elements to Segments.
+
+    Args:
+        elements (Sequence[str]): Elements to be parsed.
+
+    Raises:
+        SbsDefinitionError: When there are duplicated names.
+
+    Returns:
+        List[Segment]: List of the parsed segments. 
+    """
     if elements is None:
         return []
     if len(set(elements)) != len(elements):
         raise SbsDefinitionError("Duplicated names in element list.")
-    elem_segments = [Segment.init_from_element(name) for name in elements]
+    elem_segments = [Segment.init_from_element_name(name) for name in elements]
     return elem_segments
 
 
-def _select_closest(name, all_names, eval_cond, back=False):
+def _select_closest(name: str, all_names: pd.Index, eval_cond: Callable[[str], bool], back: bool = False) -> str:
+    """Select the closest element to the given name, going forward or backward, until the condition is met.
+
+    Args:
+        name (str): Name to start  
+        all_names (pd.Index): Pandas Index of all element names (e.g. from model) 
+        eval_cond (Callable[[str], bool]): Function taking a single argument (the name) and returning a boolean, 
+                                           whether this name can be used or not (e.g. is in the measurement).
+        back (bool, optional): Search direction, False for forwards and True for backwards. Defaults to False.
+
+    Raises:
+        SbsDefinitionError: Is raised when all names have been checked, but no suitable element is found.
+
+    Returns:
+        str: Name of the closest element fulfilling the condition.
+    """
     new_name = name
+    n_names = len(all_names)
+    checked_names = []
     while not eval_cond(new_name):
+        checked_names.append(new_name)
         delta = 1 if not back else -1
-        next_index = (all_names.index(new_name) + delta) % len(all_names)
+        next_index = (all_names.get_loc(new_name) + delta) % n_names
         new_name = all_names[next_index]
-        if name == new_name:
+        if new_name in checked_names:
             raise SbsDefinitionError(
-                "No elements remaining after filtering. "
+                "No elements found fulfilling the condition. "
                 "Probably wrong model or bad measurement."
             )
     return new_name
 
 
-def _bpm_is_in_beta_meas(bpm_name, meas):
-    return bpm_name in meas.beta_x and bpm_name in meas.beta_y
+def _get_required_accelerator_parameters(accel_inst: Accelerator) -> DotDict:
+    """Return the required parameters with the values from  the accelerator instance."""
+    parameters_required = DotDict()
+    parameters_accel = accel_inst.__class__.get_parameters()
+    for name, param in parameters_accel.items():
+        if param.get("required", False):
+            parameters_required[name] = getattr(accel_inst, name)
+    return parameters_required
+
+
+def _bpm_is_in_meas(bpm_name: str, meas: OpticsMeasurement) -> bool:
+    """ Check if the bpm_name is in the measurement in both planes.
+    Possible improvement: Check if the error is too high?
+    """
+    return bpm_name in meas.beta_phase_x.index and bpm_name in meas.beta_phase_y.index
 
 
 if __name__ == "__main__":

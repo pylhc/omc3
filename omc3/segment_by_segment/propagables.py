@@ -13,7 +13,6 @@ from typing import Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from pandas import Series
 
 from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import OpticsMeasurement
@@ -21,11 +20,18 @@ from omc3.optics_measurements.constants import ALPHA, BETA, ERR, NAME, PHASE, PH
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.constants import BACKWARD, CORRECTED, FORWARD
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
+from omc3.utils import logging_tools
+
+LOG = logging_tools.get_logger(__name__)
 
 
 def get_all_propagables() -> Tuple:
     """ Return all defined Propagables. """
     return Phase, BetaPhase, AlfaPhase
+
+
+IndexType = Union[Sequence[str], str, slice, pd.Index]
+ValueErrorType = Union[Tuple[pd.Series, pd.Series], Tuple[float, float]]
 
 
 class Propagable(ABC):
@@ -81,8 +87,8 @@ class Propagable(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_at(names: Union[Sequence[str], str, slice], measurement: OpticsMeasurement, plane: str
-               ) -> Union[Series, float]:
+    def get_at(names: IndexType, measurement: OpticsMeasurement, plane: str
+               ) -> ValueErrorType:
         """Get corresponding measurement values at the elements ``names``
 
         Args:
@@ -98,25 +104,25 @@ class Propagable(ABC):
     @cache
     @abstractmethod
     def measured_forward(self, plane: str):
-        """Interpolation or measured deviations to front propagated model."""
+        """Interpolation or measured deviations to forward propagated model."""
         ...
 
     @cache
     @abstractmethod
     def measured_backward(self, plane: str):
-        """Interpolation or measured deviations to back propagated model."""
+        """Interpolation or measured deviations to backward propagated model."""
         ...
 
     @cache
     @abstractmethod
     def corrected_forward(self, plane: str):
-        """Interpolation or corrected deviations to front propagated model."""
+        """Interpolation or corrected deviations to forward propagated model."""
         ...
 
     @cache
     @abstractmethod
     def corrected_backward(self, plane: str):
-        """Interpolation or corrected deviations to back propagated model."""
+        """Interpolation or corrected deviations to backward propagated model."""
         ...
 
     @abstractmethod
@@ -135,9 +141,9 @@ class Phase(Propagable):
         return {}
 
     @staticmethod
-    def get_at(names, meas, plane):
-        phase = meas.phasetot[plane].loc[names, f"{PHASE}{plane}"]
-        error = meas.phasetot[plane].loc[names, f"{ERR}{PHASE}{plane}"]
+    def get_at(names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        phase = meas.total_phase[plane].loc[names, f"{PHASE}{plane}"]
+        error = meas.total_phase[plane].loc[names, f"{ERR}{PHASE}{plane}"]
         return phase, error
 
     @cache
@@ -163,10 +169,10 @@ class Phase(Propagable):
     def add_differences(self, segment_diffs: SegmentDiffs):
         for plane in PLANES:
             names = _common_indices(self.segment_models.forward.index,
-                                    self._meas.phasetot[plane].index)
+                                    self._meas.total_phase[plane].index)
             df = pd.DataFrame(index=names)
             df[NAME] = names
-            df[S] = self.segment_models.front.loc[names, S]
+            df[S] = self.segment_models.forward.loc[names, S]
 
             meas_ph, err_meas_ph = Phase.get_at(names, self._meas, plane)
             df.loc[:, f"{PHASE}{plane}"] = meas_ph
@@ -175,18 +181,20 @@ class Phase(Propagable):
             phs, err_phs = self.measured_forward(plane)
             df.loc[:, f"{FORWARD}{PHASE}{plane}"] = phs
             df.loc[:, f"{ERR}{FORWARD}{PHASE}{plane}"] = err_phs
-
-            phs, err_phs = self.corrected_forward(plane)
-            df.loc[:, f"{CORRECTED}{FORWARD}{PHASE}{plane}"] = phs
-            df.loc[:, f"{ERR}{CORRECTED}{FORWARD}{PHASE}{plane}"] = err_phs
-
+            
             phs, err_phs = self.measured_backward(plane)
             df.loc[:, f"{BACKWARD}{PHASE}{plane}"] = phs
             df.loc[:, f"{ERR}{BACKWARD}{PHASE}{plane}"] = err_phs
 
-            phs, err_phs = self.corrected_backward(plane)
-            df.loc[:, f"{CORRECTED}{BACKWARD}{PHASE}{plane}"] = phs
-            df.loc[:, f"{ERR}{CORRECTED}{BACKWARD}{PHASE}{plane}"] = err_phs
+            if self.segment_models.get_path("forward_corrected").exists(): 
+                phs, err_phs = self.corrected_forward(plane)
+                df.loc[:, f"{CORRECTED}{FORWARD}{PHASE}{plane}"] = phs
+                df.loc[:, f"{ERR}{CORRECTED}{FORWARD}{PHASE}{plane}"] = err_phs
+
+            if self.segment_models.get_path("backward_corrected").exists(): 
+                phs, err_phs = self.corrected_backward(plane)
+                df.loc[:, f"{CORRECTED}{BACKWARD}{PHASE}{plane}"] = phs
+                df.loc[:, f"{ERR}{CORRECTED}{BACKWARD}{PHASE}{plane}"] = err_phs
 
             # ============== Plot for Debugging ================================
             # import matplotlib.pyplot as plt
@@ -240,9 +248,9 @@ class BetaPhase(Propagable):
     _init_pattern = "bet{}_{}"
 
     @staticmethod
-    def get_at(names, meas, plane):
-        beta = meas.beta[plane].loc[names, f"{BETA}{plane}"]
-        error = meas.beta[plane].loc[names, f"{ERR}{BETA}{plane}"]
+    def get_at(names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        beta = meas.beta_phase[plane].loc[names, f"{BETA}{plane}"]
+        error = meas.beta_phase[plane].loc[names, f"{ERR}{BETA}{plane}"]
         return beta, error
 
     @cache
@@ -259,6 +267,9 @@ class BetaPhase(Propagable):
 
     @cache
     def corrected_backward(self, plane):
+        pass
+    
+    def add_differences(self, segment_diffs: SegmentDiffs):
         pass
 
     def _compute_measured(self, plane, seg_model):
@@ -292,9 +303,9 @@ class AlfaPhase(Propagable):
     _init_pattern = "alf{}_{}"
 
     @staticmethod
-    def get_at(names, meas, plane):
-        beta = meas.beta[plane].loc[names, f"{ALPHA}{plane}"]
-        error = meas.beta[plane].loc[names, f"{ERR}{ALPHA}{plane}"]
+    def get_at(names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        beta = meas.beta_phase[plane].loc[names, f"{ALPHA}{plane}"]
+        error = meas.beta_phase[plane].loc[names, f"{ERR}{ALPHA}{plane}"]
         return beta, error
 
     @cache
@@ -312,8 +323,10 @@ class AlfaPhase(Propagable):
     @cache
     def corrected_backward(self, plane):
         pass
-
-
+    
+    def add_differences(self, segment_diffs: SegmentDiffs):
+        pass
+    
 def _common_indices(*indices):
     """ Common indices with indicies[0] order
     """
