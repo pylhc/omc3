@@ -119,27 +119,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     creator = CREATORS[accel_inst.NAME][opt.type](accel_inst, logfile=opt.logfile)
     creator.full_run()
 
-    # Initialize from this model dir, so that elements are loaded
-    # This should probably be done by the model-creator themselves instead
-    new_accel_opt = _get_required_accelerator_parameters(accel_inst)
-    new_accel_opt.accel = accel_inst.NAME
-    new_accel_opt.model_dir = opt.outputdir
-    accel_inst = manager.get_accelerator(new_accel_opt)
-
     return accel_inst
-
-
-
-
-def _get_required_accelerator_parameters(accel_inst: Accelerator) -> DotDict:
-    """Return the required parameters with the values from  the accelerator instance."""
-    parameters_required = DotDict()
-    parameters_accel = accel_inst.__class__.get_parameters()
-    for name, param in parameters_accel.items():
-        if param.get("required", False):
-            parameters_required[name] = getattr(accel_inst, name)
-    return parameters_required
-
 
 
 if __name__ == "__main__":

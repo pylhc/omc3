@@ -31,6 +31,7 @@ from omc3.model.constants import (
     ACCELERATOR_MODEL_REPOSITORY
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, SegmentCreator
+from omc3.optics_measurements.constants import NAME
 from omc3.utils import iotools
 
 LHC_REPOSITORY_NAME = "acc-models-lhc"
@@ -167,6 +168,8 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     def post_run(self) -> None:
         files_to_check = [TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
         self._check_files_exist(self.accel.model_dir, files_to_check)
+        
+        self.accel.model_best_knowledge = tfs.read(self.accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT, index=NAME)
 
 
 class LhcCorrectionModelCreator(LhcModelCreator):

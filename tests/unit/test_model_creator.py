@@ -3,7 +3,11 @@ import shutil
 from pathlib import Path
 
 import pytest
-from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
+from generic_parser import DotDict
+from pandas._testing import assert_frame_equal
+
+from omc3.model.accelerators.accelerator import (Accelerator, AcceleratorDefinitionError,
+                                                 AccExcitationMode)
 from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
@@ -30,7 +34,7 @@ def test_booster_creation_nominal_driven(tmp_path):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 @pytest.mark.basic
 def test_booster_creation_nominal_free(tmp_path):
@@ -45,7 +49,7 @@ def test_booster_creation_nominal_free(tmp_path):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
         
 @pytest.mark.basic
@@ -63,7 +67,7 @@ def test_ps_creation_nominal_driven_2018(tmp_path):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
     
 @pytest.mark.basic
@@ -79,7 +83,7 @@ def test_ps_creation_nominal_free_2018(tmp_path):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -95,7 +99,7 @@ def test_ps_creation_nominal_free_2021(tmp_path):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -115,7 +119,7 @@ def test_lhc_creation_nominal_driven(tmp_path):
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -154,7 +158,7 @@ def test_lhc_creation_nominal_free(tmp_path):
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -193,7 +197,7 @@ def test_lhc_creation_relative_modifier_path(tmp_path):
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -242,14 +246,14 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
     )
 
     # ... which is then caught here:
-    check_accel_from_dir_vs_options(
-        model_dir_relpath, accel_opt, accel, required_keys=["beam", "year"]
-    )
+    check_accel_from_dir_vs_options(model_dir_relpath, accel_opt, accel)
     os.chdir(request.config.invocation_dir)  # return to original cwd
 
 
 @pytest.mark.basic
 def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
+    """ Checks if the post_run() method succeeds on an already existing given model (dir),
+    and then checks that it failes when removing individual files from that model. """
     accel = get_accelerator(**model_25cm_beam1)
     LhcModelCreator(accel).post_run()
 
@@ -273,12 +277,12 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
 # Helper -----------------------------------------------------------------------
 
 
-def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, required_keys):
+def check_accel_from_dir_vs_options(model_dir: Path, accel_options: DotDict, accel_from_opt: Accelerator):
     # creation via model_from_dir tests that all files are in place:
     accel_from_dir = get_accelerator(
         accel=accel_options["accel"],
         model_dir=model_dir,
-        **{k: accel_options[k] for k in required_keys},
+        **_get_required_accelerator_parameters(accel_from_opt),
     )
 
     _check_arrays(accel_from_opt.nat_tunes, accel_from_dir.nat_tunes, eps=1e-4, tunes=True)
@@ -286,6 +290,15 @@ def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, re
     _check_arrays(accel_from_opt.modifiers, accel_from_dir.modifiers)
     assert accel_from_opt.excitation == accel_from_dir.excitation
     assert accel_from_opt.model_dir.absolute() == accel_from_dir.model_dir.absolute()
+    
+    if accel_from_dir.model is not None:
+        assert_frame_equal(accel_from_opt.model, accel_from_dir.model)
+    
+    if accel_from_opt.excitation != AccExcitationMode.FREE:
+        assert_frame_equal(accel_from_opt.model_driven, accel_from_dir.model_driven)
+    
+    if accel_from_dir.model_best_knowledge is not None:
+        assert_frame_equal(accel_from_opt.model_best_knowledge, accel_from_dir.model_best_knowledge)
 
     # TODO: Energy not set in model ? (jdilly, 2021)
     # assert abs(accel_from_opt.energy - accel_from_dir.energy) < 1e-2
@@ -308,3 +321,16 @@ def _check_arrays(a_array, b_array, eps=None, tunes=False):
             assert abs((a % 1) - (b % 1)) <= eps
         else:
             assert abs(a - b) <= eps
+
+
+def _get_required_accelerator_parameters(accel_inst: Accelerator) -> dict:
+    """Return the required parameters with the values from  the accelerator instance."""
+    parameters_required = dict()
+    parameters_accel = accel_inst.__class__.get_parameters()
+    for name, param in parameters_accel.items():
+        if param.get("required", False):
+            parameters_required[name] = getattr(accel_inst, name)
+    return parameters_required
+
+
+

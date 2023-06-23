@@ -84,7 +84,12 @@ class Psbooster(Accelerator):
     @staticmethod
     def get_parameters():
         params = super(Psbooster, Psbooster).get_parameters()
-        params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
+        params.add_parameter(
+            name="ring", 
+            type=int, 
+            choices=(1, 2, 3, 4),
+            required=True,
+            help="Ring to use.")
         return params
 
     def __init__(self, *args, **kwargs):

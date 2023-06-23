@@ -9,10 +9,13 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Iterable, List, Sequence, Union
 
+import tfs
+
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
 from omc3.model.constants import (JOB_MODEL_MADX, TWISS_AC_DAT, TWISS_ADT_DAT,
                                   TWISS_DAT, TWISS_ELEMENTS_DAT)
+from omc3.optics_measurements.constants import NAME
 from omc3.segment_by_segment.constants import (corrections_madx, 
                                                jobfile, 
                                                measurement_madx,
@@ -96,15 +99,23 @@ class ModelCreator(ABC):
         """
         Checks that the model creation ``MAD-X`` run was successful. It should check that the
         appropriate directories are created, and that macros and other files are in place.
-        Checks the accelerator instance.
+        Also assings created models to the accelerator instance.
         """
         # These are the default files for most model creators for now.
         files_to_check: List[str] = [TWISS_DAT, TWISS_ELEMENTS_DAT]
+        self.accel.model = tfs.read(self.accel.model_dir / TWISS_DAT, index=NAME)
+        self.accel.elements = tfs.read(self.accel.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
+        
         if self.accel.excitation == AccExcitationMode.ACD:
             files_to_check += [TWISS_AC_DAT]
+            self.accel.model_driven = tfs.read(self.accel.model_dir / TWISS_AC_DAT, index=NAME)
         elif self.accel.excitation == AccExcitationMode.ADT:
             files_to_check += [TWISS_ADT_DAT]
+            self.accel.model_driven = tfs.read(self.accel.model_dir / TWISS_ADT_DAT, index=NAME)
+
         self._check_files_exist(self.accel.model_dir, files_to_check)
+
+        
 
     @staticmethod
     def _check_files_exist(dir_: Union[Path, str], files: Sequence[str]) -> None:
