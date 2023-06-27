@@ -66,25 +66,24 @@ def segment_by_segment(opt, accel_opt) -> Dict[str, SegmentDiffs]:
     """
     TODO
     """
-    accel_inst = _get_accelerator_instance(accel_opt, opt.output_dir)
-    if opt.output_dir is None:
-        opt.output_dir = accel_inst.model_dir
-    else:
-        opt.output_dir = Path(opt.output_dir)
+    accel = _get_accelerator_instance(accel_opt, opt.output_dir)
+    if opt.output_dir is not None and  Path(opt.output_dir) != accel.model_dir:
+        raise NotImplementedError(
+            "The output directory needs to be the same as the model directory and the moment."
+        )
 
     measurement = OpticsMeasurement(opt.measurement_dir)
     segments, elements = _check_segments_and_elements(opt.segments, opt.elements)
 
     results: Dict[str, SegmentDiffs] = {}
     for segment in segments + elements:
-        propagables = create_segment(accel_inst, segment, measurement, opt.output_dir)
-        results[segment.name] = get_differences(propagables, segment.name, opt.output_dir)
+        propagables = create_segment(accel, segment, measurement)
+        results[segment.name] = get_differences(propagables, segment.name, accel.model_dir)
 
     return results
 
 
-def create_segment(accel: Accelerator, segment_in: Segment, measurement: OpticsMeasurement, output: Path
-                    ) -> List[Propagable]:
+def create_segment(accel: Accelerator, segment_in: Segment, measurement: OpticsMeasurement) -> List[Propagable]:
     """Perform the computations on the segment.
     The segment is adapted fist, so that the given start and end bpms a in the measurement.
     Then madx is run to create the specified segments and the output files
@@ -115,12 +114,12 @@ def create_segment(accel: Accelerator, segment_in: Segment, measurement: OpticsM
     # Create the segment via madx
     segment_creator = CREATORS[accel.NAME](
         accel, segment, propagables, 
-        logfile=output / logfile.format(segment.name),
+        logfile=accel.model_dir / logfile.format(segment.name),
     )
     segment_creator.full_run()
 
     # Make the created segment accessible to all propagables via SegmentModels
-    seg_models = SegmentModels(output, segment)
+    seg_models = SegmentModels(accel.model_dir, segment)
     for propagable in propagables:
         propagable.segment_models = seg_models
     return propagables

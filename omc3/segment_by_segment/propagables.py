@@ -9,7 +9,7 @@ describe the forward and backward propagation for the respective parameter.
 """
 from abc import ABC, abstractmethod
 from functools import lru_cache as cache  # in 3.9 one could use functools.cache
-from typing import Sequence, Tuple, Union
+from typing import Any, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -18,8 +18,8 @@ from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import ALPHA, BETA, ERR, NAME, PHASE, PHASE_ADV, S
 from omc3.segment_by_segment import math
-from omc3.segment_by_segment.constants import BACKWARD, CORRECTED, FORWARD
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
+from omc3.segment_by_segment.definitions import PropagableColumns as Columns
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -85,9 +85,9 @@ class Propagable(ABC):
             init_dict[end_name] = end_cond
         return init_dict
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def get_at(names: IndexType, measurement: OpticsMeasurement, plane: str
+    def get_at(cls, names: IndexType, measurement: OpticsMeasurement, plane: str
                ) -> ValueErrorType:
         """Get corresponding measurement values at the elements ``names``
 
@@ -135,15 +135,17 @@ class Propagable(ABC):
 
 
 class Phase(Propagable):
+    columns: Columns = Columns(PHASE)
 
     def init_conditions_dict(self):
         # The phase is not necessary for the initial conditions.
         return {}
 
-    @staticmethod
-    def get_at(names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
-        phase = meas.total_phase[plane].loc[names, f"{PHASE}{plane}"]
-        error = meas.total_phase[plane].loc[names, f"{ERR}{PHASE}{plane}"]
+    @classmethod
+    def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        columns = cls.columns.planed(plane)
+        phase = meas.total_phase[plane].loc[names, columns.column]
+        error = meas.total_phase[plane].loc[names, columns.error_column]
         return phase, error
 
     @cache
@@ -170,31 +172,32 @@ class Phase(Propagable):
         for plane in PLANES:
             names = _common_indices(self.segment_models.forward.index,
                                     self._meas.total_phase[plane].index)
+            c = self.columns.planed(plane)
             df = pd.DataFrame(index=names)
             df[NAME] = names
             df[S] = self.segment_models.forward.loc[names, S]
 
             meas_ph, err_meas_ph = Phase.get_at(names, self._meas, plane)
-            df.loc[:, f"{PHASE}{plane}"] = meas_ph
-            df.loc[:, f"{ERR}{PHASE}{plane}"] = err_meas_ph
+            df.loc[:, c.column] = meas_ph
+            df.loc[:, c.error_column] = err_meas_ph
 
             phs, err_phs = self.measured_forward(plane)
-            df.loc[:, f"{FORWARD}{PHASE}{plane}"] = phs
-            df.loc[:, f"{ERR}{FORWARD}{PHASE}{plane}"] = err_phs
+            df.loc[:, c.forward] = phs
+            df.loc[:, c.error_forward] = err_phs
             
             phs, err_phs = self.measured_backward(plane)
-            df.loc[:, f"{BACKWARD}{PHASE}{plane}"] = phs
-            df.loc[:, f"{ERR}{BACKWARD}{PHASE}{plane}"] = err_phs
+            df.loc[:, c.backward] = phs
+            df.loc[:, c.error_backward] = err_phs
 
             if self.segment_models.get_path("forward_corrected").exists(): 
                 phs, err_phs = self.corrected_forward(plane)
-                df.loc[:, f"{CORRECTED}{FORWARD}{PHASE}{plane}"] = phs
-                df.loc[:, f"{ERR}{CORRECTED}{FORWARD}{PHASE}{plane}"] = err_phs
+                df.loc[:, c.forward_corrected] = phs
+                df.loc[:, c.error_forward_corrected] = err_phs
 
             if self.segment_models.get_path("backward_corrected").exists(): 
                 phs, err_phs = self.corrected_backward(plane)
-                df.loc[:, f"{CORRECTED}{BACKWARD}{PHASE}{plane}"] = phs
-                df.loc[:, f"{ERR}{CORRECTED}{BACKWARD}{PHASE}{plane}"] = err_phs
+                df.loc[:, c.backward_corrected] = phs
+                df.loc[:, c.error_backward_corrected] = err_phs
 
             # ============== Plot for Debugging ================================
             # import matplotlib.pyplot as plt
@@ -246,11 +249,13 @@ class Phase(Propagable):
 class BetaPhase(Propagable):
 
     _init_pattern = "bet{}_{}"
+    columns: Columns = Columns(BETA)
 
-    @staticmethod
-    def get_at(names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
-        beta = meas.beta_phase[plane].loc[names, f"{BETA}{plane}"]
-        error = meas.beta_phase[plane].loc[names, f"{ERR}{BETA}{plane}"]
+    @classmethod
+    def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        c = cls.columns.planed(plane)
+        beta = meas.beta_phase[plane].loc[names, c.column]
+        error = meas.beta_phase[plane].loc[names, c.error_column]
         return beta, error
 
     @cache
@@ -301,11 +306,13 @@ class BetaPhase(Propagable):
 class AlfaPhase(Propagable):
 
     _init_pattern = "alf{}_{}"
+    columns: Columns = Columns(ALPHA)
 
-    @staticmethod
-    def get_at(names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
-        beta = meas.beta_phase[plane].loc[names, f"{ALPHA}{plane}"]
-        error = meas.beta_phase[plane].loc[names, f"{ERR}{ALPHA}{plane}"]
+    @classmethod
+    def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        c = cls.columns.planed(plane)
+        beta = meas.beta_phase[plane].loc[names, c.column]
+        error = meas.beta_phase[plane].loc[names, c.error_column]
         return beta, error
 
     @cache
@@ -326,10 +333,13 @@ class AlfaPhase(Propagable):
     
     def add_differences(self, segment_diffs: SegmentDiffs):
         pass
-    
+
+
+
+# Helper -----------------------------------------------------------------------
+
 def _common_indices(*indices):
-    """ Common indices with indicies[0] order
-    """
+    """Common indices between the sets of given indices."""
     common = indices[0]
     for index in indices[1:]:
         common = common.intersection(index)
@@ -337,7 +347,5 @@ def _common_indices(*indices):
 
 
 def _quadratic_add(*values):
-    result = 0.
-    for value in values:
-        result += value ** 2
-    return np.sqrt(result)
+    """Calculate the root-sum-squared of the given values."""
+    return np.sqrt((np.array(values) ** 2).sum())

@@ -79,6 +79,11 @@ class LhcModelCreator(ModelCreator):
         if accel.year in ["2018", "2022"]:  # these years should be handled by the fetcher
             symlink_dst = Path(accel.model_dir)/LHC_REPOSITORY_NAME
             if not symlink_dst.exists():
+                if symlink_dst.is_symlink():
+                    raise FileNotFoundError(
+                        "Symlink to LHC repository already exists, "
+                        f"but has no vaild destination: {symlink_dst}"
+                    )
                 LOGGER.debug(f"Symlink destination: {symlink_dst}")
                 symlink_dst.absolute().symlink_to((ACCELERATOR_MODEL_REPOSITORY/f"{accel.year}"))
 
