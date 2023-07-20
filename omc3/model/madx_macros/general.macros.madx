@@ -142,13 +142,14 @@ get_f_terms_for(table_name, elem_name): macro = {
 
 ! SEGMENT STUFF BEGINS HERE
 /*
-* Extracts the front and back propagation sequences from "base_sequences". The new
-* sequences will have the prefix "front_" and "back_".
+* Extracts the forward and backward propagation sequences from "base_sequences". The new
+* sequences will have the names of front_seq and back_seq.
 * The macro beam_"base_sequence"() has to be defined.
 * @param base_seq: Sequence from which the subsequence should be extracted.
-* @param startfrom: Initial element in the subsequence.
-* @param endat: Final element in the subsequence.
-* @param extracted_name: Extracted sequence name.
+* @param front_seq: New name of the forward propagated sequence
+* @param back_seq: New name of the backward propagated sequence
+* @param start_from: Initial element in the subsequence.
+* @param end_at: Final element in the subsequence.
 */
 extract_segment_sequence(base_seq, front_seq, back_seq, start_from, end_at): macro = {
 
@@ -211,13 +212,11 @@ save_initial_and_final_values(accel, startfrom, endat, values_file, bininame, be
 
 
 /*
-* Performs the twiss command over the front and back sequences, using the given
+* Performs the twiss command over the given sequence, using the given
 * initial conditions.
-* @param accel: Sequence to use.
-* @param front_filename: File were to store the front propagation twiss result.
-* @param back_filename: File were to store the back propagation twiss result.
-* @param bininame: Name of the initial conditions variable for front propagation.
-* @param bendname: Name of the initial conditions variable for back propagation.
+* @param used_sequence: Sequence to use.
+* @param filename: File were to store the twiss result.
+* @param init_vals: beta0 name of the saved inital conditions
 */
 twiss_segment(used_sequence, filename, init_vals): macro = {
     use, sequence = used_sequence;

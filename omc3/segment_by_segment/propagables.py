@@ -19,7 +19,7 @@ from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import ALPHA, BETA, ERR, NAME, PHASE, PHASE_ADV, S
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
-from omc3.segment_by_segment.definitions import PropagableColumns as Columns
+from omc3.segment_by_segment.definitions import PropagableColumns as Columns, BoundaryConditions
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -27,7 +27,7 @@ LOG = logging_tools.get_logger(__name__)
 
 def get_all_propagables() -> Tuple:
     """ Return all defined Propagables. """
-    return Phase, BetaPhase, AlfaPhase
+    return Phase, BetaPhase, AlphaPhase
 
 
 IndexType = Union[Sequence[str], str, slice, pd.Index]
@@ -42,12 +42,6 @@ class Propagable(ABC):
         self._meas: OpticsMeasurement = meas
         self._segment_models: SegmentModels = None
 
-        # Save initial conditions per plane:
-        self.beta0, self.alpha0, self.errbeta0, self.erralpha0 = {}, {}, {}, {}
-        for plane in PLANES:
-            self.beta0[plane], self.errbeta0[plane] = BetaPhase.get_at(self._segment.start, meas, plane)
-            self.alpha0[plane], self.erralpha0[plane] = AlfaPhase.get_at(self._segment.start, meas, plane)
-
     @property
     def segment_models(self):
         """TfsCollection of the segment models."""
@@ -60,7 +54,7 @@ class Propagable(ABC):
         self._segment_models = segment_models
 
     def init_conditions_dict(self):
-        """Return a dictionary containing the inital values at start and end
+        """Return a dictionary containing the inital values for this propagable at start and end
         of the segment.
 
         For the naming, see `save_initial_and_final_values` macro in 
@@ -75,15 +69,30 @@ class Propagable(ABC):
         init_dict = {}
         for plane in PLANES:
             # get start value
-            init_cond, _ = self.get_at(self._segment.start, self._meas, plane)
-            init_name = self._init_pattern.format(plane, "ini")
+            start_cond, _ = self.get_at(self._segment.start, self._meas, plane)
+            start_name = self._init_pattern.format(plane, "ini")
+            init_dict[start_name] = start_cond
 
             # get end value
-            init_dict[init_name] = init_cond
             end_cond, _ = self.get_at(self._segment.end, self._meas, plane)
             end_name = self._init_pattern.format(plane, "end")
             init_dict[end_name] = end_cond
         return init_dict
+    
+    def _init_start(self, plane: str) -> BoundaryConditions:
+        """Get the start condition for all propagables at the given plane."""
+        return BoundaryConditions(
+            *AlphaPhase.get_at(self._segment.start, self._meas, plane),
+            *BetaPhase.get_at(self._segment.start, self._meas, plane)
+        )
+    
+    def _init_end(self, plane: str) -> BoundaryConditions:
+        """Get the end condition  for all propagables at the given plane."""
+        return BoundaryConditions(
+            *AlphaPhase.get_at(self._segment.end, self._meas, plane),
+            *BetaPhase.get_at(self._segment.end, self._meas, plane)
+        )
+    
 
     @classmethod
     @abstractmethod
@@ -126,7 +135,7 @@ class Propagable(ABC):
         ...
 
     @abstractmethod
-    def add_differences(self):
+    def add_differences(self, segment_diffs: SegmentDiffs):
         """This function calculates the differences between the propagated 
         forward and backward models and the measured values.
         It then adds the results to the segment_diffs class 
@@ -178,7 +187,7 @@ class Phase(Propagable):
             df[S] = self.segment_models.forward.loc[names, S]
 
             meas_ph, err_meas_ph = Phase.get_at(names, self._meas, plane)
-            df.loc[:, c.column] = meas_ph
+            df.loc[:, c.column] = (meas_ph - meas_ph.iloc[0]) % 1.
             df.loc[:, c.error_column] = err_meas_ph
 
             phs, err_phs = self.measured_forward(plane)
@@ -200,39 +209,62 @@ class Phase(Propagable):
                 df.loc[:, c.error_backward_corrected] = err_phs
 
             # ============== Plot for Debugging ================================
-            # import matplotlib.pyplot as plt
-            # df.loc[:, f"{FORWARD}{PHASE}{plane}"].plot()
+            # from matplotlib import pyplot as plt
+            # fig, ax = plt.subplots()
+            # ax.set_title(f"{segment_diffs.segment_name} - {plane}")
+            # ax.set_xlabel("Distance from Segment start [m]")
+            # ax.set_ylabel("Phase")
+            # ax.errorbar(df[S], df[c.column], df[c.error_column], label="measured")
+            # ax.errorbar(df[S], df[c.forward], df[c.error_forward], label="forward")   
+            # ax.errorbar(df[S], df[c.backward], df[c.error_backward], label="backward")
+            # if self.segment_models.get_path("forward_corrected").exists(): 
+            #     ax.errorbar(df[S], df[c.forward_corrected], df[c.error_forward_corrected], label="forward corrected")
+            # if self.segment_models.get_path("backward_corrected").exists(): 
+            #     ax.errorbar(df[S], df[c.backward_corrected], df[c.error_backward_corrected], label="backward corrected")
+            # ax.legend()
             # plt.show()
             # ==================================================================
 
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.phase[plane] = df
 
-    def _compute_measured(self, plane, seg_model, sign):
+    def _compute_measured(self, plane: str, seg_model: pd.DataFrame, direction: int):
+        """ Compute the difference between the given segment model and the measured values."""
+        if direction not in (1, -1):
+            raise ValueError("Direction should be 1 (forward) or -1 (backward).")
+
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
-        init_condition = self.beta0[plane], self.errbeta0[plane], self.alpha0[plane], self.erralpha0[plane]
+        init_condition = self._init_start(plane) if direction == 1 else self._init_end(plane)
         if not self._segment.element:
             # Segment
             meas_phase, meas_err = Phase.get_at(slice(None), self._meas, plane)  # slice(None) gives all, i.e. `:`
-            names = _common_indices(seg_model.index, meas_phase.index)
+            
+            # filter names for segment
+            names = _common_indices(meas_phase.index, seg_model.index)  # meas first, so we keep direction 
+            meas_phase = meas_phase.loc[names]
             model_phase = model_phase.loc[names]
+            reference_element = names[0 if direction == 1 else -1]
+
+            # calculate phase with reference to segment (start/end)
+            segment_model_phase = (model_phase - model_phase.loc[reference_element]) % 1.
+            segment_meas_phase = (meas_phase - meas_phase.loc[reference_element]) % 1.
 
             # calculate phase beating
-            segment_meas_phase = sign * (meas_phase - meas_phase.iloc[0]) % 1.
-            phase_beating = (segment_meas_phase - model_phase) % 1.
+            phase_beating = (segment_meas_phase - segment_model_phase) % 1.
             phase_beating[phase_beating > 0.5] = phase_beating[phase_beating > 0.5] - 1
 
             # propagate the error
-            propagated_err = math.propagate_error_phase(model_phase, *init_condition)
+            propagated_err = math.propagate_error_phase(model_phase, init_condition)
             total_err = _quadratic_add(meas_err, propagated_err)
             return phase_beating, total_err
         else:
             # Element segment
             propagated_phase = model_phase.iloc[0]
-            propagated_err = math.propagate_error_phase(propagated_phase, *init_condition)
+            propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
             return propagated_phase, propagated_err
 
     def _compute_corrected(self, plane, seg_model, seg_model_corr):
+        """Compute the difference between the nominal and the corrected model."""
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
         corrected_phase = seg_model_corr.loc[:, f"{PHASE_ADV}{plane}"]
         init_condition = self.beta0[plane], self.errbeta0[plane], self.alpha0[plane], self.erralpha0[plane]
@@ -303,7 +335,7 @@ class BetaPhase(Propagable):
             return prop_beta, propagated_err
 
 
-class AlfaPhase(Propagable):
+class AlphaPhase(Propagable):
 
     _init_pattern = "alf{}_{}"
     columns: Columns = Columns(ALPHA)
@@ -335,7 +367,6 @@ class AlfaPhase(Propagable):
         pass
 
 
-
 # Helper -----------------------------------------------------------------------
 
 def _common_indices(*indices):
@@ -347,5 +378,10 @@ def _common_indices(*indices):
 
 
 def _quadratic_add(*values):
-    """Calculate the root-sum-squared of the given values."""
-    return np.sqrt((np.array(values) ** 2).sum())
+    """Calculate the root-sum-squared of the given values.
+    The individual "values" can be ``pd.Series`` and then their 
+    elements are summed by indexs."""
+    result = 0.
+    for value in values:
+        result += value ** 2
+    return np.sqrt(result)

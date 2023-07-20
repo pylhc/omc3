@@ -120,8 +120,7 @@ class TestSbSLHC:
         else:
             model_dir.mkdir()
             output_dir = model_dir
-            lhc_sequence = LHC_MODEL_DIR / "2018" / "main.seq"
-            (model_dir / "lhc.seq").symlink_to(lhc_sequence)
+            (model_dir / "lhc.seq").symlink_to(LHC_MODEL_DIR / "2018" / "main.seq")
 
         segments = [
             Segment("IP1", f"BPM.12L1.B{beam:d}", f"BPM.12R1.B{beam:d}"),

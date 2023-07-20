@@ -5,8 +5,8 @@ from tfs.collection import Tfs, TfsCollection
 
 from omc3.optics_measurements.constants import (AMP_BETA_NAME, BETA_NAME, DISPERSION_NAME, EXT,
                                                 KMOD_BETA_NAME, NORM_DISP_NAME, PHASE_NAME)
-from omc3.segment_by_segment.constants import (twiss_backward, twiss_backward_corrected,
-                                               twiss_forward, twiss_forward_corrected)
+from omc3.segment_by_segment.constants import (TWISS_BACKWARD, TWISS_BACKWARD_CORRECTED,
+                                               TWISS_FORWARD, TWISS_FORWARD_CORRECTED)
 
 
 @ dataclass
@@ -56,10 +56,10 @@ class SegmentModels(TfsCollection):
         directory: The path where to find the models.
         segment: A segment instance corresponding to the model to load.
     """
-    forward = Tfs(twiss_forward, two_planes=False)
-    backward = Tfs(twiss_backward, two_planes=False)
-    forward_corrected = Tfs(twiss_forward_corrected, two_planes=False)
-    backward_corrected = Tfs(twiss_backward_corrected, two_planes=False)
+    forward = Tfs(TWISS_FORWARD, two_planes=False)
+    backward = Tfs(TWISS_BACKWARD, two_planes=False)
+    forward_corrected = Tfs(TWISS_FORWARD_CORRECTED, two_planes=False)
+    backward_corrected = Tfs(TWISS_BACKWARD_CORRECTED, two_planes=False)
 
     def __init__(self, directory: Path, segment: Segment):
         super(SegmentModels, self).__init__(directory)

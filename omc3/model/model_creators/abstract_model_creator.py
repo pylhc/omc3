@@ -7,7 +7,7 @@ This module provides the template for all model creators.
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Iterable, List, Sequence, Union
+from typing import Dict, Iterable, List, Sequence, Union
 
 import tfs
 
@@ -19,14 +19,16 @@ from omc3.optics_measurements.constants import NAME
 from omc3.segment_by_segment.constants import (corrections_madx, 
                                                jobfile, 
                                                measurement_madx,
-                                               twiss_backward,
-                                               twiss_backward_corrected,
-                                               twiss_forward,
-                                               twiss_forward_corrected)
+                                               TWISS_BACKWARD,
+                                               TWISS_BACKWARD_CORRECTED,
+                                               TWISS_FORWARD,
+                                               TWISS_FORWARD_CORRECTED)
 from omc3.segment_by_segment.propagables import Propagable
 from omc3.segment_by_segment.segments import Segment
 
 LOG = logging.getLogger(__name__)
+
+MADXInputType = Union[Path, str, Dict[str, str]]
 
 
 class ModelCreator(ABC):
@@ -142,29 +144,55 @@ class ModelCreator(ABC):
 class SegmentCreator(ModelCreator, ABC):
     jobfile = None  # set in init
 
-    """ Creates Segment of a model. """
-    def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], *args, **kwargs):
+    def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], 
+                 corrections: MADXInputType = None, *args, **kwargs):
+        """ Creates Segment of a model. """
         super(SegmentCreator, self).__init__(accel, *args, **kwargs)
         self.segment = segment
         self.measurables = measurables
+        self.corrections = corrections
 
         # Filenames
         self.jobfile = jobfile.format(segment.name)
         self.measurement_madx = measurement_madx.format(segment.name)
         self.corrections_madx = corrections_madx.format(segment.name)
-        self.twiss_forward = twiss_forward.format(segment.name)
-        self.twiss_backward = twiss_backward.format(segment.name)
-        self.twiss_forward_corrected = twiss_forward_corrected.format(segment.name)
-        self.twiss_backward_corrected = twiss_backward_corrected.format(segment.name)
+        self.twiss_forward = TWISS_FORWARD.format(segment.name)
+        self.twiss_backward = TWISS_BACKWARD.format(segment.name)
+        self.twiss_forward_corrected = TWISS_FORWARD_CORRECTED.format(segment.name)
+        self.twiss_backward_corrected = TWISS_BACKWARD_CORRECTED.format(segment.name)
 
     def prepare_run(self) -> None:
         super(SegmentCreator, self).prepare_run()
         self._create_measurement_file()
+        self._create_corrections_file()
 
     def _create_measurement_file(self):
         meas_dict = {}
         for measurable in self.measurables:
             meas_dict.update(measurable.init_conditions_dict())
-        meas_file_content = "\n".join(f"{k} = {v};" for k, v in meas_dict.items())
+        meas_file_content = "\n".join(f"{k!s} = {v!s};" for k, v in meas_dict.items())
         output_file = self.output_dir / self.measurement_madx
         output_file.write_text(meas_file_content)
+
+    def _create_corrections_file(self):
+        if self.corrections is None:
+            return
+
+        output_file = self.output_dir / self.corrections_madx
+        if output_file.exists():
+            LOG.warning(f"Segment corrections file {output_file!s} already exists. Overwriting.")
+        output_file.write_text(self._get_corrections_text())
+        
+    
+    def _get_corrections_text(self) -> str:
+        if self.corrections is None:
+            return ""
+
+        if isinstance(self.corrections, dict):
+            return "\n".join(f"{k!s} = {v!s};" for k, v in self.corrections.items())
+        
+        input_file = Path(self.corrections)
+        if input_file.exists():
+            return input_file.read_text()
+        
+        return self.corrections

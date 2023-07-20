@@ -9,108 +9,190 @@ from typing import Union
 import numpy as np
 from pandas import Series
 
+from omc3.segment_by_segment.definitions import PropagableBoundaryConditions
 
-def propagate_error_beta(beta: Union[Series, np.array, float], dphi: Union[Series, np.array, float], beta0: float,
-                         errbeta0: float, alpha0: float, erralpha0: float) -> np.array:
+NumericOrArray = Union[float, np.array, Series]
+
+def propagate_error_phase(dphi: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
+    """Propagates the phase-error.
+       See Eq. (2) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
+       This implementation has a minus-sign instead of the first plus-sign as in the reference,
+       this seems to be the correct implementation, 
+       as found e.g. in https://github.com/pylhc/MESS/tree/master/FODO_Test_Lattice/Phase_Error_Propagation
+
+        Args:
+            dphi (float, np.array, Series): Phase advances from initial to final positions
+            init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
+    """
+    alpha0, erralpha0 = init.as_tuple(init.alpha)
+    beta0, errbeta0 = init.as_tuple(init.beta)
+    
+    sin2phi = np.sin(4 * np.pi * dphi)
+    cos2phi = np.cos(4 * np.pi * dphi)
+
+    res = np.sqrt(
+        (0.5 * (((cos2phi - 1) * alpha0) - sin2phi) * errbeta0/beta0) ** 2 +
+        (0.5 * (cos2phi - 1) * erralpha0) ** 2
+    ) / (2 * np.pi)
+    return res
+
+
+def propagate_error_beta(beta: NumericOrArray, dphi: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
     """Propagates the beta-error from beta0 to beta with dphi phaseadvance.
+       See Eq. (3) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
 
         Args:
             beta (float, np.array, Series): Beta function at final positions
             dphi (float, np.array, Series): Phase advances from initial to final positions
-            beta0 (float): Beta function at the initial position
-            errbeta0 (float): Error on the beta function at initial position
-            alpha0 (float): Alpha function at the initial position
-            erralpha0 (float): Error on the alpha function at initial position
+            init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
     """
-    return np.sqrt(
-        (
-                beta * np.sin(4 * np.pi * dphi) * alpha0 / beta0 +
-                beta * np.cos(4 * np.pi * dphi) / beta0
-        ) ** 2 * errbeta0 ** 2 +
-        (beta * np.sin(4 * np.pi * dphi)) ** 2 * erralpha0 ** 2
+    alpha0, erralpha0 = init.as_tuple(init.alpha)
+    beta0, errbeta0 = init.as_tuple(init.beta)
+    
+    sin2phi = np.sin(4 * np.pi * dphi)
+    cos2phi = np.cos(4 * np.pi * dphi)
+
+    res = np.sqrt(
+        (beta * (sin2phi * alpha0 + cos2phi) * errbeta0 / beta0) ** 2 +
+        (beta * sin2phi * erralpha0) ** 2
     )
+    return res
 
 
-def propagate_error_alfa(alpha: Union[Series, np.array, float], dphi: Union[Series, np.array, float], beta0: float,
-                         errbeta0: float, alpha0: float, erralpha0: float) -> np.array:
+def propagate_error_alpha(alpha: NumericOrArray, dphi: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
     """Propagates the alpha-error from alpha0 to alpha with dphi phaseadvance.
+       See Eq. (4) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
 
-        Args:
-            alpha (float, np.array, Series): alpha function at final positions
-            dphi (float, np.array, Series): Phase advances from initial to final positions
-            beta0 (float): Beta function at the initial position
-            errbeta0 (float): Error on the beta function at initial position
-            alpha0 (float): Alpha function at the initial position
-            erralpha0 (float): Error on the alpha function at initial position
+       Args:
+           alpha (float, np.array, Series): alpha function at final positions
+           dphi (float, np.array, Series): Phase advances from initial to final positions
+           init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
     """
-    return np.sqrt(
+    alpha0, erralpha0 = init.as_tuple(init.alpha)
+    beta0, errbeta0 = init.as_tuple(init.beta)
+
+    sin2phi = np.sin(4 * np.pi * dphi)
+    cos2phi = np.cos(4 * np.pi * dphi)
+
+    res = np.sqrt(
         (
-                (alpha * ((np.sin(4 * np.pi * dphi) * alpha0 / beta0) + (np.cos(4 * np.pi * dphi) / beta0))) -
-                (np.cos(4*np.pi*dphi) * alpha0 / beta0) + (np.sin(4 * np.pi * dphi) / beta0)
-        ) ** 2 * errbeta0 ** 2 +
-        ((np.cos(4*np.pi*dphi)) - (alpha * np.sin(4 * np.pi * dphi))) ** 2 * erralpha0 ** 2
-    )
-
-
-def propagate_error_phase(dphi: Union[Series, np.array, float], beta0: float, errbeta0: float, alpha0: float,
-                          erralpha0: float) -> np.array:
-    """Propagates the phase-error.
-
-        Args:
-            dphi (float, np.array, Series): Phase advances from initial to final positions
-            beta0 (float): Beta function at the initial position
-            errbeta0 (float): Error on the beta function at initial position
-            alpha0 (float): Alpha function at the initial position
-            erralpha0 (float): Error on the alpha function at initial position
-    """
-    return np.sqrt(
-        (
-                ((1 / 2. * np.cos(4*np.pi*dphi) * alpha0 / beta0) -
-                 (1 / 2. * np.sin(4*np.pi*dphi) / beta0)
-                 - (1 / 2. * alpha0 / beta0)
-                 ) * errbeta0
+            (((sin2phi * alpha0) + cos2phi) * alpha -
+              (cos2phi * alpha0) + sin2phi
+            ) * errbeta0/beta0
         ) ** 2 +
-        ((-(1/2.*np.cos(4*np.pi*dphi))+(1/2.)) * erralpha0) ** 2
-    )/(2*np.pi)
-
-
-def propagate_error_coupling_1001_re(f1001ab_ini, p1001_ini, phasex, phasey, f1001_std_ini, p1001_std_ini):
-    return np.sqrt(
-        (f1001_std_ini * np.cos(2 * np.pi * (p1001_ini - phasex + phasey)))**2 +
-        (2 * np.pi * p1001_std_ini * f1001ab_ini *
-         np.sin(2 * np.pi * (p1001_ini - phasex + phasey)))**2
+        ((cos2phi - (alpha * sin2phi)) * erralpha0) ** 2
     )
+    return res
 
 
-def propagate_error_coupling_1001_im(f1001ab_ini, p1001_ini, phasex, phasey, f1001_std_ini, p1001_std_ini):
-    return np.sqrt(
-        (f1001_std_ini * np.sin(2 * np.pi * (p1001_ini - phasex + phasey)))**2 +
-        (2 * np.pi * p1001_std_ini * f1001ab_ini *
-         np.cos(2 * np.pi * (p1001_ini - phasex + phasey)))**2
+def propagate_error_coupling_1001_re(dphix: NumericOrArray, dphiy: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
+    """Propagates the error on the real part of f1001 through dphix and dphiy phaseadvance,
+       based on the initial amplitude and phase error of f1001.
+       See Eq. (5) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
+
+       Args:
+           dphix (float, np.array, Series): Phase advances in x from initial to final positions
+           dphiy (float, np.array, Series): Phase advances in y from initial to final positions
+           init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
+    """
+    amp0, erramp0 = init.as_tuple(init.f1001_amplitude)
+    phase0, errphase0 = init.as_tuple(init.f1001_phase)
+    errphase0 = 2 * np.pi * errphase0
+
+    phase = 2 * np.pi * (phase0 - dphix + dphiy)
+
+    res = np.sqrt(
+        (erramp0 * np.cos(phase))**2 +
+        (errphase0 * amp0 * np.sin(phase))**2
     )
+    return res
 
+def propagate_error_coupling_1001_im(dphix: NumericOrArray, dphiy: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
+    """Propagates the error on the imagary part of f1001 through dphix and dphiy phaseadvance,
+       based on the initial amplitude and phase error of f1001.
+       See Eq. (6) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
 
-def propagate_error_coupling_1010_re(f1010ab_ini, p1010_ini, phasex, phasey, f1010_std_ini, p1010_std_ini):
-    return np.sqrt(
-        (f1010_std_ini * np.cos(2 * np.pi * (p1010_ini - phasex - phasey)))**2 +
-        (2 * np.pi * p1010_std_ini * f1010ab_ini *
-         np.sin(2 * np.pi * (p1010_ini - phasex - phasey)))**2
+       Args:
+           dphix (float, np.array, Series): Phase advances in x from initial to final positions
+           dphiy (float, np.array, Series): Phase advances in y from initial to final positions
+           init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
+    """
+    amp0, erramp0 = init.as_tuple(init.f1001_amplitude)
+    phase0, errphase0 = init.as_tuple(init.f1001_phase)
+    errphase0 = 2 * np.pi * errphase0
+
+    phase = 2 * np.pi * (phase0 - dphix + dphiy)
+
+    res = np.sqrt(
+        (erramp0 * np.sin(phase))**2 +
+        (errphase0 * amp0 * np.cos(phase))**2
     )
+    return res
 
+def propagate_error_coupling_1010_re(dphix: NumericOrArray, dphiy: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
+    """Propagates the error on the real part of f1010 through dphix and dphiy phaseadvance,
+       based on the initial amplitude and phase error of f1010.
+       See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
+       yet the phases dphix and dphiy are subtracted from the initial rdt phase.
 
-def propagate_error_coupling_1010_im(f1010ab_ini, p1010_ini, phasex, phasey, f1010_std_ini, p1010_std_ini):
-    return np.sqrt(
-        (f1010_std_ini * np.sin(2 * np.pi * (p1010_ini - phasex - phasey)))**2 +
-        (2 * np.pi * p1010_std_ini * f1010ab_ini *
-         np.cos(2 * np.pi * (p1010_ini - phasex - phasey)))**2
+       Args:
+           dphix (float, np.array, Series): Phase advances in x from initial to final positions
+           dphiy (float, np.array, Series): Phase advances in y from initial to final positions
+           init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
+    """
+    amp0, erramp0 = init.as_tuple(init.f1010_amplitude)
+    phase0, errphase0 = init.as_tuple(init.f1010_phase)
+    errphase0 = 2 * np.pi * errphase0
+
+    phase = 2 * np.pi * (phase0 - dphix - dphiy)
+
+    res = np.sqrt(
+        (erramp0 * np.cos(phase))**2 +
+        (errphase0 * amp0 * np.sin(phase))**2
     )
+    return res
 
+def propagate_error_coupling_1010_im(dphix: NumericOrArray, dphiy: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
+    """Propagates the error on the imaginary part of f1010 through dphix and dphiy phaseadvance,
+       based on the initial amplitude and phase error of f1010.
+       See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
+       yet the phases dphix and dphiy are subtracted from the initial rdt phase.
 
-def propagate_error_dispersion(std_D0, bet0, bets, dphi, alf0):
-    return np.abs(
-        std_D0 * np.sqrt(bets/bet0) *
-        (np.cos(2*np.pi*dphi)+alf0*np.sin(2*np.pi*dphi))
+       Args:
+           dphix (float, np.array, Series): Phase advances in x from initial to final positions
+           dphiy (float, np.array, Series): Phase advances in y from initial to final positions
+           init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
+    """
+    amp0, erramp0 = init.as_tuple(init.f1010_amplitude)
+    phase0, errphase0 = init.as_tuple(init.f1010_phase)
+    errphase0 = 2 * np.pi * errphase0
+
+    phase = 2 * np.pi * (phase0 - dphix - dphiy)
+
+    res = np.sqrt(
+        (erramp0 * np.sin(phase))**2 +
+        (errphase0 * amp0 * np.cos(phase))**2
     )
+    return res
+
+
+def propagate_error_dispersion(beta: NumericOrArray, dphi: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
+    """Propagates the dispersion error with dphi phaseadvance.
+
+    Args:
+        beta (float, np.array, Series): Beta function at final positions
+        dphi (float, np.array, Series): Phase advances from initial to final positions
+        init (PropagableBoundaryConditions): Initial conditions for alpha and beta and the dispersion uncertainty.
+    """
+    _, errdispersion0 = init.as_tuple(init.dispersion)
+    beta0, _ = init.as_tuple(init.beta)
+    alpha0, _ = init.as_tuple(init.alpha)
+
+    res = np.abs(
+        errdispersion0 * np.sqrt(beta / beta0) * 
+        (np.cos(2 * np.pi * dphi) + alpha0 * np.sin(2 * np.pi * dphi))
+    )
+    return res
 
 
 def weighted_average_for_SbS_elements(value1, sigma1, value2, sigma2):

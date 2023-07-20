@@ -247,25 +247,25 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
             f"",
             f"exec, extract_segment_sequence(",
             f"    LHCB{accel.beam},",
-            f"    front_LHCB{accel.beam},",
-            f"    back_LHCB{accel.beam},",
+            f"    forward_LHCB{accel.beam},",
+            f"    backward_LHCB{accel.beam},",
             f"    {self.segment.start},",
             f"    {self.segment.end},",
             f");",
             f"",
-            f"exec, beam_LHCB{accel.beam}(front_LHCB{accel.beam});",  # TODO: use engery in macro
-            f"exec, beam_LHCB{accel.beam}(back_LHCB{accel.beam});",  # TODO: use engery in macro
-            f"exec, twiss_segment(front_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",
-            f"exec, twiss_segment(back_LHCB{accel.beam}, \"{self.twiss_backward!s}\", bendLHCB{accel.beam});",
+            f"exec, beam_LHCB{accel.beam}(forward_LHCB{accel.beam});",  # TODO: use engery in macro
+            f"exec, beam_LHCB{accel.beam}(backward_LHCB{accel.beam});",  # TODO: use engery in macro
+            f"exec, twiss_segment(forward_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",
+            f"exec, twiss_segment(backward_LHCB{accel.beam}, \"{self.twiss_backward!s}\", bendLHCB{accel.beam});",
             "",
         ])
 
         if (self.output_dir / self.corrections_madx).is_file():
             madx_script += "\n".join([
                 f"call, file=\"{self.corrections_madx!s}\";",
-                f"exec, twiss_segment(front_LHCB{accel.beam}, "
+                f"exec, twiss_segment(forward_LHCB{accel.beam}, "
                 f"\"{self.twiss_forward_corrected}\", biniLHCB{accel.beam});",
-                f"exec, twiss_segment(back_LHCB{accel.beam}, "
+                f"exec, twiss_segment(backward_LHCB{accel.beam}, "
                 f"\"{self.twiss_backward_corrected}\", bendLHCB{accel.beam});",
                 "",
             ])

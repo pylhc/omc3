@@ -4,8 +4,13 @@ Segment by Segment: Definitions
 
 This module provides definitions to be used with segment by segment
 """
+from dataclasses import dataclass, fields
+from typing import Tuple
+
+from uncertainties import ufloat
+
+from omc3.optics_measurements.constants import ERR
 from omc3.segment_by_segment.constants import BACKWARD, CORRECTED, FORWARD
-from omc3.optics_measurements.constants import ALPHA, BETA, ERR, NAME, PHASE, PHASE_ADV, S
 
 
 class PropagableColumns:
@@ -61,3 +66,44 @@ class PropagableColumns:
     @property
     def error_backward_corrected(self):
         return f"{ERR}{self.backward_corrected}"
+
+
+@dataclass 
+class PropagableBoundaryConditions:
+    """Store boundary conditions with error for propagating."""
+    alpha: ufloat = None
+    beta: ufloat = None
+    dispersion: ufloat = None
+    f1001_amplitude: ufloat = None
+    f1001_phase: ufloat = None
+    f1010_amplitude: ufloat = None
+    f1010_phase: ufloat = None
+    
+    @staticmethod
+    def as_tuple(value: ufloat) -> Tuple[ufloat, ufloat]:
+        return (value.nominal_value, value.std_dev)
+
+
+@dataclass 
+class MadXBoundaryConditions:
+    """Store all boundary conditions for a Mad-X twiss."""
+    alfx: float = None
+    alfy: float = None
+    betx: float = None
+    bety: float = None
+    dx: float = None
+    dy: float = None
+    dpx: float = None
+    dpy: float = None
+    wx: float = None
+    wy: float = None
+    dphix: float = None
+    dphiy: float = None
+    r11: float = None
+    r12: float = None
+    r21: float = None
+    r22: float = None
+
+    def as_dict(self):
+        return {f.name: getattr(self, f.name) for f in fields(self) 
+                if getattr(self, f.name) is not None}
