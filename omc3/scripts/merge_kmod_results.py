@@ -146,7 +146,7 @@ def get_lumi_imbalance(data_frame: tfs.TfsDataFrame) -> Tuple[UFloat, UFloat, UF
     .. math::
 
         \\sigma_{\\frac{L_{IP1}}{L_{IP5}}} = \\frac{1}{2}\\frac{L_{IP1}}{L_{IP5}}
-        \\cdot \\sqrt{\\sum_{\substack{z \\in (x,y) \\\\ i \\in (IP1, IP5) }}
+        \\cdot \\sqrt{\\sum_{\\substack{z \\in (x,y) \\\\ i \\in (IP1, IP5) }}
         {\\frac{\\sigma^2_{\\beta_{z1,i}} + \\sigma^2_{\\beta_{z2,i}}} {(\\beta_{z1,i}+\\beta_{z2,i})^2}}}
 
     Args:

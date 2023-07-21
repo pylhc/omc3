@@ -109,7 +109,7 @@ well as a plot for all corrections (only EXPected) will be saved into the output
 
     Filepattern to use to find correction files in folders (as regex).
 
-    default: ``^changeparameters*?\.madx$``
+    default: ``^changeparameters*?\\.madx$``
 
 
 - **individual_to_input**:
