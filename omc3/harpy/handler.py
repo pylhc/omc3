@@ -16,7 +16,7 @@ import tfs
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES, PLANE_TO_NUM as P2N
 from omc3.harpy import clean, frequency, kicker
-from omc3.harpy.constants import (FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT,
+from omc3.harpy.constants import (FILE_PHASES_EXT, FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT,
                                   COL_NAME, COL_TUNE, COL_AMP, COL_MU,
                                   COL_NATTUNE, COL_NATAMP, COL_PHASE, COL_ERR)
 from omc3.utils import logging_tools
@@ -173,6 +173,7 @@ def _write_bad_bpms(output_path_without_suffix, plane, bad_bpms_with_reasons):
 
 def _write_spectrum(output_path_without_suffix, plane, spectra):
     tfs.write(f"{output_path_without_suffix}{FILE_AMPS_EXT.format(plane=plane.lower())}", spectra["COEFFS"].abs().T)
+    tfs.write(f"{output_path_without_suffix}{FILE_PHASES_EXT.format(plane=plane.lower())}", spectra["PHASES"].angle().T)
     tfs.write(f"{output_path_without_suffix}{FILE_FREQS_EXT.format(plane=plane.lower())}", spectra["FREQS"].T)
 
 
