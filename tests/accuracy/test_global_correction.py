@@ -74,7 +74,7 @@ def get_normal_params(beam):
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_quadrupole.madx",
         optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISPERSION}X", TUNE],
         weights=[1., 1., 1., 1., 1., 1.],
-        variables=["MQY"],
+        variables=["MQY_Q4"],
         fullresponse="fullresponse_MQY.h5",
         seed=12368,  # iteration test might not work with other seeds (converges too fast)
     )
