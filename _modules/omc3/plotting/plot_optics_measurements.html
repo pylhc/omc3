@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -382,7 +382,9 @@
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
-<div class="viewcode-block" id="get_plottfs_style_params"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params">[docs]</a><span class="k">def</span> <span class="nf">get_plottfs_style_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
+<div class="viewcode-block" id="get_plottfs_style_params">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params">[docs]</a>
+<span class="k">def</span> <span class="nf">get_plottfs_style_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Parameters, that are only passed on.&quot;&quot;&quot;</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
@@ -452,7 +454,10 @@
     <span class="k">return</span> <span class="n">params</span></div>
 
 
-<div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="plot">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.plot">[docs]</a>
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main plotting function.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting plotting of optics measurement data: &quot;</span>
@@ -487,6 +492,7 @@
                 <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">,)</span>
             <span class="p">)</span>
     <span class="k">return</span> <span class="n">fig_dict</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>

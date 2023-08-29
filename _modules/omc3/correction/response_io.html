@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -229,7 +229,9 @@
 <span class="c1"># Fullresponse -----------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="read_fullresponse"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.read_fullresponse">[docs]</a><span class="k">def</span> <span class="nf">read_fullresponse</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">optics_parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<div class="viewcode-block" id="read_fullresponse">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.read_fullresponse">[docs]</a>
+<span class="k">def</span> <span class="nf">read_fullresponse</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">optics_parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the response matrices from disk.</span>
 <span class="sd">    Beware: As empty DataFrames are skipped on write,</span>
 <span class="sd">    default for not found entries are empty DataFrames.</span>
@@ -249,7 +251,10 @@
     <span class="k">return</span> <span class="n">fullresponse</span></div>
 
 
-<div class="viewcode-block" id="write_fullresponse"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.write_fullresponse">[docs]</a><span class="k">def</span> <span class="nf">write_fullresponse</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fullresponse</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]):</span>
+
+<div class="viewcode-block" id="write_fullresponse">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.write_fullresponse">[docs]</a>
+<span class="k">def</span> <span class="nf">write_fullresponse</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fullresponse</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the full response matrices to disk.</span>
 <span class="sd">    Beware: Empty Dataframes are skipped! (HDF creates gigantic files otherwise)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -261,10 +266,13 @@
             <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">response_df</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;table&quot;</span><span class="p">)</span></div>
 
 
+
 <span class="c1"># Varmap -----------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="read_varmap"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.read_varmap">[docs]</a><span class="k">def</span> <span class="nf">read_varmap</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">k_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]]:</span>
+<div class="viewcode-block" id="read_varmap">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.read_varmap">[docs]</a>
+<span class="k">def</span> <span class="nf">read_varmap</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">k_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the variable mapping file from disk.</span>
 <span class="sd">    Beware: As empty DataFrames are skipped on write,</span>
 <span class="sd">    default for not found entries are empty Series.</span>
@@ -285,7 +293,10 @@
     <span class="k">return</span> <span class="n">varmap</span></div>
 
 
-<div class="viewcode-block" id="write_varmap"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.write_varmap">[docs]</a><span class="k">def</span> <span class="nf">write_varmap</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">varmap</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]]):</span>
+
+<div class="viewcode-block" id="write_varmap">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_io.write_varmap">[docs]</a>
+<span class="k">def</span> <span class="nf">write_varmap</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">varmap</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the  variable mapping file to disk.</span>
 <span class="sd">    Beware: Empty Dataframes are skipped! (HDF creates gigantic files otherwise)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -294,6 +305,7 @@
         <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">varmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">subparam</span><span class="p">,</span> <span class="n">varmap_series</span> <span class="ow">in</span> <span class="n">sub</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">varmap_series</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">subparam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;table&quot;</span><span class="p">)</span></div>
+
 
 
 <span class="c1"># Helper -----------------------------------------------------------------------</span>

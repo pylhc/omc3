@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -226,9 +226,9 @@
            <div itemprop="articleBody">
              
   <section id="scripts">
-<h1>Scripts<a class="headerlink" href="#scripts" title="Permalink to this heading"></a></h1>
+<h1>Scripts<a class="headerlink" href="#scripts" title="Link to this heading"></a></h1>
 <section id="betabeat-src-output-converter">
-<h2>BetaBeat.src Output Converter<a class="headerlink" href="#betabeat-src-output-converter" title="Permalink to this heading"></a></h2>
+<h2>BetaBeat.src Output Converter<a class="headerlink" href="#betabeat-src-output-converter" title="Link to this heading"></a></h2>
 <p>Script to convert most important output files produced by <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> / <code class="docutils literal notranslate"><span class="pre">GetLLM</span></code> into the standard
 format used in <code class="docutils literal notranslate"><span class="pre">omc3</span></code> to allow straight forward comparison of the two.</p>
 <p>Good to know: in <code class="docutils literal notranslate"><span class="pre">BetaBeat.src</span></code> the <code class="docutils literal notranslate"><span class="pre">_free</span></code> files correspond to AC dipole (or ADT-AC dipole)
@@ -445,7 +445,7 @@ compensation by equation, ‘_free2’ by model).</p>
 </dd></dl>
 
 <section id="merge-kmod-results">
-<h2>Merge KMOD Results<a class="headerlink" href="#merge-kmod-results" title="Permalink to this heading"></a></h2>
+<h2>Merge KMOD Results<a class="headerlink" href="#merge-kmod-results" title="Link to this heading"></a></h2>
 <p>Script to merge the results from KMOD into one <cite>TfsDataFrame</cite>.
 The script takes the kmod-results folders as input and merges the lsa-result tfs-files in these
 together.
@@ -539,7 +539,7 @@ files with the results of kmod analysis.</p></li>
 </dd></dl>
 
 <section id="update-natural-tune-in-lin-files">
-<h2>Update Natural Tune in Lin-Files<a class="headerlink" href="#update-natural-tune-in-lin-files" title="Permalink to this heading"></a></h2>
+<h2>Update Natural Tune in Lin-Files<a class="headerlink" href="#update-natural-tune-in-lin-files" title="Link to this heading"></a></h2>
 <p>Script to update the natural tune in lin files, based on the spectrum data (amps and freqs) and a
 given frequency interval.</p>
 <p><strong>Arguments:</strong></p>
@@ -571,7 +571,7 @@ then the omc3 filename convention will be used.</p>
 </ul>
 </section>
 <section id="write-mad-x-macros">
-<h2>Write MAD-X Macros<a class="headerlink" href="#write-mad-x-macros" title="Permalink to this heading"></a></h2>
+<h2>Write MAD-X Macros<a class="headerlink" href="#write-mad-x-macros" title="Link to this heading"></a></h2>
 <p>Write out madx scripts for the tracking macros.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
@@ -589,7 +589,7 @@ then the omc3 filename convention will be used.</p>
 </ul>
 </section>
 <section id="fake-measurement-from-model">
-<h2>Fake Measurement from Model<a class="headerlink" href="#fake-measurement-from-model" title="Permalink to this heading"></a></h2>
+<h2>Fake Measurement from Model<a class="headerlink" href="#fake-measurement-from-model" title="Link to this heading"></a></h2>
 <p>Script to generate a pseudo-measurement from a twiss-model.</p>
 <p>The <cite>model</cite> the then generated measurement is compared to can be different
 from the <cite>twiss</cite> given, e.g. if the <cite>twiss</cite> incorporates errors.</p>
@@ -707,7 +707,7 @@ global_correction_entrypoint uses (same format you would get from hole_in_one).<
 </dd></dl>
 
 <section id="linfile-cleaning">
-<h2>Linfile Cleaning<a class="headerlink" href="#linfile-cleaning" title="Permalink to this heading"></a></h2>
+<h2>Linfile Cleaning<a class="headerlink" href="#linfile-cleaning" title="Link to this heading"></a></h2>
 <p>Performs an automated cleaning of different columns in the lin-file
 as a standalone script to allow for manual refinement after harpy is done.</p>
 <p>All data is assumed to be gaussian distributed around a “true” value,

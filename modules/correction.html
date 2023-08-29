@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -229,13 +229,13 @@
            <div itemprop="articleBody">
              
   <section id="correction">
-<h1>Correction<a class="headerlink" href="#correction" title="Permalink to this heading"></a></h1>
+<h1>Correction<a class="headerlink" href="#correction" title="Link to this heading"></a></h1>
 <section id="constants">
-<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this heading"></a></h2>
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h2>
 <p>Specific constants to be used in correction, to help with consistency.</p>
 </section>
 <section id="filters">
-<h2>Filters<a class="headerlink" href="#filters" title="Permalink to this heading"></a></h2>
+<h2>Filters<a class="headerlink" href="#filters" title="Link to this heading"></a></h2>
 <p>Filters for different kind of measurement data, and to filter the entries
 in the response matrix based on (the presumably then filtered) measurement data.
 Measurement filters extract valid (or trustworthy) data, e.g. to be used in
@@ -262,7 +262,7 @@ If <cite>opt.use_errorbars</cite> is <cite>True</cite> the weights will be also 
 </dd></dl>
 
 <section id="handler">
-<h2>Handler<a class="headerlink" href="#handler" title="Permalink to this heading"></a></h2>
+<h2>Handler<a class="headerlink" href="#handler" title="Link to this heading"></a></h2>
 <p>This module contains high-level functions to manage most functionality of the corrections calculations.</p>
 </section>
 <dl class="py function">
@@ -287,7 +287,7 @@ see <code class="xref py py-mod docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 <section id="model-appenders">
-<h2>Model Appenders<a class="headerlink" href="#model-appenders" title="Permalink to this heading"></a></h2>
+<h2>Model Appenders<a class="headerlink" href="#model-appenders" title="Link to this heading"></a></h2>
 <p>Utilities to append new columns to measurement and model dataframes.
 E.g. get differences between measurement and model and append those to
 the measurement data (for corrections).</p>
@@ -328,7 +328,7 @@ If omitted, all entries in <cite>measurement</cite> are used.</p></li>
 </dd></dl>
 
 <section id="model-diff">
-<h2>Model Diff<a class="headerlink" href="#model-diff" title="Permalink to this heading"></a></h2>
+<h2>Model Diff<a class="headerlink" href="#model-diff" title="Link to this heading"></a></h2>
 <p>Calculate the differences in optics parameters between twiss-models.
 Similar to <code class="xref py py-func docutils literal notranslate"><span class="pre">omc3.correction.model_appenders.add_differences_to_model_to_measurements()</span></code>,
 yet operates on two twiss files instead.</p>
@@ -341,7 +341,7 @@ model_a and model_b.</p>
 </dd></dl>
 
 <section id="response-mad-x">
-<h2>Response MAD-X<a class="headerlink" href="#response-mad-x" title="Permalink to this heading"></a></h2>
+<h2>Response MAD-X<a class="headerlink" href="#response-mad-x" title="Link to this heading"></a></h2>
 <p>Provides a function to create the responses of beta, phase, dispersion, tune and coupling via iterative
 madx calls.</p>
 <p>The variables under investigation need to be provided as a list (which can be obtained from the accelerator
@@ -372,7 +372,7 @@ beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 </dd></dl>
 
 <section id="response-twiss">
-<h2>Response TWISS<a class="headerlink" href="#response-twiss" title="Permalink to this heading"></a></h2>
+<h2>Response TWISS<a class="headerlink" href="#response-twiss" title="Link to this heading"></a></h2>
 <p>Provides a class to get response matrices from Twiss parameters.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -584,7 +584,7 @@ either as dict-structure of Series or path to a pickled-file.</p></li>
 </dd></dl>
 
 <section id="sequence-evaluation">
-<h2>Sequence Evaluation<a class="headerlink" href="#sequence-evaluation" title="Permalink to this heading"></a></h2>
+<h2>Sequence Evaluation<a class="headerlink" href="#sequence-evaluation" title="Link to this heading"></a></h2>
 <p>Evaluates the variable responses from a sequence in MAD-X.</p>
 <p>First: Set all variables to 0
 Then: Set one variable at a time to 1</p>
@@ -615,7 +615,7 @@ beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 </dd></dl>
 
 <section id="response-matrix-io">
-<h2>Response Matrix IO<a class="headerlink" href="#response-matrix-io" title="Permalink to this heading"></a></h2>
+<h2>Response Matrix IO<a class="headerlink" href="#response-matrix-io" title="Link to this heading"></a></h2>
 <p>Input and output functions for response matrices.</p>
 </section>
 <dl class="py function">

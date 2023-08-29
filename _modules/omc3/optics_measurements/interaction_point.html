@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -227,7 +227,9 @@
 <span class="n">COLUMNS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;IP&quot;</span><span class="p">,</span> <span class="s2">&quot;BETASTAR&quot;</span><span class="p">,</span> <span class="s2">&quot;ERRBETASTAR&quot;</span><span class="p">,</span> <span class="s2">&quot;PHASEADV&quot;</span><span class="p">,</span> <span class="s2">&quot;ERRPHASEADV&quot;</span><span class="p">,</span> <span class="s2">&quot;PHASEDVMDL&quot;</span><span class="p">,</span> <span class="s2">&quot;LSTAR&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="betastar_from_phase"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.betastar_from_phase">[docs]</a><span class="k">def</span> <span class="nf">betastar_from_phase</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase_d</span><span class="p">):</span>
+<div class="viewcode-block" id="betastar_from_phase">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.betastar_from_phase">[docs]</a>
+<span class="k">def</span> <span class="nf">betastar_from_phase</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase_d</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes the **getIP** files with the betastar computed using phase advance.</span>
 
@@ -258,12 +260,15 @@
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">COLUMNS</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">rows</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">ips_d</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">ips_d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">IP_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">ips_d</span><span class="p">,</span> <span class="n">headers_dict</span><span class="o">=</span><span class="n">headers</span><span class="p">,)</span>
 
 
-<div class="viewcode-block" id="phase_to_betastar"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.phase_to_betastar">[docs]</a><span class="k">def</span> <span class="nf">phase_to_betastar</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">errphase</span><span class="p">):</span>
+<div class="viewcode-block" id="phase_to_betastar">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.phase_to_betastar">[docs]</a>
+<span class="k">def</span> <span class="nf">phase_to_betastar</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">errphase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the betastar and its error given the phase advance across the IP.</span>
 
@@ -277,6 +282,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">_phase_to_betastar_value</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">),</span>
             <span class="n">_phase_to_betastar_error</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">errphase</span><span class="p">))</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_phase_to_betastar_value</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">ph</span><span class="p">):</span>

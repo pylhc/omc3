@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -241,7 +241,9 @@
 <span class="c1"># Measurement Filter -----------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="filter_measurement"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_measurement">[docs]</a><span class="k">def</span> <span class="nf">filter_measurement</span><span class="p">(</span>
+<div class="viewcode-block" id="filter_measurement">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_measurement">[docs]</a>
+<span class="k">def</span> <span class="nf">filter_measurement</span><span class="p">(</span>
     <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">meas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Filters measurements in `keys` based on the dict-entries (keys as in `keys`)</span>
@@ -253,6 +255,7 @@
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
         <span class="n">new</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">filters</span><span class="p">[</span><span class="n">key</span><span class="p">](</span><span class="n">key</span><span class="p">,</span> <span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_measurement_filters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">defaultdict</span><span class="p">:</span>
@@ -370,7 +373,9 @@
 <span class="c1"># Response Matrix Filter -------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="filter_response_index"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_response_index">[docs]</a><span class="k">def</span> <span class="nf">filter_response_index</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="filter_response_index">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_response_index">[docs]</a>
+<span class="k">def</span> <span class="nf">filter_response_index</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Filters the index of the response matrices `response` by the respective entries in `measurement`.&quot;&quot;&quot;</span>
     <span class="c1"># rename MU to PHASE as we create a PHASE-Response afterwards</span>
     <span class="c1"># easier to do here, than to check eveywhere below. (jdilly)</span>
@@ -388,6 +393,7 @@
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
         <span class="n">new_response</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">filters</span><span class="p">[</span><span class="n">key</span><span class="p">](</span><span class="n">response</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">new_response</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_response_filters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]:</span>

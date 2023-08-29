@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -240,7 +240,9 @@
 <span class="n">METH_NO_ERR</span> <span class="o">=</span> <span class="s2">&quot;No Errors&quot;</span>
 
 
-<div class="viewcode-block" id="calculate"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate">[docs]</a><span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<div class="viewcode-block" id="calculate">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates betas and alphas from phase advances.</span>
 
@@ -269,12 +271,15 @@
     <span class="k">return</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">header</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">beta_df</span><span class="p">,</span>
               <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="n_bpm_method"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.n_bpm_method">[docs]</a><span class="k">def</span> <span class="nf">n_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_mdl_tunes</span><span class="p">):</span>
+<div class="viewcode-block" id="n_bpm_method">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.n_bpm_method">[docs]</a>
+<span class="k">def</span> <span class="nf">n_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_mdl_tunes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates betas and alphas from using all BPM combination within **range_of_bpms**. It also</span>
 <span class="sd">    accounts for systematic errors</span>
@@ -391,6 +396,7 @@
     <span class="k">return</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">error_method</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">get_elements_with_errors</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">error_defs_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error definition file could not be found&quot;</span><span class="p">)</span>
@@ -406,7 +412,9 @@
     <span class="k">return</span> <span class="n">elements</span><span class="p">,</span> <span class="n">error_method</span>
 
 
-<div class="viewcode-block" id="calculate_beta_alpha_from_single_combination"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination">[docs]</a><span class="k">def</span> <span class="nf">calculate_beta_alpha_from_single_combination</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sin_squared_elements</span><span class="p">,</span> <span class="n">outer_elmts</span><span class="p">,</span> <span class="n">cot_model</span><span class="p">,</span>
+<div class="viewcode-block" id="calculate_beta_alpha_from_single_combination">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_beta_alpha_from_single_combination</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sin_squared_elements</span><span class="p">,</span> <span class="n">outer_elmts</span><span class="p">,</span> <span class="n">cot_model</span><span class="p">,</span>
                                                  <span class="n">cot_meas</span><span class="p">,</span> <span class="n">outer_meas_phase_adv</span><span class="p">,</span> <span class="n">probed_bpm_name</span><span class="p">,</span>
                                                  <span class="n">betmdl1</span><span class="p">,</span> <span class="n">alfmdl1</span><span class="p">,</span> <span class="n">range_of_bpms</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -507,6 +515,7 @@
     <span class="k">return</span> <span class="n">beta_i</span><span class="p">,</span> <span class="n">alfa_i</span><span class="p">,</span> <span class="n">betaline</span><span class="p">,</span> <span class="n">alfaline</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_covariant_weighting</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
     <span class="n">mat_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">RCOND</span><span class="p">)</span>
     <span class="n">wb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mat_inv</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -568,7 +577,9 @@
     <span class="k">return</span> <span class="n">header</span>
 
 
-<div class="viewcode-block" id="three_bpm_method"><a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.three_bpm_method">[docs]</a><span class="k">def</span> <span class="nf">three_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_mdl_tunes</span><span class="p">):</span>
+<div class="viewcode-block" id="three_bpm_method">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.three_bpm_method">[docs]</a>
+<span class="k">def</span> <span class="nf">three_bpm_method</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_and_mdl_tunes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates betas and alphas from using adjacent BPMs (3 combination).</span>
 <span class="sd">    ``phase[&quot;MEAS&quot;]``, ``phase[&quot;MODEL&quot;]``, ``phase[&quot;ERRMEAS&quot;]`` (from ``get_phases``) are of the</span>
@@ -676,6 +687,7 @@
         <span class="n">sin_quad_model_shift1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_quad_model_shift1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_quad_model_shift2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">beta_df</span> <span class="o">=</span> <span class="n">_get_delta_columns</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">beta_df</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_delta_columns</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>

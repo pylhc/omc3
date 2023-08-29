@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -251,7 +251,9 @@
 <span class="n">Z_TOLERANCE</span> <span class="o">=</span> <span class="mf">0.0003</span>
 
 
-<div class="viewcode-block" id="estimate_tunes"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.estimate_tunes">[docs]</a><span class="k">def</span> <span class="nf">estimate_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">usvs</span><span class="p">):</span>
+<div class="viewcode-block" id="estimate_tunes">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.estimate_tunes">[docs]</a>
+<span class="k">def</span> <span class="nf">estimate_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">usvs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimates the tunes from the `FFT` of decomposed data.</span>
 
@@ -270,6 +272,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">tunex</span><span class="p">,</span> <span class="n">tuney</span><span class="p">,</span> <span class="n">tunez</span><span class="p">]</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_estimate_tune</span><span class="p">(</span><span class="n">sv_mat</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">q_s</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">upper_power</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">sv_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))))</span>
     <span class="n">synchro_limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">upper_power</span> <span class="o">/</span> <span class="mi">16</span><span class="p">)</span>  <span class="c1"># 0.03125: synchrotron tunes are lower, betatron higher</span>
@@ -280,7 +283,9 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">upper_power</span><span class="p">)[</span><span class="n">synchro_limit</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">coefs</span><span class="p">[</span><span class="n">synchro_limit</span><span class="p">:])]</span>
 
 
-<div class="viewcode-block" id="harpy_per_plane"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.harpy_per_plane">[docs]</a><span class="k">def</span> <span class="nf">harpy_per_plane</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_matrix</span><span class="p">,</span> <span class="n">usv</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<div class="viewcode-block" id="harpy_per_plane">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.harpy_per_plane">[docs]</a>
+<span class="k">def</span> <span class="nf">harpy_per_plane</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_matrix</span><span class="p">,</span> <span class="n">usv</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the spectra of TbT data, finds the main lines and cleans the BPMs for which the</span>
 <span class="sd">    main line hasn&#39;t been found or is too far from its average over BPMs.</span>
@@ -327,7 +332,10 @@
     <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="n">bad_bpms_summaries</span></div>
 
 
-<div class="viewcode-block" id="find_resonances"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.find_resonances">[docs]</a><span class="k">def</span> <span class="nf">find_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">nturns</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="n">order_resonances</span><span class="p">):</span>
+
+<div class="viewcode-block" id="find_resonances">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.find_resonances">[docs]</a>
+<span class="k">def</span> <span class="nf">find_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">nturns</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="n">order_resonances</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds higher order lines in the spectra.</span>
 
@@ -358,6 +366,7 @@
                                                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_FREQ</span><span class="si">}{</span><span class="n">resstr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">nturns</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_main_resonances</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">spectra</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
@@ -393,7 +402,9 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">mid_phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">),</span> <span class="n">mid_phase</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="clean_by_tune"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.clean_by_tune">[docs]</a><span class="k">def</span> <span class="nf">clean_by_tune</span><span class="p">(</span><span class="n">tunes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">tune_clean_limit</span><span class="p">:</span> <span class="n">Number</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<div class="viewcode-block" id="clean_by_tune">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.clean_by_tune">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_by_tune</span><span class="p">(</span><span class="n">tunes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">tune_clean_limit</span><span class="p">:</span> <span class="n">Number</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks for outliers in the tunes pandas Series and returns their indices.</span>
 
@@ -405,6 +416,7 @@
     <span class="n">bad_bpms_mask</span> <span class="o">=</span> <span class="n">outliers</span><span class="o">.</span><span class="n">get_filter_mask</span><span class="p">(</span><span class="n">tunes</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">tune_clean_limit</span><span class="p">)</span>  <span class="c1"># returns ``True`` for good BPMs</span>
     <span class="n">bad_bpms_names</span> <span class="o">=</span> <span class="n">tunes</span><span class="p">[</span><span class="o">~</span><span class="n">bad_bpms_mask</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">return</span> <span class="n">bad_bpms_names</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_bad_bpms_summary</span><span class="p">(</span><span class="n">not_tune_bpms</span><span class="p">,</span> <span class="n">cleaned_by_tune_bpms</span><span class="p">):</span>
@@ -464,7 +476,9 @@
     <span class="k">return</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="nb">bool</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">n_turns</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="windowed_padded_rfft"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.windowed_padded_rfft">[docs]</a><span class="k">def</span> <span class="nf">windowed_padded_rfft</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">svd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="windowed_padded_rfft">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.windowed_padded_rfft">[docs]</a>
+<span class="k">def</span> <span class="nf">windowed_padded_rfft</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">svd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the spectra using specified windowing function and zero-padding.</span>
 
@@ -502,7 +516,10 @@
     <span class="k">return</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">coefficients</span></div>
 
 
-<div class="viewcode-block" id="windowing"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.windowing">[docs]</a><span class="k">def</span> <span class="nf">windowing</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hamming&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="windowing">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.windowing">[docs]</a>
+<span class="k">def</span> <span class="nf">windowing</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hamming&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides specified windowing function of given length.</span>
 
@@ -532,7 +549,10 @@
     <span class="k">return</span> <span class="n">windows</span><span class="p">[</span><span class="n">window</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">windows</span><span class="p">[</span><span class="n">window</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="get_freq_mask"><a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.get_freq_mask">[docs]</a><span class="k">def</span> <span class="nf">get_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">auto_tol</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_freq_mask">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.frequency.get_freq_mask">[docs]</a>
+<span class="k">def</span> <span class="nf">get_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">auto_tol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes mask to get intervals around resonances in frequency domain.</span>
 
@@ -561,6 +581,7 @@
     <span class="k">if</span> <span class="n">tunes</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
         <span class="n">freqs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_compute_resonance_freqs</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">resonance_lines</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">_get_partial_freq_mask</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_natural_tunes</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">tunes</span><span class="p">):</span>

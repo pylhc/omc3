@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -512,7 +512,9 @@
 <span class="c1"># Main invocation ############################################################</span>
 
 
-<div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.plot">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="plot">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.plot">[docs]</a>
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main plotting function.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting plotting of tfs files: </span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -540,9 +542,12 @@
     <span class="k">return</span> <span class="n">fig_collection</span><span class="o">.</span><span class="n">fig_dict</span></div>
 
 
+
 <span class="c1"># Sorting ----------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="sort_data"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data">[docs]</a><span class="k">def</span> <span class="nf">sort_data</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<div class="viewcode-block" id="sort_data">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.sort_data">[docs]</a>
+<span class="k">def</span> <span class="nf">sort_data</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load all data from files and sort into figures.&quot;&quot;&quot;</span>
     <span class="n">collector</span> <span class="o">=</span> <span class="n">FigureCollector</span><span class="p">()</span>
     <span class="n">axes_ids</span> <span class="o">=</span> <span class="n">_get_axes_ids</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
@@ -604,7 +609,10 @@
     <span class="k">return</span> <span class="n">collector</span></div>
 
 
-<div class="viewcode-block" id="get_id"><a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id">[docs]</a><span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">filename_parts</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">file_label</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">same_axes</span><span class="p">,</span> <span class="n">same_figure</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">planes</span><span class="o">=</span><span class="p">[]):</span>
+
+<div class="viewcode-block" id="get_id">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id">[docs]</a>
+<span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="n">filename_parts</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">file_label</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">same_axes</span><span class="p">,</span> <span class="n">same_figure</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">planes</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the right IDs for the current sorting way.</span>
 <span class="sd">    This is where the actual sorting happens, by mapping the right IDs according to the chosen</span>
@@ -688,6 +696,7 @@
 
     <span class="n">out_idmap</span><span class="o">.</span><span class="n">figure_id</span> <span class="o">=</span> <span class="n">out_idmap</span><span class="o">.</span><span class="n">figure_id</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out_idmap</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_read_data</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">x_col</span><span class="p">,</span> <span class="n">y_col</span><span class="p">,</span> <span class="n">err_col</span><span class="p">):</span>

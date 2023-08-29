@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -265,7 +265,9 @@
     <span class="k">return</span> <span class="n">params</span>
 
 
-<div class="viewcode-block" id="converter_entrypoint"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.converter_entrypoint">[docs]</a><span class="nd">@entrypoint</span><span class="p">(</span><span class="n">converter_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="converter_entrypoint">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.converter_entrypoint">[docs]</a>
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">converter_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">converter_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks for expected ``BetaBeat.src`` output files in the provided input directory, converts them to</span>
@@ -304,7 +306,10 @@
     <span class="n">convert_old_directory_to_new</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_directory_to_new"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new">[docs]</a><span class="k">def</span> <span class="nf">convert_old_directory_to_new</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<div class="viewcode-block" id="convert_old_directory_to_new">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_directory_to_new</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Looks in the provided directory for expected ``BetaBeat.src`` output files, converts it to the output</span>
 <span class="sd">    format used by ``omc3`` and  write them to the new location.</span>
@@ -330,7 +335,10 @@
         <span class="n">convert_old_normalised_dispersion</span><span class="p">(</span><span class="n">inputdir_path</span><span class="p">,</span> <span class="n">outputdir_path</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_beta_from_amplitude"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude">[docs]</a><span class="k">def</span> <span class="nf">convert_old_beta_from_amplitude</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_beta_from_amplitude">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_beta_from_amplitude</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -368,7 +376,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dframe</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_beta_from_phase"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase">[docs]</a><span class="k">def</span> <span class="nf">convert_old_beta_from_phase</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_beta_from_phase">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_beta_from_phase</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -414,7 +425,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dframe</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_phase"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_phase">[docs]</a><span class="k">def</span> <span class="nf">convert_old_phase</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_phase">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_phase">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_phase</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -456,7 +470,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dframe</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_total_phase"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase">[docs]</a><span class="k">def</span> <span class="nf">convert_old_total_phase</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_total_phase">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_total_phase</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -498,7 +515,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dframe</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_closed_orbit"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit">[docs]</a><span class="k">def</span> <span class="nf">convert_old_closed_orbit</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_closed_orbit">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_closed_orbit</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -532,7 +552,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dframe</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_dispersion"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion">[docs]</a><span class="k">def</span> <span class="nf">convert_old_dispersion</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_dispersion">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_dispersion</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -566,7 +589,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dframe</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_normalised_dispersion"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion">[docs]</a><span class="k">def</span> <span class="nf">convert_old_normalised_dispersion</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_normalised_dispersion">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_normalised_dispersion</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -605,7 +631,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dframe</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_old_coupling"><a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_coupling">[docs]</a><span class="k">def</span> <span class="nf">convert_old_coupling</span><span class="p">(</span>
+
+<div class="viewcode-block" id="convert_old_coupling">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_coupling">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_old_coupling</span><span class="p">(</span>
     <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -658,6 +687,7 @@
         <span class="n">rdt_dfs</span><span class="p">[</span><span class="n">rdt</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">REAL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdt_dfs</span><span class="p">[</span><span class="n">rdt</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
         <span class="n">rdt_dfs</span><span class="p">[</span><span class="n">rdt</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">IMAG</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdt_dfs</span><span class="p">[</span><span class="n">rdt</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_file_name</span><span class="si">}{</span><span class="n">rdt</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">rdt_dfs</span><span class="p">[</span><span class="n">rdt</span><span class="p">])</span></div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

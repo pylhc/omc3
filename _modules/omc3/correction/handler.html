@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -241,7 +241,9 @@
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="correct"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.correct">[docs]</a><span class="k">def</span> <span class="nf">correct</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="correct">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.correct">[docs]</a>
+<span class="k">def</span> <span class="nf">correct</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Perform global correction as described in :mod:`omc3.global_correction`.</span>
 
 <span class="sd">    Args:</span>
@@ -314,6 +316,7 @@
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished Iterative Global Correction.&quot;</span><span class="p">)</span></div>
 
 
+
 <span class="c1"># Input ------------------------------------------------------------------------</span>
 
 
@@ -343,7 +346,9 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">beta_filename</span><span class="si">}{</span><span class="n">parameter</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
-<div class="viewcode-block" id="get_measurement_data"><a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.get_measurement_data">[docs]</a><span class="k">def</span> <span class="nf">get_measurement_data</span><span class="p">(</span>
+<div class="viewcode-block" id="get_measurement_data">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.get_measurement_data">[docs]</a>
+<span class="k">def</span> <span class="nf">get_measurement_data</span><span class="p">(</span>
         <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">meas_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">beta_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -375,6 +380,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">measurement</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_measurement_file</span><span class="p">(</span><span class="n">meas_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">filtered_keys</span><span class="p">,</span> <span class="n">measurement</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_load_fullresponse</span><span class="p">(</span><span class="n">full_response_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>

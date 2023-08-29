@@ -11,11 +11,11 @@
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -272,7 +272,9 @@
 <span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
 
-<div class="viewcode-block" id="Ps"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps">[docs]</a><span class="k">class</span> <span class="nc">Ps</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
+<div class="viewcode-block" id="Ps">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps">[docs]</a>
+<span class="k">class</span> <span class="nc">Ps</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parent Class for PS-types.&quot;&quot;&quot;</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;ps&quot;</span>
     <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;PR\.BPM&quot;</span><span class="p">,</span>
@@ -299,13 +301,21 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">year</span>
 
-<div class="viewcode-block" id="Ps.verify_object"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.verify_object">[docs]</a>    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Ps.verify_object">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.verify_object">[docs]</a>
+    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Ps.get_dir"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_dir">[docs]</a>    <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Ps.get_dir">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_dir">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ps.get_file"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_file">[docs]</a>    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Ps.get_file">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get filepaths for PS files.&quot;&quot;&quot;</span>
         <span class="n">ps_dir</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span>
         <span class="n">ps_year_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()</span>
@@ -319,7 +329,10 @@
             <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not available for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ps.get_exciter_bpm"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_exciter_bpm">[docs]</a>    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Ps.get_exciter_bpm">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_exciter_bpm">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">bpms_to_find</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PR.BPM00&quot;</span><span class="p">,</span> <span class="s2">&quot;PR.BPM03&quot;</span><span class="p">]</span>
@@ -328,7 +341,10 @@
             <span class="k">raise</span> <span class="ne">KeyError</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP&quot;</span></div>
 
-<div class="viewcode-block" id="Ps.get_base_madx_script"><a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_base_madx_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Ps.get_base_madx_script">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_base_madx_script">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best knowledge model not implemented for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -351,7 +367,9 @@
             <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s1">&#39;base.mask&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">mask</span> <span class="o">%</span> <span class="n">replace_dict</span></div></div>
+        <span class="k">return</span> <span class="n">mask</span> <span class="o">%</span> <span class="n">replace_dict</span></div>
+</div>
+
 
 
 <span class="k">class</span> <span class="nc">_PsSegmentMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

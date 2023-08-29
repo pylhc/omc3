@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -223,14 +223,14 @@
            <div itemprop="articleBody">
              
   <section id="correction">
-<h1>Correction<a class="headerlink" href="#correction" title="Permalink to this heading"></a></h1>
+<h1>Correction<a class="headerlink" href="#correction" title="Link to this heading"></a></h1>
 <section id="global-correction">
-<h2>Global Correction<a class="headerlink" href="#global-correction" title="Permalink to this heading"></a></h2>
+<h2>Global Correction<a class="headerlink" href="#global-correction" title="Link to this heading"></a></h2>
 <p>Iterative Correction Scheme.</p>
 <p>The response matrices <span class="math notranslate nohighlight">\(R_{O}\)</span> for the observables <span class="math notranslate nohighlight">\(O\)</span> (e.g. BBX, PHASEX, …)
 are loaded from a file and then the equation</p>
 <div class="math notranslate nohighlight" id="equation-eq1">
-<span class="eqno">(1)<a class="headerlink" href="#equation-eq1" title="Permalink to this equation"></a></span>\[R_{O} \cdot \delta var = O_{meas} - O_{model}\]</div>
+<span class="eqno">(1)<a class="headerlink" href="#equation-eq1" title="Link to this equation"></a></span>\[R_{O} \cdot \delta var = O_{meas} - O_{model}\]</div>
 <p>is being solved for <span class="math notranslate nohighlight">\(\delta var\)</span> via a chosen method (at the moment only numpys pinv,
 which creates a pseudo-inverse via svd is used).</p>
 <p>The response matrices are hereby merged into one matrix for all observables to solve for all
@@ -377,7 +377,7 @@ optics_params.</p>
 </dd></dl>
 
 <section id="response-creator">
-<h2>Response Creator<a class="headerlink" href="#response-creator" title="Permalink to this heading"></a></h2>
+<h2>Response Creator<a class="headerlink" href="#response-creator" title="Link to this heading"></a></h2>
 <p>Provides a response generation wrapper.
 The response matrices can be either created by <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_madx</span></code>
 or analytically via <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_twiss</span></code>.</p>
@@ -432,7 +432,7 @@ to use. Check <a class="reference internal" href="../modules/model.html#model"><
 </dd></dl>
 
 <section id="correction-test">
-<h2>Correction Test<a class="headerlink" href="#correction-test" title="Permalink to this heading"></a></h2>
+<h2>Correction Test<a class="headerlink" href="#correction-test" title="Link to this heading"></a></h2>
 <p>In a MAD-X simulation (pre-calculated) corrections are applied to the (nominal)
 model and the difference between this new matched model and the nominal model
 are evaluated. These are the changes in the optics parameters as

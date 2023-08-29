@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -261,7 +261,9 @@
 <span class="c1"># Data Addition ################################################################</span>
 
 
-<div class="viewcode-block" id="add_bbq_data"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_bbq_data">[docs]</a><span class="k">def</span> <span class="nf">add_bbq_data</span><span class="p">(</span><span class="n">kick_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bbq_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="add_bbq_data">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_bbq_data">[docs]</a>
+<span class="k">def</span> <span class="nf">add_bbq_data</span><span class="p">(</span><span class="n">kick_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bbq_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add BBQ values from column to kickac dataframe into same column.</span>
 
@@ -288,7 +290,10 @@
     <span class="k">return</span> <span class="n">kick_df</span></div>
 
 
-<div class="viewcode-block" id="add_moving_average"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_moving_average">[docs]</a><span class="k">def</span> <span class="nf">add_moving_average</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">FilterOpts</span><span class="p">,</span>
+
+<div class="viewcode-block" id="add_moving_average">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_moving_average">[docs]</a>
+<span class="k">def</span> <span class="nf">add_moving_average</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">FilterOpts</span><span class="p">,</span>
                        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds the moving average of the bbq data to kickac_df and bbq_df.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculating moving average.&quot;</span><span class="p">)</span>
@@ -302,6 +307,7 @@
         <span class="n">kickac_df</span> <span class="o">=</span> <span class="n">add_bbq_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">,</span> <span class="n">get_mav_col</span><span class="p">(</span><span class="n">plane</span><span class="p">))</span>
         <span class="n">kickac_df</span> <span class="o">=</span> <span class="n">add_bbq_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">,</span> <span class="n">get_mav_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">kickac_df</span><span class="p">,</span> <span class="n">bbq_df</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_filter_bbq_outliers</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
@@ -347,7 +353,9 @@
     <span class="k">return</span> <span class="n">bbq_df</span>
 
 
-<div class="viewcode-block" id="add_corrected_natural_tunes"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes">[docs]</a><span class="k">def</span> <span class="nf">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="add_corrected_natural_tunes">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes">[docs]</a>
+<span class="k">def</span> <span class="nf">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds the corrected natural tunes to ``kickac_df``.</span>
 <span class="sd">    Add also the total standard deviation of the natural tune to the kickac dataframe.</span>
@@ -374,7 +382,10 @@
     <span class="k">return</span> <span class="n">kickac_df</span></div>
 
 
-<div class="viewcode-block" id="add_odr"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_odr">[docs]</a><span class="k">def</span> <span class="nf">add_odr</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> 
+
+<div class="viewcode-block" id="add_odr">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_odr">[docs]</a>
+<span class="k">def</span> <span class="nf">add_odr</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> 
             <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.</span>
@@ -396,9 +407,12 @@
     <span class="k">return</span> <span class="n">kickac_df</span></div>
 
 
+
 <span class="c1"># Data Extraction --------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="get_odr_data"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_odr_data">[docs]</a><span class="k">def</span> <span class="nf">get_odr_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="viewcode-block" id="get_odr_data">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_odr_data">[docs]</a>
+<span class="k">def</span> <span class="nf">get_odr_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FakeOdrOutput</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract the data from kickac.</span>
@@ -425,7 +439,10 @@
     <span class="k">return</span> <span class="n">odr_data</span></div>
 
 
-<div class="viewcode-block" id="get_ampdet_data"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data">[docs]</a><span class="k">def</span> <span class="nf">get_ampdet_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+<div class="viewcode-block" id="get_ampdet_data">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data">[docs]</a>
+<span class="k">def</span> <span class="nf">get_ampdet_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                     <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dropna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AmpDetData</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract the data needed for the (un)corrected amplitude detuning from ``kickac_df``.</span>
@@ -474,6 +491,7 @@
     <span class="p">)</span></div>
 
 
+
 <span class="c1"># Timed DataFrames -------------------------------------------------------------</span>
 
 
@@ -510,7 +528,9 @@
 
 <span class="c1"># BBS Converter ----------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="convert_bbs_kickfile"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickfile">[docs]</a><span class="k">def</span> <span class="nf">convert_bbs_kickfile</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_bbs_kickfile">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickfile">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_bbs_kickfile</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Wrapper for :meth:`omc3.tune_analysis.kick_file_modifiers.convert_old_kickdataframe`</span>
 <span class="sd">    with read/write capabilities.&quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
@@ -518,7 +538,10 @@
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">get_kick_out_name</span><span class="p">()),</span> <span class="n">df</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_bbs_kickdataframe"><a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickdataframe">[docs]</a><span class="k">def</span> <span class="nf">convert_bbs_kickdataframe</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="convert_bbs_kickdataframe">
+<a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickdataframe">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_bbs_kickdataframe</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a kick-dataframe created with the python2 amplitude detuning</span>
 <span class="sd">    analysis into a dataframe compatible with omc3&#39;s detuning analysis.</span>
 <span class="sd">    Beware that the old files may not contain the error coefficients for</span>
@@ -563,6 +586,7 @@
         <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">df</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_rename_old_header</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
