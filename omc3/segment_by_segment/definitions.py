@@ -7,7 +7,7 @@ This module provides definitions to be used with segment by segment
 from dataclasses import dataclass, fields
 from typing import Tuple
 
-from uncertainties import ufloat
+from uncertainties.core import Variable 
 
 from omc3.optics_measurements.constants import ERR
 from omc3.segment_by_segment.constants import BACKWARD, CORRECTED, FORWARD
@@ -68,20 +68,24 @@ class PropagableColumns:
         return f"{ERR}{self.backward_corrected}"
 
 
+class Measurement(Variable):
+    def as_tuple(self) -> Tuple[float, float]:
+        return (self.nominal_value, self.std_dev)
+    
+    def __iter__(self):
+        return iter(self.as_tuple())
+
+
 @dataclass 
 class PropagableBoundaryConditions:
     """Store boundary conditions with error for propagating."""
-    alpha: ufloat = None
-    beta: ufloat = None
-    dispersion: ufloat = None
-    f1001_amplitude: ufloat = None
-    f1001_phase: ufloat = None
-    f1010_amplitude: ufloat = None
-    f1010_phase: ufloat = None
-    
-    @staticmethod
-    def as_tuple(value: ufloat) -> Tuple[ufloat, ufloat]:
-        return (value.nominal_value, value.std_dev)
+    alpha: Measurement = None
+    beta: Measurement = None
+    dispersion: Measurement = None
+    f1001_amplitude: Measurement = None
+    f1001_phase: Measurement = None
+    f1010_amplitude: Measurement = None
+    f1010_phase: Measurement = None
 
 
 @dataclass 
