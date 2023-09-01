@@ -28,6 +28,14 @@ def test_rdt_0040(tmp_path):
     _default_test_rdt("f0040_y", output_dir=tmp_path)
 
 
+@pytest.mark.basic
+def test_normalized_dispersion(tmp_path):
+    figs = _default_test("normalised_dispersion", output_dir=tmp_path)
+    assert len(figs) == 1
+    for fig in figs.values():
+        assert len(fig.axes) == 2
+
+
 @pytest.mark.extended
 def test_orbit(tmp_path):
     figs = _default_test("orbit", output_dir=tmp_path)
