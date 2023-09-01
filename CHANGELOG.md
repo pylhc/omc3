@@ -1,5 +1,13 @@
 # OMC3 Changelog
 
+#### 2023-09-01 - v0.11.2 - _jdilly_
+
+- Fixed:
+  - Plot Optics: making normalized dispersion plot a special case.
+
+- Added:
+ - Plot Optics: optional input "--labels" to manually set the legend-labels. 
+
 #### 2023-06-16 - v0.11.1 - _jdilly_
 
 - Fixed:

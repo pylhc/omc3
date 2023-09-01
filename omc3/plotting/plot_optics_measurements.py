@@ -10,6 +10,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
     figs = plot(
         folders=['folder1', 'folder2'],
+        labels=['LabelForFolder1', 'LabelForFolder2'],
         combine_by=['files'],  # to compare folder1 and folder2
         output='output_directory',
         delta=True,  # delta from reference
@@ -27,68 +28,146 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
 *--Required--*
 
-- **folders** *(MultiClass)*: Optics Measurements folders containing the analysed data.
+- **folders** *(PathOrStr)*:
 
-- **optics_parameters** *(str)*: Optics parameters to plot, e.g. 'beta_amplitude'.
-  RDTs need to be specified with plane, e.g. 'f1001_x'
+    Optics Measurements folders containing the analysed data.
+
+
+- **optics_parameters** *(str)*:
+
+    Optics parameters to plot, e.g. 'beta_amplitude'. RDTs need to be
+    specified with plane, e.g. 'f1001_x'
 
 
 *--Optional--*
 
-- **change_marker**: Changes marker for each line in the plot.
+- **change_marker**:
 
-  Action: ``store_true``
-- **combine_by**: Combine plots into one. Either files, planes (not separated into two axes) or both.
+    Changes marker for each line in the plot.
 
-  Choices: ``['files', 'planes']``
-- **delta**: Plot the difference to model instead of the parameter.
+    action: ``store_true``
 
-  Action: ``store_true``
-- **errorbar_alpha** *(float)*: Alpha value for error bars
 
-  Default: ``0.6``
-- **ip_positions**: Input to plot IP-Positions into the plots. Either 'LHCB1'
-  or 'LHCB2' for LHC defaults, a dictionary of labels and positions or path to TFS file of a model.
+- **combine_by**:
 
-- **ip_search_pattern**: In case your IPs have a weird name. Specify regex pattern.
+    Combine plots into one. Either files, planes (not separated into two
+    axes) or both.
 
-  Default: ``IP\d$``
-- **lines_manual** *(DictAsString)*: List of manual lines to plot.
-  Need to contain arguments for axvline, and may contain the additional keys "text"
-  and "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
-  and places the text at the given location.
+    choices: ``['files', 'planes']``
 
-  Default: ``[]``
-- **manual_style** *(DictAsString)*: Additional style rcParameters which
-  update the set of predefined ones.
 
-  Default: ``{}``
-- **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
+- **delta**:
 
-  Default: ``3``
-- **output** *(MultiClass)*: Folder to output the results to.
+    Plot the difference to model instead of the parameter.
 
-- **plot_styles** *(str)*: Which plotting styles to use,
-  either from plotting.styles.*.mplstyles or default mpl.
+    action: ``store_true``
 
-  Default: ``['standard']``
-- **share_xaxis**: In case of multiple axes per figure, share x-axis.
 
-  Action: ``store_true``
-- **show**: Shows plots.
+- **errorbar_alpha** *(float)*:
 
-  Action: ``store_true``
-- **suppress_column_legend**: Does not show column name in legend
-  e.g. when combining by files (see also `ncol_legend`).
+    Alpha value for error bars
 
-  Action: ``store_true``
-- **x_axis**: Which parameter to use for the x axis.
+    default: ``0.6``
 
-  Choices: ``['location', 'phase-advance']``
-  Default: ``location``
-- **x_lim** *(float, int, None)*: Limits on the x axis (Tupel)
 
-- **y_lim** *(float, int, None)*: Limits on the y axis (Tupel)
+- **ip_positions**:
+
+    Input to plot IP-Positions into the plots. Either 'LHCB1' or 'LHCB2'
+    for LHC defaults, a dictionary of labels and positions or path to TFS
+    file of a model.
+
+
+- **ip_search_pattern**:
+
+    In case your IPs have a weird name. Specify regex pattern.
+
+    default: ``IP\d$``
+
+
+- **labels** *(str)*:
+
+    Labels for the folders. If not provided, the folder names (with
+    parents until each label is unique) will be used.
+
+
+- **lines_manual** *(DictAsString)*:
+
+    List of manual lines to plot. Need to contain arguments for axvline,
+    and may contain the additional keys "text" and "loc" which is one of
+    ['bottom', 'top', 'line bottom', 'line top'] and places the text at
+    the given location.
+
+    default: ``[]``
+
+
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **ncol_legend** *(int)*:
+
+    Number of bpm legend-columns. If < 1 no legend is shown.
+
+    default: ``3``
+
+
+- **output** *(PathOrStr)*:
+
+    Folder to output the results to.
+
+
+- **plot_styles** *(str)*:
+
+    Which plotting styles to use, either from plotting.styles.*.mplstyles
+    or default mpl.
+
+    default: ``['standard']``
+
+
+- **share_xaxis**:
+
+    In case of multiple axes per figure, share x-axis.
+
+    action: ``store_true``
+
+
+- **show**:
+
+    Shows plots.
+
+    action: ``store_true``
+
+
+- **suppress_column_legend**:
+
+    Does not show column name in legend e.g. when combining by files (see
+    also `ncol_legend`).
+
+    action: ``store_true``
+
+
+- **x_axis**:
+
+    Which parameter to use for the x axis.
+
+    choices: ``['location', 'phase-advance']``
+
+    default: ``location``
+
+
+- **x_lim** *(OptionalFloat)*:
+
+    Limits on the x axis (Tupel)
+
+
+- **y_lim** *(OptionalFloat)*:
+
+    Limits on the y axis (Tupel)
+
+
 """
 from pathlib import Path
 
