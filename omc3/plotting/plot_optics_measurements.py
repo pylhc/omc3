@@ -462,7 +462,7 @@ def _plot_norm_dispersion(optics_parameter, files, file_labels, x_column, x_labe
         error_columns=[error_column, delta_error_column],
         x_columns=[x_column, x_column],
         x_labels=[x_label, x_label],
-        planes=PLANES[0],
+        planes=[PLANES[0]],
         vertical_lines=ip_positions + opt.lines_manual,
         same_figure=same_fig,
         same_axes=opt.combine_by,
