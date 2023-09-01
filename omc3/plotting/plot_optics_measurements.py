@@ -97,7 +97,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
-from omc3.optics_measurements.constants import EXT, AMPLITUDE, PHASE, REAL, IMAG
+from omc3.optics_measurements.constants import EXT, AMPLITUDE, NORM_DISP_NAME, PHASE, REAL, IMAG
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
 from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT)
 from omc3.plotting.plot_tfs import plot as plot_tfs, OptionalFloat
@@ -126,6 +126,14 @@ def get_params() -> EntryPointParameters:
         required=True,
         type=str,
         nargs="+",
+    )
+    params.add_parameter(
+        name="labels",
+        help="Labels for the folders. If not provided, the folder names "
+             "(with parents until each label is unique) will be used.",
+        required=False,
+        nargs="+",
+        type=str,
     )
     params.add_parameter(
         name="delta",
@@ -263,7 +271,10 @@ def plot(opt):
 
         is_rdt = optics_parameter.lower().startswith("f")
         files, file_labels = zip(*get_unique_filenames(opt.folders))
-        file_labels = ["_".join(flabels) for flabels in file_labels]
+        if opt.labels:
+            file_labels = opt.labels
+        else:
+            file_labels = ["_".join(flabels) for flabels in file_labels]
 
         if is_rdt:
             fig_dict.update(_plot_rdt(
@@ -274,14 +285,22 @@ def plot(opt):
             if not optics_parameter.endswith("_"):
                 optics_parameter += "_"
 
-            fig_dict.update(_plot_param(
-                optics_parameter, files, file_labels, x_axis.column, x_axis.label,
-                ip_positions, opt,)
-            )
+            if optics_parameter == NORM_DISP_NAME:
+                fig_dict.update(_plot_norm_dispersion(
+                    optics_parameter, files, file_labels, x_axis.column, x_axis.label,
+                    ip_positions, opt,)
+                )
+            else:
+                fig_dict.update(_plot_param(
+                    optics_parameter, files, file_labels, x_axis.column, x_axis.label,
+                    ip_positions, opt,)
+                )
     return fig_dict
 
 
 def _check_opt(opt):
+    if opt.labels and not len(opt.labels) == len(opt.folders):
+        raise ValueError("Labels need to be of same size as folders.")
     return opt
 
 
@@ -371,7 +390,7 @@ def _get_rdt_columns():
 
 
 def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
-    """Main plotting function for all parameters but RDTs."""
+    """Main plotting function for all parameters but RDTs and normalized dispersion."""
     y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
 
     same_fig = None
@@ -416,6 +435,45 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
                            'share_xaxis'])
     )
 
+def _plot_norm_dispersion(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
+    """Plotting normalized dispersion function for normalized dispersion.
+    Normalized dispersion is special, as we only have X. 
+    We therefore plot the delta in the second plot. """
+    y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, delta=False)
+    delta_y_column, delta_error_column, delta_column_label, delta_y_label = _get_columns_and_label(optics_parameter, delta=True)
+
+    same_fig = None
+    column_labels = [column_label, delta_column_label]
+    same_fig = 'columns'
+
+    if opt.suppress_column_legend:
+        column_labels = ['']
+
+    prefix = ''
+    if opt.combine_by and "files" in opt.combine_by:
+        prefix += f'{optics_parameter}'
+
+    return plot_tfs(
+        files=[f.absolute()/f'{optics_parameter}{{0}}{EXT}' for f in files],
+        file_labels=list(file_labels),
+        y_columns=[y_column, delta_y_column],
+        y_labels=[[y_label, delta_y_label]],
+        column_labels=column_labels,
+        error_columns=[error_column, delta_error_column],
+        x_columns=[x_column, x_column],
+        x_labels=[x_label, x_label],
+        planes=PLANES[0],
+        vertical_lines=ip_positions + opt.lines_manual,
+        same_figure=same_fig,
+        same_axes=opt.combine_by,
+        single_legend=True,
+        output_prefix=f"plot_{prefix}",
+        **opt.get_subdict(['show', 'output',
+                           'plot_styles', 'manual_style',
+                           'change_marker', 'errorbar_alpha',
+                           'ncol_legend', 'x_lim', 'y_lim',
+                           'share_xaxis'])
+    )
 
 def _get_columns_and_label(parameter, delta):
     cal: ColumnsAndLabels = FILE_COLUMN_MAPPING[parameter]
