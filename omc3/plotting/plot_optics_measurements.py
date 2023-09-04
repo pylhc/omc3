@@ -515,9 +515,9 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
     )
 
 def _plot_norm_dispersion(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
-    """Plotting normalized dispersion function for normalized dispersion.
-    Normalized dispersion is special, as we only have X. 
-    We therefore plot the delta in the second plot. """
+    """Plotting function for normalized dispersion.
+    Normalized dispersion is special, as we only evaluate the horizontal plane (X) in the optics measurements. 
+    We therefore plot the delta in the second (lower) plot."""
     y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, delta=False)
     delta_y_column, delta_error_column, delta_column_label, delta_y_label = _get_columns_and_label(optics_parameter, delta=True)
 
