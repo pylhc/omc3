@@ -81,7 +81,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
     In case your IPs have a weird name. Specify regex pattern.
 
-    default: ``IP\d$``
+    default: ``IP\\d$``
 
 
 - **labels** *(str)*:
