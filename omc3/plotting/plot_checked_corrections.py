@@ -63,7 +63,7 @@ Create plots for the correction tests performed with `omc3.scripts.correction_te
 
     In case your IPs have a weird name. Specify regex pattern.
 
-    default: ``IP\d$``
+    default: ``IP\\d$``
 
 
 - **lines_manual** *(DictAsString)*:
