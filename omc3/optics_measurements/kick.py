@@ -20,7 +20,8 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 NAT_TUNE, PEAK2PEAK,
                                                 RES,
                                                 RESCALE_FACTOR, RMS,
-                                                SQRT_ACTION, TIME, TUNE, S)
+                                                SQRT_ACTION, TIME, TUNE, S, NOISE, CLOSED_ORBIT)
+from omc3.utils.stats import weighted_mean, weighted_error
 
 
 def calculate(measure_input, input_files, scale, header_dict, plane):
@@ -37,7 +38,7 @@ def calculate(measure_input, input_files, scale, header_dict, plane):
         `TfsDataFrame` containing actions and their errors.
     """
     try:
-        kick_frame = _getkick(measure_input, input_files, plane)
+        kick_frame = _get_kick(measure_input, input_files, plane)
     except IndexError:  # occurs if either no x or no y files exist
         return pd.DataFrame
     kick_frame = _rescale_actions(kick_frame, scale, plane)
@@ -58,7 +59,7 @@ def _rescale_actions(df, scaling_factor, plane):
     return df
 
 
-def _getkick(measure_input, files, plane):
+def _get_kick(measure_input, files, plane):
     load_columns, calc_columns, column_types = _get_column_mapping(plane)
     kick_frame = pd.DataFrame(data=0.,
                               index=range(len(files[plane])),
@@ -71,22 +72,54 @@ def _getkick(measure_input, files, plane):
                 kick_frame.loc[i, col] = df[src]
 
         # calculate data from measurement
-        kick_frame.loc[i, calc_columns] = _gen_kick_calc(measure_input, df, plane)
+        kick_frame.loc[i, calc_columns] = _get_action(measure_input, df, plane)
     kick_frame = kick_frame.astype(column_types)
     return kick_frame
 
 
-def _gen_kick_calc(meas_input, lin, plane):
+def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
     """
-    Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation
+    Calculates action (2J and sqrt(2J)) and its errors from BPM data in lin-df.
+    Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation,
+    as the amplitude of the oscillations for single kicks falls off over turns,
+    and hence the amplitude of the main line does not represent the initial kick,
+    whereas it is constant for the driven excitation.
+    Reminder: A = sqrt(2J \beta) .
+
+    TODO (jdilly 07.09.2022):
+          beta_phase instead of beta_model as stated below Eq. (11) in
+          PHYS. REV. ACCEL. BEAMS 23, 042801 (2020)
+
+    Returns:
+        sqrt(2J), error sqrt(2J), 2J, error 2J as  (1x4) array
     """
-    frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin.loc[:, [f"{AMPLITUDE}{plane}", PEAK2PEAK]],
+    frame = pd.merge(_get_model_arc_betas(meas_input, plane), lin,
                      how='inner', left_index=True, right_index=True)
-    amps = (frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy() if meas_input.accelerator.excitation
-            else frame.loc[:, PEAK2PEAK].to_numpy() / 2.0)
-    meansqrt2j = amps / np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
-    mean2j = np.square(amps) / frame.loc[:, f"{BETA}{plane}"].to_numpy()
-    return np.array([np.mean(meansqrt2j), np.std(meansqrt2j), np.mean(mean2j), np.std(mean2j)])
+
+    if meas_input.accelerator.excitation:
+        amps = frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy()
+        err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
+    else:
+        amps = frame.loc[:, PEAK2PEAK].to_numpy() / 2.0
+        err_amps = frame.loc[:, f"{CLOSED_ORBIT}{RMS}"].to_numpy()
+
+    # sqrt(2J) ---
+    sqrt_beta = np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
+
+    actions_sqrt2j = amps / sqrt_beta
+    errors_sqrt2j = err_amps / sqrt_beta
+
+    mean_sqrt2j = weighted_mean(data=actions_sqrt2j, errors=errors_sqrt2j)
+    err_sqrt2j = weighted_error(data=actions_sqrt2j, errors=errors_sqrt2j)
+
+    # 2J ---
+    actions_2j = np.square(amps) / frame.loc[:, f"{BETA}{plane}"].to_numpy()
+    errors_2j = 2 * amps * err_amps / frame.loc[:, f"{BETA}{plane}"].to_numpy()
+
+    mean_2j = weighted_mean(data=actions_2j, errors=errors_2j)
+    err_2j = weighted_error(data=actions_2j, errors=errors_2j)
+
+    return np.array([mean_sqrt2j, err_sqrt2j, mean_2j, err_2j])
 
 
 def _get_model_arc_betas(measure_input, plane):

@@ -37,7 +37,7 @@ from omc3.optics_measurements.constants import (
     ERR,
     EXT,
     MDL,
-    DELTA
+    DELTA, F1010_NAME, F1001_NAME
 )
 from omc3.utils import logging_tools, stats
 
@@ -97,8 +97,8 @@ def calculate_coupling(
     )
     joined = joined.loc[joined_index].copy()
 
-    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index].copy()
-    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index].copy()
+    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
+    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
@@ -167,8 +167,8 @@ def calculate_coupling(
     f1001_df = _rdt_to_output_df(f1001, model_coupling[F1001], meas_input.accelerator.model, joined_index)
     f1010_df = _rdt_to_output_df(f1010, model_coupling[F1010], meas_input.accelerator.model, joined_index)
 
-    tfs.write(Path(meas_input.outputdir) / f"{F1001.lower()}{EXT}", f1001_df, header_dict)
-    tfs.write(Path(meas_input.outputdir) / f"{F1010.lower()}{EXT}", f1010_df, header_dict)
+    tfs.write(Path(meas_input.outputdir) / f"{F1001_NAME}{EXT}", f1001_df, header_dict)
+    tfs.write(Path(meas_input.outputdir) / f"{F1010_NAME}{EXT}", f1010_df, header_dict)
 
 
 def compensate_rdts_by_model(
@@ -335,8 +335,8 @@ def _rdt_to_output_df(
     df[AMPLITUDE + MDL] = np.abs(fterm_mdl)
 
     LOGGER.debug("Computing phase values")
-    df[PHASE] = np.angle(fterm)
-    df[PHASE + MDL] = np.angle(fterm_mdl)
+    df[PHASE] = (np.angle(fterm) / PI2) % 1
+    df[PHASE + MDL] = (np.angle(fterm_mdl) / PI2) % 1
 
     LOGGER.debug("Computing deviation from model")
     df[DELTA + AMPLITUDE] = df[AMPLITUDE] - df[AMPLITUDE + MDL]
@@ -345,6 +345,8 @@ def _rdt_to_output_df(
     LOGGER.debug("Computing error values")
     df[ERR + AMPLITUDE] = 0  # TODO: will need to implement this calculation later
     df[ERR + PHASE] = 0
+    df[ERR + DELTA + AMPLITUDE] = df[ERR + AMPLITUDE]
+    df[ERR + DELTA + PHASE] = df[ERR + PHASE]
 
     LOGGER.debug("Adding real and imaginary parts columns")
     df[REAL] = np.real(fterm)

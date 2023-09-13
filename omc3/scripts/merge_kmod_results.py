@@ -219,12 +219,9 @@ def merge_tfs(directories: List[pathlib.Path], filename: str) -> tfs.TfsDataFram
     """
     # Combine the data into one tfs
     new_tfs = tfs.TfsDataFrame()
-    headers = {}
     for d in sorted(directories):
         loaded_tfs = tfs.read_tfs(d / filename)
-        headers.update(loaded_tfs.headers)  # old headers are lost in `append`
-        new_tfs = new_tfs.append(loaded_tfs, ignore_index=True)
-    new_tfs.headers = headers
+        new_tfs = tfs.concat([new_tfs, loaded_tfs], axis="index", how_headers="right", ignore_index=True)
     new_tfs = new_tfs.set_index(NAME)
 
     # drop BPMWK and check tfs

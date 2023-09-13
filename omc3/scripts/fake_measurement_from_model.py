@@ -47,7 +47,7 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
     choices: ``['values', 'errors']``
 
-    default: ``['values', 'errors']``
+    default: ``[]``
 
 
 - **relative_errors** *(float)*:
@@ -69,18 +69,19 @@ from typing import Tuple, Sequence, List, Dict
 
 import numpy as np
 import pandas as pd
+
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
-
-from omc3.correction.constants import DISP, NORM_DISP, F1001, F1010
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_NAME,
                                                 TOTAL_PHASE_NAME,
                                                 DISPERSION_NAME, NORM_DISP_NAME,
+                                                DISPERSION, NORM_DISPERSION, F1001, F1010,
                                                 EXT, DELTA, ERR,
                                                 PHASE_ADV, BETA, PHASE,
-                                                TUNE, NAME, NAME2, S, MDL, REAL, IMAG)
+                                                TUNE, NAME, NAME2, S, MDL, REAL, IMAG,
+                                                F1001_NAME, F1010_NAME, AMPLITUDE)
 from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check, ang_diff
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
@@ -91,13 +92,13 @@ OUTPUTNAMES_MAP = {
     # Names to be output on input of certain parameters.
     f'{BETA}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME)),
     f'{BETA}Y': tuple(f"{name}y" for name in (BETA_NAME, AMP_BETA_NAME)),
-    f'{DISP}X': tuple([f"{DISPERSION_NAME}x"]),
-    f'{DISP}Y': tuple([f"{DISPERSION_NAME}y"]),
+    f'{DISPERSION}X': tuple([f"{DISPERSION_NAME}x"]),
+    f'{DISPERSION}Y': tuple([f"{DISPERSION_NAME}y"]),
     f'{PHASE}X': tuple(f"{name}x" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
     f'{PHASE}Y': tuple(f"{name}y" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
-    F1010: tuple([F1010.lower()]),
-    F1001: tuple([F1001.lower()]),
-    f'{NORM_DISP}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
+    F1010: tuple([F1010_NAME]),
+    F1001: tuple([F1001_NAME]),
+    f'{NORM_DISPERSION}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
 }
 FAKED_HEADER = "FAKED_FROM"
 VALUES = 'values'
@@ -143,7 +144,7 @@ def get_params():
               "values and the errors will be equal to the relative error * measurement."
               ),
         choices=[VALUES, ERRORS],
-        default=[VALUES, ERRORS],
+        default=[],
         type=str,
         nargs="*",
     )
@@ -190,7 +191,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
 
     # maybe create normalized dispersion
     for plane in PLANES:
-        nd_param = f'{NORM_DISP}{plane}'
+        nd_param = f'{NORM_DISPERSION}{plane}'
         if nd_param in opt.parameters:
             nd_df = create_normalized_dispersion(results[f'{DISPERSION_NAME}{plane.lower()}'],
                                                  results[f'{BETA_NAME}{plane.lower()}'],
@@ -202,6 +203,7 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
     if opt.outputdir is not None:
         LOG.info("Writing fake measurements to files.")
         output_path = Path(opt.outputdir)
+        output_path.mkdir(parents=True, exist_ok=True)
         for filename, df in results.items():
             full_path = output_path / f"{filename}{EXT}"
             tfs.write(full_path, df, save_index=NAME)
@@ -329,22 +331,28 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
                     relative_error: float, randomize: Sequence[str], headers: Dict):
     """ Creates coupling measurements for either the difference or sum RDT. """
     LOG.info(f"Creating fake coupling for {parameter}.")
-    # Naming with R and I as long as model is involved
-    re = create_measurement(df_twiss, f'{parameter}R', relative_error, randomize)
-    im = create_measurement(df_twiss, f'{parameter}I', relative_error, randomize)
-    df = pd.concat([re, im], axis=1)
-    df = append_model(df, df_model, f'{parameter}R')
-    df = append_model(df, df_model, f'{parameter}I', planes='XY')
+    def model_column(part):
+        return f"{parameter}{part[0]}"
+    column_map = {model_column(p): p for p in [REAL, IMAG, AMPLITUDE, PHASE]}
+
+    # Naming with R, I, A, P as long as model is involved
+    df = tfs.concat(
+        [create_measurement(df_twiss, model_col, relative_error, randomize) for model_col in column_map.keys()],
+        axis=1
+    )
+    for idx, model_col in enumerate(column_map.keys()):
+        df = append_model(df, df_model, model_col, planes="XY" if not idx else '')
 
     # Go to RDT naming scheme
-    df.columns = df.columns.str.replace(f'{parameter}R', REAL).str.replace(f'{parameter}I', IMAG)
+    for model_col, meas_col in column_map.items():
+        df.columns = df.columns.str.replace(model_col, meas_col)  # no df.rename! we rename also "DELTAF1001I" etc.
     df.headers = headers.copy()
     return {parameter.lower(): df}
 
 
 CREATOR_MAP = {
     BETA: create_beta,
-    DISP: create_dispersion,
+    DISPERSION: create_dispersion,
     PHASE: create_phase,
     F1010[:-1]: create_coupling,  # normally the plane is removed but here is no plane
     F1001[:-1]: create_coupling,
@@ -361,8 +369,8 @@ def create_normalized_dispersion(df_disp: pd.DataFrame, df_beta: pd.DataFrame,
 
     # Measurement
     df = tfs.TfsDataFrame(index=df_disp.index)
-    disp = df_disp.loc[:, f"{DISP}{plane}"]
-    disp_err = df_disp.loc[:, f"{ERR}{DISP}{plane}"]
+    disp = df_disp.loc[:, f"{DISPERSION}{plane}"]
+    disp_err = df_disp.loc[:, f"{ERR}{DISPERSION}{plane}"]
     beta = df_beta.loc[:, f"{BETA}{plane}"]
     beta_err = df_beta.loc[:, f"{ERR}{BETA}{plane}"]
 
@@ -373,7 +381,7 @@ def create_normalized_dispersion(df_disp: pd.DataFrame, df_beta: pd.DataFrame,
     )
 
     # Model
-    df_model[f'{parameter}'] = df_disp[f"{DISP}{plane}{MDL}"] / np.sqrt(df_beta[f"{BETA}{plane}{MDL}"])
+    df_model[f'{parameter}'] = df_disp[f"{DISPERSION}{plane}{MDL}"] / np.sqrt(df_beta[f"{BETA}{plane}{MDL}"])
     df = append_model(df, df_model, parameter, plane)
 
     df.headers = headers.copy()
@@ -426,7 +434,7 @@ def append_model(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
 
 def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
               add_coupling: bool = False) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
-    """ Get's the input data as TfsDataFrames. """
+    """ Gets the input data as TfsDataFrames. """
     LOG.debug("Loading data.")
     def try_reading(df_or_path):
         try:
@@ -457,14 +465,14 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> 
         errors = errors * len(parameters)
 
     for plane in PLANES:
-        nd_param = f'{NORM_DISP}{plane}'
+        nd_param = f'{NORM_DISPERSION}{plane}'
         if nd_param in parameters:
             idx = parameters.index(nd_param)
             nd_error = errors[idx]
             del errors[idx]
             parameters.remove(nd_param)
 
-            add_params = [p for p in (f'{DISP}{plane}', f'{BETA}{plane}') if p not in parameters]
+            add_params = [p for p in (f'{DISPERSION}{plane}', f'{BETA}{plane}') if p not in parameters]
             parameters += add_params
             errors += [nd_error/2] * len(add_params)  # not really knowable here
     return zip(parameters, errors)
@@ -472,11 +480,16 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> 
 
 def _get_random_errors(errors: np.array, values: np.array) -> np.array:
     """ Creates normal distributed error-values that will not be lower than EPSILON. """
+    LOG.debug("Calculating normal distributed random errors.")
     random_errors = np.zeros_like(errors)
     too_small = np.ones_like(errors, dtype=bool)
-    while sum(too_small):
+    n_too_small = 1
+    while n_too_small:
         random_errors[too_small] = np.random.normal(errors[too_small], errors[too_small])
         too_small = random_errors < EPSILON * np.abs(values)
+        n_too_small = sum(too_small)
+        LOG.debug(f"{n_too_small} error values are smaller than given eps.")
+    LOG.debug("Random errors created.")
     return random_errors
 
 

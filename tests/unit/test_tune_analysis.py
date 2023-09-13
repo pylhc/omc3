@@ -26,7 +26,7 @@ def test_moving_average():
 
 @pytest.mark.basic
 def test_get_poly_fun():
-    x_arr = np.linspace(0, 100, 101)
+    x_arr = np.linspace(0, 100, 101, dtype=int)  # use int for exact compare (==) below
     p0 = get_poly_fun(0)
     assert all(p0([1.43], x_arr) == 1.43)
 

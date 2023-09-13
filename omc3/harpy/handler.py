@@ -159,7 +159,7 @@ def _compute_headers(panda, date=None):
                 pass
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
-                headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)
+                headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)  # TODO: not really the RMS?
     if date:
         headers["TIME"] = date.strftime(formats.TIME)
     return headers

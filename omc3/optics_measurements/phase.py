@@ -6,6 +6,7 @@ This module contains phase calculation functionality of ``optics_measurements``.
 It provides functions to compute betatron phase advances and structures to store them.
 """
 from os.path import join
+from pathlib import Path
 from typing import Dict, Tuple
 
 import numpy as np
@@ -15,6 +16,7 @@ from numpy.typing import ArrayLike
 
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
@@ -66,6 +68,17 @@ def calculate(
                                                                              'none',
                                                                              no_errors)
         dfs = free_dfs + drv_dfs
+
+
+    if len(phase_advances["MEAS"].index) < 3:
+        LOGGER.warning("Less than 3 non-NaN phase-advances found. "
+                       "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
+                       "Common issues to check:\n\n"
+                       "- did you pass the correct tunes to harpy? Possibly also too small tolerance window?\n"
+                       "- did excitation trigger in both planes? BPMs might be cleaned if only found in one plane.\n"
+                       "- are cleaning settings (peak-to-peak, singular-value-cut) too agressive?\n"
+                       "- are you using a machine with less than 3 BPMs? Oh dear."
+        )
 
     return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
 
@@ -176,7 +189,7 @@ def _compensate_by_model(input_files, meas_input, df, plane):
 def write(dfs, headers, output, plane):
     LOGGER.info(f"Writing phases: {len(dfs)}")
     for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME, PHASE_NAME+"driven_", TOTAL_PHASE_NAME+"driven_")):
-        tfs.write(join(output, f"{name}{plane.lower()}{EXT}"), df, head)
+        tfs.write(Path(output) / f"{name}{plane.lower()}{EXT}", df, head)
         LOGGER.info(f"Phase advance beating in {name}{plane.lower()}{EXT} = "
                     f"{stats.weighted_rms(df.loc[:, f'{DELTA}PHASE{plane}'])}")
 
@@ -249,22 +262,27 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
         ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
         model_value = (model_value * bd) % 1
-        special_phase_df=special_phase_df.append(dict(zip(special_phase_columns,[
-                                                            elem1,
-                                                            elem2,
-                                                            ph_result % 1,
-                                                            bpm_err,
-                                                            _to_deg(ph_result),
-                                                            bpm_err * 360,
-                                                            model_value,
-                                                            _to_deg(model_value),
-                                                            minmu1,
-                                                            minmu2,
-                                                            bpm_phase_advance,
-                                                            elems_to_bpms,
-        ])), ignore_index=True)
+        new_row = pd.DataFrame(
+            dict(zip(special_phase_columns, [
+                elem1,
+                elem2,
+                ph_result % 1,
+                bpm_err,
+                _to_deg(ph_result),
+                bpm_err * 360,
+                model_value,
+                _to_deg(model_value),
+                minmu1,
+                minmu2,
+                bpm_phase_advance,
+                elems_to_bpms,
+            ])),
+            index=[0]
+        )
 
-    tfs.write(join(meas_input.outputdir, f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}"), special_phase_df)
+        special_phase_df = pd.concat([special_phase_df, new_row], axis="index", ignore_index=True)
+
+    tfs.write(Path(meas_input.outputdir) / f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}", special_phase_df)
 
 
 def _to_deg(phase):  # -90 to 90 degrees
