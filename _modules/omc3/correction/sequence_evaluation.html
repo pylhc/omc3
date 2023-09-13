@@ -445,7 +445,7 @@
     <span class="c1"># create a survey and save it to a temporary file</span>
     <span class="n">job_content</span> <span class="o">+=</span> <span class="p">(</span>
         <span class="s2">&quot;select, flag=survey, clear;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;select, flag=survey, pattern=&#39;^M.*\.B</span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">beam</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">$&#39;, COLUMN=NAME, L;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;select, flag=survey, pattern=&#39;^M.*</span><span class="se">\\</span><span class="s2">.B</span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">beam</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">$&#39;, COLUMN=NAME, L;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;survey, file=&#39;</span><span class="si">%(TEMPFILE)s</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;readmytable, file=&#39;</span><span class="si">%(TEMPFILE)s</span><span class="s2">&#39;, table=mytable;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;n_elem = table(mytable, tablelength);</span><span class="se">\n</span><span class="s2">&quot;</span>
