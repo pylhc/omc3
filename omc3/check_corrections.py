@@ -109,7 +109,7 @@ well as a plot for all corrections (only EXPected) will be saved into the output
 
     Filepattern to use to find correction files in folders (as regex).
 
-    default: ``^changeparameters*?\.madx$``
+    default: ``^changeparameters*?\\.madx$``
 
 
 - **individual_to_input**:
@@ -131,7 +131,7 @@ well as a plot for all corrections (only EXPected) will be saved into the output
 
     In case your IPs have a weird name. Specify regex pattern.
 
-    default: ``IP\d$``
+    default: ``IP\\d$``
 
 
 - **lines_manual** *(DictAsString)*:
