@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plotting &mdash; omc3 0.11.1 documentation</title>
+  <title>Plotting &mdash; omc3 0.11.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=57cbeb03"></script>
+        <script src="../_static/documentation_options.js?v=60336169"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -233,6 +233,7 @@
 
 <span class="n">figs</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span>
     <span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;folder1&#39;</span><span class="p">,</span> <span class="s1">&#39;folder2&#39;</span><span class="p">],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LabelForFolder1&#39;</span><span class="p">,</span> <span class="s1">&#39;LabelForFolder2&#39;</span><span class="p">],</span>
     <span class="n">combine_by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">],</span>  <span class="c1"># to compare folder1 and folder2</span>
     <span class="n">output</span><span class="o">=</span><span class="s1">&#39;output_directory&#39;</span><span class="p">,</span>
     <span class="n">delta</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># delta from reference</span>
@@ -249,64 +250,134 @@
 </div>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
-<ul class="simple">
-<li><p><strong>folders</strong> <em>(MultiClass)</em>: Optics Measurements folders containing the analysed data.</p></li>
-<li><p><strong>optics_parameters</strong> <em>(str)</em>: Optics parameters to plot, e.g. ‘beta_amplitude’.
-RDTs need to be specified with plane, e.g. ‘f1001_x’</p></li>
+<ul>
+<li><p><strong>folders</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Optics Measurements folders containing the analysed data.</p>
+</div></blockquote>
+</li>
+<li><p><strong>optics_parameters</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Optics parameters to plot, e.g. ‘beta_amplitude’. RDTs need to be
+specified with plane, e.g. ‘f1001_x’</p>
+</div></blockquote>
+</li>
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>change_marker</strong>: Changes marker for each line in the plot.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>change_marker</strong>:</p>
+<blockquote>
+<div><p>Changes marker for each line in the plot.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>combine_by</strong>: Combine plots into one. Either files, planes (not separated into two axes) or both.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['files',</span> <span class="pre">'planes']</span></code></p>
+<li><p><strong>combine_by</strong>:</p>
+<blockquote>
+<div><p>Combine plots into one. Either files, planes (not separated into two
+axes) or both.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['files',</span> <span class="pre">'planes']</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>delta</strong>: Plot the difference to model instead of the parameter.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>delta</strong>:</p>
+<blockquote>
+<div><p>Plot the difference to model instead of the parameter.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>errorbar_alpha</strong> <em>(float)</em>: Alpha value for error bars</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">0.6</span></code></p>
+<li><p><strong>errorbar_alpha</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Alpha value for error bars</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.6</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>ip_positions</strong>: Input to plot IP-Positions into the plots. Either ‘LHCB1’
-or ‘LHCB2’ for LHC defaults, a dictionary of labels and positions or path to TFS file of a model.</p></li>
-<li><p><strong>ip_search_pattern</strong>: In case your IPs have a weird name. Specify regex pattern.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">IP\d$</span></code></p>
+<li><p><strong>ip_positions</strong>:</p>
+<blockquote>
+<div><p>Input to plot IP-Positions into the plots. Either ‘LHCB1’ or ‘LHCB2’
+for LHC defaults, a dictionary of labels and positions or path to TFS
+file of a model.</p>
+</div></blockquote>
 </li>
-<li><p><strong>lines_manual</strong> <em>(DictAsString)</em>: List of manual lines to plot.
-Need to contain arguments for axvline, and may contain the additional keys “text”
-and “loc” which is one of [‘bottom’, ‘top’, ‘line bottom’, ‘line top’]
-and places the text at the given location.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+<li><p><strong>ip_search_pattern</strong>:</p>
+<blockquote>
+<div><p>In case your IPs have a weird name. Specify regex pattern.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">IP\d$</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>manual_style</strong> <em>(DictAsString)</em>: Additional style rcParameters which
-update the set of predefined ones.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+<li><p><strong>labels</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Labels for the folders. If not provided, the folder names (with
+parents until each label is unique) will be used.</p>
+</div></blockquote>
 </li>
-<li><p><strong>ncol_legend</strong> <em>(int)</em>: Number of bpm legend-columns. If &lt; 1 no legend is shown.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+<li><p><strong>lines_manual</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>List of manual lines to plot. Need to contain arguments for axvline,
+and may contain the additional keys “text” and “loc” which is one of
+[‘bottom’, ‘top’, ‘line bottom’, ‘line top’] and places the text at
+the given location.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>output</strong> <em>(MultiClass)</em>: Folder to output the results to.</p></li>
-<li><p><strong>plot_styles</strong> <em>(str)</em>: Which plotting styles to use,
-either from plotting.styles.*.mplstyles or default mpl.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">['standard']</span></code></p>
+<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>Additional style rcParameters which update the set of predefined ones.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>share_xaxis</strong>: In case of multiple axes per figure, share x-axis.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>ncol_legend</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Number of bpm legend-columns. If &lt; 1 no legend is shown.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>show</strong>: Shows plots.</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>output</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Folder to output the results to.</p>
+</div></blockquote>
 </li>
-<li><p><strong>suppress_column_legend</strong>: Does not show column name in legend
-e.g. when combining by files (see also <cite>ncol_legend</cite>).</p>
-<p>Action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+<li><p><strong>plot_styles</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Which plotting styles to use, either from plotting.styles.*.mplstyles
+or default mpl.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['standard']</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>x_axis</strong>: Which parameter to use for the x axis.</p>
-<p>Choices: <code class="docutils literal notranslate"><span class="pre">['location',</span> <span class="pre">'phase-advance']</span></code>
-Default: <code class="docutils literal notranslate"><span class="pre">location</span></code></p>
+<li><p><strong>share_xaxis</strong>:</p>
+<blockquote>
+<div><p>In case of multiple axes per figure, share x-axis.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
 </li>
-<li><p><strong>x_lim</strong> <em>(float, int, None)</em>: Limits on the x axis (Tupel)</p></li>
-<li><p><strong>y_lim</strong> <em>(float, int, None)</em>: Limits on the y axis (Tupel)</p></li>
+<li><p><strong>show</strong>:</p>
+<blockquote>
+<div><p>Shows plots.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>suppress_column_legend</strong>:</p>
+<blockquote>
+<div><p>Does not show column name in legend e.g. when combining by files (see
+also <cite>ncol_legend</cite>).</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_axis</strong>:</p>
+<blockquote>
+<div><p>Which parameter to use for the x axis.</p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">['location',</span> <span class="pre">'phase-advance']</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">location</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>x_lim</strong> <em>(OptionalFloat)</em>:</p>
+<blockquote>
+<div><p>Limits on the x axis (Tupel)</p>
+</div></blockquote>
+</li>
+<li><p><strong>y_lim</strong> <em>(OptionalFloat)</em>:</p>
+<blockquote>
+<div><p>Limits on the y axis (Tupel)</p>
+</div></blockquote>
+</li>
 </ul>
 </section>
 <dl class="py function">
