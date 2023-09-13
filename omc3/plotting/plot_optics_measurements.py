@@ -52,7 +52,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
 - **ip_search_pattern**: In case your IPs have a weird name. Specify regex pattern.
 
-  Default: ``IP\d$``
+  Default: ``IP\\d$``
 - **lines_manual** *(DictAsString)*: List of manual lines to plot.
   Need to contain arguments for axvline, and may contain the additional keys "text"
   and "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
