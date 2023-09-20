@@ -302,7 +302,10 @@ class Lhc(Accelerator):
 
     def load_main_seq_madx(self) -> str:
         if self.acc_model_path is not None:
-            return f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
+            main_call = f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
+            if self.year.startswith('hl'):
+                main_call += f'\ncall, file = \'{self.acc_model_path / "hllhc_sequence.madx"}\';'
+            return main_call
         try:
             return _get_call_main_for_year(self.year)
         except AttributeError:
@@ -414,14 +417,8 @@ class Lhc(Accelerator):
                 for modifier in self.modifiers
             )
 
-
-        model_year = 100000000
-        try:
-            model_year = int(self.year)
-        except:
-            pass
-
-        if self.year.startswith("hl") or model_year <= 2021:
+        if self.year in ['2012', '2015', '2016', '2017', '2018', '2021', 'hllhc1.3']:
+            # backwards compatibility with pre acc-models optics
             madx_script += (
                 f"\n! ----- Defining Configuration Specifics -----\n"
                 f"xing_angles = {'1' if self.xing else '0'};\n"
