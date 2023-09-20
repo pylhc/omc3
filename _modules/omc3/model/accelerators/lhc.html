@@ -564,6 +564,10 @@
 
 
     <span class="k">def</span> <span class="nf">important_phase_advances</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="s2">&quot;hl&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> 
+            <span class="c1"># skip if HiLumi, TODO: insert phase advances when they are finalised</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[[</span><span class="s2">&quot;MKD.O5R6.B2&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4R1.B2&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MKD.O5R6.B2&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4R5.B2&quot;</span><span class="p">]]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
