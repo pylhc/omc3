@@ -339,8 +339,8 @@ class Lhc(Accelerator):
         return None
 
     def important_phase_advances(self) -> List[List[str]]:
-        if "hl" in self.year: 
-            # skip if HiLumi
+        if "hl" in self.year.lower(): 
+            # skip if HiLumi, TODO: insert phase advances when they are finalised
             return []
 
         if self.beam == 2:
