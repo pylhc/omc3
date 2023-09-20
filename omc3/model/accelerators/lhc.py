@@ -80,7 +80,7 @@ Model Creation Keyword Args:
 import json
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Iterator, List, Sequence, Tuple
+from typing import Dict, Iterator, List, Sequence, Tuple, Union, Iterable
 
 import tfs
 from generic_parser import EntryPoint
@@ -218,27 +218,39 @@ class Lhc(Accelerator):
     def get_lhc_error_dir() -> Path:
         return LHC_DIR / "systematic_errors"
 
-    def get_variables(self, frm=None, to=None, classes=None):
+    def get_variables(self, frm: float = None, to: float = None, classes: Iterable[str] = None):
         correctors_dir = LHC_DIR / "2012" / "correctors"
-        all_corrs = _merge_jsons(
+        all_vars_by_class = _merge_jsons(
             correctors_dir / f"correctors_b{self.beam}" / "beta_correctors.json",
             correctors_dir / f"correctors_b{self.beam}" / "coupling_correctors.json",
             self._get_triplet_correctors_file(),
         )
-        my_classes = classes
-        if my_classes is None:
-            my_classes = all_corrs.keys()
-        vars_by_class = set(
-            _flatten_list(
-                [
-                    all_corrs[corr_cls]
-                    for corr_cls in my_classes
-                    if corr_cls in all_corrs
-                ]
-            )
-        )
-        if frm is None and to is None:
-            return list(vars_by_class)
+        if classes is None:
+            classes = all_vars_by_class.keys()
+
+        known_classes = [c for c in classes if c in all_vars_by_class]
+        unknown_classes = [c for c  in classes if c not in all_vars_by_class]
+        if unknown_classes:
+            LOGGER.debug("The following classes are not found as corrector/variable classes and "
+                         f"are assumed to be the variable names directly instead:\n{str(unknown_classes)}")
+
+        vars = list(set(_flatten_list(all_vars_by_class[corr_cls] for corr_cls in known_classes)))
+        vars = vars + unknown_classes
+
+        # Sort variables by S (nice for comparing different files)
+        return self.sort_variables_by_location(vars, frm, to)
+
+    def sort_variables_by_location(self, variables: Iterable[str], frm: float = None, to: str = None) -> List[str]:
+        """ Sorts the variables by location and filters them between `frm` and `to`.
+        If `frm` is larger than `to` it loops back around to the start the accelerator.
+        This is a useful function for the LHC that's why it is "public"
+        but it is not part of the Accelerator-Class Interface.
+
+        Args:
+            variables (Iterable): Names of variables to sort
+            frm (float): S-position to filter from
+            to (float): S-position to filter to
+        """
         elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
@@ -254,12 +266,20 @@ class Lhc(Accelerator):
         elif to is not None:
             elems_matrix = elems_matrix[elems_matrix.S <= to]
 
+        # create single list (some entries might contain multiple variable names, comma separated, e.g. "kqx.l2,ktqx2.l2")
         vars_by_position = _remove_dups_keep_order(
             _flatten_list(
                 [raw_vars.split(",") for raw_vars in elems_matrix.loc[:, "VARS"]]
             )
         )
-        return _list_intersect_keep_order(vars_by_position, vars_by_class)
+        sorted_vars = _list_intersect_keep_order(vars_by_position, variables)
+
+        # Check if no filtering but only sorting was required
+        if (frm is None) and (to is None) and (len(sorted_vars) != len(variables)):
+            unknown_vars = list(sorted(var for var in variables if var not in sorted_vars))
+            LOGGER.debug(f"The following variables do not have a location: {str(unknown_vars)}")
+            sorted_vars = sorted_vars + unknown_vars
+        return sorted_vars
 
     def get_ips(self) -> Iterator[Tuple[str]]:
         """
@@ -327,7 +347,7 @@ class Lhc(Accelerator):
     def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         beam = self.beam
         adt = "H.C" if plane == "X" else "V.B"
-        l_r = "L" if (beam == 1 != plane == "Y") else "R"
+        l_r = "L" if ((beam == 1) != (plane == "Y")) else "R"
         a_b = "B" if beam == 1 else "A"
         if self.excitation == AccExcitationMode.ACD:
             try:
@@ -466,12 +486,11 @@ class Lhc(Accelerator):
 
         return madx_script
 
-    def get_update_correction_script(self, outpath: Path, corr_file: Path) -> str:
+    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
         madx_script = self.get_base_madx_script()
-        madx_script += (
-            f"call, file = '{str(corr_file)}';\n"
-            f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
-        )
+        for corr_file in corr_files:
+            madx_script += f"call, file = '{str(corr_file)}';\n"
+        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
         return madx_script
 
     def _uses_ats_knobs(self) -> bool:
@@ -522,7 +541,7 @@ def _merge_jsons(*files) -> dict:
     return full_dict
 
 
-def _flatten_list(my_list: List) -> List:
+def _flatten_list(my_list: Iterable) -> List:
     return [item for sublist in my_list for item in sublist]
 
 
@@ -530,7 +549,7 @@ def _remove_dups_keep_order(my_list: List) -> List:
     return list(OrderedDict.fromkeys(my_list))
 
 
-def _list_intersect_keep_order(primary_list: List, secondary_list: List) -> List:
+def _list_intersect_keep_order(primary_list: Iterable, secondary_list: Iterable) -> List:
     return [elem for elem in primary_list if elem in secondary_list]
 
 

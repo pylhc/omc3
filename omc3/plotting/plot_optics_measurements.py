@@ -10,6 +10,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
     figs = plot(
         folders=['folder1', 'folder2'],
+        labels=['LabelForFolder1', 'LabelForFolder2'],
         combine_by=['files'],  # to compare folder1 and folder2
         output='output_directory',
         delta=True,  # delta from reference
@@ -27,82 +28,158 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 
 *--Required--*
 
-- **folders** *(MultiClass)*: Optics Measurements folders containing the analysed data.
+- **folders** *(PathOrStr)*:
 
-- **optics_parameters** *(str)*: Optics parameters to plot, e.g. 'beta_amplitude'.
-  RDTs need to be specified with plane, e.g. 'f1001_x'
+    Optics Measurements folders containing the analysed data.
+
+
+- **optics_parameters** *(str)*:
+
+    Optics parameters to plot, e.g. 'beta_amplitude'. RDTs need to be
+    specified with plane, e.g. 'f1001_x'
 
 
 *--Optional--*
 
-- **change_marker**: Changes marker for each line in the plot.
+- **change_marker**:
 
-  Action: ``store_true``
-- **combine_by**: Combine plots into one. Either files, planes (not separated into two axes) or both.
+    Changes marker for each line in the plot.
 
-  Choices: ``['files', 'planes']``
-- **delta**: Plot the difference to model instead of the parameter.
+    action: ``store_true``
 
-  Action: ``store_true``
-- **errorbar_alpha** *(float)*: Alpha value for error bars
 
-  Default: ``0.6``
-- **ip_positions**: Input to plot IP-Positions into the plots. Either 'LHCB1'
-  or 'LHCB2' for LHC defaults, a dictionary of labels and positions or path to TFS file of a model.
+- **combine_by**:
 
-- **ip_search_pattern**: In case your IPs have a weird name. Specify regex pattern.
+    Combine plots into one. Either files, planes (not separated into two
+    axes) or both.
 
-  Default: ``IP\d$``
-- **lines_manual** *(DictAsString)*: List of manual lines to plot.
-  Need to contain arguments for axvline, and may contain the additional keys "text"
-  and "loc" which is one of ['bottom', 'top', 'line bottom', 'line top']
-  and places the text at the given location.
+    choices: ``['files', 'planes']``
 
-  Default: ``[]``
-- **manual_style** *(DictAsString)*: Additional style rcParameters which
-  update the set of predefined ones.
 
-  Default: ``{}``
-- **ncol_legend** *(int)*: Number of bpm legend-columns. If < 1 no legend is shown.
+- **delta**:
 
-  Default: ``3``
-- **output** *(MultiClass)*: Folder to output the results to.
+    Plot the difference to model instead of the parameter.
 
-- **plot_styles** *(str)*: Which plotting styles to use,
-  either from plotting.styles.*.mplstyles or default mpl.
+    action: ``store_true``
 
-  Default: ``['standard']``
-- **share_xaxis**: In case of multiple axes per figure, share x-axis.
 
-  Action: ``store_true``
-- **show**: Shows plots.
+- **errorbar_alpha** *(float)*:
 
-  Action: ``store_true``
-- **suppress_column_legend**: Does not show column name in legend
-  e.g. when combining by files (see also `ncol_legend`).
+    Alpha value for error bars
 
-  Action: ``store_true``
-- **x_axis**: Which parameter to use for the x axis.
+    default: ``0.6``
 
-  Choices: ``['location', 'phase-advance']``
-  Default: ``location``
-- **x_lim** *(float, int, None)*: Limits on the x axis (Tupel)
 
-- **y_lim** *(float, int, None)*: Limits on the y axis (Tupel)
+- **ip_positions**:
+
+    Input to plot IP-Positions into the plots. Either 'LHCB1' or 'LHCB2'
+    for LHC defaults, a dictionary of labels and positions or path to TFS
+    file of a model.
+
+
+- **ip_search_pattern**:
+
+    In case your IPs have a weird name. Specify regex pattern.
+
+    default: ``IP\\d$``
+
+
+- **labels** *(str)*:
+
+    Labels for the folders. If not provided, the folder names (with
+    parents until each label is unique) will be used.
+
+
+- **lines_manual** *(DictAsString)*:
+
+    List of manual lines to plot. Need to contain arguments for axvline,
+    and may contain the additional keys "text" and "loc" which is one of
+    ['bottom', 'top', 'line bottom', 'line top'] and places the text at
+    the given location.
+
+    default: ``[]``
+
+
+- **manual_style** *(DictAsString)*:
+
+    Additional style rcParameters which update the set of predefined ones.
+
+    default: ``{}``
+
+
+- **ncol_legend** *(int)*:
+
+    Number of bpm legend-columns. If < 1 no legend is shown.
+
+    default: ``3``
+
+
+- **output** *(PathOrStr)*:
+
+    Folder to output the results to.
+
+
+- **plot_styles** *(str)*:
+
+    Which plotting styles to use, either from plotting.styles.*.mplstyles
+    or default mpl.
+
+    default: ``['standard']``
+
+
+- **share_xaxis**:
+
+    In case of multiple axes per figure, share x-axis.
+
+    action: ``store_true``
+
+
+- **show**:
+
+    Shows plots.
+
+    action: ``store_true``
+
+
+- **suppress_column_legend**:
+
+    Does not show column name in legend e.g. when combining by files (see
+    also `ncol_legend`).
+
+    action: ``store_true``
+
+
+- **x_axis**:
+
+    Which parameter to use for the x axis.
+
+    choices: ``['location', 'phase-advance']``
+
+    default: ``location``
+
+
+- **x_lim** *(OptionalFloat)*:
+
+    Limits on the x axis (Tupel)
+
+
+- **y_lim** *(OptionalFloat)*:
+
+    Limits on the y axis (Tupel)
+
+
 """
 from pathlib import Path
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
-
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import ERR, DELTA, AMPLITUDE, PHASE, EXT
+from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
+from omc3.optics_measurements.constants import EXT, AMPLITUDE, NORM_DISP_NAME, PHASE, REAL, IMAG
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
-from omc3.plotting.optics_measurements.constants import (DEFAULTS,
-                                                         XAXIS, YAXIS,
-                                                         IP_POS_DEFAULT)
-from omc3.plotting.plot_tfs import plot as plot_tfs, float_or_none
+from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT)
+from omc3.plotting.plot_tfs import plot as plot_tfs, OptionalFloat
 from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.iotools import PathOrStr, save_config
@@ -111,8 +188,9 @@ from omc3.utils.logging_tools import get_logger, list2str
 LOG = get_logger(__name__)
 
 
-def get_params():
+def get_params() -> EntryPointParameters:
     params = EntryPointParameters()
+    # Specific Optics-Measurements parameters
     params.add_parameter(
         name="folders",
         help="Optics Measurements folders containing the analysed data.",
@@ -129,10 +207,32 @@ def get_params():
         nargs="+",
     )
     params.add_parameter(
+        name="labels",
+        help="Labels for the folders. If not provided, the folder names "
+             "(with parents until each label is unique) will be used.",
+        required=False,
+        nargs="+",
+        type=str,
+    )
+    params.add_parameter(
         name="delta",
         help="Plot the difference to model instead of the parameter.",
         action="store_true"
     )
+    # style parameters:
+    params.update(get_optics_style_params())
+
+    # passed on to plot-tfs parameters:
+    params.add_parameter(
+        name="output",
+        help="Folder to output the results to.",
+        type=PathOrStr,
+    )
+    params.update(get_plottfs_style_params())
+    return params
+
+def get_optics_style_params() -> EntryPointParameters:
+    params = EntryPointParameters()
     params.add_parameter(
         name="ip_positions",
         help=("Input to plot IP-Positions into the plots. "
@@ -156,20 +256,19 @@ def get_params():
     params.add_parameter(
         name="x_axis",
         help="Which parameter to use for the x axis.",
-        choices=list(XAXIS.keys()),
+        choices=list(POSITION_COLUMN_MAPPING.keys()),
         default='location',
     )
-    # Parameters that are only passed on ---
+    return params
+
+def get_plottfs_style_params() -> EntryPointParameters:
+    """ Parameters, that are only passed on."""
+    params = EntryPointParameters()
     params.add_parameter(
         name="combine_by",
         help="Combine plots into one. Either files, planes (not separated into two axes) or both.",
         nargs="+",
         choices=['files', 'planes'],  # combine by columns does not really make sense
-    )
-    params.add_parameter(
-        name="output",
-        help="Folder to output the results to.",
-        type=PathOrStr,
     )
     params.add_parameter(
         name="show",
@@ -215,13 +314,13 @@ def get_params():
     params.add_parameter(
         name="x_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the x axis (Tupel)'
     )
     params.add_parameter(
         name="y_lim",
         nargs=2,
-        type=float_or_none,
+        type=OptionalFloat,
         help='Limits on the y axis (Tupel)'
     )
     params.add_parameter(
@@ -244,32 +343,43 @@ def plot(opt):
     opt = _check_opt(opt)
 
     ip_positions = _get_ip_positions(opt.ip_positions, opt.x_axis, opt.ip_search_pattern)
-    x_column, x_label = _get_x_options(opt.x_axis)
+    x_axis = _get_x_axis_column_and_label(opt.x_axis)
 
     fig_dict = {}
     for optics_parameter in opt.optics_parameters:
 
         is_rdt = optics_parameter.lower().startswith("f")
         files, file_labels = zip(*get_unique_filenames(opt.folders))
-        file_labels = ["_".join(flabels) for flabels in file_labels]
+        if opt.labels:
+            file_labels = opt.labels
+        else:
+            file_labels = ["_".join(flabels) for flabels in file_labels]
 
         if is_rdt:
             fig_dict.update(_plot_rdt(
-                optics_parameter, files, file_labels, x_column, x_label,
+                optics_parameter, files, file_labels, x_axis.column, x_axis.label,
                 ip_positions, opt,)
             )
         else:
             if not optics_parameter.endswith("_"):
                 optics_parameter += "_"
 
-            fig_dict.update(_plot_param(
-                optics_parameter, files, file_labels, x_column, x_label,
-                ip_positions, opt,)
-            )
+            if optics_parameter == NORM_DISP_NAME:
+                fig_dict.update(_plot_norm_dispersion(
+                    optics_parameter, files, file_labels, x_axis.column, x_axis.label,
+                    ip_positions, opt,)
+                )
+            else:
+                fig_dict.update(_plot_param(
+                    optics_parameter, files, file_labels, x_axis.column, x_axis.label,
+                    ip_positions, opt,)
+                )
     return fig_dict
 
 
 def _check_opt(opt):
+    if opt.labels and not len(opt.labels) == len(opt.folders):
+        raise ValueError("Labels need to be of same size as folders.")
     return opt
 
 
@@ -343,14 +453,15 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
 
 
 def _get_rdt_columns():
-    rdt_measures = ['rdt_amp', 'rdt_phase', 'rdt_real', 'rdt_imag']
-    result = {key: [None] * len(rdt_measures) for key in ['y_columns', 'y_labels', 'error_columns']}
-    for idx, meas in enumerate(rdt_measures):
-        column, _, label = YAXIS[meas]
-        result['y_columns'][idx] = column
-        result['error_columns'][idx] = f"{ERR}{AMPLITUDE}"  # replaced for phase below
-        result['y_labels'][idx] = label
-    result['error_columns'][rdt_measures.index('rdt_phase')] = f"{ERR}{PHASE}"
+    result = {key: [None] * len(RDT_COLUMN_MAPPING) for key in ['y_columns', 'y_labels', 'error_columns']}
+    for idx, col_map in enumerate(RDT_COLUMN_MAPPING.values()):
+        result['y_columns'][idx] = col_map.column
+        if col_map.column in [REAL, IMAG]:
+            # TODO: ADD ERRIMAG and ERRREAL to RDT tfs?
+            result['error_columns'][idx] = RDT_COLUMN_MAPPING[AMPLITUDE].error_column  # Uses ERRAMP for ERRIMAG/ERRREAL
+        else:
+            result['error_columns'][idx] = col_map.error_column  # should now all be there in the files
+        result['y_labels'][idx] = col_map.label
     return result
 
 
@@ -358,7 +469,7 @@ def _get_rdt_columns():
 
 
 def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
-    """Main plotting function for all parameters but RDTs."""
+    """Main plotting function for all parameters but RDTs and normalized dispersion."""
     y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, opt.delta)
 
     same_fig = None
@@ -384,10 +495,10 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
     return plot_tfs(
         files=[f.absolute()/f'{optics_parameter}{{0}}{EXT}' for f in files],
         file_labels=list(file_labels),
-        y_columns=[f'{y_column}{{0}}'],
+        y_columns=[y_column],
         y_labels=[[y_label]],
         column_labels=column_labels,
-        error_columns=[f'{error_column}{{0}}'],
+        error_columns=[error_column],
         x_columns=[x_column],
         x_labels=[x_label],
         planes=list(PLANES),
@@ -403,20 +514,51 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
                            'share_xaxis'])
     )
 
+def _plot_norm_dispersion(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
+    """Plotting function for normalized dispersion.
+    Normalized dispersion is special, as we only evaluate the horizontal plane (X) in the optics measurements. 
+    We therefore plot the delta in the second (lower) plot."""
+    y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, delta=False)
+    delta_y_column, delta_error_column, delta_column_label, delta_y_label = _get_columns_and_label(optics_parameter, delta=True)
+
+    same_fig = None
+    column_labels = [column_label, delta_column_label]
+    same_fig = 'columns'
+
+    if opt.suppress_column_legend:
+        column_labels = ['']
+
+    prefix = ''
+    if opt.combine_by and "files" in opt.combine_by:
+        prefix += f'{optics_parameter}'
+
+    return plot_tfs(
+        files=[f.absolute()/f'{optics_parameter}{{0}}{EXT}' for f in files],
+        file_labels=list(file_labels),
+        y_columns=[y_column, delta_y_column],
+        y_labels=[[y_label, delta_y_label]],
+        column_labels=column_labels,
+        error_columns=[error_column, delta_error_column],
+        x_columns=[x_column, x_column],
+        x_labels=[x_label, x_label],
+        planes=[PLANES[0]],
+        vertical_lines=ip_positions + opt.lines_manual,
+        same_figure=same_fig,
+        same_axes=opt.combine_by,
+        single_legend=True,
+        output_prefix=f"plot_{prefix}",
+        **opt.get_subdict(['show', 'output',
+                           'plot_styles', 'manual_style',
+                           'change_marker', 'errorbar_alpha',
+                           'ncol_legend', 'x_lim', 'y_lim',
+                           'share_xaxis'])
+    )
 
 def _get_columns_and_label(parameter, delta):
-    column_and_label = YAXIS[parameter]
-    column = column_and_label[0]
-    column_label = column_and_label[1]
-    y_label = column_and_label[2]
+    cal: ColumnsAndLabels = FILE_COLUMN_MAPPING[parameter]
     if delta:
-        column = f"{DELTA}{column}"
-        try:
-            y_label = column_and_label[3]
-        except IndexError:
-            y_label = fr'$\Delta {y_label[1:]}'
-
-    return column, f"{ERR}{column}", column_label, y_label
+        return cal.delta_column, cal.error_delta_column, cal.text_label, cal.delta_label
+    return cal.column, cal.error_column, cal.text_label, cal.label
 
 
 # IP-Positions -----------------------------------------------------------------
@@ -443,8 +585,7 @@ def _get_ip_positions(ip_positions, xaxis, ip_pattern):
 def _get_ip_positions_from_file(path, axis, pattern):
     model = tfs.read(path, index="NAME")
     ip_mask = model.index.str.match(pattern)
-    column = XAXIS[axis][0]
-    return _create_ip_list(model.loc[ip_mask, column])
+    return _create_ip_list(model.loc[ip_mask, POSITION_COLUMN_MAPPING[axis].column])
 
 
 def _create_ip_list(ip_dict):
@@ -456,8 +597,8 @@ def _create_ip_list(ip_dict):
 # Other ------------------------------------------------------------------------
 
 
-def _get_x_options(x_axis):
-    return XAXIS[x_axis]
+def _get_x_axis_column_and_label(x_axis):
+    return POSITION_COLUMN_MAPPING[x_axis]
 
 
 # Script Mode ------------------------------------------------------------------

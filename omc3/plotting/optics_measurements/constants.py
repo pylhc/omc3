@@ -4,6 +4,9 @@ Constants
 
 Constants and definitions for the ``plotting`` module.
 """
+from dataclasses import dataclass
+from typing import Optional
+
 from omc3.optics_measurements.constants import (
     S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
     AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,
@@ -50,19 +53,3 @@ DEFAULTS = {
 }
 
 
-XAXIS = { # Column, Label
-    'location': (S, 'Location [m]'),
-    'phase-advance': (f'{PHASE_ADV}{{0}}{MDL}', 'Phase Advance [$2 \pi$]')
-}
-
-YAXIS = {  # column, column label, yaxis-label [, Delta yaxis-label]
-    BETA_NAME:        (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
-    AMP_BETA_NAME:    (BETA, 'beta', ylabels['beta'], ylabels['betabeat']),
-    ORBIT_NAME:       ('', 'orbit', ylabels['co'], f"$\Delta$ {ylabels['co']}"),
-    PHASE_NAME:       (PHASE, 'phase', ylabels['phase']),
-    TOTAL_PHASE_NAME: (PHASE, 'total phase', ylabels['phase']),
-    'rdt_amp':        (AMPLITUDE, None, ylabels['absolute']),
-    'rdt_phase':      (PHASE, None, ylabels['phase']),
-    'rdt_real':       (REAL, None, ylabels['real']),
-    'rdt_imag':       (IMAG, None, ylabels['imag']),
-}
