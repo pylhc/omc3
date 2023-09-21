@@ -187,7 +187,7 @@ def get_tune_label(plane: str, scale: int = None) -> str:
     """ Tune label for the action/tune plots. """
     unit = ""
     if scale:
-        unit = f" \quad [10^{{{scale:d}}}]"
+        unit = fr" \quad [10^{{{scale:d}}}]"
     return fr"$\Delta Q_{plane.lower():s}{unit}$"
 
 

@@ -44,8 +44,13 @@ def _plot_stems(fig_cont: FigureContainer) -> None:
             if data[plane] is None:
                 continue
             # plot
-            markers, stems, base = ax.stem(data[plane][FREQS], data[plane][AMPS],
-                                           use_line_collection=True, basefmt='none', label=label)
+            try:
+                # Matplotlib < v3.8
+                markers, stems, base = ax.stem(data[plane][FREQS], data[plane][AMPS], basefmt='none', label=label,
+                                               use_line_collection=True)
+            except TypeError:
+                # Matplotlib >= v3.8
+                markers, stems, base = ax.stem(data[plane][FREQS], data[plane][AMPS], basefmt='none', label=label)
 
             # Set appropriate colors
             color = get_cycled_color(idx_data)

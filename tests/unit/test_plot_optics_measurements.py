@@ -28,6 +28,14 @@ def test_rdt_0040(tmp_path):
     _default_test_rdt("f0040_y", output_dir=tmp_path)
 
 
+@pytest.mark.basic
+def test_normalized_dispersion(tmp_path):
+    figs = _default_test("normalised_dispersion", output_dir=tmp_path)
+    assert len(figs) == 1
+    for fig in figs.values():
+        assert len(fig.axes) == 2
+
+
 @pytest.mark.extended
 def test_orbit(tmp_path):
     figs = _default_test("orbit", output_dir=tmp_path)
@@ -109,6 +117,29 @@ def test_two_directories_combined(tmp_path):
     )
     assert len(list(tmp_path.glob("*.pdf"))) == 2
     assert len(figs) == 2
+
+
+@pytest.mark.extended
+def test_two_directories_combined_labels(tmp_path):
+    labels = ["label1", "label2"]
+    figs = plot(
+        show=False,
+        x_axis="phase-advance",
+        ncol_legend=2,
+        folders=[str(INPUT), str(INPUT.parent / "example_copy")],
+        labels=labels,
+        output=str(tmp_path),
+        optics_parameters=["orbit", "beta_phase"],
+        combine_by=["files"],
+    )
+    assert len(list(tmp_path.glob("*.pdf"))) == 2
+    assert len(figs) == 2
+    for fig in figs.values():
+        assert len(fig.axes) == 2
+        for ax in fig.axes:
+            axlabels = ax.get_legend_handles_labels()[1]
+            for label, axlabel in zip(labels, axlabels):
+                assert label in axlabel
 
 
 @pytest.mark.extended

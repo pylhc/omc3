@@ -4,19 +4,15 @@ IO Tools
 
 Helper functions for input/output issues.
 """
-import sys
-from typing import Iterable, Any, Union
-
-import re
-
-import json
 import os
+import re
 import shutil
+import sys
 from pathlib import Path
+from typing import Any, Union
 
 from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
-from pandas import DataFrame
 from tfs import TfsDataFrame
 
 from omc3.definitions import formats
@@ -131,6 +127,7 @@ class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
 """A class that allows `float`, 'int' or `None`.
 Can be used in numeric-lists when individual entries can be `None`."""
 OptionalFloat = get_multi_class(float, int, type(None))
+OptionalFloat.__name__ = "OptionalFloat"
 
 
 def strip_quotes(value: Any) -> Any:
