@@ -87,7 +87,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
                         "were requested in N-BPM method. Using all available BPMs instead,"
                         "the results will still be correct.")
         n_bpms = n_bpms_phases
-    
+
     if n_bpms < 3:
         raise ValueError("At least 3 BPMs are required for N-BPM method!"
                         f"Instead a range of {n_bpms} was requested.")
@@ -422,7 +422,7 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     # tilt phase advances in order to have the phase advances in a neighbourhood
     tilted_meas = _tilt_slice_matrix(phase["MEAS"].to_numpy(), 2, 5, tune) * PI2
     tilted_model = _tilt_slice_matrix(phase["MODEL"].to_numpy(), 2, 5, mdltune) * PI2
-    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].to_numpy(), 2, 5, mdltune) * PI2
+    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].to_numpy(), 2, 5, 0) * PI2
     betmdl = beta_df.loc[:, f"BET{plane}{MDL}"].to_numpy()
     alfmdl = beta_df.loc[:, f"ALF{plane}{MDL}"].to_numpy()
     with np.errstate(divide='ignore'):
