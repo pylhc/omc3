@@ -99,9 +99,9 @@ def _generate_madx_jobs(
                 break
             var = variables[var_idx]
             incr_dict[var] = delta_k
-            current_job += f"{var}={var}{delta_k:+f};\n"
+            current_job += f"{var} = {var}{delta_k:+.15e};\n"
             current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}';\n"
-            current_job += f"{var}={var}{-delta_k:+f};\n\n"
+            current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}';\n"

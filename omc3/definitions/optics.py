@@ -183,8 +183,8 @@ class ColumnsAndLabels:
             return self._delta_label
 
         if self.label.startswith("$"):
-            return f"$\Delta {self.label[1:]}"
-        return f"$\Delta$ {self.label}"
+            return fr"$\Delta {self.label[1:]}"
+        return fr"$\Delta$ {self.label}"
 
 
 # Defined Columns --------------------------------------------------------------
@@ -195,7 +195,7 @@ DISPERSION_COLUMN =      ColumnsAndLabels(DISPERSION, _label=ylabels['dispersion
 NORM_DISPERSION_COLUMN = ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion')
 PHASE_COLUMN =           ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase')
 TOTAL_PHASE_COLUMN =     ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase')
-PHASE_ADVANCE_COLUMN =   ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', _label='Phase Advance [$2 \pi$]', _text_label='phase advance')
+PHASE_ADVANCE_COLUMN =   ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', _label=r'Phase Advance [$2 \pi$]', _text_label='phase advance')
 S_COLUMN =               ColumnsAndLabels(S, _label='Location [m]', _text_label='longitudinal location', needs_plane=False)
 
 RDT_AMPLITUDE_COLUMN = ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False)  # label needs rdt

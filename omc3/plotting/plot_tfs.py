@@ -509,7 +509,13 @@ def _share_xaxis(fig_collection):
     """Shared xaxis at last axes and remove all xlabels, ticks of other axes."""
     for fig_container in fig_collection.figs.values():
         axs = fig_container.axes.values()
-        fig_container.axes[fig_container.axes_ids[-1]].get_shared_x_axes().join(*axs)
+
+        # Axes.get_shared_x_axes() does not work here as it returns a GrouperView
+        # instead of the Grouper (i.e. _shared_axes['x'], matplotlib < 3.8), 
+        # so we access _shared_axes directly
+        fig_container.axes[fig_container.axes_ids[-1]]._shared_axes["x"].join(*axs)
+
+        # remove ticks and labels for all but the last axes.
         for ax_id in fig_container.axes_ids[:-1]:
             fig_container.axes[ax_id].set_xticklabels([])
             fig_container.xlabels[ax_id] = None

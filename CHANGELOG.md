@@ -1,5 +1,20 @@
 # OMC3 Changelog
 
+#### 2023-09-20 - v0.11.3 - _jdilly_, _awegsche_
+
+- Fixed:
+  - compatibility with matplotlib 3.8
+  - skipping important phase advances for HL-LHC (as not defined yet)
+  - allowing responses with delta_k < 1e-6 for full-response creation
+
+#### 2023-09-01 - v0.11.2 - _jdilly_
+
+- Fixed:
+  - Plot Optics: making normalized dispersion plot a special case.
+
+- Added:
+ - Plot Optics: optional input "--labels" to manually set the legend-labels. 
+
 #### 2023-06-16 - v0.11.1 - _jdilly_
 
 - Fixed:
