@@ -22,6 +22,9 @@ from omc3.harpy.constants import (FILE_PHASES_EXT, FILE_AMPS_EXT, FILE_FREQS_EXT
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
+import warnings
+warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
+
 LOGGER = logging_tools.get_logger(__name__)
 ALL_PLANES = (*PLANES, "Z")
 PLANE_TO_NUM = {**P2N, "Z": 3}
