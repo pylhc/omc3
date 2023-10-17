@@ -120,9 +120,14 @@ def _add_calculated_phase_errors(lin_frame):
         return lin_frame   # Do not calculated errors when no noise was calculated
     for name_root in (COL_MU, COL_PHASE):
         cols = [col for col in lin_frame.columns.to_numpy() if name_root in col]
+        list_of_err_cols_df = [lin_frame]
         for col in cols:
-            lin_frame[f"{COL_ERR}{col}"] = _get_spectral_phase_error(
+            spectral_phase_error_values = _get_spectral_phase_error(
                 lin_frame.loc[:, f"{col.replace(name_root, COL_AMP)}"], noise)
+            temp_err_df = pd.DataFrame({f"{COL_ERR}{col}":spectral_phase_error_values},
+                                       index=lin_frame.index)
+            list_of_err_cols_df.append(temp_err_df)
+        lin_frame = pd.concat(list_of_err_cols_df, axis=1)
     return lin_frame
 
 
@@ -207,7 +212,12 @@ def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
     panda.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = panda.loc[:, 'NOISE']
     if f"{COL_NATTUNE}{plane}" in panda.columns:
         panda.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = panda.loc[:, 'NOISE']
+    
+    list_of_new_cols_df = [panda]
+
     for col in cols:
         this_amp = panda.loc[:, col]
-        panda.loc[:, f"{COL_ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
+        list_of_new_cols_df.append(pd.DataFrame({f"{COL_ERR}{col}":noise_scaled * np.sqrt(1 + np.square(this_amp))}))
+    
+    panda = pd.concat(list_of_new_cols_df, axis=1)
     return panda
