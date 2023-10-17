@@ -87,7 +87,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
                         "were requested in N-BPM method. Using all available BPMs instead,"
                         "the results will still be correct.")
         n_bpms = n_bpms_phases
-    
+
     if n_bpms < 3:
         raise ValueError("At least 3 BPMs are required for N-BPM method!"
                         f"Instead a range of {n_bpms} was requested.")
@@ -422,7 +422,7 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     # tilt phase advances in order to have the phase advances in a neighbourhood
     tilted_meas = _tilt_slice_matrix(phase["MEAS"].to_numpy(), 2, 5, tune) * PI2
     tilted_model = _tilt_slice_matrix(phase["MODEL"].to_numpy(), 2, 5, mdltune) * PI2
-    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].to_numpy(), 2, 5, mdltune) * PI2
+    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].to_numpy(), 2, 5, 0) * PI2
     betmdl = beta_df.loc[:, f"BET{plane}{MDL}"].to_numpy()
     alfmdl = beta_df.loc[:, f"ALF{plane}{MDL}"].to_numpy()
     with np.errstate(divide='ignore'):
@@ -454,6 +454,11 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     with np.errstate(divide='ignore', invalid='ignore'):
         sin_squared_model = tilted_errmeas**2 / np.square(np.sin(tilted_model)) * betmdl
         sin_quadrup_model = tilted_errmeas**2 / np.power(np.sin(tilted_model), 4) * betmdl
+
+    # Calculation depends intrisically on zero division of some matrix elements (supress warning locally) 
+    import warnings
+    warnings.simplefilter(action='ignore', category=RuntimeWarning)
+    
     # square it again beacause it's used in a vector length
     sin_squared_model = np.square(sin_squared_model)
     sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
@@ -461,6 +466,9 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     sin_quad_model_shift1 = sin_quadrup_model + np.roll(sin_quadrup_model, -1, axis=0) / np.square(cot_phase_model_shift1)
     sin_quad_model_shift2 = sin_quadrup_model + np.roll(sin_quadrup_model, -2, axis=0) / np.square(cot_phase_model_shift2)
     beterr = np.sqrt(sin_squ_model_shift1[0] + sin_squ_model_shift1[3] + sin_squ_model_shift2[1]) / 3
+    
+    warnings.simplefilter(action='default', category=RuntimeWarning)
+    
     beta_df["BET" + plane] = beti
     beta_df["ERRBET" + plane] = beterr
     beta_df["ALF" + plane] = alfi
