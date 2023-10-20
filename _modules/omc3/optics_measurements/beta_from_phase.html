@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.beta_from_phase &mdash; omc3 0.11.3 documentation</title>
+  <title>omc3.optics_measurements.beta_from_phase &mdash; omc3 0.11.4 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
@@ -13,7 +13,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=c44be570"></script>
+        <script src="../../../_static/documentation_options.js?v=0fc275bd"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -300,7 +300,7 @@
                         <span class="s2">&quot;were requested in N-BPM method. Using all available BPMs instead,&quot;</span>
                         <span class="s2">&quot;the results will still be correct.&quot;</span><span class="p">)</span>
         <span class="n">n_bpms</span> <span class="o">=</span> <span class="n">n_bpms_phases</span>
-    
+
     <span class="k">if</span> <span class="n">n_bpms</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least 3 BPMs are required for N-BPM method!&quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;Instead a range of </span><span class="si">{</span><span class="n">n_bpms</span><span class="si">}</span><span class="s2"> was requested.&quot;</span><span class="p">)</span>
@@ -641,7 +641,7 @@
     <span class="c1"># tilt phase advances in order to have the phase advances in a neighbourhood</span>
     <span class="n">tilted_meas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;MEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">tune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
     <span class="n">tilted_model</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">mdltune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
-    <span class="n">tilted_errmeas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">mdltune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">tilted_errmeas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;ERRMEAS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
     <span class="n">betmdl</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="n">alfmdl</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;ALF</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
