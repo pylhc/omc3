@@ -1,5 +1,9 @@
 # OMC3 Changelog
 
+#### 2023-09-20 - v0.11.3 - _fscarlier_, _awegsche_
+- Fixed:
+    - bug in beta from phase (3BPM method) that calculated too high errors for first and last BPMs
+
 #### 2023-09-20 - v0.11.3 - _jdilly_, _awegsche_
 
 - Fixed:
