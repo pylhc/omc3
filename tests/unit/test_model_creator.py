@@ -10,13 +10,13 @@ from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator,
 from omc3.model_creator import create_instance_and_model
 
 INPUTS = Path(__file__).parent.parent / "inputs"
-MODEL_CREATOR_INPUT = INPUTS / "model_creation"
 COMP_MODEL = INPUTS / "models" / "25cm_beam1"
 CODEBASE_PATH = Path(__file__).parent.parent.parent / "omc3"
 PS_MODEL = CODEBASE_PATH / "model" / "accelerators" / "ps"
+ROOT = Path(os.getcwd())  # there might be a better way 
 
-LHC_30CM_MODIFIERS = [Path("R2022a_A30cmC30cmA10mL200cm.madx")]
-LHC_40CM_MODIFIERS = [Path("R2018h_A40mC40mA10mL10m.madx")]
+LHC_30CM_MODIFIERS = [Path("R2023a_A30cmC30cmA10mL200cm.madx")]
+HIGH_BETA_MODIFIERS = [Path("R2018h_A90mC90mA10mL10m.madx")]
 
 
 @pytest.mark.basic
@@ -31,7 +31,7 @@ def test_booster_creation_nominal_driven(tmp_path):
         energy=0.16,
         modifiers=None,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "psb",
+        path=ROOT / "acc-models-psb-2021",
         scenario="lhc",
         cycle_point="0_injection",
         str_file="psb_inj_lhc.str",
@@ -51,7 +51,7 @@ def test_booster_creation_nominal_free(tmp_path):
         energy=0.16,
         modifiers=None,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "psb",
+        path=ROOT/"acc-models-psb-2021",
         scenario="lhc",
         cycle_point="0_injection",
         str_file="psb_inj_lhc.str",
@@ -115,7 +115,7 @@ def test_ps_creation_nominal_free_2021(tmp_path):
         energy=1.4,
         year="2021",
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "ps",
+        path=ROOT/"acc-models-ps-2021",
         scenario="lhc",
         cycle_point="0_injection",
         str_file="ps_inj_lhc.str",
@@ -131,7 +131,7 @@ def test_ps_creation_nominal_free_2021(tmp_path):
 def test_lhc_creation_nominal_driven(tmp_path):
     accel_opt = dict(
         accel="lhc",
-        year="2022",
+        year="2023",
         beam=1,
         nat_tunes=[0.31, 0.32],
         drv_tunes=[0.298, 0.335],
@@ -139,7 +139,7 @@ def test_lhc_creation_nominal_driven(tmp_path):
         dpp=0.0,
         energy=6800.0,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "lhc_2022",
+        path=ROOT/"acc-models-lhc-2023",
         modifiers=LHC_30CM_MODIFIERS,
     )
     accel = create_instance_and_model(
@@ -149,7 +149,7 @@ def test_lhc_creation_nominal_driven(tmp_path):
 
 
 @pytest.mark.basic
-def test_lhc_creation_nominal_free_2018(tmp_path):
+def test_lhc_creation_nominal_free_high_beta(tmp_path):
     accel_opt = dict(
         accel="lhc",
         year="2018",
@@ -158,8 +158,8 @@ def test_lhc_creation_nominal_free_2018(tmp_path):
         dpp=0.0,
         energy=6500.0,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "lhc_2018",
-        modifiers=LHC_40CM_MODIFIERS
+        path=ROOT/"acc-models-lhc-2018",
+        modifiers=HIGH_BETA_MODIFIERS
     )
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -171,13 +171,13 @@ def test_lhc_creation_nominal_free_2018(tmp_path):
 def test_lhc_creation_nominal_free(tmp_path):
     accel_opt = dict(
         accel="lhc",
-        year="2022",
+        year="2023",
         beam=1,
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "lhc_2022",
+        path=ROOT/"acc-models-lhc-2023",
         modifiers=LHC_30CM_MODIFIERS
     )
     accel = create_instance_and_model(
@@ -192,14 +192,14 @@ def test_lhc_creation_best_knowledge(tmp_path):
     (tmp_path / LhcBestKnowledgeCreator.CORRECTIONS_FILENAME).write_text("\n")
     accel_opt = dict(
         accel="lhc",
-        year="2022",
+        year="2023",
         ats=True,
         beam=1,
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "lhc_2022",
+        path=ROOT/"acc-models-lhc-2023",
         b2_errors="MB2022_6500.0GeV_0133cm",
         modifiers=LHC_30CM_MODIFIERS
     )
@@ -219,10 +219,10 @@ def test_lhc_creation_relative_modifier_path(tmp_path):
         dpp=0.0,
         energy=6800.0,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "lhc_2022",
+        path=ROOT/"acc-models-lhc-2023",
         modifiers=LHC_30CM_MODIFIERS
     )
-    shutil.copy(MODEL_CREATOR_INPUT / "lhc_2022/operation/optics" / "R2022a_A30cmC30cmA10mL200cm.madx", tmp_path / "R2022a_A30cmC30cmA10mL200cm.madx")
+    #shutil.copy(MODEL_CREATOR_INPUT / "lhc_2022/operation/optics" / "R2022a_A30cmC30cmA10mL200cm.madx", tmp_path / "R2022a_A30cmC30cmA10mL200cm.madx")
 
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -242,7 +242,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path):
         dpp=0.0,
         energy=6800.0,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "lhc_2022",
+        path=ROOT/"acc-models-lhc-2023",
         modifiers=[NONEXISTENT]
     )
     with pytest.raises(FileNotFoundError) as creation_error:
@@ -260,7 +260,7 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
     model_dir_relpath.mkdir()
 
     optics_file_relpath = Path("R2022a_A30cmC30cmA10mL200cm.madx")
-    shutil.copy(MODEL_CREATOR_INPUT / "lhc_2022/operation/optics" / optics_file_relpath, model_dir_relpath / optics_file_relpath.name)
+    shutil.copy(ROOT/"acc-models-lhc-2022/operation/optics" / optics_file_relpath, model_dir_relpath / optics_file_relpath.name)
 
     accel_opt = dict(
         accel="lhc",
@@ -271,7 +271,7 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path):
         dpp=0.0,
         energy=6800.0,
         fetch=PATHFETCHER,
-        path=MODEL_CREATOR_INPUT / "lhc_2022",
+        path=ROOT/"acc-models-lhc-2022",
         modifiers=[optics_file_relpath],
     )
 
