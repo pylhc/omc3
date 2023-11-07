@@ -186,7 +186,7 @@ def test_lhc_creation_nominal_free(tmp_path):
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
 
 
-@pytest.mark.basic
+@pytest.mark.extended
 def test_lhc_creation_best_knowledge(tmp_path):
     (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
     (tmp_path / LhcBestKnowledgeCreator.CORRECTIONS_FILENAME).write_text("\n")
