@@ -141,6 +141,7 @@ class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
 """A class that allows `float`, 'int' or `None`.
 Can be used in numeric-lists when individual entries can be `None`."""
 OptionalFloat = get_multi_class(float, int, type(None))
+OptionalFloat.__name__ = "OptionalFloat"
 
 
 def strip_quotes(value: Any) -> Any:

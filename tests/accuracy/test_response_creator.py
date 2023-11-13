@@ -45,7 +45,7 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
     # compare to original response matrix
     original_response = read_fullresponse(model_inj_beams.model_dir / correction_params.fullresponse)
     for key in optics_params:
-        original = original_response[key]
+        original = original_response[key.replace("_Q4", "")]  # renaming of category since response creation 
         new = new_response[key].loc[original.index, original.columns]
 
         # ######## Relative RMS check ###############
