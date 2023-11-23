@@ -220,11 +220,11 @@ def _check_segments_and_elements(segments: List[str], elements: List[str]) -> Tu
     return segments, elements
 
 
-def _parse_segments(segment_definitions: Sequence[str]) -> List[Segment]:
+def _parse_segments(segment_definitions: Sequence[Union[Segment, str]]) -> List[Segment]:
     """Convert all segment definitions to Segments.     
 
     Args:
-        segment_definitions (Sequence[str]): List of segment definitions. 
+        segment_definitions (Sequence[str | Segment]): List of segment definitions or Segments. 
 
     Raises:
         SbsDefinitionError: When there are duplicated names or when the definition is not recognized.
@@ -237,10 +237,13 @@ def _parse_segments(segment_definitions: Sequence[str]) -> List[Segment]:
 
     segments = {}
     for segment_def in segment_definitions:
-        try:
-            segment = Segment.init_from_segment_definition(segment_def)
-        except ValueError:
-            raise SbsDefinitionError(f"Unable to parse segment string {segment_def}.")
+        if isinstance(segment_def, Segment):
+            segment = segment_def
+        else:
+            try:
+                segment = Segment.init_from_segment_definition(segment_def)
+            except ValueError:
+                raise SbsDefinitionError(f"Unable to parse segment string {segment_def}.")
 
         if segment.name in segments.keys():
             raise SbsDefinitionError(f"Duplicated segment name '{segment.name}'.")
@@ -248,11 +251,11 @@ def _parse_segments(segment_definitions: Sequence[str]) -> List[Segment]:
     return list(segments.values())
 
 
-def _parse_elements(elements: Sequence[str]) -> List[Segment]:
+def _parse_elements(elements: Sequence[Union[Segment, str]]) -> List[Segment]:
     """Convert all elements to Segments.
 
     Args:
-        elements (Sequence[str]): Elements to be parsed.
+        elements (Sequence[str | Segment]): Elements to be parsed or Segment-instaces.
 
     Raises:
         SbsDefinitionError: When there are duplicated names.
@@ -264,7 +267,7 @@ def _parse_elements(elements: Sequence[str]) -> List[Segment]:
         return []
     if len(set(elements)) != len(elements):
         raise SbsDefinitionError("Duplicated names in element list.")
-    elem_segments = [Segment.init_from_element_name(name) for name in elements]
+    elem_segments = [name if isinstance(name, Segment) else Segment.init_from_element_name(name) for name in elements]
     return elem_segments
 
 

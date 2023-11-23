@@ -20,7 +20,7 @@ from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
                                       chromatic, dispersion, interaction_point, kick, phase, rdt,
                                       tune, crdt, coupling)
 from omc3.optics_measurements.constants import (
-    CHROM_BETA_NAME, EXT, CALIBRATION_FILE, NAME
+    CHROM_BETA_NAME, EXT, CALIBRATION_FILE, NAME, MODEL_DIRECTORY,
 )
 from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
@@ -109,7 +109,7 @@ def _get_header(meas_input, tune_dict):
                         ('Command', f"{sys.executable} {' '.join(sys.argv)}"),
                         ('CWD', os.getcwd()),
                         ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
-                        ('Model_directory', meas_input.accelerator.model_dir),
+                        (MODEL_DIRECTORY, meas_input.accelerator.model_dir),
                         ('Compensation', compensation[meas_input.compensation]),
                         ('Q1', tune_dict["X"]["QF"]),
                         ('Q2', tune_dict["Y"]["QF"])])
