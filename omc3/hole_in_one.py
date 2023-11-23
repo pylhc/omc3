@@ -33,7 +33,7 @@ import os
 from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime
-from os.path import abspath, basename, dirname, join
+from os.path import abspath, basename, dirname, join, splitext
 
 import turn_by_turn as tbt
 
@@ -85,6 +85,9 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--outputdir**
         Required: ``True``
+      - **suffix** *(str)*: User-defined suffix for the output filenames.
+
+        Flags: **--suffix**
       - **to_write**: Choose the type of output.
 
         Flags: **--to_write**
@@ -370,7 +373,7 @@ def _run_harpy(harpy_options):
         tbt_datas = [(tbt.read_tbt(option.files, datatype=option.tbt_datatype), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
-                         for bunch_data, bunch_options in _multibunch(tbt_data, option)])
+                         for bunch_data, bunch_options in _add_suffix_and_loop_over_bunches(tbt_data, option)])
     return lins
 
 
@@ -383,14 +386,26 @@ def _replicate_harpy_options_per_file(options):
     return list_of_options
 
 
-def _multibunch(tbt_datas, options):
+def _add_suffix_and_loop_over_bunches(tbt_datas, options):
+    # hint: options.files is now a single file because of _replicate_harpy_options_per_file
+    # it is also only used here to define the output name, as the tbt-data is already loaded.
+
+    dir_name = dirname(options.files)
+    old_file_name = basename(options.files)
+    file_name_no_ext, ext = splitext(old_file_name)
+    suffix = new_options.suffix or ""
+
+    # Single bunch
     if tbt_datas.nbunches == 1:
+        options.files = join(dir_name, f"{file_name_no_ext}{suffix}{ext}")
         yield tbt_datas, options
         return
+
+    # Multibunch 
     for index in range(tbt_datas.nbunches):
         new_options = deepcopy(options)
-        new_file_name = f"bunchid{tbt_datas.bunch_ids[index]}_{basename(new_options.files)}"
-        new_options.files = join(dirname(options.files), new_file_name)
+        bunch_id_str = f"_bunchid{tbt_datas.bunch_ids[index]}"
+        new_options.files = join(dir_name, f"{file_name_no_ext}{bunch_id_str}{suffix}{ext}")
         yield tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
                           [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
 
@@ -433,6 +448,7 @@ def harpy_params():
     params = EntryPointParameters()
     params.add_parameter(name="files", required=True, nargs='+', help="TbT files to analyse")
     params.add_parameter(name="outputdir", required=True, help="Output directory.")
+    params.add_parameter(name="suffix", type=str, help="User-defined suffix for output filenames.")
     params.add_parameter(name="model", help="Model for BPM locations")
     params.add_parameter(name="unit", type=str, default=HARPY_DEFAULTS["unit"],
                          choices=("m", "cm", "mm", "um"),
