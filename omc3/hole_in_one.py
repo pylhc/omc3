@@ -97,6 +97,10 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--turns**
         Default: ``[0, 50000]``
+      - **bunches** *(int)*: Bunches to process in multi-bunch file. If not specified, all bunches
+        are processed.
+
+        Flags: **--bunches**
       - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'm'.
 
         Flags: **--unit**
@@ -391,23 +395,29 @@ def _add_suffix_and_loop_over_bunches(tbt_datas, options):
     # it is also only used here to define the output name, as the tbt-data is already loaded.
 
     dir_name = dirname(options.files)
-    old_file_name = basename(options.files)
-    file_name_no_ext, ext = splitext(old_file_name)
-    suffix = new_options.suffix or ""
+    file_name_no_ext, ext = splitext(basename(options.files))
+    suffix = options.suffix or ""
 
     # Single bunch
     if tbt_datas.nbunches == 1:
-        options.files = join(dir_name, f"{file_name_no_ext}{suffix}{ext}")
+        if suffix:
+            options.files = join(dir_name, f"{file_name_no_ext}{suffix}{ext}")
         yield tbt_datas, options
         return
 
     # Multibunch 
     for index in range(tbt_datas.nbunches):
+        bunch_id = tbt_datas.bunch_ids[index]
+        if options.bunches is not None and bunch_id not in options.bunches:
+            continue
+
         new_options = deepcopy(options)
-        bunch_id_str = f"_bunchid{tbt_datas.bunch_ids[index]}"
+        bunch_id_str = f"_bunchid{bunch_id}"
         new_options.files = join(dir_name, f"{file_name_no_ext}{bunch_id_str}{suffix}{ext}")
-        yield tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date,
-                          [tbt_datas.bunch_ids[index]], tbt_datas.nturns), new_options
+        yield (
+            tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date, [bunch_id], tbt_datas.nturns), 
+            new_options
+        )
 
 
 def _measure_optics(lins, optics_opt):
@@ -455,6 +465,9 @@ def harpy_params():
                          help=f"A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
     params.add_parameter(name="turns", type=int, nargs=2, default=HARPY_DEFAULTS["turns"],
                          help="Turn index to start and first turn index to be ignored.")
+    params.add_parameter(name="bunches", type=int, nargs="+",
+                         help="Bunches to process in multi-bunch file. "
+                         "If not specified, all bunches are processed.")
     params.add_parameter(name="to_write", nargs='+', default=HARPY_DEFAULTS["to_write"],
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output.")
