@@ -395,13 +395,13 @@ def _add_suffix_and_loop_over_bunches(tbt_datas, options):
     # it is also only used here to define the output name, as the tbt-data is already loaded.
 
     dir_name = dirname(options.files)
-    file_name_no_ext, ext = splitext(basename(options.files))
+    file_name = basename(options.files)
     suffix = options.suffix or ""
 
     # Single bunch
     if tbt_datas.nbunches == 1:
         if suffix:
-            options.files = join(dir_name, f"{file_name_no_ext}{suffix}{ext}")
+            options.files = join(dir_name, f"{file_name}{suffix}")
         yield tbt_datas, options
         return
 
@@ -412,8 +412,8 @@ def _add_suffix_and_loop_over_bunches(tbt_datas, options):
             continue
 
         new_options = deepcopy(options)
-        bunch_id_str = f"_bunchid{bunch_id}"
-        new_options.files = join(dir_name, f"{file_name_no_ext}{bunch_id_str}{suffix}{ext}")
+        bunch_id_str = f"_bunchID{bunch_id}"
+        new_options.files = join(dir_name, f"{file_name}{bunch_id_str}{suffix}")
         yield (
             tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date, [bunch_id], tbt_datas.nturns), 
             new_options
