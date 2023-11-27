@@ -1,8 +1,15 @@
+from pathlib import Path
+from typing import Sequence
+
+import numpy as np
+import pandas as pd
 import pytest
+import tfs
 import turn_by_turn as tbt
 from generic_parser import DotDict
 
-from omc3.hole_in_one import _add_suffix_and_loop_over_bunches
+from omc3.hole_in_one import _add_suffix_and_loop_over_bunches, hole_in_one_entrypoint
+from tests.accuracy.test_harpy import _get_model_dataframe
 
 
 @pytest.mark.basic
@@ -68,4 +75,67 @@ def test_input_suffix_and_multibunch(suffix, bunches):
         assert n_data == len(bunches)
     else:
         assert n_data == len(tbt_data.bunch_ids)
+
+
+@pytest.mark.extended
+@pytest.mark.parametrize("suffix", ("_my_suffix", None))
+@pytest.mark.parametrize("bunches", (None, (1, 15)))
+def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
+    """ Runs harpy and checks that the right files are created. 
     
+    Only with bunchID as we have enough tests in the accuracy tests, 
+    that implicitly check that the single-bunch files are created.
+    """
+    all_bunches = [1, 5, 15]
+    tbt_file = tmp_path / "test_file.sdds"
+
+    # Mock some TbT data ---
+    model = _get_model_dataframe()
+    tbt.write(tbt_file, create_tbt_data(model, tbt_file, bunch_ids=all_bunches))
+
+    # Run harpy ---
+    hole_in_one_entrypoint(harpy=True,
+                           clean=False,
+                           autotunes="transverse",
+                           outputdir=str(tmp_path),
+                           files=[tbt_file],
+                           to_write=["lin", "spectra"],
+                           turn_bits=4,  # make it fast
+                           output_bits=4,
+                           unit="m",
+                           suffix=suffix,
+                           bunches=None if bunches is None else list(bunches),
+                           )
+
+    # Check that the right files are created ---
+    exts = [".lin", ".freqs", ".amps"]
+    suffix_str = suffix or ""
+    for bunch in all_bunches:
+        for ext in exts:
+            for plane in "xy":
+                file_path = Path(f"{tbt_file!s}_bunchID{bunch}{suffix_str}{ext}{plane}")
+                if bunches is None or bunch in bunches:
+                    assert file_path.is_file()
+                    tfs.read(file_path)
+                else:
+                    assert not file_path.is_file()
+
+
+# Helper ---
+
+def create_tbt_data(model: pd.DataFrame, bunch_ids: Sequence[int] = (0, ), n_turns: int = 10) -> tbt.TbtData:
+    """Create simple turn-by-turn data based on the given model.
+
+    Args:
+        model (pd.DataFrame): Model to base the turn-by-turn data on
+        bunch_ids (Sequence[int], optional): Which bunces to create. The data is the same for all bunches. Defaults to (0, ).
+        n_turns (int, optional): How many turns to create. Defaults to 10.
+
+    Returns:
+        tbt.TbtData: Created TbtData
+    """
+    ints = np.arange(n_turns) - n_turns / 2
+    data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] + model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
+    data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] + model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
+    matrix = tbt.TransverseData(X=pd.DataFrame(data=data_x, index=model.index), Y=pd.DataFrame(data=data_y, index=model.index))
+    return tbt.TbtData(matrices=[matrix] * len(bunch_ids), bunch_ids=list(bunch_ids), nturns=n_turns)  
