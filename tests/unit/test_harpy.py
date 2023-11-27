@@ -91,7 +91,7 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
 
     # Mock some TbT data ---
     model = _get_model_dataframe()
-    tbt.write(tbt_file, create_tbt_data(model, tbt_file, bunch_ids=all_bunches))
+    tbt.write(tbt_file, create_tbt_data(model=model, bunch_ids=all_bunches))
 
     # Run harpy ---
     hole_in_one_entrypoint(harpy=True,
