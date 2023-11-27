@@ -34,12 +34,13 @@ from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime
 from os.path import abspath, basename, dirname, join, splitext
+from typing import Generator, Tuple
 
 import turn_by_turn as tbt
+from generic_parser import DotDict
+from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters, add_to_arguments,
+                                              entrypoint, save_options_to_config)
 
-from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters,
-                                              add_to_arguments, entrypoint,
-                                              save_options_to_config)
 from omc3.definitions import formats
 from omc3.harpy import handler
 from omc3.model import manager
@@ -390,7 +391,8 @@ def _replicate_harpy_options_per_file(options):
     return list_of_options
 
 
-def _add_suffix_and_loop_over_bunches(tbt_datas, options):
+def _add_suffix_and_loop_over_bunches(tbt_data: tbt.TbtData, options: DotDict
+    ) -> Generator[Tuple[tbt.TbtData, DotDict], None, None]:
     # hint: options.files is now a single file because of _replicate_harpy_options_per_file
     # it is also only used here to define the output name, as the tbt-data is already loaded.
 
@@ -399,15 +401,15 @@ def _add_suffix_and_loop_over_bunches(tbt_datas, options):
     suffix = options.suffix or ""
 
     # Single bunch
-    if tbt_datas.nbunches == 1:
+    if tbt_data.nbunches == 1:
         if suffix:
             options.files = join(dir_name, f"{file_name}{suffix}")
-        yield tbt_datas, options
+        yield tbt_data, options
         return
 
     # Multibunch 
-    for index in range(tbt_datas.nbunches):
-        bunch_id = tbt_datas.bunch_ids[index]
+    for index in range(tbt_data.nbunches):
+        bunch_id = tbt_data.bunch_ids[index]
         if options.bunches is not None and bunch_id not in options.bunches:
             continue
 
@@ -415,7 +417,7 @@ def _add_suffix_and_loop_over_bunches(tbt_datas, options):
         bunch_id_str = f"_bunchID{bunch_id}"
         new_options.files = join(dir_name, f"{file_name}{bunch_id_str}{suffix}")
         yield (
-            tbt.TbtData([tbt_datas.matrices[index]], tbt_datas.date, [bunch_id], tbt_datas.nturns), 
+            tbt.TbtData([tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns), 
             new_options
         )
 
