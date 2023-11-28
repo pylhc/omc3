@@ -98,10 +98,10 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--turns**
         Default: ``[0, 50000]``
-      - **bunches** *(int)*: Bunches to process in multi-bunch file. If not specified, all bunches
+      - **bunch_ids** *(int)*: Bunches to process in multi-bunch file. If not specified, all bunches
         are processed.
 
-        Flags: **--bunches**
+        Flags: **--bunch_ids**
       - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'm'.
 
         Flags: **--unit**
@@ -378,7 +378,7 @@ def _run_harpy(harpy_options):
         tbt_datas = [(tbt.read_tbt(option.files, datatype=option.tbt_datatype), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
-                         for bunch_data, bunch_options in _add_suffix_and_loop_over_bunches(tbt_data, option)])
+                         for bunch_data, bunch_options in _add_suffix_and_iter_bunches(tbt_data, option)])
     return lins
 
 
@@ -391,7 +391,7 @@ def _replicate_harpy_options_per_file(options):
     return list_of_options
 
 
-def _add_suffix_and_loop_over_bunches(tbt_data: tbt.TbtData, options: DotDict
+def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
     ) -> Generator[Tuple[tbt.TbtData, DotDict], None, None]:
     # hint: options.files is now a single file because of _replicate_harpy_options_per_file
     # it is also only used here to define the output name, as the tbt-data is already loaded.
@@ -400,17 +400,24 @@ def _add_suffix_and_loop_over_bunches(tbt_data: tbt.TbtData, options: DotDict
     file_name = basename(options.files)
     suffix = options.suffix or ""
 
-    # Single bunch
+    # Single bunch ---
     if tbt_data.nbunches == 1:
         if suffix:
             options.files = join(dir_name, f"{file_name}{suffix}")
         yield tbt_data, options
         return
 
-    # Multibunch 
+    # Multibunch ---
+    if options.bunch_ids is not None:
+        unknown_bunches = set(options.bunch_ids) - set(tbt_data.bunch_ids)
+        if unknown_bunches:
+            LOGGER.warning(
+                f"Bunch IDs {unknown_bunches} not present in multi-bunch file {options.files}."
+            )
+
     for index in range(tbt_data.nbunches):
         bunch_id = tbt_data.bunch_ids[index]
-        if options.bunches is not None and bunch_id not in options.bunches:
+        if options.bunch_ids is not None and bunch_id not in options.bunch_ids:
             continue
 
         new_options = deepcopy(options)
@@ -467,7 +474,7 @@ def harpy_params():
                          help=f"A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
     params.add_parameter(name="turns", type=int, nargs=2, default=HARPY_DEFAULTS["turns"],
                          help="Turn index to start and first turn index to be ignored.")
-    params.add_parameter(name="bunches", type=int, nargs="+",
+    params.add_parameter(name="bunch_ids", type=int, nargs="+",
                          help="Bunches to process in multi-bunch file. "
                          "If not specified, all bunches are processed.")
     params.add_parameter(name="to_write", nargs='+', default=HARPY_DEFAULTS["to_write"],
