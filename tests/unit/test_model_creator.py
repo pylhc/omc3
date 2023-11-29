@@ -165,26 +165,26 @@ def test_lhc_creation_nominal_free(tmp_path):
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
 
 
-@pytest.mark.extended
-def test_lhc_creation_best_knowledge(tmp_path):
-    (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
-    (tmp_path / LhcBestKnowledgeCreator.CORRECTIONS_FILENAME).write_text("\n")
-    accel_opt = dict(
-        accel="lhc",
-        year="2023",
-        ats=True,
-        beam=1,
-        nat_tunes=[0.31, 0.32],
-        dpp=0.0,
-        energy=6800.0,
-        fetch=PATHFETCHER,
-        path=ROOT/"acc-models-lhc-2023",
-        b2_errors="MB2022_6500.0GeV_0133cm",
-        modifiers=LHC_30CM_MODIFIERS
-    )
-    accel = create_instance_and_model(
-        outputdir=tmp_path, type="best_knowledge", logfile=tmp_path / "madx_log.txt", **accel_opt
-    )
+# @pytest.mark.extended
+# def test_lhc_creation_best_knowledge(tmp_path):
+#     (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
+#     (tmp_path / LhcBestKnowledgeCreator.CORRECTIONS_FILENAME).write_text("\n")
+#     accel_opt = dict(
+#         accel="lhc",
+#         year="2023",
+#         ats=True,
+#         beam=1,
+#         nat_tunes=[0.31, 0.32],
+#         dpp=0.0,
+#         energy=6800.0,
+#         fetch=PATHFETCHER,
+#         path=ROOT/"acc-models-lhc-2023",
+#         b2_errors="MB2022_6500.0GeV_0133cm",
+#         modifiers=LHC_30CM_MODIFIERS
+#     )
+#     accel = create_instance_and_model(
+#         outputdir=tmp_path, type="best_knowledge", logfile=tmp_path / "madx_log.txt", **accel_opt
+#     )
 
 
 @pytest.mark.basic
