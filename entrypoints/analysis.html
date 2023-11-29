@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; omc3 0.11.4 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <title>Analysis &mdash; omc3 0.12.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=0fc275bd"></script>
+        <script src="../_static/documentation_options.js?v=61ccb1f1"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -289,6 +291,9 @@ Required: <code class="docutils literal notranslate"><span class="pre">True</spa
 <p>Flags: <strong>--outputdir</strong>
 Required: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </li>
+<li><p><strong>suffix</strong> <em>(str)</em>: User-defined suffix for the output filenames.</p>
+<p>Flags: <strong>--suffix</strong></p>
+</li>
 <li><p><strong>to_write</strong>: Choose the type of output.</p>
 <p>Flags: <strong>--to_write</strong>
 Choices: <code class="docutils literal notranslate"><span class="pre">('lin',</span> <span class="pre">'spectra',</span> <span class="pre">'full_spectra',</span> <span class="pre">'bpm_summary')</span></code>
@@ -297,6 +302,10 @@ Default: <code class="docutils literal notranslate"><span class="pre">['lin',</s
 <li><p><strong>turns</strong> <em>(int)</em>: Turn index to start and first turn index to be ignored.</p>
 <p>Flags: <strong>--turns</strong>
 Default: <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">50000]</span></code></p>
+</li>
+<li><p><strong>bunch_ids</strong> <em>(int)</em>: Bunches to process in multi-bunch file. If not specified, all bunches
+are processed.</p>
+<p>Flags: <strong>--bunch_ids</strong></p>
 </li>
 <li><p><strong>unit</strong> <em>(str)</em>: A unit of TbT BPM orbit data. All cuts and output are in ‘m’.</p>
 <p>Flags: <strong>--unit</strong>

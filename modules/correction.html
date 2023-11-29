@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.11.4 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <title>Correction &mdash; omc3 0.12.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=0fc275bd"></script>
+        <script src="../_static/documentation_options.js?v=61ccb1f1"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -355,7 +357,7 @@ class).</p>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_madx.</span></span><span class="sig-name descname"><span class="pre">create_fullresponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_madx.html#create_fullresponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_madx.</span></span><span class="sig-name descname"><span class="pre">create_fullresponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_madx.html#create_fullresponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Generate a dictionary containing response matrices for
 beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 <dl class="field-list simple">
@@ -450,14 +452,14 @@ to fit the <span class="math notranslate nohighlight">\(M \cdot \delta K\)</span
 <p>Also <span class="math notranslate nohighlight">\(\Delta \Phi_{z,wj}\)</span> needs to be multiplied by <span class="math notranslate nohighlight">\(2\pi\)</span> to be consistent.</p>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="franchianalyticformulasrapid2017" role="note">
+<aside class="footnote brackets" id="franchianalyticformulasrapid2017" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>A. Franchi et al.,
 Analytic formulas for the rapid evaluation of the orbit response matrix
 and chromatic functions from lattice parameters in circular accelerators. (2017)
 <a class="reference external" href="https://arxiv.org/abs/1711.06589">https://arxiv.org/abs/1711.06589</a></p>
 </aside>
-<aside class="footnote brackets" id="tomasreviewlinearoptics2017" role="note">
+<aside class="footnote brackets" id="tomasreviewlinearoptics2017" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>R. Tomas, et al.,
 ‘Review of linear optics measurement and correction for charged particle
@@ -465,7 +467,7 @@ accelerators.’
 Physical Review Accelerators and Beams, 20(5), 54801. (2017)
 <a class="reference external" href="https://doi.org/10.1103/PhysRevAccelBeams.20.054801">https://doi.org/10.1103/PhysRevAccelBeams.20.054801</a></p>
 </aside>
-<aside class="footnote brackets" id="dillyupdatedglobalopticscorrection2018" role="note">
+<aside class="footnote brackets" id="dillyupdatedglobalopticscorrection2018" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>,<a role="doc-backlink" href="#id5">3</a>)</span>
 <p>J. Dilly et al.,
@@ -598,7 +600,7 @@ Then: Set one variable at a time to 1</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.correction.sequence_evaluation.</span></span><span class="sig-name descname"><span class="pre">evaluate_for_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/correction/sequence_evaluation.html#evaluate_for_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.sequence_evaluation.</span></span><span class="sig-name descname"><span class="pre">evaluate_for_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/correction/sequence_evaluation.html#evaluate_for_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Generate a dictionary containing response matrices for
 beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 <dl class="field-list simple">
