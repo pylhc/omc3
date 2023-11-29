@@ -205,7 +205,7 @@ def _find_modifier(modifier, accel_inst: Accelerator):
         if modifier_path.exists():
             return modifier_path.absolute()
 
-    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}")
+    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}/{MODIFIER_BRANCH}")
 
 
 if __name__ == "__main__":

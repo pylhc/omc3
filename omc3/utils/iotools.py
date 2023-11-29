@@ -39,13 +39,12 @@ def create_dirs(path_to_dir):
     path_to_dir = Path(path_to_dir)
     if not path_to_dir.exists():
         path_to_dir.mkdir(parents=True)
-        LOG.debug("Created directory structure: '{}'".format(path_to_dir))
+        LOG.debug(f"Created directory structure: '{path_to_dir}'")
     knobs_madx = path_to_dir / "knobs.madx"
     if not knobs_madx.exists():
         with open(knobs_madx, "w") as _:
             pass
         LOG.debug("Created empty `knobs.txt`")
-
 
 
 def copy_item(src_item, dest):

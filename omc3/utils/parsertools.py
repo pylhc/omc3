@@ -26,7 +26,7 @@ def require_param(name: str, parameters: dict, options: dict):
     (because we want to get some debug info, help output, etc up until that point even if the required parameter is
     not given).
 
-    The presents of the parameter in the parse options is checked and an `AttributeError` is thrown if it is missing.
+    The presence of the parameter in the parse options is checked and an `AttributeError` is thrown if it is missing.
 
     Args:
         name: the name of the parameter
@@ -36,6 +36,12 @@ def require_param(name: str, parameters: dict, options: dict):
     """
     if options[name] is None:
         raise AttributeError(f"Missing flag `{name}`.\nUsage:\n{_get_help_str(name, parameters)}")
+
+
+def _maybe_get(space: str, category: str, map: dict)  -> str:
+    if category in map:
+        return f"{space}{category}: {map[category]}\n"
+    return ""
 
 
 def _get_help_str(name: str, parameters: dict) -> str:
@@ -66,25 +72,10 @@ def _get_help_str(name: str, parameters: dict) -> str:
     help_str = "\n".join([f"{space}{line}" for line in wrap(help_str, 70)])
     help_str = f"{help_str}\n"
 
-    try:
-        flags = f"{space}flags: {item['flags']}\n"
-    except KeyError:
-        flags = ''
-
-    try:
-        choices = f"{space}choices: {item['choices']}\n"
-    except KeyError:
-        choices = ''
-
-    try:
-        default = f"{space}default: {item['default']}\n"
-    except KeyError:
-        default = ''
-
-    try:
-        action = f"{space}action: {_fmt_action(item['action'])}\n"
-    except KeyError:
-        action = ''
+    flags = _maybe_get(space, "flags", item)
+    choices = _maybe_get(space, "choices", item)
+    default = _maybe_get(space, "default", item)
+    action = _maybe_get(space, "action", item)
 
     return f"{name_and_type}{help_str}{flags}{choices}{default}{action}"
 
@@ -94,12 +85,6 @@ def _fmt_name(name) -> str:
     return name
     # # if color terminal:
     # return f"\33[1m{name}\33[22m"
-
-
-def _fmt_action(name) -> str:
-    return name
-    # # if color terminal:
-    # return f"\33[35m{name}\33[0m"
 
 
 def _fmt_type(name) -> str:

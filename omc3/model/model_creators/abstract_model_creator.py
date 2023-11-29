@@ -33,8 +33,6 @@ def check_folder_choices(parent: Path, msg: str,
     return parent / selection
 
 
-
-
 class ModelCreator(ABC):
     """
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
