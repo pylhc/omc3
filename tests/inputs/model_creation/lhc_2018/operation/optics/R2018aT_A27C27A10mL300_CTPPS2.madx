@@ -1,8 +1,0 @@
-! JMad export of model LHC 2018 optic R2018aT_A27C27A10mL300_CTPPS2
-! Generated: 2020-07-07T12:58:06.413205Z
-
-
-call, file="acc-models-lhc/toolkit/zero-strengths.madx";
-call, file="acc-models-lhc/strengths/ats/low-beta/ats_27cm_ctpps2.madx";
-call, file="acc-models-lhc/strengths/R2018aT_A27C27A10mL300_CTPPS2_lsaknobs.madx";
-call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

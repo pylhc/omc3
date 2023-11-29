@@ -1,4 +1,0 @@
-JOB A /afs/cern.ch/eng/acc-models/psb/2021/_scripts/condor/madxjob.sub
-JOB B /afs/cern.ch/eng/acc-models/psb/2021/_scripts/condor/pyjob.sub
-JOB C /afs/cern.ch/eng/acc-models/psb/2021/_scripts/condor/gitjob.sub
-PARENT A B CHILD C

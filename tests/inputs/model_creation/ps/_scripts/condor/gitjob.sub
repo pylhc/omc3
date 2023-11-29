@@ -1,3 +1,0 @@
-executable            = /afs/cern.ch/eng/acc-models/ps/2021/_scripts/condor/postprocessing.sh
-arguments             = $(ClusterId) $(ProcId)
-queue

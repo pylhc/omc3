@@ -1,8 +1,0 @@
-! JMad export of model LHC 2018 optic R2018i_A290C290A290L290
-! Generated: 2020-07-07T12:58:06.426244Z
-
-
-call, file="acc-models-lhc/toolkit/zero-strengths.madx";
-call, file="acc-models-lhc/strengths/ats/ions/ats-ion_290cm.madx";
-call, file="acc-models-lhc/strengths/R2018i_A290C290A290L290_lsaknobs.madx";
-call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

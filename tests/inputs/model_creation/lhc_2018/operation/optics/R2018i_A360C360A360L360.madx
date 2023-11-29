@@ -1,8 +1,0 @@
-! JMad export of model LHC 2018 optic R2018i_A360C360A360L360
-! Generated: 2020-07-07T12:58:06.425555Z
-
-
-call, file="acc-models-lhc/toolkit/zero-strengths.madx";
-call, file="acc-models-lhc/strengths/ats/ions/ats-ion_360cm.madx";
-call, file="acc-models-lhc/strengths/R2018i_A360C360A360L360_lsaknobs.madx";
-call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

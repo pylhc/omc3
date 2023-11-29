@@ -1,8 +1,0 @@
-! JMad export of model LHC 2018 optic R2017a_A850C850A10mL850
-! Generated: 2020-07-07T12:58:06.404143Z
-
-
-call, file="acc-models-lhc/toolkit/zero-strengths.madx";
-call, file="acc-models-lhc/strengths/ats/low-beta/ats_850cm.madx";
-call, file="acc-models-lhc/strengths/R2017a_A850C850A10mL850_lsaknobs.madx";
-call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

@@ -1,8 +1,0 @@
-! JMad export of model LHC 2018 optic R2018i_A760C760A760L760
-! Generated: 2020-07-07T12:58:06.423353Z
-
-
-call, file="acc-models-lhc/toolkit/zero-strengths.madx";
-call, file="acc-models-lhc/strengths/ats/ions/ats-ion_760cm.madx";
-call, file="acc-models-lhc/strengths/R2018i_A760C760A760L760_lsaknobs.madx";
-call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";

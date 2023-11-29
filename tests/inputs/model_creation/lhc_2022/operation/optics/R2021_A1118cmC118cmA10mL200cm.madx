@@ -1,8 +1,0 @@
-! JMad export of model LHC 2021 optic R2021_A1118cmC118cmA10mL200cm
-! Generated: 2021-11-22T21:40:43.567714Z
-
-
-call, file="acc-models-lhc/toolkit/zero-strengths.madx";
-call, file="acc-models-lhc/strengths/ATS_Nominal/2022/squeeze/ats_118cm.madx";
-call, file="acc-models-lhc/toolkit/reset-bump-flags.madx";
-call, file="acc-models-lhc/toolkit/match-lumiknobs.madx";

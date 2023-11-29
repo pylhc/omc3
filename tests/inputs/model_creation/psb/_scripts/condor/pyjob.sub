@@ -1,9 +1,0 @@
-executable              = /afs/cern.ch/eng/acc-models/psb/2021/operation/tune_control/psb_tune_control_injection.py
-output                  = psb_tune_control_injection.$(ClusterId).out
-error                   = psb_tune_control_injection.$(ClusterId).err
-log                     = job.$(ClusterId).$(ProcId).log
-initial_dir             = /afs/cern.ch/eng/acc-models/psb/2021/operation/tune_control/
-transfer_input_files    = psb_tune_control_injection.madx_job, psb.beam, ../../psb.seq, ../../_scripts/macros.madx
-transfer_output_files   = output/
-+JobFlavour             = "longlunch"
-queue
