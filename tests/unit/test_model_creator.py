@@ -85,25 +85,25 @@ def test_booster_creation_nominal_free(tmp_path):
 #     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
 #
 #
-# @pytest.mark.basic
-# def test_ps_creation_nominal_free_2018(tmp_path):
-#     accel_opt = dict(
-#         accel="ps",
-#         nat_tunes=[0.21, 0.323], # from madx_job file in acc_models
-#         dpp=0.0,
-#         energy=1.4,
-#         year="2018",
-#         fetch=PATHFETCHER,
-#         path=MODEL_CREATOR_INPUT / "ps_2018",
-#         scenario="lhc_proton",
-#         cycle_point="0_injection",
-#         str_file="ps_inj_lhc.str",
-#         tune_method="qf",
-#     )
-#     accel = create_instance_and_model(
-#         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
-#     )
-#     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+@pytest.mark.basic
+def test_ps_creation_nominal_free_2018(tmp_path):
+    accel_opt = dict(
+        accel="ps",
+        nat_tunes=[0.21, 0.323], # from madx_job file in acc_models
+        dpp=0.0,
+        energy=1.4,
+        year="2018",
+        fetch=PATHFETCHER,
+        path=ROOT / "acc-models-ps-2021",
+        scenario="lhc",
+        cycle_point="0_injection",
+        str_file="ps_inj_lhc.str",
+        tune_method="qf",
+    )
+    accel = create_instance_and_model(
+        type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
 
 
 @pytest.mark.basic
