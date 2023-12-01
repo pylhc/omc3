@@ -122,7 +122,7 @@ class Psbooster(PsBase):
 
     def get_base_madx_script(self, best_knowledge=False):
         if best_knowledge:
-            raise NotImplementedError(f"Best knowledge model not implemented for accelerator {self.NAME}")
+            raise AttributeError(f"No best knowledge model for {self.NAME} (yet).")
 
         print("--- PsBooster get_base_madx_script")
         use_acd = self.excitation == AccExcitationMode.ACD
