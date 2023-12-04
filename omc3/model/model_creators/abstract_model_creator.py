@@ -24,13 +24,15 @@ def check_folder_choices(parent: Path, msg: str,
     A helper function that scans a selected folder for children, which will then be displayed as possible choices
     """
     choices = [d.name for d in parent.iterdir() if predicate(d)]
-    if selection is None or selection not in choices:
-        if list_choices:
-            for choice in choices:
-                print(choice)
-            return None
-        raise AttributeError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
-    return parent / selection
+
+    if selection is not None and selection in choices:
+        return parent / selection
+
+    if list_choices:
+        for choice in choices:
+            print(choice)
+        return None
+    raise AttributeError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
 
 
 class ModelCreator(ABC):
