@@ -124,7 +124,6 @@ class Psbooster(PsBase):
         if best_knowledge:
             raise AttributeError(f"No best knowledge model for {self.NAME} (yet).")
 
-        print("--- PsBooster get_base_madx_script")
         use_acd = self.excitation == AccExcitationMode.ACD
         replace_dict = {
             "FILES_DIR": str(self.get_dir()),
@@ -144,8 +143,6 @@ class Psbooster(PsBase):
             replace_dict["DRV_TUNE_X"] = self.drv_tunes[0]
             replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
         mask = self.get_file('base.mask').read_text()
-        print(mask)
-        print("================================================================================")
         return mask % replace_dict
 
 

@@ -25,6 +25,5 @@ class PsModelCreator(PsBaseModelCreator):
             "OUTPUT": str(accel.model_dir),
         }
         madx_template = accel.get_file("twiss.mask").read_text()
-        print(madx_template)
         madx_script += madx_template % replace_dict
         return madx_script

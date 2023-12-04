@@ -266,8 +266,6 @@ class Accelerator:
         Verifies that this instance of an `Accelerator` is properly instantiated.
         """
         # since we removed `required` args, we check here if everything has been passed
-        print("verify")
-        print(f"{self.nat_tunes}")
         if self.model_dir is None:
             if self.nat_tunes is None:
                 raise AttributeError("Natural tunes not set (missing `--nat_tunes` flag?)")
