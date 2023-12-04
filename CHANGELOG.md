@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2023-11-29 - v0.12.1 - _jdilly_
+
+- Fixed:
+ - `tbt_converter` now also passes given output format to writer when running without noise.
+
 #### 2023-11-29 - v0.12.0 - _jdilly_
 
 - Added to harmonic analysis:
