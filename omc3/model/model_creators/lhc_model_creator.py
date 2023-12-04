@@ -7,7 +7,6 @@ This module provides convenience functions for model creation of the ``LHC``.
 import logging
 import pathlib
 import shutil
-import os
 from pathlib import Path
 from typing import List
 
@@ -30,7 +29,7 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
-    PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER,
+    PATHFETCHER, AFSFETCHER,  # GITFETCHER, LSAFETCHER,
     ACCELERATOR_MODEL_REPOSITORY,
     MODIFIER_BRANCH,
 )
@@ -74,9 +73,6 @@ class LhcModelCreator(ModelCreator):
                                  "or `--fetch path --path PATH`.")
         if accel_inst.acc_model_path is None:
             return False
-
-        p = pathlib.Path()
-
 
         if opt.list_choices:
             check_folder_choices(accel_inst.acc_model_path / MODIFIER_BRANCH,
