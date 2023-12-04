@@ -46,11 +46,14 @@ class ModelCreator(ABC):
     @abstractmethod
     def get_options(cls, accel_inst: Accelerator, options) -> bool:
         """
-        Parses additional commandline options (if any)
-        Args:
-            options:
+        Parses additional commandline options (if any). To be overridden by subclasses.
+        If there are options that ask for some output print, and no valid model to be created, return False.
 
-        Returns:
+        Args:
+            options: The remaining options (e.g. if called by model_creater, those not yet consumed by
+                                            the model creator)
+
+        Returns: True if enough options are given to provide a valid model
 
         """
         return True
