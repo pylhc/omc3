@@ -1,5 +1,22 @@
 # OMC3 Changelog
 
+#### 2023-11-29 - v0.12.1 - _jdilly_
+
+- Fixed:
+ - `tbt_converter` now also passes given output format to writer when running without noise.
+
+#### 2023-11-29 - v0.12.0 - _jdilly_
+
+- Added to harmonic analysis:
+    - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file 
+    with different parameters without overwriting it.
+    - `bunch_ids` input parameter: in case of multibunch-files only analyse these bunches.
+    If not given, all bunches will be analysed, as before.
+
+#### 2023-09-20 - v0.11.4 - _fscarlier_, _awegsche_
+- Fixed:
+    - bug in beta from phase (3BPM method) that calculated too high errors for first and last BPMs
+
 #### 2023-09-20 - v0.11.3 - _jdilly_, _awegsche_
 
 - Fixed:
