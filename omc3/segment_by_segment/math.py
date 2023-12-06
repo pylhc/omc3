@@ -24,8 +24,8 @@ def propagate_error_phase(dphi: NumericOrArray, init: PropagableBoundaryConditio
             dphi (float, np.array, Series): Phase advances from initial to final positions
             init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
     """
-    alpha0, erralpha0 = init.as_tuple(init.alpha)
-    beta0, errbeta0 = init.as_tuple(init.beta)
+    alpha0, erralpha0 = init.alpha.as_tuple()
+    beta0, errbeta0 = init.beta.as_tuple()
     
     sin2phi = np.sin(4 * np.pi * dphi)
     cos2phi = np.cos(4 * np.pi * dphi)
@@ -46,8 +46,8 @@ def propagate_error_beta(beta: NumericOrArray, dphi: NumericOrArray, init: Propa
             dphi (float, np.array, Series): Phase advances from initial to final positions
             init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
     """
-    alpha0, erralpha0 = init.as_tuple(init.alpha)
-    beta0, errbeta0 = init.as_tuple(init.beta)
+    alpha0, erralpha0 = init.alpha.as_tuple()
+    beta0, errbeta0 = init.beta.as_tuple()
     
     sin2phi = np.sin(4 * np.pi * dphi)
     cos2phi = np.cos(4 * np.pi * dphi)
@@ -68,8 +68,8 @@ def propagate_error_alpha(alpha: NumericOrArray, dphi: NumericOrArray, init: Pro
            dphi (float, np.array, Series): Phase advances from initial to final positions
            init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
     """
-    alpha0, erralpha0 = init.as_tuple(init.alpha)
-    beta0, errbeta0 = init.as_tuple(init.beta)
+    alpha0, erralpha0 = init.alpha.as_tuple()
+    beta0, errbeta0 = init.beta.as_tuple()
 
     sin2phi = np.sin(4 * np.pi * dphi)
     cos2phi = np.cos(4 * np.pi * dphi)
@@ -95,8 +95,10 @@ def propagate_error_coupling_1001_re(dphix: NumericOrArray, dphiy: NumericOrArra
            dphiy (float, np.array, Series): Phase advances in y from initial to final positions
            init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
-    amp0, erramp0 = init.as_tuple(init.f1001_amplitude)
-    phase0, errphase0 = init.as_tuple(init.f1001_phase)
+    
+    amp0, erramp0 = init.f1001_amplitude.as_tuple()
+    phase0, errphase0 = init.f1001_phase.as_tuple()
+
     errphase0 = 2 * np.pi * errphase0
 
     phase = 2 * np.pi * (phase0 - dphix + dphiy)
@@ -117,8 +119,8 @@ def propagate_error_coupling_1001_im(dphix: NumericOrArray, dphiy: NumericOrArra
            dphiy (float, np.array, Series): Phase advances in y from initial to final positions
            init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
-    amp0, erramp0 = init.as_tuple(init.f1001_amplitude)
-    phase0, errphase0 = init.as_tuple(init.f1001_phase)
+    amp0, erramp0 = init.f1001_amplitude.as_tuple()
+    phase0, errphase0 = init.f1001_phase.as_tuple()
     errphase0 = 2 * np.pi * errphase0
 
     phase = 2 * np.pi * (phase0 - dphix + dphiy)
@@ -140,8 +142,8 @@ def propagate_error_coupling_1010_re(dphix: NumericOrArray, dphiy: NumericOrArra
            dphiy (float, np.array, Series): Phase advances in y from initial to final positions
            init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
     """
-    amp0, erramp0 = init.as_tuple(init.f1010_amplitude)
-    phase0, errphase0 = init.as_tuple(init.f1010_phase)
+    amp0, erramp0 = init.f1010_amplitude.as_tuple()
+    phase0, errphase0 = init.f1010_phase.as_tuple()
     errphase0 = 2 * np.pi * errphase0
 
     phase = 2 * np.pi * (phase0 - dphix - dphiy)
@@ -163,8 +165,8 @@ def propagate_error_coupling_1010_im(dphix: NumericOrArray, dphiy: NumericOrArra
            dphiy (float, np.array, Series): Phase advances in y from initial to final positions
            init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
     """
-    amp0, erramp0 = init.as_tuple(init.f1010_amplitude)
-    phase0, errphase0 = init.as_tuple(init.f1010_phase)
+    amp0, erramp0 = init.f1010_amplitude.as_tuple()
+    phase0, errphase0 = init.f1010_phase.as_tuple()
     errphase0 = 2 * np.pi * errphase0
 
     phase = 2 * np.pi * (phase0 - dphix - dphiy)
@@ -184,9 +186,9 @@ def propagate_error_dispersion(beta: NumericOrArray, dphi: NumericOrArray, init:
         dphi (float, np.array, Series): Phase advances from initial to final positions
         init (PropagableBoundaryConditions): Initial conditions for alpha and beta and the dispersion uncertainty.
     """
-    _, errdispersion0 = init.as_tuple(init.dispersion)
-    beta0, _ = init.as_tuple(init.beta)
-    alpha0, _ = init.as_tuple(init.alpha)
+    _, errdispersion0 = init.dispersion.as_tuple()
+    beta0, _ = init.beta.as_tuple()
+    alpha0, _ = init.alpha.as_tuple()
 
     res = np.abs(
         errdispersion0 * np.sqrt(beta / beta0) * 

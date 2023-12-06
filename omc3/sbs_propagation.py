@@ -312,6 +312,7 @@ def _copy_needed_model_files(model_dir: Path, output_dir: Path) -> None:
         output_dir (Path): Path to the output directory.
     """
     LOGGER.debug("Copying model files...")
+    output_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy(model_dir / TWISS_ELEMENTS_DAT, output_dir / TWISS_ELEMENTS_DAT)
     for file in model_dir.glob("*"):
         if file.name.startswith(ACC_MODELS_PREFIX) or file.name == MACROS_DIR:

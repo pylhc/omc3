@@ -19,7 +19,7 @@ from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import ALPHA, BETA, ERR, NAME, PHASE, PHASE_ADV, S
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
-from omc3.segment_by_segment.definitions import PropagableColumns as Columns, BoundaryConditions
+from omc3.segment_by_segment.definitions import Measurement, PropagableColumns as Columns, PropagableBoundaryConditions as BoundaryConditions
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -82,15 +82,15 @@ class Propagable(ABC):
     def _init_start(self, plane: str) -> BoundaryConditions:
         """Get the start condition for all propagables at the given plane."""
         return BoundaryConditions(
-            *AlphaPhase.get_at(self._segment.start, self._meas, plane),
-            *BetaPhase.get_at(self._segment.start, self._meas, plane)
+            alpha=Measurement(*AlphaPhase.get_at(self._segment.start, self._meas, plane)),
+            beta=Measurement(*BetaPhase.get_at(self._segment.start, self._meas, plane))
         )
     
     def _init_end(self, plane: str) -> BoundaryConditions:
         """Get the end condition  for all propagables at the given plane."""
         return BoundaryConditions(
-            *AlphaPhase.get_at(self._segment.end, self._meas, plane),
-            *BetaPhase.get_at(self._segment.end, self._meas, plane)
+            alpha=Measurement(*AlphaPhase.get_at(self._segment.end, self._meas, plane)),
+            beta=Measurement(*BetaPhase.get_at(self._segment.end, self._meas, plane))
         )
     
 
@@ -263,18 +263,18 @@ class Phase(Propagable):
             propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
             return propagated_phase, propagated_err
 
-    def _compute_corrected(self, plane, seg_model, seg_model_corr):
+    def _compute_corrected(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame):
         """Compute the difference between the nominal and the corrected model."""
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
         corrected_phase = seg_model_corr.loc[:, f"{PHASE_ADV}{plane}"]
-        init_condition = self.beta0[plane], self.errbeta0[plane], self.alpha0[plane], self.erralpha0[plane]
+        init_condition = self._init_start(plane)
         if not self._segment.element:
             phase_beating = (corrected_phase - model_phase) % 1.
-            propagated_err = math.propagate_error_phase(model_phase, *init_condition)
+            propagated_err = math.propagate_error_phase(model_phase, init_condition)
             return phase_beating, propagated_err
         else:
             propagated_phase = model_phase.iloc[0]
-            propagated_err = math.propagate_error_phase(propagated_phase, *init_condition)
+            propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
             return propagated_phase, propagated_err
 
 
@@ -309,10 +309,10 @@ class BetaPhase(Propagable):
     def add_differences(self, segment_diffs: SegmentDiffs):
         pass
 
-    def _compute_measured(self, plane, seg_model):
+    def _compute_measured(self, plane: str, seg_model: pd.DataFrame, direction: int):
         model_beta = seg_model.loc[:, f"{BETA}{plane}"]
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
-        init_condition = self.beta0[plane], self.errbeta0[plane], self.alpha0[plane], self.erralpha0[plane]
+        init_condition = self._init_start(plane) if direction == 1 else self._init_end(plane)
         if not self._segment.element:
             beta, err_beta = BetaPhase.get_at(slice(None), self._meas, plane)
 
@@ -326,12 +326,12 @@ class BetaPhase(Propagable):
 
             # propagate the error
             err_beta = err_beta / model_beta
-            propagated_err = math.propagate_error_beta(model_beta, model_phase, *init_condition)
+            propagated_err = math.propagate_error_beta(model_beta, model_phase, init_condition)
             total_err = _quadratic_add(err_beta, propagated_err)
             return beta_beating, total_err
         else:
             prop_beta = model_beta.iloc[0]
-            propagated_err = math.propagate_error_beta(prop_beta, model_phase.iloc[0], *init_condition)
+            propagated_err = math.propagate_error_beta(prop_beta, model_phase.iloc[0], init_condition)
             return prop_beta, propagated_err
 
 
@@ -343,9 +343,9 @@ class AlphaPhase(Propagable):
     @classmethod
     def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
         c = cls.columns.planed(plane)
-        beta = meas.beta_phase[plane].loc[names, c.column]
+        alpha = meas.beta_phase[plane].loc[names, c.column]
         error = meas.beta_phase[plane].loc[names, c.error_column]
-        return beta, error
+        return alpha, error
 
     @cache
     def measured_forward(self, plane):
