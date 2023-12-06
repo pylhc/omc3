@@ -94,6 +94,12 @@ def model_inj_beam2(request, tmp_path_factory):
     return tmp_model(tmp_path_factory, beam=2, id_='inj')
 
 
+@pytest.fixture(scope="module", params=[1, 2])
+def model_25cm_beams(request, tmp_path_factory):
+    """ Fixture for inj model for both beams"""
+    return tmp_model(tmp_path_factory, beam=request.param, id_='25cm')
+
+
 @pytest.fixture(scope="module")
 def model_25cm_beam1(request, tmp_path_factory):
     """ Fixture for 25cm beam 1 model"""

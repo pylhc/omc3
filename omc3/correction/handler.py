@@ -5,7 +5,6 @@ Handler
 This module contains high-level functions to manage most functionality of the corrections calculations.
 """
 import datetime
-import os
 import time
 from pathlib import Path
 from typing import Callable, Dict, List, Sequence, Tuple, Union
@@ -16,21 +15,24 @@ import tfs
 from generic_parser import DotDict
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
-import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
-from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, F1001,
-                                                F1010, NORM_DISPERSION, PHASE, TUNE,
-                                                DISPERSION_NAME, EXT, REAL, IMAG,
-                                                NORM_DISP_NAME, PHASE_NAME, NAME
-                                                )
-from omc3.correction.constants import ERROR, VALUE, WEIGHT, DIFF
+from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.model_creators.lhc_model_creator import LhcCorrectionModelCreator
+from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
+                                                F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
+                                                PHASE, PHASE_NAME, TUNE)
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
 
 LOG = logging_tools.get_logger(__name__)
+
+
+CORRECTION_MODEL_CREATORS = {
+    "lhc": LhcCorrectionModelCreator,
+}
 
 
 def correct(accel_inst: Accelerator, opt: DotDict) -> None:
@@ -76,7 +78,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             LOG.debug("Updating model via MADX.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst)
+            corr_model_elements = create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
@@ -213,17 +215,14 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _create_corrected_model(twiss_out: Union[Path, str], change_params: Sequence[Path], accel_inst: Accelerator) -> tfs.TfsDataFrame:
+def create_corrected_model(twiss_out: Union[Path, str], change_params: Sequence[Path], accel_inst: Accelerator) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params)
-    twiss_out_path = Path(twiss_out)
-    madx_script = f"! Based on model '{accel_inst.model_dir}'\n" + madx_script
-    madx_wrapper.run_string(
-        madx_script,
-        output_file=twiss_out_path.parent / f"job.create_{twiss_out_path.stem}.madx",
-        log_file=twiss_out_path.parent / f"job.create_{twiss_out_path.stem}.log",
-        cwd=accel_inst.model_dir,  # models are always run from there
+    model_creator = CORRECTION_MODEL_CREATORS[accel_inst.NAME](
+        accel=accel_inst, 
+        twiss_out=twiss_out, 
+        change_params=change_params,
     )
+    model_creator.full_run()
     return tfs.read(twiss_out, index=NAME)
 
 

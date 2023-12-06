@@ -30,3 +30,4 @@ B2_ERRORS_TFS = "b2_errors.tfs"
 PLANE_TO_HV = dict(X="H", Y="V")
 
 ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models/lhc")
+ACC_MODELS_PREFIX = "acc-models"

@@ -76,3 +76,4 @@ ERR_CALIBRATION = "ERROR_CALIBRATION"
 # Headers ----------------------------------------------------------------------
 RESCALE_FACTOR: str = "RescalingFactor"
 BPM_RESOLUTION: str = "BPMResolution"
+MODEL_DIRECTORY: str = "Model_directory"   # wish this was 'ModelDirectory' but too afraid to change it (jdilly 2023)

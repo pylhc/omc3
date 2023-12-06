@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from typing import Any, Union
 
-from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
+from generic_parser.entry_datatypes import DictAsString, get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
 from tfs import TfsDataFrame
 
@@ -81,7 +81,7 @@ class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
 
 
 class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path, str)):
-    """A class that behaves like a Path when possible, otherwise like a string."""
+    """A class that behaves like a Path when possible, otherwise maybe a TfsDataFrame, otherwise like a string."""
     def __new__(cls, value):
         value = strip_quotes(value)
         try:
@@ -92,7 +92,27 @@ class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path,
         try:
             return TfsDataFrame(value)
         except TypeError:
-            return value
+            pass
+        
+        return value
+
+
+class PathOrStrOrDict(metaclass=get_instance_faker_meta(dict, Path, str)):
+    """A class that tries to parse/behaves like a dict when possible, 
+    otherwise either like a Path or like a string."""
+    def __new__(cls, value):
+        value = strip_quotes(value)
+        try:
+            return DictAsString(value)
+        except ValueError:
+            pass
+
+        try:
+            return Path(value)
+        except TypeError:
+            pass
+
+        return value 
 
 
 class UnionPathStr(metaclass=get_instance_faker_meta(Path, str)):
