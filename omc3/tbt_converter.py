@@ -126,6 +126,7 @@ def _read_and_write_files(opt):
             if opt.noise_levels is None:
                 tbt.write(
                     Path(opt.outputdir) / f"{_file_name_without_sdds(input_file)}{suffix}",
+                    datatype=opt.output_datatype,
                     tbt_data=tbt_data,
                 )
             else:
