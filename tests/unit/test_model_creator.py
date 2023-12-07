@@ -299,7 +299,7 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
 # Helper -----------------------------------------------------------------------
 
 
-def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, required_keys):
+def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, required_keys, best_knowledge=False):
     # creation via model_from_dir tests that all files are in place:
     accel_from_dir = get_accelerator(
         accel=accel_options["accel"],
@@ -313,11 +313,19 @@ def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, re
     assert accel_from_opt.excitation == accel_from_dir.excitation
     assert accel_from_opt.model_dir == accel_from_dir.model_dir
 
+    if best_knowledge:
+        assert accel_from_dir.model_best_knowledge is not None
+
+        beta_model = accel_from_dir.model["BETX"]
+        beta_bk = accel_from_dir.model_best_knowledge["BETX"]
+
+        _check_arrays(beta_model, beta_bk, eps=1e-4, is_close=False)
+
     # TODO: Energy not set in model ? (jdilly, 2021)
     # assert abs(accel_from_opt.energy - accel_from_dir.energy) < 1e-2
 
 
-def _check_arrays(a_array, b_array, eps=None, tunes=False):
+def _check_arrays(a_array, b_array, eps=None, tunes=False, is_close=True):
     if a_array is None:
         a_array = []
 
@@ -329,8 +337,8 @@ def _check_arrays(a_array, b_array, eps=None, tunes=False):
 
     for a, b in zip(a_array, b_array):
         if eps is None:
-            assert a == b
+            assert (a == b) == is_close
         elif tunes:
-            assert abs((a % 1) - (b % 1)) <= eps
+            assert (abs((a % 1) - (b % 1)) <= eps) == is_close
         else:
-            assert abs(a - b) <= eps
+            assert (abs(a - b) <= eps) == is_close
