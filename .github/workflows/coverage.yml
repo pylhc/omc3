@@ -36,14 +36,6 @@ jobs:
       - name: Install package
         run: python -m pip install '.[test]'
 
-      - name: Clone acc-models
-        run: |
-          git clone -b 2023 https://gitlab.cern.ch/acc-models/acc-models-lhc.git acc-models-lhc-2023
-          git clone -b 2022 https://gitlab.cern.ch/acc-models/acc-models-lhc.git acc-models-lhc-2022
-          git clone -b 2018 https://gitlab.cern.ch/acc-models/acc-models-lhc.git acc-models-lhc-2018
-          git clone -b 2021 https://gitlab.cern.ch/acc-models/acc-models-psb.git acc-models-psb-2021
-          git clone -b 2021 https://gitlab.cern.ch/acc-models/acc-models-ps.git acc-models-ps-2021
-
       - name: Set up env for CodeClimate (push)
         run: |
           echo "GIT_BRANCH=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_ENV

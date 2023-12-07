@@ -147,8 +147,8 @@ class Ps(PsBase):
             "ACC_MODELS_DIR": self.acc_model_path,
             "BEAM_FILE": self.beam_file,
             "STR_FILE": self.str_file,
-            "DRV_TUNE_X": "",
-            "DRV_TUNE_Y": "",
+            "DRV_TUNE_X": "0",
+            "DRV_TUNE_Y": "0",
             "MODIFIERS": "",
             "USE_MACROS": "0" if self.year == "2018" else "1",  # 2018 doesn't provide a macros file
             "PS_TUNE_METHOD": self.tune_method,

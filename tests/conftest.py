@@ -11,6 +11,7 @@ import string
 import sys
 from contextlib import contextmanager
 from pathlib import Path
+import git
 
 import pytest
 
@@ -137,3 +138,31 @@ def tmp_model(factory, beam: int, id_: str):
         energy=0.45 if id_ == 'inj' else 6.5,
         driven_excitation=None if id_ == 'inj' else 'acd'
     )
+
+
+GITLAB_REPO_ACC_MODELS = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
+
+@pytest.fixture(scope="session")
+def acc_models_lhc_2023(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "lhc", 2023)
+
+@pytest.fixture(scope="session")
+def acc_models_lhc_2022(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "lhc", 2022)
+
+@pytest.fixture(scope="session")
+def acc_models_lhc_2018(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "lhc", 2018)
+
+@pytest.fixture(scope="session")
+def acc_models_psb_2021(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "psb", 2021)
+
+@pytest.fixture(scope="session")
+def acc_models_ps_2021(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "ps", 2021)
+
+def acc_models_lhc(tmp_path_factory, accel: str, year: int):
+    tmp_path = tmp_path_factory.mktemp(f"acc-models-{accel}-{year}")
+    git.Repo.clone_from(GITLAB_REPO_ACC_MODELS.format(accel), tmp_path, branch=str(year)) 
+    return tmp_path
