@@ -32,11 +32,10 @@ from omc3.model.constants import (
     PATHFETCHER, AFSFETCHER,  # GITFETCHER, LSAFETCHER,
     ACCELERATOR_MODEL_REPOSITORY,
     MODIFIER_BRANCH,
+    B2_ERRORS_ROOT,
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import iotools
-
-B2_ERRORS_ROOT = pathlib.Path("/afs/cern.ch/eng/sl/lintrack/error_tables/")
 
 LOGGER = logging.getLogger(__name__)
 

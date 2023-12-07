@@ -39,3 +39,5 @@ PLANE_TO_HV = dict(X="H", Y="V")
 
 ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models")
 MODIFIER_BRANCH = "operation/optics"
+
+B2_ERRORS_ROOT = Path("/afs/cern.ch/eng/sl/lintrack/error_tables/")
