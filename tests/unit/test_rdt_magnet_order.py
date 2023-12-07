@@ -139,8 +139,6 @@ def test_optics_default_rdt_order(tmp_path):
     model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
-    print(tmp_path)
-
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
     hole_in_one_entrypoint(harpy=True,
@@ -166,7 +164,6 @@ def test_optics_default_rdt_order(tmp_path):
 
     # Now check that we got the wanted directories and nothing more
     rdt_dirs = os.listdir(os.path.join(tmp_path, 'rdt'))
-    print(rdt_dirs)
     assert len(rdt_dirs) == 6
 
     magnets = 'quadrupole', 'sextupole', 'octupole'
