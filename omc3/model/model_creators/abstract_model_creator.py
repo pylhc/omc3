@@ -22,6 +22,28 @@ def check_folder_choices(parent: Path, msg: str,
                           predicate=always_true) -> Path:
     """
     A helper function that scans a selected folder for children, which will then be displayed as possible choices
+    
+    Args:
+        parent (Path): The folder to scan
+        msg (str): The message to display, on failure
+        selection (str): The current selection
+        list_choices (bool): Whether to just list the choices. In that case `None` is returned, instead
+        of an error
+        predicate (callable): A function that takes a path and returns True if the path results in
+        a valid choice
+
+    Examples:
+        Let's say we expect a choice for a sequence file in the folder `model_root`.
+
+        ```
+        check_folder_choices(model_root, "Expected sequence file", predicate=lambda p: p.suffix == ".seq")
+        ```
+
+        Or we want all subfolder of `scenarios`
+
+        ```
+        check_folder_choices(scenarios, "Expected scenario folder", predicate=lambda p: p.is_dir())
+        ```
     """
     choices = [d.name for d in parent.iterdir() if predicate(d)]
 
