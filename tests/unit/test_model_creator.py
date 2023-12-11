@@ -10,13 +10,10 @@ from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator,
 from omc3.model_creator import create_instance_and_model
 
 INPUTS = Path(__file__).parent.parent / "inputs"
-COMP_MODEL = INPUTS / "models" / "25cm_beam1"
-CODEBASE_PATH = Path(__file__).parent.parent.parent / "omc3"
-PS_MODEL = CODEBASE_PATH / "model" / "accelerators" / "ps"
-
 LHC_30CM_MODIFIERS = [Path("R2023a_A30cmC30cmA10mL200cm.madx")]
 HIGH_BETA_MODIFIERS = [Path("R2018h_A90mC90mA10mL10m.madx")]
 
+# ---- creation tests ------------------------------------------------------------------------------
 
 @pytest.mark.basic
 def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
@@ -295,9 +292,104 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
         if file_path_moved.exists():
             shutil.move(file_path_moved, file_path)
 
+# ---- cli tests -----------------------------------------------------------------------------------
 
-# Helper -----------------------------------------------------------------------
+@pytest.mark.basic
+def test_lhc_creator_cli(tmp_path, acc_models_lhc_2023, capsys):
 
+    accel_opt = dict(
+        accel="lhc",
+        year="2023",
+        ats=True,
+        beam=1,
+        nat_tunes=[0.31, 0.32],
+        dpp=0.0,
+        energy=6800.0,
+        fetch=PATHFETCHER,
+        path=acc_models_lhc_2023,
+        list_choices=True,
+    )
+    create_instance_and_model(
+        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+
+    output = capsys.readouterr().out
+    modifiers = output.split("\n")
+    modifiers = [m for m in modifiers if len(m) > 0]  # remove empty lines
+
+    # let's check that we got modifiers (we must, since `acc_models_lhc_2023` is pointing to a valid
+    # acc-models directory)
+    assert len(modifiers) > 0
+
+    # furthermore, all of the returned filenames must be `.madx` files
+    for m in modifiers:
+        assert m.endswith(".madx")
+
+@pytest.mark.basic
+def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
+    accel_opt = dict(
+        accel="psbooster",
+        ring=1,
+        nat_tunes=[0.28, 0.45],
+        drv_tunes=[0.205, 0.274],
+        driven_excitation="acd",
+        dpp=0.0,
+        energy=0.16,
+        modifiers=None,
+        fetch=PATHFETCHER,
+        path=acc_models_psb_2021,
+        scenario="lhc",
+        list_choices=True,
+    )
+
+    create_instance_and_model(
+        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+
+    output = capsys.readouterr().out
+    cycle_points = output.split("\n")
+    cycle_points = [c for c in cycle_points if len(c) > 0]  # remove empty lines
+    cycle_points.sort()
+
+    assert cycle_points == [
+        "0_injection",
+        "1_flat_bottom",
+        "2_flat_top",
+        "3_extraction",
+    ]
+
+@pytest.mark.basic
+def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
+    accel_opt = dict(
+        accel="ps",
+        nat_tunes=[0.21, 0.323], # from madx_job file in acc_models
+        dpp=0.0,
+        energy=1.4,
+        year="2018",
+        fetch=PATHFETCHER,
+        path=acc_models_ps_2021,
+        scenario="lhc",
+        tune_method="pfw",
+        list_choices=True,
+    )
+    create_instance_and_model(
+        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+
+    output = capsys.readouterr().out
+    cycle_points = output.split("\n")
+    cycle_points = [c for c in cycle_points if len(c) > 0]  # remove empty lines
+    cycle_points.sort()
+
+    assert cycle_points == [
+        "0_injection",
+        "1_flat_bottom",
+        "2_flat_top",
+        "3_extraction",
+        "4_flat_bottom_wo_QDN90",
+    ]
+
+# ---- helper --------------------------------------------------------------------------------------
 
 def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, required_keys, best_knowledge=False):
     # creation via model_from_dir tests that all files are in place:
