@@ -48,10 +48,6 @@ def _b2_columns() -> List[str]:
     return cols_outer[:42] + cols_middle + cols_outer[42:]
 
 
-def is_folder(path: Path) -> bool:
-    return path.is_dir()
-
-
 class LhcModelCreator(ModelCreator):
     acc_model_name = "lhc"
 
@@ -64,7 +60,7 @@ class LhcModelCreator(ModelCreator):
                                                              "No optics tag (flag --year) given",
                                                              accel_inst.year,
                                                              opt.list_choices,
-                                                             is_folder)
+                                                             lambda path: path.is_dir())
         else:
             raise AttributeError(f"{accel_inst.NAME} model creation requires one of the following fetchers: "
                                  f"[{PATHFETCHER}, {AFSFETCHER}]. "

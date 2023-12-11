@@ -1,5 +1,6 @@
 import os
 import shutil
+import copy
 from pathlib import Path
 
 import pytest
@@ -8,10 +9,12 @@ from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_E
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
+from omc3.model.model_creators.lhc_model_creator import LhcModelCreator
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 LHC_30CM_MODIFIERS = [Path("R2023a_A30cmC30cmA10mL200cm.madx")]
 HIGH_BETA_MODIFIERS = [Path("R2018h_A90mC90mA10mL10m.madx")]
+UNAVAILABLE_FETCHER = "unavailable_fetcher"
 
 # ---- creation tests ------------------------------------------------------------------------------
 
@@ -36,6 +39,23 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
+
+    # now check a few error cases
+
+    accel_opt_duplicate = accel_opt.copy()
+    accel_opt_duplicate["scenario"] = None
+    with pytest.raises(AttributeError):
+        create_instance_and_model(
+            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+        )
+
+    accel_opt_duplicate = accel_opt.copy()
+    accel_opt_duplicate["str_file"] = None
+    with pytest.raises(AttributeError):
+        create_instance_and_model(
+            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+        )
+
 
 @pytest.mark.basic
 def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
@@ -101,6 +121,14 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
 
+    accel_opt_duplicate = accel_opt.copy()
+    accel_opt_duplicate["energy"] = None
+
+    with pytest.raises(RuntimeError):
+        create_instance_and_model(
+            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+        )
+
 
 @pytest.mark.basic
 def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
@@ -121,6 +149,23 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+
+    # checks that should fail
+
+    with pytest.raises(AcceleratorDefinitionError):
+        accel_duplicate = copy.deepcopy(accel)
+        accel_duplicate.model_dir = None
+        LhcModelCreator.check_accelerator_instance(accel_duplicate)
+
+    with pytest.raises(AcceleratorDefinitionError):
+        accel_duplicate = copy.deepcopy(accel)
+        accel_duplicate.modifiers = None
+        LhcModelCreator.check_accelerator_instance(accel_duplicate)
+
+    with pytest.raises(AttributeError):
+        create_instance_and_model(
+            type="nominal", outputdir=None, logfile=tmp_path / "madx_log.txt", **accel_opt
+        )
 
 
 @pytest.mark.basic
@@ -338,9 +383,28 @@ def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
         modifiers=None,
         fetch=PATHFETCHER,
         path=acc_models_psb_2021,
-        scenario="lhc",
         list_choices=True,
     )
+
+    create_instance_and_model(
+        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+
+    output = capsys.readouterr().out
+    scenarios = output.split("\n")
+    scenarios = [c for c in scenarios if len(c) > 0]  # remove empty lines
+    scenarios.sort()
+
+    assert scenarios == [
+        "ad",
+        "east",
+        "isolde",
+        "lhc",
+        "sftpro",
+        "tof"
+    ]
+
+    accel_opt["scenario"] = "lhc"
 
     create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
