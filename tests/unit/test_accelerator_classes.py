@@ -41,7 +41,7 @@ def test_psbase_best_knowledge():
             tune_method="qf"
             )
 
-    with pytest.raises(AttributeError) as error:
+    with pytest.raises(AttributeError):
         _ = accel.get_base_madx_script(best_knowledge=True)
 
     accel = Psbooster(
@@ -52,7 +52,7 @@ def test_psbase_best_knowledge():
             ring=1,
             )
 
-    with pytest.raises(AttributeError) as error:
+    with pytest.raises(AttributeError):
         _ = accel.get_base_madx_script(best_knowledge=True)
 
 @pytest.mark.basic
