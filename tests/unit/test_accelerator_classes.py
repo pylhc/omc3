@@ -2,10 +2,11 @@ import pytest
 from pathlib import Path
 
 from tfs import TfsDataFrame
-from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.accelerators.ps import Ps
 from omc3.model.accelerators.psbooster import Psbooster
+from omc3.model.accelerators.skekb import SKekB
 
 INPUTS = Path(__file__).parent.parent / 'inputs'
 MODEL_INJ_BEAM1 = INPUTS / "models" / "2022_inj_b1_adt"
@@ -28,7 +29,6 @@ def test_lhc_adt_b2():
 
     _check_exciter_bpm_detection(accel, "X", "BPMWA.B5R4.B2", "BPMWA.A5R4.B2")
     _check_exciter_bpm_detection(accel, "Y", "BPMWA.B5L4.B2", "BPMWA.A5L4.B2")
-
 
 @pytest.mark.basic
 def test_psbase_best_knowledge():
@@ -54,6 +54,16 @@ def test_psbase_best_knowledge():
 
     with pytest.raises(AttributeError) as error:
         _ = accel.get_base_madx_script(best_knowledge=True)
+
+@pytest.mark.basic
+def test_skekb():
+
+    accel = SKekB(ring="ler")
+    assert accel.ring == "ler"
+
+    # try invalid value
+    with pytest.raises(AcceleratorDefinitionError):
+        accel.ring = "Beam1"
 
 
 # ---- Helper function -----------------------------------------------------------------------------
