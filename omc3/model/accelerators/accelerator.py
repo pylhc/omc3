@@ -374,6 +374,9 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> List[Path]:
         job_madx = job_file.read_text()
 
         # find modifier tag in lines and return called file in these lines
+        # the modifier tag is used by the model creator to mark which line defines modifiers
+        # see e.g. `get_base_madx_script()` in `lhc.py`
+        # example for a match to the regex: `call, file = 'modifiers.madx'; MODIFIER_TAG`
         modifiers = re.findall(
             fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
             job_madx,
