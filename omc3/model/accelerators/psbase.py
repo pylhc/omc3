@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from generic_parser import DotDict
 
 from omc3.model.accelerators.accelerator import Accelerator

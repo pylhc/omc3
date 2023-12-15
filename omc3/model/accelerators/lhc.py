@@ -180,13 +180,6 @@ class Lhc(Accelerator):
         if self.model_dir is None and self.xing is None:
             raise AcceleratorDefinitionError("Crossing on or off not set.")
 
-        if self.excitation is None:
-            raise AcceleratorDefinitionError("Excitation mode not set.")
-        if (self.excitation != AccExcitationMode.FREE) and (self.drv_tunes is None):
-            raise AcceleratorDefinitionError(
-                "An excitation mode was given but driven tunes are not set."
-            )
-
         # TODO: write more output prints
         LOGGER.debug(
             "... verification passed. \nSome information about the accelerator:"

@@ -30,9 +30,9 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
     PATHFETCHER, AFSFETCHER,  # GITFETCHER, LSAFETCHER,
-    ACCELERATOR_MODEL_REPOSITORY,
-    MODIFIER_BRANCH,
-    B2_ERRORS_ROOT,
+    AFS_ACCELERATOR_MODEL_REPOSITORY,
+    MODIFIER_SUBDIR,
+    AFS_B2_ERRORS_ROOT,
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import iotools
@@ -56,7 +56,7 @@ class LhcModelCreator(ModelCreator):
         if opt.fetch == PATHFETCHER:
             accel_inst.acc_model_path = Path(opt.path)
         elif opt.fetch == AFSFETCHER:
-            accel_inst.acc_model_path = check_folder_choices(ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
+            accel_inst.acc_model_path = check_folder_choices(AFS_ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
                                                              "No optics tag (flag --year) given",
                                                              accel_inst.year,
                                                              opt.list_choices,
@@ -70,7 +70,7 @@ class LhcModelCreator(ModelCreator):
             return False
 
         if opt.list_choices:
-            check_folder_choices(accel_inst.acc_model_path / MODIFIER_BRANCH,
+            check_folder_choices(accel_inst.acc_model_path / MODIFIER_SUBDIR,
                                  "No modifier given",
                                  None,
                                  True,
@@ -143,8 +143,8 @@ class LhcModelCreator(ModelCreator):
         if accel.b2_errors is not None:
             LOGGER.debug("copying B2 error tables")
 
-            b2_error_path = B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.errors"
-            b2_madx_path = B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.madx"
+            b2_error_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.errors"
+            b2_madx_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.madx"
             shutil.copy(
                 b2_madx_path,
                 accel.model_dir / B2_SETTINGS_MADX,
@@ -205,7 +205,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     def get_options(cls, accel_inst, opt) -> bool:
 
         if accel_inst.list_b2_errors:
-            errors_dir = B2_ERRORS_ROOT / f"Beam{accel_inst.beam}"
+            errors_dir = AFS_B2_ERRORS_ROOT / f"Beam{accel_inst.beam}"
             for d in errors_dir.iterdir():
                 if d.suffix==".errors" and d.name.startswith("MB2022"):
                     print(d.stem)

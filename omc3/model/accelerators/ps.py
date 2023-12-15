@@ -69,11 +69,13 @@ from omc3.model.accelerators.psbase import PsBase
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent
 
+# tune matching methods
+# check `ps/base.madx`
 TUNE_METHODS = {
-    "qf": 1,
-    "pfw": 2,
-    "bh": 3,
-    "f8l": 4,
+    "qf": 1,  # main quadrupoles (low energy quads)
+    "pfw": 2,  # pole face windings
+    "bh": 3,  # combined function magnet quadrupole
+    "f8l": 4,  # figure of eight loop
 }
 
 class Ps(PsBase):

@@ -121,6 +121,8 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
 
+    # the PS acc-models repo doesn't provide `.beam` files, that could be used to extract the
+    # energy settings for each scenario automatically. So we rely on te user to specify this
     accel_opt_duplicate = accel_opt.copy()
     accel_opt_duplicate["energy"] = None
 

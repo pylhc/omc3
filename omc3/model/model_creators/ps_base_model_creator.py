@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-#
 import os
 from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.accelerators.psbooster import Psbooster
-from omc3.model.constants import (ACCELERATOR_MODEL_REPOSITORY, AFSFETCHER,
+from omc3.model.constants import (AFS_ACCELERATOR_MODEL_REPOSITORY, AFSFETCHER,
                                   PATHFETCHER)
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import logging_tools
@@ -32,7 +30,7 @@ class PsBaseModelCreator(ModelCreator):
         if opt.fetch == PATHFETCHER:
             accel_inst.acc_model_path = Path(opt.path)
         elif opt.fetch == AFSFETCHER:
-            accel_inst.acc_model_path = check_folder_choices(ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
+            accel_inst.acc_model_path = check_folder_choices(AFS_ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
                                                               "No optics tag (flag --year) given",
                                                               accel_inst.year,
                                                               opt.list_choices)

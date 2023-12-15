@@ -32,6 +32,7 @@ def test_lhc_adt_b2():
 
 @pytest.mark.basic
 def test_psbase_best_knowledge():
+    # PS and Booster don't have best knowledge models (yet)
 
     accel = Ps(
             year="2021",
