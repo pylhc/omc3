@@ -194,13 +194,15 @@ class Accelerator:
             self.model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
 
         # Base Model ########################################
-        if self.REPOSITORY is not None and Path(model_dir / self.REPOSITORY).is_dir():
+        if self.REPOSITORY is not None:
             acc_models = model_dir / self.REPOSITORY
-            if acc_models.exists():
+
+            if acc_models.is_dir():
                 if acc_models.is_symlink():
                     self.acc_model_path = Path(os.readlink(acc_models)).absolute()
                 else:
                     self.acc_model_path = acc_models
+            # else this wasn't an acc-models based model
 
         # Modifiers #########################################
         self.modifiers = _get_modifiers_from_modeldir(model_dir)
