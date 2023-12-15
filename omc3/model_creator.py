@@ -11,7 +11,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, MODIFIER_BRANCH
+from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, MODIFIER_SUBDIR
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
@@ -202,11 +202,11 @@ def _find_modifier(modifier, accel_inst: Accelerator):
 
     # and last case, try to find it in the acc-models rep
     if accel_inst.acc_model_path is not None:
-        modifier_path = accel_inst.acc_model_path / MODIFIER_BRANCH / modifier
+        modifier_path = accel_inst.acc_model_path / MODIFIER_SUBDIR / modifier
         if modifier_path.exists():
             return modifier_path.absolute()
 
-    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}/{MODIFIER_BRANCH}")
+    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}/{MODIFIER_SUBDIR}")
 
 
 if __name__ == "__main__":
