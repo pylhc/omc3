@@ -35,8 +35,8 @@ def _get_params():
 @entrypoint(_get_params())
 def get_accelerator(opt, other_opt) -> Accelerator:
     """
-    Returns (accel, help_requested):
-        `accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.
+    Returns (opt.accel, help_requested):
+        `opt.accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.
         `help_requested` is a boolean stating if help was requested at any point
 
     """
