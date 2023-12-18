@@ -129,10 +129,11 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
     accel_opt_duplicate = accel_opt.copy()
     accel_opt_duplicate["energy"] = None
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError) as excinfo:
         create_instance_and_model(
             type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
         )
+    assert "Please provide the --energy ENERGY flag" in str(excinfo.value)
 
 
 @pytest.mark.basic
@@ -157,15 +158,17 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
 
     # checks that should fail
 
-    with pytest.raises(AcceleratorDefinitionError):
+    with pytest.raises(AcceleratorDefinitionError) as excinfo:
         accel_duplicate = copy.deepcopy(accel)
         accel_duplicate.model_dir = None
         LhcModelCreator.check_accelerator_instance(accel_duplicate)
+    assert "model directory (outputdir option) was not given" in str(excinfo.value)
 
-    with pytest.raises(AcceleratorDefinitionError):
+    with pytest.raises(AcceleratorDefinitionError) as excinfo:
         accel_duplicate = copy.deepcopy(accel)
         accel_duplicate.modifiers = None
         LhcModelCreator.check_accelerator_instance(accel_duplicate)
+    assert "no modifiers could be found" in str(excinfo.value)
 
     with pytest.raises(AttributeError):
         create_instance_and_model(
