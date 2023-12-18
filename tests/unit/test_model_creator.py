@@ -77,7 +77,10 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
 
-# ps tune matching fails for 2018 optics TODO: check with PS expert
+# # ps tune matching fails for 2018 optics
+# # The magnets used for the different tune matching methods in > 2018 were installed in LS2. 
+# # TODO: check with PS expert a) if model creation <= 2018 is desired and b) how it worked
+#
 # @pytest.mark.basic
 # def test_ps_creation_nominal_driven_2018(tmp_path):
 #     accel_opt = dict(
