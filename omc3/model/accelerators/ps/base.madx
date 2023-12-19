@@ -1,0 +1,148 @@
+title, "PS model by OMC3 model creator";
+
+// -------------------------------------------------------------------------------------------------
+// ---- Macros, TODO: move into macros.madx --------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+
+ps_tune_matching_method = %(PS_TUNE_METHOD)s;
+
+find_integer_tunes(qx, qy): macro = {
+twiss;
+int_qx = floor(table(summ, q1));
+int_qy = floor(table(summ, q2));
+total_qx = int_qx + qx;
+total_qy = int_qy + qy;
+}
+
+// low energy quads (leq) --------------------------------------------------------------------------
+
+tune_matching_method1(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
+  match, sequence=ps;
+    vary, name = kf;
+    vary, name = kd;
+    !constraint, expr = table(summ,Q1)  = qx;
+    !constraint, expr = table(summ,Q2)  = qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
+    jacobian,calls=50000,bisec=3, tolerance = 1E-15;
+  endmatch;
+};
+
+// combined function magnet components -------------------------------------------------------------
+
+// pole face windings
+tune_matching_method2(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
+  match, sequence=ps;
+    vary, name = k1prpfwf;
+    vary, name = k1prpfwd;
+    !constraint, expr = table(summ,Q1)  = qx;
+    !constraint, expr = table(summ,Q2)  = qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
+    jacobian,calls=50000,bisec=3, tolerance = 1E-15;
+  endmatch;
+};
+
+// actual quad of combined function magnets
+tune_matching_method3(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
+  match, sequence=ps;
+    vary, name = k1prbhf;
+    vary, name = k1prbhd;
+    !constraint, expr = table(summ,Q1)  = qx;
+    !constraint, expr = table(summ,Q2)  = qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
+    jacobian,calls=50000,bisec=3, tolerance = 1E-15;
+  endmatch;
+};
+
+// figure 8 loop
+tune_matching_method4(qx, qy): macro = {
+  exec, find_integer_tunes(qx,qy);
+  match, sequence=ps;
+    vary, name = k1prf8l;
+    !constraint, expr = table(summ,Q1)  = qx;
+    !constraint, expr = table(summ,Q2)  = qy;
+    constraint, range=#E, MUX=total_qx, MUY=total_qy;
+    jacobian,calls=50000,bisec=3, tolerance = 1E-15;
+  endmatch;
+};
+
+// ------------------------------------------------------------------------------------------------
+// ---- Energy and particle definition ------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
+if (%(USE_CUSTOM_PC)s == 1) {
+    beam_Ek=%(KINETICENERGY)s;
+    beam_Etot = beam_Ek + pmass;
+    beam_pc = sqrt(beam_Etot*beam_Etot - pmass*pmass);
+
+    BEAM, PARTICLE=PROTON, PC=beam_pc;
+} else {
+    call, file="%(BEAM_FILE)s";
+};
+
+BRHO      := BEAM->PC * 3.3356;
+
+// ------------------------------------------------------------------------------------------------
+// ---- Call lattice files ------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
+call, file="%(ACC_MODELS_DIR)s/ps_mu.seq";
+call, file="%(ACC_MODELS_DIR)s/ps_ss.seq";
+call, file="%(STR_FILE)s";
+
+if (%(USE_MACROS)s == 1) {
+    call, file="%(ACC_MODELS_DIR)s/_scripts/macros.madx";
+};
+
+// ------------------------------------------------------------------------------------------------
+// ---- Install AC-Dipole -------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
+ Qx = %(NAT_TUNE_X)s;
+ Qy = %(NAT_TUNE_Y)s;
+ Qxd = %(DRV_TUNE_X)s;
+ Qyd = %(DRV_TUNE_Y)s;
+
+ hacmap21 = 0;
+ vacmap43 = 0;
+ hacmap: matrix, l=0, rm21 := hacmap21;
+ vacmap: matrix, l=0, rm43 := vacmap43;
+
+ KFB_MARKER: marker;
+
+ seqedit, sequence=PS;
+  flatten;
+
+  replace, element=PR.KFB97, by=KFB_MARKER;
+  install, element=hacmap, at=0.46, from=KFB_MARKER;
+  install, element=vacmap, at=0.46, from=KFB_MARKER;
+
+  !cycle, start=PS43$START;
+  cycle, start=PI.SMH42.ENDMARKER;
+ endedit;
+
+ use, sequence=PS;
+
+// ------------------------------------------------------------------------------------------------
+// ---- Tune matching -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
+if (ps_tune_matching_method == 1) {
+  exec, tune_matching_method1(Qx, Qy);
+};
+
+if (ps_tune_matching_method == 2) {
+  exec, tune_matching_method2(Qx, Qy);
+};
+
+if (ps_tune_matching_method == 3) {
+  exec, tune_matching_method3(Qx, Qy);
+};
+
+if (ps_tune_matching_method == 4) {
+  exec, tune_matching_method4(Qx, Qy);
+};
+
+use, sequence=PS;

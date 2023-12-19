@@ -53,6 +53,7 @@ EXTRA_DEPENDENCIES = {
         "hypothesis>=5.0.0",
         "jpype1>=1.3.0",
         "attrs>=19.2.0",
+        "gitpython>=3.1.0",
     ],
     "doc": [
         "sphinx",

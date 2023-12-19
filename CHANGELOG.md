@@ -1,5 +1,12 @@
 # OMC3 Changelog
 
+#### 2023-12-07 - v0.13.0 - _awegsche_
+
+- Added:
+ - complete overhaul of model creation, uses now `acc-models` for LHC, PS and PSB and prints
+   useful information about available model parameters. Can load from either a user defined path
+   (`--path <PATH>`) or from the afs copy of acc-models (`--afs`)
+
 #### 2023-11-29 - v0.12.1 - _jdilly_
 
 - Fixed:

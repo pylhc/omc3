@@ -7,6 +7,11 @@ It contains entrypoint wrappers to get accelerator classes or their instances.
 """
 from generic_parser.entrypoint_parser import entrypoint, EntryPoint, EntryPointParameters
 from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota
+from generic_parser.dict_parser import ArgumentError
+from generic_parser.tools import silence
+
+from omc3.model.accelerators.accelerator import Accelerator
+from omc3.utils.parsertools import print_help
 
 ACCELS = {
     lhc.Lhc.NAME: lhc.Lhc,
@@ -28,15 +33,27 @@ def _get_params():
 
 
 @entrypoint(_get_params())
-def get_accelerator(opt, other_opt):
+def get_accelerator(opt, other_opt) -> Accelerator:
     """
-    Returns the `Accelerator` instance of the desired accelerator, as given at the commandline.
+    Returns (opt.accel, help_requested):
+        `opt.accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.
+        `help_requested` is a boolean stating if help was requested at any point
+
     """
+
     if not isinstance(opt.accel, str):
-        # assume it's the class
+        # if it's the class already, we just return it
         return opt.accel
+
     return ACCELS[opt.accel](other_opt)
 
+
+@entrypoint(_get_params())
+def get_accelerator_class(opt, other):
+    """
+    """
+
+    return ACCELS[opt.accel]
 
 @entrypoint(_get_params())
 def get_parsed_opt(opt, other_opt):
