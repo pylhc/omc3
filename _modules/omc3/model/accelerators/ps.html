@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.ps &mdash; omc3 0.12.1 documentation</title>
+  <title>omc3.model.accelerators.ps &mdash; omc3 0.13.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=c5b435e8"></script>
+        <script src="../../../../_static/documentation_options.js?v=1019fba8"></script>
         <script src="../../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -267,17 +267,32 @@
 
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPoint</span>
 
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AccElementTypes</span><span class="p">,</span> <span class="n">AccExcitationMode</span>
-<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">PLANE_TO_HV</span><span class="p">,</span> <span class="n">MODIFIER_TAG</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AccElementTypes</span><span class="p">,</span>
+    <span class="n">AccExcitationMode</span><span class="p">,</span>
+    <span class="n">Accelerator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.parsertools</span> <span class="kn">import</span> <span class="n">require_param</span>
+<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">MODIFIER_TAG</span><span class="p">,</span> <span class="n">PLANE_TO_HV</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.psbase</span> <span class="kn">import</span> <span class="n">PsBase</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
+<span class="c1"># tune matching methods</span>
+<span class="c1"># check `ps/base.madx`</span>
+<span class="n">TUNE_METHODS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;qf&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># main quadrupoles (low energy quads)</span>
+    <span class="s2">&quot;pfw&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># pole face windings</span>
+    <span class="s2">&quot;bh&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># combined function magnet quadrupole</span>
+    <span class="s2">&quot;f8l&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>  <span class="c1"># figure of eight loop</span>
+<span class="p">}</span>
 
 <div class="viewcode-block" id="Ps">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps">[docs]</a>
-<span class="k">class</span> <span class="nc">Ps</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Ps</span><span class="p">(</span><span class="n">PsBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parent Class for PS-types.&quot;&quot;&quot;</span>
+
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;ps&quot;</span>
     <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;PR\.BPM&quot;</span><span class="p">,</span>
                <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
@@ -288,31 +303,27 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">():</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="n">Ps</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;year&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">2021</span><span class="p">),</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Year of the optics.&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tune_method&quot;</span><span class="p">,</span>
+                             <span class="n">choices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">TUNE_METHODS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tune method&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">opt</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">year</span>
+
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_from_model_dir</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>
+            <span class="k">return</span>  <span class="c1"># if we create the model from the model dir, none of the following needs to happen</span>
+
+        <span class="n">require_param</span><span class="p">(</span><span class="s2">&quot;tune_method&quot;</span><span class="p">,</span> <span class="n">Ps</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">opt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tune_method</span> <span class="o">=</span> <span class="n">TUNE_METHODS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">tune_method</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Ps.verify_object">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.verify_object">[docs]</a>
     <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="Ps.get_dir">
-<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_dir">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Ps.get_file">
@@ -348,7 +359,7 @@
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_base_madx_script">[docs]</a>
     <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best knowledge model not implemented for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No best knowledge model for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2"> (yet).&quot;</span><span class="p">)</span>
 
         <span class="n">use_acd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
@@ -356,19 +367,23 @@
             <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">use_acd</span><span class="p">)),</span>
             <span class="s2">&quot;NAT_TUNE_X&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="s2">&quot;NAT_TUNE_Y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="s2">&quot;KINETICENERGY&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
-            <span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;KINETICENERGY&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
+            <span class="s2">&quot;USE_CUSTOM_PC&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ACC_MODELS_DIR&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">,</span>
+            <span class="s2">&quot;BEAM_FILE&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_file</span><span class="p">,</span>
+            <span class="s2">&quot;STR_FILE&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_file</span><span class="p">,</span>
+            <span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
             <span class="s2">&quot;MODIFIERS&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;BEAM_FILE&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># From 2021</span>
+            <span class="s2">&quot;USE_MACROS&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;2018&quot;</span> <span class="k">else</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>  <span class="c1"># 2018 doesn&#39;t provide a macros file</span>
+            <span class="s2">&quot;PS_TUNE_METHOD&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tune_method</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="p">:</span>
             <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;MODIFIERS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot; call, file = &#39;</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="p">])</span>
-            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;BEAM_FILE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot; call, file = &#39;</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.beam&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;&quot;</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modifiers</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">use_acd</span><span class="p">:</span>
             <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s1">&#39;base.mask&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s1">&#39;base.madx&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">mask</span> <span class="o">%</span> <span class="n">replace_dict</span></div>
 </div>
 

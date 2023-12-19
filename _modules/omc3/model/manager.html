@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.manager &mdash; omc3 0.12.1 documentation</title>
+  <title>omc3.model.manager &mdash; omc3 0.13.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=c5b435e8"></script>
+        <script src="../../../_static/documentation_options.js?v=1019fba8"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -217,6 +217,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span>
 <span class="kn">from</span> <span class="nn">omc3.model.accelerators</span> <span class="kn">import</span> <span class="n">lhc</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">esrf</span><span class="p">,</span> <span class="n">psbooster</span><span class="p">,</span> <span class="n">skekb</span><span class="p">,</span> <span class="n">petra</span><span class="p">,</span> <span class="n">iota</span>
+<span class="kn">from</span> <span class="nn">generic_parser.dict_parser</span> <span class="kn">import</span> <span class="n">ArgumentError</span>
+<span class="kn">from</span> <span class="nn">generic_parser.tools</span> <span class="kn">import</span> <span class="n">silence</span>
+
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.parsertools</span> <span class="kn">import</span> <span class="n">print_help</span>
 
 <span class="n">ACCELS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="p">,</span>
@@ -240,15 +245,30 @@
 <div class="viewcode-block" id="get_accelerator">
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">get_accelerator</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_accelerator</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the `Accelerator` instance of the desired accelerator, as given at the commandline.</span>
+<span class="sd">    Returns (opt.accel, help_requested):</span>
+<span class="sd">        `opt.accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.</span>
+<span class="sd">        `help_requested` is a boolean stating if help was requested at any point</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="c1"># assume it&#39;s the class</span>
+        <span class="c1"># if it&#39;s the class already, we just return it</span>
         <span class="k">return</span> <span class="n">opt</span><span class="o">.</span><span class="n">accel</span>
+
     <span class="k">return</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">](</span><span class="n">other_opt</span><span class="p">)</span></div>
 
+
+
+<div class="viewcode-block" id="get_accelerator_class">
+<a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator_class">[docs]</a>
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">get_accelerator_class</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="get_parsed_opt">
