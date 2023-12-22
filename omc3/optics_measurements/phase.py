@@ -247,7 +247,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                              f'BPM_PHASE{plane}',
                              f'BPM_{ERR}PHASE{plane}',]
     special_phase_df = pd.DataFrame(columns=special_phase_columns)
-    
+
     for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
