@@ -67,7 +67,7 @@ def append_dpp(list_of_tfs, dpp_values):
     return list_of_tfs
 
 
-def calculate_dpoverp(input_files, meas_input): 
+def calculate_dpoverp(input_files, meas_input):
     df_orbit = pd.DataFrame(meas_input.accelerator.model).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['CO', 'CORMS']), how='inner',
                         left_index=True, right_index=True)
