@@ -319,8 +319,9 @@ def convert_old_closed_orbit(
 
     dframe = tfs.read(old_file_path)
     dframe = dframe.rename(columns={f"STD{plane}": f"{ERR}{plane}"})
-    dframe[f"{DELTA}{plane}"] = df_diff(dframe, f"{plane}", f"{plane}{MDL}")
-    dframe[f"{ERR}{DELTA}{plane}"] = dframe.loc[:, f"{ERR}{plane}"].to_numpy()
+    # The Closed Orbit is in [mm] in BB.src but in [m] in omc3, so we divide by 1e3
+    dframe[f"{DELTA}{plane}"] = df_diff(dframe, f"{plane}", f"{plane}{MDL}") / 1e3
+    dframe[f"{ERR}{DELTA}{plane}"] = dframe.loc[:, f"{ERR}{plane}"].to_numpy() / 1e3
     tfs.write(Path(outputdir) / f"{new_file_name}{plane.lower()}{EXT}", dframe)
 
 
