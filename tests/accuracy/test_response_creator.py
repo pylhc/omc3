@@ -1,15 +1,15 @@
 import numpy as np
 import pytest
 
-from omc3.correction.constants import (DISP, PHASE, PHASE_ADV)
-from omc3.correction.handler import _rms
 from omc3.correction.response_io import read_fullresponse, read_varmap
 from omc3.correction.sequence_evaluation import evaluate_for_variables
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
+from omc3.model.manager import get_accelerator
+from omc3.optics_measurements.constants import (DISPERSION, PHASE, PHASE_ADV)
 from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.utils import logging_tools
+from omc3.utils.stats import rms
 from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
-from omc3.model.manager import get_accelerator
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -31,21 +31,21 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
     # parameter setup
     is_skew = orientation == 'skew'
     beam = model_inj_beams.beam
-    _, optics_params, variables, fullresponse, _ = get_skew_params(beam) if is_skew else get_normal_params(beam)
-    optics_params = _adapt_optics_params(optics_params, creator, is_skew)
+    correction_params = get_skew_params(beam) if is_skew else get_normal_params(beam)
+    optics_params = _adapt_optics_params(correction_params.optics_params, creator, is_skew)
 
     # response creation
     new_response = create_response(
         **model_inj_beams,
         creator=creator,
         delta_k=DELTA_K,
-        variable_categories=variables,
+        variable_categories=correction_params.variables,
     )
 
     # compare to original response matrix
-    original_response = read_fullresponse(model_inj_beams.model_dir / fullresponse)
+    original_response = read_fullresponse(model_inj_beams.model_dir / correction_params.fullresponse)
     for key in optics_params:
-        original = original_response[key]
+        original = original_response[key.replace("_Q4", "")]  # renaming of category since response creation 
         new = new_response[key].loc[original.index, original.columns]
 
         # ######## Relative RMS check ###############
@@ -59,7 +59,7 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
             check = np.allclose(original, new, rtol=MADX_RTOL, atol=MADX_ATOL)
         else:
             # check for approximate values
-            check = (_rms(original - new)/_rms(original)).mean() < TWISS_RMS_TOL
+            check = (rms(original - new)/rms(original)).mean() < TWISS_RMS_TOL
 
         assert check, f"Fullresponse via {creator} does not match for {key}"
 
@@ -92,7 +92,7 @@ def _adapt_optics_params(optics_params, creator, is_skew):
         optics_params = OPTICS_PARAMS_CHOICES
     elif is_skew:
         # twiss calculates (N)D[X,Y] but (N)DX is all zero and NDY not in madx.
-        optics_params = list(optics_params) + [f"{DISP}Y"]
+        optics_params = list(optics_params) + [f"{DISPERSION}Y"]
 
     # replace PHASE with MU, as the responses operate on MU
     return [f"{PHASE_ADV}{k[-1]}" if k[:-1] == PHASE else k for k in optics_params]

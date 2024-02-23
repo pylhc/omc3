@@ -5,6 +5,7 @@ LHC Model Creator
 This module provides convenience functions for model creation of the ``LHC``.
 """
 import logging
+import pathlib
 import shutil
 from pathlib import Path
 from typing import List
@@ -28,24 +29,56 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
-    ACCELERATOR_MODEL_REPOSITORY
+    PATHFETCHER, AFSFETCHER,  # GITFETCHER, LSAFETCHER,
+    AFS_ACCELERATOR_MODEL_REPOSITORY,
+    MODIFIER_SUBDIR,
+    AFS_B2_ERRORS_ROOT,
 )
-from omc3.model.model_creators.abstract_model_creator import ModelCreator
+from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import iotools
-
-LHC_REPOSITORY_NAME = "acc-models-lhc"
 
 LOGGER = logging.getLogger(__name__)
 
 
 def _b2_columns() -> List[str]:
-    cols_outer = [f"{KP}{num}{S}L" for KP in ("K", "P") for num in range(21) for S in ("", "S")]
+    cols_outer = [f"{KP}{num}{S}L" for KP in (
+        "K", "P") for num in range(21) for S in ("", "S")]
     cols_middle = ["DX", "DY", "DS", "DPHI", "DTHETA", "DPSI", "MREX", "MREY", "MREDX", "MREDY",
                    "AREX", "AREY", "MSCALX", "MSCALY", "RFM_FREQ", "RFM_HARMON", "RFM_LAG"]
     return cols_outer[:42] + cols_middle + cols_outer[42:]
 
 
 class LhcModelCreator(ModelCreator):
+    acc_model_name = "lhc"
+
+    @classmethod
+    def get_options(cls, accel_inst, opt) -> bool:
+        if opt.fetch == PATHFETCHER:
+            accel_inst.acc_model_path = Path(opt.path)
+        elif opt.fetch == AFSFETCHER:
+            accel_inst.acc_model_path = check_folder_choices(AFS_ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
+                                                             "No optics tag (flag --year) given",
+                                                             accel_inst.year,
+                                                             opt.list_choices,
+                                                             lambda path: path.is_dir())
+        else:
+            raise AttributeError(f"{accel_inst.NAME} model creation requires one of the following fetchers: "
+                                 f"[{PATHFETCHER}, {AFSFETCHER}]. "
+                                 "Please provide one with the flag `--fetch afs` "
+                                 "or `--fetch path --path PATH`.")
+        if accel_inst.acc_model_path is None:
+            return False
+
+        if opt.list_choices:
+            check_folder_choices(accel_inst.acc_model_path / MODIFIER_SUBDIR,
+                                 "No modifier given",
+                                 None,
+                                 True,
+                                 lambda path: path.suffix == ".madx")
+            return False
+
+        return True
+
     @classmethod
     def get_madx_script(cls, accel: Lhc) -> str:  # nominal
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
@@ -86,15 +119,17 @@ class LhcModelCreator(ModelCreator):
 
     @classmethod
     def prepare_run(cls, accel: Lhc) -> None:
-        if accel.year in ["2018", "2022"]:  # these years should be handled by the fetcher
-            symlink_dst = Path(accel.model_dir)/LHC_REPOSITORY_NAME
-            if not symlink_dst.exists():
-                LOGGER.debug(f"Symlink destination: {symlink_dst}")
-                symlink_dst.absolute().symlink_to((ACCELERATOR_MODEL_REPOSITORY/f"{accel.year}"))
+        LOGGER.info("preparing run ...")
+        if accel.acc_model_path is not None:
+            link = Path(accel.model_dir)/accel.REPOSITORY
+            target = accel.acc_model_path
+            if not link.exists():
+                link.absolute().symlink_to(target)
 
         cls.check_accelerator_instance(accel)
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
+        LOGGER.info("creating macros dirs")
         iotools.create_dirs(macros_path)
 
         LOGGER.debug("Copying macros to model directory")
@@ -103,28 +138,39 @@ class LhcModelCreator(ModelCreator):
         shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
         shutil.copy(lib_path / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
 
-        if accel.energy is not None:
-            LOGGER.debug("Copying B2 error files for given energy in model directory")
-            core = f"{int(accel.energy * 1000):04d}"
-            error_dir_path = accel.get_lhc_error_dir()
-            shutil.copy(error_dir_path / f"{core}GeV.tfs", accel.model_dir / ERROR_DEFFS_TXT)
+        # reconstruct path to b2_errors
+        b2_error_path = None
+        if accel.b2_errors is not None:
+            LOGGER.debug("copying B2 error tables")
+
+            b2_error_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.errors"
+            b2_madx_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.madx"
             shutil.copy(
-                error_dir_path / "b2_errors_settings" / f"beam{accel.beam}_{core}GeV.madx",
+                b2_madx_path,
                 accel.model_dir / B2_SETTINGS_MADX,
             )
-            b2_table = tfs.read(error_dir_path / f"b2_errors_beam{accel.beam}.tfs", index="NAME")
+            b2_table = tfs.read(b2_error_path, index="NAME")
             gen_df = pd.DataFrame(
                 data=np.zeros((b2_table.index.size, len(_b2_columns()))),
                 index=b2_table.index,
                 columns=_b2_columns(),
             )
-            gen_df["K1L"] = b2_table.loc[:, f"K1L_{core}"].to_numpy()
+            gen_df["K1L"] = b2_table.loc[:, f"K1L"].to_numpy()
             tfs.write(
                 accel.model_dir / B2_ERRORS_TFS,
                 gen_df,
                 headers_dict={"NAME": "EFIELD", "TYPE": "EFIELD"},
                 save_index="NAME",
             )
+
+        if accel.energy is not None:
+            core = f"{int(accel.energy):04d}"
+
+            LOGGER.debug("Copying error defs for analytical N-BPM method")
+            error_dir_path = accel.get_lhc_error_dir()
+            shutil.copy(error_dir_path /
+                        f"{core}GeV.tfs", accel.model_dir / ERROR_DEFFS_TXT)
+
 
     @staticmethod
     def check_accelerator_instance(accel: Lhc) -> None:
@@ -142,7 +188,8 @@ class LhcModelCreator(ModelCreator):
             )
 
         # hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)
-        inexistent_modifiers = [m for m in accel.modifiers if not (accel.model_dir / m).exists()]
+        inexistent_modifiers = [
+            m for m in accel.modifiers if not (accel.model_dir / m).exists()]
         if len(inexistent_modifiers):
             raise AcceleratorDefinitionError(
                 "The following modifier files do not exist: "
@@ -155,19 +202,34 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     CORRECTIONS_FILENAME: str = "corrections.madx"
 
     @classmethod
+    def get_options(cls, accel_inst, opt) -> bool:
+
+        if accel_inst.list_b2_errors:
+            errors_dir = AFS_B2_ERRORS_ROOT / f"Beam{accel_inst.beam}"
+            for d in errors_dir.iterdir():
+                if d.suffix==".errors" and d.name.startswith("MB2022"):
+                    print(d.stem)
+            return False
+
+        return super().get_options(accel_inst, opt)
+
+    @classmethod
     def get_madx_script(cls, accel: Lhc) -> str:
         if accel.excitation is not AccExcitationMode.FREE:
-            raise AcceleratorDefinitionError("Don't set ACD or ADT for best knowledge model.")
-        if accel.energy is None:
-            raise AcceleratorDefinitionError("Best knowledge model requires energy.")
+            raise AcceleratorDefinitionError(
+                "Don't set ACD or ADT for best knowledge model.")
 
-        corrections_file = accel.model_dir / cls.CORRECTIONS_FILENAME  # existence is tested in madx
-        mqts_file = accel.model_dir / cls.EXTRACTED_MQTS_FILENAME  # existence is tested in madx
+        corrections_file = accel.model_dir / \
+            cls.CORRECTIONS_FILENAME  # existence is tested in madx
 
         madx_script = accel.get_base_madx_script(best_knowledge=True)
+        madx_script += f"call, file = '{corrections_file}';\n"
+
+        mqts_file = accel.model_dir / cls.EXTRACTED_MQTS_FILENAME
+        if mqts_file.exists():
+            madx_script += f"call, file = '{mqts_file}';\n"
+
         madx_script += (
-            f"call, file = '{corrections_file}';\n"
-            f"call, file = '{mqts_file}';\n"
             f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
             f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
         )
@@ -175,7 +237,8 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 
     @classmethod
     def check_run_output(cls, accel: Lhc) -> None:
-        files_to_check = [TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
+        files_to_check = [TWISS_BEST_KNOWLEDGE_DAT,
+                          TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
         cls._check_files_exist(accel.model_dir, files_to_check)
 
 

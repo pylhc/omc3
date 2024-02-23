@@ -5,15 +5,17 @@ Fixtures defined in here are discovered by all tests automatically.
 
 See also https://stackoverflow.com/a/34520971 .
 """
-import re
+import random
 import shutil
+import string
 import sys
 from contextlib import contextmanager
 from pathlib import Path
+import git
 
 import pytest
-from generic_parser import DotDict
 
+from generic_parser import DotDict
 from omc3 import model
 
 INPUTS = Path(__file__).parent / 'inputs'
@@ -37,6 +39,40 @@ def cli_args(*args, **kwargs):
     yield
     sys.argv = args_save
 
+
+@contextmanager
+def mock_module_import(module, replacement):
+    """  Temporarily mock a package with something else.
+    Needs to be used before the module is imported,
+    so it only works on dynamic imports (which we don't have a lot).
+    For already imported packages (e.g. module.package) you can use pytest's:
+    monkeypatch.setattr(module, "package", replacement)
+    """
+    orig = sys.modules.get(module)  # get the original module, if present
+    sys.modules[module] = replacement  # patch it
+    try:
+        yield
+    finally:
+        if orig is not None:  # if the module was installed, restore patch
+            sys.modules[module] = orig
+        else:  # if the module never existed, remove the key
+            del sys.modules[module]
+
+def random_string(length: int,
+                  lower: bool = True,
+                  upper: bool = True,
+                  digits: bool = True,
+                  punctuation: bool = False
+                  ) -> str:
+    """ Returns a random string. """
+    charset = ''
+    for chars, switch in ((string.ascii_lowercase, lower),
+                          (string.ascii_uppercase, upper),
+                          (string.digits, digits),
+                          (string.punctuation, punctuation)):
+        if switch:
+            charset = charset + chars
+    return ''.join(random.choice(charset) for _ in range(length))
 
 # Model fixtures from /inputs/models -------------------------------------------
 # Hint: Before adding 25cm models, update files (see inj model folders, jdilly 2021)
@@ -102,3 +138,31 @@ def tmp_model(factory, beam: int, id_: str):
         energy=0.45 if id_ == 'inj' else 6.5,
         driven_excitation=None if id_ == 'inj' else 'acd'
     )
+
+
+GITLAB_REPO_ACC_MODELS = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
+
+@pytest.fixture(scope="session")
+def acc_models_lhc_2023(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "lhc", 2023)
+
+@pytest.fixture(scope="session")
+def acc_models_lhc_2022(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "lhc", 2022)
+
+@pytest.fixture(scope="session")
+def acc_models_lhc_2018(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "lhc", 2018)
+
+@pytest.fixture(scope="session")
+def acc_models_psb_2021(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "psb", 2021)
+
+@pytest.fixture(scope="session")
+def acc_models_ps_2021(tmp_path_factory):
+    return acc_models_lhc(tmp_path_factory, "ps", 2021)
+
+def acc_models_lhc(tmp_path_factory, accel: str, year: int):
+    tmp_path = tmp_path_factory.mktemp(f"acc-models-{accel}-{year}")
+    git.Repo.clone_from(GITLAB_REPO_ACC_MODELS.format(accel), tmp_path, branch=str(year)) 
+    return tmp_path

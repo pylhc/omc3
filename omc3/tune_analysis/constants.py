@@ -187,7 +187,7 @@ def get_tune_label(plane: str, scale: int = None) -> str:
     """ Tune label for the action/tune plots. """
     unit = ""
     if scale:
-        unit = f" \quad [10^{{{scale:d}}}]"
+        unit = fr" \quad [10^{{{scale:d}}}]"
     return fr"$\Delta Q_{plane.lower():s}{unit}$"
 
 
@@ -200,4 +200,4 @@ def get_action_label(plane: str, unit: str) -> str:
 
 def get_detuning_exponent_for_order(order: int) -> int:
     """ Returns the default exponent for detuning orders. Highly Empirical. """
-    return {1: 3, 2: 9, 3: 15}[order]
+    return {1: 3, 2: 11, 3: 15}[order]

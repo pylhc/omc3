@@ -19,7 +19,15 @@ TWISS_AC_DAT = "twiss_ac.dat"
 TWISS_ELEMENTS_DAT = "twiss_elements.dat"
 TWISS_DAT = "twiss.dat"
 ERROR_DEFFS_TXT = "error_deffs.txt"
-JOB_MODEL_MADX = "job.create_model.madx"
+JOB_MODEL_MADX_MASK = "job.create_model_{}.madx"
+JOB_MODEL_MADX_NOMINAL = JOB_MODEL_MADX_MASK.format("nominal")
+JOB_MODEL_MADX_BEST_KNOWLEDGE = JOB_MODEL_MADX_MASK.format("best_knowledge")
+
+# fetcher command names
+PATHFETCHER = "path"
+AFSFETCHER = "afs"
+GITFETCHER = "git"
+LSAFETCHER = "lsa"
 
 GENERAL_MACROS = "general.macros.madx"
 LHC_MACROS = "lhc.macros.madx"
@@ -29,4 +37,7 @@ B2_SETTINGS_MADX = "b2_settings.madx"
 B2_ERRORS_TFS = "b2_errors.tfs"
 PLANE_TO_HV = dict(X="H", Y="V")
 
-ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models/lhc")
+AFS_ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models")
+MODIFIER_SUBDIR = "operation/optics"
+
+AFS_B2_ERRORS_ROOT = Path("/afs/cern.ch/eng/sl/lintrack/error_tables/")

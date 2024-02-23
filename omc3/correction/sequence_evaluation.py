@@ -234,7 +234,7 @@ def _create_basic_job(accel_inst: Accelerator, k_values: List[str], variables: S
     # create a survey and save it to a temporary file
     job_content += (
         "select, flag=survey, clear;\n"
-        f"select, flag=survey, pattern='^M.*\.B{accel_inst.beam:d}$', COLUMN=NAME, L;\n"
+        f"select, flag=survey, pattern='^M.*\\.B{accel_inst.beam:d}$', COLUMN=NAME, L;\n"
         "survey, file='%(TEMPFILE)s';\n"
         "readmytable, file='%(TEMPFILE)s', table=mytable;\n"
         "n_elem = table(mytable, tablelength);\n"

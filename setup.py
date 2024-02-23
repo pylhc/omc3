@@ -17,20 +17,21 @@ with README.open("r") as docs:
 
 # Dependencies for the package itself
 DEPENDENCIES = [
-    "matplotlib>=3.2.0,<3.4.3",  # temporary limitations, try run test!
+    "matplotlib>=3.7.0",  # to be able to run with pandas 2.0
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
     "numpy>=1.19.0",
-    "pandas>=1.0, <1.4",  # with 1.4.0 the interpolation in bbq_tools fails, pinning for now
+    "pandas>=2.0",
     "scipy>=1.5.0",
     "scikit-learn>=0.23.0",
-    "tfs-pandas>=3.1",
+    "tfs-pandas>=3.7",
     "generic-parser>=1.1.0",
     "sdds>=0.1.3",
     "h5py>=2.9.0",
     "tables>=3.6.0",
     "uncertainties>=3.1.4",
     "optics-functions>=0.1.0",
-    "turn_by_turn>=0.4.0",
+    "turn_by_turn>=0.6.0",
+    "requests>=2.27.0",
 ]
 
 # Extra dependencies
@@ -38,6 +39,12 @@ EXTRA_DEPENDENCIES = {
     "cern": [
         "jpype1>=1.3.0",
         "pytimber>=2.8.0",
+        "pylogbook>=3.4.0",
+        "kerberos>=1.3.1",  # requires having krb-5config installed on the system
+    ],
+    "optional": [
+        "pymupdf>=1.22.0",  # logbook for conversion from pdf to png
+        "qtpy>=2.3.1",  # putting plots in windows
     ],
     "test": [
         "pytest>=5.2",
@@ -46,10 +53,10 @@ EXTRA_DEPENDENCIES = {
         "hypothesis>=5.0.0",
         "jpype1>=1.3.0",
         "attrs>=19.2.0",
+        "gitpython>=3.1.0",
     ],
     "doc": [
         "sphinx",
-        "travis-sphinx",
         "sphinx_rtd_theme",
     ],
 }

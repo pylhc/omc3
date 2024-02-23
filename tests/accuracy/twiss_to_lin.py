@@ -72,13 +72,23 @@ def generate_lin_files(model, tune, nattune, motion='_d', dpp=0.0, beam_directio
                                          + dpp * model.loc[:, f"DMU{plane}{motion}"]
                                          + (noise_freq_domain / (2 * np.pi)) *np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
         lin[f"ERRMU{plane}"] = noise_freq_domain / (2 * np.pi)
+
+        lin[f"ERRAMP{plane}"] = noise_freq_domain * np.random.randn(nbpms)
+
         lin[f"AMP{plane}"] = np.sqrt(model.loc[:, f"BET{plane}{motion}"] * ACTION *
                                      (1 + dpp * np.sin(2 * np.pi * model.loc[:, f"PHI{plane}{motion}"])
-                                      * model.loc[:, f"W{plane}{motion}"])) + noise_freq_domain * np.random.randn(nbpms)
+                                      * model.loc[:, f"W{plane}{motion}"])) + lin[f"ERRAMP{plane}"]
+
+        lin[f"ERRAMP{plane}"] = np.abs(lin[f"ERRAMP{plane}"])  # * 2  divided by two removed?
 
         lin[f"NATMU{plane}"] = np.remainder(model.loc[:, f"MU{plane}{MOTION['free']}"]
                                             + (NAT_OVER_DRV * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction
-        lin[f"NATAMP{plane}"] = NAT_OVER_DRV * np.sqrt(ACTION * model.loc[:, f"BET{plane}{MOTION['free']}"]) + noise_freq_domain * np.random.randn(nbpms)
+
+        lin[f"ERRNATAMP{plane}"] = noise_freq_domain * np.random.randn(nbpms)
+
+        lin[f"NATAMP{plane}"] = NAT_OVER_DRV * np.sqrt(ACTION * model.loc[:, f"BET{plane}{MOTION['free']}"]) + lin[f"ERRNATAMP{plane}"]
+
+        lin[f"ERRNATAMP{plane}"] = np.abs(lin[f"ERRNATAMP{plane}"])  # * 2  divided by two removed?
 
         lin[f"PHASE{COUPLING_INDICES[plane]}"] = np.remainder(model.loc[:, f"MU{OTHER[plane]}{motion}"] + dpp * model.loc[:, f"DMU{OTHER[plane]}{motion}"]
                                                   + (COUPLING * noise_freq_domain / (2 * np.pi)) * np.random.randn(nbpms) + np.random.rand(), 1) * beam_direction

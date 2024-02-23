@@ -1,5 +1,115 @@
 # OMC3 Changelog
 
+#### 2023-12-07 - v0.13.0 - _awegsche_
+
+- Added:
+ - complete overhaul of model creation, uses now `acc-models` for LHC, PS and PSB and prints
+   useful information about available model parameters. Can load from either a user defined path
+   (`--path <PATH>`) or from the afs copy of acc-models (`--afs`)
+
+#### 2023-11-29 - v0.12.1 - _jdilly_
+
+- Fixed:
+ - `tbt_converter` now also passes given output format to writer when running without noise.
+
+#### 2023-11-29 - v0.12.0 - _jdilly_
+
+- Added to harmonic analysis:
+    - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file 
+    with different parameters without overwriting it.
+    - `bunch_ids` input parameter: in case of multibunch-files only analyse these bunches.
+    If not given, all bunches will be analysed, as before.
+
+#### 2023-09-20 - v0.11.4 - _fscarlier_, _awegsche_
+- Fixed:
+    - bug in beta from phase (3BPM method) that calculated too high errors for first and last BPMs
+
+#### 2023-09-20 - v0.11.3 - _jdilly_, _awegsche_
+
+- Fixed:
+  - compatibility with matplotlib 3.8
+  - skipping important phase advances for HL-LHC (as not defined yet)
+  - allowing responses with delta_k < 1e-6 for full-response creation
+
+#### 2023-09-01 - v0.11.2 - _jdilly_
+
+- Fixed:
+  - Plot Optics: making normalized dispersion plot a special case.
+
+- Added:
+ - Plot Optics: optional input "--labels" to manually set the legend-labels. 
+
+#### 2023-06-16 - v0.11.1 - _jdilly_
+
+- Fixed:
+ - OptionalString: 'None' as input is converted to None.
+ - Missing Kerberos config added to MANIFEST for packaging.
+ - Plot Optics plots now correct error-column, e.g. for beta-beating.
+ - Added warnings/errors for too few bpms in N-BPM/3-BPM methods. 
+ - Added navbar to sphinx documentation.
+
+- Tests:
+ - Added test for the classes in omc3.plotting.utils.windows
+
+#### 2023-06-05 - v0.11.0 - _jdilly_
+
+- Added:
+ - `omc3.plotting.utils.windows`: Qt-based windows and widgets for matplotlib-figure organization.
+ - Using the new windows in `omc3.plotting.plot_checked_corrections` and `omc3.plotting.plot_tfs`
+
+#### 2023-05-15 - v0.10.0 - _jdilly_
+
+- Added:
+  - `omc3.check_corrections`: A new feature to check the validity of corrections.
+  - `omc3.plotting.plot_checked_corrections`: Function to plot the checked corrections.
+  - Unified optics-columns naming in `omc3.definitions.optics`
+    (but not yet propagated through the code)
+  - Function to calculate RMS in `omc3.utils.stats.rms`.
+
+- Fixed:
+  - Some minor bugs with fake datatypes
+  - Doc of `ArrayType` typehints
+
+#### 2023-04-27 - v0.9.0 - _jdilly_
+
+- Added:
+  - RBAC token provider in omc3.utils.rbac
+  - pylogbook wrapper in omc3.scripts.create_logbook_entry
+
+#### 2023-04-20 - v0.8.0 - _jdilly_
+
+- Fix:
+  - Changed all `pandas`/`tfs-pandas` `append()` and `join()` to `concat()`
+  - Moved `InputFiles` into separate module
+
+#### 2023-03-16 - v0.7.2 - _jdilly_
+
+- Fix: 
+  - Added missing columns to coupling in BBS-OMC3 converter
+
+#### 2023-01-20 - v0.7.1 - _jdilly_
+
+- Added:
+  - Amplitude Detuning plots: Switch to plot only with/without BBQ correction 
+
+- Fix: 
+  - Second Order Amplitude Detuning fit now working
+  - Correct print/calculation of second order direct terms for forced 
+    kicks in plot-labels.
+
+#### 2022-11-08 - v0.7.0 - _jdilly_
+
+- Added:
+  - Tune error based on deviation of filtered BBQ data to the moving average
+    (over moving average window)
+  - Action error calculated from error on the spectral line
+    (which in turn is the same as NOISE)
+  
+#### 2022-11-01 - v0.6.6
+
+- Bugfixes 
+  - correction: fullresponse is converted to Path.
+  - fake measurement from model: dont randomize errors and values by default. 
 
 #### 2022-10-15 - v0.6.5
 
@@ -10,7 +120,6 @@
 #### 2022-10-12 - v0.6.4
 
 - Fixed the phase filtering for coupling calculation to not forget columns.
-
 
 #### 2022-09-27 - v0.6.3
 
