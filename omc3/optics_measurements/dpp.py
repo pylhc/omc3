@@ -96,7 +96,7 @@ def calculate_amp_dpoverp(input_files, meas_input):
     df_filtered = df_orbit.loc[mask, :]
     amps = input_files.get_data(df_filtered, 'AMPX') * input_files.get_data(df_filtered, 'AMPZ')
     mask_zeros = (amps > 0) if amps.ndim == 1 else (np.sum(amps, axis=1) > 0)
-    dispersions = df_filtered.loc[mask_zeros, "DX"]
+    dispersions = df_filtered.loc[mask_zeros, "DX"].to_numpy()
     denom = np.sum(dispersions ** 2)
     if denom == 0.:
         raise ValueError("Cannot compute dpp probably no arc BPMs.")
