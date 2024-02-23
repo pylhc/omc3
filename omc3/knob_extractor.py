@@ -156,7 +156,28 @@ KNOB_CATEGORIES: Dict[str, List[str]] = {
     "mo": [
         "LHCBEAM1:LANDAU_DAMPING",
         "LHCBEAM2:LANDAU_DAMPING"
-    ]
+    ],
+    "lumi_scan": [
+        "LHCBEAM1:IP1_SEPSCAN_X_MM",
+        "LHCBEAM1:IP1_SEPSCAN_Y_MM",
+        "LHCBEAM2:IP1_SEPSCAN_X_MM",
+        "LHCBEAM2:IP1_SEPSCAN_Y_MM",
+
+        "LHCBEAM1:IP2_SEPSCAN_X_MM",
+        "LHCBEAM1:IP2_SEPSCAN_Y_MM",
+        "LHCBEAM2:IP2_SEPSCAN_X_MM",
+        "LHCBEAM2:IP2_SEPSCAN_Y_MM",
+
+        "LHCBEAM1:IP5_SEPSCAN_X_MM",
+        "LHCBEAM1:IP5_SEPSCAN_Y_MM",
+        "LHCBEAM2:IP5_SEPSCAN_X_MM",
+        "LHCBEAM2:IP5_SEPSCAN_Y_MM",
+
+        "LHCBEAM1:IP8_SEPSCAN_X_MM",
+        "LHCBEAM1:IP8_SEPSCAN_Y_MM",
+        "LHCBEAM2:IP8_SEPSCAN_X_MM",
+        "LHCBEAM2:IP8_SEPSCAN_Y_MM",
+    ],
 }
 
 USAGE_EXAMPLES = """Usage Examples:
