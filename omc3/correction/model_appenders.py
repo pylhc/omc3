@@ -67,10 +67,16 @@ def _get_model_generic(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.
 
 
 def _get_model_phases(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.DataFrame:
-    model_column = f"{PHASE_ADV}{key[-1]}"
+    plane = key[-1]
+    tunes = {'X':model.headers['Q1'],
+             'Y':model.headers['Q2'],
+             }
+    model_column = f"{PHASE_ADV}{plane}"
     with logging_tools.log_pandas_settings_with_copy(LOG.debug):
-        meas[MODEL] = (model.loc[meas["NAME2"].to_numpy(), model_column].to_numpy() -
-                       model.loc[meas.index.to_numpy(), model_column].to_numpy())
+        model_phases_advances = (model.loc[meas["NAME2"].to_numpy(), model_column].to_numpy() -
+                                 model.loc[meas.index.to_numpy(), model_column].to_numpy())
+        model_phases_advances[model_phases_advances < 0] += tunes[plane]
+        meas[MODEL] = model_phases_advances
         meas[DIFF] = df_diff(meas, VALUE, MODEL)
     return meas
 

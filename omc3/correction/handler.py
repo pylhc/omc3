@@ -18,6 +18,7 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
+import omc3.correction.arc_by_arc as abba
 from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, F1001,
                                                 F1010, NORM_DISPERSION, PHASE, TUNE,
                                                 DISPERSION_NAME, EXT, REAL, IMAG,
@@ -62,6 +63,9 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     # apply filters to data
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
     meas_dict = model_appenders.add_differences_to_model_to_measurements(nominal_model, meas_dict)
+
+    if opt.arc_by_arc_phase and accel_inst.NAME == 'lhc':
+        meas_dict = abba.reduce_to_arc_extremities(meas_dict, nominal_model, ats=False)
 
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
     resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
