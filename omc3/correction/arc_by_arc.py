@@ -17,7 +17,7 @@ def get_left_right_pair(arc, beam, bpms):
     return [left_of_arc, right_of_arc]
 
 
-def get_arc_by_arc_bpm_pairs(meas_dict, include_ips=None):
+def get_arc_by_arc_bpm_pairs(meas_dict, opt):
     bpms = meas_dict['PHASEX'].index
     beam = bpms[0][-1]
     bpm_pairs = {}
@@ -92,9 +92,9 @@ def get_arc_phases(bpm_pairs, meas_dict, tune, plane):
     return meas_dict
 
 
-def reduce_to_arc_extremities(meas_dict, nominal_model, ats=False):
-    bpm_pairs_x = get_arc_by_arc_bpm_pairs(meas_dict, ats=ats)
-    bpm_pairs_y = get_arc_by_arc_bpm_pairs(meas_dict, ats=ats)
+def reduce_to_arc_extremities(meas_dict, nominal_model, opt):
+    bpm_pairs_x = get_arc_by_arc_bpm_pairs(meas_dict, opt)
+    bpm_pairs_y = get_arc_by_arc_bpm_pairs(meas_dict, opt)
     meas_dict = get_arc_phases(bpm_pairs_x, meas_dict, nominal_model.headers['Q1'], 'X')
     meas_dict = get_arc_phases(bpm_pairs_y, meas_dict, nominal_model.headers['Q2'], 'Y')
     return meas_dict
