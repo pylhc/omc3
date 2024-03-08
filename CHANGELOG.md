@@ -3,6 +3,9 @@
 
 #### IN PROGRESS - v0.14.0 - _jdilly_, _fscarlier_, _fesoubel_
 
+- Fixed:
+  - Plot Check Corrections: Fixed Crash when normalized dispersion is in measurements
+
 - Added:
   - Global Correction: Total phase correction arc-by-arc
   - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
