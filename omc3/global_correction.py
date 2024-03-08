@@ -195,7 +195,7 @@ CORRECTION_DEFAULTS = {
     "method": "pinv",
     "iterations": 4,
     "arc_by_arc_phase": False,
-    "include_ips": None,
+    "include_ips_in_arc_by_arc": None,
 }
 
 
@@ -278,11 +278,11 @@ def correction_params():
                          type=bool,
                          default=CORRECTION_DEFAULTS["arc_by_arc_phase"],
                          help="Set to True for arc-by-arc total pahse correction.", )
-    params.add_parameter(name="include_ips",
+    params.add_parameter(name="include_ips_in_arc_by_arc",
                          type=str,
                          choices=("left", "right"),
-                         default=CORRECTION_DEFAULTS["include_ips"],
-                         help="Include ips left or right of arcs in arcs.", )
+                         default=CORRECTION_DEFAULTS["include_ips_in_arc_by_arc"],
+                         help="If not specified only takes pure arcs. Otherwise it includes IPs left or right of arcs.", )
     return params
 
 

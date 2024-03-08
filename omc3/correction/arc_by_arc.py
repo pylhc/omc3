@@ -21,14 +21,13 @@ def get_arc_by_arc_bpm_pairs(meas_dict, opt):
     beam = bpms[0][-1]
     bpm_pairs = {}
     bpm_pairs_with_ips = {}
-    include_ips = False
     
     arcs_to_cycle = ['81', '12', '23', '34', '45', '56', '67', '78']
 
     for lhc_arc in arcs_to_cycle:
         bpm_pairs[lhc_arc] = get_left_right_pair(lhc_arc, beam, bpms)
 
-    if include_ips == 'left': 
+    if opt.include_ips_in_arc_by_arc == 'left': 
         bpm_pairs_with_ips['81'] =  [bpm_pairs['78'][1], bpm_pairs['81'][1]]
         bpm_pairs_with_ips['12'] =  [bpm_pairs['81'][1], bpm_pairs['12'][1]]
         bpm_pairs_with_ips['23'] =  [bpm_pairs['12'][1], bpm_pairs['23'][1]]
@@ -38,7 +37,7 @@ def get_arc_by_arc_bpm_pairs(meas_dict, opt):
         bpm_pairs_with_ips['67'] =  [bpm_pairs['56'][1], bpm_pairs['67'][1]]
         bpm_pairs_with_ips['78'] =  [bpm_pairs['67'][1], bpm_pairs['78'][1]]
         bpm_pairs = bpm_pairs_with_ips
-    elif include_ips == 'right': 
+    elif opt.include_ips_in_arc_by_arc == 'right': 
         bpm_pairs_with_ips['81'] =  [bpm_pairs['78'][0], bpm_pairs['81'][0]]
         bpm_pairs_with_ips['12'] =  [bpm_pairs['81'][0], bpm_pairs['12'][0]]
         bpm_pairs_with_ips['23'] =  [bpm_pairs['12'][0], bpm_pairs['23'][0]]
