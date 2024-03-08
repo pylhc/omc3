@@ -16,8 +16,8 @@ def get_left_right_pair(arc, beam, bpms):
     return [left_of_arc, right_of_arc]
 
 
-def get_arc_by_arc_bpm_pairs(meas_dict, opt):
-    bpms = meas_dict['PHASEX'].index
+def get_arc_by_arc_bpm_pairs(meas_dict, opt, plane):
+    bpms = meas_dict[f'PHASE{plane}'].index
     beam = bpms[0][-1]
     bpm_pairs = {}
     bpm_pairs_with_ips = {}
@@ -48,7 +48,7 @@ def get_arc_by_arc_bpm_pairs(meas_dict, opt):
         bpm_pairs_with_ips['78'] =  [bpm_pairs['67'][0], bpm_pairs['78'][0]]
         bpm_pairs = bpm_pairs_with_ips
 
-    return bpm_pairs
+    return bpm_pairs 
 
 
 def circular_sum_phase(phase_df, tune, bpm_pair, key):
@@ -91,8 +91,8 @@ def get_arc_phases(bpm_pairs, meas_dict, tune, plane):
 
 
 def reduce_to_arc_extremities(meas_dict, nominal_model, opt):
-    bpm_pairs_x = get_arc_by_arc_bpm_pairs(meas_dict, opt)
-    bpm_pairs_y = get_arc_by_arc_bpm_pairs(meas_dict, opt)
+    bpm_pairs_x = get_arc_by_arc_bpm_pairs(meas_dict, opt, "X")
+    bpm_pairs_y = get_arc_by_arc_bpm_pairs(meas_dict, opt, "Y")
     meas_dict = get_arc_phases(bpm_pairs_x, meas_dict, nominal_model.headers['Q1'], 'X')
     meas_dict = get_arc_phases(bpm_pairs_y, meas_dict, nominal_model.headers['Q2'], 'Y')
     return meas_dict
