@@ -1,5 +1,24 @@
 # OMC3 Changelog
 
+
+#### IN PROGRESS - v0.14.0 - _jdilly_, _fscarlier_, _fesoubel_
+
+- Added:
+  - Global Correction: Total phase correction arc-by-arc
+  - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
+  - Script to copy KMod results into optics directory
+
+
+#### 2024-03-08 - v0.13.1 - _jdilly_, _awegsche_, _mlegarre_, _fesoubel_
+
+- Added:
+  - Knob Extractor: Lumiscan Knob
+
+- Fixed:
+  - BBS converter: fixed closed orbit units
+  - Optics: Pandas indexing error in DPP
+
+
 #### 2023-12-07 - v0.13.0 - _awegsche_
 
 - Added:
