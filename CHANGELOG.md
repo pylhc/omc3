@@ -5,6 +5,7 @@
 
 - Fixed:
   - Plot Check Corrections: Fixed Crash when normalized dispersion is in measurements
+  - Knob extractor: fixing path hack. To be removed in the future when java is fixed on CCC machines
 
 - Added:
   - Global Correction: Total phase correction arc-by-arc
