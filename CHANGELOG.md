@@ -5,6 +5,7 @@
 
 - Fixed:
   - Plot Check Corrections: Fixed Crash when normalized dispersion is in measurements
+  - Plot Optics Measurements: Added extra mpl style for clearer plots
   - Knob extractor: fixing path hack. To be removed in the future when java is fixed on CCC machines
 
 - Added:
