@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.scripts.linfile_clean &mdash; omc3 0.13.1 documentation</title>
+  <title>omc3.scripts.linfile_clean &mdash; omc3 0.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=b4617fb1"></script>
+        <script src="../../../_static/documentation_options.js?v=9e420a66"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -214,6 +214,10 @@
 <span class="sd">Performs an automated cleaning of different columns in the lin-file</span>
 <span class="sd">as a standalone script to allow for manual refinement after harpy is done.</span>
 
+<span class="sd">The type of cleaning is determined by the number of values in the ``limit``</span>
+<span class="sd">parameter. When no ``limit`` is given or a single number is given, </span>
+<span class="sd">auto-cleaning is performed:</span>
+
 <span class="sd">All data is assumed to be gaussian distributed around a &quot;true&quot; value,</span>
 <span class="sd">and outliers are cleaned by calculating average and standard deviation</span>
 <span class="sd">of the given data.</span>
@@ -226,6 +230,9 @@
 <span class="sd">Datapoints with a standard deviation smaller than the given limit are not</span>
 <span class="sd">cleaned. The limit is given in whatever units the data itself is in and</span>
 <span class="sd">is an absolute value.</span>
+
+<span class="sd">If two values are given for the ``limit`` parameter, all data-points in between </span>
+<span class="sd">these limits are kept and all data-points outside of these limits are cleaned.</span>
 
 <span class="sd">Cleaning is done per given file independently</span>
 <span class="sd">i.e. removed BPMs from one file can be present in the next.</span>
@@ -263,10 +270,15 @@
 <span class="sd">    Columns to clean on.</span>
 
 
+<span class="sd">- **keep** *(str)*:</span>
+
+<span class="sd">    Do not clean BPMs with given names.</span>
+
+
 <span class="sd">- **limit** *(float)*:</span>
 
-<span class="sd">    Do not clean data-points deviating less than this limit from the</span>
-<span class="sd">    average.</span>
+<span class="sd">    Two values: Do not clean data-points in between these values.</span>
+<span class="sd">    Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.</span>
 
 <span class="sd">    default: ``0.0``</span>
 
@@ -327,8 +339,14 @@
         <span class="p">),</span>
         <span class="n">limit</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not clean data-points deviating less than this limit from the average.&quot;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Two values: Do not clean data-points in between these values. &quot;</span>
+                 <span class="s2">&quot;Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">keep</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not clean BPMs with given names.&quot;</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">backup</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
@@ -352,7 +370,7 @@
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The option &#39;columns&#39; is required for cleaning.&quot;</span><span class="p">)</span>
-    <span class="n">clean_columns</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">backup</span><span class="p">)</span></div>
+    <span class="n">clean_columns</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">keep</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">backup</span><span class="p">)</span></div>
 
 
 
@@ -402,15 +420,30 @@
 
 <div class="viewcode-block" id="clean_columns">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.linfile_clean.clean_columns">[docs]</a>
-<span class="k">def</span> <span class="nf">clean_columns</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                  <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">backup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">clean_columns</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> 
+                  <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                  <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>   <span class="c1"># default set in _check_limits</span>
+                  <span class="n">keep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># default set below</span>
+                  <span class="n">backup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Clean the columns in the given files.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
         <span class="n">file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cleaning </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check limits</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="n">_check_limits</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+
+        <span class="c1"># read and check file</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read_tfs</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">COL_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keep</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">keep</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="n">not_found_bpms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">keep</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">not_found_bpms</span><span class="p">):</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following BPMs to keep were not found in </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="n">not_found_bpms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># clean</span>
         <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">_filter_by_column</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">_filter_by_column</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_compute_headers</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">backup</span><span class="p">:</span>
@@ -420,13 +453,41 @@
 
 
 
-<span class="k">def</span> <span class="nf">_filter_by_column</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="n">Number</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_check_limits</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Number</span><span class="p">],</span> <span class="n">Number</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Number</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Check that one or two limits are given and convert them into a tuple if needed.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="p">(</span><span class="n">limit</span><span class="p">,)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Performing auto-cleaning.&quot;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performing cleaning between the limits </span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">limit</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected 1 or 2 limits, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">limit</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_by_column</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Number</span><span class="p">],</span> <span class="n">keep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the dataframe with all rows dropped filtered by the given column.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> not in current file. Skipping cleaning.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span>
 
-    <span class="n">good_bpms</span> <span class="o">=</span> <span class="n">get_filter_mask</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+    <span class="n">keep_bpms</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">keep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">good_bpms</span> <span class="o">=</span> <span class="n">get_filter_mask</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">|</span> <span class="n">keep_bpms</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">good_bpms</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="o">*</span><span class="n">limit</span><span class="p">)</span> <span class="o">|</span> <span class="n">keep_bpms</span>
+    
     <span class="n">n_good</span><span class="p">,</span> <span class="n">n_total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">good_bpms</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_bpms</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cleaned </span><span class="si">{</span><span class="n">n_total</span><span class="o">-</span><span class="n">n_good</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">n_total</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> elements in </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">n_good</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> remaining).&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">good_bpms</span><span class="p">,</span> <span class="p">:]</span>

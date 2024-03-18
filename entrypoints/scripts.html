@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.13.1 documentation</title>
+  <title>Scripts &mdash; omc3 0.14.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -16,7 +16,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=b4617fb1"></script>
+        <script src="../_static/documentation_options.js?v=9e420a66"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -712,6 +712,9 @@ global_correction_entrypoint uses (same format you would get from hole_in_one).<
 <h2>Linfile Cleaning<a class="headerlink" href="#linfile-cleaning" title="Link to this heading"></a></h2>
 <p>Performs an automated cleaning of different columns in the lin-file
 as a standalone script to allow for manual refinement after harpy is done.</p>
+<p>The type of cleaning is determined by the number of values in the <code class="docutils literal notranslate"><span class="pre">limit</span></code>
+parameter. When no <code class="docutils literal notranslate"><span class="pre">limit</span></code> is given or a single number is given,
+auto-cleaning is performed:</p>
 <p>All data is assumed to be gaussian distributed around a “true” value,
 and outliers are cleaned by calculating average and standard deviation
 of the given data.</p>
@@ -722,6 +725,8 @@ n stays constant (or 2 or less data-points remain).</p>
 <p>Datapoints with a standard deviation smaller than the given limit are not
 cleaned. The limit is given in whatever units the data itself is in and
 is an absolute value.</p>
+<p>If two values are given for the <code class="docutils literal notranslate"><span class="pre">limit</span></code> parameter, all data-points in between
+these limits are kept and all data-points outside of these limits are cleaned.</p>
 <p>Cleaning is done per given file independently
 i.e. removed BPMs from one file can be present in the next.
 The columns are iterated on the same file, i.e. the cleaning is done
@@ -755,10 +760,15 @@ numbered, with the highest number being the latest backup.</p>
 <div><p>Columns to clean on.</p>
 </div></blockquote>
 </li>
+<li><p><strong>keep</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Do not clean BPMs with given names.</p>
+</div></blockquote>
+</li>
 <li><p><strong>limit</strong> <em>(float)</em>:</p>
 <blockquote>
-<div><p>Do not clean data-points deviating less than this limit from the
-average.</p>
+<div><p>Two values: Do not clean data-points in between these values.
+Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.</p>
 <p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
 </div></blockquote>
 </li>
@@ -777,7 +787,7 @@ And it requires an accelerator instance.</p>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.linfile_clean.</span></span><span class="sig-name descname"><span class="pre">clean_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/linfile_clean.html#clean_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.linfile_clean.</span></span><span class="sig-name descname"><span class="pre">clean_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/linfile_clean.html#clean_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Clean the columns in the given files.</p>
 </dd></dl>
 
