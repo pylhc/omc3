@@ -1,6 +1,5 @@
 # OMC3 Changelog
 
-
 #### IN PROGRESS - v0.15.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:
@@ -14,6 +13,10 @@
   - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
   - Script to copy KMod results into optics directory
 
+#### 2024-03-18 - v0.14.0 - _jdilly_
+
+- Added:
+  - Linfile Updater: `keep`-flag to keep names and option to clean manually between limits.
 
 #### 2024-03-08 - v0.13.1 - _jdilly_, _awegsche_, _mlegarre_, _fesoubel_
 
@@ -23,7 +26,6 @@
 - Fixed:
   - BBS converter: fixed closed orbit units
   - Optics: Pandas indexing error in DPP
-
 
 #### 2023-12-07 - v0.13.0 - _awegsche_
 
