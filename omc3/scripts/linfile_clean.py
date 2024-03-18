@@ -4,6 +4,10 @@ Linfile Cleaning
 Performs an automated cleaning of different columns in the lin-file
 as a standalone script to allow for manual refinement after harpy is done.
 
+The type of cleaning is determined by the number of values in the ``limit``
+parameter. When no ``limit`` is given or a single number is given, 
+auto-cleaning is performed:
+
 All data is assumed to be gaussian distributed around a "true" value,
 and outliers are cleaned by calculating average and standard deviation
 of the given data.
@@ -16,6 +20,9 @@ n stays constant (or 2 or less data-points remain).
 Datapoints with a standard deviation smaller than the given limit are not
 cleaned. The limit is given in whatever units the data itself is in and
 is an absolute value.
+
+If two values are given for the ``limit`` parameter, all data-points in between 
+these limits are kept and all data-points outside of these limits are cleaned.
 
 Cleaning is done per given file independently
 i.e. removed BPMs from one file can be present in the next.
@@ -53,10 +60,15 @@ No cleaning is performed with this option.
     Columns to clean on.
 
 
+- **keep** *(str)*:
+
+    Do not clean BPMs with given names.
+
+
 - **limit** *(float)*:
 
-    Do not clean data-points deviating less than this limit from the
-    average.
+    Two values: Do not clean data-points in between these values.
+    Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.
 
     default: ``0.0``
 
@@ -117,8 +129,14 @@ def get_params():
         ),
         limit=dict(
             type=float,
-            help="Do not clean data-points deviating less than this limit from the average.",
-            default=0.0,
+            nargs='+',
+            help="Two values: Do not clean data-points in between these values. "
+                 "Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.",
+        ),
+        keep=dict(
+            nargs='+',
+            type=str,
+            help="Do not clean BPMs with given names.",
         ),
         backup=dict(
             action="store_true",
@@ -140,7 +158,7 @@ def main(opt):
 
     if opt.columns is None:
         raise ValueError("The option 'columns' is required for cleaning.")
-    clean_columns(opt.files, opt.columns, opt.limit, opt.backup)
+    clean_columns(opt.files, opt.columns, opt.limit, opt.keep, opt.backup)
 
 
 # Restore ----------------------------------------------------------------------
@@ -184,15 +202,30 @@ def _restore_file(file):
 
 # Clean ------------------------------------------------------------------------
 
-def clean_columns(files: Sequence[Union[Path, str]], columns: Sequence[str],
-                  limit: float = 0.0, backup: bool = True):
+def clean_columns(files: Sequence[Union[Path, str]], 
+                  columns: Sequence[str],
+                  limit: float = (0.0,), 
+                  keep: Sequence[str] = (),
+                  backup: bool = True):
     """ Clean the columns in the given files."""
     for file in files:
         file = Path(file)
         LOG.info(f"Cleaning {file.name}.")
+
+        # check limits
+        limit = _check_limits(limit)
+
+        # read and check file
         df = tfs.read_tfs(file, index=COL_NAME)
+        if keep is None:
+            keep = ()
+        not_found_bpms = set(keep) - set(df.index)
+        if len(not_found_bpms):
+            LOG.warning(f"The following BPMs to keep were not found in {file.name}:\n{not_found_bpms}")
+
+        # clean
         for column in columns:
-            df = _filter_by_column(df, column, limit)
+            df = _filter_by_column(df, column, limit, keep)
         df.headers.update(_compute_headers(df))
 
         if backup:
@@ -201,13 +234,41 @@ def clean_columns(files: Sequence[Union[Path, str]], columns: Sequence[str],
         tfs.write_tfs(file, df, save_index=COL_NAME)
 
 
-def _filter_by_column(df: pd.DataFrame, column: str, limit: Number) -> pd.DataFrame:
+def _check_limits(limit: Union[Sequence[Number], Number]) -> Sequence[Number]:
+    """ Check that one or two limits are given and convert them into a tuple if needed."""
+    if limit is None:
+        limit = (0.0,)
+
+    try:
+        len(limit)
+    except TypeError:
+        limit = (limit,)
+
+    if len(limit) == 1:
+        LOG.info("Performing auto-cleaning.")
+
+    elif len(limit) == 2:
+        LOG.info(f"Performing cleaning between the limits {limit}.")
+        limit = tuple(sorted(limit))
+
+    else:
+        raise ValueError(f"Expected 1 or 2 limits, got {len(limit)}.")
+    
+    return limit
+
+
+def _filter_by_column(df: pd.DataFrame, column: str, limit: Sequence[Number], keep: Sequence[str]) -> pd.DataFrame:
     """Get the dataframe with all rows dropped filtered by the given column."""
     if column not in df.columns:
         LOG.info(f"{column} not in current file. Skipping cleaning.")
         return df
 
-    good_bpms = get_filter_mask(data=df[column], limit=limit)
+    keep_bpms = df.index.isin(keep)
+    if len(limit) == 1:
+        good_bpms = get_filter_mask(data=df[column], limit=limit[0]) | keep_bpms
+    else:
+        good_bpms = df[column].between(*limit) | keep_bpms
+    
     n_good, n_total = sum(good_bpms), len(good_bpms)
     LOG.info(f"Cleaned {n_total-n_good:d} of {n_total:d} elements in {column} ({n_good:d} remaining).")
     return df.loc[good_bpms, :]
