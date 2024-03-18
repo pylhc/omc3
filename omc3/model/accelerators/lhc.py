@@ -344,7 +344,7 @@ class Lhc(Accelerator):
             excitation_name = "AC-Dipole"
             possible_bpms = [f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"]
             element = f"MKQA.6L4.B{beam}"
-        if self.excitation == AccExcitationMode.ADT:
+        elif self.excitation == AccExcitationMode.ADT:
             excitation_name = "ADT-AC-Dipole"
             possible_bpms = [f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"]
             element = f"ADTK{adt}5{l_r}4.B{beam}"
