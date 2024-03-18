@@ -204,8 +204,8 @@ def _restore_file(file):
 
 def clean_columns(files: Sequence[Union[Path, str]], 
                   columns: Sequence[str],
-                  limit: float = (0.0,), 
-                  keep: Sequence[str] = (),
+                  limit: float = None,   # default set in _check_limits
+                  keep: Sequence[str] = None,  # default set below
                   backup: bool = True):
     """ Clean the columns in the given files."""
     for file in files:
