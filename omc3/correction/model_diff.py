@@ -54,7 +54,6 @@ def _get_mapping():
     return defaultdict(
         lambda: _diff,
         {
-            PHASE_ADV: _phase_advance_diff,
             PHASE: _phase_advance_diff,
             BETA: _beta_beating,
             NORM_DISPERSION: _normalized_dispersion_diff,

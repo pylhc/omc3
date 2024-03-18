@@ -1,5 +1,18 @@
 # OMC3 Changelog
 
+#### IN PROGRESS - v0.15.0 - _jdilly_, _fscarlier_, _fesoubel_
+
+- Fixed:
+  - Plot Check Corrections: Fixed Crash when normalized dispersion is in measurements
+  - Plot Optics Measurements: Added extra mpl style for clearer plots
+  - Knob extractor: fixing path hack. To be removed in the future when java is fixed on CCC machines
+  - LHC exciter BPM not found: Tells you which BPMs were searched for
+
+- Added:
+  - Global Correction: Total phase correction arc-by-arc
+  - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
+  - Script to copy KMod results into optics directory
+
 #### 2024-03-18 - v0.14.0 - _jdilly_
 
 - Added:

@@ -167,7 +167,7 @@ from omc3.correction.constants import (
 )
 from omc3.definitions.optics import (
     FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, RDT_PHASE_COLUMN, 
-    RDT_IMAG_COLUMN, RDT_REAL_COLUMN, RDT_AMPLITUDE_COLUMN
+    RDT_IMAG_COLUMN, RDT_REAL_COLUMN, RDT_AMPLITUDE_COLUMN, NORM_DISP_NAME,
 )
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.plot_optics_measurements import (
@@ -497,11 +497,13 @@ def show_plots(figure_dict: Dict[str, Figure]):
                 # is x and the following column is y. They are added to the tab, which 
                 # is named by the optics parameter without plane.
                 tab_name = " ".join(tab_prename.split("_")[:-1 if correction_name else -2])  # remove plane (and column-name)
-                name_y = next(parameter_names)
+                if tab_prename.startswith(NORM_DISP_NAME):
+                    name_y = None  # special case, so far the only one
+                else:
+                    name_y = next(parameter_names)
 
             new_tab = PlotWidget(
-                figure_dict[name_x],
-                figure_dict[name_y],
+                *[figure_dict[name] for name in (name_x, name_y) if name is not None],
                 title=tab_name,
             )
             current_tab.add_tab(new_tab)
