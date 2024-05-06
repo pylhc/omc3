@@ -122,7 +122,7 @@ def _detect_bpms_with_nans(bpm_data) -> pd.Index:
     """Detects BPMs with NaN values."""
     nan_bpms = bpm_data[bpm_data.isna().any(axis=1)].index
     if nan_bpms.size:
-        LOGGER.debug(
+        LOGGER.warning(
             f"NaN BPMs detected. "
             f"{nan_bpms.size} BPMs removed: {', '.join(nan_bpms)}"
         )
