@@ -54,7 +54,8 @@ def _cut_cleaning(harpy_input, bpm_data, model):
     bpm_flatness = _detect_flat_bpms(bpm_data, harpy_input.peak_to_peak)
     bpm_spikes = _detect_bpms_with_spikes(bpm_data, harpy_input.max_peak)
     exact_zeros = _detect_bpms_with_exact_zeros(bpm_data, harpy_input.keep_exact_zeros)
-    all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros)
+    bpm_nans = _detect_bpms_with_nans(bpm_data)
+    all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros, bpm_nans)
     original_bpms = bpm_data.index
 
     bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms, sort=False)]
@@ -110,8 +111,22 @@ def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
     too_low = bpm_data[bpm_data.min(axis=1) < -max_peak_cut].index
     bpm_spikes = too_high.union(too_low)
     if bpm_spikes.size:
-        LOGGER.debug(f"Spikes > {max_peak_cut} detected. BPMs removed: {bpm_spikes.size}")
+        LOGGER.debug(
+            f"Spikes > {max_peak_cut} detected. "
+            f"{bpm_spikes.size} BPMs removed: {', '.join(bpm_spikes)}"
+        )
     return bpm_spikes
+
+
+def _detect_bpms_with_nans(bpm_data) -> pd.Index:
+    """Detects BPMs with NaN values."""
+    nan_bpms = bpm_data[bpm_data.isna().any(axis=1)].index
+    if nan_bpms.size:
+        LOGGER.debug(
+            f"NaN BPMs detected. "
+            f"{nan_bpms.size} BPMs removed: {', '.join(nan_bpms)}"
+        )
+    return nan_bpms
 
 
 def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
@@ -121,7 +136,10 @@ def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
         return pd.Index([])
     exact_zeros = bpm_data[~np.all(bpm_data, axis=1)].index
     if exact_zeros.size:
-        LOGGER.debug(f"Exact zeros detected. BPMs removed: {exact_zeros.size}")
+        LOGGER.debug(
+            f"Exact zeros detected. "
+            f"{exact_zeros.size} BPMs removed: {', '.join(exact_zeros)} "
+        )
     return exact_zeros
 
 
