@@ -55,14 +55,15 @@ def get_average_betastar_results(opt):
 
     Returns:
         The final results as a DataFrame.
-    """ 
+    """
     final_results = []
     for beam in [1, 2]:
         all_dfs = []
         for mpath in opt.meas_paths:
+            print(mpath)
             all_dfs.append(tfs.read(mpath / f'B{beam}' / 'results.tfs').drop(columns=['LABEL', 'TIME']))
-        
-        panel = np.array(all_dfs)          
+
+        panel = np.array(all_dfs)
         # Calculate mean and std along the new axis (axis=0)
         mean_df = pd.DataFrame(panel.mean(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
         std_df = pd.DataFrame(panel.std(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
@@ -95,18 +96,18 @@ def get_average_bpm_betas_results(opt):
         all_dfs = []
         for mpath in opt.meas_paths:
             all_dfs.append(tfs.read(mpath / f'B{beam}' / 'lsa_results.tfs').set_index('NAME'))
-        
-        panel = np.array(all_dfs)          
+
+        panel = np.array(all_dfs)
         # Calculate mean and std along the new axis (axis=0)
         mean_df = pd.DataFrame(panel.mean(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
         std_df = pd.DataFrame(panel.std(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
-        
+
         mean_df['ERRBETX'] = std_df['BETX']
         mean_df['ERRBETY'] = std_df['BETY']
         mean_df = mean_df.reset_index()
         final_results[beam] = mean_df
         tfs.write(opt.output_dir / f'averaged_bpm_beam{beam}_ip{opt.ip}_beta{opt.beta}m.tfs', mean_df)
-    
+
     return final_results
 
 
@@ -116,7 +117,7 @@ def plot_results(opt, results):
 
     Parameters:
     - opt: input options
-    - results: the calculated average betas 
+    - results: the calculated average betas
 
     Returns:
     None
