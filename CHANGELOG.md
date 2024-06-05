@@ -13,6 +13,13 @@
   - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
   - Script to copy KMod results into optics directory
 
+#### 2024-06-05 - v0.14.1 - _jdilly_
+
+- Fixed:
+  - LHC Knobs: Fixed typo "MQSOR" to "MQSORG" in LHC Beam 2 coupling knobs.
+
+- CI: Dropped python 3.8
+
 #### 2024-03-18 - v0.14.0 - _jdilly_
 
 - Added:
