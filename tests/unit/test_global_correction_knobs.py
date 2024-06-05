@@ -1,11 +1,8 @@
-""" Tests for global correction knobs.
-
+""" 
+Tests for the definition files of the global correction knobs.
 """
+import json
 
-
-import pytest
-import json 
-from pathlib import Path
 from omc3.model.accelerators.lhc import LHC_DIR
 
 CORRECTORS_DIR = LHC_DIR / "2012" / "correctors"
