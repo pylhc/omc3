@@ -5,6 +5,8 @@
 - Fixed:
   - LHC Knobs: Fixed typo "MQSOR" to "MQSORG" in LHC Beam 2 coupling knobs.
 
+- CI: Dropped python 3.8
+
 #### 2024-03-18 - v0.14.0 - _jdilly_
 
 - Added:
