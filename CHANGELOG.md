@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2024-06-05 - v0.14.1 - _jdilly_
+
+- Fixed:
+  - LHC Knobs: Fixed typo "MQSOR" to "MQSORG" in LHC Beam 2 coupling knobs.
+
 #### 2024-03-18 - v0.14.0 - _jdilly_
 
 - Added:
