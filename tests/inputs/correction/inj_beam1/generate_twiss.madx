@@ -34,3 +34,18 @@ exec, do_twiss_monitors(LHCB1, 'twiss_skew_quadrupole_error.dat', 0.0);
 
 kqs.l2b1 = kqs.l2b1 - 0.0001;
 kqs.l6b1 = kqs.l6b1 + 0.00023;
+
+
+! MQT Quadrupole Error
+kqtf.a23b1 = kqtf.a23b1 -2.5e-04;
+kqtf.a34b1 = kqtf.a34b1 +5.6e-05;
+kqtd.a67b1 = kqtd.a67b1 +3.6e-05;
+kqtf.a78b1 = kqtf.a78b1 +4.8e-05;
+
+exec, do_twiss_monitors(LHCB1, 'twiss_mqt_quadrupole_error.dat', 0.0);
+
+kqtf.a23b1 = kqtf.a23b1 +2.5e-04;
+kqtf.a34b1 = kqtf.a34b1 -5.6e-05;
+kqtd.a67b1 = kqtd.a67b1 -3.6e-05;
+kqtf.a78b1 = kqtf.a78b1 -4.8e-05;
+

@@ -6,7 +6,7 @@ This module provides high-level functions to manage most functionality of ``mode
 It contains entrypoint wrappers to get accelerator classes or their instances.
 """
 from generic_parser.entrypoint_parser import entrypoint, EntryPoint, EntryPointParameters
-from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota
+from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota, generic
 from generic_parser.dict_parser import ArgumentError
 from generic_parser.tools import silence
 
@@ -21,7 +21,8 @@ ACCELS = {
     skekb.SKekB.NAME: skekb.SKekB,
     "JPARC": skekb.SKekB,
     petra.Petra.NAME: petra.Petra,
-    iota.Iota.NAME: iota.Iota
+    iota.Iota.NAME: iota.Iota,
+    generic.Generic.NAME: generic.Generic,
 }
 
 

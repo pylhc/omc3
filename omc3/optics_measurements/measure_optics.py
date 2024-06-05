@@ -64,7 +64,15 @@ def measure_optics(input_files: InputFiles, measure_input):
         dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
         if plane == "X":
             dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
-    coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
+
+    try:
+        coupling.calculate_coupling(measure_input, input_files, phase_dict, tune_dict, common_header)
+    except ZeroDivisionError:
+        if measure_input.accelerator.NAME in ('generic', 'sps'):
+            LOGGER.error("Coupling failed with zero-division error. Single plane BPMs? Skipped.")
+        else:
+            raise
+    
     if measure_input.only_coupling:
         return
     if 'rdt' in measure_input.nonlinear:

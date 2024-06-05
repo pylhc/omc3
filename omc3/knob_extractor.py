@@ -63,6 +63,12 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 
 
 """
+####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ################
+# This ia a hack, please remove at the earliers convenience
+import os
+if "PATH" in os.environ and "/mcr/bin" in os.environ["PATH"]:
+    os.environ["PATH"] = "/bin:" + os.environ["PATH"]
+##############################################################
 import argparse
 import logging
 import math
