@@ -9,7 +9,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Sequence, Union
 
 from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
@@ -58,7 +58,7 @@ def copy_item(src_item, dest):
         LOG.error(f"Could not copy item because of IOError. Item: '{src_item}'")
 
 
-def glob_regex(path: Path, pattern: str) -> "filter object":
+def glob_regex(path: Path, pattern: str) -> Sequence[str]:
     """ Do a glob on the given `path` based on the regular expression `pattern`.
     Returns only the matching filenames (as strings).
 
