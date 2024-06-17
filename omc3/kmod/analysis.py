@@ -146,7 +146,7 @@ def fit_prec(x, beta_av):
     return dQ
 
 
-np.vectorize(fit_prec)
+np.vectorize(fit_prec)  # does nothing if we don't store result!
 
 
 def fit_approx(x, beta_av):
@@ -154,14 +154,14 @@ def fit_approx(x, beta_av):
     return dQ
 
 
-np.vectorize(fit_approx)
+np.vectorize(fit_approx)  # does nothing if we don't store result!
 
 
-def average_beta_from_Tune(Q, TdQ, l, Dk):
+def average_beta_from_Tune(Q, TdQ, length, Dk):
     """Calculates average beta function in quadrupole from tune change ``TdQ`` and ``delta K``."""
 
     beta_av = 2 * (1 / np.tan(2 * np.pi * Q) *
-              (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (l * Dk)
+              (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (length * Dk)
     return abs(beta_av)
 
 
