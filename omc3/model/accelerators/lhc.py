@@ -462,7 +462,7 @@ class Lhc(Accelerator):
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
 
-        madx_script += f"\n! ----- Matching Knobs and Output Files -----\n"
+        madx_script += "\n! ----- Matching Knobs and Output Files -----\n"
 
         # in the best knowledge case, all knobs are loaded from actual knowledge
         if not best_knowledge:

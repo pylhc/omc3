@@ -15,7 +15,7 @@ from scipy.optimize import curve_fit
 from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
+from omc3.optics_measurements.constants import AMPLITUDE, ERR, EXT, IMAG, PHASE, REAL
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
@@ -73,7 +73,7 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
 
     Returns:
     """
-    LOGGER.info(f"Start of RDT analysis")
+    LOGGER.info("Start of RDT analysis")
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
     LOGGER.info(f"Calculating RDTs up to magnet order {meas_input['rdt_magnet_order']}")
@@ -187,11 +187,11 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
         df.loc[:, "ERRMEAS"].to_numpy()[:, np.newaxis], comp_coeffs1, comp_coeffs2)
     rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase)
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
-    df[f"PHASE"] = rdt_angles
-    df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
+    df[f"{PHASE}"] = rdt_angles
+    df[f"{ERR}{PHASE}"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
     df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
-    df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[f"{REAL}"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[f"{IMAG}"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
     # in old files there was "EAMP" and "PHASE_STD"
     return df.loc[:, ["S", "COUNT", AMPLITUDE, f"{ERR}{AMPLITUDE}", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 

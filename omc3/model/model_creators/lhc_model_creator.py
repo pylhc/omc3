@@ -154,7 +154,7 @@ class LhcModelCreator(ModelCreator):
                 index=b2_table.index,
                 columns=_b2_columns(),
             )
-            gen_df["K1L"] = b2_table.loc[:, f"K1L"].to_numpy()
+            gen_df["K1L"] = b2_table.loc[:, "K1L"].to_numpy()
             tfs.write(
                 accel.model_dir / B2_ERRORS_TFS,
                 gen_df,

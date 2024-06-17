@@ -488,7 +488,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
 
     prefix = ''
     if opt.delta:
-        prefix += f'delta_'
+        prefix += 'delta_'
     if opt.combine_by and "files" in opt.combine_by:
         prefix += f'{optics_parameter}'
 

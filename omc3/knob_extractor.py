@@ -446,7 +446,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame
 
     # Write them out
     with open(output, "w") as outfile:
-        outfile.write(f"!! --- knobs extracted by knob_extractor\n")
+        outfile.write("!! --- knobs extracted by knob_extractor\n")
         outfile.write(f"!! --- extracted knobs for time {collected_knobs.headers[Head.time]}\n\n")
         for category, knobs_df in category_knobs.items():
             outfile.write(f"!! --- {category:10} --------------------\n")

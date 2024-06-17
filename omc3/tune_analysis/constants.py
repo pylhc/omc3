@@ -36,7 +36,7 @@ def get_kick_out_name() -> str:
 
 
 def get_bbq_out_name() -> str:
-    return f"bbq_ampdet.tfs"
+    return "bbq_ampdet.tfs"
 
 
 @dataclass

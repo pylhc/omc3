@@ -113,9 +113,11 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
                                                  bpm_matrix.shape[1])
     if tunes[2] > 0:
         df, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, df)
-        df[f"MUZ"] = _realign_phases(df.loc[:, f"MUZ"].to_numpy(),
-                                              df.loc[:, f"TUNEZ"].to_numpy(),
-                                              bpm_matrix.shape[1])
+        df[f"{COL_MU}Z"] = _realign_phases(
+            df.loc[:, f"{COL_MU}Z"].to_numpy(),
+            df.loc[:, f"{COL_TUNE}Z"].to_numpy(),
+            bpm_matrix.shape[1],
+        )
     return df, spectra, bad_bpms_summaries
 
 
