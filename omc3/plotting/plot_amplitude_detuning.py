@@ -706,12 +706,12 @@ def get_labels_with_odr_labels(ax, odr_labels):
 
     empty = Line2D([0], [0], ls='none', marker='', label='')
     h_new, l_new = [], []
-    for handle, label, odr in zip(h, l, odr_labels):
+    for handle, label, odr_label in zip(h, l, odr_labels):
         h_new.append(handle)
         l_new.append(label)
-        if odr is not None:
+        if odr_label is not None:
             h_new.append(empty)
-            l_new.append("\n".join(odr.values()))
+            l_new.append("\n".join(odr_label.values()))
     return h_new, l_new
 
 
