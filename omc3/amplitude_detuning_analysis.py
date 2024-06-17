@@ -503,7 +503,7 @@ def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFram
             LOG.debug(f"Getting bbq data from file '{str(input_):s}'")
             data = read_timed_dataframe(input_)
             if not len(data.index):
-                raise ValueError(f"No entries in {str(input_):s}.")
+                raise ValueError(f"No entries in {str(input_):s}.") from e
 
     else:  # input_ is a number, assumed to be a fill number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")
