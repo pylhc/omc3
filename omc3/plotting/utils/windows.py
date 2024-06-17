@@ -45,12 +45,9 @@ else:
     try:
         matplotlib.use('qtagg')
     except ImportError as e:
-        if not "headless" in str(e):
+        if "headless" not in str(e):
             raise
-        LOG.debug(
-            "Could not change mpl to use QT, "
-            "due to headless mode (i.e. no display connected)."
-            )
+        LOG.debug("Could not change mpl to use QT, due to headless mode (i.e. no display connected).")
 
 # ------------------------------------------------------------------------------
 
