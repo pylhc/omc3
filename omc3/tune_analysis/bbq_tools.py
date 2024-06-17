@@ -140,7 +140,7 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[p
         # ... as we change the index of data now
         data.index = pd.Index([i.timestamp() for i in data.index])
 
-    data[clean_mask] = np.NaN
+    data[clean_mask] = np.nan
 
     try:
         # 'interpolate' fills nan based on index/values of neighbours
