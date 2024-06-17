@@ -36,8 +36,8 @@ def read_fullresponse(path: Path, optics_parameters: Sequence[str] = None) -> Di
         fullresponse = defaultdict(pd.DataFrame)
         if optics_parameters is None:
             optics_parameters = _main_store_groups(store)
-        for p in optics_parameters:
-            fullresponse[p] = store[p]
+        for param in optics_parameters:
+            fullresponse[param] = store[param]
     return fullresponse
 
 
