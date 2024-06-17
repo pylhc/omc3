@@ -275,7 +275,7 @@ def figure_title(text, ax=None, pad=0, **kwargs):
 
 def get_legend_ncols(labels, max_length=78):
     """Calculate the number of columns in legend dynamically."""
-    return max([max_length/max([len(l) for l in labels]), 1])
+    return max([max_length/max([len(label) for label in labels]), 1])
 
 
 def transpose_legend_order(ncol, handles=None, labels=None, ax=None):

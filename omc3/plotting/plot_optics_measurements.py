@@ -417,12 +417,12 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
         if combine_planes:
             y_labels = [optics_parameter.upper()]
             if opt.suppress_column_legend:
-                column_labels = [l.format('F') for l in columns['y_labels'][idxs]]
+                column_labels = [label.format('F') for label in columns['y_labels'][idxs]]
             else:
-                column_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+                column_labels = [label.format(optics_parameter.upper()) for label in columns['y_labels'][idxs]]
 
         else:
-            y_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+            y_labels = [label.format(optics_parameter.upper()) for label in columns['y_labels'][idxs]]
             column_labels = [optics_parameter.upper()]
             if opt.suppress_column_legend:
                 column_labels = ['']

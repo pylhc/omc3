@@ -71,13 +71,13 @@ def phase_to_betastar(lstar, phase, errphase):
             _phase_to_betastar_error(lstar, phase, errphase))
 
 
-def _phase_to_betastar_value(l, ph):
+def _phase_to_betastar_value(lstar, ph):
     tph = np.tan(ph)
-    return (l * (1 - np.sqrt(tph ** 2 + 1))) / tph
+    return (lstar * (1 - np.sqrt(tph ** 2 + 1))) / tph
 
 
-def _phase_to_betastar_error(l, ph, eph):
-    return abs((eph * l * (abs(np.cos(ph)) - 1)) / (np.sin(ph) ** 2))
+def _phase_to_betastar_error(lstar, ph, eph):
+    return abs((eph * lstar * (abs(np.cos(ph)) - 1)) / (np.sin(ph) ** 2))
 
 
 def _get_meas_phase(bpml, bpmr, phases_df):
