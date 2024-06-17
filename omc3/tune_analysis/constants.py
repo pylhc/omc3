@@ -5,7 +5,7 @@ Constants
 Specific constants and helpers to be used in ``tune_analysis``, to help with consistency.
 """
 from dataclasses import dataclass
-from typing import Tuple, Sequence
+from typing import Sequence
 
 import pandas as pd
 from omc3.definitions.constants import PLANE_TO_NUM

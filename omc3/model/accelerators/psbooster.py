@@ -63,12 +63,12 @@ Model Creation Keyword Args:
 import logging
 from pathlib import Path
 
-from generic_parser import DotDict, EntryPoint
+from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import (Accelerator,
                                                  AcceleratorDefinitionError, AccElementTypes, AccExcitationMode)
 from omc3.model.accelerators.psbase import PsBase
-from omc3.model.constants import PLANE_TO_HV, MODIFIER_TAG
+from omc3.model.constants import PLANE_TO_HV
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent

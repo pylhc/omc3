@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError

@@ -6,7 +6,6 @@ This module contains fitting functionality for ``tune_analysis``.
 It provides tools for fitting functions, mainly via odr.
 
 """
-from collections import namedtuple
 from typing import Sequence, Dict, List, Tuple
 
 import numpy as np
@@ -17,7 +16,7 @@ from scipy.odr import RealData, Model, ODR
 from scipy.optimize import curve_fit
 
 from omc3.utils import logging_tools
-from omc3.tune_analysis.constants import FakeOdrOutput, AmpDetData
+from omc3.tune_analysis.constants import FakeOdrOutput
 
 LOG = logging_tools.get_logger(__name__)
 

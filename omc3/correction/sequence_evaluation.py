@@ -18,8 +18,8 @@ import numpy as np
 import tfs
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction.response_io import write_fullresponse, write_varmap
-from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
+from omc3.correction.response_io import write_varmap
+from omc3.model.accelerators.accelerator import Accelerator
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 

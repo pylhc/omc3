@@ -20,7 +20,7 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 NAT_TUNE, PEAK2PEAK,
                                                 RES,
                                                 RESCALE_FACTOR, RMS,
-                                                SQRT_ACTION, TIME, TUNE, S, NOISE, CLOSED_ORBIT)
+                                                SQRT_ACTION, TIME, TUNE, S, CLOSED_ORBIT)
 from omc3.utils.stats import weighted_mean, weighted_error
 
 

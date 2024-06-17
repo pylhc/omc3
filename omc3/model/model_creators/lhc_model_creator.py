@@ -5,7 +5,6 @@ LHC Model Creator
 This module provides convenience functions for model creation of the ``LHC``.
 """
 import logging
-import pathlib
 import shutil
 from pathlib import Path
 from typing import List

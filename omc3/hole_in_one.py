@@ -33,7 +33,7 @@ import os
 from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime
-from os.path import abspath, basename, dirname, join, splitext
+from os.path import abspath, basename, dirname, join
 from typing import Generator, Tuple
 
 import turn_by_turn as tbt
