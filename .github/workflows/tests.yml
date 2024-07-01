@@ -1,5 +1,5 @@
-# Runs all tests in two steps: the basic tests and the "extended" tests
-name: Tests
+# Runs all tests 
+name: All Tests
 
 defaults:
   run:
@@ -10,65 +10,13 @@ on:  # Runs on any push event to any branch except master (the coverage workflow
     branches-ignore:
       - 'master'
 
-
 jobs:
-  basic_tests:  # Runs the basic tests, aka all tests not marked with "extended", on all push events
-    name: basic / ${{ matrix.os }} / ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-latest, windows-latest]
-        # Make sure to escape 3.10 with quotes so it doesn't get interpreted as float 3.1 by GA's parser
-        python-version: [3.9, "3.10", "3.11"]
+  basic_tests:
+    uses: pylhc/.github/.github/workflows/tests.yml@master
+    with:
+      pytest-options: -m "not extended and not cern_network"
 
-    steps:
-      - uses: actions/checkout@v3
-
-      - if: matrix.os == 'macos-latest'
-        name: Set up hdf5
-        run: brew install hdf5
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: '**/setup.py'
-
-      - name: Upgrade pip, setuptools and wheel
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install package
-        run: python -m pip install '.[test]'
-
-      - name: Run Basic Tests
-        run: python -m pytest -m "not extended and not cern_network"
-
-
-  extended_tests:  # Runs tests marked as "extended", after the previous step
-    needs: basic_tests  # only here for aesthetics purpose
-    name: extended / ${{ matrix.os }} / ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-latest, windows-latest]
-        python-version: [3.9, "3.10", "3.11"]
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: '**/setup.py'
-
-      - name: Upgrade pip, setuptools and wheel
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install package
-        run: python -m pip install '.[test]'
-
-      - name: Run Extended Tests
-        run: python -m pytest -m "extended and not cern_network"
+  extended_tests:
+    uses: pylhc/.github/.github/workflows/tests.yml@master
+    with:
+      pytest-options: -m "extended and not cern_network"
