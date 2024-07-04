@@ -199,7 +199,6 @@ class LhcModelCreator(ModelCreator):
 
 class LhcBestKnowledgeCreator(LhcModelCreator):
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
-    CORRECTIONS_FILENAME: str = "corrections.madx"
 
     @classmethod
     def get_options(cls, accel_inst, opt) -> bool:
@@ -219,11 +218,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
             raise AcceleratorDefinitionError(
                 "Don't set ACD or ADT for best knowledge model.")
 
-        corrections_file = accel.model_dir / \
-            cls.CORRECTIONS_FILENAME  # existence is tested in madx
-
         madx_script = accel.get_base_madx_script(best_knowledge=True)
-        madx_script += f"call, file = '{corrections_file}';\n"
 
         mqts_file = accel.model_dir / cls.EXTRACTED_MQTS_FILENAME
         if mqts_file.exists():

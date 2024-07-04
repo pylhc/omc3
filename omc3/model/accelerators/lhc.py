@@ -390,24 +390,22 @@ class Lhc(Accelerator):
             f"! Model directory: {Path(self.model_dir).absolute()}\n"
             f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
             f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
-            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'OK':>10s}]\n"
+            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'YES':>10s}]\n"
         )
         if self.excitation == AccExcitationMode.FREE:
-            info_comments += f"! Excitation             [{'NO':>10s}]\n\n"
-            return info_comments
+            info_comments += f"! Excitation             [{'NO':>10s}]\n"
         else:
             info_comments += (
                 f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
                 f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
-                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n\n"
+                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n"
+
             )
         return info_comments
 
-    def get_base_madx_script(self, best_knowledge: bool = False) -> str:
-        ats_md = False
-        high_beta = False
+    def get_base_madx_script(self, best_knowledge: bool = False, ats_md: bool = False, high_beta: bool = False) -> str:
         madx_script = (
-            f"{self._get_madx_script_info_comments()}"
+            f"{self._get_madx_script_info_comments()}\n\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
         )
@@ -421,10 +419,13 @@ class Lhc(Accelerator):
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
 
-        madx_script += "! ----- Calling Sequence and Optics -----\n"
+        madx_script += "\n! ----- Calling Sequence -----\n"
         madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
         madx_script += self.load_main_seq_madx()
         madx_script += "\n\n"
+        
+        madx_script += "\n! ---- Call optics and other modifiers ----\n"
+        madx_script += "option, echo;  ! re-enable output to see the optics settings\n"
 
         if self.modifiers is not None:
             madx_script += "".join(
@@ -434,6 +435,7 @@ class Lhc(Accelerator):
 
         if self.year in ['2012', '2015', '2016', '2017', '2018', '2021', 'hllhc1.3']:
             # backwards compatibility with pre acc-models optics
+            # WARNING: This might override values extracted via the knob-extractor.
             madx_script += (
                 f"\n! ----- Defining Configuration Specifics -----\n"
                 f"xing_angles = {'1' if self.xing else '0'};\n"
@@ -443,14 +445,14 @@ class Lhc(Accelerator):
                 f"    exec, set_default_crossing_scheme();\n"
                 f"}}\n"
             )
-        else:
-            madx_script += 'call, file="knobs.madx";\n\n'
 
         madx_script += (
+            "\n! ----- Finalize Sequence -----\n"
             "exec, cycle_sequences();\n"
             f"use, sequence = LHCB{self.beam};\n"
             f"option, echo;\n"
         )
+
         if best_knowledge:
             # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
             madx_script += (
@@ -459,11 +461,12 @@ class Lhc(Accelerator):
                 f"seterr, table=errtab;\n"
                 f"call, file = '{self.model_dir / B2_SETTINGS_MADX}';\n"
             )
+            
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
 
         madx_script += f"\n! ----- Matching Knobs and Output Files -----\n"
-
+        
         # in the best knowledge case, all knobs are loaded from actual knowledge
         if not best_knowledge:
             if self._uses_ats_knobs():
