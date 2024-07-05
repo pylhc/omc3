@@ -423,7 +423,6 @@ class Lhc(Accelerator):
         madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
         madx_script += self.load_main_seq_madx()
         madx_script += "\noption, echo;  ! re-enable output to see the optics settings\n"
-        madx_script += "\n\n"
         
         madx_script += "\n! ---- Call optics and other modifiers ----\n"
 
