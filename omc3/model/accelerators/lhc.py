@@ -422,10 +422,10 @@ class Lhc(Accelerator):
         madx_script += "\n! ----- Calling Sequence -----\n"
         madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
         madx_script += self.load_main_seq_madx()
+        madx_script += "\noption, echo;  ! re-enable output to see the optics settings\n"
         madx_script += "\n\n"
         
         madx_script += "\n! ---- Call optics and other modifiers ----\n"
-        madx_script += "option, echo;  ! re-enable output to see the optics settings\n"
 
         if self.modifiers is not None:
             madx_script += "".join(
@@ -450,7 +450,6 @@ class Lhc(Accelerator):
             "\n! ----- Finalize Sequence -----\n"
             "exec, cycle_sequences();\n"
             f"use, sequence = LHCB{self.beam};\n"
-            f"option, echo;\n"
         )
 
         if best_knowledge:
@@ -466,7 +465,7 @@ class Lhc(Accelerator):
             madx_script += "exec, high_beta_matcher();\n"
 
         madx_script += f"\n! ----- Matching Knobs and Output Files -----\n"
-        
+
         # in the best knowledge case, all knobs are loaded from actual knowledge
         if not best_knowledge:
             if self._uses_ats_knobs():
