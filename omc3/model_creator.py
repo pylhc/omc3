@@ -20,7 +20,7 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
-from omc3.utils.iotools import create_dirs, PathOrStr
+from omc3.utils.iotools import create_dirs, PathOrStr, save_config
 from omc3.utils import logging_tools
 from omc3.utils.parsertools import print_help, require_param
 from generic_parser.tools import silence
@@ -151,6 +151,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         print_help(_get_params())
         return None
 
+    
     # proceed to the creator
     accel_inst = manager.get_accelerator(accel_opt)
     require_param("type", _get_params(), opt)
@@ -185,6 +186,10 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
                output_file=opt.outputdir / JOB_MODEL_MADX_MASK.format(opt.type),
                log_file=opt.logfile,
                cwd=opt.outputdir)
+    
+    # Save config at the end, to not being written out for each time the choices are listed
+    save_config(Path(opt.outputdir), opt=opt, unknown_opt=accel_opt, script=__file__)
+    
     # Return accelerator instance
     accel_inst.model_dir = opt.outputdir
     return accel_inst
