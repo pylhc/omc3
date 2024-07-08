@@ -7,6 +7,7 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from copy import deepcopy
 from os.path import join
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -106,13 +107,8 @@ def calculate(measure_input, input_files, tunes, phases, invariants, header):
 def write(df, header, meas_input, plane, rdt):
     outputdir = join(meas_input.outputdir, "rdt", _rdt_to_order_and_type(rdt))
     iotools.create_dirs(outputdir)
-    tfs.write(join(outputdir, f"f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df, header,
+    tfs.write(join(outputdir, f"f{str(rdt)}_{plane.lower()}{EXT}"), df, header,
               save_index="NAME")
-
-
-def _rdt_to_str(rdt):
-    j, k, l, m = rdt
-    return f"{j}{k}{l}{m}"
 
 
 def _rdt_to_order_and_type(rdt):
