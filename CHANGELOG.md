@@ -1,5 +1,16 @@
 # OMC3 Changelog
 
+#### 2024-07-08 - v0.15.0 - _jdilly_
+
+- PINNING NUMPY TO < 2.0.0
+
+- Changed:
+  - Model creation:
+    - removed hard-coded `knobs.madx` from `lhc`
+    - removed `corrections.madx` from `lhc` best-knowledge model
+    - zip up log-output files in `response_madx.py`
+    - keep 0th output file in `response_madx.py` for reference
+
 #### 2024-06-05 - v0.14.1 - _jdilly_
 
 - Fixed:

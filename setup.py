@@ -19,7 +19,7 @@ with README.open("r") as docs:
 DEPENDENCIES = [
     "matplotlib>=3.7.0",  # to be able to run with pandas 2.0
     "Pillow>=6.2.2",  # not our dependency but older versions crash with mpl
-    "numpy>=1.19.0",
+    "numpy>=1.19.0,<2.0.0",  # limiting numpy to < 2.0.0 until pytables is fixed
     "pandas>=2.0",
     "scipy>=1.5.0",
     "scikit-learn>=0.23.0",
