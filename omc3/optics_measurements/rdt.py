@@ -7,7 +7,6 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from copy import deepcopy
 from os.path import join
-from typing import Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -45,7 +44,7 @@ def _generate_plane_rdts(order):
     single_plane = {'X': [], 'Y': []}
     double_plane = {'X': [], 'Y': []}
     # Iterate through our RDTs and classify them depending on what plane they act
-    for (j,k,l,m) in all_rdts:
+    for (j,k,l,m) in all_rdts:  # noqa: E741
         if j == 0 and l == 0:  # the RDT can't be seen on any plane
             continue
         if l+m == 0 and j != 0:  # The line where the RDT is seen is a multiple of the Qx line
@@ -74,7 +73,6 @@ def calculate(
         measure_input: `OpticsInput` object containing analysis settings.
         input_files: `InputFiles` object containing frequency spectra files (linx/y).
         tunes:
-        phases: dataframe with phase advances between BPMs.
         invariants:
         header: headers to include to the written result files.
     """
@@ -111,34 +109,27 @@ def calculate(
 def write(df, header, meas_input, plane, rdt):
     outputdir = join(meas_input.outputdir, "rdt", _rdt_to_order_and_type(rdt))
     iotools.create_dirs(outputdir)
-    tfs.write(join(outputdir, f"f{str(rdt)}_{plane.lower()}{EXT}"), df, header,
+    tfs.write(join(outputdir, f"f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}"), df, header,
               save_index="NAME")
 
 
-def _rdt_to_order_and_type(rdt: Union[int, str]):
-    """
-    Decompose the input RDT into its four various components
-    and return the type of RDT (normal or skew) and its order.
+def _rdt_to_str(rdt):
+    j, k, l, m = rdt  # noqa: E741
+    return f"{j}{k}{l}{m}"
 
-    Args:
-        rdt (Union[int, str]): the RDT to decompose.
-    
-    Returns:
-        A string with the type and (magnet) order of
-        the provided RDT.
-    """
-    j, k, l, m = map(int, str(rdt))  # noqa: E741
+
+def _rdt_to_order_and_type(rdt):
+    j, k, l, m = rdt  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
-    orders = dict(
-        ((1, "dipole"),
-         (2, "quadrupole"),
-         (3, "sextupole"),
-         (4, "octupole"),
-         (5, "decapole"),
-         (6, "dodecapole"),
-         (7, "tetradecapole"),
-         (8, "hexadecapole"),
-    ))
+    orders = dict(((1, "dipole"), 
+                   (2, "quadrupole"), 
+                   (3, "sextupole"), 
+                   (4, "octupole"),
+                   (5, "decapole"),
+                   (6, "dodecapole"),
+                   (7, "tetradecapole"),
+                   (8, "hexadecapole"),
+                 ))
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
@@ -163,22 +154,8 @@ def _get_n_upper_diagonals(n, shape):
     return diags(np.ones((n, shape[0])), np.arange(n)+1, shape=shape).toarray()
 
 
-def _determine_line(rdt: Union[int, str], plane: str) -> Tuple[int, int, int]:
-    """
-    Find the given line to look for in the spectral analysis of
-    the given plane that corresponds to the given RDT.
-
-    Args:
-        rdt (Union[int, str]): the RDT to look for.
-        plane (str): the plane to look for the RDT in.
-    
-    Returns:
-        A tuple of three integers representing the line
-        to look for in the spectral analysis. For instance,
-        f1001 corresponds to the line (0, 1, 0) in the X plane
-        which means the line located at 1 * Qy = Qy.
-    """
-    j, k, l, m = map(int, str(rdt))  # noqa: E741
+def _determine_line(rdt, plane):
+    j, k, l, m = rdt  # noqa: E741
     lines = dict(X=(1 - j + k, m - l, 0),
                  Y=(k - j, 1 - l + m, 0))
     return lines[plane]
@@ -262,7 +239,7 @@ def get_linearized_problem(invs, plane, rdt):
     2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
     we use sqrt(2J): unit is sqrt(m).
     """
-    j, k, l, m = rdt
+    j, k, l, m = rdt  # noqa: E741
     act_x = invs["X"].T[0]
     act_y = invs["Y"].T[0]
     if plane == "X":
