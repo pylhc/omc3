@@ -171,13 +171,13 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     # Prepare model-dir output directory
     accel_inst.model_dir = Path(opt.outputdir).absolute()
 
-    # adjust modifier paths,
-    if accel_inst.modifiers is not None:
-        accel_inst.modifiers = [_find_modifier(m, accel_inst) for m in accel_inst.modifiers]
-
     # Prepare paths
     create_dirs(opt.outputdir)
     creator.prepare_run(accel_inst)
+    
+    # adjust modifier paths,
+    if accel_inst.modifiers is not None:
+        accel_inst.modifiers = [_find_modifier(m, accel_inst) for m in accel_inst.modifiers]
 
     madx_script = creator.get_madx_script(accel_inst)
     # Run madx to create model
