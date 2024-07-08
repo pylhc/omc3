@@ -7,7 +7,7 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from copy import deepcopy
 from os.path import join
-from typing import Union
+from typing import Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -127,7 +127,7 @@ def _rdt_to_order_and_type(rdt: Union[int, str]):
         A string with the type and (magnet) order of
         the provided RDT.
     """
-    j, k, l, m = str(rdt)  # noqa: E741
+    j, k, l, m = map(int, str(rdt))  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
     orders = dict(
         ((1, "dipole"),
@@ -163,7 +163,7 @@ def _get_n_upper_diagonals(n, shape):
     return diags(np.ones((n, shape[0])), np.arange(n)+1, shape=shape).toarray()
 
 
-def _determine_line(rdt: Union[int, str], plane: str) -> str:
+def _determine_line(rdt: Union[int, str], plane: str) -> Tuple[int, int, int]:
     """
     Find the given line to look for in the spectral analysis of
     the given plane that corresponds to the given RDT.
@@ -173,10 +173,12 @@ def _determine_line(rdt: Union[int, str], plane: str) -> str:
         plane (str): the plane to look for the RDT in.
     
     Returns:
-        A string representing the line to look for in the
-        spectral analysis.
+        A tuple of three integers representing the line
+        to look for in the spectral analysis. For instance,
+        f1001 corresponds to the line (0, 1, 0) in the X plane
+        which means the line located at 1 * Qy = Qy.
     """
-    j, k, l, m = str(rdt)  # noqa: E741
+    j, k, l, m = map(int, str(rdt))  # noqa: E741
     lines = dict(X=(1 - j + k, m - l, 0),
                  Y=(k - j, 1 - l + m, 0))
     return lines[plane]
