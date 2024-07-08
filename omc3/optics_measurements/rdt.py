@@ -163,8 +163,20 @@ def _get_n_upper_diagonals(n, shape):
     return diags(np.ones((n, shape[0])), np.arange(n)+1, shape=shape).toarray()
 
 
-def _determine_line(rdt, plane):
-    j, k, l, m = rdt
+def _determine_line(rdt: Union[int, str], plane: str) -> str:
+    """
+    Find the given line to look for in the spectral analysis of
+    the given plane that corresponds to the given RDT.
+
+    Args:
+        rdt (Union[int, str]): the RDT to look for.
+        plane (str): the plane to look for the RDT in.
+    
+    Returns:
+        A string representing the line to look for in the
+        spectral analysis.
+    """
+    j, k, l, m = str(rdt)  # noqa: E741
     lines = dict(X=(1 - j + k, m - l, 0),
                  Y=(k - j, 1 - l + m, 0))
     return lines[plane]
