@@ -111,18 +111,30 @@ def write(df, header, meas_input, plane, rdt):
               save_index="NAME")
 
 
-def _rdt_to_order_and_type(rdt):
-    j, k, l, m = rdt
+def _rdt_to_order_and_type(rdt: Union[int, str]):
+    """
+    Decompose the input RDT into its four various components
+    and return the type of RDT (normal or skew) and its order.
+
+    Args:
+        rdt (Union[int, str]): the RDT to decompose.
+    
+    Returns:
+        A string with the type and (magnet) order of
+        the provided RDT.
+    """
+    j, k, l, m = str(rdt)  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
-    orders = dict(((1, "dipole"), 
-                   (2, "quadrupole"), 
-                   (3, "sextupole"), 
-                   (4, "octupole"),
-                   (5, "decapole"),
-                   (6, "dodecapole"),
-                   (7, "tetradecapole"),
-                   (8, "hexadecapole"),
-                 ))
+    orders = dict(
+        ((1, "dipole"),
+         (2, "quadrupole"),
+         (3, "sextupole"),
+         (4, "octupole"),
+         (5, "decapole"),
+         (6, "dodecapole"),
+         (7, "tetradecapole"),
+         (8, "hexadecapole"),
+    ))
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
