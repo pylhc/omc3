@@ -17,6 +17,7 @@ from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import AMPLITUDE, ERR, EXT, IMAG, PHASE, REAL
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
@@ -62,17 +63,20 @@ def _generate_plane_rdts(order):
     return single_plane, double_plane
 
 
-def calculate(measure_input, input_files, tunes, phases, invariants, header):
+def calculate(
+    measure_input: dict, input_files: InputFiles, tunes, phases, invariants, header: dict
+) -> None:
     """
+    Computes the RDTs for the given input files and settings up to the magnet
+    order given in the inputs, and writes the results to file.
 
     Args:
-        measure_input:
-        input_files:
+        measure_input: `OpticsInput` object containing analysis settings.
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
         tunes:
+        phases: dataframe with phase advances between BPMs.
         invariants:
-        header:
-
-    Returns:
+        header: headers to include to the written result files.
     """
     LOGGER.info("Start of RDT analysis")
     meas_input = deepcopy(measure_input)
