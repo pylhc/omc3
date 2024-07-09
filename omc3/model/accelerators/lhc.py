@@ -311,29 +311,6 @@ class Lhc(Accelerator):
         LOGGER.info(f"> Driven Tune X     [{self.drv_tunes[0]:10.3f}]")
         LOGGER.info(f"> Driven Tune Y     [{self.drv_tunes[1]:10.3f}]")
 
-    def load_main_seq_madx(self) -> str:
-        if self.acc_model_path is not None:
-            main_call = f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
-            if self.year.startswith('hl'):
-                main_call += f'\ncall, file = \'{self.acc_model_path / "hllhc_sequence.madx"}\';'
-            return main_call
-        try:
-            return _get_call_main_for_year(self.year)
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, mode "
-                "has to be specified (--lhcmode option missing?)."
-            )
-
-    # Private Methods ##########################################################
-
-    def _get_triplet_correctors_file(self) -> Path:
-        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
-        return correctors_dir / "triplet_correctors.json"
-
-    def _get_corrector_elems(self) -> Path:
-        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
-        return correctors_dir / f"corrector_elems_b{self.beam}.tfs"
 
     def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
         beam = self.beam
@@ -384,24 +361,7 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
-    def _get_madx_script_info_comments(self) -> str:
-        info_comments = (
-            f'title, "LHC Model created by omc3";\n'
-            f"! Model directory: {Path(self.model_dir).absolute()}\n"
-            f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
-            f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
-            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'YES':>10s}]\n"
-        )
-        if self.excitation == AccExcitationMode.FREE:
-            info_comments += f"! Excitation             [{'NO':>10s}]\n"
-        else:
-            info_comments += (
-                f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
-                f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
-                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n"
-
-            )
-        return info_comments
+    # MAD-X Methods ############################################################
 
     def get_base_madx_script(self, best_knowledge: bool = False, ats_md: bool = False, high_beta: bool = False) -> str:
         madx_script = (
@@ -421,7 +381,7 @@ class Lhc(Accelerator):
 
         madx_script += "\n! ----- Calling Sequence -----\n"
         madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
-        madx_script += self.load_main_seq_madx()
+        madx_script += self._get_madx_main_sequence_loading()
         madx_script += "\noption, echo;  ! re-enable output to see the optics settings\n"
         
         madx_script += "\n! ---- Call optics and other modifiers ----\n"
@@ -481,6 +441,39 @@ class Lhc(Accelerator):
             madx_script += "exec, full_response_ats();\n"
 
         return madx_script
+        
+    def _get_madx_script_info_comments(self) -> str:
+        info_comments = (
+            f'title, "LHC Model created by omc3";\n'
+            f"! Model directory: {Path(self.model_dir).absolute()}\n"
+            f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
+            f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
+            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'YES':>10s}]\n"
+        )
+        if self.excitation == AccExcitationMode.FREE:
+            info_comments += f"! Excitation             [{'NO':>10s}]\n"
+        else:
+            info_comments += (
+                f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
+                f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
+                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n"
+
+            )
+        return info_comments
+
+    def _get_madx_main_sequence_loading(self) -> str:
+        if self.acc_model_path is not None:
+            main_call = f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
+            if self.year.startswith('hl'):
+                main_call += f'\ncall, file = \'{self.acc_model_path / "hllhc_sequence.madx"}\';'
+            return main_call
+        try:
+            return _get_call_main_for_year(self.year)
+        except AttributeError:
+            raise AcceleratorDefinitionError(
+                "The accelerator definition is incomplete, mode "
+                "has to be specified (--lhcmode option missing?)."
+            )
 
     def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
         madx_script = self.get_base_madx_script()
@@ -488,6 +481,8 @@ class Lhc(Accelerator):
             madx_script += f"call, file = '{str(corr_file)}';\n"
         madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
         return madx_script
+
+    # Private Methods ##########################################################
 
     def _uses_ats_knobs(self) -> bool:
         """
@@ -507,6 +502,14 @@ class Lhc(Accelerator):
             return int(self.year) >= 2022  # self.year is always a string
         except ValueError:  # if a "hllhc1.x" year is given
             return False
+
+    def _get_triplet_correctors_file(self) -> Path:
+        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
+        return correctors_dir / "triplet_correctors.json"
+
+    def _get_corrector_elems(self) -> Path:
+        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
+        return correctors_dir / f"corrector_elems_b{self.beam}.tfs"
 
 
 # General functions ##########################################################
