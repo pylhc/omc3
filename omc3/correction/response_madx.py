@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Dict, Sequence, Tuple, List
 
 import numpy as np
+import zipfile
 import pandas as pd
 import tfs
 from optics_functions.coupling import coupling_via_cmatrix
@@ -139,9 +140,16 @@ def _clean_up(temp_dir: Path, num_proc: int) -> None:
         log_path = job_path.with_name(f"{job_path.name}.log")
         full_log += log_path.read_text()
         log_path.unlink()
-        job_path.unlink()
-    full_log_path = temp_dir / "response_madx_full.log"
-    full_log_path.write_text(full_log)
+        if index:  # keep 0th for reference
+            job_path.unlink()
+    
+    # write compressed full log file
+    full_log_name = "response_madx_full.log"
+    zipfile.ZipFile(
+        temp_dir / f"{full_log_name}.zip", 
+        mode="w", 
+        compression=zipfile.ZIP_DEFLATED
+    ).writestr(full_log_name, full_log)
 
 
 def _load_madx_results(

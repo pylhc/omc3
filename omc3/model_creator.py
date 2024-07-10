@@ -5,13 +5,14 @@ Model Creator
 Entrypoint to run the model creator for LHC, PSBooster and PS models.
 """
 from pathlib import Path
+from typing import Union
 
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, MODIFIER_SUBDIR
+from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, OPTICS_SUBDIR
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
@@ -20,7 +21,7 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
-from omc3.utils.iotools import create_dirs, PathOrStr
+from omc3.utils.iotools import create_dirs, PathOrStr, save_config
 from omc3.utils import logging_tools
 from omc3.utils.parsertools import print_help, require_param
 from generic_parser.tools import silence
@@ -151,6 +152,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         print_help(_get_params())
         return None
 
+    
     # proceed to the creator
     accel_inst = manager.get_accelerator(accel_opt)
     require_param("type", _get_params(), opt)
@@ -161,7 +163,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     # now that the creator is initialised, we can ask for modifiers that are actually present
     # using the fetcher we chose
-    if not creator.get_options(accel_inst, opt):
+    if not creator.check_options(accel_inst, opt):
         return None
 
     accel_inst.verify_object()
@@ -170,43 +172,46 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     # Prepare model-dir output directory
     accel_inst.model_dir = Path(opt.outputdir).absolute()
 
-    # adjust modifier paths,
+    # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
     if accel_inst.modifiers is not None:
         accel_inst.modifiers = [_find_modifier(m, accel_inst) for m in accel_inst.modifiers]
 
     # Prepare paths
     create_dirs(opt.outputdir)
-    (Path(opt.outputdir) / "knobs.madx").touch()  # create empty knobs.madx for madx job
     creator.prepare_run(accel_inst)
-
+    
     madx_script = creator.get_madx_script(accel_inst)
     # Run madx to create model
     run_string(madx_script,
                output_file=opt.outputdir / JOB_MODEL_MADX_MASK.format(opt.type),
                log_file=opt.logfile,
                cwd=opt.outputdir)
+    
+    # Save config at the end, to not being written out for each time the choices are listed
+    save_config(Path(opt.outputdir), opt=opt, unknown_opt=accel_opt, script=__file__)
+    
     # Return accelerator instance
     accel_inst.model_dir = opt.outputdir
     return accel_inst
 
 
-def _find_modifier(modifier, accel_inst: Accelerator):
+def _find_modifier(modifier: Path, accel_inst: Accelerator):
     # first case: if modifier exists as is, take it
     if modifier.exists():
         return modifier
 
     # second case: try if it is already in the output dir
-    modifier_path = accel_inst.model_dir / modifier
-    if modifier_path.exists():
-        return modifier_path.absolute()
+    model_dir_path: Path = accel_inst.model_dir / modifier
+    if model_dir_path.exists():
+        return model_dir_path.absolute()
 
     # and last case, try to find it in the acc-models rep
     if accel_inst.acc_model_path is not None:
-        modifier_path = accel_inst.acc_model_path / MODIFIER_SUBDIR / modifier
-        if modifier_path.exists():
-            return modifier_path.absolute()
+        optics_path: Path = accel_inst.acc_model_path / OPTICS_SUBDIR / modifier
+        if optics_path.exists():
+            return optics_path.absolute()
 
-    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}/{MODIFIER_SUBDIR}")
+    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}/{OPTICS_SUBDIR}")
 
 
 if __name__ == "__main__":
