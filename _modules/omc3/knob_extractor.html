@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.knob_extractor &mdash; omc3 0.14.1 documentation</title>
+  <title>omc3.knob_extractor &mdash; omc3 0.15.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3a3a8e7f"></script>
+        <script src="../../_static/documentation_options.js?v=ef97403f"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -242,8 +242,6 @@
 
 <span class="sd">    Specify user-defined output path. This should probably be</span>
 <span class="sd">    `model_dir/knobs.madx`</span>
-
-<span class="sd">    default: ``knobs.madx``</span>
 
 
 <span class="sd">- **state**:</span>
@@ -689,16 +687,16 @@
 <span class="k">def</span> <span class="nf">_get_knobs_def_file</span><span class="p">(</span><span class="n">user_defined</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Check which knobs-definition file is appropriate to take. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">user_defined</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using user defined knobs.txt: &#39;</span><span class="si">{</span><span class="n">user_defined</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using user knobs-definition file: &#39;</span><span class="si">{</span><span class="n">user_defined</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">user_defined</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">KNOBS_FILE_ACC_MODELS</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using model folder&#39;s knobs.txt: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_ACC_MODELS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using given acc-models folder&#39;s knobs.txt as knobsdefinition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_ACC_MODELS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">KNOBS_FILE_ACC_MODELS</span>
 
     <span class="k">if</span> <span class="n">KNOBS_FILE_AFS</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="c1"># if all fails, fall back to lhc acc-models</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using fallback knobs.txt: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_AFS</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using afs-fallback acc-models folder&#39;s knobs.txt as knobs-definition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_AFS</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">KNOBS_FILE_AFS</span>
 
     <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;None of the knobs-definition files are available.&quot;</span><span class="p">)</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.iotools &mdash; omc3 0.14.1 documentation</title>
+  <title>omc3.utils.iotools &mdash; omc3 0.15.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=3a3a8e7f"></script>
+        <script src="../../../_static/documentation_options.js?v=ef97403f"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -219,7 +219,7 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">generic_parser.entry_datatypes</span> <span class="kn">import</span> <span class="n">get_instance_faker_meta</span><span class="p">,</span> <span class="n">get_multi_class</span>
 <span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">save_options_to_config</span>
@@ -410,6 +410,24 @@
 
 
 
+<div class="viewcode-block" id="replace_in_path">
+<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.replace_in_path">[docs]</a>
+<span class="k">def</span> <span class="nf">replace_in_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">new</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Replace a part of a path with a new path. </span>
+<span class="sd">    Useful for example to replace the original path with a path to a symlink or vice versa.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (Path): Path object to replace the subpath in </span>
+<span class="sd">        old (Union[Path, str]): Subpath to be replaced</span>
+<span class="sd">        new (Union[Path, str]): Subpath to replace with</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path: New Path object with the replacement in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">old</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">new</span><span class="p">)))</span></div>
+
+
+
 <div class="viewcode-block" id="remove_none_dict_entries">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries">[docs]</a>
 <span class="k">def</span> <span class="nf">remove_none_dict_entries</span><span class="p">(</span><span class="n">dict_</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -467,6 +485,26 @@
         <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
         <span class="n">unknown</span><span class="o">=</span><span class="n">unknown_opt</span>
     <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="always_true">
+<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.always_true">[docs]</a>
+<span class="k">def</span> <span class="nf">always_true</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A function that is always True. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="get_check_suffix_func">
+<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_check_suffix_func">[docs]</a>
+<span class="k">def</span> <span class="nf">get_check_suffix_func</span><span class="p">(</span><span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a function that checks the suffix of a given path agains </span>
+<span class="sd">    the suffix. &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">check_suffix</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="n">suffix</span>
+    <span class="k">return</span> <span class="n">check_suffix</span></div>
+
 
 </pre></div>
 

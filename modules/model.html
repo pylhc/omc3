@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.14.1 documentation</title>
+  <title>Model &mdash; omc3 0.15.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -16,7 +16,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=3a3a8e7f"></script>
+        <script src="../_static/documentation_options.js?v=ef97403f"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -529,7 +529,7 @@ modified.</p>
 <dd><p>Parent Class for LHC-types.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_knowledge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_md</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns job (string) to create the basic accelerator sequence.</p>
 </dd></dl>
 
@@ -995,6 +995,12 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcBestKnowledgeCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator.check_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Use the fetcher to list choices if requested.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_run_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Lhc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator.check_run_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Checks that the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run was successful. It should check that the
 appropriate directories are created, and that macros and other files are in place.
@@ -1018,20 +1024,6 @@ Checks the accelerator instance. Called by the <code class="docutils literal not
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcBestKnowledgeCreator.get_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Parses additional commandline options (if any). To be overridden by subclasses.
-If there are options that ask for some output print, and no valid model to be created, return False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>options</strong> -- The remaining options (e.g. if called by model_creater, those not yet consumed by
-the model creator)</p>
-</dd>
-</dl>
-<p>Returns: True if enough options are given to provide a valid model</p>
 </dd></dl>
 
 </dd></dl>
@@ -1059,6 +1051,12 @@ the model creator)</p>
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.lhc_model_creator.</span></span><span class="sig-name descname"><span class="pre">LhcModelCreator</span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Lhc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator.check_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Use the fetcher to list choices if requested.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_correction_check_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Lhc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'changeparameters_couple.madx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator.get_correction_check_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to verify global corrections. This script should create twiss
@@ -1089,20 +1087,6 @@ files for before (<code class="docutils literal notranslate"><span class="pre">t
 <dd class="field-even"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcModelCreator.get_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Parses additional commandline options (if any). To be overridden by subclasses.
-If there are options that ask for some output print, and no valid model to be created, return False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>options</strong> -- The remaining options (e.g. if called by model_creater, those not yet consumed by
-the model creator)</p>
-</dd>
-</dl>
-<p>Returns: True if enough options are given to provide a valid model</p>
 </dd></dl>
 
 <dl class="py method">

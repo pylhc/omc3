@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utils &mdash; omc3 0.14.1 documentation</title>
+  <title>Utils &mdash; omc3 0.15.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -16,7 +16,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=3a3a8e7f"></script>
+        <script src="../_static/documentation_options.js?v=ef97403f"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -295,6 +295,12 @@ Very special and used e.g. in the BBQ Input.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">always_true</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#always_true"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A function that is always True.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">convert_paths_in_dict_to_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#convert_paths_in_dict_to_strings"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Converts all Paths in the dict to strings, including those in iterables.</p>
 </dd></dl>
@@ -316,6 +322,13 @@ If <code class="docutils literal notranslate"><span class="pre">src_item</span><
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">create_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#create_dirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Creates all dirs to <code class="docutils literal notranslate"><span class="pre">path_to_dir</span></code> if not exists.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">get_check_suffix_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#get_check_suffix_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns a function that checks the suffix of a given path agains
+the suffix.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -360,6 +373,28 @@ if the script names were different, just the original opt.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">remove_none_dict_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#remove_none_dict_entries"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Removes <code class="docutils literal notranslate"><span class="pre">None</span></code> entries from dict. This can be used as a workaround to
 <a class="reference external" href="https://github.com/pylhc/generic_parser/issues/26">https://github.com/pylhc/generic_parser/issues/26</a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">replace_in_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#replace_in_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Replace a part of a path with a new path.
+Useful for example to replace the original path with a path to a symlink or vice versa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Path</em>) -- Path object to replace the subpath in</p></li>
+<li><p><strong>old</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Subpath to be replaced</p></li>
+<li><p><strong>new</strong> (<em>Union</em><em>[</em><em>Path</em><em>, </em><em>str</em><em>]</em>) -- Subpath to replace with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New Path object with the replacement in.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.response_madx &mdash; omc3 0.14.1 documentation</title>
+  <title>omc3.correction.response_madx &mdash; omc3 0.15.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=3a3a8e7f"></script>
+        <script src="../../../_static/documentation_options.js?v=ef97403f"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -228,6 +228,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">optics_functions.coupling</span> <span class="kn">import</span> <span class="n">coupling_via_cmatrix</span>
@@ -352,9 +353,16 @@
         <span class="n">log_path</span> <span class="o">=</span> <span class="n">job_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">job_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">)</span>
         <span class="n">full_log</span> <span class="o">+=</span> <span class="n">log_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="n">log_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-        <span class="n">job_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-    <span class="n">full_log_path</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;response_madx_full.log&quot;</span>
-    <span class="n">full_log_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">full_log</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">index</span><span class="p">:</span>  <span class="c1"># keep 0th for reference</span>
+            <span class="n">job_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    
+    <span class="c1"># write compressed full log file</span>
+    <span class="n">full_log_name</span> <span class="o">=</span> <span class="s2">&quot;response_madx_full.log&quot;</span>
+    <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span>
+        <span class="n">temp_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">full_log_name</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">,</span> 
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> 
+        <span class="n">compression</span><span class="o">=</span><span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">writestr</span><span class="p">(</span><span class="n">full_log_name</span><span class="p">,</span> <span class="n">full_log</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_load_madx_results</span><span class="p">(</span>
