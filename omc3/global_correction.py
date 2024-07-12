@@ -194,6 +194,8 @@ CORRECTION_DEFAULTS = {
     "beta_filename": "beta_phase_",
     "method": "pinv",
     "iterations": 4,
+    "arc_by_arc_phase": False,
+    "include_ips": None,
 }
 
 
@@ -272,6 +274,15 @@ def correction_params():
     params.add_parameter(name="update_response",
                          action="store_true",
                          help="Update the (analytical) response per iteration.", )
+    params.add_parameter(name="arc_by_arc_phase",
+                         type=bool,
+                         default=CORRECTION_DEFAULTS["arc_by_arc_phase"],
+                         help="Set to True for arc-by-arc total pahse correction.", )
+    params.add_parameter(name="include_ips",
+                         type=str,
+                         choices=("left", "right"),
+                         default=CORRECTION_DEFAULTS["include_ips"],
+                         help="Include ips left or right of arcs in arcs.", )
     return params
 
 
