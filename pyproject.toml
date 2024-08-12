@@ -23,15 +23,7 @@ name = "omc3"
 readme = "README.md"
 description = "An accelerator physics tools package for the OMC team at CERN."
 authors = [
-    {name = "PyLHC", email = "pylhc@github.com"},
-    {name = "Joschua Dilly", email = "joschua.dilly@cern.ch"},
-    {name = "Lukas Malina", email = "lukas.malina@pm.me"},
-    {name = "Felix Soubelet", email = "felix.soubelet@cern.ch"},
-    {name = "Michael Hofer"},
-    {name = "Andreas Wegscheider"},
-    {name = "Mael Le Garrec", email = "mael.le.garrec@cern.ch"},
-    {name = "Jaime Coello de Portugal"},
-    {name = "Tobias Persson", email = "tobias.persson@cern.ch"},
+    {name = "OMC Team", email = "pylhc@github.com"},  # see zenodo file / commits for details
 ]
 license = "MIT"
 dynamic = ["version"]
