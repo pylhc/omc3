@@ -217,7 +217,12 @@ def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2023):
 @pytest.mark.basic
 def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2023):
     (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
-    (tmp_path / LhcBestKnowledgeCreator.CORRECTIONS_FILENAME).write_text("\n")
+    
+    corrections = tmp_path / "other_corrections.madx"
+    corrections_str = "! just a comment to test the corrections file is actually loaded in madx. whfifhkdskjfshkdhfswojeorijr"
+    corrections.write_text(f"{corrections_str}\n")
+
+    logfile = tmp_path / "madx_log.txt"
 
     accel_opt = dict(
         accel="lhc",
@@ -229,20 +234,21 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2023):
         energy=6800.0,
         fetch=PATHFETCHER,
         path=acc_models_lhc_2023,
-        modifiers=LHC_30CM_MODIFIERS
+        modifiers=LHC_30CM_MODIFIERS + [corrections]
     )
 
     # like from the GUI, dump best knowledge on top of nominal
     accel = create_instance_and_model(
-        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+        outputdir=tmp_path, type="nominal", logfile=logfile, **accel_opt
     )
 
     accel_opt["b2_errors"] = str(INPUTS / "models/error_tables/MB2022_6500.0GeV_0133cm")
 
     accel = create_instance_and_model(
-        outputdir=tmp_path, type="best_knowledge", logfile=tmp_path / "madx_log.txt", **accel_opt
+        outputdir=tmp_path, type="best_knowledge", logfile=logfile, **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"], best_knowledge=True)
+    assert corrections_str in logfile.read_text()
 
 
 @pytest.mark.basic

@@ -57,6 +57,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 
 """
+from pathlib import Path
 from typing import Dict
 
 import pandas as pd
@@ -68,7 +69,7 @@ from omc3.correction.response_io import write_fullresponse
 from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr
+from omc3.utils.iotools import PathOrStr, save_config
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -114,6 +115,9 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> Dict[str, pd.DataFram
     The response matrices can be either created by response_madx or TwissResponse.
     """
     LOG.info("Creating response.")
+    if opt.outfile_path is not None:
+        save_config(Path(opt.outfile_path).parent, opt=opt, unknown_opt=other_opt, script=__file__)
+
     accel_inst = manager.get_accelerator(other_opt)
 
     if opt.creator == "madx":

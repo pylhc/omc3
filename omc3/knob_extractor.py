@@ -33,8 +33,6 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
     Specify user-defined output path. This should probably be
     `model_dir/knobs.madx`
 
-    default: ``knobs.madx``
-
 
 - **state**:
 
@@ -461,16 +459,16 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame
 def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path:
     """ Check which knobs-definition file is appropriate to take. """
     if user_defined is not None:
-        LOGGER.info(f"Using user defined knobs.txt: '{user_defined}")
+        LOGGER.info(f"Using user knobs-definition file: '{user_defined}")
         return Path(user_defined)
 
     if KNOBS_FILE_ACC_MODELS.is_file():
-        LOGGER.info(f"Using model folder's knobs.txt: '{KNOBS_FILE_ACC_MODELS}")
+        LOGGER.info(f"Using given acc-models folder's knobs.txt as knobsdefinition file: '{KNOBS_FILE_ACC_MODELS}")
         return KNOBS_FILE_ACC_MODELS
 
     if KNOBS_FILE_AFS.is_file():
         # if all fails, fall back to lhc acc-models
-        LOGGER.info(f"Using fallback knobs.txt: '{KNOBS_FILE_AFS}'")
+        LOGGER.info(f"Using afs-fallback acc-models folder's knobs.txt as knobs-definition file: '{KNOBS_FILE_AFS}'")
         return KNOBS_FILE_AFS
 
     raise FileNotFoundError("None of the knobs-definition files are available.")
